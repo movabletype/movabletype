@@ -16,11 +16,11 @@
 </mtapp:widget>
 
 <mt:setvarblock name="css_include" append="1">
-<link rel="stylesheet" href="<$mt:var name="static_uri"$>chart-api/mtchart.css?v=<mt:var name="mt_version_id" escape="URL">">
+<mt:stylesheet path="chart-api/mtchart.css">
 </mt:setvarblock>
 
 <mt:setvarblock name="js_include" append="1">
-<script src="<$mt:var name="static_uri"$>chart-api/mtchart.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+<mt:script path="chart-api/mtchart.js">
 <script type="text/javascript">
 /* <![CDATA[ */
   jQuery(function() {
@@ -90,7 +90,8 @@
         hoverCallback: function (index, options, content) {
           var row  = options.data[index];
           var data = hover_data[index];
-          var html = '<div class="morris-hover-row-label">' + row.x + '</div>';
+          var html = jQuery('<div class="morris-hover-row-label">').text(row.x);
+          html = html.prop('outerHTML');
           for (var i = 0; i < data.length; i++) {
             var colorSubscript = i;
             if ( i > 16 ) {
@@ -98,7 +99,8 @@
               colorSubscript = i - ( 17 * number );
             }
             var color = chartColors[colorSubscript];
-            html += '<div class="morris-hover-point" style="color: ' + color + ';">' + data[i].label + ': ' + data[i].count + '</div>';
+            var div = jQuery('<div class="morris-hover-point" style="color: ' + color + ';">').text(data[i].label + ': ' + data[i].count);
+            html += div.prop('outerHTML');
           }
           return html;
         },

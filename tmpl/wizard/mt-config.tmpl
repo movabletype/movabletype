@@ -25,17 +25,6 @@ PublishCharset <mt:var name="publish_charset"></mt:if><mt:if name="non_cgi_suffi
 </mt:if><mt:loop name="script_loop">
 <mt:var name="name"> <mt:var name="path"></mt:loop></mt:if>
 
-#======== USER PATHS =================
-<mt:if name="base_user_directory">
-BaseUserDirectory <mt:var name="base_user_directory"></mt:if><mt:if name="base_site_path">
-BaseSitePath <mt:var name="base_site_path"></mt:if><mt:if name="support_directory_path">
-SupportDirectoryPath <mt:var name="support_directory_path"></mt:if><mt:if name="support_directory_url">
-SupportDirectoryURL <mt:var name="support_directory_url"></mt:if><mt:if name="import_path">
-ImportPath <mt:var name="import_path"></mt:if><mt:if name="user_plugin_path">
-UserPluginPath <mt:var name="user_plugin_path"></mt:if><mt:if name="user_themes_directory">
-UserThemesDirectory <mt:var name="user_themes_directory"></mt:if><mt:if name="user_template_path">
-UserTemplatePath <mt:var name="user_template_path"></mt:if>
-
 #======== DATABASE SETTINGS ==========<mt:if name="use_dbms">
 
 ObjectDriver <mt:var name="object_driver">
@@ -45,13 +34,15 @@ DBPassword <mt:var name="database_password"></mt:if><mt:if name="database_host">
 DBHost <mt:var name="database_host"></mt:if><mt:if name="database_port">
 DBPort <mt:var name="database_port"></mt:if><mt:if name="database_socket">
 DBSocket <mt:var name="database_socket"></mt:if><mt:if name="database_odbcdriver">
-ODBCDriver <mt:var name="odbcdriver"></mt:if></mt:if>
+ODBCDriver <mt:var name="odbcdriver"></mt:if><mt:if name="database_odbcencrypt">
+ODBCEncrypt <mt:var name="odbcencrypt"></mt:if></mt:if>
 
 #======== MAIL =======================
 EmailAddressMain <mt:var name="email_address_main"><mt:if name="mail_transfer">
 MailTransfer <mt:var name="mail_transfer"><mt:if name="mail_transfer" eq="smtp">
 SMTPServer <mt:var name="smtp_server">
-SMTPPort <mt:var name="smtp_port"><mt:if name="smtp_auth">
+SMTPPort <mt:var name="smtp_port"><mt:if name="smtp_ssl">
+SMTPS <mt:var name="smtp_ssl"></mt:if><mt:if name="smtp_auth">
 SMTPAuth <mt:var name="smtp_auth">
 SMTPUser <mt:var name="smtp_auth_username">
 SMTPPassword <mt:var name="smtp_auth_password"></mt:if><mt:else><mt:if name="sendmail_path">

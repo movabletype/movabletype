@@ -82,6 +82,8 @@ sub run_tests {
 
             my $blog = MT::Blog->load($blog_id);
             $blog->archive_type_preferred($archive_type);
+            $blog->language(MT->current_language);
+            $blog->date_language(MT->current_language);
             $blog->save;
 
             $self->_run_perl_test( $blog_id, $map, $objs );
@@ -129,6 +131,7 @@ sub _run_perl_test {
             $ctx->stash( blog          => $blog );
             $ctx->stash( blog_id       => $blog->id );
             $ctx->stash( local_blog_id => $blog->id );
+            $ctx->stash( local_lang_id => lc(MT->current_language) );
             $ctx->stash( builder       => MT->builder );
 
             my ( $stash, $skip )
@@ -233,6 +236,13 @@ sub _run_php_test {
             my $archive_type = $map->archive_type;
             my $archiver     = MT->publisher->archiver($archive_type);
 
+            my $blog = MT::Blog->load($blog_id);
+            if ($blog and $blog->language ne lc MT->config->DefaultLanguage) {
+                $blog->language(MT->config->DefaultLanguage);
+                $blog->date_language(MT->config->DefaultLanguage);
+                $blog->save;
+            }
+
             ( my $method_name = $archive_type ) =~ tr|A-Z-|a-z_|;
 
             my $tmpl = MT::Template->load( $map->template_id );
@@ -316,7 +326,7 @@ PHP
                 $test_script .= <<"PHP";
 require_once('class.mt_fileinfo.php');
 \$fileinfo = new FileInfo;
-\$fileinfo->Load($finfo_id);
+\$fileinfo->LoadByIntId($finfo_id);
 \$ctx->stash('_fileinfo', \$fileinfo);
 PHP
             }
@@ -330,7 +340,7 @@ PHP
                 $test_script .= <<"PHP";
 require_once('class.mt_content_type.php');
 \$ct = new ContentType;
-\$ct->Load($ct_id);
+\$ct->LoadByIntId($ct_id);
 \$ctx->stash('content_type', \$ct);
 PHP
             }
@@ -348,7 +358,7 @@ PHP
                 $test_script .= <<"PHP";
 require_once('class.mt_category.php');
 \$cat = new Category;
-\$cat->Load($category_id);
+\$cat->LoadByIntId($category_id);
 \$ctx->stash('category', \$cat);
 \$ctx->stash('archive_category', \$cat);
 PHP
@@ -359,7 +369,7 @@ PHP
                 $test_script .= <<"PHP";
 require_once('class.mt_author.php');
 \$author = new Author;
-\$author->Load($author_id);
+\$author->LoadByIntId($author_id);
 \$ctx->stash('author', \$author);
 \$ctx->stash('archive_author', \$author);
 PHP
@@ -370,7 +380,7 @@ PHP
                 $test_script .= <<"PHP";
 require_once('class.mt_entry.php');
 \$entry = new Entry;
-\$entry->Load($entry_id);
+\$entry->LoadByIntId($entry_id);
 \$ctx->stash('entry', \$entry);
 PHP
             }
@@ -380,7 +390,7 @@ PHP
                 $test_script .= <<"PHP";
 require_once('class.mt_content_data.php');
 \$cd = new ContentData;
-\$cd->Load($cd_id);
+\$cd->LoadByIntId($cd_id);
 \$ctx->stash('content', \$cd);
 PHP
             }
@@ -390,7 +400,7 @@ PHP
                 $test_script .= <<"PHP";
 require_once('class.mt_category_set.php');
 \$category_set = new CategorySet;
-\$category_set->Load($category_set_id);
+\$category_set->LoadByIntId($category_set_id);
 \$ctx->stash('category_set', \$category_set);
 PHP
             }
@@ -416,7 +426,7 @@ if ($ctx->_compile_source('evaluated template', $tmpl, $_var_compiled)) {
 ?>
 PHP
 
-            my $result = MT::Test::PHP->run($test_script, \my $php_error);
+            my $result = Encode::decode_utf8(MT::Test::PHP->run($test_script, \my $php_error));
 
             # those with $method_name have higher precedence
             # and todo does, too

@@ -4,8 +4,10 @@
     option_alt=asset-option-alt-<mt:var name="id" escape="html">
     option_title=asset-option-title-<mt:var name="id" escape="html">
     option_width=thumb_width-<mt:var name="id" escape="html">
+    option_height=thumb_height-<mt:var name="id" escape="html">
     option_caption=asset-option-caption-<mt:var name="id" escape="html">
     option_align=asset-option-align-<mt:var name="id" escape="html">
+    option_keep_aspect_ratio=thumb_keep_aspect_ratio-<mt:var name="id" escape="html">
     </mt:setvars>
 
     <input type="hidden" class="asset-option-id" value="<mt:var name="id" escape="html">">
@@ -13,7 +15,9 @@
     <input type="hidden" class="asset-option-alt" value="<mt:var name="$option_alt" escape="html">">
     <input type="hidden" class="asset-option-title" value="<mt:var name="$option_title" escape="html">">
     <input type="hidden" class="asset-option-width" value="<mt:var name="$option_width" escape="html">">
+    <input type="hidden" class="asset-option-height" value="<mt:var name="$option_height" escape="html">">
     <input type="hidden" class="asset-option-caption" value="<mt:var name="$option_caption" escape="html">">
     <input type="hidden" class="asset-option-align" value="<mt:var name="$option_align" escape="html">">
+    <input type="hidden" class="asset-option-keep_aspect_ratio" value="<mt:var name="$option_keep_aspect_ratio" escape="html">">
     </mt:Asset>
 </mt:loop>

@@ -24,6 +24,8 @@ __PACKAGE__->install_properties(
             'file_ext'    => 'string(20)',
             'mime_type'   => 'string(255)',
             'parent'      => 'integer',
+            'width'       => 'integer',
+            'height'      => 'integer',
         },
         indexes => {
             label      => 1,
@@ -254,36 +256,15 @@ sub list_props {
             use_blank => 1,
         },
         image_width => {
-            label     => 'Pixel Width',
-            base      => '__virtual.integer',
-            display   => 'none',
-            meta_type => 'image_width',
-            col       => 'vinteger',
-            raw       => sub {
-                my ( $prop, $asset ) = @_;
-                my $meta = $prop->meta_type;
-                $asset->has_meta( $prop->meta_type ) or return;
-                return $asset->$meta;
-            },
-            terms => sub {
-                my $prop = shift;
-                my ( $args, $db_terms, $db_args ) = @_;
-                my $super_terms = $prop->super(@_);
-                $db_args->{joins} ||= [];
-                push @{ $db_args->{joins} },
-                    MT->model('asset')->meta_pkg->join_on(
-                    undef,
-                    {   type     => $prop->meta_type,
-                        asset_id => \"= asset_id",      # FOR-EDITOR ",
-                        %$super_terms,
-                    },
-                    );
-            },
+            label   => 'Pixel Width',
+            base    => '__virtual.integer',
+            display => 'none',
+            col     => 'width',
         },
         image_height => {
-            base      => 'asset.image_width',
-            label     => 'Pixel Height',
-            meta_type => 'image_height',
+            base  => 'asset.image_width',
+            label => 'Pixel Height',
+            col   => 'height',
         },
         tag => {
             base         => '__virtual.tag',

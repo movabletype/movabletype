@@ -9,13 +9,15 @@
          "asset_file_ext",
          "asset_file_name",
          "asset_file_path",
+         "asset_height",
          "asset_id",
          "asset_label",
          "asset_mime_type",
          "asset_modified_by",
          "asset_modified_on",
          "asset_parent",
-         "asset_url"
+         "asset_url",
+         "asset_width"
       ],
       "rows" : [
          [
@@ -27,13 +29,15 @@
             "jpg",
             "test.jpg",
             "__MT_HOME__/t/images/test.jpg",
+            480,
             1,
             "Userpic A",
             "image/jpeg",
             null,
             null,
             null,
-            "http://narnia.na/nana/images/test.jpg"
+            "http://narnia.na/nana/images/test.jpg",
+            640
          ],
          [
             3,
@@ -44,13 +48,15 @@
             "jpg",
             "test.jpg",
             "__MT_HOME__/t/images/test.jpg",
+            480,
             2,
             "Sample Image",
             "image/jpeg",
             null,
             null,
             null,
-            "http://narnia.na/nana/images/test.jpg"
+            "http://narnia.na/nana/images/test.jpg",
+            640
          ],
          [
             3,
@@ -61,86 +67,14 @@
             "pdf",
             "test.pdf",
             "__MT_HOME__/t/files/test.pdf",
+            null,
             3,
             "Sample File",
             "application/pdf",
             null,
             null,
             null,
-            "http://narnia.na/nana/files/test.pdf"
-         ]
-      ]
-   },
-   "mt_asset_meta" : {
-      "cols" : [
-         "asset_meta_asset_id",
-         "asset_meta_type",
-         "asset_meta_vblob",
-         "asset_meta_vchar",
-         "asset_meta_vchar_idx",
-         "asset_meta_vclob",
-         "asset_meta_vdatetime",
-         "asset_meta_vdatetime_idx",
-         "asset_meta_vfloat",
-         "asset_meta_vfloat_idx",
-         "asset_meta_vinteger",
-         "asset_meta_vinteger_idx"
-      ],
-      "rows" : [
-         [
-            1,
-            "image_height",
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            480,
-            null
-         ],
-         [
-            1,
-            "image_width",
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            640,
-            null
-         ],
-         [
-            2,
-            "image_height",
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            480,
-            null
-         ],
-         [
-            2,
-            "image_width",
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            640,
+            "http://narnia.na/nana/files/test.pdf",
             null
          ]
       ]
@@ -1105,7 +1039,7 @@
       ],
       "rows" : [
          [
-            "DataAPIDisableSite 0\nDefaultSupportedLanguages en_us,ja\nDisableDataAPI 0\nDisableNotificationPings 1\nPluginAlias ContentType Information Widget=ContentInfoWidget\nPluginAlias Markdown=Markdown/Markdown.pl\nPluginAlias SmartyPants=Markdown/SmartyPants.pl\nPluginAlias Textile=Textile/textile2.pl\nPluginAlias WXR Importer=WXRImporter\nPluginAlias Widget Manager Upgrade Assistant=WidgetManager/WidgetManager.pl\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion blockeditor=1\nPluginSchemaVersion contenttypecolumn=0.01\nPluginSchemaVersion formattedtext=1.00\nPluginSchemaVersion tinymce5=1\nPluginSchemaVersion tinymce6=1\nPluginSwitch Awesome=1\nPluginSwitch BlockEditor=0\nPluginSwitch ContentInfoWidget=1\nPluginSwitch ContentTypeColumn=1\nPluginSwitch FormattedText=1\nPluginSwitch FormattedTextForTinyMCE5=0\nPluginSwitch FormattedTextForTinyMCE6=1\nPluginSwitch GoogleAnalyticsV4=1\nPluginSwitch IllegalObjectType=1\nPluginSwitch Markdown/Markdown.pl=1\nPluginSwitch Markdown/SmartyPants.pl=1\nPluginSwitch SortMethod=1\nPluginSwitch Textile/textile2.pl=0\nPluginSwitch TinyMCE5=0\nPluginSwitch TinyMCE6=1\nPluginSwitch WXRImporter=1\nPluginSwitch WidgetManager/WidgetManager.pl=0\nSchemaVersion 8.0000\nTrimFilePath 1\n",
+            "DataAPIDisableSite 0\nDefaultSupportedLanguages en_us,ja\nDisableDataAPI 0\nDisableNotificationPings 1\nPluginAlias ContentType Information Widget=ContentInfoWidget\nPluginAlias Markdown=Markdown/Markdown.pl\nPluginAlias SmartyPants=Markdown/SmartyPants.pl\nPluginAlias Textile=Textile/textile2.pl\nPluginAlias WXR Importer=WXRImporter\nPluginAlias Widget Manager Upgrade Assistant=WidgetManager/WidgetManager.pl\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion blockeditor=1\nPluginSchemaVersion contenttypecolumn=0.01\nPluginSchemaVersion formattedtext=1.00\nPluginSchemaVersion tinymce5=1\nPluginSchemaVersion tinymce6=1\nPluginSwitch Awesome=1\nPluginSwitch BlockEditor=0\nPluginSwitch ContentInfoWidget=1\nPluginSwitch ContentTypeColumn=1\nPluginSwitch FormattedText=1\nPluginSwitch FormattedTextForTinyMCE5=0\nPluginSwitch FormattedTextForTinyMCE6=1\nPluginSwitch GoogleAnalyticsV4=1\nPluginSwitch IllegalObjectType=1\nPluginSwitch Markdown/Markdown.pl=1\nPluginSwitch Markdown/SmartyPants.pl=1\nPluginSwitch SortMethod=1\nPluginSwitch Textile/textile2.pl=0\nPluginSwitch TinyMCE5=0\nPluginSwitch TinyMCE6=1\nPluginSwitch WXRImporter=1\nPluginSwitch WidgetManager/WidgetManager.pl=0\nSchemaVersion 8.0001\nTrimFilePath 1\n",
             1
          ]
       ]
@@ -5499,5 +5433,5 @@
          ]
       ]
    },
-   "schema_version" : "WidgetManager 1.1; blockeditor 1; contenttypecolumn 0.01; core 8.0000; formattedtext 1.00; tinymce5 1; tinymce6 1"
+   "schema_version" : "WidgetManager 1.1; blockeditor 1; contenttypecolumn 0.01; core 8.0001; formattedtext 1.00; tinymce5 1; tinymce6 1"
 }

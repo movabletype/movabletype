@@ -286,7 +286,7 @@ sub ascii_only { ( ( ref $_[0] ) || $_[0] ) eq __PACKAGE__ }
 
     '__UNPUBLISHED' => 'Unpublish',
 
-    '_BASE_SITE_PATH' => 'Base Site Path',
+    'YEARLY_ARCHIVE_TITLE' => '[_1]',
 );
 
 1;

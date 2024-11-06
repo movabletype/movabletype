@@ -15,4 +15,3 @@ class MTSerializeTest extends TestCase {
         $this->assertFalse($serializer1 === $serializer3);
     }
 }
-

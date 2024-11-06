@@ -10,9 +10,9 @@ class ClassTest extends TestCase {
 
         $category = Mockdata::makeCategory();
         $entry = Mockdata::makeEntry();
-    
+
         $entry2 = new Entry();
-        $entry2->Load($entry->id);
+        $entry2->LoadByIntId($entry->id);
         $this->assertEquals('Entry', get_class($entry2));
         $this->assertEquals($entry->id, $entry2->id);
 
@@ -40,7 +40,7 @@ class ClassTest extends TestCase {
         $this->assertEquals('Trackback', get_class($trackback2));
         $this->assertEquals($trackback2->id, $trackback->id);
 
-        $category2 = $trackback2->category(); 
+        $category2 = $trackback2->category();
         $this->assertEquals('Category', get_class($category2));
         $this->assertEquals($category->id, $category2->id);
     }
@@ -52,7 +52,7 @@ class ClassTest extends TestCase {
         $oasset = MockData::makeObjectAsset(['object_ds' => 'entry']);
 
         $oasset2 = new ObjectAsset();
-        $oasset2->Load($oasset->id);
+        $oasset2->LoadByIntId($oasset->id);
         $this->assertEquals('ObjectAsset', get_class($oasset2));
         $this->assertEquals($oasset->id, $oasset2->id);
 
@@ -70,7 +70,7 @@ class ClassTest extends TestCase {
         $entry = MockData::makeEntry();
         $oscore = MockData::makeObjectScore(['object_ds' => 'entry']);
         $oscore2 = new ObjectScore();
-        $oscore2->Load($oscore->id);
+        $oscore2->LoadByIntId($oscore->id);
         $this->assertEquals('ObjectScore', get_class($oscore2));
         $this->assertEquals($oscore->id, $oscore2->id);
 
@@ -85,7 +85,7 @@ class ClassTest extends TestCase {
         $otag = MockData::makeObjectTag(['object_datasource' => 'entry', 'tag_id' => 1]);
 
         $otag2 = new ObjectTag();
-        $otag2->Load($otag->id);
+        $otag2->LoadByIntId($otag->id);
         $this->assertEquals('ObjectTag', get_class($otag2));
         $this->assertEquals($otag->id, $otag2->id);
 
@@ -100,22 +100,8 @@ class ClassTest extends TestCase {
     public function testPage() {
 
         $page = MockData::makePage();
-
-        require_once('class.mt_folder.php');
-        $folder = new Folder();
-        $folder->blog_id = 1;
-        $folder->class = 'folder';
-        $folder->category_category_set_id = 0;
-        $folder->label = '';
-        $folder->save();
-
-        require_once('class.mt_placement.php');
-        $placement = new Placement();
-        $placement->blog_id = 1;
-        $placement->entry_id = $page->id;
-        $placement->is_primary = 1;
-        $placement->category_id = $folder->id;
-        $placement->save();
+        $folder = MockData::makeFolder(['blog_id' => 1]);
+        $placement = MockData::makeObjectPlacement(['blog_id' => 1, 'category_id' => $folder->id]);
 
         $folder2 = $page->folder();
         $this->assertEquals('Folder', get_class($folder2));
@@ -129,5 +115,21 @@ class ClassTest extends TestCase {
         $blog = $template->blog();
         $this->assertEquals('Website', get_class($blog));
         $this->assertEquals(1, $blog->id);
+    }
+
+    public function testCategory() {
+
+        $category = MockData::makeCategory();
+        $trackback = MockData::makeTrackback(['category_id' => $category->id]);
+        $trackback2 = $category->trackback();
+        $this->assertEquals('Trackback', get_class($trackback2));
+        $this->assertEquals($trackback2->id, $trackback->id);
+
+        $ct = MockData::makeContentType();
+        $cf = MockData::makeContentField();
+        $cd = MockData::makeContentData();
+        $ocat = MockData::makeObjectCategory(['object_ds' => 'content_data']);
+        $count = $category->content_data_count(['content_type_id' => $ct->id, 'content_field_name' => $cf->name]);
+        $this->assertEquals(1, $count);
     }
 }

@@ -261,6 +261,13 @@ sub suite {
                 my $result = MT::Util::from_json($body);
                 is( $result->{totalResults},
                     3, 'The number of asset (blog_id=0) is 3.' );
+                my @images = grep {$_->{type} eq 'image'} @{$result->{items}};
+                my $has_width_and_height = 1;
+                for my $image (@images) {
+                    next if $image->{meta}{height} && $image->{meta}{width};
+                    $has_width_and_height = 0;
+                }
+                ok $has_width_and_height, "images have height/width";
             },
         },
         {    # Blog.
@@ -276,6 +283,13 @@ sub suite {
                 my $result = MT::Util::from_json($body);
                 is( $result->{totalResults},
                     7, 'The number of asset (blog_id=1) is 7.' );
+                my @images = grep {$_->{type} eq 'image'} @{$result->{items}};
+                my $has_width_and_height = 1;
+                for my $image (@images) {
+                    next if $image->{meta}{height} && $image->{meta}{width};
+                    $has_width_and_height = 0;
+                }
+                ok $has_width_and_height, "images have height/width";
             },
         },
         {    # Website.

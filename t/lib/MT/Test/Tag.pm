@@ -68,6 +68,7 @@ sub run_perl_tests {
             $ctx->stash( 'blog',          $blog );
             $ctx->stash( 'blog_id',       $blog->id );
             $ctx->stash( 'local_blog_id', $blog->id );
+            $ctx->stash( 'local_lang_id', lc(MT->current_language) );
             $ctx->stash( 'builder',       MT->builder );
 
             $callback->( $ctx, $block ) if $callback;
@@ -147,6 +148,13 @@ SKIP: {
         }
         $archive_type ||= '';
 
+        my $blog = MT::Blog->load($blog_id);
+        if ($blog and $blog->language ne lc MT->config->DefaultLanguage) {
+            $blog->language(MT->config->DefaultLanguage);
+            $blog->date_language(MT->config->DefaultLanguage);
+            $blog->save;
+        }
+
         my $test_name_prefix = $self->_test_name_prefix($archive_type);
 
         run {
@@ -162,17 +170,19 @@ SKIP: {
                 my $text     = $block->text || '';
                 my $extra    = $callback ? ($callback->($block) || '') : '';
 
+                my $log;
                 require MT::Util::UniqueID;
-                my $log = $ENV{MT_TEST_PHP_ERROR_LOG_FILE_PATH} ||
-                          File::Spec->catfile($ENV{MT_TEST_ROOT}, 'php-' . MT::Util::UniqueID::create_session_id() . '.log');
+                local $ENV{MT_TEST_PHP_ERROR_LOG_FILE_PATH} = $ENV{MT_TEST_PHP_ERROR_LOG_FILE_PATH} 
+                    ? $ENV{MT_TEST_PHP_ERROR_LOG_FILE_PATH}
+                    : $log = File::Spec->catfile($ENV{MT_TEST_ROOT}, 'php-' . MT::Util::UniqueID::create_session_id() . '.log');
                 my $block_name = $block->name || $block->seq_num;
                 $ENV{REQUEST_URI} = "$0 [$block_name]";
                 my $got;
                 if ($^O eq 'MSWin32' or $ENV{MT_TEST_NO_PHP_DAEMON}) {
-                    my $php_script = php_test_script( $block_name, $block->blog_id || $blog_id, $template, $text, $log, $extra );
+                    my $php_script = php_test_script( $block_name, $block->blog_id || $blog_id, $template, $text, $extra );
                     $got = Encode::decode_utf8(MT::Test::PHP->run($php_script));
                 } else {
-                    $got = Encode::decode_utf8(_php_daemon($template, $block->blog_id || $blog_id, $extra, $text, $log));
+                    $got = Encode::decode_utf8(_php_daemon($template, $block->blog_id || $blog_id, $extra, $text));
                 }
 
                 my $php_error = __PACKAGE__->_retrieve_php_logs($log);
@@ -248,7 +258,7 @@ sub MT::Test::Tag::_filter_vars {
 }
 
 sub MT::Test::Tag::php_test_script {    # full qualified to avoid Spiffy magic
-    my ( $block_name, $blog_id, $template, $text, $log, $extra ) = @_;
+    my ( $block_name, $blog_id, $template, $text, $extra ) = @_;
     $text ||= '';
 
     $template =~ s/<\$(mt.+?)\$>/<$1>/gi;
@@ -256,11 +266,8 @@ sub MT::Test::Tag::php_test_script {    # full qualified to avoid Spiffy magic
 
     my $test_script = <<PHP;
 <?php
-\$MT_HOME   = '@{[ $ENV{MT_HOME} ? $ENV{MT_HOME} : '.' ]}';
 \$MT_CONFIG = '@{[ MT->instance->find_config ]}';
 \$blog_id   = '$blog_id';
-\$log = '$log';
-\$ignore_php_dynamic_properties_warnings = '@{[ $ENV{MT_TEST_IGNORE_PHP_DYNAMIC_PROPERTIES_WARNINGS} || 0 ]}';
 
 \$tmpl = <<<__TMPL__
 $template
@@ -272,14 +279,17 @@ __TMPL__
 ;
 PHP
     $test_script .= <<'PHP';
+$MT_HOME = $_ENV['MT_HOME'] ?? '.';
 include_once($MT_HOME . '/php/mt.php');
 include_once($MT_HOME . '/php/lib/MTUtil.php');
 include_once($MT_HOME . '/t/lib/MT/Test/Tag/error_handler.php');
 
 $error_handler = new MT_Test_Error_Handler();
 set_error_handler([$error_handler, 'handler']);
+$log = $_ENV['MT_TEST_PHP_ERROR_LOG_FILE_PATH'];
 $error_handler->log = $log;
-$error_handler->ignore_php_dynamic_properties_warnings = $ignore_php_dynamic_properties_warnings;
+$error_handler->ignore_php_dynamic_properties_warnings = 
+                $_ENV['MT_TEST_IGNORE_PHP_DYNAMIC_PROPERTIES_WARNINGS'] ?? false;
 
 $mt = MT::get_instance($blog_id, $MT_CONFIG);
 $mt->config('PHPErrorLogFilePath', $log);
@@ -317,7 +327,7 @@ PHP
 my $PHP_DAEMON;
 
 sub MT::Test::Tag::_php_daemon {
-    my ($template, $blog_id, $extra, $text, $log) = @_;
+    my ($template, $blog_id, $extra, $text) = @_;
 
     $PHP_DAEMON ||= Test::TCP->new(
         code => sub {
@@ -327,11 +337,7 @@ sub MT::Test::Tag::_php_daemon {
             my @opts    = (
                 $ENV{MT_HOME} . '/t/lib/MT/Test/Tag/daemon.php',
                 '--port', $port,
-                '--mt_home', ($ENV{MT_HOME} ? $ENV{MT_HOME} : '.'),
                 '--mt_config', $config,
-                '--init_blog_id', $blog_id,
-                '--ignore_php_dynamic_properties_warnings', ($ENV{MT_TEST_IGNORE_PHP_DYNAMIC_PROPERTIES_WARNINGS} || 0),
-                $log ? ('--log', $log) : (),
             );
             exec join(' ', @$command, @opts);
         });
@@ -355,7 +361,8 @@ PHP
     $| = 1;
     select $old_handle;
     require JSON;
-    print $sock JSON::to_json([$blog_id, $template, $extra, $log]);
+    my $mt_env = {map { $_, $ENV{$_} } grep { $_ =~ /^MT_/ || $_ eq 'REQUEST_URI'} keys %ENV};
+    print $sock JSON::to_json([$blog_id, $template, $extra, $mt_env]);
     shutdown $sock, 1;
     my $result = do { local $/; <$sock> };
     close $sock;

@@ -356,6 +356,10 @@ sub start_element {
                     $self->{skip} += 1;
                     return;
                 }
+                elsif ( $self->{skip_fileinfo} and $name eq 'fileinfo' ) {
+                    $self->{skip} += 1;
+                    return;
+                }
 
                 unless ($obj) {
                     $obj = $class->new;

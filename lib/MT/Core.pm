@@ -2164,6 +2164,7 @@ BEGIN {
                 default => {}
             },
             'DataAPIDisableSite'   => undef,
+            'SuperuserRespectsDataAPIDisableSite' => undef,
             'RebuildOffsetSeconds' => { default => 20 },
             'DisableDataAPI'       => { default => 0 },
 
@@ -2243,6 +2244,7 @@ BEGIN {
             'PHPErrorLogFilePath' => undef,
             'LogEachFilePublishedInTheBackground' => undef,
             'TrimFilePath' => { default => 0 },
+            'UseRiot' => { default => 1 },
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {

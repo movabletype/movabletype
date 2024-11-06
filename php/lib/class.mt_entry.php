@@ -95,11 +95,9 @@ class Entry extends BaseObject
         $col_name = "entry_template_id";
         $template = null;
         if (isset($this->$col_name) && is_numeric($this->$col_name)) {
-            $template_id = $this->$col_name;
-
             require_once('class.mt_template.php');
             $template = new Template;
-            $template->Load("template_id = $template_id");
+            $template->LoadByIntId($this->$col_name);
         }
 
         return $template;
@@ -118,7 +116,8 @@ class Entry extends BaseObject
 
         require_once('class.mt_trackback.php');
         $trackback = new Trackback();
-        $loaded = $trackback->Load("trackback_entry_id = " . $this->entry_id);
+        $mtdb = MT::get_instance()->db();
+        $loaded = $trackback->Load("trackback_entry_id = ". $mtdb->ph('trackback_entry_id', $bind, $this->entry_id), $bind);
         if (!$loaded)
             $trackback = null;
         return $trackback;

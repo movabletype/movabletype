@@ -142,6 +142,7 @@ on 'test' => sub {
     requires 'Test::Data';
     requires 'Test::Deep';
     requires 'Test::Differences';
+    requires 'Test::FailWarnings';
     requires 'Test::File';
     requires 'Test::LeakTrace';
     requires 'Test::Memcached';

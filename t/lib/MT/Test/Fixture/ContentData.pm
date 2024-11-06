@@ -4,7 +4,6 @@ use strict;
 use warnings;
 use base 'MT::Test::Fixture::ArchiveType';
 
-my $invalid_id = 1000;
 our %FixtureSpec = (
     author => [qw/author/],
     blog   => [
@@ -137,6 +136,15 @@ our %FixtureSpec = (
                     options => {
                         multiple => 1,
                         max      => 5,
+                        min      => 1,
+                    },
+                },
+                cf_image_single => {
+                    type    => 'asset_image',
+                    name    => 'asset_image_single',
+                    options => {
+                        multiple => 0,
+                        max      => 1,
                         min      => 1,
                     },
                 },
@@ -404,10 +412,11 @@ our %FixtureSpec = (
                 cf_tables                   => "<tr><td>1</td><td></td><td></td></tr>\n"
                     . "<tr><td></td><td>2</td><td></td></tr>\n"
                     . "<tr><td></td><td></td><td>3</td></tr>",
-                cf_tags         => [ 'tag2',      'tag1',      \$invalid_id ],
-                cf_categories   => [ 'category2', 'category1', \$invalid_id ],
-                cf_image        => [ 'test2.jpg', 'test.jpg',  \$invalid_id ],
-                cf_content_type => [ 'cd2',       \$invalid_id ],
+                cf_tags         => [ 'tag2',      'tag1' ],
+                cf_categories   => [ 'category2', 'category1' ],
+                cf_image        => [ 'test2.jpg', 'test.jpg' ],
+                cf_image_single => [ 'test2.jpg' ],
+                cf_content_type => [ 'cd2' ],
                 cf_text_label => '',
             },
         },
@@ -440,10 +449,10 @@ our %FixtureSpec = (
                 cf_tables                   => "<tr><td>1</td><td></td><td></td></tr>\n"
                     . "<tr><td></td><td>2</td><td></td></tr>\n"
                     . "<tr><td></td><td></td><td>3</td></tr>",
-                cf_tags         => [ 'tag2',      'tag1',      \$invalid_id ],
-                cf_categories   => [ 'category2', 'category1', \$invalid_id ],
-                cf_image        => [ 'test2.jpg', 'test.jpg',  \$invalid_id ],
-                cf_content_type => [ 'cd2',       \$invalid_id ],
+                cf_tags         => [ 'tag2',      'tag1' ],
+                cf_categories   => [ 'category2', 'category1' ],
+                cf_image        => [ 'test2.jpg', 'test.jpg' ],
+                cf_content_type => [ 'cd2' ],
             },
         },
         cd_multi2 => {

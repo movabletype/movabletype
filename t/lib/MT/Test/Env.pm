@@ -20,6 +20,7 @@ use Mock::MonkeyPatch;
 use Sub::Name;
 use Time::HiRes qw/time/;
 use Module::Find qw/findsubmod/;
+use Test::FailWarnings;
 
 our $MT_HOME;
 
@@ -344,7 +345,7 @@ sub connect_info {
     } else {
         my @keys = qw(
             ObjectDriver Database DBPort DBHost DBSocket
-            DBUser DBPassword ODBCDriver
+            DBUser DBPassword ODBCDriver ODBCEncrypt
         );
         for my $key (@keys) {
             my $env_key = "MT_TEST_" . (uc $key);
@@ -780,6 +781,16 @@ sub _fixture_file {
     return "$id.json";
 }
 
+sub _fixture_readme {
+    my $self = shift;
+    "$self->{fixture_dirs}[-1]/README";
+}
+
+sub _fixture_home_readme {
+    my $self = shift;
+    "$self->{fixture_dirs}[0]/README";
+}
+
 sub fix_mysql_create_table_sql {
     my $class = shift;
     return unless $class->mysql_charset eq 'utf8mb4';
@@ -877,7 +888,8 @@ sub prepare_fixture {
 
         if ($self->{fixture_dirs}[-1]) {
             mkpath $self->{fixture_dirs}[-1] unless -d $self->{fixture_dirs}[-1];
-            open my $fh, '>', "$self->{fixture_dirs}[-1]/README" or die $!;
+            open my $fh, '>', $self->_fixture_readme or die $!;
+            print $fh "SchemaVersion ", MT->schema_version, "\n";
             print $fh join "\n", @{ $self->{addons_and_plugins} }, "";
             close $fh;
         }
@@ -996,7 +1008,7 @@ sub load_schema_and_fixture {
         or $fixture_schema_version ne $self->schema_version)
     {
         my $fixture_uid = $self->fixture_uid;
-        diag "FIXTURE ($fixture_uid) IS IGNORED: please update fixture";
+        diag "FIXTURE ($fixture_file) IS IGNORED: please update fixture" unless $self->{config}{PluginSwitch};
         if ($fixture_schema_version && eval { require Text::Diff }) {
             $fixture_schema_version .= "\n";
             my $self_schema_version = $self->schema_version . "\n";
@@ -1116,6 +1128,22 @@ sub save_schema {
     }
 
     $self->_set_fixture_dirs;
+
+    my $saved_schema_version = '';
+    if (-f $self->_fixture_home_readme) {
+        open my $fh, '<', $self->_fixture_home_readme or die $!;
+        while(<$fh>) {
+            chomp;
+            if (/SchemaVersion ([0-9.]+)/) {
+                $saved_schema_version = $1;
+                last;
+            }
+        }
+    }
+    if ($saved_schema_version ne MT->schema_version) {
+        print STDERR "Schema version has changed from $saved_schema_version to " . MT->schema_version . "\n";
+        $force = 1;
+    }
 
     #  always save in MT_HOME/t/fixture
     my $file = join "/", $self->{fixture_dirs}[0], $self->_schema_file;

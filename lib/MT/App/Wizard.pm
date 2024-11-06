@@ -10,7 +10,7 @@ use strict;
 use warnings;
 use base qw( MT::App );
 
-use MT::Util qw( browser_language is_within_a_directory );
+use MT::Util qw( browser_language );
 
 sub id {'wizard'}
 
@@ -116,50 +116,6 @@ sub init_core_registry {
                     qw(set_static_uri_to set_static_file_to default_language)
                 ],
             },
-            content_separation => {
-                order   => 10,
-                handler => \&content_separation,
-                params  => [qw( skip_content_separation )],
-            },
-            base_user_directory => {
-                order     => 20,
-                handler   => \&base_user_directory,
-                params    => [qw( base_user_directory force_content_separation )],
-                condition => sub {
-                    my ($app, $param) = @_;
-                    return $param->{skip_content_separation} ? 0 : 1;
-                },
-            },
-            base_site_path => {
-                order     => 30,
-                handler   => \&base_site_path,
-                params    => [qw( base_site_path )],
-                condition => sub {
-                    my ($app, $param) = @_;
-                    return $param->{skip_content_separation} ? 0 : 1;
-                },
-            },
-            support_directory => {
-                order     => 40,
-                handler   => \&support_directory,
-                params    => [qw( support_directory_path support_directory_url )],
-                condition => sub {
-                    my ($app, $param) = @_;
-                    return $param->{skip_content_separation} ? 0 : 1;
-                },
-            },
-            other_paths => {
-                order   => 50,
-                handler => \&other_paths,
-                params  => [qw(
-                    user_plugin_path user_themes_directory
-                    import_path user_template_path
-                )],
-                condition => sub {
-                    my ($app, $param) = @_;
-                    return $param->{skip_content_separation} ? 0 : 1;
-                },
-            },
             packages => {
                 order   => 80,
                 handler => \&packages,
@@ -170,7 +126,7 @@ sub init_core_registry {
                 handler => \&configure,
                 params  => [
                     qw(dbpath dbname dbport dbserver dbsocket
-                        dbtype dbuser dbpass odbcdriver publish_charset)
+                        dbtype dbuser dbpass odbcdriver odbcencrypt publish_charset)
                 ]
             },
             optional => {
@@ -289,6 +245,16 @@ sub init_permissions {
 sub pre_start {
     my $app = shift;
     my %param;
+
+    if ($] < 5.016003) {
+        $param{perl_is_too_old} = 1;
+        $param{version}         = sprintf('%vd', $^V);
+    }
+    if (eval { require MT::Util::Dependencies; 1 }) {
+        if (MT::Util::Dependencies->lacks_core_modules) {
+            $param{perl_lacks_core_modules} = 1;
+        }
+    }
 
     eval { use File::Spec; };
     my ($static_file_path);
@@ -422,185 +388,6 @@ sub start {
     } else {
         $app->run_next_step(%param);
     }
-}
-
-sub content_separation {
-    my $app   = shift;
-    my %param = @_;
-
-    $param{set_static_uri_to} = $app->param('set_static_uri_to');
-
-    # set static web path
-    $app->config->set('StaticWebPath', $param{set_static_uri_to});
-
-    $param{config} = $app->serialize_config(%param);
-
-    if ($app->param('test')) {
-        return $app->run_next_step(%param);
-    }
-
-    return $app->build_page("content_separation.tmpl", \%param);
-}
-
-sub base_user_directory {
-    my $app   = shift;
-    my %param = @_;
-
-    $param{set_static_uri_to} = $app->param('set_static_uri_to');
-
-    # set static web path
-    $app->config->set('StaticWebPath', $param{set_static_uri_to});
-
-    $param{config} = $app->serialize_config(%param);
-
-    if ($app->param('test')) {
-        return $app->run_next_step(%param) if $app->_test_user_directory('base_user_directory', \%param);
-    }
-    return $app->build_page("base_user_directory.tmpl", \%param);
-}
-
-sub _test_user_directory {
-    my ($app, $name, $param) = @_;
-
-    my $dir = $app->param($name) or return 1;
-
-    require File::Spec;
-    if (!File::Spec->file_name_is_absolute($dir)) {
-        $param->{ $name . '_is_relative' } = 1;
-        return;
-    }
-
-    if (!-d $dir) {
-        $param->{ $name . '_does_not_exist' } = 1;
-        return;
-    }
-
-    if (is_within_a_directory($dir, $app->mt_dir)) {
-        $param->{ $name . '_is_within_mt_dir' } = 1;
-        return;
-    }
-
-    return 1;
-}
-
-sub base_site_path {
-    my $app   = shift;
-    my %param = @_;
-
-    $param{set_static_uri_to} = $app->param('set_static_uri_to');
-
-    # set static web path
-    $app->config->set('StaticWebPath', $param{set_static_uri_to});
-
-    $param{config} = $app->serialize_config(%param);
-
-    if ($app->param('test')) {
-        return $app->run_next_step(%param) if $app->_test_user_directory('base_site_path', \%param);
-    }
-    if ($param{base_user_directory} && !defined $param{base_site_path}) {
-        $param{base_site_path} = File::Spec->catdir($param{base_user_directory}, 'sites');
-    }
-    return $app->build_page("base_site_path.tmpl", \%param);
-}
-
-sub support_directory {
-    my $app   = shift;
-    my %param = @_;
-
-    $param{set_static_uri_to} = $app->param('set_static_uri_to');
-
-    # set static web path
-    $app->config->set('StaticWebPath', $param{set_static_uri_to});
-
-    $param{config} = $app->serialize_config(%param);
-
-    if ($app->param('test')) {
-        return $app->run_next_step(%param) if $app->_test_support_directory(\%param);
-    }
-    if ($param{base_user_directory} && !defined $param{support_directory_path}) {
-        $param{support_directory_path} = File::Spec->catdir($param{base_user_directory}, 'support');
-    }
-    return $app->build_page("support_directory.tmpl", \%param);
-}
-
-sub _test_support_directory {
-    my ($app, $param) = @_;
-    my $support_directory_path = $app->param('support_directory_path');
-    my $support_directory_url  = $app->param('support_directory_url');
-
-    return 1 if !$support_directory_path && !$support_directory_url;
-
-    if ($support_directory_path && !$support_directory_url or !$support_directory_path && $support_directory_url) {
-        $param->{support_directory_path_and_url_are_needed} = 1;
-        return;
-    }
-
-    return unless $app->_test_user_directory('support_directory_path', $param);
-
-    if (!-w $support_directory_path) {
-        $param->{support_directory_path_is_not_writable} = 1;
-        return;
-    }
-    my $static_file_path = $param->{set_static_file_to} || File::Spec->catdir($app->mt_dir, 'mt-static');
-    my $mt_js            = File::Spec->catfile($static_file_path,       'mt.js');
-    my $mt_js_copy       = File::Spec->catfile($support_directory_path, 'mt.js');
-    my $mt_js_copied;
-    if (-e $mt_js && !-e $mt_js_copy) {
-        require File::Copy;
-        if (File::Copy::copy($mt_js, $mt_js_copy)) {
-            $mt_js_copied = 1;
-        }
-    }
-    my $ok          = 1;
-    my $support_url = $app->param('support_directory_url');
-    $support_url .= '/' unless substr($support_url, -1, 1) eq '/';
-    unless ($app->is_valid_static_path($support_url)) {
-        $param->{support_directory_url_is_invalid} = 1;
-        $ok = 0;
-    }
-    unlink $mt_js_copy if $mt_js_copied;
-
-    return $ok;
-}
-
-sub other_paths {
-    my $app   = shift;
-    my %param = @_;
-
-    $param{set_static_uri_to} = $app->param('set_static_uri_to');
-
-    # set static web path
-    $app->config->set('StaticWebPath', $param{set_static_uri_to});
-
-    $param{config} = $app->serialize_config(%param);
-
-    if ($app->param('test')) {
-        return $app->run_next_step(%param) if _test_other_paths($app, \%param);
-    }
-    if ($param{base_user_directory}) {
-        my %default = (
-            user_plugin_path      => 'plugins',
-            user_themes_directory => 'themes',
-            user_template_path    => 'tmpl',
-            import_path           => 'import',
-        );
-        for my $name (keys %default) {
-            $param{$name} = File::Spec->catdir($param{base_user_directory}, $default{$name}) if !defined $param{$name};
-        }
-    }
-    return $app->build_page("other_paths.tmpl", \%param);
-}
-
-sub _test_other_paths {
-    my ($app, $param) = @_;
-
-    my $ok = 1;
-    $ok = 0 unless $app->_test_user_directory('user_plugin_path',      $param);
-    $ok = 0 unless $app->_test_user_directory('user_themes_directory', $param);
-    $ok = 0 unless $app->_test_user_directory('user_template_path',    $param);
-    $ok = 0 unless $app->_test_user_directory('import_path',           $param);
-
-    return $ok;
 }
 
 sub packages {
@@ -826,12 +613,13 @@ sub configure {
             else {
                 $cfg->Database( $param{dbname} );
             }
-            $cfg->DBUser( $param{dbuser} )         if $param{dbuser};
-            $cfg->DBPassword( $param{dbpass} )     if $param{dbpass};
-            $cfg->DBPort( $param{dbport} )         if $param{dbport};
-            $cfg->DBSocket( $param{dbsocket} )     if $param{dbsocket};
-            $cfg->ODBCDriver( $param{odbcdriver} ) if $param{odbcdriver};
-            $cfg->DBHost( $param{dbserver} )       if $param{dbserver};
+            $cfg->DBUser( $param{dbuser} )           if $param{dbuser};
+            $cfg->DBPassword( $param{dbpass} )       if $param{dbpass};
+            $cfg->DBPort( $param{dbport} )           if $param{dbport};
+            $cfg->DBSocket( $param{dbsocket} )       if $param{dbsocket};
+            $cfg->ODBCDriver( $param{odbcdriver} )   if $param{odbcdriver};
+            $cfg->ODBCEncrypt( $param{odbcencrypt} ) if $param{odbcencrypt};
+            $cfg->DBHost( $param{dbserver} )         if $param{dbserver};
             my $current_charset = $cfg->PublishCharset;
             $cfg->PublishCharset( $param{publish_charset} )
                 if $param{publish_charset};
@@ -1033,12 +821,12 @@ sub optional {
     push @$transfer, { id => 'sendmail', name => $app->translate('Sendmail') };
 
     foreach (@$transfer) {
-        if ( $_->{id} eq $param{mail_transfer} ) {
+        if ( $_->{id} eq ($param{mail_transfer} || '') ) {
             $_->{selected} = 1;
         }
     }
 
-    $param{ 'use_' . $param{mail_transfer} } = 1;
+    $param{ 'use_' . $param{mail_transfer} } = 1 if $param{mail_transfer};
     $param{mail_loop}                        = $transfer;
     $param{config}                           = $app->serialize_config(%param);
 
@@ -1076,17 +864,14 @@ sub optional {
                     if $param{smtp_server};
                 $cfg->SMTPPort( $param{smtp_port} )
                     if $param{smtp_port};
-                $cfg->SMTPAuth(1)
-                    if $param{smtp_auth};
-                if ( $cfg->SMTPAuth ) {
+                if ( $param{smtp_auth} ) {
                     $cfg->SMTPUser( $param{smtp_auth_username} )
                         if $param{smtp_auth_username};
                     $cfg->SMTPpassword( $param{smtp_auth_password} )
                         if $param{smtp_auth_password};
-                    $cfg->SMTPAuth('ssl')
-                        if $param{smtp_ssl} eq 'ssl';
-                    $cfg->SMTPAuth('starttls')
-                        if $param{smtp_ssl} eq 'tls';
+                    $cfg->SMTPAuth( $param{smtp_ssl} || 1 );
+                } elsif ( $param{smtp_ssl} ) {
+                    $cfg->SMTPS( $param{smtp_ssl} );
                 }
             }
 
@@ -1198,6 +983,7 @@ sub seed {
                 dbport          => 'database_port',
                 dbsocket        => 'database_socket',
                 odbcdriver      => 'database_odbcdriver',
+                odbcencrypt     => 'database_odbcencrypt',
                 setnames        => 'use_setnames',
                 publish_charset => 'publish_charset',
             );
@@ -1234,7 +1020,7 @@ sub seed {
         }
     }
 
-    if ( $param{temp_dir} eq $app->config->TempDir ) {
+    if ( ( $param{temp_dir} || '') eq $app->config->TempDir ) {
         $param{temp_dir} = '';
     }
 
@@ -1253,17 +1039,11 @@ sub seed {
 
     $param{tmpl_loop} = \@tmpl_loop;
 
-    # If TLS is enabled, SMTPAuth should be 'starttls'
-    $param{smtp_auth} = 'starttls'
-        if ( $param{mail_transfer} && $param{mail_transfer} eq 'smtp' )
-        && $param{smtp_auth}
-        && $param{smtp_ssl} eq 'tls';
-
-    # If SSL is enabled, SMTPAuth should be 'ssl'
-    $param{smtp_auth} = 'ssl'
-        if ( $param{mail_transfer} && $param{mail_transfer} eq 'smtp' )
-        && $param{smtp_auth}
-        && $param{smtp_ssl} eq 'ssl';
+    if ( $param{mail_transfer} && $param{mail_transfer} eq 'smtp' ) {
+        if ($param{smtp_auth} && $param{smtp_ssl}) {
+            $param{smtp_auth} = delete $param{smtp_ssl};
+        }
+    }
 
     my $data = $app->build_page( "mt-config.tmpl", \%param );
 
@@ -1368,7 +1148,7 @@ sub module_check {
         else {
             $desc = $self->translate($desc);
         }
-        eval( "use $mod" . ( $ver ? " $ver;" : ";" ) );
+        eval( "use $mod" . ( $ver ? " $ver ();" : " ();" ) );
         $mod .= $ver if $mod eq 'DBD::ODBC';
         $sort = $mod unless defined $sort;
         if ($@) {
@@ -1499,7 +1279,7 @@ sub set_form_fields {
         if ( $data->{element} eq 'select' ) {
             my @options;
             my $option = $data->{option};
-            foreach my $key ( keys %$option ) {
+            foreach my $key ( sort keys %$option ) {
                 my $select = {};
                 $select->{value} = $key;
                 $select->{label} = $option->{$key};

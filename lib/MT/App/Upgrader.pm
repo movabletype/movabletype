@@ -208,12 +208,11 @@ sub upgrade {
     my $install_mode;
     my %param;
 
-    my $ver = $^V ? join( '.', unpack 'C*', $^V ) : $];
     my $perl_ver_check = '';
-    if ( $] < 5.016000 ) {    # our minimal requirement for support
+    if ( $] < 5.016003 ) {    # our minimal requirement for support
         $param{version_warning} = 1;
-        $param{perl_version}    = $ver;
-        $param{perl_minimum}    = '5.16.0';
+        $param{perl_version}    = sprintf('%vd', $^V);
+        $param{perl_minimum}    = '5.16.3';
     }
 
     my $method = $app->request_method;
@@ -478,36 +477,36 @@ sub init_website {
         return $app->build_page( 'setup_initial_website.tmpl', \%param );
     }
 
-    # check to publishing path (writable?)
-    my $site_path;
-    if ( -d $param{website_path} ) {
-        $site_path = $param{website_path};
-    }
-    else {
-        my @dirs = File::Spec->splitdir( $param{website_path} );
-        pop @dirs;
-        $site_path = File::Spec->catdir(@dirs);
-    }
-    if ( $param{'sitepath_limited'} ) {
-
-        # making sure that we have a '/' or '\' in the end of the path
-        my $s_path = File::Spec->catdir( $site_path, "PATH" );
-        $s_path =~ s/PATH$//;
-        my $l_path = File::Spec->catdir( $param{'sitepath_limited'}, "PATH" );
-        $l_path =~ s/PATH$//;
-        $l_path = quotemeta($l_path);
-        if ( $s_path !~ m/^$l_path/i ) {
-            $param{error} = $app->translate(
-                "The 'Website Root' provided below is not allowed");
-            return $app->build_page( 'setup_initial_website.tmpl', \%param );
+    if ($app->param('finish')) {
+        # check to publishing path (writable?)
+        my $site_path;
+        if (-d $param{website_path}) {
+            $site_path = $param{website_path};
+        } else {
+            my @dirs = File::Spec->splitdir($param{website_path});
+            pop @dirs;
+            $site_path = File::Spec->catdir(@dirs);
         }
-    }
-    if ( !-w $site_path ) {
-        $param{error} = $app->translate(
-            "The 'Website Root' provided below is not writable by the web server.  Change the ownership or permissions on this directory, then click 'Finish Install' again.",
-            $param{website_path}
-        );
-        return $app->build_page( 'setup_initial_website.tmpl', \%param );
+        if ($param{'sitepath_limited'}) {
+
+            # making sure that we have a '/' or '\' in the end of the path
+            my $s_path = File::Spec->catdir($site_path, "PATH");
+            $s_path =~ s/PATH$//;
+            my $l_path = File::Spec->catdir($param{'sitepath_limited'}, "PATH");
+            $l_path =~ s/PATH$//;
+            $l_path = quotemeta($l_path);
+            if ($s_path !~ m/^$l_path/i) {
+                $param{error} = $app->translate("The 'Website Root' provided below is not allowed");
+                return $app->build_page('setup_initial_website.tmpl', \%param);
+            }
+        }
+        if (!-w $site_path) {
+            $param{error} = $app->translate(
+                "The 'Website Root' provided below is not writable by the web server.  Change the ownership or permissions on this directory, then click 'Finish Install' again.",
+                $param{website_path},
+            );
+            return $app->build_page('setup_initial_website.tmpl', \%param);
+        }
     }
 
     my %config = $app->unserialize_config();
@@ -782,12 +781,11 @@ sub main {
     my $app = shift;
     my ($param) = @_;
 
-    my $ver = $^V ? join( '.', unpack 'C*', $^V ) : $];
     my $perl_ver_check = '';
-    if ( $] < 5.016000 ) {    # our minimal requirement for support
+    if ( $] < 5.016003 ) {    # our minimal requirement for support
         $param->{version_warning} = 1;
-        $param->{perl_version}    = $ver;
-        $param->{perl_minimum}    = '5.16.0';
+        $param->{perl_version}    = sprintf('%vd', $^V);
+        $param->{perl_minimum}    = '5.16.3';
     }
 
     my $driver       = MT::Object->driver;

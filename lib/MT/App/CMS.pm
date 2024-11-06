@@ -1354,14 +1354,6 @@ sub core_list_actions {
                     $count > 1 ? 1 : 0;
                 }
             },
-            clone_blog => {
-                label         => "Clone Child Site",
-                order         => 150,
-                code          => "${pkg}Blog::clone",
-                permit_action => 'clone_blog',
-                max           => 1,
-                dialog        => 1,
-            },
         },
         'template' => {
             refresh_tmpl_templates => {
@@ -2817,6 +2809,8 @@ sub set_default_tmpl_params {
     my $lang = lc MT->current_language || 'en_us';
     $param->{language_id} = ( $lang !~ /en[_-]us/ ) ? $lang : '';
     $param->{mode} = $app->mode;
+
+    $param->{is_psgi} = $ENV{'psgi.input'} ? 1 : 0;
 
     my $blog_id = $app->param('blog_id') || 0;
     my $blog;

@@ -10,17 +10,17 @@
 
 <mt:setvarblock name="js_include" append="1">
   <mt:if name="mt_debug">
-  <script type="text/javascript" src="<mt:var name="static_uri">js/image_editor/fabric.js?v=<mt:var name="mt_version_id" escape="url">"></script>
-  <script type="text/javascript" src="<mt:var name="static_uri">js/image_editor/darkroom.js?v=<mt:var name="mt_version_id" escape="url">"></script>
-  <script type="text/javascript" src="<mt:var name="static_uri">js/image_editor/jquery.numeric.js?v=<mt:var name="mt_version_id" escape="url">"></script>
-  <script type="text/javascript" src="<mt:var name="static_uri">js/image_editor/jquery.selection.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+  <mt:script type="text/javascript" path="js/image_editor/fabric.js">
+  <mt:script type="text/javascript" path="js/image_editor/darkroom.js">
+  <mt:script type="text/javascript" path="js/image_editor/jquery.numeric.js">
+  <mt:script type="text/javascript" path="js/image_editor/jquery.selection.js">
   <mt:else>
-  <script type="text/javascript" src="<mt:var name="static_uri">js/image_editor/fabric.min.js?v=<mt:var name="mt_version_id" escape="url">"></script>
-  <script type="text/javascript" src="<mt:var name="static_uri">js/image_editor/darkroom.min.js?v=<mt:var name="mt_version_id" escape="url">"></script>
-  <script type="text/javascript" src="<mt:var name="static_uri">js/image_editor/jquery.numeric.min.js?v=<mt:var name="mt_version_id" escape="url">"></script>
-  <script type="text/javascript" src="<mt:var name="static_uri">js/image_editor/jquery.selection.min.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+  <mt:script type="text/javascript" path="js/image_editor/fabric.min.js">
+  <mt:script type="text/javascript" path="js/image_editor/darkroom.min.js">
+  <mt:script type="text/javascript" path="js/image_editor/jquery.numeric.min.js">
+  <mt:script type="text/javascript" path="js/image_editor/jquery.selection.min.js">
   </mt:if>
-  <script type="text/javascript" src="<mt:var name="static_uri">js/image_editor/image_editor.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+  <mt:script type="text/javascript" path="js/image_editor/image_editor.js">
 </mt:setvarblock>
 
 <mt:setvarblock name="modal_body">

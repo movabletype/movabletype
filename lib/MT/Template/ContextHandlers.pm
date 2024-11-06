@@ -683,6 +683,8 @@ sub core_tags {
                 '$Core::MT::Template::Tags::Entry::_hdlr_entry_create_date',
             EntryModifiedDate =>
                 '$Core::MT::Template::Tags::Entry::_hdlr_entry_mod_date',
+            EntryUnpublishedDate =>
+                '$Core::MT::Template::Tags::Entry::_hdlr_entry_unpublished_date',
 
             EntryBlogID =>
                 '$Core::MT::Template::Tags::Entry::_hdlr_entry_blog_id',
@@ -812,6 +814,8 @@ sub core_tags {
                 '$Core::MT::Template::Tags::Page::_hdlr_page_modified_author_url',
             PageExcerpt =>
                 '$Core::MT::Template::Tags::Page::_hdlr_page_excerpt',
+            PageUnpublishedDate =>
+                '$Core::MT::Template::Tags::Page::_hdlr_page_unpublished_date',
             BlogPageCount =>
                 '$Core::MT::Template::Tags::Page::_hdlr_blog_page_count',
             WebsitePageCount =>
@@ -994,6 +998,10 @@ sub core_tags {
                 '$Core::MT::Template::Tags::Misc::_hdlr_captcha_fields',
             'StatsSnippet' =>
                 '$Core::MT::Template::Tags::Misc::_hdlr_stats_snippet',
+            Script =>
+                '$Core::MT::Template::Tags::Misc::_hdlr_script',
+            Stylesheet =>
+                '$Core::MT::Template::Tags::Misc::_hdlr_stylesheet',
 
             # Content Type
             AuthorContentCount =>

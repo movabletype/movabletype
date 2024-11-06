@@ -1,45 +1,85 @@
 // rollup.config.js
-import glob from "glob";
 import resolve from "@rollup/plugin-node-resolve";
 import commonjs from "@rollup/plugin-commonjs";
-import esbuild from 'rollup-plugin-esbuild'
+import esbuild from "rollup-plugin-esbuild";
 import livereload from "rollup-plugin-livereload";
 import sveltePreprocess from "svelte-preprocess";
-import typescript from '@rollup/plugin-typescript';
+import typescript from "@rollup/plugin-typescript";
 import svelte from "rollup-plugin-svelte";
 import css from "rollup-plugin-css-only";
 
 const production = !process.env.ROLLUP_WATCH;
+const defaultOutputDir = "mt-static/js/build";
 
-export default {
-  input: ["src/bootstrap.ts"].concat(glob.sync("src/api/*.ts")),
-  output: {
-    dir: "mt-static/js/build",
-    format: "esm",
-    sourcemap: true
-  },
-  plugins: [
-    resolve({
-      browser: true,
-      dedupe: ["svelte"],
-    }),
-    commonjs(),
-    esbuild({
-      sourceMap: true,
-      minify: production,
-    }),
-    css({ output: "bundle.css" }),
-    svelte({
-      preprocess: sveltePreprocess({ sourceMap: !production }),
-      compilerOptions: {
-        // enable run-time checks when not in production
-        dev: !production,
-      },
-    }),
+const mtStaticOutputDir = "mt-static";
+const mtStaticInputFiles = [
+  "src/mt-static/plugins/TinyMCE5/lib/js/tinymce/plugins/mt_protect/plugin.ts",
+  "src/mt-static/plugins/TinyMCE6/lib/js/tinymce/plugins/mt_protect/plugin.ts",
+];
 
-    // Watch the `public` directory and refresh the
-    // browser on changes when not in production
-    !production && livereload("mt-static/js/build"),
-    typescript({ sourceMap: !production })
-  ],
+const srcConfig = (inputFile) => {
+  return {
+    input: [inputFile],
+    output: {
+      dir: defaultOutputDir,
+      format: "esm",
+      sourcemap: !production,
+    },
+    plugins: [
+      resolve({
+        browser: true,
+        dedupe: ["svelte"],
+      }),
+      commonjs(),
+      esbuild({
+        sourceMap: true,
+        minify: production,
+      }),
+      css({ output: "bundle.css" }),
+      svelte({
+        preprocess: sveltePreprocess({ sourceMap: !production }),
+        compilerOptions: {
+          // enable run-time checks when not in production
+          dev: !production,
+        },
+      }),
+
+      // Watch the `public` directory and refresh the
+      // browser on changes when not in production
+      !production && livereload(defaultOutputDir),
+      typescript({ sourceMap: !production }),
+    ],
+  };
 };
+
+const mtStaticConfig = (inputfile) => {
+  return {
+    input: inputfile,
+    output: {
+      file: inputfile.replace(/^src\//, "").replace(/ts$/, "js"),
+      format: "iife",
+      sourcemap: !production,
+    },
+    plugins: [
+      resolve({
+        browser: true,
+      }),
+      commonjs(),
+      esbuild({
+        sourceMap: true,
+        minify: production,
+      }),
+
+      // Watch the `public` directory and refresh the
+      // browser on changes when not in production
+      !production && livereload(mtStaticOutputDir),
+      typescript({ sourceMap: !production }),
+    ],
+  };
+};
+
+export default [
+  srcConfig("src/contenttype.ts"),
+  srcConfig("src/listing.ts"),
+  ...mtStaticInputFiles.map(mtStaticConfig),
+];

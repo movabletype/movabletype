@@ -515,7 +515,7 @@ sub filtered_list {
             :                         ( blog_id => $blog_ids );
     }
 
-    if (  !$app->user->is_superuser
+    if (  (!$app->user->is_superuser or $app->config->SuperuserRespectsDataAPIDisableSite)
         && $scope_mode ne 'strict'
         && (   $class->has_column('blog_id')
             || $class eq 'MT::Blog'

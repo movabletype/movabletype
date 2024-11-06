@@ -15,7 +15,7 @@ BEGIN {
 use MT::Test::DataAPI;
 use MT::Test::Fixture;
 
-$test_env->prepare_fixture('content_data');
+$test_env->prepare_fixture('content_data/dirty');
 
 use MT::App::DataAPI;
 my $app = MT::App::DataAPI->new;
