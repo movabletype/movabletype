@@ -116,6 +116,11 @@ class UnitTest extends TestCase {
         $this->assertEquals('Entry', get_class($entries[0]));
         $this->assertEquals($entry2->id, $entries[0]->id);
 
+        $entries = $mt->db()->fetch_entries(['blog_id' => $site1->id, 'min_comment' => 0], $total_count);
+        $this->assertEquals(2, count($entries));
+        $this->assertEquals('Entry', get_class($entries[0]));
+        $this->assertEquals($entry2->id, $entries[0]->id);
+
         $entries = $mt->db()->fetch_entries(['blog_id' => $site1->id, 'limit' => 1, 'sort_by' => 'basename'], $total_count);
         $this->assertEquals(1, count($entries));
         $this->assertEquals('Entry', get_class($entries[0]));
@@ -132,10 +137,22 @@ class UnitTest extends TestCase {
         $this->assertEquals($entry1->id, $entries[0]->id);
     }
 
+    public function testBlogEntryCount() {
+
+        $author = MockData::makeAuthor(['basename' => __FUNCTION__]);
+        $site1 = MockData::makeBlog(['name' => __FUNCTION__]);
+        $entry1 = MockData::makeEntry(['status' => 2, 'basename' => 'basename1']);
+        $entry2 = MockData::makeEntry(['status' => 2, 'basename' => 'basename2']);
+        $mt = MT::get_instance();
+
+        $count = $mt->db()->blog_entry_count(['blog_id' => $site1->id, 'author_id' => $author->id]);
+        $this->assertEquals(2, $count);
+    }
+
     public function testFetchCategory() {
 
         $mt = MT::get_instance();
-        $site1 = MockData::makeBlog(['name' => 'testFetchCategory']);
+        $site1 = MockData::makeBlog(['name' => __FUNCTION__]);
         $ctx = $this->get_blog_context($site1);
 
         $category1 = Mockdata::makeCategory(['label' => 'mylabel1']);
@@ -150,7 +167,7 @@ class UnitTest extends TestCase {
         $this->assertEquals('Category', get_class($categories[0]));
         $this->assertEquals($category1->id, $categories[0]->id);
 
-        $ccet = Mockdata::makeCategorySet();
+        $cset = Mockdata::makeCategorySet(['name' => __FUNCTION__]);
         $category3 = Mockdata::makeCategory(['label' => 'mylabel3']);
         $category4 = Mockdata::makeCategory(['label' => 'mylabel4']);
         $ct = Mockdata::makeContentType();
@@ -159,10 +176,51 @@ class UnitTest extends TestCase {
         $ocat = MockData::makeObjectCategory(['object_ds' => 'content_data', 'category_id' => $category4->id]);
 
         $categories = $mt->db()->fetch_categories([
-            'category_set_id' => $ccet->id, 'blog_id' => $site2->id, 'content_id' => $cd->id]);
+            'category_set_id' => $cset->id, 'blog_id' => $site2->id, 'content_id' => $cd->id]);
         $this->assertEquals(2, count($categories));
         $this->assertEquals('Category', get_class($categories[0]));
         $this->assertEquals($category3->id, $categories[0]->id);
+
+        $categories = $mt->db()->fetch_categories([
+            'category_set_id' => $cset->id, 'blog_id' => $site2->id, 'content_id' => $cd->id, 'show_empty' => 1]);
+        $this->assertEquals(2, count($categories));
+        $this->assertEquals('Category', get_class($categories[0]));
+        $this->assertEquals($category3->id, $categories[0]->id);
+
+        $categories = $mt->db()->fetch_categories([
+            'blog_id' => $site2->id, 'entry_id' => $entry1->id, 'show_empty' => 1]);
+        $this->assertEquals(2, count($categories));
+        $this->assertEquals('Category', get_class($categories[0]));
+        $this->assertEquals($category1->id, $categories[0]->id);
+
+        $this->assertEquals(4, $mt->db()->blog_category_count([]));
+    }
+
+
+    public function testFetchCategorySets() {
+
+        $site = Mockdata::makeBlog(['name' => __FUNCTION__]);
+        $mt = MT::get_instance();
+        $ctx = $this->get_blog_context($site);
+
+        $cset = Mockdata::makeCategorySet(['name' => __FUNCTION__]);
+        $ct1 = Mockdata::makeContentType();
+        $cf1 = MockData::makeContentField(['type' => 'categories', 'related_cat_set_id' => $cset->id]);
+
+        $csets = $mt->db()->fetch_category_sets(['blog_id' => $site->id]);
+        $this->assertEquals(1, count($csets));
+        $this->assertEquals('CategorySet', get_class($csets[0]));
+        $this->assertEquals($cset->id, $csets[0]->id);
+
+        $csets = $mt->db()->fetch_category_sets(['name' => __FUNCTION__]);
+        $this->assertEquals(1, count($csets));
+        $this->assertEquals('CategorySet', get_class($csets[0]));
+        $this->assertEquals($cset->id, $csets[0]->id);
+
+        $csets = $mt->db()->fetch_category_sets(['content_type' => $ct1->id]);
+        $this->assertEquals(1, count($csets));
+        $this->assertEquals('CategorySet', get_class($csets[0]));
+        $this->assertEquals($cset->id, $csets[0]->id);
     }
 
     public function testFetchAuthors() {
@@ -171,11 +229,11 @@ class UnitTest extends TestCase {
         $site = MockData::makeBlog(['name' => 'testFetchAuthors']);
         $ctx = $this->get_blog_context($site);
 
-        $author = MockData::makeAuthor(['basename' => 'joe']);
+        $author = MockData::makeAuthor(['basename' => 'testFetchAuthors']);
         $entry = MockData::makeEntry(['basename' => 'basename1', 'status' => 2]);
         $oscore = MockData::makeObjectScore(['object_ds' => 'author', 'namespace' => 'testFetchAuthors']);
 
-        $authors = $mt->db()->fetch_authors(['author_nickname' => 'joe']);
+        $authors = $mt->db()->fetch_authors(['author_nickname' => 'testFetchAuthors']);
         $this->assertEquals(1, count($authors));
         $this->assertEquals('Author', get_class($authors[0]));
         $this->assertEquals($author->id, $authors[0]->id);
@@ -189,6 +247,36 @@ class UnitTest extends TestCase {
         $this->assertEquals(1, count($authors));
         $this->assertEquals('Author', get_class($authors[0]));
         $this->assertEquals($author->id, $authors[0]->id);
+
+        $ct1 = Mockdata::makeContentType();
+        $cd1 = Mockdata::makeContentData();
+        $ct2 = Mockdata::makeContentType();
+        $cd2 = Mockdata::makeContentData();
+
+        $ct_bak = $ctx->stash('content_type');
+        $ctx->stash('content_type', $ct1);
+        $authors = $mt->db()->fetch_authors(['need_content' => true]);
+        $this->assertEquals(1, count($authors));
+        $this->assertEquals('Author', get_class($authors[0]));
+        $this->assertEquals($author->id, $authors[0]->id);
+        $ctx->stash('content_type', $ct_bak);
+
+        $permission = MockData::makePermission(['permissions' => "'sign_in_cms'", 'author_id' => $author->id]);
+        $author2 = MockData::makeAuthor(['basename' => 'testFetchAuthors2']);
+        $permission = MockData::makePermission(['permissions' => "'create_post'", 'author_id' => $author2->id]);
+
+        $authors = $mt->db()->fetch_authors(['any_type' => 1, 'need_association' => 1]);
+        $this->assertEquals(2, count($authors));
+        $this->assertEquals($author->id, $authors[0]->id);
+        $this->assertEquals($author2->id, $authors[1]->id);
+
+        $authors = $mt->db()->fetch_authors(['need_entry' => 0, 'need_association' => 1]);
+        $this->assertEquals(1, count($authors));
+        $this->assertEquals($author2->id, $authors[0]->id);
+
+        $this->assertEquals(1, $mt->db()->author_entry_count([]));
+        $this->assertEquals(1, $mt->db()->author_entry_count(['author_id' => $author->id]));
+        $this->assertEquals(0, $mt->db()->author_entry_count(['author_id' => $author2->id]));
     }
 
     public function testFetchPluginData() {
@@ -197,10 +285,19 @@ class UnitTest extends TestCase {
 
         require_once('class.mt_plugindata.php');
         $plugindata = new PluginData();
-        $plugindata->data = $mt->db()->serialize(['foo' => 'fooval', 'bar' => 'barval']);
+        if (getenv('MT_TEST_BACKEND') !== 'oracle') {
+            $plugindata->data = $mt->db()->serialize(['foo' => 'fooval', 'bar' => 'barval']);
+        }
         $plugindata->key = 'configuration:blog:3';
         $plugindata->plugin = 'MyPlugin';
-        $plugindata->save();
+        MockData::finalize_and_save($plugindata);
+
+        // TODO find proper way to insert blob data
+        if (getenv('MT_TEST_BACKEND') === 'oracle') {
+            $data = $mt->db()->serialize(['foo' => 'fooval', 'bar' => 'barval']);
+            $hexData = bin2hex(pack('A*', $data));
+            $res = $mt->db()->db()->Execute("update mt_plugindata set plugindata_data = hextoraw(:1) where plugindata_id = :2", ['1' => $hexData, '2' => $plugindata->id]);
+        }
 
         $config = $mt->db()->fetch_plugin_data('MyPlugin', 'configuration:blog:3');
         $this->assertEquals('fooval', $config['foo']);
@@ -227,10 +324,22 @@ class UnitTest extends TestCase {
 
     public function testFetchAvgScores() {
 
-        $oscore = MockData::makeObjectScore(['object_ds' => 'entry']);
+        $author = MockData::makeAuthor(['basename' => __FUNCTION__]);
+        $site = Mockdata::makeBlog(['name' => __FUNCTION__]);
+        $ctx = $this->get_blog_context($site);
+        $entry = Mockdata::makeEntry(['basename' => __FUNCTION__]);
+        $oscore = MockData::makeObjectScore(['object_ds' => 'entry', 'namespace' => __FUNCTION__]);
         $mt = MT::get_instance();
-        $score = $mt->db()->fetch_avg_scores('foo', 'entry', 'asc', '');
-        $this->assertEquals('ADORecordSet_pdo', get_class($score));
+        $score = $mt->db()->fetch_avg_scores(__FUNCTION__, 'entry', 'asc', '');
+        $this->assertEquals(true, is_a($score, 'ADORecordSet'));
+
+        $score2 = $mt->db()->fetch_scores(__FUNCTION__, $entry->id, 'entry');
+        $this->assertEquals('ObjectScore', get_class($score2[0]));
+        $this->assertEquals($score2[0]->id, $oscore->id);
+
+        $score3 = $mt->db()->fetch_score(__FUNCTION__, $entry->id, $author->id, 'entry');
+        $this->assertEquals('ObjectScore', get_class($score3));
+        $this->assertEquals($score3->id, $oscore->id);
     }
 
     public function testBlogPingCount() {
@@ -244,6 +353,59 @@ class UnitTest extends TestCase {
         $mt = MT::get_instance();
         $count = $mt->db()->blog_ping_count(['blog_id' => $ping->blog_id]);
         $this->assertEquals(1, $count);
+    }
+
+    public function testFetchAssetTags() {
+
+        $site = Mockdata::makeBlog(['name' => __FUNCTION__]);
+        $asset = Mockdata::makeAsset(['status' => 2]);
+        $tag1 = MockData::makeTag(['name' => 'foo']);
+        $tag2 = MockData::makeTag(['name' => 'bar']);
+        $otag1 = MockData::makeObjectTag(['object_datasource' => 'asset', 'tag_id' => $tag1->id]);
+        $otag2 = MockData::makeObjectTag(['object_datasource' => 'asset', 'tag_id' => $tag2->id]);
+
+        $mt = MT::get_instance();
+        $tags = $mt->db()->fetch_asset_tags(['asset_id' => $asset->id, 'blog_id' => $site->id]);
+        $this->assertEquals('Tag', get_class($tags[0]));
+        $this->assertEquals(2, count($tags));
+        $this->assertEquals($tag2->id, $tags[0]->id);
+
+        $tags = $mt->db()->fetch_asset_tags(['asset_id' => $asset->id, 'blog_id' => $site->id, 'tags' => 'foo']);
+        $this->assertEquals('Tag', get_class($tags[0]));
+        $this->assertEquals(1, count($tags));
+        $this->assertEquals($tag1->id, $tags[0]->id);
+
+        $tags = $mt->db()->fetch_asset_tags(['asset_id' => $asset->id, 'blog_id' => $site->id, 'tags' => 'foo,bar']);
+        $this->assertEquals('Tag', get_class($tags[0]));
+        $this->assertEquals(2, count($tags));
+        $this->assertEquals($tag2->id, $tags[0]->id);
+        $this->assertEquals($tag1->id, $tags[1]->id);
+
+        $otags = $mt->db()->fetch_objecttags(['blog_id' => $site->id, 'tag_id' => [$tag1->id], 'datasource' => 'asset']);
+        $this->assertEquals(1, count($otags));
+        $this->assertEquals('ObjectTag', get_class($otags[0]));
+        $this->assertEquals($otag1->id, $otags[0]->id);
+    }
+
+    public function testFetchEntryTags() {
+
+        $site = Mockdata::makeBlog(['name' => __FUNCTION__]);
+        $entry = Mockdata::makeEntry(['status' => 2]);
+        $tag1 = MockData::makeTag(['name' => 'foo']);
+        $tag2 = MockData::makeTag(['name' => 'bar']);
+        $otag1 = MockData::makeObjectTag(['object_datasource' => 'entry', 'tag_id' => $tag1->id]);
+        $otag2 = MockData::makeObjectTag(['object_datasource' => 'entry', 'tag_id' => $tag2->id]);
+
+        $mt = MT::get_instance();
+        $tags = $mt->db()->fetch_entry_tags(['entry_id' => $entry->id, 'blog_id' => $site->id]);
+        $this->assertEquals('Tag', get_class($tags[0]));
+        $this->assertEquals(2, count($tags));
+        $this->assertEquals($tag2->id, $tags[0]->id);
+
+        $otags = $mt->db()->fetch_objecttags(['blog_id' => $site->id, 'tag_id' => [$tag1->id], 'datasource' => 'entry']);
+        $this->assertEquals(1, count($otags));
+        $this->assertEquals('ObjectTag', get_class($otags[0]));
+        $this->assertEquals($otag1->id, $otags[0]->id);
     }
 
     // @TODO SKIP MTC-29547
@@ -371,6 +533,68 @@ class UnitTest extends TestCase {
         $this->assertEquals($site->id, $template->blog_id);
     }
 
+    public function testResolveUrl() {
+
+        $site = Mockdata::makeBlog(['name' => __FUNCTION__]);
+        $template = MockData::makeTemplate(['name' => 'testFetchContent', 'type' => 'archive', 'text' => 'foo']);
+        $map1 = Mockdata::makeTemplateMap(['archive_type' => 'ContentType-Author', 'build_type' => 1]);
+        $fi1 = Mockdata::makeFileInfo(['archive_type' => 'ContentType-Category', 'templatemap_id' => $map1->id, 'url' => 'mypath']);
+        $mt = MT::get_instance();
+        $ctx = $this->get_blog_context($site);
+
+        $fi2 = $mt->db()->resolve_url('mypath', $site->id, 1);
+        $this->assertEquals('FileInfo', get_class($fi2));
+        $this->assertEquals($fi2->id, $fi1->id);
+    }
+
+    public function testFetchTemplatemap() {
+
+        $site = Mockdata::makeBlog(['name' => __FUNCTION__]);
+        $mt = MT::get_instance();
+        $ctx = $this->get_blog_context($site);
+
+        $ct1 = Mockdata::makeContentType();
+        $cf1 = MockData::makeContentField(['type' => 'single_line_text']);
+        $cd1 = Mockdata::makeContentData();
+        $template = MockData::makeTemplate(['name' => 'testFetchContent', 'type' => 'archive', 'text' => 'foo']);
+        $map1 = Mockdata::makeTemplateMap(['archive_type' => 'ContentType-Author', 'build_type' => 1]);
+        $map2 = Mockdata::makeTemplateMap(['archive_type' => 'ContentType-Category', 'build_type' => 2]);
+
+        $res1 = $mt->db()->fetch_templates(['type' => 'archive', 'blog_id' => $site->id]);
+        $this->assertEquals(1, count($res1));
+        $this->assertEquals($template->id, $res1[0]->id);
+
+        $res1 = $mt->db()->fetch_templatemap(['build_type' => 2]);
+        $this->assertEquals(1, count($res1));
+        $this->assertEquals($map2->id, $res1[0]->id);
+
+        $res2 = $mt->db()->fetch_templatemap(['content_type' => $ct1->id, 'blog_id' => $site->id]);
+        $this->assertEquals(2, count($res2));
+        $this->assertEquals($map1->id, $res2[0]->id);
+    }
+
+    public function testFetchContentTypeId() {
+
+        $site = Mockdata::makeBlog(['name' => __FUNCTION__]);
+        $mt = MT::get_instance();
+        $ctx = $this->get_blog_context($site);
+
+        $author = MockData::makeAuthor(['basename' => __FUNCTION__]);
+        $ct1 = Mockdata::makeContentType(['name' => __FUNCTION__]);
+        $id = $mt->db()->fetch_content_type_id(['content_type' => $ct1->unique_id]);
+        $this->assertEquals($ct1->id, $id);
+        $id = $mt->db()->fetch_content_type_id(['content_type' => __FUNCTION__]);
+        $this->assertEquals($ct1->id, $id);
+
+        $cts = $mt->db()->fetch_content_types([]);
+        $this->assertEquals(1, count($cts));
+        $this->assertEquals($ct1->id, $cts[0]->id);
+
+        $cts = $mt->db()->fetch_content_types(['content_type' => $ct1->id]);
+        $this->assertEquals(1, count($cts));
+        $this->assertEquals($ct1->id, $cts[0]->id);
+    }
+
     public function testFetchContent() {
 
         $site = Mockdata::makeBlog(['name' => 'testFetchContent']);
@@ -420,6 +644,12 @@ class UnitTest extends TestCase {
         $this->assertEquals(true, empty($res));
         $res = $mt->db()->fetch_contents(['current_timestamp_end' => $date1], $ct3->id);
         $this->assertEquals(true, empty($res));
+
+        $count = $mt->db()->content_count(['blog_id' => $site->id, 'content_type' => $ct1->id]);
+        $this->assertEquals(1, $count);
+
+        $count = $mt->db()->author_content_count(['blog_id' => $site->id, 'author_id' => $author->id, 'content_type_id' => $ct1->id]);
+        $this->assertEquals(1, $count);
     }
 
     public function testFetchContentFields() {
@@ -437,6 +667,16 @@ class UnitTest extends TestCase {
         $this->assertEquals(1, count($res));
         $this->assertEquals('ContentField', get_class($res[0]));
         $this->assertEquals($cf1->id, $res[0]->id);
+
+        $res = $mt->db()->fetch_content_fields(['content_type_id' => $ct1->id]);
+        $this->assertEquals(1, count($res));
+        $this->assertEquals('ContentField', get_class($res[0]));
+        $this->assertEquals($cf1->id, $res[0]->id);
+
+        $res = $mt->db()->fetch_content_fields(['content_type_id' => [$ct1->id, $ct2->id]]);
+        $this->assertEquals(2, count($res));
+        $this->assertEquals('ContentField', get_class($res[0]));
+        $this->assertEquals($cf1->id, $res[0]->id);
     }
 
     public function testFetchContentTags() {
@@ -450,8 +690,8 @@ class UnitTest extends TestCase {
         $cd = Mockdata::makeContentData();
         $tag1 = MockData::makeTag(['name' => 'foo']);
         $tag2 = MockData::makeTag(['name' => 'bar']);
-        $otag = Mockdata::makeObjectTag(['object_datasource' => 'content_data', 'tag_id' => $tag1->id]);
-        $otag = Mockdata::makeObjectTag(['object_datasource' => 'content_data', 'tag_id' => $tag2->id]);
+        $otag1 = Mockdata::makeObjectTag(['object_datasource' => 'content_data', 'tag_id' => $tag1->id]);
+        $otag2 = Mockdata::makeObjectTag(['object_datasource' => 'content_data', 'tag_id' => $tag2->id]);
 
         $tags = $mt->db()->fetch_content_tags([]);
         $this->assertEquals(2, count($tags));
@@ -472,6 +712,12 @@ class UnitTest extends TestCase {
         $tags = $mt->db()->fetch_content_tags(['cd_id' => $cd->id]);
         $this->assertEquals(2, count($tags));
         $this->assertEquals('Tag', get_class($tags[0]));
+
+        $otags = $mt->db()->fetch_objecttags(['blog_id' => $site->id, 'tag_id' => [$tag1->id],
+                                                                                    'datasource' => 'content_data']);
+        $this->assertEquals(1, count($otags));
+        $this->assertEquals('ObjectTag', get_class($otags[0]));
+        $this->assertEquals($otag1->id, $otags[0]->id);
     }
 
     public function testFetchNextPrevContent() {
@@ -518,7 +764,7 @@ class UnitTest extends TestCase {
 
         require_once('class.mt_author.php');
         $author = new Author;
-        $author->Load(1);
+        $author->LoadByIntId(1);
         $perm2 = $author->permissions(1);
         $this->assertTrue(is_array($perm2) && !empty($perm2));
         $this->assertEquals(1, count($perm2));
@@ -545,7 +791,7 @@ class UnitTest extends TestCase {
 
         require_once('class.mt_blog.php');
         $b = new Blog;
-        $b->Load(1);
+        $b->LoadByIntId(1);
         $b->set_values(['blog_name' => 'test_name', 'blog_site_url' => 'test_url']);
         $this->assertEquals($b->blog_name, 'test_name');
         $this->assertEquals($b->blog_site_url, 'test_url');
@@ -683,7 +929,7 @@ class UnitTest extends TestCase {
     public function testAssociation() {
         require_once('class.mt_association.php');
         $assoc = new Association();
-        $assoc->Load('association_id=1');
+        $assoc->LoadByIntId(1);
         $role = $assoc->role();
         $this->assertEquals('Role', get_class($role));
         $this->assertEquals('1', $role->id);
@@ -697,7 +943,7 @@ class UnitTest extends TestCase {
 
         require_once('class.mt_fileinfo.php');
         $finfo2 = new FileInfo();
-        $finfo2->Load($finfo->id);
+        $finfo2->LoadByIntId($finfo->id);
         $cat2 = $finfo2->category();
         $this->assertEquals('Category', get_class($cat2));
         $this->assertEquals($cat1->id, $cat2->id);
@@ -727,12 +973,29 @@ class UnitTest extends TestCase {
         $this->assertEquals(sprintf('https://example.com#a%06d', $cd1->id), $url2); // TODO: FIXME: domain part needs trailing slash according to perl implementation
     }
 
+    public function testFetchObjectcategory() {
+
+        $site = Mockdata::makeBlog(['name' => __FUNCTION__]);
+        $mt = MT::get_instance();
+        $ctx = $this->get_blog_context($site);
+
+        $ct1 = Mockdata::makeContentType();
+        $cf1 = MockData::makeContentField(['type' => 'categories']);
+        $cd1 = Mockdata::makeContentData();
+        $cat1 = Mockdata::makeCategory(['label' => 'mylabel']);
+        $ocat1 = MockData::makeObjectCategory(['object_ds' => 'content_data', 'category_id' => $cat1->id]);
+
+        $categories = $mt->db()->fetch_objectcategory(['blog_id' => $site->id, 'category_id' => [$cat1->id], 'cf_id' => $cf1->id]);
+        $this->assertEquals('ObjectCategory', get_class($categories[0]));
+        $this->assertEquals($ocat1->id, $categories[0]->id);
+    }
+
     public function testFunctionMtblogsitepath() {
 
         $mt = MT::get_instance();
         $ctx = $mt->context();
         $blog = new Blog;
-        $blog->Load(1);
+        $blog->LoadByIntId(1);
 
         require_once('function.mtblogsitepath.php');
         $this->assertEquals('/', smarty_function_mtblogsitepath(['id' => $blog->id], $ctx));
@@ -743,7 +1006,7 @@ class UnitTest extends TestCase {
         $mt = MT::get_instance();
         $ctx = $mt->context();
         $blog = new Blog;
-        $blog->Load(1);
+        $blog->LoadByIntId(1);
 
         require_once('function.mtwebsitepath.php');
         $this->assertEquals('/', smarty_function_mtwebsitepath(['id' => $blog->id], $ctx));
@@ -754,7 +1017,7 @@ class UnitTest extends TestCase {
         $mt = MT::get_instance();
         $ctx = $mt->context();
         $blog = new Blog;
-        $blog->Load(1);
+        $blog->LoadByIntId(1);
 
         require_once('function.mtwebsiterelativeurl.php');
         $this->assertEquals('', smarty_function_mtwebsiterelativeurl(['id' => $blog->id], $ctx));
@@ -765,7 +1028,7 @@ class UnitTest extends TestCase {
         $mt = MT::get_instance();
         $ctx = $mt->context();
         $blog = new Blog;
-        $blog->Load(1);
+        $blog->LoadByIntId(1);
 
         require_once('function.mtwebsiteurl.php');
         $this->assertEquals('/', smarty_function_mtwebsiteurl(['id' => $blog->id], $ctx));

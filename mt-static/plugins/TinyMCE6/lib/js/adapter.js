@@ -6,6 +6,12 @@
  * $Id$
  */
 ;(function ($) {
+    $.extend(tinymce.defaultSettings, {
+        external_plugins: {
+            mt_protect: StaticURI + 'plugins/TinyMCE6/lib/js/tinymce/plugins/mt_protect/plugin.js',
+        },
+    });
+
     MT.Editor.TinyMCE = function () {
         MT.Editor.apply(this, arguments)
     }
@@ -25,7 +31,8 @@
             plugins: 'lists,media,link,fullscreen,table,quickbars',
             external_plugins: {
                 mt: StaticURI + 'plugins/TinyMCE6/lib/js/tinymce/plugins/mt/plugin' + suffix + '.js',
-                mt_fullscreen: StaticURI + 'plugins/TinyMCE6/lib/js/tinymce/plugins/mt_fullscreen/plugin' + suffix + '.js'
+                mt_fullscreen: StaticURI + 'plugins/TinyMCE6/lib/js/tinymce/plugins/mt_fullscreen/plugin' + suffix + '.js',
+                mt_protect: StaticURI + 'plugins/TinyMCE6/lib/js/tinymce/plugins/mt_protect/plugin.js',
             },
 
             language: $('html').attr('lang'),

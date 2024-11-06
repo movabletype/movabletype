@@ -45,9 +45,11 @@ class Category extends BaseObject
     }
 
     public function trackback() {
+        $mtdb = MT::get_instance()->db();
         require_once('class.mt_trackback.php');
         $trackback = new Trackback();
-        $loaded = $trackback->Load("trackback_category_id = " . $this->category_id);
+        $loaded = $trackback->Load("trackback_category_id = ".
+                                                $mtdb->ph('trackback_category_id', $bind, $this->category_id), $bind);
         if (!$loaded)
             $trackback = null;
         return $trackback;
@@ -94,61 +96,58 @@ class Category extends BaseObject
     }
 
     public function content_data_count($terms = array()) {
-        $blog_id = $this->blog_id;
-        $cat_id = $this->id;
+        $mtdb = MT::get_instance()->db();
 
-        $where = "cd_status = 2
-                  and cd_blog_id = $blog_id";
-
-        if (isset($terms['content_type_id']) && $terms['content_type_id']) {
-            $content_type_id = $terms['content_type_id'];
-        }
         if (isset($terms['content_field_id']) && $terms['content_field_id']) {
             $content_field_id = $terms['content_field_id'];
         }
 
         if (empty($content_field_id) && isset($terms['content_field_name']) && $terms['content_field_name']) {
-            $content_field_name = $terms['content_field_name'];
-            if (!empty($content_type_id)) {
-                $cf_content_type_filter = "and cf_content_type_id = $content_type_id";
-            } else {
-                $cf_content_type_filter = "";
+            $cf_where = 'cf_name = ' . $mtdb->ph('cf_name', $bind, $terms['content_field_name']);
+            if (!empty($terms['content_type_id'])) {
+                $cf_where .= ' and cf_content_type_id = '.
+                                                    $mtdb->ph('cf_content_type_id', $bind, $terms['content_type_id']);
             }
-            $cf_where = "cf_name = '$content_field_name'
-                         $cf_content_type_filter";
             require_once("class.mt_content_field.php");
             $content_field = new ContentField();
-            $content_field->Load($cf_where);
+            $content_field->Load($cf_where, $bind);
             if (!$content_field->id) {
                 return 0;
             }
             $content_field_id = $content_field->id;
         }
 
-        if (!empty($content_type_id)) {
-            $where = $where. ' and cd_content_type_id = ' . $content_type_id;
-        }
+        $bind_cd = [];
+
+        $join = [];
 
         if (!empty($content_field_id)) {
-            $content_field_filter = 'and objectcategory_cf_id = ' . $content_field_id;
+            $content_field_filter = 'and objectcategory_cf_id = '.
+                                                        $mtdb->ph('objectcategory_cf_id', $bind_cd, $content_field_id);
         } else {
             $content_field_filter = '';
         }
 
-        $join = array();
-        $join['mt_objectcategory'] =
-            array(
-                'condition' => "cd_id = objectcategory_object_id
-                                $content_field_filter
-                                and objectcategory_object_ds = 'content_data'
-                                and objectcategory_category_id = $cat_id"
-            );
+        $join['mt_objectcategory'] = [
+            'condition' => "cd_id = objectcategory_object_id
+            $content_field_filter
+            and objectcategory_object_ds = 'content_data'
+            and objectcategory_category_id = ". $mtdb->ph('objectcategory_category_id', $bind_cd, $this->id)
+        ];
+
+        $where = "cd_status = 2 and cd_blog_id = ". $mtdb->ph('cd_blog_id', $bind_cd, $this->blog_id);
+
+        if (!empty($terms['content_type_id'])) {
+            $where = $where. ' and cd_content_type_id = '.
+                                                $mtdb->ph('cd_content_type_id', $bind_cd, $terms['content_type_id']);
+        }
 
         require_once("class.mt_content_data.php");
         $content_data = new ContentData();
         $cnt = $content_data->count(
             array(
                 'where' => $where,
+                'bind' => $bind_cd,
                 'join' => $join,
                 'distinct' => true,
             )

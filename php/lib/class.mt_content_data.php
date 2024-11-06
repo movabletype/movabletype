@@ -100,23 +100,25 @@ class ContentData extends BaseObject
         return array();
     }
     public function content_type() {
-      $where = "content_type_id = " . $this->content_type_id;
-
       require_once('class.mt_content_type.php');
       $ct = new ContentType();
-      $ct->Load($where);
+      $ct->LoadByIntId($this->content_type_id);
       return $ct;
     }
 
     private function get_content_field( $unique_id ) {
-      $where = "cf_content_type_id = " . $this->content_type_id;
-      $where .= " and cf_unique_id = '$unique_id'";
+        $mtdb = MT::get_instance()->db();
+        $where = sprintf(
+            'cf_content_type_id = %s and cf_unique_id = %s',
+            $mtdb->ph('cf_content_type_id', $bind, $this->content_type_id),
+            $mtdb->ph('cf_unique_id', $bind, $unique_id)
+        );
 
-      require_once('class.mt_content_field.php');
-      $cf = new ContentField();
-      $cf->Load($where);
-      return $cf;
-    }
+        require_once('class.mt_content_field.php');
+        $cf = new ContentField();
+        $cf->Load($where, $bind);
+        return $cf;
+      }
 }
 
 // Relations

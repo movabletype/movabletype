@@ -1,5 +1,22 @@
 (function () {
 
+function isSameOrigin(iframe) {
+  if (iframe.attr("srcdoc")) {
+    return true;
+  }
+  var src = iframe.attr("src");
+  if (!src) {
+    return true;
+  }
+  var a = document.createElement("a");
+  a.href = src;
+  return (
+    a.hostname === window.location.hostname &&
+    a.protocol === window.location.protocol &&
+    a.port === window.location.port
+  );
+}
+
 var defs = {}; // id -> {dependencies, definition, instance (possibly undefined)}
 
 // Used when there is no 'main' module.
@@ -401,6 +418,22 @@ define(
         height: node.attr('height') || (name === "audio" ? "30" : "150"),
         frameborder: '0'
       });
+
+      var origSandbox = node.attr('sandbox')
+      if (!isSameOrigin(node)) {
+        previewNode.attr("sandbox", origSandbox);
+      } else {
+        var newSandbox = "allow-scripts";
+        if (origSandbox !== undefined) {
+          newSandbox = origSandbox
+            .split(/\s+/)
+            .filter(function (value) {
+              return !/allow-same-origin/i.test(value);
+            })
+            .join(" ");
+        }
+        previewNode.attr("sandbox", newSandbox);
+      }
 
       shimNode = new Node('span', 1);
       shimNode.attr('class', 'mce-shim');

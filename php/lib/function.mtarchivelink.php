@@ -35,9 +35,7 @@ function smarty_function_mtarchivelink($args, &$ctx) {
     }
     $args['blog_id'] = $blog->blog_id;
 
-    $ar = ArchiverFactory::get_archiver($at);
-    $link_sql = $ar->get_archive_link_sql($ts, $at, $args);
-    $link = $ctx->mt->db()->archive_link($ts, $at, $link_sql, $args);
+    $link = $ctx->mt->db()->archive_link($ts, $at, $args);
 
     if (!empty($args['with_index']) && preg_match('/\/(#.*)*$/', $link)) {
         $blog = $ctx->stash('blog');
