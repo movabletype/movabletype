@@ -365,10 +365,6 @@ build-language-stamp
 ^node_modules/
 \.node-version$
 \.php_cs\.dist$
-^rollup.config.ts
-^tsconfig.json
-\.babelrc
-\.eslintrc.js
 
 ^mt-static/plugins/Motion
 ^mt-static/jquery/themes/Motion

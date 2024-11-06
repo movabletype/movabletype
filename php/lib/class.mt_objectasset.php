@@ -28,11 +28,9 @@ class ObjectAsset extends BaseObject
         $col_name = "objectasset_asset_id";
         $asset = null;
         if (isset($this->$col_name) && is_numeric($this->$col_name)) {
-            $asset_id = $this->$col_name;
-
             require_once('class.mt_asset.php');
             $asset = new Asset;
-            $asset->Load("asset_id = $asset_id");
+            $asset->LoadByIntId($this->$col_name);
         }
 
         return $asset;
@@ -42,7 +40,7 @@ class ObjectAsset extends BaseObject
         require_once("class.mt_" . $this->object_ds . ".php");
         $class = $this->object_ds;
         $obj = new $class;
-        $obj->Load($this->object_ds . "_id = " . $this->object_id);
+        $obj->LoadByIntId($this->object_id);
         return $obj;
     }
 }

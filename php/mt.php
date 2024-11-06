@@ -10,8 +10,8 @@
  */
 require_once('lib/class.exception.php');
 
-define('VERSION', '8.000004');
-define('PRODUCT_VERSION', '8.0.4');
+define('VERSION', '8.000005');
+define('PRODUCT_VERSION', '8.0.5');
 define('DATA_API_DEFAULT_VERSION', '6');
 
 $PRODUCT_NAME = '__PRODUCT_NAME__';
@@ -97,6 +97,9 @@ class MT {
         return MT::$_instance;
     }
 
+    /**
+     * @TODO Not in use
+     */
     public function caching($val = null) {
         if ( !is_null($val) ) {
             $this->caching = $val;
@@ -105,6 +108,9 @@ class MT {
         return $this->caching;
     }
 
+    /**
+     * @TODO Not in use
+     */
     public function conditional($val = null) {
         if ( !is_null($val) ) {
             $this->conditional = $val;
@@ -113,6 +119,9 @@ class MT {
         return $this->conditional;
     }
 
+    /**
+     * @TODO Not in use
+     */
     public function blog_id() {
         return $this->blog_id;
     }

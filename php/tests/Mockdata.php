@@ -25,7 +25,8 @@ class Mockdata {
         $blog->class = $args['class'] ?? 'blog';
         $blog->days_on_index = $args['days_on_index'] ?? 0;
         $blog->site_url = $args['site_url'] ?? 'https://example.com/';
-        $blog->save();
+        $blog->site_path = $args['site_path'] ?? '/path/to/site';
+        self::finalize_and_save($blog);
         self::$last_blog_id = $blog->id;
         return $blog;
     }
@@ -44,7 +45,7 @@ class Mockdata {
         $entry->ping_count = 0;
         $entry->authored_on = date("Y-m-d h:i:s");
         $entry->created_on = date("Y-m-d h:i:s");
-        $entry->save();
+        self::finalize_and_save($entry);
         self::$last_entry_id = $entry->id;
         return $entry;
     }
@@ -58,7 +59,7 @@ class Mockdata {
         $page->current_revision = 1;
         $page->status = '3';
         $page->template_id = '1';
-        $page->save();
+        self::finalize_and_save($page);
         self::$last_entry_id = $page->id;
         return $page;
     }
@@ -69,7 +70,7 @@ class Mockdata {
         $asset = new Asset();
         $asset->blog_id = $args['blog_id'] ?? self::$last_blog_id ?? 1;
         $asset->class = 'image';
-        $asset->save();
+        self::finalize_and_save($asset);
 
         self::$last_asset_id = $asset->id;
 
@@ -89,7 +90,7 @@ class Mockdata {
         $author->type = 1;
         $author->status = 2;
         $author->class = 'image';
-        $author->save();
+        self::finalize_and_save($author);
 
         self::$last_author_id = $author->id;
 
@@ -103,12 +104,27 @@ class Mockdata {
         $category->blog_id = $args['blog_id'] ?? self::$last_blog_id ?? 1;
         $category->class = 'category';
         $category->category_category_set_id = self::$last_category_set_id ?? $args['category_set_id'] ?? 0;
-        $category->label = $args['label'] ?? '';
-        $category->save();
+        $category->label = $args['label'] ?? 'label';
+        self::finalize_and_save($category);
 
         self::$last_category_id = $category->id;
 
         return $category;
+    }
+
+    public static function makeFolder($args=[]) {
+
+        require_once('class.mt_folder.php');
+        $folder = new Folder();
+        $folder->blog_id = $args['blog_id'] ?? self::$last_blog_id ?? 1;
+        $folder->class = 'folder';
+        $folder->category_category_set_id = self::$last_category_set_id ?? $args['category_set_id'] ?? 0;
+        $folder->label = $args['label'] ?? 'label';
+        self::finalize_and_save($folder);
+
+        self::$last_category_id = $folder->id;
+
+        return $folder;
     }
 
     public static function makeCategorySet($args=[]) {
@@ -116,9 +132,8 @@ class Mockdata {
         require_once('class.mt_category_set.php');
         $categoryset = new CategorySet();
         $categoryset->blog_id = $args['blog_id'] ?? self::$last_blog_id ?? 1;
-        $categoryset->name = 'foo';
-
-        $categoryset->save();
+        $categoryset->name = $args['name'] ?? 'foo';
+        self::finalize_and_save($categoryset);
 
         self::$last_category_set_id = $categoryset->id;
 
@@ -133,7 +148,7 @@ class Mockdata {
         $trackback->blog_id = $args['blog_id'] ?? self::$last_blog_id ?? 1;
         $trackback->last_moved_on = '2000-01-01 00:00:00';
         $trackback->category_id = $args['category_id'] ?? self::$last_category_id;
-        $trackback->save();
+        self::finalize_and_save($trackback);
 
         self::$last_trackback_id = $trackback->id;
 
@@ -153,13 +168,12 @@ class Mockdata {
         $ping->junk_status = 1;
         $ping->tb_id = $args['trackback_id'] ?? self::$last_trackback_id;
         $ping->visible = 1;
-        $ping->save();
+        self::finalize_and_save($ping);
 
         $entry = new Entry();
-        $entry->Load($entry_id);
+        $entry->LoadByIntId($entry_id);
         $entry->ping_count++;
-        $entry->save();
-
+        self::finalize_and_save($entry);
         return $ping;
     }
 
@@ -183,7 +197,7 @@ class Mockdata {
         }
         $oscore->author_id = $args['author_id'] ?? self::$last_author_id ?? 1;
         $oscore->namespace = $args['namespace'] ?? 'foo';
-        $oscore->save();
+        self::finalize_and_save($oscore);
         return $oscore;
     }
 
@@ -198,7 +212,7 @@ class Mockdata {
         $template->text = $args['text'];
         $template->current_revision = 1;
         $template->content_type_id = $args['content_type_id'] ?? self::$last_content_type_id ?? 1;
-        $template->save();
+        self::finalize_and_save($template);
         self::$last_template_id = $template->id;
         return $template;
     }
@@ -217,7 +231,7 @@ class Mockdata {
         $map->file_template = $args['file_template'];
         $map->is_preferred = $args['is_preferred'] ?? 1;
         $map->template_id = $args['template_id'] ?? self::$last_template_id;
-        $map->save();
+        self::finalize_and_save($map);
         return $map;
     }
 
@@ -226,7 +240,7 @@ class Mockdata {
         require_once('class.mt_tag.php');
         $tag = new Tag();
         $tag->tag_name = $args['name'];
-        $tag->save();
+        self::finalize_and_save($tag);
         return $tag;
     }
 
@@ -239,13 +253,12 @@ class Mockdata {
         $comment->entry_id = $entry_id;
         $comment->last_moved_on = '2000-01-01 00:00:00';
         $comment->visible = $args['visible'] ?? 1;
-        $comment->save();
+        self::finalize_and_save($comment);
 
         $entry = new Entry();
-        $entry->Load($entry_id);
+        $entry->LoadByIntId($entry_id);
         $entry->comment_count++;
-        $entry->save();
-
+        self::finalize_and_save($entry);
         return $comment;
     }
 
@@ -265,7 +278,7 @@ class Mockdata {
                 $oasset->object_id = self::$last_content_data_id;
             }
         }
-        $oasset->save();
+        self::finalize_and_save($oasset);
         return $oasset;
     }
 
@@ -281,11 +294,13 @@ class Mockdata {
                 $otag->object_id = self::$last_entry_id;
             } elseif ($args['object_datasource'] === 'content_data') {
                 $otag->object_id = self::$last_content_data_id;
+            } elseif ($args['object_datasource'] === 'asset') {
+                $otag->object_id = self::$last_asset_id;
             }
         }
         $otag->cf_id = 0;
         $otag->tag_id = $args['tag_id'];
-        $otag->save();
+        self::finalize_and_save($otag);
         return $otag;
     }
 
@@ -296,7 +311,7 @@ class Mockdata {
         $touch->blog_id = $args['blog_id'] ?? self::$last_blog_id ?? 1;
         $touch->object_type = $args['object_type'];
         $touch->modified_on = $args['modified_on'] ?? '20240101122459';
-        $touch->save();
+        self::finalize_and_save($touch);
         return $touch;
     }
 
@@ -306,7 +321,7 @@ class Mockdata {
         $trigger = new RebuildTrigger();
         $trigger->blog_id = $args['blog_id'] ?? self::$last_blog_id ?? 1;
         // $trigger->object_type = $type;
-        $trigger->save();
+        self::finalize_and_save($trigger);
         return $trigger;
     }
 
@@ -317,9 +332,10 @@ class Mockdata {
         $cf->blog_id = $args['blog_id'] ?? self::$last_blog_id ?? 1;
         $cf->unique_id = $args['unique_id'] ?? md5(uniqid(rand(), true));
         $cf->content_type_id = $args['content_type_id'] ?? self::$last_content_type_id ?? 1;
+        $cf->related_cat_set_id = $args['related_cat_set_id'] ?? null;
         $cf->name = $args['name'] ?? 'foo';
         $cf->type = $args['type'];
-        $cf->save();
+        self::finalize_and_save($cf);
 
         self::$last_content_field_id = $cf->id;
 
@@ -339,7 +355,7 @@ class Mockdata {
         $cf_idx->value_integer = $args['value_integer'];
         $cf_idx->value_float = $args['value_float'];
         $cf_idx->value_double = $args['value_double'];
-        $cf_idx->save();
+        self::finalize_and_save($cf_idx);
 
         return $cf_idx;
     }
@@ -350,7 +366,8 @@ class Mockdata {
         $ct = new ContentType();
         $ct->blog_id = $args['blog_id'] ?? self::$last_blog_id ?? 1;
         $ct->unique_id = $args['unique_id'] ?? md5(uniqid(rand(), true));
-        $ct->save();
+        $ct->name = $args['name'] ?? 'my_ct';
+        self::finalize_and_save($ct);
 
         self::$last_content_type_id = $ct->id;
         self::$last_ct_unique_id = $ct->unique_id;
@@ -364,13 +381,13 @@ class Mockdata {
         $cd = new ContentData();
         $cd->blog_id = $args['blog_id'] ?? self::$last_blog_id ?? 1;
         $cd->content_type_id = $args['content_type_id'] ?? self::$last_content_type_id ?? 1;
-        $cd->author_id = self::$last_author_id ?? 1;
+        $cd->author_id = $args['author_id'] ?? self::$last_author_id ?? 1;
         $cd->status = $args['status'] ?? 2;
         $cd->ct_unique_id = $args['ct_unique_id'] ?? self::$last_ct_unique_id;
         $cd->unique_id = $args['unique_id'] ?? md5(uniqid(rand(), true));
         $cd->current_revision = 1;
         $cd->authored_on = date("Y-m-d h:i:s");
-        $cd->save();
+        self::finalize_and_save($cd);
 
         self::$last_content_data_id = $cd->id;
 
@@ -394,7 +411,7 @@ class Mockdata {
         }
         $ocat->cf_id = $args['content_field_id'] ?? self::$last_content_field_id ?? 0;
         $ocat->category_id = $args['category_id'] ?? self::$last_category_id;
-        $ocat->save();
+        self::finalize_and_save($ocat);
         return $ocat;
     }
 
@@ -406,8 +423,7 @@ class Mockdata {
         $placement->entry_id = $args['entry_id'] ?? self::$last_entry_id;
         $placement->is_primary = $args['is_primary'] ?? 1;
         $placement->category_id = $args['category_id'];
-        $placement->save();
-
+        self::finalize_and_save($placement);
         return $placement;
     }
 
@@ -417,9 +433,8 @@ class Mockdata {
         $permission = new Permission();
         $permission->blog_id = $args['blog_id'] ?? self::$last_blog_id ?? 1;
         $permission->author_id = $args['author_id'] ?? self::$last_author_id;
-        $permission->permissions = "'administer','edit_templates','manage_plugins','view_log','create_site','sign_in_cms','sign_in_data_api','manage_users_groups','manage_content_types','manage_content_data'";
-        $permission->save();
-
+        $permission->permissions = $args['permissions'] ?? "'administer','edit_templates','manage_plugins','view_log','create_site','sign_in_cms','sign_in_data_api','manage_users_groups','manage_content_types','manage_content_data'";
+        self::finalize_and_save($permission);
         return $permission;
     }
 
@@ -432,8 +447,7 @@ class Mockdata {
         $assoc->type = $args['type'] ?? 1;
         $assoc->group_id = $args['group_id'] ?? 0;
         $assoc->role_id = $args['role_id'] ?? 0;
-        $assoc->save();
-
+        self::finalize_and_save($assoc);
         return $assoc;
     }
 
@@ -446,9 +460,21 @@ class Mockdata {
         $finfo->category_id = $args['category_id'] ?? self::$last_category_id;
         $finfo->author_id = $args['author_id'] ?? self::$last_author_id;
         $finfo->archive_type = $args['archive_type'] ?? 'Individual';
+        $finfo->template_id = $args['template_id'] ?? self::$last_template_id;
         $finfo->templatemap_id = $args['templatemap_id'];
-        $finfo->save();
+        $finfo->url = $args['url'];
+        self::finalize_and_save($finfo);
         return $finfo;
+    }
+    
+    public static function finalize_and_save($obj) {
+        if (getenv('MT_TEST_BACKEND') === 'oracle' && empty($obj->id)) {
+            $db = MT::get_instance()->db()->db();
+            $seq = $obj->_table. '_ID';
+            $res = $db->Execute("SELECT $seq.NEXTVAL FROM DUAL");
+            $obj->id = $res->fields[0] ?? 1;
+        }
+        $obj->save();
     }
 }
 

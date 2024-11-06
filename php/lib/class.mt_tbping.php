@@ -46,7 +46,7 @@ class TBPing extends BaseObject
 
             require_once('class.mt_trackback.php');
             $tb = new Trackback;
-            $tb->Load("trackback_id = $tb_id");
+            $tb->LoadByIntId($tb_id);
         }
 
         return $tb;
