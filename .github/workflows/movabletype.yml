@@ -369,18 +369,18 @@ jobs:
       - name: checkout
         uses: actions/checkout@v4.1.0
       - name: test npm ci
-        run: docker run -t -v $PWD:/mt -w /mt node:lts bash -c "npm ci"
+        run: docker run -t -v $PWD:/mt -w /mt node:20 bash -c "npm ci"
       - name: npm run test
-        run: docker run -t -v $PWD:/mt -w /mt node:lts bash -c "npm run test"
+        run: docker run -t -v $PWD:/mt -w /mt node:20 bash -c "npm run test"
       - name: test svelte commands
-        run: docker run -t -v $PWD:/mt -w /mt node:lts bash -c "npm run svelte-check-types && npm run svelte-lint && npm run svelte-format && npm run build-svelte && git config --global --add safe.directory /mt && git add -N . && git diff --exit-code --name-only"
+        run: docker run -t -v $PWD:/mt -w /mt node:20 bash -c "npm run svelte-check-types && npm run svelte-lint && npm run svelte-format && npm run build-svelte && git config --global --add safe.directory /mt && git add -N . && git diff --exit-code --name-only"
       - name: reset git add
         run: git reset
       - name: test to copy files
-        run: docker run -t -v $PWD:/mt -w /mt node:lts bash -c 'npm run copy && git config --global --add safe.directory /mt && git add -N . && git diff --exit-code --name-only'
+        run: docker run -t -v $PWD:/mt -w /mt node:20 bash -c 'npm run copy && git config --global --add safe.directory /mt && git add -N . && git diff --exit-code --name-only'
       - name: test to build Riot.js tags
         # TODO: replace yarn with npm run
-        run: docker run -t -v $PWD:/mt -w /mt node:lts bash -c 'yarn && yarn build-riot && yarn build-riot-admin2023 && yarn build-ss && git config --global --add safe.directory /mt && test "$(git diff)" = ""'
+        run: docker run -t -v $PWD:/mt -w /mt node:20 bash -c 'yarn && yarn build-riot && yarn build-riot-admin2023 && yarn build-ss && git config --global --add safe.directory /mt && test "$(git diff)" = ""'
 
   notify_slack:
     runs-on: ubuntu-latest
