@@ -612,7 +612,7 @@ sub mt_authorization_data {
     $header =~ s/\A\s+|\s+\z//g;
 
     my ( $type, $rest ) = split /\s+/, $header, 2;
-    return undef unless $type;
+    return undef unless $type && $rest;
 
     $values{$type} = {};
 
