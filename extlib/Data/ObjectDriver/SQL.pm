@@ -147,6 +147,15 @@ sub as_sql_having {
         '';
 }
 
+sub as_escape {
+    my ($stmt, $escape_char) = @_;
+
+    # escape_char can be ''(two quotes), or \\ for mysql and \ for others, but it doesn't accept any injections.
+    die 'escape_char length must be up to two characters' if defined($escape_char) && length($escape_char) > 2;
+
+    return " ESCAPE '$escape_char'";
+}
+
 sub add_where {
     my $stmt = shift;
     ## xxx Need to support old range and transform behaviors.
@@ -270,6 +279,7 @@ sub _mk_term {
                 $term = "$c $val->{op} " . ${$val->{value}};
             } else {
                 $term = "$c $val->{op} ?";
+                $term .= $stmt->as_escape($val->{escape}) if $val->{escape} && $op =~ /^(?:NOT\s+)?I?LIKE$/;
                 push @bind, $val->{value};
             }
         }

@@ -62,11 +62,16 @@ sub test_wizard {
 
     my $app = MT::Test::App->new('MT::App::Wizard');
 
+    # XXX: for now
+    no warnings 'redefine';
+    local *MT::App::takedown = sub {};
+
     $app->get_ok();
 
     my %seen;
     my $ct        = 0;
     my $prev_step = '';
+    local $MT::DebugMode = 1;
     until ((my $step = current_step($app) || '') eq 'seed') {
         die $app->content unless $step;
         die $app->content if $ct > 2;
@@ -101,6 +106,7 @@ sub current_step {
 
 sub next_step {
     my ($app, $param) = @_;
+    my $callback = delete $param->{__test_after_post};
     my $form = $app->form or return;
     my $mode = $form->find_input('__mode');
     if (!$mode->value) {
@@ -120,6 +126,10 @@ sub next_step {
         $input->value($param->{$name});
     }
     $app->post_ok($form->click);
+    ok !$app->generic_error, "no generic errors";
+    if ($callback) {
+        $callback->($app);
+    }
 }
 
 package MT::Test::Wizard::ConfigGuard;

@@ -68,7 +68,7 @@ jobs:
     strategy:
       matrix:
         config:
-          - {image: fedora40, mt_test_env: ''}                           # Perl 5.38 / PHP 8.3 / MySQL 8.0
+          - {image: fedora41, mt_test_env: ''}                           # Perl 5.40 / PHP 8.3 / MySQL 8.0
           - {image: buster,   mt_test_env: 'MT_TEST_RUN_APP_AS_CGI=1'}   # Perl 5.28.0 / PHP 7.3 / MariaDB 10.3
           - {image: centos7,  mt_test_env: 'MT_TEST_ADMIN_THEME_ID=0'}   # Perl 5.16 / PHP 7.1 / MariaDB 5.5
         test: 
@@ -144,10 +144,12 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v4.1.0
-      - name: docker pull
-        uses: ./.github/actions/docker-mt-test
+      - name: docker login
+        uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567
         with:
-          tag: ${{ matrix.config.image }}
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
       - name: test
         if: ${{ matrix.test != 'php' && matrix.test != 'selenium' && matrix.test != 'xt' }}
         run: docker run -t -v $PWD:/mt -w /mt ghcr.io/movabletype/movabletype/test:${{ matrix.config.image }} bash -c "${{ matrix.config.mt_test_env }} prove -lr -j4 -PMySQLPool=MT::Test::Env -It/lib ${{ matrix.test }}"
@@ -171,18 +173,18 @@ jobs:
       - name: checkout
         uses: actions/checkout@v4.1.0
       - name: test npm ci
-        run: docker run -t -v $PWD:/mt -w /mt node:lts bash -c "npm ci"
+        run: docker run -t -v $PWD:/mt -w /mt node:20 bash -c "npm ci"
       - name: npm run test
-        run: docker run -t -v $PWD:/mt -w /mt node:lts bash -c "npm run test"
+        run: docker run -t -v $PWD:/mt -w /mt node:20 bash -c "npm run test"
       - name: test svelte commands
-        run: docker run -t -v $PWD:/mt -w /mt node:lts bash -c "npm run svelte-check-types && npm run svelte-lint && npm run svelte-format && npm run build-svelte && git config --global --add safe.directory /mt && git add -N . && git diff --exit-code --name-only"
+        run: docker run -t -v $PWD:/mt -w /mt node:20 bash -c "npm run svelte-check-types && npm run svelte-lint && npm run svelte-format && npm run build-svelte && git config --global --add safe.directory /mt && git add -N . && git diff --exit-code --name-only"
       - name: reset git add
         run: git reset
       - name: test to copy files
-        run: docker run -t -v $PWD:/mt -w /mt node:lts bash -c 'npm run copy && git config --global --add safe.directory /mt && git add -N . && git diff --exit-code --name-only'
+        run: docker run -t -v $PWD:/mt -w /mt node:20 bash -c 'npm run copy && git config --global --add safe.directory /mt && git add -N . && git diff --exit-code --name-only'
       - name: test to build Riot.js tags
         # TODO: replace yarn with npm run
-        run: docker run -t -v $PWD:/mt -w /mt node:lts bash -c 'yarn && yarn build-riot && yarn build-riot-admin2023 && yarn build-ss && git config --global --add safe.directory /mt && test "$(git diff)" = ""'
+        run: docker run -t -v $PWD:/mt -w /mt node:20 bash -c 'yarn && yarn build-riot && yarn build-riot-admin2023 && yarn build-ss && git config --global --add safe.directory /mt && test "$(git diff)" = ""'
 
   notify_slack:
     runs-on: ubuntu-latest

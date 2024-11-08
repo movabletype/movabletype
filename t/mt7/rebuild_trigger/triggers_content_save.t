@@ -144,6 +144,26 @@ MT::RebuildTrigger->new(
     ct_id          => $child_ct->id,
 )->save;
 
+# Broken case 1
+MT::RebuildTrigger->new(
+    blog_id        => $child->id,
+    object_type    => TYPE_CONTENT_TYPE,
+    action         => ACTION_RI,
+    event          => $EventType,
+    target         => TARGET_BLOG,
+    target_blog_id => $parent->id,
+)->save;
+
+# Broken case 2
+MT::RebuildTrigger->new(
+    blog_id        => $parent->id,
+    object_type    => TYPE_CONTENT_TYPE,
+    action         => ACTION_RI,
+    event          => $EventType,
+    target         => TARGET_BLOG,
+    target_blog_id => $child->id,
+)->save;
+
 $test_env->ls;
 
 subtest 'single edit, content data, parent to child' => sub {

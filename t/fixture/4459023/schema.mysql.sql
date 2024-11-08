@@ -193,45 +193,6 @@ CREATE TABLE `mt_author_summary` (
   PRIMARY KEY (`author_summary_author_id`, `author_summary_type`)
 ) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
-DROP TABLE IF EXISTS `mt_awesome`;
-
---
--- Table: `mt_awesome`
---
-CREATE TABLE `mt_awesome` (
-  `awesome_class` varchar(255) NULL DEFAULT 'foo',
-  `awesome_file` varchar(255) NULL DEFAULT NULL,
-  `awesome_id` integer(11) NOT NULL auto_increment,
-  `awesome_title` varchar(255) NULL DEFAULT NULL,
-  INDEX `mt_awesome_class` (`awesome_class`),
-  PRIMARY KEY (`awesome_id`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
-
-DROP TABLE IF EXISTS `mt_awesome_meta`;
-
---
--- Table: `mt_awesome_meta`
---
-CREATE TABLE `mt_awesome_meta` (
-  `awesome_meta_awesome_id` integer(11) NOT NULL,
-  `awesome_meta_type` varchar(75) NOT NULL,
-  `awesome_meta_vblob` mediumblob NULL DEFAULT NULL,
-  `awesome_meta_vchar` varchar(255) NULL DEFAULT NULL,
-  `awesome_meta_vchar_idx` varchar(255) NULL DEFAULT NULL,
-  `awesome_meta_vclob` mediumtext NULL DEFAULT NULL,
-  `awesome_meta_vdatetime` datetime NULL DEFAULT NULL,
-  `awesome_meta_vdatetime_idx` datetime NULL DEFAULT NULL,
-  `awesome_meta_vfloat` float NULL DEFAULT NULL,
-  `awesome_meta_vfloat_idx` float NULL DEFAULT NULL,
-  `awesome_meta_vinteger` integer(11) NULL DEFAULT NULL,
-  `awesome_meta_vinteger_idx` integer(11) NULL DEFAULT NULL,
-  INDEX `mt_awesome_meta_type_vchar` (`awesome_meta_type`, `awesome_meta_vchar_idx`),
-  INDEX `mt_awesome_meta_type_vdt` (`awesome_meta_type`, `awesome_meta_vdatetime_idx`),
-  INDEX `mt_awesome_meta_type_vflt` (`awesome_meta_type`, `awesome_meta_vfloat_idx`),
-  INDEX `mt_awesome_meta_type_vint` (`awesome_meta_type`, `awesome_meta_vinteger_idx`),
-  PRIMARY KEY (`awesome_meta_awesome_id`, `awesome_meta_type`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
-
 DROP TABLE IF EXISTS `mt_blog`;
 
 --
@@ -435,7 +396,6 @@ CREATE TABLE `mt_cd` (
   `cd_label` varchar(255) NULL DEFAULT NULL,
   `cd_modified_by` integer(11) NULL DEFAULT NULL,
   `cd_modified_on` datetime NULL DEFAULT NULL,
-  `cd_random` integer(11) NULL DEFAULT NULL,
   `cd_status` smallint(6) NOT NULL,
   `cd_unique_id` varchar(40) NOT NULL,
   `cd_unpublished_on` datetime NULL DEFAULT NULL,

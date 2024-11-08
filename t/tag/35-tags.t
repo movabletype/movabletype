@@ -19,6 +19,11 @@ use MT::Util qw(ts2epoch epoch2ts);
 
 $test_env->prepare_fixture('db_data');
 
+my $switch = MT->config->PluginSwitch;
+$switch->{Awesome} = 1;
+MT->config->PluginSwitch($switch, 1);
+MT->config->save_config;
+
 my $server_path = MT->instance->server_path;
 $server_path =~ s|\\|/|g if $^O eq 'MSWin32';
 
@@ -4233,12 +4238,6 @@ foobar
 --- expected_php
 barfoo
 
-=== test 757
---- template
-<MTSubCategories show_empty="1" top="1" sort_method="SortMethod::sort"><MTCategoryLabel></MTSubCategories>
---- expected
-barfoo
-
 === test 758
 --- template
 <MTArchiveList archive_type="Individual"><mt:EntryID>:<$mt:CategoryID$>;</MTArchiveList>
@@ -4806,12 +4805,6 @@ has Markdown.pl
 <MTHasPlugin name="Markdown">has Markdown.pl (alias)</MTHasPlugin>
 --- expected
 has Markdown.pl (alias)
-
-=== test 855
---- template
-<MTHasPlugin name="Awesome">has Awesome<MTElse>doesn't have Awesome</MTHasPlugin>
---- expected
-has Awesome
 
 === test 856
 --- template

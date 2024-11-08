@@ -7,8 +7,6 @@ use Test::More;
 use MT::Test::Env;
 
 BEGIN {
-    eval 'use Test::Spec; 1'
-        or plan skip_all => 'Test::Spec is not installed';
     eval 'use Imager; 1'
         or plan skip_all => 'Imager is not installed';
     plan skip_all => 'Not for Windows now' if $^O eq 'MSWin32';
