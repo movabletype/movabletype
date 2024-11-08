@@ -1065,21 +1065,15 @@ abstract class MTDatabase {
             $include_private = 0;
             if ( preg_match('/\b(AND|OR|NOT)\b|\(|\)/i', $tag_arg) ) {
                 $tag_array = preg_split('/\b(AND|OR|NOT)\b|\(|\)/i', $tag_arg, -1, PREG_SPLIT_NO_EMPTY);
-                foreach ($tag_array as $tag) {
-                    $tag_body = trim($tag);
-                    if ($tag_body && (substr($tag_body,0,1) == '@')) {
-                        $include_private = 1;
-                    }
-                }
             } else {
                 # Only comma separated.
                 $tag_array = tag_split($tag_arg);
                 $tag_arg = implode(" or ", $tag_array);
-                foreach ($tag_array as $tag) {
-                    $tag_body = trim($tag);
-                    if ($tag_body && (substr($tag_body,0,1) == '@')) {
-                        $include_private = 1;
-                    }
+            }
+            foreach ($tag_array as $tag) {
+                $tag_body = trim($tag);
+                if ($tag_body && (substr($tag_body,0,1) == '@')) {
+                    $include_private = 1;
                 }
             }
 
