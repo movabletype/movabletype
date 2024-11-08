@@ -201,6 +201,8 @@ sub _post_save {
 sub _pre_remove {
     my ( $cb, $obj, $original ) = @_;
 
+    MT->app->reboot;
+
     my $content_type = MT::ContentType->load( $obj->content_type_id || 0 ) or return 1;
     my $perm_name
         = 'content_type:'
@@ -218,8 +220,6 @@ sub _pre_remove {
         $role->set_these_permissions(@permissions);
         $role->save;
     }
-
-    MT->app->reboot;
 }
 
 sub related_content_type {
