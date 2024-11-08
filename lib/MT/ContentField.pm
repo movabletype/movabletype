@@ -201,7 +201,7 @@ sub _post_save {
 sub _pre_remove {
     my ( $cb, $obj, $original ) = @_;
 
-    my $content_type = MT::ContentType->load( $obj->content_type_id || 0 );
+    my $content_type = MT::ContentType->load( $obj->content_type_id || 0 ) or return 1;
     my $perm_name
         = 'content_type:'
         . $content_type->unique_id
