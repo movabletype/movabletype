@@ -93,7 +93,7 @@
     "svelte-check": "^3.8.5",
     "svelte-preprocess": "^5.0.4",
     "typescript": "^5.5.3",
-    "vitest": "^2.0.4"
+    "vitest": "^2.1.4"
   },
   "dependencies": {
     "@riotjs/observable": "^4.1.1",
