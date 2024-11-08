@@ -82,9 +82,9 @@ left:<?php echo 'a'. 'b'?>:right
 --- expected
 left:ab:right
 
-=== test modifier in MTIf with DynamicTemplateAllowTestModifier=1
+=== test modifier in MTIf with AllowTestModifier=1
 --- mt_config
-{DynamicTemplateAllowPHP => 1, DynamicTemplateAllowTestModifier => 1}
+{DynamicTemplateAllowPHP => 1, AllowTestModifier => 1}
 --- template
 [<mt:SetVar name="foo" value="1"><mt:If name="foo" test="1">true<mt:else>false</mt:If>]
 [<mt:SetVar name="foo" value="0"><mt:If name="foo" test="1">true<mt:else>false</mt:If>]
@@ -95,9 +95,9 @@ left:ab:right
 --- expected
 [true][true][false][false][true][false]
 
-=== test modifier with DynamicTemplateAllowTestModifier=0
+=== test modifier with AllowTestModifier=0
 --- mt_config
-{DynamicTemplateAllowPHP => 1, DynamicTemplateAllowTestModifier => 0}
+{DynamicTemplateAllowPHP => 1, AllowTestModifier => 0}
 --- template
 [<mt:SetVar name="foo" value="1"><mt:If name="foo" test="1">true<mt:else>false</mt:If>]
 [<mt:SetVar name="foo" value="0"><mt:If name="foo" test="1">true<mt:else>false</mt:If>]
@@ -108,9 +108,9 @@ left:ab:right
 --- expected
 [true][false][true][false][true][true]
 
-=== test modifier in MTElse with DynamicTemplateAllowTestModifier=1
+=== test modifier in MTElse with AllowTestModifier=1
 --- mt_config
-{DynamicTemplateAllowPHP => 1, DynamicTemplateAllowTestModifier => 1}
+{DynamicTemplateAllowPHP => 1, AllowTestModifier => 1}
 --- template
 [<mt:SetVar name="foo" value="1"><mt:Unless name="foo" test="1">true<mt:else>false</mt:Unless>]
 [<mt:SetVar name="foo" value="0"><mt:Unless name="foo" test="1">true<mt:else>false</mt:Unless>]
@@ -121,9 +121,9 @@ left:ab:right
 --- expected
 [false][false][true][true][false][true]
 
-=== test modifier with DynamicTemplateAllowTestModifier=0
+=== test modifier with AllowTestModifier=0
 --- mt_config
-{DynamicTemplateAllowPHP => 1, DynamicTemplateAllowTestModifier => 0}
+{DynamicTemplateAllowPHP => 1, AllowTestModifier => 0}
 --- template
 [<mt:SetVar name="foo" value="1"><mt:Unless name="foo" test="1">true<mt:else>false</mt:Unless>]
 [<mt:SetVar name="foo" value="0"><mt:Unless name="foo" test="1">true<mt:else>false</mt:Unless>]
