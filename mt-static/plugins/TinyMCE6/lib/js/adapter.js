@@ -34,6 +34,7 @@
                 mt_fullscreen: StaticURI + 'plugins/TinyMCE6/lib/js/tinymce/plugins/mt_fullscreen/plugin' + suffix + '.js',
                 mt_protect: StaticURI + 'plugins/TinyMCE6/lib/js/tinymce/plugins/mt_protect/plugin.js',
             },
+            paste_data_images: false,
 
             language: $('html').attr('lang'),
             menubar: false,
