@@ -185,7 +185,7 @@ sub init_request {
         my $val = $app->param($param);
         next unless defined $val && ( $val ne '' );
         return $app->errtrans( 'Invalid [_1] parameter.', $param )
-            if ( $val !~ m/^(\d+,?)+$/ && $val ne 'all' );
+            if ( $val !~ m/^[0-9]+(,[0-9]+)*$/ && $val ne 'all' );
     }
 
     # invalid request if they are given Zero as blog_id
