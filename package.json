@@ -97,6 +97,7 @@
   },
   "dependencies": {
     "@riotjs/observable": "^4.1.1",
+    "a-table": "github:movabletype/a-table.js#v1.5.10-2",
     "bootstrap": "4.3.1",
     "bootstrap5": "npm:bootstrap@5.1.3",
     "codemirror": "5.61.1",
