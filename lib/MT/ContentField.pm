@@ -220,6 +220,8 @@ sub _pre_remove {
         $role->set_these_permissions(@permissions);
         $role->save;
     }
+
+    return 1;
 }
 
 sub related_content_type {
