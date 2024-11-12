@@ -33,9 +33,12 @@ function smarty_block_mtif($args, $content, &$ctx, &$repeat) {
             }
             if (preg_match('/^$/', $name)) {
                 $name = $vars[$name];
-                if (!isset($name))
+                if (!isset($name)) {
                     return $ctx->error($ctx->mt->translate(
-                        "You used an [_1] tag without a valid name attribute.", "<MT$tag>" ));
+                        "You used an [_1] tag without a valid name attribute.",
+                        "<MTIf>"
+                    ));
+                }
             }
             if (isset($name)) {
                 $value = isset($ctx->__stash['vars'][$name]) ? $ctx->__stash['vars'][$name] : null;
