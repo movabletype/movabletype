@@ -208,6 +208,10 @@ class ArchiverFactory {
             throw new MTException('Undefined archive type. (' . $at . ')');
         }
 
+        if (isset(ArchiverFactory::$_archivers[$at])) {
+            return ArchiverFactory::$_archivers[$at];
+        }
+
         $class = ArchiverFactory::$_archive_types[$at];
         if (!empty($class)) {
             $instance = new $class;
