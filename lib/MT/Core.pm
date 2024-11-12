@@ -1927,6 +1927,7 @@ BEGIN {
             'PublishCharset'          => { default => 'utf-8', },
             'SafeMode'                => { default => 1, },
             'AllowFileInclude'        => { default => 0, },
+            'AllowTestModifier'       => { default => 1 },
             'GlobalSanitizeSpec'      => {
                 default =>
                     'a href,b,i,br/,p,strong,em,ul,ol,li,blockquote,pre',
