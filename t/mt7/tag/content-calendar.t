@@ -432,7 +432,7 @@ __END__
 
 === MT::ContentCalendar distinguish content types
 --- template
-<mt:ContentCalendar month="201706" content_type="test content data2" category_set="test category set" category="[% cat_label %]">
+<mt:ContentCalendar month="201706" content_type="test content data2">
 <mt:CalendarIfNoContents><mt:CalendarDay></mt:CalendarIfNoContents></mt:ContentCalendar>
 --- expected
 1
