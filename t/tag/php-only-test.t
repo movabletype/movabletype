@@ -61,6 +61,8 @@ done_testing;
 __DATA__
 
 === raw smarty tag allowed
+--- mt_config
+{DynamicTemplateAllowPHP => 1, DynamicTemplateAllowSmartyTags => 1}
 --- template
 left:{{textformat}}123{{/textformat}}:right
 --- expected
@@ -81,3 +83,19 @@ left:ab:right
 left:<?php echo 'a'. 'b'?>:right
 --- expected
 left:ab:right
+
+=== legal smarty delimiters
+--- mt_config
+{DynamicTemplateAllowPHP => 1, DynamicTemplateAllowSmartyTags => 1}
+--- template
+<mt:SetVar name="foo" value="{{foo}}"><mt:Var name="foo">
+--- expected
+{{foo}}
+
+=== legal smarty delimiters
+--- mt_config
+{DynamicTemplateAllowPHP => 1, DynamicTemplateAllowSmartyTags => 0}
+--- template
+{{}}<mt:SetVar name="foo" value="{{foo}}"><mt:Var name="foo">
+--- expected
+{{}}{{foo}}
