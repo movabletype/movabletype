@@ -59,6 +59,10 @@ my $ct = MT::Test::Permission->make_content_type(
     name    => 'test content data',
     blog_id => $blog_id,
 );
+my $ct2 = MT::Test::Permission->make_content_type(
+    name    => 'test content data2',
+    blog_id => $blog_id,
+);
 my $cf_datetime = MT::Test::Permission->make_content_field(
     blog_id         => $ct->blog_id,
     content_type_id => $ct->id,
@@ -141,6 +145,13 @@ my $cd4 = MT::Test::Permission->make_content_data(
     modified_on     => '20230515000000',
     authored_on     => '20170615000000',
     data            => { $cf_category->id => [ $category1->id ], },
+);
+my $cd2_1 = MT::Test::Permission->make_content_data(
+    blog_id         => $blog_id,
+    content_type_id => $ct2->id,
+    created_on      => '20100402000000',
+    modified_on     => '20230502000000',
+    authored_on     => '20170619000000',
 );
 
 $vars->{ct_uid}          = $ct->unique_id;
@@ -419,3 +430,38 @@ __END__
 
 30
 
+=== MT::ContentCalendar distinguish content types
+--- template
+<mt:ContentCalendar month="201706" content_type="test content data2" category_set="test category set" category="[% cat_label %]">
+<mt:CalendarIfNoContents><mt:CalendarDay></mt:CalendarIfNoContents></mt:ContentCalendar>
+--- expected
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
