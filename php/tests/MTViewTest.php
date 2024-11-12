@@ -65,7 +65,7 @@ EOF;
         try {
             $compiled = $ctx->fetch('eval:'. $template);
         } catch (Exception $e) {
-            $this->assertMatchesRegularExpression('/Unexpected /', $e->getMessage());
+            $this->assertTrue(preg_match('/Unexpected /', $e->getMessage()) === 1);
         }
 
         $mt->config('DynamicTemplateAllowSmartyTags', 0);
@@ -82,8 +82,8 @@ EOF;
 
         foreach ([0, 1] as $config) {
             $mt->config('DynamicTemplateAllowSmartyTags', $config);
-            $this->assertMatchesRegularExpression('/value="\{\{ldelim\}\}foo\{\{rdelim\}\}"/', 
-                                                                    smarty_prefilter_mt_to_smarty($template, $ctx));
+            $this->assertTrue(preg_match('/value="\{\{ldelim\}\}foo\{\{rdelim\}\}"/', 
+                                                                    smarty_prefilter_mt_to_smarty($template, $ctx)) === 1);
             $compiled = $ctx->fetch('eval:'. $template);
             $this->assertEquals("left::middle:{{foo}}:right", $compiled);
         }
@@ -103,7 +103,7 @@ EOF;
         try {
             $compiled = $ctx->fetch('eval:'. $template);
         } catch (Exception $e) {
-            $this->assertMatchesRegularExpression('/Illigal name for/', $e->getMessage());
+            $this->assertTrue(preg_match('/Illigal name for/', $e->getMessage()) === 1);
         }
 
         $mt->config('DynamicTemplateAllowSmartyTags', 0);
