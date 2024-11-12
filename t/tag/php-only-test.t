@@ -59,6 +59,8 @@ done_testing;
 __DATA__
 
 === raw smarty tag allowed
+--- mt_config
+{DynamicTemplateAllowPHP => 1, DynamicTemplateAllowSmartyTags => 1}
 --- template
 left:{{textformat}}123{{/textformat}}:right
 --- expected
@@ -131,3 +133,19 @@ left:ab:right
 [<mt:SetVar name="foo" value="5"><mt:Unless name="foo" test='$foo < 4'>true<mt:else>false</mt:Unless>]
 --- expected
 [false][true][false][true][false][false]
+
+=== legal smarty delimiters
+--- mt_config
+{DynamicTemplateAllowPHP => 1, DynamicTemplateAllowSmartyTags => 1}
+--- template
+<mt:SetVar name="foo" value="{{foo}}"><mt:Var name="foo">
+--- expected
+{{foo}}
+
+=== legal smarty delimiters
+--- mt_config
+{DynamicTemplateAllowPHP => 1, DynamicTemplateAllowSmartyTags => 0}
+--- template
+{{}}<mt:SetVar name="foo" value="{{foo}}"><mt:Var name="foo">
+--- expected
+{{}}{{foo}}

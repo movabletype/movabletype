@@ -139,9 +139,15 @@ bar
 foo
 bar
 --- should_not_be_called_object_tag_load
---- expected_php_todo
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-28120
+
+=== MTEntries[tag] : Multiple tags (a private tag OR a public tag)
+--- template
+<MTEntries tag="@private OR baz" sort_by="id" sort_order="ascend">
+<$MTEntryTitle$></MTEntries>
+--- expected
+foo
+baz
+--- should_not_be_called_object_tag_load
 
 === MTEntries[tag] : Multiple tags (comma separated)
 --- template
@@ -151,9 +157,6 @@ https://movabletype.atlassian.net/browse/MTC-28120
 foo
 bar
 --- should_not_be_called_object_tag_load
---- expected_php_todo
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-28119
 
 === MTEntries[tag] : Multiple tags of same asset
 --- template
