@@ -12,7 +12,7 @@ function smarty_block_mtsethashvar($args, $content, &$ctx, &$repeat) {
         $name or $name = $args['var'];
         if (!$name) return '';
 
-        if (preg_match('/^$/', $name)) {
+        if (preg_match('/^\$/', $name)) {
             $name = $vars[$name];
             if (!isset($name)) {
                 return $ctx->error($ctx->mt->translate(

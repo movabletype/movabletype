@@ -31,7 +31,7 @@ function smarty_block_mtif($args, $content, &$ctx, &$repeat) {
                 else if (array_key_exists('key', $args))
                     $key = $args['key'];
             }
-            if (preg_match('/^$/', $name)) {
+            if (preg_match('/^\$/', $name)) {
                 $name = $vars[$name];
                 if (!isset($name)) {
                     return $ctx->error($ctx->mt->translate(
