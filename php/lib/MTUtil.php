@@ -1346,6 +1346,7 @@ function create_tag_expr_function($expr, &$tags, $datasource = 'entry') {
         ## allowed only existing tag name and some logical operators
         ## ( AND, OR, NOT, and round brackets ).
         $id = '#' . $tag->tag_id;
+        $count = 0;
         $expr = preg_replace('/
             (
                 \sAND\s
@@ -1361,11 +1362,9 @@ function create_tag_expr_function($expr, &$tags, $datasource = 'entry') {
                 | \sAND\s
                 | \sOR\s
                 | \sNOT\s
-            )/ix',
-            "$1$id$2",
-            $expr); # Change all matches to #$id (e.g. #932)
+            )/ix', "$1$id$2", $expr, -1, $count); # Change all matches to #$id (e.g. #932)
 
-        if (preg_match("/$id/", $expr)) {
+        if (0 < $count) {
             unset($tags_dict[$tag->tag_name]);
             $tags_dict[$id] = $tag;
         }
