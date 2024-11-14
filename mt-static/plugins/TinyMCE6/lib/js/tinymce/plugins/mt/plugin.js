@@ -197,7 +197,10 @@
         })
 
         editor.on('drop paste', function (e) {
-            if (editor.options.get('inline')) {
+            if (
+              !MT.Editor.TinyMCE.config['plugin_mt_can_upload'] ||
+              editor.options.get('inline')
+            ) {
                 return true;
             }
 
