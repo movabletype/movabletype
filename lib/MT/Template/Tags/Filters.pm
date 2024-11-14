@@ -263,7 +263,8 @@ B<Example:>
 
 sub _fltr_trim {
     my ( $str, $val, $ctx ) = @_;
-    $str =~ s/^\s+|\s+$//gs;
+    $str =~ s/^\s+//;
+    $str =~ s/(\S)\s+$/$1/;
     $str;
 }
 
