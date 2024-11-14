@@ -195,6 +195,55 @@
                 return
             }
         })
+
+        editor.on('drop paste', function (e) {
+            if (editor.options.get('inline')) {
+                return true;
+            }
+
+            var dataTransfer = e.dataTransfer || e.clipboardData
+            var files = []
+
+            for (var i = 0; i < dataTransfer.files.length; i++) {
+                if (/^image\//.test(dataTransfer.files[i].type)) {
+                    files.push(dataTransfer.files[i])
+                }
+            }
+
+            if (files.length === 0) {
+                return true;
+            }
+
+            var blogId = $('[name=blog_id]').val() || 0
+
+            editor.execCommand('mtSaveBookmark')
+            openDialog('dialog_asset_modal', '_type=asset&amp;edit_field=' + editor.id + '&amp;blog_id=' + blogId + '&amp;dialog_view=1&amp;filter=class&amp;filter_val=image&amp;can_multi=1')
+
+            var dialogIframe = document.querySelector(
+                "#mt-dialog-iframe"
+            );
+            var intervalId = setInterval(() => {
+                if (!(
+                    dialogIframe.contentWindow &&
+                    // new dialog page has been loaded
+                    dialogIframe.contentWindow.uploadFiles &&
+                    // content has been loaded
+                    dialogIframe.contentWindow.document.readyState !== "loading" &&
+                    // jQuery(initFunc) has been finished
+                    dialogIframe.contentWindow.jQuery
+                )) {
+                    return
+                }
+
+                clearInterval(intervalId)
+                var win = dialogIframe.contentWindow
+                var uploadForm = win.document.querySelector("#upload");
+                win.uploadFiles(files)
+                uploadForm.style.setProperty("display", "none", "important");
+            }, 100)
+
+            return false
+        })
     }
 
     var register_commands = function (editor) {
