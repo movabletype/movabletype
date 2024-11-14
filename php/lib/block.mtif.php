@@ -6,6 +6,7 @@
 # $Id$
 
 function smarty_block_mtif($args, $content, &$ctx, &$repeat) {
+    $vars = $ctx->__stash['vars'];
     if (!isset($content)) {
         $result = 0;
         $name = isset($args['name'])
@@ -157,7 +158,6 @@ function smarty_block_mtif($args, $content, &$ctx, &$repeat) {
         }
         return $ctx->_hdlr_if($args, $content, $ctx, $repeat, $result);
     } else {
-        $vars =& $ctx->__stash['vars'];
         return $ctx->_hdlr_if($args, $content, $ctx, $repeat);
     }
 }
