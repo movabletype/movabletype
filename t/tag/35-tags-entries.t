@@ -118,9 +118,6 @@ foo
 --- expected
 a OR b
 --- should_not_be_called_object_tag_load
---- expected_php_todo
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-28118
 
 === MTEntries[tag] : Multiple tags
 --- template
