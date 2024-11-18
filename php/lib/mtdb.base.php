@@ -74,7 +74,7 @@ abstract class MTDatabase {
 
     // Abstract method
 //    abstract protected function connect_with_options($user, $password = '', $dbname = '', $host = '', $port = '', $sock = '', $options = []);
-//    abstract protected function connect($user, $password = '', $dbname = '', $host = '', $port = '', $sock = '');
+    abstract protected function connect($user, $password = '', $dbname = '', $host = '', $port = '', $sock = '');
     abstract public function set_names($mt);
 
     // Utility method
