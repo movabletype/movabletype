@@ -285,7 +285,7 @@ class MT {
                 $this->config('DBSocket'),
                 $this->config('DBMaxRetries'),
                 $this->config('DBRetryInterval'),
-                $this->config('DBIConnectOptions'),
+                $this->config('DBIConnectOptions')
             );
         }
         return $this->db;
