@@ -31,7 +31,7 @@ sub php_version {
 }
 
 sub _find_smarty_version {
-    open my $fh, '<', "$ENV{MT_HOME}/php/extlib/smarty/libs/Smarty.class.php";
+    open my $fh, '<', "$ENV{MT_HOME}/php/vendor/smarty/smarty/libs/Smarty.class.php";
     read($fh, my $buf, 8192) or return;
     my ($smarty_version) = $buf =~ /SMARTY_VERSION\s*=\s*'([0-9.]+)';/;
     my ($major, $minor, $patch) = split /\./, $smarty_version;
