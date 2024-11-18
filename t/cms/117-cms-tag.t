@@ -163,11 +163,13 @@ subtest 'Test in website scope' => sub {
         my $tag = MT::Tag->load({ name => 'Alpha one' });
         my $app = MT::Test::App->new('MT::App::CMS');
         $app->login($admin);
-        $app->post_ok({
-            __mode   => 'rename_tag',
-            blog_id  => $website->id,
-            tag_name => 'Alpha two',
-            __id     => $tag->id,
+        $app->js_post_ok({
+            __mode     => 'rename_tag',
+            blog_id    => $website->id,
+            tag_name   => 'Alpha two',
+            __id       => $tag->id,
+            datasource => 'tag',
+            xhr        => 'false',
         });
 
         my $tag2 = MT::Tag->load({ name => 'Alpha two' });
@@ -186,11 +188,13 @@ subtest 'Test in website scope' => sub {
         my $tag = MT::Tag->load({ name => 'Alpha one' });
         my $app = MT::Test::App->new('MT::App::CMS');
         $app->login($admin);
-        $app->post_ok({
-            __mode   => 'rename_tag',
-            blog_id  => $website->id,
-            tag_name => '@entry2',
-            __id     => $tag->id,
+        $app->js_post_ok({
+            __mode     => 'rename_tag',
+            blog_id    => $website->id,
+            tag_name   => '@entry2',
+            __id       => $tag->id,
+            datasource => 'tag',
+            xhr        => 'false',
         });
 
         my $tag2 = MT::Tag->load({ name => '@entry2' });
@@ -209,12 +213,14 @@ subtest 'Test in website scope' => sub {
         my $tag = MT::Tag->load({ name => 'Alpha one' });
         my $app = MT::Test::App->new('MT::App::CMS');
         $app->login($admin);
-        $app->post_ok({
-            __mode   => 'rename_tag',
-            __type   => 'entry',
-            blog_id  => $blog->id,
-            tag_name => 'Alpha two',
-            __id     => $tag->id,
+        $app->js_post_ok({
+            __mode     => 'rename_tag',
+            __type     => 'entry',
+            blog_id    => $blog->id,
+            tag_name   => 'Alpha two',
+            __id       => $tag->id,
+            datasource => 'tag',
+            xhr        => 'false',
         });
 
         my $tag2 = MT::Tag->load({ name => 'Alpha two' });
