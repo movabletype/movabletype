@@ -69,7 +69,7 @@ jobs:
       matrix:
         config:
           - {image: cloud7}
-          - {image: fedora41, mt_test_env: ''}                           # Perl 5.40 / PHP 8.3 / MySQL 8.0
+          - {image: fedora41, mt_test_env: 'MT_TEST_ADMIN_THEME_ID=0'}   # Perl 5.40 / PHP 8.3 / MySQL 8.0
           - {image: noble,    mt_test_env: ''}                           # Perl 5.38 / PHP 8.3 / MySQL 8.4
           - {image: buster,   mt_test_env: 'MT_TEST_RUN_APP_AS_CGI=1'}   # Perl 5.28.0 / PHP 7.3 / MariaDB 10.3
         test: 
