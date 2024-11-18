@@ -18,7 +18,7 @@ class MTDatabasepostgres extends MTDatabase {
         return parent::unserialize($data);
     }
 
-    protected function connect($user, $password = '', $dbname = '', $host = '', $port = '', $sock = '', $options = []) {
+    protected function connect_with_options($user, $password = '', $dbname = '', $host = '', $port = '', $sock = '', $options = []) {
         if (extension_loaded('pdo') && extension_loaded('pdo_pgsql')) {
             $prefix = 'pdo_pgsql';
             $this->pdo_enabled = true;

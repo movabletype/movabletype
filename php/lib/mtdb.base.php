@@ -55,7 +55,11 @@ abstract class MTDatabase {
         $retry_cnt = 0;
         while ( ( empty($this->conn) || ( !empty($this->conn) && !$this->conn->IsConnected() ) ) && $retry_cnt++ < $retry ) {
             try {
-                $this->connect($user, $password, $dbname, $host, $port, $sock, $options);
+                if (method_exists($this, 'connect_with_options')) {
+                    $this->connect_with_options($user, $password, $dbname, $host, $port, $sock, $options);
+                } else {
+                    $this->connect($user, $password, $dbname, $host, $port, $sock);
+                }
             } catch (Exception $e ) {
                 sleep( $retry_int );
             }
@@ -69,7 +73,8 @@ abstract class MTDatabase {
     }
 
     // Abstract method
-    abstract protected function connect($user, $password = '', $dbname = '', $host = '', $port = '', $sock = '', $options = []);
+//    abstract protected function connect_with_options($user, $password = '', $dbname = '', $host = '', $port = '', $sock = '', $options = []);
+//    abstract protected function connect($user, $password = '', $dbname = '', $host = '', $port = '', $sock = '');
     abstract public function set_names($mt);
 
     // Utility method
