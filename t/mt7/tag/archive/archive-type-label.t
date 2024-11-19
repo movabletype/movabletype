@@ -44,12 +44,15 @@ for my $archive_type ( MT->publisher->archive_types ) {
         $blog_id,
         sub {
             my ( $ctx, $block, $tmpl ) = @_;
+            my $language;
+            if (defined($block->language)) {
+                $language = $block->language;
+                chomp($language);
+            } else {
+                $language = $default_language;
+            }
             my $site = MT::Blog->load($blog_id);
-            $site->language(
-                defined $block->language
-                ? $block->language
-                : $default_language
-            );
+            $site->language($language);
             $site->archive_type($archive_type);
             $ctx->stash('blog', $site);
         },
@@ -61,10 +64,13 @@ for my $archive_type ( MT->publisher->archive_types ) {
         $blog_id,
         sub {
             my ($block) = @_;
-            my $language
-                = defined $block->language
-                ? $block->language
-                : $default_language;
+            my $language;
+            if (defined($block->language)) {
+                $language = $block->language;
+                chomp($language);
+            } else {
+                $language = $default_language;
+            }
             my $site = MT::Blog->load($blog_id);
             $site->language($language);
             $site->archive_type($archive_type);
