@@ -14,7 +14,7 @@ for my $dir (@dirs) {
         wanted => sub {
             my $file = $File::Find::name;
             return unless -f $file && $file =~ /\.php$/;
-            return if $file =~ /extlib/;
+            return if $file =~ /php\/vendor/;
             my $code = path($file)->slurp;
             chomp $code;
             $code =~ s/$quote_re/""/gs;
