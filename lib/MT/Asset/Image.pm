@@ -546,6 +546,8 @@ sub on_upload {
         undef $thumb;
     }
     if ( $param->{image_defaults} ) {
+        require MT::Util::Deprecated;
+        MT::Util::Deprecated::warning(since => '8.5.0', name => 'image_defaults');
 
         # Save new defaults if requested.
         $blog->image_default_wrap_text( $param->{wrap_text} ? 1 : 0 );
