@@ -204,12 +204,21 @@
                 return true;
             }
 
-            var dataTransfer = e.dataTransfer || e.clipboardData
             var files = []
-
-            for (var i = 0; i < dataTransfer.files.length; i++) {
-                if (/^image\//.test(dataTransfer.files[i].type)) {
-                    files.push(dataTransfer.files[i])
+            var dataTransfer = e.dataTransfer || e.clipboardData
+            for (var i = 0; i < dataTransfer.items.length; i++) {
+                var item = dataTransfer.items[i]
+                if (item.kind === 'string' && item.type === 'text/plain') {
+                    var plainTextContent = item.getData('text/plain')
+                    if (!plainTextContent && !plainTextContent.startsWith('file://')) {
+                        return true; // paste as text
+                    }
+                }
+                else if (/text\/(html|plain)/.test(item.type)) {
+                    return true; // paste as text
+                }
+                else if (item.kind === 'file' && /^image\//.test(item.type)) {
+                    files.push(item.getAsFile())
                 }
             }
 
