@@ -64,7 +64,7 @@ class MT {
     private static $_instance = null;
 
     static public $config_type_array = array('pluginpath', 'alttemplate', 'outboundtrackbackdomains', 'memcachedservers', 'userpasswordvalidation');
-    static public $config_type_hash  = array('pluginswitch', 'pluginalias', 'pluginschemaversion', 'commenterregistration');
+    static public $config_type_hash  = array('pluginswitch', 'pluginalias', 'pluginschemaversion', 'commenterregistration', 'dbiconnectoptions');
 
     /***
      * Constructor for MT class.
@@ -284,7 +284,9 @@ class MT {
                 $this->config('DBPort'),
                 $this->config('DBSocket'),
                 $this->config('DBMaxRetries'),
-                $this->config('DBRetryInterval'));
+                $this->config('DBRetryInterval'),
+                $this->config('DBIConnectOptions')
+            );
         }
         return $this->db;
     }
