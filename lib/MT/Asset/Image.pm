@@ -1162,6 +1162,7 @@ sub _set_mandatory_exif_tags {
             push @MandatoryExifTags, $value->{Name};
         }
     }
+    push @MandatoryExifTags, 'Orientation'; # special case
     @MandatoryExifTags;
 }
 
