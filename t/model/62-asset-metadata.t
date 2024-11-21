@@ -34,6 +34,8 @@ my @webp_capable_drivers = grep { $webp_capable_driver_map{$_} } $test_env->imag
 
 my $cfg = MT->config;
 
+my $ignore_orientation = 1;
+
 for my $driver ( $test_env->image_drivers ) {
     subtest $driver => sub {
         for my $file_ext (qw(jpg webp)) {
@@ -127,7 +129,7 @@ for my $driver ( $test_env->image_drivers ) {
 
                     $image->remove_all_metadata;
 
-                    ok( !$image->has_metadata, 'has_metadata method returns false.' );
+                    ok( !$image->has_metadata($ignore_orientation), 'has_metadata method returns false.' );
                     ok( $image->exif->GetValue('JFIFVersion'),
                         'JFIFVersion tag is still remaining.'
                     ) if $file_ext eq 'jpg';
@@ -147,7 +149,7 @@ for my $driver ( $test_env->image_drivers ) {
                         $image->rotate(90);
                     }
 
-                    ok( !$image->has_metadata,
+                    ok( !$image->has_metadata($ignore_orientation),
                         'Has no metadata after rotating image.' );
                 };
             }

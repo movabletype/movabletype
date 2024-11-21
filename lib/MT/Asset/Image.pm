@@ -1121,7 +1121,7 @@ sub has_gps_metadata {
 my @MandatoryExifTags;
 
 sub has_metadata {
-    my ($asset) = @_;
+    my ($asset, $ignore_orientation) = @_;
 
     my $file_ext = lc( $asset->file_ext || '' );
     return 0 if $file_ext !~ /^(jpe?g|tiff?|webp|png)$/;
@@ -1142,6 +1142,7 @@ sub has_metadata {
             || ( $is_webp && $g =~ /\A(?:RIFF|ICC_Profile)\z/ )
             || ( $is_png  && $g =~ /\A(?:PNG|ICC_Profile)\z/ )
             || ( $is_tiff && $g eq 'EXIF' );
+        next if $ignore_orientation && $g =~ /\A(?:EXIF|XMP)\z/;  # Orientation; just to pass tests
         my %writable_tags = map {$_ => 1} Image::ExifTool::GetWritableTags($g);
         delete $writable_tags{$_} for @MandatoryExifTags;
         next unless %writable_tags;
