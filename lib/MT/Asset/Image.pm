@@ -374,6 +374,18 @@ sub thumbnail_filename {
     return $format;
 }
 
+sub _get_normalized_size {
+    my $asset = shift;
+    my ($width, $height) = ($asset->image_width, $asset->image_height);
+    if (my $exif = $asset->exif) {
+        my $orientation = $exif->GetValue('Orientation');
+        if ($orientation && $orientation =~ /rotate (?:90|270)/i) {
+            ($width, $height) = ($height, $width);
+        }
+    }
+    return ($width, $height);
+}
+
 sub as_html {
     my $asset   = shift;
     my ($param) = @_;
@@ -398,11 +410,7 @@ sub as_html {
         }
 
         my $dimensions = sprintf(
-            'width="%s" height="%s"',
-            (   $thumb
-                ? ( $thumb->image_width, $thumb->image_height )
-                : ( $asset->image_width, $asset->image_height )
-            )
+            'width="%s" height="%s"', _get_normalized_size($thumb ? $thumb : $asset)
         );
         my $wrap_style = '';
         if ( $param->{wrap_text} && $param->{align} ) {
