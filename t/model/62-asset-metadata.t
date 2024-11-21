@@ -151,9 +151,9 @@ for my $driver ( $test_env->image_drivers ) {
 
                     ok( !$image->has_metadata($ignore_orientation),
                         'Has no metadata after rotating image.' );
-                };
-            }
-        };
+                }
+            };
+        }
     };
 }
 
