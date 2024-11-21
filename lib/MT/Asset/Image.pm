@@ -1127,7 +1127,6 @@ sub has_metadata {
             || ( $is_tiff && $g eq 'EXIF' );
         my %writable_tags = map {$_ => 1} Image::ExifTool::GetWritableTags($g);
         delete $writable_tags{$_} for @MandatoryExifTags;
-        delete $writable_tags{Orientation};  # special case
         next unless %writable_tags;
         $exif->Options( Group => $g );
         $exif->ExtractInfo( $asset->file_path );
