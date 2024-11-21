@@ -284,6 +284,15 @@ sub thumbnail_file {
         MT->translate( "Error creating thumbnail file: [_1]", $fmgr->errstr )
         );
 
+    # Copy some of the exif data from the original
+    if ($asset->has_metadata && !$asset->is_metadata_broken) {
+        my $thumb_exif = Image::ExifTool->new;
+        $thumb_exif->SetNewValuesFromFile($file_path);
+        $thumb_exif->WriteInfo($thumbnail)
+            or return $asset->trans_error( 'Writing metadata failed: [_1]',
+            $thumb_exif->GetValue('Error') );
+    }
+
     # Remove metadata from thumbnail file.
     require MT::Image;
     MT::Image->remove_metadata($thumbnail)
