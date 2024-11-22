@@ -115,7 +115,7 @@ App = new Class( Component, Component.Delegator, {
     },
     
     
-    // deprecated since MT 8.4.1 and 8.5.0
+    // deprecated since MT 8.4.2 and 8.5.0
     eventUnload: function( event ) {
         this.destroy();
     },
