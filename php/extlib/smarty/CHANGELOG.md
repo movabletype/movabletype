@@ -6,6 +6,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.5.5] - 2024-11-21
+
+
+- Support the deprecations introduced in PHP 8.4 and added tests for PHP 8.4 [#1084](https://github.com/smarty-php/smarty/pull/1084)
+
+## [4.5.4] - 2024-08-14
+- Fixed that using `count()` would trigger a deprecation notice. [#813](https://github.com/smarty-php/smarty/issues/813)
+
+
 ## [4.5.3] - 2024-05-28
 - Fixed a code injection vulnerability in extends-tag. This addresses CVE-2024-35226.
 
