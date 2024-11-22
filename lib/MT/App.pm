@@ -3562,17 +3562,8 @@ sub takedown {
         $app->log_times();
     }
 
-    my $during_installation = 0;
-    if ( UNIVERSAL::isa($app, 'MT::App::Upgrader') ) {
-        $during_installation = 1;
-    }
-    elsif ( exists $app->{redirect} ) {
-        my $script = MT->config->UpgradeScript;
-        $during_installation = $app->{redirect} =~ /\Q$script\E/i;
-    }
-
     # save_config here so not to miss any dirty config change to persist
-    if ( $during_installation ) {
+    if ( UNIVERSAL::isa( $app, 'MT::App::Upgrader' ) ) {
 
         # mt_config table doesn't exist during installation
         if ( my $cfg_pkg = $app->model('config') ) {
