@@ -26,8 +26,7 @@ function smarty_function_mtusersessioncookiedomain($args, &$ctx) {
             if ($ctx->mt->config('DynamicTemplateAllowPHP')) {
                 ob_start();
                 eval('?>' . $_var_compiled);
-                $domain = ob_get_contents();
-                ob_end_clean();
+                $domain = ob_get_clean();
             } else {
                 $domain = $_var_compiled;
             }

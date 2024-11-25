@@ -17,8 +17,7 @@ function smarty_modifier_mteval($text, $arg) {
     if ($ctx->mt->config('DynamicTemplateAllowPHP')) {
         ob_start();
         eval('?>' . $_var_compiled);
-        $_contents = ob_get_contents();
-        ob_end_clean();
+        $_contents = ob_get_clean();
     } else {
         $_contents = $_var_compiled;
     }

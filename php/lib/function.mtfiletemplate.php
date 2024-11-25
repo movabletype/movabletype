@@ -87,8 +87,7 @@ function smarty_function_mtfiletemplate($args, &$ctx) {
     if ($ctx->mt->config('DynamicTemplateAllowPHP')) {
         ob_start();
         eval('?>' . $_var_compiled);
-        $file = ob_get_contents();
-        ob_end_clean();
+        $file = ob_get_clean();
     } else {
         $file = $_var_compiled;
     }
