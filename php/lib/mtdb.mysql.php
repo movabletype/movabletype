@@ -27,12 +27,19 @@ class MTDatabasemysql extends MTDatabase {
             }
             $dsn = "mysql:$dsn";
             if (!empty($options['mysql_ssl'])) {
-                $this->conn->pdoParameters = [
-                    PDO::MYSQL_ATTR_SSL_KEY => !empty($options['mysql_ssl_client_key']) ? $options['mysql_ssl_client_key'] : '/var/lib/mysql/client-key.pem',
-                    PDO::MYSQL_ATTR_SSL_CERT => !empty($options['mysql_ssl_client_cert']) ? $options['mysql_ssl_client_cert'] : '/var/lib/mysql/client-cert.pem',
-                    PDO::MYSQL_ATTR_SSL_CA => !empty($options['mysql_ssl_ca_file']) ? $options['mysql_ssl_ca_file'] : '/var/lib/mysql/ca.pem',
-                    PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => !empty($options['mysql_ssl_verify_server_cert']),
+                $pdo_params = [
+                    PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => !empty($options['mysql_ssl_verify_server_cert'])
                 ];
+                if (!empty($options['mysql_ssl_client_key'])) {
+                    $pdo_params[PDO::MYSQL_ATTR_SSL_KEY] = $options['mysql_ssl_client_key'];
+                }
+                if (!empty($options['mysql_ssl_client_cert'])) {
+                    $pdo_params[PDO::MYSQL_ATTR_SSL_CERT] = $options['mysql_ssl_client_cert'];
+                }
+                if (!empty($options['mysql_ssl_ca_file'])) {
+                    $pdo_params[PDO::MYSQL_ATTR_SSL_CA] = $options['mysql_ssl_ca_file'];
+                }
+                $this->conn->pdoParameters = $pdo_params;
             }
             $this->conn->Connect($dsn, $user, $password, $dbname);
         } elseif (extension_loaded('mysqli')) {
@@ -46,9 +53,15 @@ class MTDatabasemysql extends MTDatabase {
                     $host .= ":$port";
             }
             if (!empty($options['mysql_ssl'])) {
-                $this->conn->ssl_key = !empty($options['mysql_ssl_client_key']) ? $options['mysql_ssl_client_key'] : '/var/lib/mysql/client-key.pem';
-                $this->conn->ssl_cert = !empty($options['mysql_ssl_client_cert']) ? $options['mysql_ssl_client_cert'] : '/var/lib/mysql/client-cert.pem';
-                $this->conn->ssl_ca = !empty($options['mysql_ssl_ca_file']) ? $options['mysql_ssl_ca_file'] : '/var/lib/mysql/ca.pem';
+                if (!empty($options['mysql_ssl_client_key'])) {
+                    $this->conn->ssl_key = $options['mysql_ssl_client_key'];
+                }
+                if (!empty($options['mysql_ssl_client_cert'])) {
+                    $this->conn->ssl_cert = $options['mysql_ssl_client_cert'];
+                }
+                if (!empty($options['mysql_ssl_ca_file'])) {
+                    $this->conn->ssl_ca = $options['mysql_ssl_ca_file'];
+                }
             }
             $this->conn->Connect($dsn, $user, $password, $dbname);
         } else {
