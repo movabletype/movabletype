@@ -418,7 +418,7 @@ set_error_handler(function($error_no, $error_msg, $error_file, $error_line, $err
 });
 
 if ($ctx->_compile_source('evaluated template', $tmpl, $_var_compiled)) {
-    $ctx->_eval('?>' . $_var_compiled);
+    print($_var_compiled);
 } else {
     print('Error compiling template module.');
 }
