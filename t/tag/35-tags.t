@@ -4966,7 +4966,15 @@ left File include is disabled by "AllowFileInclude" config directive. right
 
 === test 883-3 include php file
 --- mt_config
-{AllowFileInclude => 1}
+{AllowFileInclude => 1, DynamicTemplateAllowPHP => 0}
+--- template embed_path_to_php_test
+<mt:Include ssi="1" file="PATH">
+--- expected
+<?php echo 3+4;
+
+=== test 883-3 include php file
+--- mt_config
+{AllowFileInclude => 1, DynamicTemplateAllowPHP => 1}
 --- template embed_path_to_php_test
 <mt:Include ssi="1" file="PATH">
 --- expected
