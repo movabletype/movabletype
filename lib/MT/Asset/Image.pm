@@ -268,7 +268,11 @@ sub thumbnail_file {
                 MT->translate( "Error cropping image: [_1]", $img->errstr ) );
         }
 
-        ($data) = $img->scale( Height => $n_h, Width => $n_w )
+        my %scale_arg = (Height => $n_h, Width => $n_w);
+        if ($asset->is_rotated_90_degrees) {
+            ($scale_arg{Height}, $scale_arg{Width}) = ($scale_arg{Width}, $scale_arg{Height});
+        }
+        ($data) = $img->scale(%scale_arg)
             or return $asset->error(
             MT->translate( "Error scaling image: [_1]", $img->errstr ) );
 
