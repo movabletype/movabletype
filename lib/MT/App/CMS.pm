@@ -3269,7 +3269,7 @@ sub build_menus {
     my $blog         = $app->blog;
     my $blog_id      = $blog ? $blog->id : 0;
     my $theme        = $blog ? $blog->theme : undef;
-    my $theme_modify = $theme ? $theme->{menu_modification} : {};
+    my $theme_modify = $theme ? $theme->{menus_modification} : {};
     my $mode         = $app->mode;
 
     my @top_ids = grep { !/:/ } keys %$menus;
