@@ -365,6 +365,18 @@ sub thumbnail_filename {
     return $format;
 }
 
+sub is_rotated_90_degrees {
+    my $asset = shift;
+    return $asset->{__is_rotated_90_degrees} if defined $asset->{__is_rotated_90_degrees};
+    if (my $exif = $asset->exif) {
+        my $orientation = $exif->GetValue('Orientation');
+        if ($orientation && $orientation =~ /rotate (?:90|270)/i) {
+            return $asset->{__is_rotated_90_degrees} = 1;
+        }
+    }
+    return $asset->{__is_rotated_90_degrees} = 0;
+}
+
 sub as_html {
     my $asset   = shift;
     my ($param) = @_;
