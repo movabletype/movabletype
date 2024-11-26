@@ -170,6 +170,7 @@ sub _load_from_registry {
         base_css              => $reg->{base_css},
         required_components   => $reg->{required_components},
         optional_components   => $reg->{optional_components},
+        menu_modification     => $reg->{menu_modification},
         menus_modification    => $reg->{menus_modification},
     };
     my $theme = $pkg->new($props);
@@ -224,6 +225,7 @@ sub _load_from_themes_directory {
         protected             => $y->{protected},
         required_components   => $y->{required_components},
         optional_components   => $y->{optional_components},
+        menu_modification     => $y->{menu_modification},
         menus_modification    => $y->{menus_modification},
     };
 
