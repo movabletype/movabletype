@@ -3691,17 +3691,19 @@ sub build_actions {
         my $cond   = $action->{condition};
         if ( defined $cond ) {
             next unless $cond;
+            $cond = MT->handler_to_coderef($cond) unless ref $cond;
             next if ref $cond eq 'CODE' && !$cond->( $app, $param );
         }
 
         my $href = $action->{href};
-        if ( $href && ref $href eq 'CODE' ) {
-            $href = $href->( $app, $param );
+        if (defined $href) {
+            $href = MT->handler_to_coderef($href) unless ref $href;
+            $href = $href->( $app, $param ) if ref $href eq 'CODE';
         }
         $action->{id} = $id;
         $action->{order} ||= 0;
 
-        push @valid_actions, $action;
+        push @valid_actions, { %$action, href => $href };
     }
 
     @valid_actions
