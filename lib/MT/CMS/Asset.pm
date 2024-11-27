@@ -3009,6 +3009,11 @@ sub transform_image {
         return $app->errtrans('Invalid request.');
     }
 
+    # normalize the image first if it is rotated
+    if ($asset->is_rotated_90_degrees) {
+        $asset->normalize_orientation;
+    }
+
     $asset->transform(@$actions)
         or return $app->errtrans( 'Transforming image failed: [_1]',
         $asset->errstr );
