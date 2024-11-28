@@ -201,7 +201,9 @@ sub _post_save {
 sub _pre_remove {
     my ( $cb, $obj, $original ) = @_;
 
-    my $content_type = MT::ContentType->load( $obj->content_type_id || 0 );
+    MT->app->reboot;
+
+    my $content_type = MT::ContentType->load( $obj->content_type_id || 0 ) or return 1;
     my $perm_name
         = 'content_type:'
         . $content_type->unique_id
@@ -219,7 +221,7 @@ sub _pre_remove {
         $role->save;
     }
 
-    MT->app->reboot;
+    return 1;
 }
 
 sub related_content_type {

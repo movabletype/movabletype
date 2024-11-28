@@ -848,7 +848,7 @@ sub init_config {
 }
 
 {
-    my ($memory_start);
+    my $memory_start = '';
 
     sub log_times {
         my $pkg = shift;

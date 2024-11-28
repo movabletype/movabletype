@@ -6,25 +6,25 @@ use FindBin;
 use lib "$FindBin::Bin/../lib"; # t/lib
 use Test::More;
 use MT::Test::Env;
+use MT::Test::Memcached;
+
 BEGIN {
     eval { require Test::MockObject }
         or plan skip_all => 'Test::MockObject is not installed';
 }
 
 our $test_env;
+my $memcached;
 BEGIN {
-    $test_env = MT::Test::Env->new;
+    $memcached = MT::Test::Memcached->new or plan skip_all => "Memcached is not available";
+    $test_env = MT::Test::Env->new( MemcachedServers => $memcached->address );
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
 use MT::Test;
 use MT::Cache::Negotiate;
 use MT::Memcached::ExpirableProxy;
-use MT::Test::Memcached;
-use MT::Memcached;
 
-my $memcached = MT::Test::Memcached->new or plan skip_all => "Memcached is not available";
-MT->config(MemcachedServers => $memcached->address);
 MT::Memcached::cleanup();
 
 my $m = MT::Memcached->instance;
