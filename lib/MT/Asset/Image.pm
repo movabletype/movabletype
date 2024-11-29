@@ -1159,7 +1159,6 @@ sub has_metadata {
         $writable_tags ||= MT::Image::ExifData::writable_tags();
 
         $exif->Options( Group => $g );
-        $exif->ExtractInfo( $asset->file_path );
         for my $t ( $exif->GetTagList ) {
             return 1 if $writable_tags->{$t};
         }
