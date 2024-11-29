@@ -1106,9 +1106,11 @@ sub transform {
 }
 
 sub exif {
-    my ($asset) = @_;
+    my ($asset, %options) = @_;
     require Image::ExifTool;
     my $exif = Image::ExifTool->new;
+    %options = (FastScan => 2, Composite => 0, Duplicates => 0, %options);
+    $exif->Options($_ => $options{$_}) for keys %options;
     $exif->ExtractInfo( $asset->file_path )
         or
         return $asset->trans_error( 'Extracting image metadata failed: [_1]',
