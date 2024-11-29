@@ -1128,8 +1128,6 @@ sub has_gps_metadata {
         : 0;
 }
 
-my @MandatoryExifTags;
-
 sub has_metadata {
     my ($asset, $ignore_orientation) = @_;
 
@@ -1143,7 +1141,8 @@ sub has_metadata {
     my $is_webp = $file_ext eq 'webp';
     my $is_png  = $file_ext eq 'png';
 
-    @MandatoryExifTags = _set_mandatory_exif_tags() unless @MandatoryExifTags;
+    require MT::Image::ExifData;
+    my $writable_tags;
     for my $g ( $exif->GetGroups ) {
         next
             if $g eq 'ExifTool'
@@ -1153,27 +1152,16 @@ sub has_metadata {
             || ( $is_png  && $g =~ /\A(?:PNG|ICC_Profile)\z/ )
             || ( $is_tiff && $g eq 'EXIF' );
         next if $ignore_orientation && $g =~ /\A(?:EXIF|XMP)\z/;  # Orientation; just to pass tests
-        my %writable_tags = map {$_ => 1} Image::ExifTool::GetWritableTags($g);
-        delete $writable_tags{$_} for @MandatoryExifTags;
-        next unless %writable_tags;
+
+        $writable_tags ||= MT::Image::ExifData::writable_tags();
+
         $exif->Options( Group => $g );
         $exif->ExtractInfo( $asset->file_path );
         for my $t ( $exif->GetTagList ) {
-            return 1 if $writable_tags{$t};
+            return 1 if $writable_tags->{$t};
         }
     }
     return 0;
-}
-
-sub _set_mandatory_exif_tags {
-    require Image::ExifTool::Exif;
-    @MandatoryExifTags = ();
-    for my $value (values %Image::ExifTool::Exif::Main) {
-        if (ref $value eq 'HASH' && $value->{Mandatory}) {
-            push @MandatoryExifTags, $value->{Name};
-        }
-    }
-    @MandatoryExifTags;
 }
 
 sub remove_gps_metadata {
