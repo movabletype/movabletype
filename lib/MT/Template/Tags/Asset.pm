@@ -125,7 +125,7 @@ sub _hdlr_assets {
         # Call _hdlr_pass_tokens_else if there are no assets, so that MTElse
         # is properly executed if it's present.
         #
-        return $ctx->_hdlr_pass_tokens_else(@_) unless @$assets[0];
+        return $ctx->_hdlr_pass_tokens_else($args, $cond) unless @$assets[0];
     }
     else {
         $assets = $ctx->stash('assets');
@@ -511,7 +511,7 @@ sub _hdlr_assets {
         $i++;
     }
     if ( !@assets ) {
-        return $ctx->_hdlr_pass_tokens_else(@_);
+        return $ctx->_hdlr_pass_tokens_else($args, $cond);
     }
 
     $res;
