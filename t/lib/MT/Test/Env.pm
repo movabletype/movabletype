@@ -290,7 +290,7 @@ sub save_file {
 
 sub image_drivers {
     my $self = shift;
-    map { my $tmp = basename($_); $tmp =~ s/\.pm$//; $tmp } glob "$MT_HOME/lib/MT/Image/*.pm";
+    grep !/ExifData/, map { my $tmp = basename($_); $tmp =~ s/\.pm$//; $tmp } glob "$MT_HOME/lib/MT/Image/*.pm";
 }
 
 sub suppress_deprecated_warnings {
