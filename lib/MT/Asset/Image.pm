@@ -1151,7 +1151,10 @@ sub has_metadata {
             || ( $is_webp && $g =~ /\A(?:RIFF|ICC_Profile)\z/ )
             || ( $is_png  && $g =~ /\A(?:PNG|ICC_Profile)\z/ )
             || ( $is_tiff && $g eq 'EXIF' );
-        next if $ignore_orientation && $g =~ /\A(?:EXIF|XMP)\z/;  # Orientation; just to pass tests
+
+        return 1 unless $g eq 'EXIF' or $g eq 'XMP';
+
+        next if $ignore_orientation; # Orientation; just to pass tests
 
         $writable_tags ||= MT::Image::ExifData::writable_tags();
 
