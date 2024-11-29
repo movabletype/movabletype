@@ -69,6 +69,9 @@ for my $driver ( $test_env->image_drivers ) {
                 subtest 'exif method' => sub {
                     ok( $image->can('exif'), 'Has exif method.' );
                     my $exif = Image::ExifTool->new;
+                    $exif->Options(FastScan => 2);
+                    $exif->Options(Composite => 0);
+                    $exif->Options(Duplicates => 0);
                     $exif->ExtractInfo( $image->file_path );
                     is_deeply(_remove_access_date($image->exif), _remove_access_date($exif), 'Check exif data.' );
                 };
