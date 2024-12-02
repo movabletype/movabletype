@@ -554,8 +554,13 @@ sub prepare_category_set {
                 next;
             }
             my $items = $spec->{category_set}{$name};
+            my $blog_id;
+            if (ref $items eq 'HASH') {
+                $blog_id = _find_blog_id($objs, $items);
+                $items   = $items->{categories};
+            }
             if (ref $items eq 'ARRAY') {
-                my $blog_id = $objs->{blog_id}
+                $blog_id ||= $objs->{blog_id}
                     or croak "blog_id is required: category_set: $name";
                 my $set = MT::Test::Permission->make_category_set(
                     blog_id => $blog_id,
