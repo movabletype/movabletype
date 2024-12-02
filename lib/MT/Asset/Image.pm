@@ -270,7 +270,21 @@ sub thumbnail_file {
 
         my %scale_arg = (Height => $n_h, Width => $n_w);
         if ($asset->is_rotated_90_degrees) {
-            ($scale_arg{Height}, $scale_arg{Width}) = ($scale_arg{Width}, $scale_arg{Height});
+            if ($param{Type}) {
+                # A new type of the image may not fully support Orientation, so let's normalize it
+                my $orientation = $asset->exif->GetValue('Orientation');
+                if ($orientation =~ /Mirror horizontal/i) {
+                    $img->flipHorizontal();
+                }
+                if ($orientation =~ /Rotate 90 CW/i) {
+                    $img->rotate( Degrees => 90 );
+                }
+                if ($orientation =~ /Rotate 270 CW/i) {
+                    $img->rotate( Degrees => 270 );
+                }
+            } else {
+                ($scale_arg{Height}, $scale_arg{Width}) = ($scale_arg{Width}, $scale_arg{Height});
+            }
         }
         ($data) = $img->scale(%scale_arg)
             or return $asset->error(
@@ -289,14 +303,9 @@ sub thumbnail_file {
         );
 
     # Copy some of the exif data from the original
-    if ($asset->has_metadata && !$asset->is_metadata_broken) {
+    if (!$param{Type} && $asset->has_metadata && !$asset->is_metadata_broken) {
         my $thumb_exif = Image::ExifTool->new;
-        if (!$param{Type}) {
-            $thumb_exif->SetNewValuesFromFile($file_path);
-        } elsif (my $orientation = $asset->exif->GetValue('Orientation')) {
-            $thumb_exif->SetNewValuesFromFile($thumbnail);
-            $thumb_exif->SetNewValue('EXIF:Orientation' => $orientation);
-        }
+        $thumb_exif->SetNewValuesFromFile($file_path);
         $thumb_exif->WriteInfo($thumbnail)
             or return $asset->trans_error( 'Writing metadata failed: [_1]',
             $thumb_exif->GetValue('Error') );
