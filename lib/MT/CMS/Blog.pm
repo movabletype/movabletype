@@ -824,6 +824,7 @@ sub rebuild_pages {
         }
     }
 
+    my $map;
     if ( $type eq 'all' ) {
         return $app->permission_denied()
             unless $perms->can_do('rebuild');
@@ -902,7 +903,7 @@ sub rebuild_pages {
                 ->can_do('rebuild');
         }
         elsif ($map_id) {
-            my $map = MT->model('templatemap')->load($map_id)
+            $map = MT->model('templatemap')->load($map_id)
                 or return $app->errtrans( 'Cannot load template #[_1].',
                 $map_id );
             return $app->permission_denied()
@@ -927,7 +928,8 @@ sub rebuild_pages {
                 Offset         => $offset,
                 Limit          => $app->config->EntriesPerRebuild,
                 FilterCallback => $cb,
-                ( $template_id || $map_id ? ( Force => 1 ) : () ),
+                ($template_id ? (TemplateID  => $template_id, Force => 1) : ()),
+                ($map         ? (TemplateMap => $map,         Force => 1) : ()),
             ) or return $app->publish_error();
             $offset += $count;
         }
