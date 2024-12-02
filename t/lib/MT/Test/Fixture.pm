@@ -441,6 +441,8 @@ sub prepare_entry {
             my $title     = $arg{title} || '(no title)';
             my @cat_names = @{ delete $arg{categories} || [] };
             my @tag_names = @{ delete $arg{tags}       || [] };
+            my @asset_names = @{ delete $arg{assets}   || [] };
+            my @image_names = @{ delete $arg{images}   || [] };
 
             my $blog_id = _find_blog_id($objs, \%arg)
                 or croak "blog_id is required: entry: $title";
@@ -478,6 +480,26 @@ sub prepare_entry {
                     tag_id            => $tag->id,
                 );
             }
+            for my $asset_name (@asset_names) {
+                my $asset = $objs->{asset}{$asset_name}
+                    or croak "unknown asset: $asset_name entry: $title";
+                MT::Test::Permission->make_objectasset(
+                    blog_id   => $blog_id,
+                    object_id => $entry->id,
+                    object_ds => 'entry',
+                    asset_id  => $asset->id,
+                );
+            }
+            for my $image_name (@image_names) {
+                my $image = $objs->{image}{$image_name}
+                    or croak "unknown image: $image_name entry: $title";
+                MT::Test::Permission->make_objectasset(
+                    blog_id   => $blog_id,
+                    object_id => $entry->id,
+                    object_ds => 'entry',
+                    asset_id  => $image->id,
+                );
+            }
         }
     }
 }
@@ -501,7 +523,9 @@ sub prepare_page {
             }
             my $title       = $arg{title} || '(no title)';
             my $folder_name = delete $arg{folder};
-            my @tag_names   = @{ delete $arg{tags} || [] };
+            my @tag_names   = @{ delete $arg{tags}   || [] };
+            my @asset_names = @{ delete $arg{assets} || [] };
+            my @image_names = @{ delete $arg{images} || [] };
 
             my $blog_id = _find_blog_id($objs, \%arg)
                 or croak "blog_id is required: page: $title";
@@ -537,6 +561,26 @@ sub prepare_page {
                     object_id         => $page->id,
                     object_datasource => 'page',
                     tag_id            => $tag->id,
+                );
+            }
+            for my $asset_name (@asset_names) {
+                my $asset = $objs->{asset}{$asset_name}
+                    or croak "unknown asset: $asset_name entry: $title";
+                MT::Test::Permission->make_objectasset(
+                    blog_id   => $blog_id,
+                    object_id => $page->id,
+                    object_ds => 'entry',
+                    asset_id  => $asset->id,
+                );
+            }
+            for my $image_name (@image_names) {
+                my $image = $objs->{image}{$image_name}
+                    or croak "unknown image: $image_name entry: $title";
+                MT::Test::Permission->make_objectasset(
+                    blog_id   => $blog_id,
+                    object_id => $page->id,
+                    object_ds => 'entry',
+                    asset_id  => $image->id,
                 );
             }
         }
