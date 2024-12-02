@@ -51,7 +51,7 @@
     "svelte-dev": "rollup --config rollup.config.ts --configPlugin typescript -w",
     "svelte-check-types": "tsc",
     "svelte-format": "prettier --plugin prettier-plugin-svelte --write 'src/**/*.{ts,svelte}' '*.ts'",
-    "svelte-lint": "eslint --fix --ext .ts --ext .tsx --ext .svelte src"
+    "svelte-lint": "eslint --fix --c .ts --c .tsx --c .svelte src"
   },
   "repository": {
     "type": "git",
@@ -63,6 +63,8 @@
   },
   "homepage": "https://github.com/movabletype/movabletype#readme",
   "devDependencies": {
+    "@eslint/eslintrc": "^3.2.0",
+    "@eslint/js": "^9.16.0",
     "@rollup/plugin-commonjs": "^25.0.8",
     "@rollup/plugin-json": "^6.1.0",
     "@rollup/plugin-node-resolve": "^15.2.3",
@@ -78,6 +80,7 @@
     "clean-css-cli": "^5.6.2",
     "eslint": "^9.16.0",
     "eslint-plugin-svelte": "^2.46.0",
+    "globals": "^15.13.0",
     "jsdom": "^25.0.1",
     "node-sass": "^9.0.0",
     "postcss-cli": "^11.0.0",
