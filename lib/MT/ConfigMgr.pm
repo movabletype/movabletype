@@ -159,12 +159,35 @@ sub default {
     $def;
 }
 
+sub _is_changed {
+    my ($old, $new) = @_;
+    return 1 if !defined($old);
+    return 1 if ref $old ne ref $new;
+    my $type = ref $old;
+    if (!$type) {
+        return $old ne $new;
+    } elsif ($type eq 'ARRAY') {
+        my $size = @$old;
+        return 1 if $size ne @$new;
+        for my $i (0 .. $size - 1) {
+            return 1 if _is_changed($old->[$i], $new->[$i]);
+        }
+    } elsif ($type eq 'HASH') {
+        my $size = %$old;
+        return 1 if $size ne %$new;
+        for my $k (keys %$old) {
+            return 1 if !exists $new->{$k};
+            return 1 if _is_changed($old->{$k}, $new->{$k});
+        }
+    }
+    return;
+}
+
 sub set_internal {
     my $mgr = shift;
     my ( $var, $val, $db_flag ) = @_;
     $var = lc $var;
     return $mgr->{__env}{$var} if exists $mgr->{__env}{$var};
-    $mgr->set_dirty() if defined($db_flag) && $db_flag;
     $val = '' if defined $val and ($val eq q{''} or $val eq q{""});
     my $set = $db_flag ? '__dbvar' : '__var';
     if ( defined( my $alias = $mgr->{__settings}{$var}{alias} ) ) {
@@ -178,19 +201,23 @@ sub set_internal {
     elsif ( my $type = $mgr->{__settings}{$var}{type} ) {
         if ( $type eq 'ARRAY' ) {
             if ( ref $val eq 'ARRAY' ) {
+                $mgr->set_dirty() if $db_flag && _is_changed($mgr->{$set}{$var}, $val);
                 $mgr->{$set}{$var} = $val;
             }
             else {
+                $mgr->set_dirty() if $db_flag;
                 $mgr->{$set}{$var} ||= [];
                 push @{ $mgr->{$set}{$var} }, $val if defined $val;
             }
         }
         elsif ( $type eq 'HASH' ) {
             if ( ref $val eq 'HASH' ) {
+                $mgr->set_dirty() if $db_flag && _is_changed($mgr->{$set}{$var}, $val);
                 $mgr->{$set}{$var} = $val;
             }
             elsif ($val && $val =~ /=/) {
                 ( my ($key), $val ) = split /=/, $val, 2;
+                $mgr->set_dirty() if $db_flag && _is_changed($mgr->{$set}{$var}{$key}, $val);
                 $mgr->{$set}{$var}{$key} = $val;
             }
             else {
@@ -199,10 +226,12 @@ sub set_internal {
             }
         }
         else {
+            $mgr->set_dirty() if $db_flag && _is_changed($mgr->{$set}{$var}, $val);
             $mgr->{$set}{$var} = $val;
         }
     }
     else {
+        $mgr->set_dirty() if $db_flag && _is_changed($mgr->{$set}{$var}, $val);
         $mgr->{$set}{$var} = $val;
     }
     return $val;
