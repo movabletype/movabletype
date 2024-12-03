@@ -315,7 +315,7 @@ sub thumbnail_file {
 
     # Remove metadata from thumbnail file.
     require MT::Image;
-    MT::Image->remove_metadata($thumbnail)
+    MT::Image->remove_metadata($thumbnail, $param{Type})
         or return $asset->error( MT::Image->errstr );
 
     return ( $thumbnail, $n_w, $n_h );
