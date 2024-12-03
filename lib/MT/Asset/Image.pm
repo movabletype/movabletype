@@ -303,9 +303,11 @@ sub thumbnail_file {
         );
 
     # Copy some of the exif data from the original
-    if (!$param{Type} && $asset->has_metadata && !$asset->is_metadata_broken) {
+    if ($asset->has_metadata && !$asset->is_metadata_broken) {
         my $thumb_exif = Image::ExifTool->new;
-        $thumb_exif->SetNewValuesFromFile($file_path);
+        if (!$param{Type}) {
+            $thumb_exif->SetNewValuesFromFile($file_path);
+        }
         $thumb_exif->WriteInfo($thumbnail)
             or return $asset->trans_error( 'Writing metadata failed: [_1]',
             $thumb_exif->GetValue('Error') );
