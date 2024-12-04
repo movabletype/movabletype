@@ -12,30 +12,24 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-$test_env->prepare_fixture(sub {
-    MT::Test->init_db;
+$test_env->prepare_fixture('db');
 
-    my $cnf = MT->config;
-    $cnf->define({Array => {type => 'ARRAY'}, Hash => {type => 'HASH'}});
-    $cnf->set('Scalar', 'file', 1);
-    $cnf->save_config;
-});
+my $cnf = MT->config;
+$cnf->define({Array => {type => 'ARRAY'}, Hash => {type => 'HASH'}});
+$cnf->clear_dirty;
 
 subtest 'Read/Write scalar' => sub {
-    my $cnf = MT->config;
+    is $cnf->is_dirty, 0, "Before change config";
 
-    is $cnf->is_dirty, 0, "After save config";
-    $cnf->set('Scalar', 'different', 1);
+    $cnf->set('Scalar', 'file', 1);
     is $cnf->is_dirty, 1, "Scalar config is changed";
     $cnf->save_config;
     is $cnf->is_dirty, 0, "After save config";
-    $cnf->set('Scalar', 'different', 1);
+    $cnf->set('Scalar', 'file', 1);
     is $cnf->is_dirty, 0, "Set same value";
 };
 
 subtest 'Read/Write array' => sub {
-    my $cnf = MT->config;
-
     $cnf->save_config;
     is $cnf->is_dirty, 0, "After save config";
 
@@ -59,8 +53,6 @@ subtest 'Read/Write array' => sub {
 };
 
 subtest 'Read/Write hash' => sub {
-    my $cnf = MT->config;
-
     $cnf->save_config;
     is $cnf->is_dirty, 0, "After save config";
 
