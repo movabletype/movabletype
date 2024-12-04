@@ -91,7 +91,7 @@ sub setup {
     }
 
     if (my $str = $block->template_module_cache_setting) {
-        my $hash = eval($block->template_module_cache_setting);
+        my $hash = eval($str);
         while (my ($key, $val) = each(%$hash)) {
             $template->$key($val);
         }
