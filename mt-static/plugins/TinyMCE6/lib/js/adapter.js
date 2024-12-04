@@ -6,12 +6,12 @@
  * $Id$
  */
 ;(function ($) {
-    $.extend(tinymce.defaultSettings, {
+    $.extend(tinymce.defaultOptions, {
         external_plugins: {
             mt_protect: StaticURI + 'plugins/TinyMCE6/lib/js/tinymce/plugins/mt_protect/plugin.js',
         },
+        paste_data_images: false,
     });
-    tinymce.defaultOptions.paste_data_images = false;
 
     MT.Editor.TinyMCE = function () {
         MT.Editor.apply(this, arguments)
