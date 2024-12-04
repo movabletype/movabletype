@@ -161,7 +161,8 @@ sub default {
 
 sub _is_changed {
     my ($old, $new) = @_;
-    return 1 if !defined($old);
+    return 0 if !defined($old) && !defined($new);
+    return 1 if !defined($old) || !defined($new);
     return 1 if ref $old ne ref $new;
     my $type = ref $old;
     if (!$type) {
