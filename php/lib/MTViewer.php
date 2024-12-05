@@ -985,6 +985,7 @@ EOT;
      * @return mixed
      */
     function _eval($code, $params=null) {
+        trigger_error('function _eval is deprecated', E_USER_DEPRECATED);
         return eval($code);
     }
 

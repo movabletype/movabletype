@@ -253,10 +253,13 @@ function smarty_function_mtinclude($args, &$ctx) {
         }
     }
 
-    ob_start();
-    $ctx->_eval('?>' . $_var_compiled);
-    $_contents = ob_get_contents();
-    ob_end_clean();
+    if ($ctx->mt->config('DynamicTemplateAllowPHP')) {
+        ob_start();
+        eval('?>' . $_var_compiled);
+        $_contents = ob_get_clean();
+    } else {
+        $_contents = $_var_compiled;
+    }
 
     _clear_vars($ctx, $ext_args);
 
