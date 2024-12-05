@@ -394,6 +394,8 @@ jQuery(window).on('load', init );
             var msg = '<__trans phrase="You have unsaved changes to this asset that will be lost. Are you sure you want to edit image?" escape="js">';
             if ( confirm(msg) ) {
                 isDirty = false;
+            } else {
+                event.stopImmediatePropagation();
             }
         }
         return false;
