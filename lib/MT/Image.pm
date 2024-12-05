@@ -185,6 +185,11 @@ sub get_image_info {
     my $width  = int($exif->GetValue('ImageWidth')  || 0);
     my $height = int($exif->GetValue('ImageHeight') || 0);
     my $ext    = $exif->GetValue('FileTypeExtension');
+
+    my $orientation = $exif->GetValue('Orientation');
+    if ($orientation && $orientation =~ /rotate (?:90|270)/i) {
+        ($width, $height) = ($height, $width);
+    }
     return wantarray ? ($width, $height, $ext) : {width => $width, height => $height, ext => $ext};
 }
 
@@ -290,7 +295,7 @@ sub crop {
 }
 
 sub remove_metadata {
-    my ( $class, $file ) = @_;
+    my ( $class, $file, $remove_orientation ) = @_;
 
     my $lc_file = lc($file);
     return 1 if $lc_file !~ /\.(jpe?g|tiff?|webp|png)$/;
@@ -312,7 +317,7 @@ sub remove_metadata {
         $exif->SetNewValue( 'PNG:*', undef, Replace => 2 ) if $lc_file =~ /png/;
         $exif->SetNewValue( 'JFIF:*', undef, Replace => 2 ) if $lc_file =~ /jpe?g/;
         $exif->SetNewValue( 'ICC_Profile:*', undef, Replace => 2 );
-        $exif->SetNewValue( 'EXIF:Orientation', $orientation ) if $orientation;
+        $exif->SetNewValue( 'EXIF:Orientation', $orientation ) if $orientation && !$remove_orientation;
     }
     $exif->WriteInfo($file)
         or $class->trans_error( 'Writing metadata failed: [_1]',
