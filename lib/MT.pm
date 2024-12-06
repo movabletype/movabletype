@@ -1360,6 +1360,9 @@ sub init_plugins {
             if (!$mt->isa('MT::App::Wizard') && $model->driver->table_exists($model)) {
                 $mt->config->save_config;
             }
+            else {
+                $mt->config->clear_dirty;
+            }
         }
     }
     return 1;
