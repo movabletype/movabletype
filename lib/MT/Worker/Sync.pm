@@ -8,7 +8,7 @@ package MT::Worker::Sync;
 
 use strict;
 use warnings;
-use base qw( TheSchwartz::Worker );
+use base qw( MT::Worker );
 use Time::HiRes qw(gettimeofday tv_interval);
 use TheSchwartz::Job;
 use MT::FileInfo;

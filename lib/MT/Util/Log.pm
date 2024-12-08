@@ -210,11 +210,34 @@ sub _get_message {
         ( $pkg, $filename, $line ) = caller(++$i);
     }
 
-    my @time = localtime(time);
-    return
-        sprintf "%04d-%02d-%02dT%02d:%02d:%02d [%s] %s %s at %s line %d.",
-        $time[5] + 1900, $time[4] + 1, @time[ 3, 2, 1, 0 ],
-        $level, $memory, $message, $filename, $line;
+
+    if ( MT->config->AuditLog ) {
+        require POSIX;
+        require Time::HiRes;
+        require MT::Util;
+
+        my $mt = MT->instance;
+        my $audit_data = $mt->request('MT::Core::Audit');
+        my $time = Time::HiRes::time();
+        my $frac = (split(/\./, sprintf("%.6f", $time)))[1];
+        return MT::Util::to_json({
+            time => POSIX::strftime("%Y-%m-%dT%H:%M:%S.$frac%z", localtime($time)),
+            message => $message,
+            level => $level,
+            ($memory ? (memory => $memory) : ()),
+            filename => $filename,
+            line => $line,
+            %{$audit_data || {}},
+        });
+    }
+    else {
+        my @time = localtime(time);
+        my $log_message =
+            sprintf "%04d-%02d-%02dT%02d:%02d:%02d [%s] %s %s at %s line %d.",
+            $time[5] + 1900, $time[4] + 1, @time[ 3, 2, 1, 0 ],
+            $level, $memory, $message, $filename, $line;
+        return $log_message
+    }
 }
 
 sub _get_memory {

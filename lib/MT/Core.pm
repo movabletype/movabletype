@@ -2196,6 +2196,8 @@ BEGIN {
 
             'FluentLoggerOption' => { type => 'HASH' },
 
+            'AuditLog' => { default => 0 },
+
             # Notification Center
             'NotificationCacheTTL' => { default => 3600 },
 

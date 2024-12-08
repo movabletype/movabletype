@@ -8,7 +8,7 @@ package WXRImporter::Worker::Downloader;
 
 use strict;
 use warnings;
-use base qw( TheSchwartz::Worker );
+use base qw( MT::Worker );
 
 use TheSchwartz::Job;
 use HTTP::Request;

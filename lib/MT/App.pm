@@ -3268,9 +3268,26 @@ sub run {
                         = ref($author) eq $app->user_class
                         ? $app->show_error( { error => $app->errstr } )
                         : $app->show_login();
-                    last REQUEST;
                 }
             }
+
+
+            if ($app->config->AuditLog) {
+                require MT::Util::UniqueID;
+                my $audit_data = {
+                    requestId => MT::Util::UniqueID::create_uuid(),
+                    userId    => $app->user ? $app->user->id + 0: undef,
+                    remoteIp  => $app->remote_ip,
+                    context   => {},
+                };
+                $app->run_callbacks( 'init_audit_data', $app, $audit_data );
+                $app->request('MT::Core::Audit', $audit_data);
+                require MT::Util::Log;
+                MT::Util::Log::init();
+                local $audit_data->{context}{mode} = $mode;
+                MT::Util::Log->info('request started');
+            }
+            last REQUEST if $body;
 
             unless (@handlers) {
                 my $meth = "mode_$mode";
@@ -3459,6 +3476,9 @@ __HTML__
         $timer->mark( ref($app) . '::run' );
     }
 
+    if ($app->config->AuditLog) {
+        MT::Util::Log->info('request completed');
+    }
     $app->takedown();
 }
 

@@ -98,6 +98,21 @@ sub run_tasks {
             # Run this task
             my ($status, $err);
             $app->run_callbacks('pre_run_task', $app, $task);
+            if ($app->config->AuditLog) {
+                require MT::Util::UniqueID;
+                my $audit_data = {
+                    requestId => MT::Util::UniqueID::create_uuid(),
+                    userId    => undef,
+                    remoteIp  => undef,
+                    context   => {},
+                };
+                $app->run_callbacks( 'init_audit_data', $app, $audit_data );
+                $app->request('MT::Core::Audit', $audit_data);
+                require MT::Util::Log;
+                MT::Util::Log::init();
+                local $audit_data->{context}{task} = $name;
+                MT::Util::Log->info('task started');
+            }
             eval {
                 local $app->{session} = $sess;
                 $status = $task->run;
@@ -128,6 +143,9 @@ sub run_tasks {
 
             }
             $app->run_callbacks('post_run_task', $app, $task, $status, $err);
+            if ($app->config->AuditLog) {
+                MT::Util::Log->info('task completed');
+            }
 
             $sess->start(time);
             $sess->save;

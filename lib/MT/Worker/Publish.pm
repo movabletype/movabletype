@@ -8,7 +8,7 @@ package MT::Worker::Publish;
 
 use strict;
 use warnings;
-use base qw( TheSchwartz::Worker );
+use base qw( MT::Worker );
 
 use TheSchwartz::Job;
 use Time::HiRes qw(gettimeofday tv_interval);
