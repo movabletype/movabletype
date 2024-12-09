@@ -967,7 +967,7 @@ sub do_search_replace {
 
     # don't allow passed limit to be higher than config limit
     my $param_limit = $app->param('limit');
-    if ( $param_limit && ( $param_limit < $limit ) ) {
+    if ( $param_limit && ( $param_limit eq 'all' || $param_limit < $limit ) ) {
         $limit = $param_limit;
     }
     $limit =~ s/\D//g if $limit ne 'all';
