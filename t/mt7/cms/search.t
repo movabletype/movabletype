@@ -129,6 +129,20 @@ subtest 'content_data' => sub {
             MT->config('CMSSearchLimit', $cms_search_limit_org);
         };
 
+        subtest 'CMSSearchLimit does not affect other tabs' => sub {
+            my $cms_search_limit_org    = MT->config('CMSSearchLimit');
+            my $cms_search_limit_org_cd = MT->config('CMSSearchLimitContentData');
+            MT->config('CMSSearchLimit',            50);
+            MT->config('CMSSearchLimitContentData', 10);
+            $app->get_ok({ __mode => 'search_replace', blog_id => $blog_id });
+            $app->change_tab('content_data');
+            is $app->find_searchform('search_form')->find_input('limit')->value, 10;
+            $app->change_tab('entry');
+            is $app->find_searchform('search_form')->find_input('limit')->value, 50;
+            MT->config('CMSSearchLimitContentData', $cms_search_limit_org_cd);
+            MT->config('CMSSearchLimit',            $cms_search_limit_org);
+        };
+
         $cd->remove();
     };
 };

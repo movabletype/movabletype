@@ -50,6 +50,7 @@ function reSearch(type) {
             jQuery('#search_form input[name=do_search]').val(1);
         }
         jQuery('#search_form input[name=_type]').val(type);
+        jQuery('#search_form input[name=limit]').val('');
         jQuery('#search_form').trigger('submit');
     }
     return false;

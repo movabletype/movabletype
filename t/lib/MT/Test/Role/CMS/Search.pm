@@ -62,6 +62,9 @@ sub change_tab {
             }
         }
     }
+    my $limit = $form->find_input('limit');
+    $limit->readonly(0);
+    $limit->value('');
     $self->post_ok($form->click);
 }
 
