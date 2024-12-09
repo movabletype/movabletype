@@ -1083,7 +1083,7 @@ sub do_search_replace {
         if ( !$is_regex && $type ne 'content_data' ) {
             @terms = @{make_terms_for_plain_search(\%terms, \@cols, $plain_search)};
         }
-        $args{limit} = $limit + 1 if $limit ne 'all';
+        $args{limit} = MT->config->default('CMSSearchSQLLimit') if $limit ne 'all';
         my $iter;
         if ($do_replace) {
             $iter = iter_for_replace($class, \@ids);

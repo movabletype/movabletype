@@ -2002,6 +2002,7 @@ BEGIN {
             },
             'SearchContentTypes' => undef,
             'CMSSearchLimit'     => { default => 125 },
+            'CMSSearchSQLLimit'  => { default => 1000 },
             'OneHourMaxPings'    => { default => 10, },
             'OneDayMaxPings'     => { default => 50, },
             'SupportURL'         => undef,
