@@ -959,11 +959,19 @@ sub do_search_replace {
     my $limit;
 
     # type-specific directives override global CMSSearchLimit
-    my $directive = 'CMSSearchLimit' . ucfirst($type);
-    $limit
-        = MT->config->$directive
-        || MT->config->CMSSearchLimit
-        || MT->config->default('CMSSearchLimit');
+    require String::CamelCase;
+    my $directive = 'CMSSearchLimit' . String::CamelCase::camelize($type);
+    $limit = MT->config->$directive;
+    if (!$limit && $type =~ /_/) {
+        my $directive = 'CMSSearchLimit' . ucfirst($type);
+        $limit = MT->config->$directive;
+        if ($limit) {
+            require MT::Util::Deprecated;
+            MT::Util::Deprecated::warning(since => '8.6.0');
+        }
+    }
+    $limit ||= MT->config->CMSSearchLimit;
+    $limit ||= MT->config->default('CMSSearchLimit');
 
     # don't allow passed limit to be higher than config limit
     my $param_limit = $app->param('limit');
