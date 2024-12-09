@@ -62,6 +62,9 @@ sub change_tab {
             }
         }
     }
+    my $limit = $form->find_input('limit');
+    $limit->readonly(0);
+    $limit->value('');
     $self->post_ok($form->click);
 }
 
@@ -82,6 +85,10 @@ sub change_content_type {
     }
 }
 
+sub have_more_link_exists {
+    $_[0]->wq_find('#have-more-count')->size ? 1 : 0;
+}
+
 sub search {
     my ($self, $value, $opts) = @_;
     my $form = $self->find_searchform('search_form') or return;
@@ -89,6 +96,9 @@ sub search {
     my $do_search = $form->find_input('do_search');
     $do_search->readonly(0);
     $do_search->value(1);
+    if ($opts->{limit} && $opts->{limit} eq 'all' && $self->have_more_link_exists) {
+        $form->find_input('limit')->readonly(0);
+    }
     $self->apply_opts($form, $opts) if $opts;
     $self->post_ok($form->click);
 }
