@@ -1091,8 +1091,8 @@ sub do_search_replace {
         if ( !$is_regex && $type ne 'content_data' ) {
             @terms = @{make_terms_for_plain_search(\%terms, \@cols, $plain_search)};
         }
-        $args{limit} = $limit + 1 if $limit ne 'all';
-        my $iter;
+        $args{limit} = $limit if $limit ne 'all';
+        my ($iter, $pre_count);
         if ($do_replace) {
             $iter = iter_for_replace($class, \@ids);
         }
@@ -1103,7 +1103,9 @@ sub do_search_replace {
                 $iter = $class->load_iter( $terms, $args )
                     or die $class->errstr;
             } elsif ($blog_id || ( $type eq 'blog' ) || ( $app->mode eq 'dialog_grant_role' ) || $author->is_superuser) {
-                $iter = $class->load_iter(@terms ? \@terms : \%terms, \%args) or die $class->errstr;
+                my @terms_and_args= (@terms ? \@terms : \%terms, \%args);
+                $pre_count = $class->count(@terms_and_args);
+                $iter = $class->load_iter(@terms_and_args) or die $class->errstr;
             } else {
                 if ( $class->has_column('blog_id') ) {
 
@@ -1288,16 +1290,15 @@ sub do_search_replace {
                 }
                 push @data, $obj;
             }
-            last if ( $limit ne 'all' ) && @data > $limit;
+            last if ( $limit ne 'all' ) && @data >= $limit;
         }
+
+        if ($limit ne 'all' && (!defined($pre_count) || $pre_count > $limit)) {
+            $param{have_more} = 1;
+        }
+
         if (@data) {
             $param{have_results} = 1;
-
-            # We got one extra to see if there were more
-            if ( ( $limit ne 'all' ) && @data > $limit ) {
-                $param{have_more} = 1;
-                pop @data;
-            }
             $matches = @data;
 
             if ( $do_replace && !$show_all && $app->param('error') ) {

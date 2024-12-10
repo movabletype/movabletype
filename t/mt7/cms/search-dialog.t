@@ -196,10 +196,7 @@ subtest 'content_data' => sub {
         my ($labels, $pager, $have_more) = search_result_cd($app);
         is_deeply($labels, ['cd-27-label', 'cd-26-label', 'cd-25-label']);
         is $pager,              undef;
-        TODO: {
-            local $TODO = q!have_more isn't always given because the search loop may reduce data into less than CMSSearchLimit!;
-            is $have_more->{limit}, 3;
-        }
+        is $have_more->{limit}, 3;
     };
 
     for my $label ('cd-27-label', 'cd-01-label') {
@@ -219,8 +216,8 @@ subtest 'content_data' => sub {
             });
             my ($labels, $pager, $have_more) = search_result_cd($app);
             is_deeply($labels, [$label]);
-            is $pager,     undef;
-            is $have_more, undef;
+            is $pager,              undef;
+            is $have_more->{limit}, 1;
         };
     }
 };

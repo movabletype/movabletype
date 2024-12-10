@@ -108,7 +108,7 @@ subtest 'content_data' => sub {
             my $cf_id1 = $objs->{content_type}{ct_multi}{content_field}{cf_single_line_text}->id;
             $app->search('oldest', { is_limited => 1, search_cols => ['__field:' . $cf_id1] });
             is_deeply($app->found_titles, []);
-            ok !$app->have_more_link_exists;
+            ok $app->have_more_link_exists;
 
             subtest 'CMSSearchLimitContentData is 10' => sub {
 
