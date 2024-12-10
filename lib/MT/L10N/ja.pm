@@ -1084,7 +1084,6 @@ use vars qw( @ISA %Lexicon );
 	'Cannot load asset #[_1]' => 'アセット(ID:[_1])をロードできませんでした',
 	'Cannot load asset #[_1].' => 'アセット(ID:[_1])をロードできませんでした。',
 	'Cannot load file #[_1].' => 'ID:[_1]のファイルをロードできません。',
-	'Cannot overwrite an existing file with a file of a different type. Original: [_1] Uploaded: [_2]' => '違うアセットの種類での上書きはできません。 元のファイル:[_1] アップロードされたファイル[_2]',
 	'Custom...' => 'カスタム...',
 	'Extension changed from [_1] to [_2]' => '拡張子が[_1]から[_2]に変更されました',
 	'Failed to create thumbnail file because [_1] could not handle this image type.' => 'サムネイルの作成ができませんでした。[_1]がサポートしていない画像形式です。',
