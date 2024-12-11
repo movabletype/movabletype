@@ -1498,6 +1498,7 @@ sub init_plugins {
 
         my @loaded_plugins;
         my @errors;
+        my %dependence_paths;
         foreach my $PluginPath (@$PluginPaths) {
             my $plugin_lastdir = $PluginPath;
             $plugin_lastdir =~ s![\\/]$!!;
@@ -1525,12 +1526,6 @@ sub init_plugins {
                     my $plugin_dir = $plugin;
                     $plugin_envelope = "$plugin_lastdir/" . $plugin;
 
-                    foreach my $lib (qw(lib extlib)) {
-                        my $plib
-                            = File::Spec->catdir( $plugin_full_path, $lib );
-                        unshift @INC, $plib if -d $plib;
-                    }
-
                     # handle config.yaml
                     my $yaml = File::Spec->catdir( $plugin_full_path,
                         'config.yaml' );
@@ -1538,6 +1533,7 @@ sub init_plugins {
                     if ( -f $yaml ) {
                         my $obj = __load_plugin_with_yaml( $use_plugins, $PluginSwitch, $plugin_dir );
                         push @loaded_plugins, $obj if $obj;
+                        $dependence_paths{$plugin_full_path} += 1 if $obj;
                         next;
                     }
 
@@ -1559,6 +1555,7 @@ sub init_plugins {
                             next if exists $Plugins{$sig} && $Plugins{$sig}{error};
                             my $obj = __load_plugin( $mt, $timer, $PluginSwitch, $use_plugins, $plugin_file, $sig );
                             push @loaded_plugins, $obj if $obj;
+                            $dependence_paths{$plugin_full_path} += 1 if $obj;
                             push @errors, [$plugin_full_path, $Plugins{$sig}{error}] if $Plugins{$sig}{error};
                         }
                     }
@@ -1589,6 +1586,8 @@ sub init_plugins {
                     MT::Util::Log::init();
                     MT::Util::Log->error($error);
                 };
+                my $dependence_path = $Plugins{$sig_to_drop}{object}->path;
+                $dependence_paths{$dependence_path} -= 1 if exists $dependence_paths{$dependence_path};
                 $Plugins{$sig_to_drop}{enabled} = 0;
                 $Plugins{$sig_to_drop}{system_error} = $error;
                 delete $Plugins{$sig_to_drop}{object};
@@ -1597,6 +1596,15 @@ sub init_plugins {
                 next;
             }
             $deduped_plugins{$name} = $plugin;
+        }
+
+        foreach my $dependence_path (keys %dependence_paths) {
+            next if $dependence_paths{$dependence_path} <= 0;
+            foreach my $lib (qw(lib extlib)) {
+                my $plib
+                    = File::Spec->catdir( $dependence_path, $lib );
+                unshift @INC, $plib if -d $plib;
+            }
         }
 
         for my $plugin (values %deduped_plugins) {
