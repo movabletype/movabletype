@@ -3256,7 +3256,7 @@ sub _hdlr_app_widget {
     my $return_args = $app->make_return_args;
     $return_args = encode_html($return_args);
     my $cgi = $app->uri;
-    if ( $hosted_widget && ( !$insides !~ m/<form\s/i ) ) {
+    if ( $hosted_widget && ( $insides !~ m/<form\s/i ) ) {
         $insides = <<"EOT";
         <form id="$id-form" method="post" action="$cgi">
         <input type="hidden" name="__mode" value="update_widget_prefs" />
