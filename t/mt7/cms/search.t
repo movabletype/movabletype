@@ -72,6 +72,80 @@ subtest 'content_data' => sub {
             };
         };
     };
+
+    subtest 'limit' => sub {
+        my $cfs = $objs->{content_type}{ct_multi}{content_field};
+        my $cd = MT::Test::Permission->make_content_data(
+            authored_on     => '19810612223059', # oldest
+            blog_id         => $blog_id,
+            content_type_id => $ct_id,
+            identifier      => "oldest",
+            label           => "oldest",
+            data            => {
+                $cfs->{cf_single_line_text}->id => "oldest",
+            },
+        );
+
+
+        subtest 'default limit' => sub {
+            $app->get_ok({ __mode => 'search_replace', blog_id => $blog_id });
+            $app->change_tab('content_data');
+            $app->change_content_type($ct_id);
+            my $cf_id1 = $objs->{content_type}{ct_multi}{content_field}{cf_single_line_text}->id;
+            $app->search('oldest', { is_limited => 1, search_cols => ['__field:' . $cf_id1] });
+            is_deeply($app->found_titles, ['oldest']);
+            ok !$app->have_more_link_exists;
+        };
+
+        subtest 'CMSSearchLimit is 1' => sub {
+
+            my $cms_search_limit_org    = MT->config('CMSSearchLimit');
+            my $cms_search_limit_org_cd = MT->config('CMSSearchLimitContentData');
+            MT->config('CMSSearchLimit',            1);
+            MT->config('CMSSearchLimitContentData', '');
+
+            $app->get_ok({ __mode => 'search_replace', blog_id => $blog_id });
+            $app->change_tab('content_data');
+            $app->change_content_type($ct_id);
+            my $cf_id1 = $objs->{content_type}{ct_multi}{content_field}{cf_single_line_text}->id;
+            $app->search('oldest', { is_limited => 1, search_cols => ['__field:' . $cf_id1] });
+            is_deeply($app->found_titles, []);
+            ok $app->have_more_link_exists;
+
+            subtest 'CMSSearchLimitContentData is 10' => sub {
+
+                my $cms_search_limit_org = MT->config('CMSSearchLimitContentData');
+                MT->config('CMSSearchLimitContentData', 10);
+
+                $app->get_ok({ __mode => 'search_replace', blog_id => $blog_id });
+                $app->change_tab('content_data');
+                $app->change_content_type($ct_id);
+                my $cf_id1 = $objs->{content_type}{ct_multi}{content_field}{cf_single_line_text}->id;
+                $app->search('oldest', { is_limited => 1, search_cols => ['__field:' . $cf_id1] });
+                is_deeply($app->found_titles, ['oldest']);
+                ok !$app->have_more_link_exists;
+            };
+
+            MT->config('CMSSearchLimitContentData', $cms_search_limit_org);
+            MT->config('CMSSearchLimit',            $cms_search_limit_org);
+        };
+
+        subtest 'CMSSearchLimit does not affect other tabs' => sub {
+            my $cms_search_limit_org    = MT->config('CMSSearchLimit');
+            my $cms_search_limit_org_cd = MT->config('CMSSearchLimitContentData');
+            MT->config('CMSSearchLimit',            50);
+            MT->config('CMSSearchLimitContentData', 10);
+            $app->get_ok({ __mode => 'search_replace', blog_id => $blog_id });
+            $app->change_tab('content_data');
+            is $app->find_searchform('search_form')->find_input('limit')->value, 10;
+            $app->change_tab('entry');
+            is $app->find_searchform('search_form')->find_input('limit')->value, 50;
+            MT->config('CMSSearchLimitContentData', $cms_search_limit_org_cd);
+            MT->config('CMSSearchLimit',            $cms_search_limit_org);
+        };
+
+        $cd->remove();
+    };
 };
 
 subtest 'content_data with daterange' => sub {

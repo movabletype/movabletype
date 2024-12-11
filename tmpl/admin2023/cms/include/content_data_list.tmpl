@@ -201,7 +201,7 @@ function loadContentDataList(offset) {
         } else {
           canPaginate = false;
         }
-        if (data.have_more) {
+        if (data.have_more && data.have_more.limit != 0) {
           jQuery('#have-more-limit').text(data.have_more.limit);
           jQuery('#have-more-count').show();
         } else {

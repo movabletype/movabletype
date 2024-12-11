@@ -2000,14 +2000,15 @@ BEGIN {
             'ContentDataSearchThrottleIPWhitelist' => {
                 default => sub { $_[0]->SearchThrottleIPWhitelist }
             },
-            'SearchContentTypes' => undef,
-            'CMSSearchLimit'     => { default => 125 },
-            'OneHourMaxPings'    => { default => 10, },
-            'OneDayMaxPings'     => { default => 50, },
-            'SupportURL'         => undef,
-            'NewsURL'            => undef,
-            'NewsboxURL'         => undef,
-            'FeedbackURL'        => undef,
+            'SearchContentTypes'        => undef,
+            'CMSSearchLimit'            => { default => 125 },
+            'CMSSearchLimitContentData' => { default => 1000 },
+            'OneHourMaxPings'           => { default => 10, },
+            'OneDayMaxPings'            => { default => 50, },
+            'SupportURL'                => undef,
+            'NewsURL'                   => undef,
+            'NewsboxURL'                => undef,
+            'FeedbackURL'               => undef,
 
             'EmailAddressMain'         => undef,
             'EmailReplyTo'             => undef,
