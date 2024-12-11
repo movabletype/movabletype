@@ -51,6 +51,7 @@ sub core_methods {
 sub needs_upgrade {
     my $app = shift;
 
+    return 1 if $app->param('steps');
     return 1 if MT->schema_version > ( $app->{cfg}->SchemaVersion || 0 );
 
     foreach my $plugin (@MT::Components) {
