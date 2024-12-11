@@ -5,7 +5,7 @@
  * a-table:
  *   license: MIT (http://opensource.org/licenses/MIT)
  *   author: appleple
- *   version: 1.5.10-2
+ *   version: 1.5.10-3
  *
  * a-template:
  *   license: MIT (http://opensource.org/licenses/MIT)
@@ -4831,6 +4831,9 @@ var aTable = function (_aTemplate) {
       }
       data.history.push((0, _clone2.default)(data.row));
       this.update();
+      if (this.afterAction) {
+        this.afterAction();
+      }
     }
   }, {
     key: 'updateTable',
@@ -5288,6 +5291,9 @@ var aTable = function (_aTemplate) {
         }
         self.insertRow(selectedno + 1, newRow);
         self.update();
+        if (this.afterAction) {
+          this.afterAction();
+        }
         return;
       }
       targetPoints.forEach(function (point) {
@@ -5314,6 +5320,9 @@ var aTable = function (_aTemplate) {
       this.insertRow(selectedno + 1, newRow);
       data.history.push((0, _clone2.default)(data.row));
       this.update();
+      if (this.afterAction) {
+        this.afterAction();
+      }
     }
   }, {
     key: 'insertRowAbove',
@@ -5341,6 +5350,9 @@ var aTable = function (_aTemplate) {
         }
         self.insertRow(0, newRow);
         self.update();
+        if (this.afterAction) {
+          this.afterAction();
+        }
         return;
       }
       targetPoints.forEach(function (point) {
@@ -5367,6 +5379,9 @@ var aTable = function (_aTemplate) {
       this.insertRow(selectedno, newRow);
       data.history.push((0, _clone2.default)(this.data.row));
       this.update();
+      if (this.afterAction) {
+        this.afterAction();
+      }
     }
   }, {
     key: 'mergeCells',
