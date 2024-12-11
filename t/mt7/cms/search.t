@@ -99,8 +99,10 @@ subtest 'content_data' => sub {
 
         subtest 'CMSSearchLimit is 1' => sub {
 
-            my $cms_search_limit_org = MT->config('CMSSearchLimit');
-            MT->config('CMSSearchLimit', 1);
+            my $cms_search_limit_org    = MT->config('CMSSearchLimit');
+            my $cms_search_limit_org_cd = MT->config('CMSSearchLimitContentData');
+            MT->config('CMSSearchLimit',            1);
+            MT->config('CMSSearchLimitContentData', '');
 
             $app->get_ok({ __mode => 'search_replace', blog_id => $blog_id });
             $app->change_tab('content_data');
@@ -122,11 +124,10 @@ subtest 'content_data' => sub {
                 $app->search('oldest', { is_limited => 1, search_cols => ['__field:' . $cf_id1] });
                 is_deeply($app->found_titles, ['oldest']);
                 ok !$app->have_more_link_exists;
-
-                MT->config('CMSSearchLimitContentData', $cms_search_limit_org);
             };
 
-            MT->config('CMSSearchLimit', $cms_search_limit_org);
+            MT->config('CMSSearchLimitContentData', $cms_search_limit_org);
+            MT->config('CMSSearchLimit',            $cms_search_limit_org);
         };
 
         subtest 'CMSSearchLimit does not affect other tabs' => sub {

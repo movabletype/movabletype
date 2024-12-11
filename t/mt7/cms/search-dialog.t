@@ -8,7 +8,7 @@ use Test::More;
 use MT::Test::Env;
 our $test_env;
 BEGIN {
-    $test_env = MT::Test::Env->new(CMSSearchLimit => 3);
+    $test_env = MT::Test::Env->new(CMSSearchLimit => 3, CMSSearchLimitContentData => 3);
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 

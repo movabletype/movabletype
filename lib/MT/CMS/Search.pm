@@ -961,15 +961,15 @@ sub do_search_replace {
     # type-specific directives override global CMSSearchLimit
     require String::CamelCase;
     my $directive = 'CMSSearchLimit' . String::CamelCase::camelize($type);
-    $limit = MT->config->$directive;
-    if (!$limit && $type =~ /_/) {
-        my $directive = 'CMSSearchLimit' . ucfirst($type);
-        $limit = MT->config->$directive;
+    if ($type =~ /_/) {
+        my $old_directive = 'CMSSearchLimit' . ucfirst($type);
+        $limit = MT->config->$old_directive;
         if ($limit) {
             require MT::Util::Deprecated;
-            MT::Util::Deprecated::warning(since => '8.6.0');
+            MT::Util::Deprecated::warning(since => '8.6.0', name => $old_directive, alternative => $directive);
         }
     }
+    $limit ||= MT->config->$directive;
     $limit ||= MT->config->CMSSearchLimit;
     $limit ||= MT->config->default('CMSSearchLimit');
 
