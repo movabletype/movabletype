@@ -89,6 +89,10 @@ sub search {
     my $do_search = $form->find_input('do_search');
     $do_search->readonly(0);
     $do_search->value(1);
+    if ($opts->{limit} && $opts->{limit} eq 'all' && $self->wq_find('#have-more-count')->size) {
+        my $limit = $form->find_input('limit');
+        $limit->readonly(0) if $self->wq_find('#have-more-count')->size;
+    }
     $self->apply_opts($form, $opts) if $opts;
     $self->post_ok($form->click);
 }

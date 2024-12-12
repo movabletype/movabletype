@@ -967,7 +967,7 @@ sub do_search_replace {
 
     # don't allow passed limit to be higher than config limit
     my $param_limit = $app->param('limit');
-    if ( $param_limit && ( $param_limit < $limit ) ) {
+    if ( $param_limit && ( $param_limit eq 'all' || $param_limit < $limit ) ) {
         $limit = $param_limit;
     }
     $limit =~ s/\D//g if $limit ne 'all';
@@ -1083,7 +1083,7 @@ sub do_search_replace {
         if ( !$is_regex && $type ne 'content_data' ) {
             @terms = @{make_terms_for_plain_search(\%terms, \@cols, $plain_search)};
         }
-        $args{limit} = $limit + 1 if $limit ne 'all';
+        $args{limit} = MT->config->default('CMSSearchSQLLimit') if $limit ne 'all';
         my $iter;
         if ($do_replace) {
             $iter = iter_for_replace($class, \@ids);
