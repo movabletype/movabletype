@@ -1095,7 +1095,7 @@ sub do_search_replace {
                 $iter = $class->load_iter( $terms, $args )
                     or die $class->errstr;
             } elsif ($blog_id || ( $type eq 'blog' ) || ( $app->mode eq 'dialog_grant_role' ) || $author->is_superuser) {
-                $iter = $class->load_iter(@terms ? \@terms : \%terms, \%args) or die $class->errstr;
+                $iter = incremental_iter($class, @terms ? \@terms : \%terms, \%args);
             } else {
                 if ( $class->has_column('blog_id') ) {
 
@@ -1107,7 +1107,7 @@ sub do_search_replace {
                     );
                     push @terms, {blog_id => [map {$_->blog_id} @perms]} if @perms;
                 }
-                $iter = $class->load_iter( \@terms, \%args );
+                $iter = incremental_iter($class, \@terms, \%args);
             }
         }
         my $i = 1;
@@ -1655,6 +1655,29 @@ sub iter_for_replace {
             MT::Meta::Proxy->bulk_load_meta_objects(\@objs) if @objs && $objs[0]->has_meta;
         }
         return shift(@objs);
+    };
+}
+
+sub incremental_iter {
+    my ($class, $terms, $args) = @_;
+    my $limit    = MT->config->CMSSearchLimit;
+    my $offset   = 0;
+    my $get_iter = sub {
+        local $args->{limit}  = $limit;
+        local $args->{offset} = $offset;
+        my $iter = $class->load_iter($terms, $args) or die $class->errstr;
+        return $iter;
+    };
+    my $iter;
+    return sub {
+        $iter ||= $get_iter->();
+        my $obj = $iter->();
+        if (!$obj) {
+            $iter = $get_iter->();
+            $obj  = $iter->();
+        }
+        $offset++ if $obj;
+        return $obj;
     };
 }
 

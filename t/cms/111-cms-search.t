@@ -95,6 +95,41 @@ subtest 'unit test for iter_for_replace' => sub {
     }
 };
 
+subtest 'unit test for incremental_iter' => sub {
+    my $cms_search_limit_org = MT->config('CMSSearchLimit');
+
+    require MT::CMS::Search;
+
+    for my $limit (1, 2, 125) {
+        MT->config('CMSSearchLimit', $limit);
+
+        subtest 'get all' => sub {
+            my @entries  = MT::Entry->load();
+            my @expected = map { $_->id } @entries;
+            my $iter     = MT::CMS::Search::incremental_iter('MT::Entry', {}, {});
+            my @got;
+            while (my $obj = $iter->()) {
+                push @got, $obj->id;
+            }
+            is_deeply(\@got, \@expected);
+        };
+
+        subtest 'get with term' => sub {
+            my $terms    = { title => ['Verse 2', 'Verse 3'] };
+            my @entries  = MT::Entry->load($terms);
+            my @expected = map { $_->id } @entries;
+            my $iter     = MT::CMS::Search::incremental_iter('MT::Entry', $terms, {});
+            my @got;
+            while (my $obj = $iter->()) {
+                push @got, $obj->id;
+            }
+            is_deeply(\@got, \@expected);
+        };
+    }
+
+    MT->config('CMSSearchLimit', $cms_search_limit_org);
+};
+
 subtest search => sub {
     subtest basic => sub {
         my $app = MT::Test::App->new('MT::App::CMS');
@@ -106,6 +141,37 @@ subtest search => sub {
 
         $app->search('Verse');
         is_deeply($app->found_titles, ['Verse 5', 'Verse 4', 'Verse 3', 'Verse 2', 'Verse 1'], 'basic 2');
+    };
+
+    subtest 'limit' => sub {
+        my $cms_search_limit_org = MT->config('CMSSearchLimit');
+        MT->config('CMSSearchLimit', 3);
+
+        my $app = MT::Test::App->new('MT::App::CMS');
+        $app->login($admin);
+        $app->get_ok({ __mode => 'search_replace', blog_id => $blog_id });
+
+        subtest 'first search' => sub {
+            $app->search('Verse');
+            is_deeply($app->found_titles, ['Verse 5', 'Verse 4', 'Verse 3']);
+            ok $app->have_more_link_exists;
+        };
+
+        subtest 'click "Show all matches"' => sub {
+            $app->search('Verse', { limit => 'all' });
+            is_deeply($app->found_titles, ['Verse 5', 'Verse 4', 'Verse 3', 'Verse 2', 'Verse 1']);
+            ok !$app->have_more_link_exists;
+        };
+
+        $app->get_ok({ __mode => 'search_replace', blog_id => $blog_id });
+
+        subtest 'regex search does not miss old entries' => sub {
+            $app->search('Verse 1', { is_regex => 1 });
+            is_deeply($app->found_titles, ['Verse 1']);
+            ok !$app->have_more_link_exists;
+        };
+
+        MT->config('CMSSearchLimit', $cms_search_limit_org);
     };
 
     subtest 'with daterange' => sub {
