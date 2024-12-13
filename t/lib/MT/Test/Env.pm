@@ -290,7 +290,7 @@ sub save_file {
 
 sub image_drivers {
     my $self = shift;
-    map { my $tmp = basename($_); $tmp =~ s/\.pm$//; $tmp } glob "$MT_HOME/lib/MT/Image/*.pm";
+    grep !/ExifData/, map { my $tmp = basename($_); $tmp =~ s/\.pm$//; $tmp } glob "$MT_HOME/lib/MT/Image/*.pm";
 }
 
 sub suppress_deprecated_warnings {
@@ -412,11 +412,23 @@ sub _connect_info_mysql {
         }
     } else {
         $self->{dsn} = "dbi:mysql:host=$info{DBHost};dbname=$info{Database};user=$info{DBUser}";
-        my $dbh = DBI->connect($self->{dsn});
+        my $dbh = do { local $SIG{__WARN__}; DBI->connect($self->{dsn}, undef, undef, { PrintError => 0 }) };
         if (!$dbh) {
-            die $DBI::errstr unless $DBI::errstr =~ /Unknown database/;
-            (my $dsn = $self->{dsn}) =~ s/dbname=$info{Database};//;
-            $dbh = DBI->connect($dsn) or die $DBI::errstr;
+            if ($DBI::errstr =~ /Connections using insecure transport are prohibited/) {
+                $dbh = DBI->connect($self->{dsn}, undef, undef, {
+                    mysql_ssl                    => 1,
+                    mysql_ssl_verify_server_cert => 0,
+                }) or die $DBI::errstr;
+                $info{DBIConnectOptions} = {
+                    mysql_ssl                    => 1,
+                    mysql_ssl_verify_server_cert => 0,
+                };
+            } elsif ($DBI::errstr =~ /Unknown database/) {
+                (my $dsn = $self->{dsn}) =~ s/dbname=$info{Database};//;
+                $dbh = DBI->connect($dsn) or die $DBI::errstr;
+            } else {
+                die $DBI::errstr;
+            }
         }
         $self->_prepare_mysql_database($dbh);
     }
@@ -558,10 +570,16 @@ CREATE DATABASE mt_test CHARACTER SET $character_set COLLATE $collation;
 END_OF_SQL
 
     my ($major_version, $minor_version, $is_maria, $maria_major, $maria_minor) = _mysql_version();
-    if ($ENV{MT_TEST_MYSQLPOOL_DSN} && $is_maria && $maria_major == 10 && $maria_minor > 3) {
-        $sql .= <<"END_OF_SQL";
+    if ($ENV{MT_TEST_MYSQLPOOL_DSN} && ((!$is_maria && $major_version >= 8) or ($is_maria && $maria_major == 10 && $maria_minor > 3))) {
+        if ($ENV{MT_TEST_FORCE_MYSQL_NATIVE_PASSWORD}) {
+            $sql .= <<"END_OF_SQL";
 ALTER USER root\@localhost IDENTIFIED VIA mysql_native_password USING PASSWORD('');
 END_OF_SQL
+        } else {
+            $sql .= <<"END_OF_SQL";
+ALTER USER root\@localhost IDENTIFIED BY '';
+END_OF_SQL
+        }
     }
 
     for my $statement (split ";\n", $sql) {
@@ -654,7 +672,14 @@ sub my_cnf {
 
     # MySQL 8.0+
     if ((!$is_maria && $major_version >= 8) or ($is_maria && $maria_major == 10 && $maria_minor > 3)) {
-        $cnf{default_authentication_plugin} = 'mysql_native_password';
+        if ($ENV{MT_TEST_FORCE_MYSQL_NATIVE_PASSWORD}) {
+            $cnf{default_authentication_plugin} = 'mysql_native_password';
+        } elsif (!$is_maria && $major_version >= 8) {
+            $cnf{caching_sha2_password_auto_generate_rsa_keys} = 1;
+        }
+        if ($ENV{MT_TEST_FORCE_MYSQL_SECURE_TRANSPORT}) {
+            $cnf{require_secure_transport} = 'true';
+        }
     }
 
     my $charset = $class->mysql_charset;
@@ -693,6 +718,7 @@ sub _mysqld {
 sub dbh {
     my $self = shift;
     $self->connect_info unless $self->{dsn};
+    my $options = $self->{_config}{DBIConnectOptions} || {};
     DBI->connect(
         $self->{dsn},
         undef, undef,
@@ -700,6 +726,7 @@ sub dbh {
             RaiseError         => 1,
             PrintError         => 0,
             ShowErrorStatement => 1,
+            %$options,
         },
     ) or die $DBI::errstr;
 }

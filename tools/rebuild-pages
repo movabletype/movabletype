@@ -6,7 +6,10 @@ use warnings;
 use FindBin;
 use lib ("$FindBin::Bin/../lib", "$FindBin::Bin/../extlib");
 
-use LWP::UserAgent::Local;
+use Carp ();
+use IPC::Run3 'run3';
+use IO::String;
+use HTTP::Response;
 use HTTP::Request;
 use Data::Dumper;
 use Encode;
@@ -76,9 +79,6 @@ my $scraper = scraper {
 
     result 'status_publishing', 'status_error', 'status_success';
 };
-
-### Creates UserAgent
-my $ua = new LWP::UserAgent::Local( { ScriptAlias => $script_path } );
 
 ### Runs build script.
 foreach my $blog (@blogs) {
@@ -167,7 +167,7 @@ sub run_rebuild {
             $url .= "&username=" . $username;
             $url .= "&password=" . $password;
             my $req = new HTTP::Request( GET => $url );
-            my $resp = $ua->request($req);
+            my $resp = simple_request($script_path, $req);
             if ( $resp->is_success ) {
                 my $content = $resp->decoded_content;
                 my $res = $scraper->scrape($content);
@@ -214,6 +214,78 @@ sub logging {
     print $enc->encode($msg) if !$silent;
 }
 
+sub simple_request {
+    my $script_alias = shift;
+    my $request      = shift;
+
+    Carp::croak
+        "simple_request requires an HTTP::Request argument"
+        unless ref $request && $request->isa('HTTP::Request');
+
+    my $request_method = $request->method();
+    $request_method = "GET" unless $request_method;
+
+    my ( $script_name, $path )
+        = ( $request->uri->path()
+            =~ m|^(?:\w+://[^/]*/?)?$script_alias([^/]*)(/?.*)| );
+    $script_name
+        or die "Couldn't determine script name from "
+        . $request->uri()->path();
+    $ENV{REQUEST_URI} = $script_alias;
+
+    $request->headers()->scan(
+        sub {
+            my $header_name = $_[0];
+            $header_name =~ tr/a-z-/A-Z_/;
+            $ENV{ "HTTP_" . $header_name } = $_[1];
+        }
+    );
+
+    $ENV{REQUEST_METHOD}  = $request_method;
+    $ENV{SCRIPT_NAME}     = $script_name;
+    $ENV{PATH_INFO}       = $path;
+    $ENV{QUERY_STRING}    = $request->uri->query || '';
+    $ENV{HTTP_USER_AGENT} = "Ezra's Local User Agent 0.1";
+
+    my $content = $request->content();
+    if ($content) {
+        $ENV{CONTENT_LENGTH} = length $request->content();
+    }
+    run3 [$^X, "./$script_name"],
+        \$content, \my $output, undef,
+        { binmode_stdin => 1 }
+        or die "Couldn't spawn ./$script_name";
+    print STDERR "$script_name exit status: $?\n" if $?;
+
+    my $RESPONSE = IO::String->new($output);
+
+    my $response = new HTTP::Response();
+    $response->request($request);
+    my $status_line = '';
+    while ( ( my $line = <$RESPONSE> ) !~ /^\s*$/ ) {
+        if ( $line =~ /^Status:/i ) {
+            $status_line = $line;
+        }
+        else {
+            my ( $hdr_name, $hdr_val ) = ( $line =~ /(.*?):(.*)/ );
+            $response->header( $hdr_name => $hdr_val );
+        }
+    }
+
+    $status_line =~ s/Status: //i;
+    my ( $response_code, $response_desc )
+        = $status_line =~ /^(\d\d\d)(\s.*)?$/;
+    $response->code($response_code);
+    $response->message($response_desc);
+
+    local $/ = undef;
+    my $body = <$RESPONSE>;
+    $response->content($body);
+
+    close $RESPONSE;
+    $response;
+}
+
 1;
 
 __END__
@@ -247,5 +319,3 @@ rebuild_pages
 
     This script requires following perl modules.
         Web::Scraper           You must install from CPAN if you not installed yet.
-        LWP::UserAgent::Local  You must install from sixapart repository if you not installed yet.
-                               https://github.com/movabletype/movabletype/blob/master/t/lib/LWP/UserAgent/Local.pm

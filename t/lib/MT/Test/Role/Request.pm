@@ -73,9 +73,11 @@ sub post_form_ok {
             $input->readonly(0);
             note "Set value to readonly field: $name";
         }
-    }
-    for my $name (keys %$params) {
-        $form->param( $name => $params->{$name} );
+        if ($input->type eq 'file') {
+            $input->file($params->{$name});
+        } else {
+            $form->param( $name => $params->{$name} );
+        }
     }
 
     my $res = $self->post( $form->click );

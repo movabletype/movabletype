@@ -7,11 +7,15 @@ use lib "$FindBin::Bin/../lib",    # t/lib
     "$FindBin::Bin/../..";         # $ENV{MT_HOME}
 use Test::More;
 use MT::Test::Env;
-our $test_env;
+use MT::Test::Memcached;
 
+our $test_env;
+my $memcached;
 BEGIN {
+    $memcached = MT::Test::Memcached->new or plan skip_all => "Memcached is not available";
     $test_env = MT::Test::Env->new(
-        PluginPath => ['TEST_ROOT/plugins'],
+        MemcachedServers => $memcached->address,
+        PluginPath => ['TEST_ROOT/plugins']
     );
     $ENV{MT_CONFIG} = $test_env->config_file;
 
@@ -76,10 +80,6 @@ PM
 }
 
 use MT::Test;
-use MT::Test::Memcached;
-
-my $memcached = MT::Test::Memcached->new or plan skip_all => "Memcached is not available";
-MT->config(MemcachedServers => $memcached->address);
 
 my $m = MT::Memcached->instance;
 $m->set(__FILE__, __FILE__, 1);

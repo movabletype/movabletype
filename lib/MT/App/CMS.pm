@@ -320,6 +320,8 @@ sub core_methods {
             code     => "${pkg}Tools::login_json",
             app_mode => 'JSON',
         },
+
+        ## DEPRECATED since 8.5.0
         'regenerate_site_stats_data' => {
             code     => "${pkg}Dashboard::regenerate_site_stats_data",
             app_mode => 'JSON',
@@ -3267,7 +3269,7 @@ sub build_menus {
     my $blog         = $app->blog;
     my $blog_id      = $blog ? $blog->id : 0;
     my $theme        = $blog ? $blog->theme : undef;
-    my $theme_modify = $theme ? $theme->{menu_modification} : {};
+    my $theme_modify = $theme ? $theme->{menus_modification} || $theme->{menu_modification} : {};
     my $mode         = $app->mode;
 
     my @top_ids = grep { !/:/ } keys %$menus;
@@ -3689,17 +3691,19 @@ sub build_actions {
         my $cond   = $action->{condition};
         if ( defined $cond ) {
             next unless $cond;
+            $cond = MT->handler_to_coderef($cond) unless ref $cond;
             next if ref $cond eq 'CODE' && !$cond->( $app, $param );
         }
 
         my $href = $action->{href};
-        if ( $href && ref $href eq 'CODE' ) {
-            $href = $href->( $app, $param );
+        if (defined $href) {
+            $href = MT->handler_to_coderef($href) unless ref $href;
+            $href = $href->( $app, $param ) if ref $href eq 'CODE';
         }
         $action->{id} = $id;
         $action->{order} ||= 0;
 
-        push @valid_actions, $action;
+        push @valid_actions, { %$action, href => $href };
     }
 
     @valid_actions

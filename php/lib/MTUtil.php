@@ -1320,14 +1320,56 @@ function tagarray_name_sort($a, $b) {
     return strcmp(strtolower($a->tag_name), strtolower($b->tag_name));
 }
 
+# sorts by length of tag name in descending
+function tagarray_name_length_sort($a, $b) {
+    return length_text($b->tag_name) <=> length_text($a->tag_name);
+}
+
 function create_tag_expr_function($expr, &$tags, $datasource = 'entry') {
     $tags_used = array();
     $orig_expr = $expr;
 
+    # Sort in descending order by length
+    usort($tags, 'tagarray_name_length_sort');
+
     $tags_dict = array();
     foreach ($tags as $tag) {
         $tags_dict[$tag->tag_name] = $tag;
+
+        $name = $tag->tag_name;
+        ## FIXME: this implementation can't handle tags which starts
+        ## with hash mark and numbers related. because they could break
+        ## our mid-compiled expression. now just skip them.
+        if (preg_match('/^\s*\#\d+\s*$/', $name)) continue;
+
+        ## search for tags from expression and replace them with its IDs.
+        ## allowed only existing tag name and some logical operators
+        ## ( AND, OR, NOT, and round brackets ).
+        $id = '#' . $tag->tag_id;
+        $count = 0;
+        $expr = preg_replace('/
+            (
+                \sAND\s
+                | \sOR\s
+                | \s?NOT\s
+                | \(
+                | \A
+            )
+            \s*?\Q'.$name.'\E\s*?
+            (
+                \Z
+                | \)
+                | \sAND\s
+                | \sOR\s
+                | \sNOT\s
+            )/ix', "$1$id$2", $expr, -1, $count); # Change all matches to #$id (e.g. #932)
+
+        if (0 < $count) {
+            unset($tags_dict[$tag->tag_name]);
+            $tags_dict[$id] = $tag;
+        }
     }
+
     $tokens = preg_split('/\b(AND|NOT|OR|\(\))\b/i', $expr, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
     $result = '';
     foreach ($tokens as $t) {

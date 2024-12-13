@@ -31,15 +31,22 @@
   export let store: Listing.ListStore;
   export let zeroStateLabel: string;
 
+  let callListReady = false;
+
   $: hidden = store.count === 0;
 
   onMount(() => {
     store.trigger("load_list");
   });
 
-  // sub_fields are not updated yet in store.on("refresh_view", ...)
   afterUpdate(() => {
+    // update sub_fields not managed in the svelte lifecycle
     updateSubFields();
+
+    if (callListReady) {
+      callListReady = false;
+      jQuery(window).trigger("listReady");
+    }
   });
 
   store.on(
@@ -53,7 +60,8 @@
         window.document.body.scrollTop = window.document.body.scrollHeight;
       }
       if (!args.notCallListReady) {
-        jQuery(window).trigger("listReady");
+        // trigger a "listReady" event in afterUpdate() after the DOM has been updated
+        callListReady = true;
       }
     },
   );

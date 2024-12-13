@@ -6,4 +6,5 @@ system("MT_CONFIG=$MT_CONFIG". ' perl -It/lib -Ilib -Iextlib -MMT::Test=:db -E "
 
 set_include_path(realpath(__DIR__). '/../');
 require_once('mt.php');
-MT::get_instance(1, realpath("t/$MT_CONFIG"));
+$mt = MT::get_instance(1, realpath("t/$MT_CONFIG"));
+$mt->init_plugins();
