@@ -1083,7 +1083,6 @@ sub do_search_replace {
         if ( !$is_regex && $type ne 'content_data' ) {
             @terms = @{make_terms_for_plain_search(\%terms, \@cols, $plain_search)};
         }
-        $args{limit} = $limit + 1 if $limit ne 'all';
         my $iter;
         if ($do_replace) {
             $iter = iter_for_replace($class, \@ids);
@@ -1277,18 +1276,18 @@ sub do_search_replace {
                     push @to_save,      $obj;
                     push @to_save_orig, $orig_obj;
                 }
+
+                # We got one extra to see if there were more
+                if ($limit ne 'all' && @data >= $limit) {
+                    $param{have_more} = 1;
+                    last;
+                }
+
                 push @data, $obj;
             }
-            last if ( $limit ne 'all' ) && @data > $limit;
         }
         if (@data) {
             $param{have_results} = 1;
-
-            # We got one extra to see if there were more
-            if ( ( $limit ne 'all' ) && @data > $limit ) {
-                $param{have_more} = 1;
-                pop @data;
-            }
             $matches = @data;
 
             if ( $do_replace && !$show_all && $app->param('error') ) {
