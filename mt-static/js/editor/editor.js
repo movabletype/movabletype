@@ -7,9 +7,10 @@
  */
 ;(function($) {
 
-MT.Editor = function(id, manager) {
+MT.Editor = function(id, manager, options) {
     this.id = id;
     this.manager = manager;
+    this.options = options;
     this.initialized = false;
     this.editor = null;
 };
