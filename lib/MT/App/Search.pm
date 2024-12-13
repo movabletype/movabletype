@@ -10,7 +10,8 @@ use strict;
 use warnings;
 use base qw( MT::App );
 
-use MT::Util qw( encode_html encode_url perl_sha1_digest_hex );
+use MT::Util qw( encode_html encode_url );
+use MT::Util::Digest::SHA qw( sha1_hex );
 use MT::Util::Encode;
 use MT::App::Search::Common;
 
@@ -307,8 +308,8 @@ sub generate_cache_keys {
     $key       .= $app_key_param;
     $count_key .= $app_key_param;
 
-    $key       = perl_sha1_digest_hex($key);
-    $count_key = perl_sha1_digest_hex($count_key);
+    $key       = sha1_hex($key);
+    $count_key = sha1_hex($count_key);
 
     $app->{cache_keys} = {
         result       => $key,
