@@ -100,7 +100,7 @@ function convertedText(response) {
     jQuery('#'+field_id).html(response.result[field_id]);
     jQuery('.convert_breaks[data-target='+field_id+']').attr('data-orig_text_format', 'richtext');
     jQuery('#'+field_id).parents('.editor-content').removeClass('editor-plaintext').show();
-    app.editor.reload();
+    app.editor.setMode('richtext');
     </mt:unless>
 }
 function changedTextFormat(e, noConfirm) {
@@ -163,7 +163,6 @@ function changedTextFormat(e, noConfirm) {
         });
     } else {
         <mt:if name="editors">
-        app.editor.reload();
         app.editor.setMode(option);
         </mt:if>
         app.editor.focus();

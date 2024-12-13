@@ -184,7 +184,7 @@ div.group-container.multi_line_text-field-container>.form-group {
       jQuery('#'+field_id).val(response.result[field_id]);
       jQuery('.convert_breaks[data-target='+field_id+']').attr('data-orig_text_format', 'richtext');
       jQuery('#'+field_id).parents('.editor-content').removeClass('editor-plaintext').show();
-      app.editor.reload();
+      app.editor.setMode('richtext');
       </mt:unless>
   }
   function changedTextFormat(e, noConfirm) {
@@ -250,11 +250,10 @@ div.group-container.multi_line_text-field-container>.form-group {
           jQuery('#'+editor_id).addClass('editor-plaintext');
 
           var html = jQuery('#'+editor_id + '-blockeditor').blockeditor('get_html');
-          app.editor.reload();
-          app.editor.setMode('textarea');
-          app.editor.setHTML(html);
           jQuery('#' + editor_id + '-blockeditor').blockeditor('destroy');
           jQuery('#' + editor_id).parents('.editor-content').show();
+          app.editor.setHTML(html);
+          app.editor.setMode(option);
           app.editor.focus();
       } else if (option == 'richtext') {
       <mt:else>
@@ -262,7 +261,6 @@ div.group-container.multi_line_text-field-container>.form-group {
           // changing to plaintext editor
           jQuery('#'+editor_id).parents('.editor-content').addClass('editor-plaintext');
 
-          app.editor.reload();
           app.editor.setMode(option);
           app.editor.focus();
       } else if(cur_text_format == 'blockeditor' && option != 'richtext') {
@@ -270,7 +268,6 @@ div.group-container.multi_line_text-field-container>.form-group {
           jQuery('#'+editor_id).parents('.editor-content').addClass('editor-plaintext');
 
           var html = jQuery('#'+editor_id + '-blockeditor').blockeditor('get_html');
-          app.editor.reload();
           app.editor.setMode(option);
           app.editor.setContent(html);
           jQuery('#' + editor_id + '-blockeditor').blockeditor('destroy');
