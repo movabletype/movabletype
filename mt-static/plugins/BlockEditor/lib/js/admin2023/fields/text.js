@@ -50,6 +50,12 @@
                   if(MT.EditorManager){
                       var editor = new MT.EditorManager(this.id, {
                           format: 'richtext',
+                          editorOptions: {
+                            richtext: {
+                              inline: true,
+                              toolbar: ['bold italic underline strikethrough | blockquote bullist numlist hr | link unlink'],
+                            }
+                          },
                           wrap: true,
                       });
                       self.editors.push(editor);
