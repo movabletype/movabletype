@@ -146,8 +146,8 @@ $.each([
     'getHeight', 'setHeight', 'resetUndo'
 ], function() {
     var method = this;
-    MT.Editor.prototype[method] = function() {
-        return this.editor ? this.editor[method]() : null;
+    MT.Editor.prototype[method] = function(...args) {
+        return this.editor ? this.editor[method](...args) : null;
     };
 });
 
