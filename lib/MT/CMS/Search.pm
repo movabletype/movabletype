@@ -1092,8 +1092,7 @@ sub do_search_replace {
             my $terms = $param->{terms};
             my $args  = $param->{args};
             if ( defined $terms && defined $args ) {
-                $iter = $class->load_iter( $terms, $args )
-                    or die $class->errstr;
+                $iter = incremental_iter($class, $terms, $args);
             } elsif ($blog_id || ( $type eq 'blog' ) || ( $app->mode eq 'dialog_grant_role' ) || $author->is_superuser) {
                 $iter = incremental_iter($class, @terms ? \@terms : \%terms, \%args);
             } else {
