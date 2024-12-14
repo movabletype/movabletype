@@ -141,7 +141,7 @@ $.extend(MT.EditorManager.prototype, {
 
             this.currentEditor.hide();
             this.currentEditor = editor;
-            this.currentEditor.initOrShow(format);
+            this.currentEditor.initOrShow(format, content, height);
             this.currentEditor.setContent(content);
             this.currentEditor.setHeight(height);
         }
