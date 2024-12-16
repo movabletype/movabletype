@@ -131,16 +131,18 @@ subtest 'unit test for incremental_iter' => sub {
 
         my $terms = { title => ['Verse 1', 'Verse 2', 'Verse 3', 'Verse 4', 'Verse 5'] };
         my $handler;
+        my $offset;
         my $limit = 2;
         MT->config('CMSSearchLimit', $limit);
 
         my $mock = sub {
-            my $iter = MT::CMS::Search::incremental_iter('MT::Entry', $terms, {});
+            my $iter = MT::CMS::Search::incremental_iter('MT::Entry', $terms, {}, $offset);
             my @got;
-            while (my $obj = $iter->()) {
+            while (my $obj = $iter->(\my $next_offset)) {
                 push @got, $obj->title if $handler->($obj);
                 if (@got > $limit) {
                     pop @got;
+                    $offset = $next_offset - 1;
                     last;
                 }
             }
@@ -148,21 +150,38 @@ subtest 'unit test for incremental_iter' => sub {
         };
 
         subtest 'normal' => sub {
+            $offset = 0;
             $handler = sub { 1 };
             is_deeply($mock->(), ['Verse 1', 'Verse 2']);
+            is $offset, 2, 'right offset';
+            is_deeply($mock->(), ['Verse 3', 'Verse 4'], 'second page');
+            is $offset, 4, 'right offset';
+            is_deeply($mock->(), ['Verse 5'], 'third page');
         };
 
         subtest 'reduce by search_handler' => sub {
+            $offset = 0;
             $handler = sub { $_[0]->title !~ /Verse 2/ };
             is_deeply($mock->(), ['Verse 1', 'Verse 3']);
+            is $offset, 3, 'right offset';
+            is_deeply($mock->(), ['Verse 4', 'Verse 5'], 'second page');
+            $offset = 0;
             $handler = sub { $_[0]->title !~ /Verse 1/ };
             is_deeply($mock->(), ['Verse 2', 'Verse 3']);
+            is $offset, 3, 'right offset';
+            is_deeply($mock->(), ['Verse 4', 'Verse 5'], 'second page');
+            $offset = 0;
             $handler = sub { $_[0]->title !~ /Verse (1|2)/ };
             is_deeply($mock->(), ['Verse 3', 'Verse 4']);
+            is $offset, 4, 'right offset';
+            is_deeply($mock->(), ['Verse 5'], 'second page');
+            $offset = 0;
             $handler = sub { $_[0]->title !~ /Verse (1|2|3)/ };
             is_deeply($mock->(), ['Verse 4', 'Verse 5']);
+            $offset = 0;
             $handler = sub { $_[0]->title !~ /Verse (1|2|3|4)/ };
             is_deeply($mock->(), ['Verse 5']);
+            $offset = 0;
             $handler = sub { $_[0]->title !~ /Verse (2|3|4|5)/ };
             is_deeply($mock->(), ['Verse 1']);
         };

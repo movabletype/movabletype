@@ -55,6 +55,13 @@ function reSearch(type) {
     return false;
 }
 
+function nextPage() {
+    jQuery('#search_form input[name=offset]').val(<mt:var name="next_offset">);
+    jQuery('#search_form input[name=do_search]').val(1);
+    jQuery('#search_form').trigger('submit');
+    return false;
+}
+
 function unLimit(newLimit) {
     jQuery('#search_form input[name=limit]').val(newLimit);
     jQuery('#search_form input[name=do_search]').val(1);
@@ -168,6 +175,7 @@ function toggleContentTypeDateTimeInputs() {
     <input type="hidden" name="__mode" value="search_replace" />
     <input type="hidden" name="_type" value="<mt:var name="object_type">" />
     <input type="hidden" name="limit" value="<mt:if name="limit_all">all<mt:else><mt:var name="limit" escape="html"></mt:if>" />
+    <input type="hidden" name="offset" value="0" />
   <mt:if name="blog_id">
     <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
   </mt:if>
@@ -478,6 +486,12 @@ function toggleContentTypeDateTimeInputs() {
 
 <mt:if name="searched" id="search_results">
 <mt:ignore>Search results will be placed here from app code.</mt:ignore>
+</mt:if>
+
+<mt:if name="next_offset">
+<div class="mt-2">
+  <a href="#" onclick="return nextPage()" class="replace action primary button btn btn-primary">Search for next <mt:var name="limit" escape="html"> results</a>
+</div>
 </mt:if>
 
 <mt:if name="have_more">
