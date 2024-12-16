@@ -830,9 +830,10 @@ sub do_search_replace {
         $quicksearch,  $publish_status,     $my_posts,
         $search_type,  $filter,             $filter_val,
         $change_note,
+        $offset
         )
         = map scalar $app->param($_),
-        qw( search replace do_replace case is_regex is_limited _type is_junk is_dateranged replace_ids date_time_field_id from to timefrom timeto show_all do_search orig_search quicksearch publish_status my_posts search_type filter filter_val change_note );
+        qw( search replace do_replace case is_regex is_limited _type is_junk is_dateranged replace_ids date_time_field_id from to timefrom timeto show_all do_search orig_search quicksearch publish_status my_posts search_type filter filter_val change_note offset);
 
     # trim 'search' parameter
     $search = '' unless defined($search);
@@ -1091,9 +1092,9 @@ sub do_search_replace {
             my $terms = $param->{terms};
             my $args  = $param->{args};
             if ( defined $terms && defined $args ) {
-                $iter = incremental_iter($class, $terms, $args);
+                $iter = incremental_iter($class, $terms, $args, $offset);
             } elsif ($blog_id || ( $type eq 'blog' ) || ( $app->mode eq 'dialog_grant_role' ) || $author->is_superuser) {
-                $iter = incremental_iter($class, @terms ? \@terms : \%terms, \%args);
+                $iter = incremental_iter($class, @terms ? \@terms : \%terms, \%args, $offset);
             } else {
                 if ( $class->has_column('blog_id') ) {
 
@@ -1105,7 +1106,7 @@ sub do_search_replace {
                     );
                     push @terms, {blog_id => [map {$_->blog_id} @perms]} if @perms;
                 }
-                $iter = incremental_iter($class, \@terms, \%args);
+                $iter = incremental_iter($class, \@terms, \%args, $offset);
             }
         }
         my $i = 1;
@@ -1132,7 +1133,8 @@ sub do_search_replace {
                 );
             }
         }
-        while ( my $obj = $iter->() ) {
+
+        while ( my $obj = $iter->(\my $next_offset) ) {
             next
                 unless $author->is_superuser
                 || $app->handler_to_coderef( $api->{perm_check} )->($obj);
@@ -1280,6 +1282,7 @@ sub do_search_replace {
                 # We got one extra to see if there were more
                 if ($limit ne 'all' && @data >= $limit) {
                     $param{have_more} = 1;
+                    $param{next_offset} = $next_offset if $next_offset;
                     last;
                 }
 
@@ -1289,14 +1292,10 @@ sub do_search_replace {
         if (@data) {
             $param{have_results} = 1;
             $matches = @data;
-
             if ( $do_replace && !$show_all && $app->param('error') ) {
                 @to_save      = ();
                 @to_save_orig = ();
             }
-        }
-        else {
-            $matches = 0;
         }
     }
     my $replace_count = 0;
@@ -1485,7 +1484,7 @@ sub do_search_replace {
         error               => $error,
         limit               => $limit,
         limit_all           => $limit eq 'all',
-        count_matches       => $matches,
+        count_matches       => $matches || 0,
         replace_count       => $replace_count,
         "search_$type"      => 1,
         search_label        => $class->class_label_plural,
@@ -1657,9 +1656,9 @@ sub iter_for_replace {
 }
 
 sub incremental_iter {
-    my ($class, $terms, $args) = @_;
+    my ($class, $terms, $args, $offset) = @_;
     my $limit    = MT->config->CMSSearchLimit;
-    my $offset   = 0;
+    $offset   ||= 0;
     my $get_iter = sub {
         local $args->{limit}  = $limit;
         local $args->{offset} = $offset;
@@ -1668,13 +1667,14 @@ sub incremental_iter {
     };
     my $iter;
     return sub {
+        my $next_offset = shift;
         $iter ||= $get_iter->();
         my $obj = $iter->();
         if (!$obj) {
             $iter = $get_iter->();
             $obj  = $iter->();
         }
-        $offset++ if $obj;
+        $$next_offset = ++$offset if $obj;
         return $obj;
     };
 }
