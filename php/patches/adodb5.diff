@@ -1,0 +1,106 @@
+diff --git a/php/vendor/adodb/adodb-php/adodb-active-record.inc.php b/php/vendor/adodb/adodb-php/adodb-active-record.inc.php
+index 5fbe7b90ae..e199688edf 100644
+--- a/php/vendor/adodb/adodb-php/adodb-active-record.inc.php
++++ b/php/vendor/adodb/adodb-php/adodb-active-record.inc.php
+@@ -1156,12 +1156,23 @@ global $_ADODB_ACTIVE_DBS;
+ 	$save = $db->SetFetchMode(ADODB_FETCH_NUM);
+ 
+ 	$qry = "select * from ".$table;
++	// Separate table name if table name was already joined other table.
++	if (preg_match('/^(.+)\sJOIN\s.+ON/i', $table)) {
++		$matches = preg_split('/\s/i', $table);
++		$tblname = trim($matches[0]);
++		$qry = "$tblname.* from ".$table;
++		$table = $tblname;
++	} else
++		$qry = "* from ".$table;
++
++	if (isset($extra['distinct']))
++		$qry = "distinct " . $qry;
++	$qry = "select " . $qry;
+ 
+ 	if (!empty($whereOrderBy)) {
+ 		$qry .= ' WHERE '.$whereOrderBy;
+ 	}
+ 	if(isset($extra['limit'])) {
+-		$rows = false;
+ 		if(isset($extra['offset'])) {
+ 			$rs = $db->SelectLimit($qry, $extra['limit'], $extra['offset'],$bindarr);
+ 		} else {
+@@ -1180,7 +1191,7 @@ global $_ADODB_ACTIVE_DBS;
+ 
+ 	$false = false;
+ 
+-	if ($rows === false) {
++	if (!isset($rows) || !is_array($rows)) {
+ 		return $false;
+ 	}
+ 
+@@ -1199,7 +1210,19 @@ global $_ADODB_ACTIVE_DBS;
+ 	foreach($rows as $row) {
+ 
+ 		$obj = new $class($table,$primkeyArr,$db);
+-		if ($obj->ErrorNo()){
++
++		$has_error = false;
++		if ($db->databaseType == 'mssqlnative') {
++			if ($obj->ErrorMsg()) {
++				if ($obj->ErrorNo())
++					$has_error = true;
++			}
++		}
++		else {
++			if ($obj->ErrorNo())
++				$has_error = true;
++		}
++		if ($has_error){
+ 			$db->_errorMsg = $obj->ErrorMsg();
+ 			return $false;
+ 		}
+diff --git a/php/vendor/adodb/adodb-php/drivers/adodb-mssqlnative.inc.php b/php/vendor/adodb/adodb-php/drivers/adodb-mssqlnative.inc.php
+index f7e1bcc167..82100b7edc 100644
+--- a/php/vendor/adodb/adodb-php/drivers/adodb-mssqlnative.inc.php
++++ b/php/vendor/adodb/adodb-php/drivers/adodb-mssqlnative.inc.php
+@@ -102,6 +102,7 @@ class ADODB_mssqlnative extends ADOConnection {
+ 
+ 	var $sequences = false;
+ 	var $mssql_version = '';
++	var $is_utf = false;
+ 
+ 	function __construct()
+ 	{
+@@ -514,6 +515,8 @@ class ADODB_mssqlnative extends ADOConnection {
+ 				ADOConnection::outp('No userid or password supplied, attempting connection with Windows Authentication');
+ 		}
+ 
++		if ( $this->is_utf )
++			$connectionInfo['CharacterSet'] = 'UTF-8';
+ 
+ 		/*
+ 		* Now merge in the passed connection parameters setting
+@@ -1040,6 +1043,11 @@ class ADODB_mssqlnative extends ADOConnection {
+ 
+ 	}
+ 
++	function Execute($sql,$inputarr=false) {
++		if ( $this->is_utf )
++			$sql = preg_replace( '/(\'.*\')/', 'N$1', $sql);
++		return parent::Execute( $sql, $inputarr );
++	}
+ }
+ 
+ /*--------------------------------------------------------------------------------------
+diff --git a/php/vendor/adodb/adodb-php/drivers/adodb-pdo.inc.php b/php/vendor/adodb/adodb-php/drivers/adodb-pdo.inc.php
+index d3ce12d08d..f004e6a9f8 100644
+--- a/php/vendor/adodb/adodb-php/drivers/adodb-pdo.inc.php
++++ b/php/vendor/adodb/adodb-php/drivers/adodb-pdo.inc.php
+@@ -159,6 +159,9 @@ class ADODB_pdo extends ADOConnection {
+ 					$argDSN .= ';dbname='.$argDatabasename;
+ 			}
+ 		}
++		if ( $this->port ) {
++			$argDSN .= ';port=' . $this->port;
++		}
+ 		/*
+ 		* Configure for persistent connection if required,
+ 		* by adding the the pdo parameter into any provided
