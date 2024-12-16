@@ -127,6 +127,47 @@ subtest 'unit test for incremental_iter' => sub {
         };
     }
 
+    subtest 'with do_search_replace mock' => sub {
+
+        my $terms = { title => ['Verse 1', 'Verse 2', 'Verse 3', 'Verse 4', 'Verse 5'] };
+        my $handler;
+        my $limit = 2;
+        MT->config('CMSSearchLimit', $limit);
+
+        my $mock = sub {
+            my $iter = MT::CMS::Search::incremental_iter('MT::Entry', $terms, {});
+            my @got;
+            while (my $obj = $iter->()) {
+                push @got, $obj->title if $handler->($obj);
+                if (@got > $limit) {
+                    pop @got;
+                    last;
+                }
+            }
+            return \@got;
+        };
+
+        subtest 'normal' => sub {
+            $handler = sub { 1 };
+            is_deeply($mock->(), ['Verse 1', 'Verse 2']);
+        };
+
+        subtest 'reduce by search_handler' => sub {
+            $handler = sub { $_[0]->title !~ /Verse 2/ };
+            is_deeply($mock->(), ['Verse 1', 'Verse 3']);
+            $handler = sub { $_[0]->title !~ /Verse 1/ };
+            is_deeply($mock->(), ['Verse 2', 'Verse 3']);
+            $handler = sub { $_[0]->title !~ /Verse (1|2)/ };
+            is_deeply($mock->(), ['Verse 3', 'Verse 4']);
+            $handler = sub { $_[0]->title !~ /Verse (1|2|3)/ };
+            is_deeply($mock->(), ['Verse 4', 'Verse 5']);
+            $handler = sub { $_[0]->title !~ /Verse (1|2|3|4)/ };
+            is_deeply($mock->(), ['Verse 5']);
+            $handler = sub { $_[0]->title !~ /Verse (2|3|4|5)/ };
+            is_deeply($mock->(), ['Verse 1']);
+        };
+    };
+
     MT->config('CMSSearchLimit', $cms_search_limit_org);
 };
 
