@@ -1886,17 +1886,10 @@ sub _upload_file_compat {
         $asset->created_by( $app->user->id );
     }
     else {
-        if ( $asset->class ne $asset_pkg->class_type ) {
-            return $app->error(
-                $app->translate(
-                    "Cannot overwrite an existing file with a file of a different type. Original: [_1] Uploaded: [_2]",
-                    $asset->class_label,
-                    $asset_pkg->class_label
-                )
-            );
-        }
         $original = $asset->clone;
         $asset->modified_by( $app->user->id );
+        bless $asset, ref($asset_pkg) || $asset_pkg;
+        $asset->class( $asset_pkg->class_type );
     }
     $asset->url($asset_url);
 
@@ -2432,17 +2425,10 @@ sub _upload_file {
         $asset->created_by( $app->user->id );
     }
     else {
-        if ( $asset->class ne $asset_pkg->class_type ) {
-            return $app->error(
-                $app->translate(
-                    "Cannot overwrite an existing file with a file of a different type. Original: [_1] Uploaded: [_2]",
-                    $asset->class_label,
-                    $asset_pkg->class_label
-                )
-            );
-        }
         $original = $asset->clone;
         $asset->modified_by( $app->user->id );
+        bless $asset, ref($asset_pkg) || $asset_pkg;
+        $asset->class( $asset_pkg->class_type );
     }
     $asset->url($asset_url);
 
