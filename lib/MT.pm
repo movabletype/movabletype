@@ -1370,6 +1370,7 @@ sub init_plugins {
 
 {
     my $plugin_full_path;
+    my %added_plugins;
 
     sub add_plugin {
         my $class = shift;
@@ -1388,12 +1389,39 @@ sub init_plugins {
             return;
         }
         $plugin->envelope($plugin_envelope);
-        Carp::confess(
-            "You cannot register multiple plugin objects from a single script. $plugin_sig"
-            )
-            if exists( $Plugins{$plugin_sig} )
-            && ( exists $Plugins{$plugin_sig}{object} );
 
+        # If conflict signature, remove older plugin.
+        if ( exists($added_plugins{$plugin_sig}) ) {
+            require version;
+            my $dup = $added_plugins{$plugin_sig};
+            my $dup_version = eval { version->parse($dup->version    || 0) } || 0;
+            my $cur_version = eval { version->parse($plugin->version || 0) } || 0;
+            if ( $cur_version > $dup_version ) {
+                my $error = MT->translate("Conflicted plugin [_1] [_2] is disabled by the system", $dup->{full_path}, $dup_version);
+                eval {
+                    require MT::Util::Log;
+                    MT::Util::Log::init();
+                    MT::Util::Log->error($error);
+                };
+
+                delete $Plugins{$plugin_sig};
+                delete $Components{ lc $dup->id };
+
+                @Components = grep { ($_->{plugin_sig} || '') ne $plugin_sig } @Components;
+            }
+            else {
+                my $error = MT->translate("Conflicted plugin [_1] [_2] is disabled by the system", $plugin_full_path, $cur_version);
+                eval {
+                    require MT::Util::Log;
+                    MT::Util::Log::init();
+                    MT::Util::Log->error($error);
+                };
+
+                return 1;
+            }
+        }
+
+        $added_plugins{$plugin_sig} = $plugin;
         $Components{ lc $id } = $plugin if $id;
         $Plugins{$plugin_sig}{object} = $plugin;
         $plugin->{full_path} = $plugin_full_path;
@@ -1420,8 +1448,11 @@ sub init_plugins {
             $Plugins{$plugin_sig}{enabled}   = 0;
             return 0;
         }
-        return 0 if exists $Plugins{$plugin_sig};
-        $Plugins{$plugin_sig}{full_path} = $plugin_full_path;
+
+        if ( not exists($added_plugins{$plugin_sig}) ) {
+            return 0 if exists $Plugins{$plugin_sig};
+        }
+
         $timer->pause_partial if $timer;
         eval "# line " . __LINE__ . " " . __FILE__ . "\nrequire '$plugin';";
         $timer->mark( "Loaded plugin " . $sig ) if $timer;
@@ -1446,9 +1477,13 @@ sub init_plugins {
                 MT->add_plugin( {} );
             }
         }
+
+        # Ignore this plugin because newer already exists.
+        return 0 if exists $Plugins{$plugin_sig}{full_path};
+
+        $Plugins{$plugin_sig}{full_path} = $plugin_full_path;
         $Plugins{$plugin_sig}{enabled} = 1;
         $PluginSwitch->{$plugin_sig} = 1;
-        return $Plugins{$plugin_sig}{object};
     }
 
     sub __load_plugin_with_yaml {
@@ -1470,7 +1505,11 @@ sub init_plugins {
             $Plugins{$plugin_dir}{enabled}   = 0;
             return;
         }
-        return if exists $Plugins{$plugin_dir};
+
+        if ( not exists($added_plugins{$plugin_dir}) ) {
+            return 0 if exists $Plugins{$plugin_dir};
+        }
+
         my $id = lc $plugin_dir;
         $id =~ s/\.\w+$//;
         my $p = $pclass->new(
@@ -1483,9 +1522,13 @@ sub init_plugins {
 
         # rebless? based on config?
         local $plugin_sig = $plugin_dir;
-        $PluginSwitch->{$plugin_sig} = 1;
         MT->add_plugin($p);
-        return $p;
+
+        # Ignore this plugin because newer already exists.
+        return 0 if exists $Plugins{$plugin_sig}{full_path};
+
+        $Plugins{$plugin_sig}{full_path} = $plugin_full_path;
+        $PluginSwitch->{$plugin_sig} = 1;
     }
 
     sub _init_plugins_core {
@@ -1497,7 +1540,7 @@ sub init_plugins {
             $timer = $mt->get_timer();
         }
 
-        my @loaded_plugins;
+        %added_plugins = ();
         my @errors;
         foreach my $PluginPath (@$PluginPaths) {
             my $plugin_lastdir = $PluginPath;
@@ -1516,8 +1559,7 @@ sub init_plugins {
                         next if exists $Plugins{$plugin} && $Plugins{$plugin}{error};
                         $plugin_envelope = $plugin_lastdir;
                         if ($plugin_full_path =~ /\.pl$/) {
-                            my $obj = __load_plugin( $mt, $timer, $PluginSwitch, $use_plugins, $plugin_full_path, $plugin );
-                            push @loaded_plugins, $obj if $obj;
+                            __load_plugin( $mt, $timer, $PluginSwitch, $use_plugins, $plugin_full_path, $plugin );
                             push @errors, [$plugin_full_path, $Plugins{$plugin}{error}] if $Plugins{$plugin}{error};
                         }
                         next;
@@ -1531,8 +1573,7 @@ sub init_plugins {
                         'config.yaml' );
 
                     if ( -f $yaml ) {
-                        my $obj = __load_plugin_with_yaml( $use_plugins, $PluginSwitch, $plugin_dir );
-                        push @loaded_plugins, $obj if $obj;
+                        __load_plugin_with_yaml( $use_plugins, $PluginSwitch, $plugin_dir );
                         next;
                     }
 
@@ -1552,8 +1593,7 @@ sub init_plugins {
                         if ( -f $plugin_file ) {
                             my $sig = $plugin_dir . '/' . $plugin;
                             next if exists $Plugins{$sig} && $Plugins{$sig}{error};
-                            my $obj = __load_plugin( $mt, $timer, $PluginSwitch, $use_plugins, $plugin_file, $sig );
-                            push @loaded_plugins, $obj if $obj;
+                            __load_plugin( $mt, $timer, $PluginSwitch, $use_plugins, $plugin_file, $sig );
                             push @errors, [$plugin_full_path, $Plugins{$sig}{error}] if $Plugins{$sig}{error};
                         }
                     }
@@ -1563,7 +1603,7 @@ sub init_plugins {
 
         # Drop conflicting plugins
         my %deduped_plugins;
-        for my $plugin (@loaded_plugins) {
+        for my $plugin (values %added_plugins) {
             my $name = $plugin->name;
             if (my $dup = $deduped_plugins{$name}) {
                 require version;
