@@ -1525,12 +1525,6 @@ sub init_plugins {
                     my $plugin_dir = $plugin;
                     $plugin_envelope = "$plugin_lastdir/" . $plugin;
 
-                    foreach my $lib (qw(lib extlib)) {
-                        my $plib
-                            = File::Spec->catdir( $plugin_full_path, $lib );
-                        unshift @INC, $plib if -d $plib;
-                    }
-
                     # handle config.yaml
                     my $yaml = File::Spec->catdir( $plugin_full_path,
                         'config.yaml' );
@@ -1599,7 +1593,19 @@ sub init_plugins {
             $deduped_plugins{$name} = $plugin;
         }
 
+        my %included_parents;
         for my $plugin (values %deduped_plugins) {
+            if ( -d $plugin->{full_path} ) {
+                my $parent_path = $plugin->{full_path};
+                next if exists $included_parents{$parent_path};
+                $included_parents{$parent_path} = 1;
+                foreach my $lib (qw(lib extlib)) {
+                    my $plib
+                        = File::Spec->catdir( $parent_path, $lib );
+                    unshift @INC, $plib if -d $plib;
+                }
+            }
+
             if ($plugin->isa('MT::Plugin')) {
                 $plugin->init;
             }
