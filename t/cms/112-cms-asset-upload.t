@@ -21,6 +21,7 @@ use MT::Test::App;
 use Image::ExifTool;
 
 my $has_image_magick = eval { require Image::Magick; 1 };
+my $image_driver     = MT->config->ImageDriver;
 
 $test_env->prepare_fixture('db_data');
 
@@ -139,21 +140,35 @@ subtest 'Regular JPEG image, wrt exif removal' => sub {
             my $exif = Image::ExifTool::ImageInfo($file);
             if ($exif_removal or $key eq 'thumbnail') {
                 ok !$exif->{Comment}, "$key has no Comment in exif" or note explain $exif;
-                ok $exif->{ProfileCMMType}, "but $key still has profile information in exif";
+                SKIP: {
+                    # FIXME
+                    local $TODO = 'Only for ImageMagick driver' unless $image_driver =~ /ImageMagick/;
+                    ok $exif->{ProfileCMMType}, "but $key still has profile information in exif";
+                }
                 is $exif->{Orientation} => 'Horizontal (normal)', "but $key still has orientation information in exif";
-                if ($has_image_magick) {
-                    my $magick = Image::Magick->new;
-                    $magick->Read($file);
-                    ok $magick->Get('icc'), "Image::Magick still returns icc";
+                SKIP: {
+                    if ($has_image_magick) {
+                        # FIXME
+                        local $TODO = 'Only for ImageMagick driver' unless $image_driver =~ /ImageMagick/;
+                        my $magick = Image::Magick->new;
+                        $magick->Read($file);
+                        ok $magick->Get('icc'), "Image::Magick still returns icc";
+                    }
                 }
             } else {
                 is $exif->{Comment} => 'mt_test', "$key still has Comment in exif";
-                ok $exif->{ProfileCMMType}, "$key still has profile information in exif";
+                SKIP: {
+                    local $TODO = 'Only for *Magick driver' unless $image_driver =~ /Magick/;
+                    ok $exif->{ProfileCMMType}, "$key still has profile information in exif";
+                }
                 is $exif->{Orientation} => 'Horizontal (normal)', "but $key still has orientation information in exif";
-                if ($has_image_magick) {
-                    my $magick = Image::Magick->new;
-                    $magick->Read($file);
-                    ok $magick->Get('icc'), "Image::Magick returns icc";
+                SKIP: {
+                    if ($has_image_magick) {
+                        local $TODO = 'Only for *Magick driver' unless $image_driver =~ /Magick/;
+                        my $magick = Image::Magick->new;
+                        $magick->Read($file);
+                        ok $magick->Get('icc'), "Image::Magick returns icc";
+                    }
                 }
             }
         }

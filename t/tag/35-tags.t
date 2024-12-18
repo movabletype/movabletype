@@ -16,6 +16,7 @@ use MT::Test::PHP;
 use MT::Test::Permission;
 use MT::Test::Util::CreativeCommons;
 use MT::Util qw(ts2epoch epoch2ts);
+use MT::Util::Captcha;
 
 $test_env->prepare_fixture('db_data');
 
@@ -67,6 +68,7 @@ my %vars = (
     STATIC_FILE_PATH => MT->instance->static_file_path . '/',
     THREE_DAYS_AGO => epoch2ts($blog, time() - int(3.5 * 86400)),
     TEST_ROOT => $test_env->root,
+    NO_CAPTCHA => MT::Util::Captcha->check_availability // '',
 );
 
 sub var {
@@ -80,6 +82,7 @@ sub var {
 }
 
 filters {
+    skip         => [qw( var chomp )],
     template     => [qw( var )],
     expected     => [qw( var )],
     expected_php => [qw( var )],
@@ -4981,6 +4984,8 @@ left File include is disabled by "AllowFileInclude" config directive. right
 20;
 
 === test 885
+--- skip
+[% NO_CAPTACH %]
 --- template
 <mt:CaptchaFields>
 --- expected regexp
