@@ -1897,7 +1897,7 @@ sub _hdlr_content_field {
         $check_value = @$value ? $value->[0] : '';
     }
 
-    return $ctx->_hdlr_pass_tokens_else(@_) if !$check_value && $check_value eq '';
+    return $ctx->_hdlr_pass_tokens_else($args, $cond) if !$check_value && $check_value eq '';
 
     my $field_type
         = MT->registry('content_field_types')->{ $field_data->{type} }

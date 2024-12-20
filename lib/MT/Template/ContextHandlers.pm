@@ -1896,9 +1896,9 @@ sub _hdlr_else {
     delete $args->{'@'};
     if (%$args) {
         defined( my $res = _hdlr_if(@_) ) or return;
-        return $res ? $ctx->slurp(@_) : $ctx->else();
+        return $res ? $ctx->slurp($args, $cond) : $ctx->else();
     }
-    return $ctx->slurp(@_);
+    return $ctx->slurp($args, $cond);
 }
 
 ###########################################################################
