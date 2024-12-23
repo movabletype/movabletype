@@ -1,0 +1,41 @@
+<?php return array(
+    'root' => array(
+        'name' => 'movabletype/movabletype',
+        'pretty_version' => 'dev-develop',
+        'version' => 'dev-develop',
+        'reference' => 'bdd8115307c2690e1aaa971d067b03124fb231f1',
+        'type' => 'library',
+        'install_path' => __DIR__ . '/../../',
+        'aliases' => array(),
+        'dev' => false,
+    ),
+    'versions' => array(
+        'adodb/adodb-php' => array(
+            'pretty_version' => 'v5.22.7',
+            'version' => '5.22.7.0',
+            'reference' => 'e7150539d5707ae556172532e2b25ac4e88cb2a6',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../adodb/adodb-php',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+        'movabletype/movabletype' => array(
+            'pretty_version' => 'dev-develop',
+            'version' => 'dev-develop',
+            'reference' => 'bdd8115307c2690e1aaa971d067b03124fb231f1',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../../',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+        'smarty/smarty' => array(
+            'pretty_version' => 'v4.5.5',
+            'version' => '4.5.5.0',
+            'reference' => 'c4851c12e34ff80073ddeb7d98b059d57dea9de2',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../smarty/smarty',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+    ),
+);
