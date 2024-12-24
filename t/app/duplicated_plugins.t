@@ -3,7 +3,7 @@ use warnings;
 use FindBin;
 use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
-use Test::Deep qw(cmp_deeply supersetof noneof);
+use Test::Deep qw(cmp_deeply noneof);
 use MT::Test::Env;
 
 our $test_env;
@@ -78,26 +78,18 @@ my $switch = MT->config->PluginSwitch || {};
 ok !$switch->{'MyPlugin0.1/MyPlugin.pl'}, "older version is listed in PluginSwitch but is 0";
 ok $switch->{'MyPlugin1.0/MyPlugin.pl'},  "newer version is listed in PluginSwitch";
 
-use_ok 'MyPlugin::Tags'; # MyPlugin::Tags is no error
+use MyPlugin::Tags;
+my $func_result = MyPlugin::Tags::_hdlr_hello_world();
+like $func_result => qr/1.0/, "included newer module";
 
 my $older_module_path = $test_env->path( 'plugins/MyPlugin0.1/lib' );
 cmp_deeply(
     \@INC,
-    noneof(
-        map { $test_env->path($_) } (
-            'plugins/MyPlugin0.1/lib',
-        ),
-    ),
+    noneof( $older_module_path ),
     "not included older module"
 ) or note explain \@INC;
 
 my $newer_module_path = $test_env->path( 'plugins/MyPlugin1.0/lib' );
-cmp_deeply(
-    \@INC,
-    supersetof( $newer_module_path ),
-    "included newer module"
-) or note explain \@INC;
-
 is scalar(grep { $_ eq $newer_module_path } @INC), 1, "module included not repeatly";
 
 ok eval { MT::PSGI->new->to_app }, "psgi app without an error" or note $@;
