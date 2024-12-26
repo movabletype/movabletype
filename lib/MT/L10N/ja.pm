@@ -4313,6 +4313,9 @@ use vars qw( @ISA %Lexicon );
 	'Grant site permission to group' => 'グループにサイトの権限を割り当てる',
 	'Grant site permission to user' => 'ユーザーにサイトの権限を割り当てる',
 
+## tmpl/admin2023/cms/dialog/theme_element_detail.tmpl
+	q{The settings will be saved when you click the 'Next' button.} => '「次へ」ボタンをクリックすると設定が保存されます。',
+
 ## tmpl/admin2023/cms/edit_asset.tmpl
 	'Appears in...' => '利用状況',
 	'Embed Asset' => 'アセットの埋め込み',
