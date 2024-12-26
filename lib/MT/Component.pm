@@ -45,7 +45,12 @@ sub new {
     my $class = shift;
     my ($self) = ref $_[0] ? @_ : {@_};
     bless $self, $class;
-    $self->init unless $self->isa('MT::Plugin');
+    if ($self->isa('MT::Plugin')) {
+        $self->load_required_meta;
+    }
+    else {
+        $self->init;
+    }
     $self;
 }
 
@@ -159,6 +164,19 @@ sub load_registry {
         or die "Error reading $path: "
         . ( MT::Util::YAML->errstr || $@ || $! );
     return $y;
+}
+
+sub load_required_meta {
+    my $c = shift;
+    my $r = $c->load_registry("config.yaml");
+    if ( !$r ) {
+        return 1;
+    }
+
+    # map key required elements into metadata
+    $c->version( $r->{version} ) if exists $r->{version};
+    $c->{registry}{name} = $r->{name} if exists $r->{name};
+    return 1;
 }
 
 sub init_registry {

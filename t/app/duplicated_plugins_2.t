@@ -1,0 +1,84 @@
+use strict;
+use warnings;
+use FindBin;
+use lib "$FindBin::Bin/../lib";    # t/lib
+use Test::More;
+use Test::Deep qw(cmp_deeply noneof);
+use MT::Test::Env;
+
+our $test_env;
+BEGIN {
+    $test_env = MT::Test::Env->new(
+        PluginPath => ['TEST_ROOT/plugins'],
+    );
+    $ENV{MT_CONFIG} = $test_env->config_file;
+    for my $version ('0.1', '1.0') {
+        $test_env->save_file("plugins/MyPlugin$version/config.yaml", <<"YAML" );
+id: MyPlugin
+name: MyPlugin
+version: $version
+tags:
+    function:
+        HelloWorld: \$MyPlugin::MyPlugin::Tags::_hdlr_hello_world
+YAML
+
+        $test_env->save_file("plugins/MyPlugin${version}/lib/MyPlugin/Tags.pm", <<"PERL_MODULE");
+package MyPlugin::Tags;
+use strict;
+
+sub _hdlr_hello_world {
+    my (\$ctx, \$args) = \@_;
+    return 'hello world ($version)';
+}
+
+1;
+PERL_MODULE
+    }
+}
+
+use MT;
+use MT::Test;
+use MT::PSGI;
+
+ok eval { MT->instance }, "mt instance" or note $@;
+
+my $switch = MT->config->PluginSwitch || {};
+
+ok !$switch->{'MyPlugin0.1'}, "older version is listed in PluginSwitch but is 0";
+ok $switch->{'MyPlugin1.0'},  "newer version is listed in PluginSwitch";
+
+use MyPlugin::Tags;
+my $func_result = MyPlugin::Tags::_hdlr_hello_world();
+like $func_result => qr/1.0/, "included newer module";
+
+my $older_module_path = $test_env->path( 'plugins/MyPlugin0.1/lib' );
+cmp_deeply(
+    \@INC,
+    noneof( $older_module_path ),
+    "not included older module"
+) or note explain \@INC;
+
+my $newer_module_path = $test_env->path( 'plugins/MyPlugin1.0/lib' );
+is scalar(grep { $_ eq $newer_module_path } @INC), 1, "module included not repeatly";
+
+ok eval { MT::PSGI->new->to_app }, "psgi app without an error" or note $@;
+
+my $log = $test_env->slurp_logfile;
+like $log => qr/Conflicted plugin MyPlugin 0.1 is disabled/, "logged correctly";
+
+$test_env->prepare_fixture('db');
+
+note "first rpt";
+run_rpt();    # may or may not have a plugin error
+
+note "second rpt";
+unlike run_rpt() => qr/Conflicted plugin MyPlugin 0.1 is disabled/, "no plugin error";
+
+done_testing;
+
+sub run_rpt {
+    MT::Session->remove( { kind => 'PT' } );
+    my $res = `perl -It/lib ./tools/run-periodic-tasks --verbose 2>&1`;
+    note $res;
+    $res;
+}
