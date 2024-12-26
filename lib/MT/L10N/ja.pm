@@ -4772,6 +4772,7 @@ use vars qw( @ISA %Lexicon );
 	'_THEME_AUTHOR' => '作者名',
 	q{Cannot install new theme with existing (and protected) theme's basename.} => q{新しいテーマは既存、または保護されたテーマベース名ではインストールできません。},
 	q{Use letters, numbers, dash or underscore only (a-z, A-Z, 0-9, '-' or '_').} => q{次の文字と数字のみ利用できます: アルファベット、数字、ダッシュ(-)、アンダースコア(_)},
+  'Always include all options' => '常に全てのオプションをエクスポート対象にする',
 
 ## tmpl/admin2023/cms/field_html/field_html_asset.tmpl
 	'Assets greater than or equal to [_1] must be selected' => '[_1]以上のアセットを選択してください',
