@@ -209,8 +209,8 @@
             for (var i = 0; i < dataTransfer.items.length; i++) {
                 var item = dataTransfer.items[i]
                 if (item.kind === 'string' && item.type === 'text/plain') {
-                    var plainTextContent = item.getData('text/plain')
-                    if (!plainTextContent && !plainTextContent.startsWith('file://')) {
+                    var plainTextContent = dataTransfer.getData('text/plain')
+                    if (plainTextContent && !plainTextContent.startsWith('file://')) {
                         return true; // paste as text
                     }
                 }
