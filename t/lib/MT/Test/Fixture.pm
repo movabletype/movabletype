@@ -29,6 +29,7 @@ sub prepare {
 
     $objs ||= { __first_time => 1 };
     $class->prepare_author($spec, $objs);
+    $class->prepare_group($spec, $objs);
     $class->prepare_website($spec, $objs);
     $class->prepare_blog($spec, $objs);
     $class->prepare_asset($spec, $objs);
@@ -119,6 +120,24 @@ sub prepare_author {
     }
     if ($objs->{__first_time} and @author_names == 1) {
         $objs->{author_id} = $objs->{author}{ $author_names[0] }->id;
+    }
+}
+
+sub prepare_group {
+    my ($class, $spec, $objs) = @_;
+
+    if (ref $spec->{group} eq 'ARRAY') {
+        for my $item (@{ $spec->{group} }) {
+            my %arg = ref $item eq 'HASH' ? %$item : (name => $item);
+            if (exists $objs->{group}{ $arg{name} }) {
+                _note_or_croak("group: $arg{name} already exists");
+                next;
+            }
+            $arg{display_name} ||= $arg{name};
+            my $roles = delete $arg{roles};                        ## not for now
+            my $group = MT::Test::Permission->make_group(%arg);
+            $objs->{group}{ $group->name } = $group;
+        }
     }
 }
 
