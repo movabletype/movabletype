@@ -349,6 +349,11 @@ sub prepare_fixture {
             );
         }
     }
+    for my $type (qw(website blog)) {
+        for my $site (values %{$objs->{$type} || {}}) {
+            $site->refresh;
+        }
+    }
 
     MT->publisher->rebuild(BlogID => $blog_id);
 }
