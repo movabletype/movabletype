@@ -253,6 +253,7 @@ sub prepare_image {
                     image_width  => $info->{ImageWidth},
                     image_height => $info->{ImageHeight},
                     mime_type    => $info->{MIMEType},
+                    label        => $name,
                     %$item,
                 );
 
@@ -309,6 +310,7 @@ sub prepare_asset {
                     url       => "%s/assets/$name",
                     file_path => $file,
                     file_ext  => $ext,
+                    label     => $name,
                     %$item,
                 );
 
