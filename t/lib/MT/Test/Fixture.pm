@@ -1013,6 +1013,7 @@ sub prepare_template {
     my ($class, $spec, $objs) = @_;
     return unless $spec->{template};
 
+    my $needs_update;
     if (ref $spec->{template} eq 'ARRAY') {
         my @widgetsets;
         for my $item (@{ $spec->{template} }) {
@@ -1091,6 +1092,7 @@ sub prepare_template {
                 }
 
                 my $tmpl_map = MT::Test::Permission->make_templatemap(%$map);
+                $needs_update = 1;
 
                 push @{ $objs->{templatemap}{ $tmpl->name } ||= [] }, $tmpl_map;
 
@@ -1108,6 +1110,13 @@ sub prepare_template {
             my $obj = $objs->{template}{$widgetset->{blog_id}}{$widgetset->{name}};
             $obj->modulesets(MT::Template->widgets_to_modulesets(\@modulesets, $widgetset->{blog_id}));
             $obj->save_widgetset;
+        }
+    }
+    if ($needs_update) {
+        for my $type (qw(website blog)) {
+            for my $site (values %{$objs->{$type} || {}}) {
+                $site->refresh;    # to update archive_types
+            }
         }
     }
 }
