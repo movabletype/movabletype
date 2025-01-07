@@ -455,13 +455,6 @@ our %ExtLibOnly = (
         url     => "https://metacpan.org/pod/Algorithm::Diff",
         used_in => ["HTML::Diff"],
     },
-    "AutoLoader" => {
-        extlib    => 5.74,
-        not_used  => 1,
-        note      => "used inexplicitly in many modules including MT::ConfigMgr",
-        perl_core => 5.72,
-        url       => "https://metacpan.org/pod/AutoLoader",
-    },
     "boolean" => {
         extlib  => 0.46,
         url     => "https://metacpan.org/pod/boolean",
@@ -486,11 +479,6 @@ our %ExtLibOnly = (
         extlib  => 0.04,
         url     => "https://metacpan.org/pod/Class::ErrorHandler",
         used_in => ["URI::Fetch"],
-    },
-    "Class::Inspector" => {
-        extlib   => 1.36,
-        not_used => 1,
-        url      => "https://metacpan.org/pod/Class::Inspector",
     },
     "Class::Method::Modifiers" => {
         extlib  => 2.15,
@@ -581,20 +569,10 @@ our %ExtLibOnly = (
         url     => "https://metacpan.org/pod/HTML::Diff",
         used_in => ["MT::Revisable"],
     },
-    "HTML::Template" => {
-        extlib   => 2.97,
-        not_used => 1,
-        url      => "https://metacpan.org/pod/HTML::Template",
-    },
     "HTTP::Cookies" => {
         extlib   => 6.11,
         internal => 1,
         url      => "https://metacpan.org/pod/HTTP::Cookies",
-    },
-    "HTTP::Daemon" => {
-        extlib   => 6.16,
-        not_used => 1,
-        url      => "https://metacpan.org/pod/HTTP::Daemon",
     },
     "HTTP::Date" => {
         extlib  => 6.06,
@@ -686,11 +664,6 @@ our %ExtLibOnly = (
         url     => "https://metacpan.org/pod/Net::HTTPS",
         used_in => ["MT"],
     },
-    "Net::OAuth" => {
-        extlib   => 0.28,
-        not_used => 1,
-        url      => "https://metacpan.org/pod/Net::OAuth",
-    },
     "Net::SMTPS" => {
         extlib  => "0.10",
         url     => "https://metacpan.org/pod/Net::SMTPS",
@@ -723,16 +696,6 @@ our %ExtLibOnly = (
         extlib  => 0.32,
         url     => "https://metacpan.org/pod/Try::Tiny",
         used_in => ["LWP::UserAgent"],
-    },
-    "UNIVERSAL::require" => {
-        extlib   => 0.19,
-        not_used => 1,
-        url      => "https://metacpan.org/pod/UNIVERSAL::require",
-    },
-    "URI::Fetch" => {
-        extlib   => 0.15,
-        not_used => 1,
-        url      => "https://metacpan.org/pod/URI::Fetch",
     },
     "UUID::URandom" => {
         extlib  => 0.001,
