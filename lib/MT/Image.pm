@@ -244,35 +244,6 @@ sub check_upload {
         ) unless is_valid_image( $params{Fh} );
     }
 
-    ## If the image exceeds the dimension limit, resize it before writing.
-    if ( my $max_dim = $params{MaxDim} ) {
-        if (   defined($w)
-            && defined($h)
-            && ( $w > $max_dim || $h > $max_dim ) )
-        {
-            require MT::Util::Deprecated;
-            MT::Util::Deprecated::warning(name => 'MaxDim support', since => '8.3.0');
-            my $uploaded_data = eval { local $/; <$fh> };
-            my $img = $class->new( Data => $uploaded_data )
-                or return $class->error( $class->errstr );
-
-            if ( $params{Square} ) {
-                ( undef, $w, $h ) = $img->make_square()
-                    or return $class->error( $img->errstr );
-            }
-            ( my ($resized_data), $w, $h )
-                = $img->scale(
-                ( ( $w > $h ) ? 'Width' : 'Height' ) => $max_dim )
-                or return $class->error( $img->errstr );
-
-            $write_file = sub {
-                $params{Fmgr}
-                    ->put_data( $resized_data, $params{Local}, 'upload' );
-            };
-            $file_size = length $resized_data;
-        }
-    }
-
     if ( my $max_size = $params{Max} ) {
         if ( $max_size < $file_size ) {
             return $class->error(
