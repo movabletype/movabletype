@@ -78,16 +78,23 @@
     <mtapp:setting
        id="theme-options-field"
        label="<__trans phrase="Options">">
-      <ul class="list-unstyled">
+      <div class="form-inline">
+        <div class="custom-control custom-checkbox">
+          <input type="checkbox" id="include_all" class="custom-control-input" name="include_all" value="1" <mt:if name="include_all">checked="checked"</mt:if>>
+          <label class="custom-control-label" for="include_all"><__trans phrase="Always include all options"></label>
+        </div>
+      </div>
+      <ul class="list-unstyled ml-5">
       <mt:loop name="exporters">
         <li>
           <div class="form-inline">
             <div class="custom-control custom-checkbox">
-              <input type="checkbox" id="<mt:var name="id">-include" class="custom-control-input" name="include" value="<mt:var name="id">" onclick="toggleActive('<mt:var name="id">-detail')" <mt:if name="included">checked="checked"</mt:if>>
-              <label class="custom-control-label" for="<mt:var name="id" escape="html">-include"><mt:var name="label"></label>
+              <input type="checkbox" id="<mt:var name="id">-check_include" name="check_include" class="custom-control-input" value="<mt:var name="id">" onclick="toggleActive('<mt:var name="id">-detail')" <mt:if name="included">checked="checked"</mt:if> <mt:if name="include_all">disabled</mt:if>>
+              <label class="custom-control-label" for="<mt:var name="id" escape="html">-check_include"><mt:var name="label"></label>
+            <input type="hidden" id="<mt:var name="id">-include" name="include" value="<mt:var name="id">" <mt:unless name="included">disabled</mt:unless>>
             </div>
         <mt:if name="template">
-            <span id="<mt:var name="id">-detail" class="theme-option-detail ml-3 <mt:unless name="include"> active</mt:unless>">
+            <span id="<mt:var name="id">-detail" class="theme-option-detail ml-3 <mt:unless name="include"> active</mt:unless>"<mt:if name="include_all">style="pointer-events: none; opacity: 0.5"</mt:if>>
               <a href="<mt:var name="script_url">?__mode=theme_element_detail&exporter_id=<mt:var name="id">&blog_id=<mt:var name="blog_id">" class="mt-open-dialog mt-modal-open" data-mt-modal-large>
                 <__trans phrase="Details">
               </a>
@@ -173,6 +180,21 @@ jQuery(function() {
     });
     jQuery('#theme_settings').on('submit', function() {
         return jQuery(this).find('input, select').mtValidate('simple') ? true : false;
+    });
+    jQuery('#include_all').on('change', function() {
+        var checked = jQuery(this).prop('checked');
+        if ( checked ) {
+            jQuery('[name="include"]').prop('disabled', false);
+            jQuery('[name="check_include"]').prop({ 'checked': true, 'disabled': true });
+            jQuery('[id$="-detail"]').css({ 'pointer-events': 'none', 'opacity': 0.5 });
+        } else {
+            jQuery('[name="check_include"]').prop('disabled', false);
+            jQuery('[id$="-detail"]').css({ 'pointer-events': '', 'opacity': '' });
+        }
+    });
+    jQuery('[name="check_include"]').on('change', function() {
+        var $this = jQuery(this);
+        jQuery(`[id="${$this.val()}-include"]`).prop('disabled', !$this.prop('checked'));
     });
 });
     <mt:var name="js_include_footer" />
