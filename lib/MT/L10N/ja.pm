@@ -1269,7 +1269,7 @@ use vars qw( @ISA %Lexicon );
 	q{Name '[_1]' is already used.} => q{'[_1]'はすでに存在します},
 
 ## lib/MT/CMS/Dashboard.pm
-	'An image processing toolkit, often specified by the ImageDriver configuration directive, is not present on your server or is configured incorrectly. A toolkit must be installed to ensure proper operation of the userpics feature. Please install Graphics::Magick, Image::Magick, NetPBM, GD, or Imager, then set the ImageDriver configuration directive accordingly.' => 'ImageDriverに設定された画像処理ツールが存在しないかまたは正しく設定されていないため、Movable Typeのユーザー画像機能を利用できません。この機能を利用するには、Graphics::Magick、Image::Magick、NetPBM、GD、Imagerのいずれかをインストールする必要があります。',
+	'An image processing toolkit, often specified by the ImageDriver configuration directive, is not present on your server or is configured incorrectly. A toolkit must be installed to ensure proper operation of the userpics feature. Please install Graphics::Magick, Image::Magick, GD, or Imager, then set the ImageDriver configuration directive accordingly.' => 'ImageDriverに設定された画像処理ツールが存在しないかまたは正しく設定されていないため、Movable Typeのユーザー画像機能を利用できません。この機能を利用するには、Graphics::Magick、Image::Magick、GD、Imagerのいずれかをインストールする必要があります。',
 	'Can verify SSL certificate, but verification is disabled.' => 'SSL 証明書の検証を行う準備ができていますが、環境変数で SSL 証明書の検証が無効に設定されています。',
 	'Cannot verify SSL certificate.' => 'SSL 証明書の検証ができません。',
 	'Error: This child site does not have a parent site.' => '親サイトが存在しません。',
@@ -2266,12 +2266,6 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/Image/Imager.pm
 	'Cannot load Imager: [_1]' => 'Imagerをロードできません: [_1]',
-
-## lib/MT/Image/NetPBM.pm
-	'Cannot load IPC::Run: [_1]' => 'IPC::Runをロードできません: [_1]',
-	'Cropping to [_1]x[_2] failed: [_3]' => '[_1]x[_2] にトリミングできませんでした: [_3]',
-	'Reading alpha channel of image failed: [_1]' => 'アルファチャンネルを読み込めませんでした: [_1]',
-	'You do not have a valid path to the NetPBM tools on your machine.' => 'NetPBMツールへのパスが正しく設定されていません。',
 
 ## lib/MT/Import.pm
 	'Another system (Movable Type format)' => '他のシステム(Movable Type形式)',

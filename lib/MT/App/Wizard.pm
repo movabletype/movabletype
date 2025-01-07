@@ -183,10 +183,6 @@ sub init_core_registry {
                 order  => 400,
                 driver => 'Imager',
             },
-            netpbm => {
-                order  => 500,
-                driver => 'NetPBM',
-            },
         },
     };
 }

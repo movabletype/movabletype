@@ -346,9 +346,9 @@ MT::Image - Movable Type image manipulation routines
 =head1 DESCRIPTION
 
 I<MT::Image> contains image manipulation routines using either the
-I<NetPBM> tools, the I<ImageMagick> and I<Image::Magick> Perl module,
+I<ImageMagick> and I<Image::Magick> Perl module,
 or the I<GD> and I<GD> Perl module.
-The backend framework used (NetPBM, ImageMagick, GD) depends on the value of
+The backend framework used (ImageMagick, GD) depends on the value of
 the I<ImageDriver> setting in the F<mt.cfg> file (or, correspondingly, set
 on an instance of the I<MT::ConfigMgr> class).
 
