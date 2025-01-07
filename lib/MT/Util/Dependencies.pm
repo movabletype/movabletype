@@ -222,11 +222,6 @@ our %Requirements = (
         tags       => ["Archive"],
         url        => "https://metacpan.org/pod/IO::Uncompress::Gunzip",
     },
-    "IPC::Run" => {
-        label => "IPC::Run is optional; It is needed if you would like to use NetPBM as the image processor for Movable Type.",
-        tags  => ["System", "Image"],
-        url   => "https://metacpan.org/pod/IPC::Run",
-    },
     "JSON" => {
         extlib   => "4.10",
         label    => "JSON is required to use DataAPI, Content Type, and listing framework.",

@@ -2984,7 +2984,6 @@ use vars qw( @ISA %Lexicon );
 	'HTML::Entities is required by CGI.pm' => 'HTML::Entitiesは、CGI.pm の動作に必要です。',
 	'IO::Compress::Gzip is required in order to compress files during an export operation.' => 'IO::Compress::Gzipはエクスポート中にファイルを圧縮するのに必要です。',
 	'IO::Uncompress::Gunzip is required in order to decompress files during an import operation.' => 'IO::Uncompress::Gunzipはインポート中にファイルを展開するのに必要です。',
-	'IPC::Run is optional; It is needed if you would like to use NetPBM as the image processor for Movable Type.' => 'IPC::RunのインストールはMTのイメージドライバとしてNetPBMを利用する場合に必要となります。',
 	'Image::ExifTool is used to manipulate image metadata.' => 'Image::ExifToolは画像のメタデータを操作するのに使われます。',
 	'Image::Size is sometimes required to determine the size of images in different formats.' => 'Image::Sizeはさまざまな形式の画像の大きさを調べるのに必要になることがあります。',
 	'JSON is required to use DataAPI, Content Type, and listing framework.' => 'JSONはDataAPIやコンテンツタイプ、リスティングフレームワークの利用に必要です。',
