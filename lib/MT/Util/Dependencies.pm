@@ -470,11 +470,6 @@ our %ExtLibOnly = (
         url     => "https://metacpan.org/pod/Class::Data::Inheritable",
         used_in => ["Data::ObjectDriver::Driver::BaseCache"],
     },
-    "Class::ErrorHandler" => {
-        extlib  => 0.04,
-        url     => "https://metacpan.org/pod/Class::ErrorHandler",
-        used_in => ["URI::Fetch"],
-    },
     "Class::Method::Modifiers" => {
         extlib  => 2.15,
         url     => "https://metacpan.org/pod/Class::Method::Modifiers",
