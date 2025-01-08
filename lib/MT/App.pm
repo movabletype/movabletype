@@ -941,7 +941,6 @@ sub print_encode {
 sub init {
     my $app   = shift;
     my %param = @_;
-    $app->{apache} = $param{ApacheObject} if exists $param{ApacheObject};
 
     # start tracing even prior to 'init'
     local $SIG{__WARN__} = sub { $app->trace( $_[0] ) };
