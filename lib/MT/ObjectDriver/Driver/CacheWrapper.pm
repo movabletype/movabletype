@@ -33,24 +33,16 @@ sub wrap {
     }
 
     if ($use_caching) {
-        ## If running under mod_perl, using request->pnotes; otherwise,
-        ## just use a hash.
         my $ram_cache;
-        if ( MT::Util::is_mod_perl1() ) {
-            require Data::ObjectDriver::Driver::Cache::Apache;
-            $ram_cache = 'Data::ObjectDriver::Driver::Cache::Apache';
-        }
-        else {
             require MT::ObjectDriver::Driver::Cache::RAM;
             $ram_cache = 'MT::ObjectDriver::Driver::Cache::RAM';
-        }
 
         my $driver;
 
         require MT::Memcached;
         if ( MT::Memcached->is_available ) {
             $driver = sub {
-                ## Look first in mod_perl/memory; then in memcached; then fall back
+                ## Look first in memory; then in memcached; then fall back
                 ## to hitting the database.
                 require Data::ObjectDriver::Driver::Cache::Memcached;
                 $ram_cache->new(

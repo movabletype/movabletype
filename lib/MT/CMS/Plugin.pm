@@ -39,7 +39,6 @@ sub cfg_plugins {
         $param{switched}     = 1 if $app->param('switched');
         $param{'reset'}  = 1 if $app->param('reset');
         $param{saved}    = 1 if $app->param('saved');
-        $param{mod_perl} = 1 if MT::Util::is_mod_perl1();
         $app->add_breadcrumb( $app->translate("Plugin Settings") );
         $param{screen_id}    = "list-plugins";
         $param{screen_class} = "plugin-settings";

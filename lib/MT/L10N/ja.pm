@@ -3776,8 +3776,6 @@ use vars qw( @ISA %Lexicon );
 	'Your plugin settings have been saved.' => 'プラグインの設定を保存しました。',
 	'Your plugins have been reconfigured.' => 'プラグインを再設定しました。',
 	'_PLUGIN_DIRECTORY_URL' => 'https://plugins.movabletype.jp/',
-	q{Your plugins have been reconfigured. Since you're running mod_perl, you must restart your web server for these changes to take effect.} => q{プラグインの設定が変更されました。mod_perlを利用している場合は、設定変更を有効にするためにウェブサーバーを再起動する必要があります。},
-	q{Your plugins have been reconfigured. Since you're running mod_perl, you will need to restart your web server for these changes to take effect.} => q{プラグインを再設定しました。mod_perl環境下でお使いの場合は、設定を反映させるためにウェブサーバーを再起動してください。},
 
 ## tmpl/admin2023/cms/cfg_prefs.tmpl
 	'Active Server Page Includes' => 'ASPのインクルード',

@@ -931,17 +931,12 @@ sub seed {
     my $drivers = $app->object_drivers;
 
     my $r_uri = $ENV{REQUEST_URI} || $ENV{SCRIPT_NAME};
-    if ( MT::Util::is_mod_perl1()
-        || ( ( $r_uri =~ m/\/mt-wizard\.(\w+)(\?.*)?$/ ) && ( $1 ne 'cgi' ) )
+    if (
+        ( ( $r_uri =~ m/\/mt-wizard\.(\w+)(\?.*)?$/ ) && ( $1 ne 'cgi' ) )
         )
     {
         my $new = '';
-        if ( MT::Util::is_mod_perl1() ) {
-            $param{mod_perl} = 1;
-        }
-        else {
             $new = '.' . $1;
-        }
         my @scripts;
         my $cfg      = $app->config;
         my @cfg_keys = grep {/Script$/} keys %{ $cfg->{__settings} };
