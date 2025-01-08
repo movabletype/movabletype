@@ -1822,10 +1822,7 @@ sub browser_language {
 }
 
 sub launch_background_tasks {
-    return !(
-        $ENV{FAST_CGI}
-        || $ENV{'psgi.input'}
-        || !MT->config->LaunchBackgroundTasks );
+    return !($ENV{FAST_CGI} || $ENV{'psgi.input'} || !MT->config->LaunchBackgroundTasks);
 }
 
 sub start_background_task {

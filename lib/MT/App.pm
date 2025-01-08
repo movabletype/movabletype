@@ -910,23 +910,20 @@ sub send_http_header {
     my $app = shift;
     my ($type) = @_;
     $type ||= $app->{response_content_type} || 'text/html';
-    if ( my $charset = $app->charset ) {
+    if (my $charset = $app->charset) {
         $type .= "; charset=$charset"
             if $type =~ m!^text/|\+xml$|/json$!
             && $type !~ /\bcharset\b/;
     }
-        $app->{cgi_headers}{-status}
-            = ( $app->response_code || 200 )
-            . (
-            $app->{response_message} ? ' ' . $app->{response_message} : '' );
-        $app->{cgi_headers}{-type} = $type;
-        $app->print( $app->{query}->header( %{ $app->{cgi_headers} } ) );
+    $app->{cgi_headers}{-status} = ($app->response_code || 200) . ($app->{response_message} ? ' ' . $app->{response_message} : '');
+    $app->{cgi_headers}{-type}   = $type;
+    $app->print($app->{query}->header(%{ $app->{cgi_headers} }));
 }
 
 sub print {
     my $app = shift;
-        CORE::print(@_);
-    if ( $MT::DebugMode & 128 ) {
+    CORE::print(@_);
+    if ($MT::DebugMode & 128) {
         CORE::print STDERR @_;
     }
 }
@@ -1052,31 +1049,30 @@ sub init_request {
         cookies _errstr request_method requires_login __host );
     delete $app->{$_} foreach @req_vars;
     $app->user(undef);
-        if ( $param{CGIObject} ) {
-            $app->{query} = $param{CGIObject};
-            require CGI;
-            $CGI::POST_MAX = $app->config->CGIMaxUpload;
-        }
-        else {
-            if ( my $path_info = $ENV{PATH_INFO} ) {
-                if ( $path_info =~ m/\.cgi$/ ) {
+    if ($param{CGIObject}) {
+        $app->{query} = $param{CGIObject};
+        require CGI;
+        $CGI::POST_MAX = $app->config->CGIMaxUpload;
+    } else {
+        if (my $path_info = $ENV{PATH_INFO}) {
+            if ($path_info =~ m/\.cgi$/) {
 
-                    # some CGI environments (notably 'sbox') leaves PATH_INFO
-                    # defined which interferes with CGI.pm determining the
-                    # request url.
-                    delete $ENV{PATH_INFO};
-                }
-            }
-            require CGI;
-            $CGI::POST_MAX = $app->config->CGIMaxUpload;
-            $app->{query} = eval { CGI->new( $app->{no_read_body} ? {} : () ) };
-            if (my $err = $@) {
-                my $res = parse_init_cgi_error($err);
-                $app->{query} = CGI->new( {} );
-                $app->response_code($res->{code});
-                die $res->{message};
+                # some CGI environments (notably 'sbox') leaves PATH_INFO
+                # defined which interferes with CGI.pm determining the
+                # request url.
+                delete $ENV{PATH_INFO};
             }
         }
+        require CGI;
+        $CGI::POST_MAX = $app->config->CGIMaxUpload;
+        $app->{query} = eval { CGI->new($app->{no_read_body} ? {} : ()) };
+        if (my $err = $@) {
+            my $res = parse_init_cgi_error($err);
+            $app->{query} = CGI->new({});
+            $app->response_code($res->{code});
+            die $res->{message};
+        }
+    }
     $app->init_query();
 
     $app->{return_args} = $app->{query}->param('return_args');
@@ -1098,13 +1094,13 @@ sub init_query {
 
     # CGI.pm has this terrible flaw in that if a POST is in effect,
     # it totally ignores any query parameters.
-    if ( $app->request_method eq 'POST' ) {
-            my $query_string = $ENV{'QUERY_STRING'};
-            $query_string ||= $ENV{'REDIRECT_QUERY_STRING'}
-                if defined $ENV{'REDIRECT_QUERY_STRING'};
-            if ( defined($query_string) and $query_string ne '' ) {
-                $q->parse_params($query_string);
-            }
+    if ($app->request_method eq 'POST') {
+        my $query_string = $ENV{'QUERY_STRING'};
+        $query_string ||= $ENV{'REDIRECT_QUERY_STRING'}
+            if defined $ENV{'REDIRECT_QUERY_STRING'};
+        if (defined($query_string) and $query_string ne '') {
+            $q->parse_params($query_string);
+        }
     }
 }
 
@@ -2733,32 +2729,30 @@ sub request_content {
 sub get_header {
     my $app = shift;
     my ($key) = @_;
-        ( $key = uc($key) ) =~ tr/-/_/;
-        return $ENV{ 'HTTP_' . $key };
+    ($key = uc($key)) =~ tr/-/_/;
+    return $ENV{ 'HTTP_' . $key };
 }
 
 sub set_header {
     my $app = shift;
-    my ( $key, $val ) = @_;
-        unless ( $key =~ /^-/ ) {
-            ( $key = lc($key) ) =~ tr/-/_/;
-            $key = '-' . $key;
-        }
-        if ( $key eq '-cookie' ) {
-            push @{ $app->{cgi_headers}{$key} }, $val;
-        }
-        else {
-            $app->{cgi_headers}{$key} = $val;
-        }
+    my ($key, $val) = @_;
+    unless ($key =~ /^-/) {
+        ($key = lc($key)) =~ tr/-/_/;
+        $key = '-' . $key;
+    }
+    if ($key eq '-cookie') {
+        push @{ $app->{cgi_headers}{$key} }, $val;
+    } else {
+        $app->{cgi_headers}{$key} = $val;
+    }
 }
 
 sub request_method {
     my $app = shift;
     if (@_) {
         $app->{request_method} = shift;
-    }
-    elsif ( !exists $app->{request_method} ) {
-            $app->{request_method} = $ENV{REQUEST_METHOD} || '';
+    } elsif (!exists $app->{request_method}) {
+        $app->{request_method} = $ENV{REQUEST_METHOD} || '';
     }
     $app->{request_method};
 }
@@ -2768,17 +2762,17 @@ sub upload_info {
     my ($param_name) = @_;
     my $q            = $app->param;
 
-    my ( $fh, $info, $no_upload );
-        ## Older versions of CGI.pm didn't have an 'upload' method.
-        eval { $fh = $q->upload($param_name) };
-        if ( $@ && $@ =~ /^Undefined subroutine/ ) {
-            $fh = $q->param($param_name);
-        }
-        return unless $fh;
-        $info = $q->uploadInfo($fh);
+    my ($fh, $info, $no_upload);
+    ## Older versions of CGI.pm didn't have an 'upload' method.
+    eval { $fh = $q->upload($param_name) };
+    if ($@ && $@ =~ /^Undefined subroutine/) {
+        $fh = $q->param($param_name);
+    }
+    return unless $fh;
+    $info = $q->uploadInfo($fh);
 
     return if $no_upload;
-    return ( $fh, $info );
+    return ($fh, $info);
 }
 
 sub cookie_val {
@@ -2794,31 +2788,30 @@ sub bake_cookie {
     my $app   = shift;
     my %param = @_;
     my $cfg   = $app->config;
-    if ( ( !exists $param{'-secure'} ) && $app->is_secure ) {
+    if ((!exists $param{'-secure'}) && $app->is_secure) {
         $param{'-secure'} = 1;
     }
-    unless ( $param{-path} ) {
+    unless ($param{-path}) {
         $param{-path} = $cfg->CookiePath || $app->path;
     }
-    if ( !$param{-domain} && $cfg->CookieDomain ) {
+    if (!$param{-domain} && $cfg->CookieDomain) {
         $param{-domain} = $cfg->CookieDomain;
     }
-        require CGI::Cookie;
-        my $cookie = CGI::Cookie->new(%param);
-        $app->set_header( '-cookie', $cookie );
+    require CGI::Cookie;
+    my $cookie = CGI::Cookie->new(%param);
+    $app->set_header('-cookie', $cookie);
 }
 
 sub cookies {
     my $app = shift;
-    unless ( $app->{cookies} ) {
-        my $class
+    unless ($app->{cookies}) {
+        my $class = 'CGI::Cookie';
         eval "use $class;";
         $app->{cookies} = $class->fetch;
     }
-    if ( $app->{cookies} ) {
+    if ($app->{cookies}) {
         return wantarray ? %{ $app->{cookies} } : $app->{cookies};
-    }
-    else {
+    } else {
         return wantarray ? () : undef;
     }
 }
@@ -3107,14 +3100,13 @@ sub run {
         $app->validate_request_params($meth_info) or die;
 
         require MT::Auth;
-            my $err;
-            eval { $err = $q->cgi_error };
-            unless ($@) {
-                if ( $err && $err =~ /^413/ ) {
-                    die $app->translate('The file you uploaded is too large.')
-                        . "\n";
-                }
+        my $err;
+        eval { $err = $q->cgi_error };
+        unless ($@) {
+            if ($err && $err =~ /^413/) {
+                die $app->translate('The file you uploaded is too large.') . "\n";
             }
+        }
 
     REQUEST:
         {
@@ -3256,13 +3248,11 @@ sub run {
     }
 
     if ( my $url = $app->{redirect} ) {
-        if ( !MT->config->DisableMetaRefresh and $app->{redirect_use_meta} ) {
+        if (!MT->config->DisableMetaRefresh and $app->{redirect_use_meta}) {
             $app->send_http_header();
-            $app->print( '<meta http-equiv="refresh" content="' . encode_html(MT->config->WaitAfterReboot). ';url=' . encode_html($url) . '">' );
-        }
-        else {
-                $app->print(
-                    $q->redirect( -uri => $url, %{ $app->{cgi_headers} } ) );
+            $app->print('<meta http-equiv="refresh" content="' . encode_html(MT->config->WaitAfterReboot) . ';url=' . encode_html($url) . '">');
+        } else {
+            $app->print($q->redirect(-uri => $url, %{ $app->{cgi_headers} }));
         }
     }
     else {
@@ -3879,7 +3869,7 @@ sub delete_param {
     my ($key) = @_;
     my $q     = $app->{query};
     return unless $q;
-        $q->delete($key);
+    $q->delete($key);
 }
 
 sub param_hash {
@@ -3924,7 +3914,7 @@ sub validate_param {
 
 sub query_string {
     my $app = shift;
-        $app->{query}->query_string;
+    $app->{query}->query_string;
 }
 
 sub return_uri {
@@ -4072,15 +4062,14 @@ sub app_path {
 sub script {
     my $app = shift;
     return $app->{__script} if exists $app->{__script};
-    my $script
-        = $ENV{SCRIPT_NAME};
-    if ( !$script ) {
+    my $script = $ENV{SCRIPT_NAME};
+    if (!$script) {
         require File::Basename;
         import File::Basename qw(basename);
         $script = basename($0);
     }
     $script =~ s!/$!!;
-    $script = ( split /\//, $script )[-1];
+    $script = (split /\//, $script)[-1];
     $app->{__script} = $script;
 }
 
@@ -4125,21 +4114,21 @@ sub path_info {
     my $app = shift;
     return $app->{__path_info} if exists $app->{__path_info};
     my $path_info;
-        return undef unless $app->{query};
-        $path_info = $app->{query}->path_info;
+    return undef unless $app->{query};
+    $path_info = $app->{query}->path_info;
 
-        my $script_name = $ENV{SCRIPT_NAME};
-        $path_info =~ s!^$script_name!!
-            if $script_name;
+    my $script_name = $ENV{SCRIPT_NAME};
+    $path_info =~ s!^$script_name!!
+        if $script_name;
     $app->{__path_info} = $path_info;
 }
 
 sub is_secure {
     my $app = shift;
-        return
-              $app->{query}->protocol() eq 'https' ? 1
-            : ( $app->get_header('X-Forwarded-Proto') || '' ) eq 'https' ? 1
-            :                                                              0;
+    return
+          $app->{query}->protocol() eq 'https'                     ? 1
+        : ($app->get_header('X-Forwarded-Proto') || '') eq 'https' ? 1
+        :                                                            0;
 }
 
 sub redirect {
@@ -4156,8 +4145,7 @@ sub redirect {
 
 sub redirect_to_home {
     my $app = shift;
-    my $uri =
-        $app->{query}->url( -pathinfo => 1, -query => 0, -full => 1 );
+    my $uri = $app->{query}->url(-pathinfo => 1, -query => 0, -full => 1);
     return $app->redirect($uri);
 }
 
@@ -4375,9 +4363,7 @@ sub remote_ip {
     my $app = shift;
 
     my $trusted = $app->config->TransparentProxyIPs || 0;
-    my $remote_ip = (
-        $ENV{REMOTE_ADDR}
-    );
+    my $remote_ip = $ENV{REMOTE_ADDR};
     $remote_ip ||= '127.0.0.1';
     my $ip
         = $trusted
@@ -4422,7 +4408,7 @@ sub remote_ip {
 sub document_root {
     my $app = shift;
     my $cwd = '';
-        $cwd = $ENV{DOCUMENT_ROOT} || $app->mt_dir;
+    $cwd = $ENV{DOCUMENT_ROOT} || $app->mt_dir;
     $cwd = File::Spec->canonpath($cwd);
     $cwd =~ s!([\\/])cgi(?:-bin)?([\\/].*)?$!$1!;
     $cwd =~ s!([\\/])mt[\\/]?$!$1!i;
@@ -4460,7 +4446,7 @@ sub set_no_cache {
     }
 
     ## Add the Pragma: no-cache header.
-        $app->param->cache('no');
+    $app->param->cache('no');
 }
 
 sub verify_password_strength {

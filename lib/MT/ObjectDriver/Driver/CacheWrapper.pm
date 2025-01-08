@@ -33,9 +33,8 @@ sub wrap {
     }
 
     if ($use_caching) {
-        my $ram_cache;
-            require MT::ObjectDriver::Driver::Cache::RAM;
-            $ram_cache = 'MT::ObjectDriver::Driver::Cache::RAM';
+        require MT::ObjectDriver::Driver::Cache::RAM;
+        my $ram_cache = 'MT::ObjectDriver::Driver::Cache::RAM';
 
         my $driver;
 
