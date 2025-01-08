@@ -713,10 +713,7 @@ sub system_information_widget {
     $param->{total_content_types} = $ct_class->count();
 
     # Server model
-    if ( $ENV{MOD_PERL} ) {
-        $param->{server_model} = 'mod_perl';
-    }
-    elsif ( $ENV{FAST_CGI} ) {
+    if ( $ENV{FAST_CGI} ) {
         $param->{server_model} = 'FastCGI';
     }
     elsif ( $ENV{'psgi.version'} ) {

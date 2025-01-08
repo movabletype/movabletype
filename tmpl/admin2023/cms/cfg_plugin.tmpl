@@ -88,19 +88,11 @@
       </mtapp:statusmsg>
     </mt:if>
     <mt:if name="switched">
-      <mt:if name="mod_perl">
-        <mtapp:statusmsg
-           id="switched"
-           class="success">
-          <__trans phrase="Your plugins have been reconfigured. Since you're running mod_perl, you must restart your web server for these changes to take effect.">
-        </mtapp:statusmsg>
-      <mt:else>
-        <mtapp:statusmsg
-           id="switched"
-           class="success">
-          <__trans phrase="Your plugins have been reconfigured.">
-        </mtapp:statusmsg>
-      </mt:if>
+      <mtapp:statusmsg
+         id="switched"
+         class="success">
+        <__trans phrase="Your plugins have been reconfigured.">
+      </mtapp:statusmsg>
     </mt:if>
   <mt:else>
     <mt:if name="saved">
@@ -118,19 +110,11 @@
       </mtapp:statusmsg>
     </mt:if>
     <mt:if name="switched">
-      <mt:if name="mod_perl">
-        <mtapp:statusmsg
-           id="switched"
-           class="success">
-          <__trans phrase="Your plugins have been reconfigured. Since you're running mod_perl, you will need to restart your web server for these changes to take effect.">
-        </mtapp:statusmsg>
-      <mt:else>
-        <mtapp:statusmsg
-           id="switched"
-           class="success">
-          <__trans phrase="Your plugins have been reconfigured.">
-        </mtapp:statusmsg>
-      </mt:if>
+      <mtapp:statusmsg
+         id="switched"
+         class="success">
+        <__trans phrase="Your plugins have been reconfigured.">
+      </mtapp:statusmsg>
     </mt:if>
   </mt:if>
 </mt:setvarblock>

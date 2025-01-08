@@ -929,10 +929,7 @@ sub init_config {
                 . $DBI::VERSION
                 . "; DBD/"
                 . $drh->{Version} . "\n";
-            if ( MT::Util::is_mod_perl1() ) {
-                print $PERFLOG "# App Mode: mod_perl\n";
-            }
-            elsif ( $ENV{FAST_CGI} ) {
+            if ( $ENV{FAST_CGI} ) {
                 print $PERFLOG "# App Mode: FastCGI\n";
             }
             elsif ( $ENV{'psgi.input'} ) {

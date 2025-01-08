@@ -931,25 +931,17 @@ sub seed {
     my $drivers = $app->object_drivers;
 
     my $r_uri = $ENV{REQUEST_URI} || $ENV{SCRIPT_NAME};
-    if ( MT::Util::is_mod_perl1()
-        || ( ( $r_uri =~ m/\/mt-wizard\.(\w+)(\?.*)?$/ ) && ( $1 ne 'cgi' ) )
-        )
-    {
+    if ((($r_uri =~ m/\/mt-wizard\.(\w+)(\?.*)?$/) && ($1 ne 'cgi'))) {
         my $new = '';
-        if ( MT::Util::is_mod_perl1() ) {
-            $param{mod_perl} = 1;
-        }
-        else {
-            $new = '.' . $1;
-        }
+        $new = '.' . $1;
         my @scripts;
         my $cfg      = $app->config;
-        my @cfg_keys = grep {/Script$/} keys %{ $cfg->{__settings} };
+        my @cfg_keys = grep { /Script$/ } keys %{ $cfg->{__settings} };
         $param{mt_script} = $app->config->AdminScript;
         foreach my $key (@cfg_keys) {
             my $path = $cfg->get($key);
             $path =~ s/\.cgi$/$new/;
-            if ( -e File::Spec->catfile( $app->{mt_dir}, $path ) ) {
+            if (-e File::Spec->catfile($app->{mt_dir}, $path)) {
                 $param{mt_script} = $path if $key eq 'AdminScript';
                 push @scripts, { name => $key, path => $path };
             }
@@ -958,8 +950,7 @@ sub seed {
             $param{script_loop}    = \@scripts if @scripts;
             $param{non_cgi_suffix} = 1;
         }
-    }
-    else {
+    } else {
         $param{mt_script} = $app->config->AdminScript;
     }
 

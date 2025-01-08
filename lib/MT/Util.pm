@@ -34,7 +34,7 @@ our @EXPORT_OK
     weaken log_time make_string_csv browser_language sanitize_embed
     extract_url_path break_up_text dir_separator deep_do deep_copy
     realpath canonicalize_path clear_site_stats_widget_cache check_fast_cgi is_valid_ip
-    encode_json build_upload_destination is_mod_perl1 asset_from_url
+    encode_json build_upload_destination is_asset_from_url
     date_for_listing is_within_a_directory );
 
 push @EXPORT_OK, @MT::Util::Deprecated::EXPORT_OK;
@@ -49,13 +49,6 @@ push @EXPORT_OK, @MT::Util::Deprecated::EXPORT_OK;
             && Scalar::Util->can('weaken') ? 1 : 0;
         Scalar::Util::weaken( $_[0] ) if $Has_Weaken;
     }
-}
-
-sub is_mod_perl1 () {
-    return ( $ENV{MOD_PERL}
-            and
-            ( !$ENV{MOD_PERL_API_VERSION} or $ENV{MOD_PERL_API_VERSION} < 2 )
-    );
 }
 
 sub leap_day {
@@ -1829,10 +1822,7 @@ sub browser_language {
 }
 
 sub launch_background_tasks {
-    return !( is_mod_perl1()
-        || $ENV{FAST_CGI}
-        || $ENV{'psgi.input'}
-        || !MT->config->LaunchBackgroundTasks );
+    return !($ENV{FAST_CGI} || $ENV{'psgi.input'} || !MT->config->LaunchBackgroundTasks);
 }
 
 sub start_background_task {
