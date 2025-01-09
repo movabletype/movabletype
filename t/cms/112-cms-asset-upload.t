@@ -276,6 +276,106 @@ subtest 'Regular JPEG image with wrong extension separator' => sub {
     );
 };
 
+subtest 'Regular JPEG image with string added like extension' => sub {
+    my $newest_asset = MT::Asset->load(
+        { class => '*' },
+        { sort  => [{ column => 'id', desc => 'DESC' }] },
+    );
+
+    my $test_image = $test_env->path('string-added-like-extension.jpg');
+    MT::Test::Image->write(file => $test_image);
+    my $renamed_test_image = $test_env->path('test.bak');
+    rename $test_image => $renamed_test_image or die $!;
+
+    my $app = MT::Test::App->new('CMS');
+    $app->login($admin);
+    $app->js_post_ok({
+        __test_upload => [file => $renamed_test_image],
+        __mode        => 'js_upload_file',
+        blog_id       => $blog->id,
+        destination   => '%a',
+    });
+
+    $app->content_like(
+        qr/Extension changed from none to jpg/,
+        'Reported that the extension was changed'
+    );
+
+    my $created_asset = MT::Asset->load(
+        { id   => { '>' => $newest_asset->id } },
+        { sort => [{ column => 'id', desc => 'DESC' }] },
+    );
+    ok($created_asset, 'An asset is created');
+    my $expected_values = {
+        'file_ext'   => 'jpg',
+        'file_path'  => File::Spec->catfile(qw/ %a test.bak.jpg /),
+        'file_name'  => 'test.bak.jpg',
+        'url'        => '%a/test.bak.jpg',
+        'class'      => 'image',
+        'blog_id'    => '1',
+        'created_by' => '1'
+    };
+    my $result_values = do {
+        return +{} unless $created_asset;
+        my $values = $created_asset->column_values();
+        +{ map { $_ => $values->{$_} } keys %$expected_values };
+    };
+    is_deeply(
+        $result_values, $expected_values,
+        "Created asset's column values"
+    );
+};
+
+subtest 'Regular JPEG image with extension string being filename' => sub {
+    my $newest_asset = MT::Asset->load(
+        { class => '*' },
+        { sort  => [{ column => 'id', desc => 'DESC' }] },
+    );
+
+    my $test_image = $test_env->path('extension-string-being-filename.jpg');
+    MT::Test::Image->write(file => $test_image);
+    my $renamed_test_image = $test_env->path('jpg');
+    rename $test_image => $renamed_test_image;
+
+    my $app = MT::Test::App->new('CMS');
+    $app->login($admin);
+    $app->js_post_ok({
+        __test_upload => [file => $renamed_test_image],
+        __mode        => 'js_upload_file',
+        blog_id       => $blog->id,
+        destination   => '%a',
+    });
+
+    $app->content_like(
+        qr/Extension changed from none to jpg/,
+        'Reported that the extension was changed'
+    );
+
+    my $created_asset = MT::Asset->load(
+        { id   => { '>' => $newest_asset->id } },
+        { sort => [{ column => 'id', desc => 'DESC' }] },
+    );
+    ok($created_asset, 'An asset is created');
+    my $expected_values = {
+        'file_ext'   => 'jpg',
+        'file_path'  => File::Spec->catfile(qw/ %a jpg.jpg /),
+        'file_name'  => 'jpg.jpg',
+        'url'        => '%a/jpg.jpg',
+        'class'      => 'image',
+        'blog_id'    => '1',
+        'created_by' => '1'
+    };
+    my $result_values = do {
+        return +{} unless $created_asset;
+        my $values = $created_asset->column_values();
+        +{ map { $_ => $values->{$_} } keys %$expected_values };
+    };
+    is_deeply(
+        $result_values, $expected_values,
+        "Created asset's column values"
+    );
+};
+
 subtest 'Regular PDF file' => sub {
     my $newest_asset = MT::Asset->load(
         { class => '*' },
