@@ -1492,7 +1492,7 @@ sub _upload_file_compat {
                     require MT::Asset::Image;
                     my $ext = MT::Asset::Image->extensions;
                     my ( $filename, undef, $ext_old ) = File::Basename::fileparse($basename, @$ext);
-                    $ext_old = "" if not $filename =~ /\.$/;
+                    $ext_old = "" unless $filename =~ /\.$/;
                     if (   $ext_new ne lc($ext_old)
                         && !(lc($ext_old) eq 'jpeg' && $ext_new eq 'jpg')
                         && !(lc($ext_old) eq 'ico'  && $ext_new =~ /^(bmp|png|gif)$/)
@@ -2043,7 +2043,7 @@ sub _upload_file {
             require MT::Asset::Image;
             my $ext = MT::Asset::Image->extensions;
             my ( $filename, undef, $ext_old ) = File::Basename::fileparse($basename, @$ext);
-            $ext_old = "" if not $filename =~ /\.$/;
+            $ext_old = "" unless $filename =~ /\.$/;
 
             if (   $ext_new ne lc($ext_old)
                 && !(lc($ext_old) eq 'jpeg' && $ext_new eq 'jpg')
