@@ -241,9 +241,9 @@
         <__trans phrase="Warning: Changing the [_1] URL requires a complete publish of your [_1], even when publishing profile is dynamic publishing." params="<mt:var name="object_label" capitalize="1">">
         </p>
     <mt:if name="is_blog">
-      <small class="form-text text-muted hint"><__trans phrase="The URL of your child site. Exclude the filename (i.e. index.html). End with '/'. Example: http://www.example.com/blog/"></small>
+      <small class="form-text text-body-secondary hint"><__trans phrase="The URL of your child site. Exclude the filename (i.e. index.html). End with '/'. Example: http://www.example.com/blog/"></small>
     <mt:else>
-      <small class="form-text text-muted hint"><__trans phrase="The URL of your site. Exclude the filename (i.e. index.html).  End with '/'. Example: http://www.example.com/"></small>
+      <small class="form-text text-body-secondary hint"><__trans phrase="The URL of your site. Exclude the filename (i.e. index.html).  End with '/'. Example: http://www.example.com/"></small>
     </mt:if>
     </mtapp:setting>
 
@@ -277,16 +277,16 @@
       </p>
 
       <mt:if name="is_blog">
-      <small class="form-text text-muted hint relative-site_path-hint">
+      <small class="form-text text-body-secondary hint relative-site_path-hint">
         <__trans phrase="The path where your index files will be published. Do not end with '/' or '\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog">
       </small>
         <mt:unless name="sitepath_limited">
-      <small class="form-text text-muted hint absolute-site_path-hint">
+      <small class="form-text text-body-secondary hint absolute-site_path-hint">
         <__trans phrase="The path where your index files will be published. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred.  Do not end with '/' or '\'. Example: /home/mt/public_html or C:\www\public_html">
       </small>
         </mt:unless>
       <mt:else>
-      <small class="form-text text-muted hint absolute-site_path-hint">
+      <small class="form-text text-body-secondary hint absolute-site_path-hint">
         <__trans phrase="The path where your index files will be published. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred.  Do not end with '/' or '\'. Example: /home/mt/public_html or C:\www\public_html">
       </small>
       </mt:if>
@@ -411,9 +411,9 @@
           <__trans phrase="Warning: Changing the archive URL requires a complete publish of your [_1], even when publishing profile is dynamic publishing." params="<mt:var name="object_label" capitalize="1">">
         </p>
       <mt:if name="is_blog">
-        <small class="form-text text-muted hint"><__trans phrase="The URL of the archives section of your child site. Example: http://www.example.com/blog/archives/"></small>
+        <small class="form-text text-body-secondary hint"><__trans phrase="The URL of the archives section of your child site. Example: http://www.example.com/blog/archives/"></small>
       <mt:else>
-        <small class="form-text text-muted hint"><__trans phrase="The URL of the archives section of your site. Example: http://www.example.com/archives/"></small>
+        <small class="form-text text-body-secondary hint"><__trans phrase="The URL of the archives section of your site. Example: http://www.example.com/archives/"></small>
       </mt:if>
       </mtapp:setting>
 
@@ -451,16 +451,16 @@
           <__trans phrase="Warning: Changing the archive path requires a complete publish of your [_1], even when publishing profile is dynamic publishing." params="<mt:var name="object_label" capitalize="1">">
           </p>
         <mt:if name="is_blog">
-        <small class="form-text text-muted hint relative-site_path-hint">
+        <small class="form-text text-body-secondary hint relative-site_path-hint">
           <__trans phrase="The path where your archives section index files will be published. Do not end with '/' or '\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog">
         </small>
           <mt:unless name="sitepath_limited">
-        <small class="form-text text-muted hint absolute-site_path-hint">
+        <small class="form-text text-body-secondary hint absolute-site_path-hint">
           <__trans phrase="The path where your archives section index files will be published. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred. Do not end with '/' or '\'. Example: /home/mt/public_html or C:\www\public_html">
         </small>
           </mt:unless>
         <mt:else>
-        <small class="form-text text-muted hint absolute-site_path-hint">
+        <small class="form-text text-body-secondary hint absolute-site_path-hint">
           <__trans phrase="The path where your archives section index files will be published. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred. Do not end with '/' or '\'. Example: /home/mt/public_html or C:\www\public_html">
         </small>
         </mt:if>
@@ -527,9 +527,9 @@
       <input type="hidden" name="no_archives_are_active" id="no_archives_are_active" value="1" />
     </mt:unless>
     <mt:if name="is_blog">
-      <small class="form-text text-muted hint"><__trans phrase="Used to generate URLs (permalinks) for this child site's archived entries. Choose one of the archive types used in this child site's archive templates."></small>
+      <small class="form-text text-body-secondary hint"><__trans phrase="Used to generate URLs (permalinks) for this child site's archived entries. Choose one of the archive types used in this child site's archive templates."></small>
     <mt:else>
-      <small class="form-text text-muted hint"><__trans phrase="Used to generate URLs (permalinks) for this site's archived entries. Choose one of the archive types used in this site's archive templates."></small>
+      <small class="form-text text-body-secondary hint"><__trans phrase="Used to generate URLs (permalinks) for this site's archived entries. Choose one of the archive types used in this site's archive templates."></small>
     </mt:if>
     </mtapp:setting>
 
