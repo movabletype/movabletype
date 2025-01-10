@@ -461,7 +461,7 @@ function createUploadBlock () {
   this.deleteAsset.hide();
 </mt:unless>
   this.progressbar.find('.progress-bar').css('width', '0')
-                                        .attr('aria-valuenow', '0');
+                                        .parent().attr('aria-valuenow', '0');
   jQuery('#blockeditor-upload-progress').prepend(this.uploadBlockPanel);
 
   // Recalculate block height
@@ -477,7 +477,7 @@ function createUploadBlock () {
 
   this.setProgress = function(val) {
     this.progressbar.find('.progress-bar').css('width', val + '%')
-                                          .attr('aria-valuenow', parseInt(val));
+                                          .parent().attr('aria-valuenow', parseInt(val));
     if( parseInt(val) >= 100 ) {
       this.filename.hide();
       this.cancelUpload.hide();
