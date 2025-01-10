@@ -683,7 +683,7 @@ $small-font-size:             .875em !default;
 
 $sub-sup-font-size:           .75em !default;
 
-$text-muted:                  $gray-600 !default;
+$body-secondary-color:        $gray-600 !default;
 
 $initialism-font-size:        $small-font-size !default;
 
@@ -756,7 +756,7 @@ $table-striped-columns-order: even !default;
 
 $table-group-separator-color: currentcolor !default;
 
-$table-caption-color:         $text-muted !default;
+$table-caption-color:         $body-secondary-color !default;
 
 $table-bg-scale:              -80% !default;
 // scss-docs-end table-variables
@@ -862,7 +862,7 @@ $form-text-margin-top:                  .25rem !default;
 $form-text-font-size:                   $small-font-size !default;
 $form-text-font-style:                  null !default;
 $form-text-font-weight:                 null !default;
-$form-text-color:                       $text-muted !default;
+$form-text-color:                       $body-secondary-color !default;
 // scss-docs-end form-text-variables
 
 // scss-docs-start form-label-variables
