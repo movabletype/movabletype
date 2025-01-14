@@ -391,10 +391,8 @@ jQuery(window).on('load', init );
     });
     jQuery('.image-editor a').on('click', function(event) {
         if (isDirty) {
-            var msg = '<__trans phrase="You have unsaved changes to this asset that will be lost. Are you sure you want to edit image?" escape="js">';
-            if ( confirm(msg) ) {
-                isDirty = false;
-            } else {
+            var msg = '<__trans phrase="This asset has unsaved changes. Are you sure you want to edit image?" escape="js">';
+            if ( !confirm(msg) ) {
                 event.stopImmediatePropagation();
             }
         }

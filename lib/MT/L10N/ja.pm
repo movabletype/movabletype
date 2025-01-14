@@ -4320,7 +4320,7 @@ use vars qw( @ISA %Lexicon );
 	'Related Assets' => '関連するアセット',
 	'Stats' => '情報',
 	'This asset has been used by other users.' => 'このアセットは、他のユーザーにより利用されています。',
-	'You have unsaved changes to this asset that will be lost. Are you sure you want to edit image?' => '保存されていないアセットへの変更は失われます。画像を編集しますか？',
+	'This asset has unsaved changes. Are you sure you want to edit image?' => 'このアセットには保存されていない変更が存在します。画像を編集しますか？',
 	'You have unsaved changes to this asset that will be lost.' => '保存されていないアセットへの変更は失われます。',
 	'You must specify a name for the asset.' => 'アセットに名前を設定してください。',
 	'[_1] - Created by [_2]' => '作成: [_2] - [_1]',
