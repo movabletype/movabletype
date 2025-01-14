@@ -1,0 +1,78 @@
+<$mt:setvar name="page_title" value="<__trans phrase="Reply to comment">"$>
+
+<mt:if name="closing">
+<mt:setvarblock name="js_include" append="1">
+<script type="text/javascript">
+/* <![CDATA[ */
+<mt:if name="return_url">
+jQuery.fn.mtModal.close('<mt:var name="return_url" escape="js">');
+<mt:else>
+jQuery.fn.mtModal.close();
+parent.location.reload();
+</mt:if>
+
+/* ]]> */
+</script>
+</mt:setvarblock>
+</mt:if>
+
+<mt:setvarblock name="form_header">
+<form action="<mt:var name="script_url">" method="post" name="comments_form" id="comments-form">
+    <input type="hidden" name="__mode" value="reply" />
+    <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+    <input type="hidden" name="reply_to" value="<mt:var name="reply_to" escape="html">" />
+    <input type="hidden" name="blog_id" value="<mt:var name="blog_id" escape="html">" />
+    <input type="hidden" name="return_url" value="<mt:if name="return_url"><mt:var name="return_url" escape="html"><mt:else><mt:var name="script_url">?__mode=list&amp;_type=comment&amp;blog_id=<mt:var name="blog_id" escape="url"></mt:if>" />
+</mt:setvarblock>
+
+<mt:setvarblock name="form_footer">
+</form>
+</mt:setvarblock>
+
+<mt:setvarblock name="modal_body">
+<mt:if name="error">
+    <mtapp:statusmsg
+        id="generic-error"
+        class="error"
+        can_close="0">
+        <mt:var name="error" escape="html">
+    </mtapp:statusmsg>
+</mt:if>
+
+    <div id="comment" class="card mt-2 mb-4">
+        <div class="card-header comment-meta">
+          <__trans phrase="On [_1], [_2] commented on [_3]" params="<span class="comment-date"><$mt:var name="comment_created_on"$></span>%%<span class="commenter-name"><$mt:var name="commenter_name" escape="html"$></span>%%<span class="entry-title"><$mt:var name="entry_title" escape="html" escape="html"$></span>">
+        </div>
+        <div class="card-body comment-body">
+            <$mt:var name="comment_text"$>
+        </div>
+    </div>
+
+    <mtapp:setting
+        id="comment-reply"
+        label="<__trans phrase="Your reply:">"
+        label_class="top-label">
+        <textarea name="comment-reply" id="comment-reply" class="form-control text full high"><mt:var name="text" escape="html"></textarea>
+    </mtapp:setting>
+</mt:setvarblock>
+
+    <mt:setvarblock name="action_buttons">
+        <button
+           mt:command="submit"
+           type="submit"
+           accesskey="s"
+           title="<__trans phrase="Submit reply (s)">"
+           id="action button  publish-comment-action"
+           class="save action primary button btn btn-primary"
+           ><__trans phrase="Submit"></button>
+        <button
+           type="submit"
+           accesskey="x"
+           title="<__trans phrase="Cancel (x)">"
+           data-mt-modal-close
+           class="action button mt-close-dialog btn btn-default"
+           ><__trans phrase="Cancel"></button>
+    </mt:setvarblock>
+
+<mt:include name="layout/modal.tmpl">
+<mt:var name="layout">

@@ -35,7 +35,7 @@ const srcConfig = (inputFile) => {
         sourceMap: true,
         minify: production,
       }),
-      css({ output: "bundle.css" }),
+      css({ output: inputFile.replace(/^src\//, "").replace(/ts$/, "css") }),
       svelte({
         preprocess: sveltePreprocess({ sourceMap: !production }),
         compilerOptions: {
@@ -81,5 +81,6 @@ const mtStaticConfig = (inputfile) => {
 export default [
   srcConfig("src/contenttype.ts"),
   srcConfig("src/listing.ts"),
+  srcConfig("src/admin-header.ts"),
   ...mtStaticInputFiles.map(mtStaticConfig),
 ];

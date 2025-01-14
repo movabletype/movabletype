@@ -1,0 +1,25 @@
+<mt:setvarblock name="system_msg">
+<div id="msg-block">
+<mt:unless name="recovered_object">
+  <mt:if name="autosaved_object_exists">
+    <mt:unless name="error">
+  <mtapp:statusmsg
+     id="recovered-object"
+     class="info">
+    <__trans phrase="A saved version of this content data was auto-saved [_2]. <a href="[_1]" class="alert-link">Recover auto-saved content</a>" params="<mt:var name="script_url">?__mode=view&amp;_type=<mt:var name="object_type">&amp;_recover=1<mt:if name="id">&amp;id=<mt:var name="id" escape="url"></mt:if><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id" escape="url"></mt:if>%%<mt:date ts="$autosaved_object_ts" relative="1">">
+  </mtapp:statusmsg>
+    </mt:unless>
+  </mt:if>
+</mt:unless>
+
+<mt:if name="saved_deleted">
+  <mtapp:statusmsg
+    id="saved-deleted"
+    class="success"
+    rebuild="$rebuild"
+    can_close="0">
+    <__trans phrase="The content data has been deleted from the database.">
+  </mtapp:statusmsg>
+</mt:if>
+</div>
+</mt:setvarblock>

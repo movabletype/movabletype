@@ -1,0 +1,187 @@
+<mt:setvar name="page_title" value="<__trans phrase="Sign in">">
+<mt:setvar name="no_page_header" value="1">
+<mt:setvar name="complete" value="1">
+<mt:setvar name="screen_id" value="sign-in">
+<mt:setvar name="screen_class" value="sign-in">
+
+<mt:SetVarBlock name="js_include" append="1">
+<mt:unless name="optimize_ui">
+<mt:if name="use_jquery_json">
+<mt:script type="text/javascript" path="jquery/jquery.json.js">
+</mt:if>
+<mt:script type="text/javascript" path="data-api/v4/js/mt-data-api.js">
+<mt:else>
+<mt:if name="use_jquery_json">
+<mt:script type="text/javascript" path="jquery/jquery.json.min.js">
+</mt:if>
+<mt:script type="text/javascript" path="data-api/v4/js/mt-data-api.min.js">
+</mt:unless>
+<mt:script type="text/javascript" path="js-cookie/js.cookie.min.js">
+<script type="text/javascript">
+/* <![CDATA[ */
+(function() {
+
+function redirectWithCookie(jsonText) {
+    Cookies.set(MT.DataAPI.accessTokenKey, jsonText);
+    var url = '<mt:var name="redirect_url" encode_js="1" />#_login';
+    location.href = url;
+}
+
+function redirectWithOneTimeToken(token) {
+    location.href = '<mt:var name="redirect_url" encode_js="1" />#_ott_' + token;
+}
+
+<mt:Unless name="redirect_type">
+<mt:If name="access_token">
+redirectWithCookie('<mt:Var name="access_token" to_json="1" encode_js="1" />');
+</mt:If>
+</mt:Unless>
+
+
+jQuery(function() {
+    if (window.top && (window.top.location != window.location)) {
+      jQuery('#username')
+        .val( window.top.jQuery('#user .username').text())
+        .addClass('disabled')
+        .attr('disabled','disabled');
+      jQuery('#sign-in-button').on('click', function(){
+        jQuery('#username').prop('disabled', false);
+      });
+    }
+});
+
+jQuery(function($) {
+    function initFocus() {
+        $('#username').trigger('focus');
+        if ($('#username').trigger('focus').val() != '') {
+            $('#password').trigger('focus');
+        }
+    }
+    initFocus();
+
+    $('#login_form').on('submit', function() {
+        var form = this;
+        $.ajax({
+            url: this.action,
+            data: $(this).serialize(),
+            type: 'POST',
+            cache : false
+        }).done(function(data) {
+            if (data.oneTimeToken) {
+                redirectWithOneTimeToken(data.oneTimeToken);
+            }
+            else {
+                redirectWithCookie(<mt:if name="use_jquery_json">$.toJSON(data)<mt:else>JSON.stringify(data)</mt:if>);
+            }
+        }).fail(function(data) {
+            if (data.status === 401) {
+                $('#login-error').removeClass('hidden');
+
+                $('#password').val('');
+                if (! $('#username').attr('disabled')) {
+                    $('#username').val('');
+                }
+                initFocus();
+            }
+            else {
+                alert('Ajax error: ' + data.responseText);
+            }
+        });
+        return false;
+    });
+});
+
+})();
+/* ]]> */
+</script>
+</mt:SetVarBlock>
+
+<mt:setvarblock name="page_content">
+<input type="hidden" name="redirectUrl" id="redirect_url" value="<mt:var name="redirect_url" escape="html">" />
+
+<form method="post" action="<mt:var name="script_url">/v<mt:var name="api_version" />/authentication" id="login_form">
+<mt:loop name="query_params">
+  <input type="hidden" name="<mt:var name="name" escape="html">" value="<mt:var name="value" escape="html">" />
+</mt:loop>
+  <input type="hidden" name="clientId" id="clientId" value="<mt:var name="client_id" escape="html">" />
+  <input type="hidden" name="mtDataApiLoginMagicToken" value="<mt:var name="mt_data_api_login_magic_token" escape="html">" />
+  <input type="hidden" name="redirect_type" value="<mt:var name="redirect_type" escape="html">" />
+
+  <div id="msg-block"></div>
+
+  <div class="row">
+    <div class="col-12">
+
+<mt:if name="logged_out">
+  <mt:if name="delegate_auth">
+    <mtapp:statusmsg
+       id="delegate_auth_logout"
+       class="info"
+       can_close="0">
+      <__trans phrase="Your Movable Type session has ended.">
+    </mtapp:statusmsg>
+  <mt:else>
+    <mtapp:statusmsg
+       id="session_end_logout"
+       class="info"
+       can_close="0">
+      <__trans phrase="Your Movable Type session has ended. If you wish to sign in again, you can do so below.">
+    </mtapp:statusmsg>
+  </mt:if>
+<mt:else>
+  <mt:if name="login_again">
+    <mtapp:statusmsg
+       id="action_logout"
+       class="info"
+       can_close="0">
+      <__trans phrase="Your Movable Type session has ended. Please sign in again to continue this action.">
+    </mtapp:statusmsg>
+  <mt:else>
+    <mt:if name="error">
+      <mtapp:statusmsg
+         id="generic-error"
+         class="danger"
+         can_close="0">
+        <mt:var name="error">
+      </mtapp:statusmsg>
+    </mt:if>
+  </mt:if>
+</mt:if>
+<mtapp:statusmsg
+   id="login-error"
+   class="danger hidden"
+   can_close="0">
+     <__trans phrase="Invalid login.">
+</mtapp:statusmsg>
+
+  </div>
+</div>
+
+<mt:unless name="delegate_auth">
+  <mt:var name="login_fields">
+  <div class="row align-items-center actions-bar actions-bar-login">
+    <div id="forget-password" class="col order-last order-md-first">
+    <mt:if name="can_recover_password">
+      <a href="<mt:var name="mt_url">?__mode=start_recover">
+        <__trans phrase="Forgot your password?">
+      </a>
+    </mt:if>
+    </div>
+    <div class="col-12 col-md-auto order-first order-md-last mb-4 mb-md-0 text-end">
+      <button
+         type="submit"
+         id="sign-in-button"
+         accesskey="s"
+         title="<__trans phrase="Sign In (s)">"
+         class="sign-in action primary button btn__mobile btn-primary">
+        <__trans phrase="Sign In">
+      </button>
+    </div>
+  </div>
+
+</mt:unless>
+</form>
+</mt:setvarblock>
+
+<mt:include name="layout/chromeless.tmpl">
+<mt:var name="layout">

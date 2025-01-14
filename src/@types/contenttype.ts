@@ -94,3 +94,14 @@ export interface Type {
 
   warning?: string;
 }
+
+export interface ContentTypes {
+  count: number;
+  page: number;
+  pageMax: number;
+  contentTypes: ContentType[];
+}
+export interface ContentType {
+  id: string;
+  name: string;
+}

@@ -1,0 +1,95 @@
+<mt:if name="is_full_screen">
+  <mt:setvar name="screen_class" value="rebuilding-screen">
+  <mt:setvar name="top_nav_loop" value="0">
+  <mt:setvarblock name="page_title"><__trans phrase="Publishing..."></mt:setvarblock>
+<mt:else>
+  <mt:setvar name="screen_type" value="popup-screen">
+  <mt:setvarblock name="html_title"><__trans phrase="Publishing [_1]..." params="<mt:var name="blog_name" escape="html" escape="html">"></mt:setvarblock>
+  <mt:setvarblock name="page_title"><__trans phrase="Publishing <em>[_1]</em>..." params="<mt:var name="blog_name" escape="html" escape="html">"></mt:setvarblock>
+</mt:if>
+
+<mt:setvarblock name="rebuilding_message">
+<mt:if name="is_one_index">
+<__trans phrase="Publishing [_1]..." params="<mt:var name="build_type_name" escape="html"> ">
+<mt:else>
+  <mt:if name="is_individual">
+<__trans phrase="Publishing [_1] [_2]..." params="<mt:var name="build_type_name" escape="html">%%<mt:var name="indiv_range" escape="html"> ">
+  <mt:else>
+    <mt:if name="is_content">
+      <mt:if name="dynamic">
+<__trans phrase="Publishing [_1] dynamic links..." params="<mt:var name="build_type_name" escape="html"> ">
+      <mt:else>
+<__trans phrase="Publishing [_1]..." params="<mt:var name="build_type_name" escape="html"> ">
+      </mt:if>
+    <mt:else>
+      <mt:if name="dynamic">
+<__trans phrase="Publishing [_1] dynamic links..." params="<mt:var name="build_type_name" escape="html"> ">
+      <mt:else>
+        <mt:if name="build_type_name">
+          <mt:if name="archives">
+<__trans phrase="Publishing [_1] archives..." params="<mt:var name="build_type_name" escape="html"> ">
+          <mt:else>
+<__trans phrase="Publishing [_1] templates..." params="<mt:var name="build_type_name" escape="html"> ">
+          </mt:if>
+        <mt:else>
+<__trans phrase="Publishing...">
+        </mt:if>
+      </mt:if>
+    </mt:if>
+  </mt:if>
+</mt:if>
+</mt:setvarblock>
+
+<mt:setvarblock name="page_content">
+<div class="row">
+  <div class="col-12">
+    <div class="alert-publishing">
+    <img width="40" height="40" src="<mt:var name="static_uri">images/ic_rebuild-animation@x2.gif" />
+    <mt:var name="rebuilding_message">
+    </div>
+  </div>
+</div>
+
+<mt:if name="total">
+  <mt:if name="complete">
+<div class="mt-progress">
+  <div class="progress">
+    <div class="progress-bar" data-role="progressbar" style="width: <mt:var name="complete" escape="html">%;" aria-valuenow="<mt:var name="comple" escape="html">" aria-valuemin="0" aria-valuemax="100">
+    </div>
+  </div>
+</div>
+<p><__trans phrase="Complete [_1]%" params="<$mt:var name="complete"$>"></p>
+  <mt:else>
+<div class="mt-progress">
+  <div class="progress">
+    <div class="progress-bar progress-bar-striped progress-bar-animated" style="width: 100%;" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
+    </div>
+  </div>
+</div>
+  </mt:if>
+</mt:if>
+</mt:setvarblock>
+
+<mt:setvarblock name="js_include" append="1">
+<script type="text/javascript">
+/* <![CDATA[ */
+function doRedirect () {
+<mt:if name="redirect_target">
+    window.location='<mt:var name="redirect_target" remove_html="1">';
+<mt:elseif name="is_content_data">
+    window.location='<mt:var name="script_url">?__mode=rebuild&blog_id=<mt:var name="blog_id" escape="url">&type=<mt:var name="build_type" escape="url">&next=<mt:var name="build_next" escape="url">&offset=<mt:var name="offset" escape="url">&limit=<mt:var name="limit" escape="url">&total=<mt:var name="total" escape="url">&start_time=<mt:var name="start_time" escape="url">&content_data_id=<mt:var name="content_data_id" escape="url">&content_type_id=<mt:var name="content_type_id" escape="url">&is_new=<mt:var name="is_new" escape="url">&old_status=<mt:var name="old_status" escape="url">&old_categories=<mt:var name="old_categories" escape="url">&old_date=<mt:var name="old_date" escape="url">&old_previous=<mt:var name="old_previous" escape="url">&old_next=<mt:var name="old_next" escape="url"><mt:if name="is_full_screen">&fs=1</mt:if><mt:if name="with_indexes">&with_indexes=1</mt:if><mt:if name="no_static">&no_static=1</mt:if><mt:if name="template_id">&template_id=<mt:var name="template_id" escape="url"></mt:if><mt:if name="templatemap_id">&templatemap_id=<mt:var name="templatemap_id" escape="url"></mt:if><mt:if name="return_args">&return_args=<mt:var name="return_args" escape="url"></mt:if>';
+<mt:else>
+    window.location='<mt:var name="script_url">?__mode=rebuild&blog_id=<mt:var name="blog_id" escape="url">&type=<mt:var name="build_type" escape="url">&next=<mt:var name="build_next" escape="url">&offset=<mt:var name="offset" escape="url">&limit=<mt:var name="limit" escape="url">&total=<mt:var name="total" escape="url">&start_time=<mt:var name="start_time" escape="url">&entry_id=<mt:var name="entry_id" escape="url">&is_new=<mt:var name="is_new" escape="url">&old_status=<mt:var name="old_status" escape="url">&old_categories=<mt:var name="old_categories" escape="url">&old_date=<mt:var name="old_date" escape="url">&old_previous=<mt:var name="old_previous" escape="url">&old_next=<mt:var name="old_next" escape="url"><mt:if name="is_full_screen">&fs=1</mt:if><mt:if name="with_indexes">&with_indexes=1</mt:if><mt:if name="no_static">&no_static=1</mt:if><mt:if name="template_id">&template_id=<mt:var name="template_id" escape="url"></mt:if><mt:if name="templatemap_id">&templatemap_id=<mt:var name="templatemap_id" escape="url"></mt:if><mt:if name="return_args">&return_args=<mt:var name="return_args" escape="url"></mt:if><mt:if name="content_type_id">&content_type_id=<mt:var name="content_type_id" escape="url"></mt:if>';
+</mt:if>
+}
+setTimeout('doRedirect()', 200);
+/* ]]> */
+</script>
+</mt:setvarblock>
+
+<mt:if name="is_full_screen">
+  <mt:include name="layout/single_column.tmpl">
+<mt:else>
+  <mt:include name="layout/chromeless.tmpl">
+</mt:if>
+<mt:var name="layout">

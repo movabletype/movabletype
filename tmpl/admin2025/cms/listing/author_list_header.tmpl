@@ -1,0 +1,61 @@
+<mt:setvarblock name="system_msg" append="1">
+    <mt:if name="request.saved_status" eq="disabled">
+        <mtapp:statusmsg
+            id="saved-status-disabled"
+            class="success">
+            <__trans phrase="You have successfully disabled the selected user(s).">
+        </mtapp:statusmsg>
+    <mt:elseif eq="enabled">
+        <mtapp:statusmsg
+            id="saved-status-disabled"
+            class="success">
+            <__trans phrase="You have successfully enabled the selected user(s).">
+        </mtapp:statusmsg>
+    <mt:elseif eq="unlocked">
+        <mtapp:statusmsg
+            id="saved-status-disabled"
+            class="success">
+            <__trans phrase="You have successfully unlocked the selected user(s).">
+        </mtapp:statusmsg>
+    </mt:if>
+    <mt:if name="request.saved_deleted">
+        <mtapp:statusmsg
+            id="saved-deleted"
+            class="success">
+            <__trans phrase="You have successfully deleted the user(s) from the Movable Type system.">
+            <mt:if name="request.author_ldap_found">
+            <br /><__trans phrase="The deleted user(s) still exist in the external directory. As such, they will still be able to login to Movable Type Advanced.">
+            </mt:if>
+        </mtapp:statusmsg>
+    </mt:if>
+    <mt:if name="request.synchronized">
+        <mtapp:statusmsg
+            id="synchronized"
+            class="success">
+            <__trans phrase="You have successfully synchronized users' information with the external directory.">
+        </mtapp:statusmsg>
+    </mt:if>
+    <mt:if name="request.unchanged">
+        <mtapp:statusmsg
+            id="unchanged"
+            class="success">
+            <__trans phrase="Some ([_1]) of the selected user(s) could not be re-enabled because they were no longer found in the external directory." params="<mt:var name="unchanged">" escape="html">
+        </mtapp:statusmsg>
+    </mt:if>
+    <mt:if name="request.not_enabled">
+        <mtapp:statusmsg
+            id="not_enabled"
+            class="error"
+            can_close="0">
+            <__trans phrase="Some ([_1]) of the selected user(s) could not be re-enabled because they had some invalid parameter(s). Please check the <a href='[_2]' class="alert-link">activity log</a> for more details." params="<mt:var name="request.not_enabled" escape="html">%%<mt:var name="script_url">?__mode=list&_type=log&blog_id=<mt:var name="blog_id">">
+        </mtapp:statusmsg>
+    </mt:if>
+    <mt:if name="request.error">
+        <mtapp:statusmsg
+            id="error"
+            class="error"
+            can_close="0">
+            <__trans phrase="An error occurred during synchronization.  See the <a href='[_1]' class="alert-link">activity log</a> for detailed information." params="<mt:var name="script_url">?__mode=list&_type=log&blog_id=0">
+        </mtapp:statusmsg>
+    </mt:if>
+</mt:setvarblock>

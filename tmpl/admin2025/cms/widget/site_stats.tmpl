@@ -1,0 +1,126 @@
+<mtapp:widget
+  class="site-stats-widget"
+  label="<__trans phrase="Site Stats">"
+  can_close="1">
+<div class="row up-column">
+  <div id="statistics_settings_link" class="col-12 text-end">
+    <a href="<mt:var name="mt_url">?__mode=cfg_web_services&amp;blog_id=<mt:var name="blog_id">"><__trans phrase="Statistics Settings"></a>
+  </div>
+</div>
+<div class="row down-column">
+  <div class="col-12 down-column-contents">
+    <div id="graph" style="width: 99%;"></div>
+  </div>
+</div>
+<div class="mt-5 stats_provider text-end text-muted">Provider:<mt:var name="stats_provider" escape="html"></div>
+</mtapp:widget>
+
+<mt:setvarblock name="css_include" append="1">
+<mt:stylesheet path="chart-api/mtchart.css">
+</mt:setvarblock>
+
+<mt:setvarblock name="js_include" append="1">
+<mt:script path="chart-api/mtchart.js">
+<script type="text/javascript">
+/* <![CDATA[ */
+  jQuery(function() {
+    var chartColors = [
+      '#6AAC2B',
+      '#FFBE00',
+      '#CF6DD3',
+      '#8F2CFF',
+      '#2D85FF',
+      '#5584D4',
+      '#5ED2B8',
+      '#9CCF41',
+      '#F87085',
+      '#2C8087',
+      '#8EEC6A',
+      '#FFE700',
+      '#FF5E19',
+      '#FF4040',
+      '#976BD6',
+      '#503D99',
+      '#395595'
+    ];
+
+    jQuery('#statistics_settings_link').hide();
+
+    get_graph_data('<mt:var name="stat_url">', true);
+
+    function get_graph_data(stat_url, retry) {
+      jQuery.ajax(stat_url, {
+        dataType: 'jsonp',
+        jsonpCallback: 'widget_site_stats_draw_graph',
+        error: function(xhr) {
+            if (retry && xhr.status === 404) {
+              jQuery('select#select_blog_id').triggerHandler('change');
+            }
+          },
+        success: function(data) {
+            widget_site_stats_draw(data);
+          }
+      });
+    }
+
+    function addComma (str) {
+      var num = new String(str).replace(/,/g, "");
+      while(num != (num = num.replace(/^(-?\d+)(\d{3})/, "$1,$2")));
+      return num;
+    }
+
+  function widget_site_stats_draw(data) {
+      jQuery('.site-stats-widget .down-column').css('height', '');
+
+      if (data.error) {
+        jQuery('#graph')
+          .append(jQuery('<div class="msg msg-error"/>').text(data.error));
+        jQuery('.site-stats-widget .down-column').css('height', 'auto');
+      }
+
+      var hover_data = data.hover_data.data;
+      var config = {
+        type: 'morris.line',
+        yLength: hover_data[0].length,
+        autoResize: true,
+        height: 200,
+        lineWidth: 3,
+        pointSize: 3,
+        data: data.graph_data,
+        hoverCallback: function (index, options, content) {
+          var row  = options.data[index];
+          var data = hover_data[index];
+          var html = jQuery('<div class="morris-hover-row-label">').text(row.x);
+          html = html.prop('outerHTML');
+          for (var i = 0; i < data.length; i++) {
+            var colorSubscript = i;
+            if ( i > 16 ) {
+              var number = parseInt(i/17);
+              colorSubscript = i - ( 17 * number );
+            }
+            var color = chartColors[colorSubscript];
+            var div = jQuery('<div class="morris-hover-point" style="color: ' + color + ';">').text(data[i].label + ': ' + data[i].count);
+            html += div.prop('outerHTML');
+          }
+          return html;
+        },
+        yLabelFormat: function (y) {
+            return '';
+        }
+      }
+      var range = {
+        unit: 'daily',
+        length: 10,
+        end: data.graph_data[9].x
+      }
+      new MT.ChartAPI.Graph(config, range).trigger('APPEND_TO', jQuery('#graph'));
+      if (data.can_edit_config) {
+        jQuery('#statistics_settings_link').show();
+      }
+    }
+
+  });
+
+  /* ]]> */
+</script>
+</mt:setvarblock>

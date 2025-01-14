@@ -1,0 +1,41 @@
+<mtapp:listing>
+<mt:if name="__first__">
+  <mt:setvarblock name="table_header">
+    <tr>
+      <th class="head cb"><input type="checkbox" name="id-head" value="all" class="select" /></th>
+      <th class="head flag si"><img src="<mt:var name="static_uri">images/status_icons/invert-flag.gif" alt="<__trans phrase="Status">" title="<__trans phrase="Status">" width="9" height="9" /></th>
+      <th class="head commenter primary"><span class="col-label"><__trans phrase="Commenter"></span></th>
+      <th class="head identity"><span class="col-label"><__trans phrase="Identity"></span></th>
+      <th class="head email"><span class="col-label"><__trans phrase="Email"></span></th>
+      <th class="head url"><span class="col-label"><__trans phrase="URL"></span></th>
+      <th class="head comments num"><span class="col-label"><__trans phrase="Comments"></span></th>
+      <th class="head recent"><span class="col-label"><__trans phrase="Last Commented"></span></th>
+    </tr>
+  </mt:setvarblock>
+  <thead>
+    <mt:var name="table_header">
+  </thead>
+  <tbody>
+</mt:if>
+    <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
+      <td class="head cb">
+      <mt:if name="has_edit_access">
+        <input type="checkbox" name="id" value="<mt:var name="author_id">" class="select" />
+      <mt:else>
+        &nbsp;
+      </mt:if>
+      </td>
+      <td class="head flag <mt:if name="commenter_approved">status-trusted<mt:else><mt:if name="commenter_banned">status-banned<mt:else>status-authenticated</mt:if></mt:if>">
+        <img src="<mt:var name="static_uri">images/spacer.gif" alt="" class="status-icon" width="13" height="9" />
+      </td>
+      <td class="head commenter"><a href="<mt:var name="script_url">?__mode=view&amp;_type=commenter&amp;blog_id=<mt:var name="blog_id">&amp;id=<mt:var name="author_id">" title="<__trans phrase="Edit this commenter">"><mt:var name="author_display" escape="html"></a></td>
+      <td class="head identity"><mt:if name="commenter_url"><a href="<mt:var name="commenter_url">" title="<__trans phrase="View this commenter&rsquo;s profile">"><mt:var name="author" escape="html"></a><mt:else><mt:var name="author" escape="html"></mt:if></td>
+      <td class="head email status-email"><mt:unless name="email_hidden"><a href="mailto:<mt:var name="email" escape="html">"><mtapp:statusicon id="ic_email" title="<__trans phrase="Email">" size="sm"></a><mt:else>&nbsp;</mt:unless></td>
+      <td class="head url status-link"><mt:if name="url"><a href="<mt:var name="url" escape="html">"><mtapp:svgicon id="ic_link" title="<__trans phrase="Link">" size="sm"></a><mt:else>&nbsp;</mt:if></td>
+      <td class="head comments"><mt:var name="comment_count"></td>
+      <td class="head recent"><span title="<mt:var name="most_recent_time_formatted">"><mt:if name="most_recent_relative"><mt:if name="dates_relative"><mt:var name="most_recent_relative"><mt:else><mt:var name="most_recent_formatted"></mt:if><mt:else><mt:var name="most_recent_formatted"></mt:if></span></td>
+    </tr>
+<mt:if name="__last__">
+  </tbody>
+</mt:if>
+</mtapp:listing>

@@ -1,0 +1,141 @@
+<mt:setvar name="page_title" value="<__trans phrase="Web Services Settings">">
+<mt:setvar name="position_actions_bottom" value="1">
+<mt:setvar name="web_services" value="1">
+
+<mt:setvarblock name="system_msg">
+<mt:if name="error">
+  <mtapp:statusmsg
+     id="generic-error"
+     class="error"
+     can_close="0">
+    <mt:var name="error">
+  </mtapp:statusmsg>
+</mt:if>
+<mt:if name="saved">
+  <mtapp:statusmsg
+     id="saved"
+     class="success"
+     rebuild="all"
+     can_close="0">
+    <__trans phrase="Your preferences have been saved.">
+  </mtapp:statusmsg>
+</mt:if>
+<mt:unless name="hide_config_warnings">
+  <mt:if name="config_warning">
+    <mtapp:statusmsg
+       id="info"
+       class="info"
+       can_close="0">
+      <mt:var name="config_warning">
+    </mtapp:statusmsg>
+  </mt:if>
+</mt:unless>
+</mt:setvarblock>
+
+<mt:setvarblock name="page_content">
+
+<form name="cfg_form" method="post" action="<mt:var name="script_url">">
+  <input type="hidden" name="id" value="<mt:var name="id" escape="html">" />
+  <mt:if name="blog_id">
+    <input type="hidden" name="__mode" value="save" />
+    <input type="hidden" name="_type" value="<mt:if name="is_website">website<mt:else>blog</mt:if>" />
+    <input type="hidden" name="cfg_screen" value="cfg_web_services" />
+    <input type="hidden" name="blog_id" value="<mt:var name="blog_id" escape="html">" />
+  <mt:else>
+    <input type="hidden" name="__mode" value="save_cfg_system_web_services" />
+  </mt:if>
+  <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
+  <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+
+  <mtapp:settinggroup id="data-api-settings">
+    <legend class="h3"><__trans phrase="Data API Settings"></legend>
+    <mtapp:setting
+       id="enable-data-api"
+       label="<__trans phrase="Data API">">
+    <div class="mb-3">
+      <mt:unless name="blog_id">
+      <div class="form-check">
+        <input type="checkbox" value="1" name="disable_data_api" id="disable-data-api" class="form-check-input" <mt:if name="disable_data_api_readonly">disabled="disabled"</mt:if><mt:if name="disable_data_api"> checked="checked"</mt:if> />
+        <label class="form-check-label" for="disable-data-api">
+          <__trans phrase="Disable Data API">
+        </label>
+      </div>
+      </mt:unless>
+      <div class="form-check">
+        <input type="checkbox" value="1" name="enable_data_api" id="enable-data-api" class="form-check-input" <mt:if name="data_api_disable_site_readonly">disabled="disabled"</mt:if><mt:if name="enable_data_api"> checked="checked"</mt:if> />
+        <label class="form-check-label" for="enable-data-api">
+      <mt:if name="blog_id">
+          <mt:if name="superuser_respects_enable_data_api">
+          <__trans phrase="Enable Data API in this site for all users including system administrators.">
+          <mt:else>
+          <__trans phrase="Enable Data API in this site.">
+          (<__trans phrase="System administrators are always allowed to use Data API.">)
+          </mt:if>
+      <mt:else>
+          <__trans phrase="Enable Data API in system scope.">
+      </mt:if>
+        </label>
+      </div>
+    </div>
+    </mtapp:setting>
+  </mtapp:settinggroup>
+
+  <mt:if name="blog_id">
+    <mt:unless name="system_disabled_notify_pings">
+    <mtapp:settinggroup id="system-feedback-controls">
+      <legend class="h3"><__trans phrase="External Notifications"></legend>
+      <mt:if name="enabled_plugins{Trackback}">
+      <mtapp:setting
+         id="ping_blogs"
+         label="<__trans phrase="Notify ping services of [_1] updates" params="<mt:if name="is_blog"><__trans phrase="child site"><mt:else><__trans phrase="site"></mt:if>">">
+      <mt:if name="system_disabled_notify_pings">
+        <p>
+          <img src="<mt:var name="static_uri">images/status_icons/warning.gif" alt="<__trans phrase="Setting Ignored">" width="9" height="9" />
+          <span class="alert-warning-inline"><__trans phrase="Note: This option is currently ignored because outbound notification pings are disabled system-wide."></span>
+        </p>
+      </mt:if>
+        <mt:if name="pings_loop">
+        <ul class="list-unstyled">
+        <mt:loop name="pings_loop">
+          <li>
+            <div class="form-check">
+              <input type="checkbox" name="ping_<mt:var name="key" escape="html">" id="ping_<mt:var name="key" escape="html">" class="form-check-input" value="1"<mt:if name="selected"> checked="checked"</mt:if> class="cb" />
+              <label class="form-check-label" for="ping_<mt:var name="key" escape="html">"><mt:var name="label" escape="html"></label>
+            </div>
+          </li>
+        </mt:loop>
+        </ul>
+        <label class="form-label" for="ping_others">
+          <__trans phrase="Others:">
+          <span class="text-muted hint"><__trans phrase="(Separate URLs with a carriage return.)"></span>
+        </label>
+        <mt:else>
+          <span class="text-muted hint"><__trans phrase="(Separate URLs with a carriage return.)"></span>
+        </mt:if>
+        <textarea name="ping_others" id="ping_others" class="form-control text low"><mt:var name="ping_others" escape="html"></textarea>
+      </mtapp:setting>
+      </mt:if>
+
+    </mtapp:settinggroup>
+    </mt:unless>
+  </mt:if>
+
+  <mt:loop name="config_templates">
+    <mt:var name="tmpl" />
+  </mt:loop>
+
+<mt:setvarblock name="action_buttons">
+    <button
+        type="submit"
+        accesskey="s"
+        title="<__trans phrase="Save changes to these settings (s)">"
+        class="save action primary button btn btn-primary"
+        ><__trans phrase="Save Changes"></button>
+</mt:setvarblock>
+<mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
+
+</form>
+</mt:setvarblock>
+
+<mt:include name="layout/default.tmpl">
+<mt:var name="layout">

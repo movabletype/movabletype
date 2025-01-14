@@ -1,0 +1,22 @@
+<mt:app:ContentFieldOptionGroup
+   type="single_line_text">
+
+  <mtapp:ContentFieldOption
+     id="single_line_text-min_length"
+     label="<__trans phrase="Min Length">">
+    <input ref="min_length" type="number" name="min_length" id="single_line_text-min_length" class="form-control w-25" min="0" value={ options.min_length || 0 }>
+  </mtapp:ContentFieldOption>
+
+  <mtapp:ContentFieldOption
+     id="single_line_text-max_length"
+     label="<__trans phrase="Max Length">">
+    <input ref="max_length" type="number" name="max_length" id="single_line_text-max_length" class="form-control w-25" min="1" value={ options.max_length || 255 }>
+  </mtapp:ContentFieldOption>
+
+  <mtapp:ContentFieldOption
+     id="single_line_text-initial_value"
+     label="<__trans phrase="Initial Value">">
+    <input ref="initial_value" type="text" name="initial_value" id="single_line_text-initial_value" class="form-control" value={ options.initial_value }>
+  </mtapp:ContentFieldOption>
+
+</mt:app:ContentFieldOptionGroup>

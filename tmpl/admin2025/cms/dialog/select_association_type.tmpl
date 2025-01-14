@@ -1,0 +1,37 @@
+<$mt:setvar name="page_title" value="<__trans phrase="Grant Permissions">"$>
+<$mt:setvar name="screen_type" value="dialog-select-association-type"$>
+
+<mt:setvarblock name="modal_body">
+<ul>
+  <li>
+    <a href="<mt:var name="script_url">?__mode=dialog_grant_role&amp;_type=user&amp;type=site&amp;return_args=<mt:var name="return_args" escape="url">" class="icon-left icon-create mt-open-dialog">
+      <__trans phrase="Grant site permission to user">
+    </a>
+  </li>
+<mt:if name="has_group"><__trans_section component="enterprise">
+  <li>
+    <a href="<mt:var name="script_url">?__mode=dialog_grant_role&amp;_type=group&amp;type=site&amp;return_args=<mt:var name="return_args" escape="url">" class="icon-left icon-create mt-open-dialog">
+      <__trans phrase="Grant site permission to group">
+    </a>
+  </li>
+</__trans_section></mt:if>
+</ul>
+</mt:setvarblock>
+
+<mt:setvarblock name="modal_footer">
+<div class="actions-bar">
+  <form action="" method="get" onsubmit="return false">
+    <button
+       type="submit"
+       accesskey="x"
+       class="cancel action button mt-close-dialog btn btn-default"
+       data-mt-modal-close
+       title="<__trans phrase="Cancel (x)">">
+      <__trans phrase="Cancel">
+    </button>
+  </form>
+</div>
+</mt:setvarblock>
+
+<mt:include name="layout/modal.tmpl">
+<mt:var name="layout">
