@@ -48,6 +48,11 @@ my %copied_but_unused = map { $_ => 1 } qw(
 
 my %used_in_archetype = map {$_ => 1} qw(css/editor/editor-content.css);
 
+# though empty now...
+my %made_by_rollup = map {$_ => 1} qw(
+    js/build/bundle.css
+);
+
 my $mt_static = realpath("$FindBin::Bin/../mt-static");
 my @tmpl_dirs = map { realpath($_) } grep {-d $_} ("$FindBin::Bin/../tmpl", glob("$FindBin::Bin/../plugins/*/tmpl"), glob("$FindBin::Bin/../addons/*/tmpl"));
 
@@ -186,6 +191,9 @@ for my $path (sort keys %known) {
         } elsif ($used_in_archetype{$path}) {
             local $TODO = "only used in archetype";
             ok $used_in_archetype{$path}, "$path is only used in archetype";
+        } elsif ($made_by_rollup{$path}) {
+            local $TODO = "will be made by rollup";
+            ok $made_by_makejs{$path}, "$path will be made by rollup, used $known{$path} times";
         } elsif ($copied_but_unused{$path}) {
             local $TODO = "copied but not used";
             ok $used_in_makejs{$path}, "$path is copied from node_modules but not used";
