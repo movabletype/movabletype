@@ -19,14 +19,11 @@ $js .= `cat mt-static/js/edit.js`;
 $js .= `cat mt-static/js/archetype_editor.js`;
 $js .= `cat mt-static/js/cms.js`;
 
-$js .= `cat mt-static/js/contenttype/tag/*.tag`;
 $js .= `cat mt-static/js/admin2023/contenttype/tag/*.tag`;
 $js .= `cat src/contenttype/elements/*.svelte`;
-$js .= `cat mt-static/js/listing/tag/*.tag`;
 $js .= `cat mt-static/js/admin2023/listing/tag/*.tag`;
 $js .= `cat src/listing/elements/*.svelte`;
 $js .= `cat mt-static/js/mt/util.js`;
-$js .= `cat mt-static/js/tc/mixer/display.js`;
 $js .= `cat mt-static/plugins/BlockEditor/lib/js/blockeditor_field.js`;
 $js
     .= `cat mt-static/plugins/BlockEditor/lib/js/blockeditor_field_manager.js`;
