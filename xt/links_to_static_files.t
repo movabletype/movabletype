@@ -11,7 +11,7 @@ use HTML::Filter::Callbacks;
 use MT::Test::Util::MakeMTTagsHarmless;
 
 BEGIN {
-#    plan skip_all => 'requires MT_TEST_STATIC_FILES for now' unless exists $ENV{MT_TEST_STATIC_FILES};
+    plan skip_all => 'requires MT_TEST_STATIC_FILES for now' unless exists $ENV{MT_TEST_STATIC_FILES};
 }
 
 my %known;
