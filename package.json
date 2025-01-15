@@ -21,7 +21,7 @@
     "build-ss": "riot mt-static/js/ss/tag mt-static/js/ss/ss.js",
     "copy": "npm run copy-a-table && npm run copy-bootstrap5 && npm run copy-jquery-ui && npm run copy-jquery-ui-touch-punch && npm run copy-popper && npm run copy-riot && npm run rename-riot-compiler && npm run copy-svg4everybody && npm run copy-mt-chart-api && npm run copy-mt-data-api-sdk && npm run copy-jquery && npm run copy-tinymce6 && npm run copy-tinymce6-language",
     "copy-a-table": "cp -rf node_modules/a-table/build mt-static/a-table.js/ && cp -rf node_modules/a-table/css mt-static/a-table.js/ && cp -rf node_modules/a-table/fonts mt-static/a-table.js",
-    "copy-bootstrap5": "cp -rf node_modules/bootstrap5/dist/* mt-static/bootstrap5/",
+    "copy-bootstrap5": "cp -rf node_modules/bootstrap5/dist/js/bootstrap.bundle.* mt-static/bootstrap5/js/",
     "copy-jquery-ui": "cp -f node_modules/jquery-ui/dist/*.js mt-static/jqueryui/",
     "copy-jquery-ui-touch-punch": "cp -rf node_modules/jquery-ui-touch-punch/jquery.ui.touch-punch.* mt-static/jqueryui/",
     "copy-popper": "cp -rf node_modules/popper.js/dist/umd/* mt-static/popper/",
