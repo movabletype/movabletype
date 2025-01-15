@@ -265,7 +265,7 @@ jQuery('.collapse.mt-collapse__content').on('show.bs.collapse', function (e) {
             <title>Disabled</title>
             <use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_empty"></use>
           </svg>
-          <span class="plugin-name-disabled text-muted">
+          <span class="plugin-name-disabled text-body-secondary">
             <$mt:var name="plugin_name" escape="html"$>
             <mt:if name="plugin_version">
               <span class="plugin-version">
@@ -299,12 +299,12 @@ jQuery('.collapse.mt-collapse__content').on('show.bs.collapse', function (e) {
           </span>
         </mt:if>
         <mt:if name="plugin_system_error">
-            <span class="alert-error-inline icon-left icon-error text-muted">
+            <span class="alert-error-inline icon-left icon-error text-body-secondary">
               <mtapp:svgicon id="ic_caution" size="sm" title="<__trans phrase="Failed to load">" color="danger">
               <mt:var name="plugin_system_error" escape="html">
             </span>
         <mt:elseif name="plugin_error">
-            <span class="alert-error-inline icon-left icon-error text-muted">
+            <span class="alert-error-inline icon-left icon-error text-body-secondary">
               <mtapp:svgicon id="ic_caution" size="sm" title="<__trans phrase="Failed to load">" color="danger">
               <__trans phrase="Failed to Load">
             </span>
@@ -319,7 +319,7 @@ jQuery('.collapse.mt-collapse__content').on('show.bs.collapse', function (e) {
               <__trans phrase="Disable">
             </a>
           <mt:else>
-            <span class="text-muted icon-left icon-neutral">
+            <span class="text-body-secondary icon-left icon-neutral">
               <svg role="img" class="mt-icon--secondary mt-icon--sm" style="margin: 0;">
                 <title><__trans phrase="Disabled"></title>
                 <use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_remove"></use>
@@ -335,12 +335,12 @@ jQuery('.collapse.mt-collapse__content').on('show.bs.collapse', function (e) {
         </mt:if>
       <mt:else>
         <mt:if name="plugin_system_error">
-            <span class="alert-error-inline icon-left icon-error text-muted">
+            <span class="alert-error-inline icon-left icon-error text-body-secondary">
               <mtapp:svgicon id="ic_caution" size="sm" title="<__trans phrase="Failed to load">" color="danger">
               <mt:var name="plugin_system_error" escape="html">
             </span>
         <mt:elseif name="plugin_error">
-            <span class="alert-error-inline icon-left icon-error text-muted">
+            <span class="alert-error-inline icon-left icon-error text-body-secondary">
               <mtapp:svgicon id="ic_caution" size="sm" title="<__trans phrase="Failed to load">" color="danger">
               <__trans phrase="Failed to Load">
             </span>
@@ -351,7 +351,7 @@ jQuery('.collapse.mt-collapse__content').on('show.bs.collapse', function (e) {
               <__trans phrase="Enabled">
             </span>
           <mt:else>
-            <span class="text-muted icon-left icon-neutral">
+            <span class="text-body-secondary icon-left icon-neutral">
               <mtapp:svgicon id="ic_remove" size="sm" title="<__trans phrase="Disabled">" color="secondary">
               <__trans phrase="Disabled">
             </span>
