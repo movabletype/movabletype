@@ -254,15 +254,26 @@ sub global_perms {
         $perms->$column( "'" . join( "','", @permissions ) . "'" );
     }
 
+    sub remove_permissions {
+        my $perms = shift;
+        __PACKAGE__->_remove_these($perms, 'permissions', @_);
+    }
+
     sub remove_restrictions {
-        my $perms    = shift;
-        my (@perms)  = @_;
-        my $cur_rest = $perms->restrictions;
-        return unless $cur_rest;
+        my $perms = shift;
+        __PACKAGE__->_remove_these($perms, 'restrictions', @_);
+    }
+
+    sub _remove_these {
+        my $pkg   = shift;
+        my $perms = shift;
+        my ($column, @perms) = @_;
+        my $val = $perms->$column;
+        return unless $val;
         for my $perm_name (@perms) {
-            $cur_rest =~ s/'$perm_name',?//i;
+            $val =~ s/'$perm_name',?//i;
         }
-        $perms->restrictions($cur_rest);
+        $perms->$column($val);
     }
 
     # Clears all permissions or those in a particular set

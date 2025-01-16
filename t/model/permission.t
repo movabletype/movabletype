@@ -26,6 +26,24 @@ subtest 'can_upload' => sub {
     ok !$perm->has('upload'), 'has no upload permission after call "can_upload(0)"';
 };
 
+subtest 'remove_permissions' => sub {
+    my $perm = MT::Permission->new(author_id => 1, blog_id => 1);
+    ok !$perm->permissions, 'has no permissions';
+
+    $perm->set_these_permissions('create_post', 'edit_templates', 'rebuild', 'create_site');
+    ok $perm->has('create_post'),    'has create_post permission';
+    ok $perm->has('edit_templates'), 'has edit_templates permission';
+    ok $perm->has('rebuild'),        'has rebuild permission';
+    ok $perm->has('create_site'),    'has create_site permissions';
+
+    $perm->remove_permissions('create_post', 'rebuild', 'manage_users');
+    ok !$perm->has('create_post'),   'has no create_post permission';
+    ok $perm->has('edit_templates'), 'has edit_templates permission';
+    ok !$perm->has('rebuild'),       'has no rebuild permission';
+    ok $perm->has('create_site'),    'has create_site permission';
+    ok !$perm->has('manage_users'),  'has no manage_users permission';
+};
+
 subtest 'remove_restrictions' => sub {
     my $perm = MT::Permission->new(author_id => 1, blog_id => 1);
     ok !$perm->restrictions, 'has no restrictions';
