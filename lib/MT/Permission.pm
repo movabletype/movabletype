@@ -606,7 +606,7 @@ sub can_upload {
             $perms->set_these_permissions('upload');
         }
         else {
-            $perms->clear_permissions('upload');
+            $perms->remove_permissions('upload');
         }
     }
     return $perms->can_do('upload');
