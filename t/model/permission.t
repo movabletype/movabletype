@@ -26,4 +26,22 @@ subtest 'can_upload' => sub {
     ok !$perm->has('upload'), 'has no upload permission after call "can_upload(0)"';
 };
 
+subtest 'remove_restrictions' => sub {
+    my $perm = MT::Permission->new(author_id => 1, blog_id => 1);
+    ok !$perm->restrictions, 'has no restrictions';
+
+    $perm->set_these_restrictions('create_post', 'edit_templates', 'rebuild', 'create_site');
+    ok $perm->is_restricted('create_post'),    'has create_post restriction';
+    ok $perm->is_restricted('edit_templates'), 'has edit_templates restriction';
+    ok $perm->is_restricted('rebuild'),        'has rebuild restriction';
+    ok $perm->is_restricted('create_site'),    'has create_site restriction';
+
+    $perm->remove_restrictions('create_post', 'rebuild', 'manage_users');
+    ok !$perm->is_restricted('create_post'),   'has no create_post restriction';
+    ok $perm->is_restricted('edit_templates'), 'has edit_templates restriction';
+    ok !$perm->is_restricted('rebuild'),       'has no rebuild restriction';
+    ok $perm->is_restricted('create_site'),    'has create_site restriction';
+    ok !$perm->is_restricted('manage_users'),  'has no manage_users restriction';
+};
+
 done_testing;
