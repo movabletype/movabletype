@@ -126,17 +126,6 @@ sub id {
     return lc $id;
 }
 
-sub version_slug {
-    require MT::Util::Deprecated;
-    MT::Util::Deprecated::warning(since => '8.3.0');
-
-    return MT->translate_templatized(<<"SLUG");
-<__trans phrase="Powered by [_1]" params="$PRODUCT_NAME">
-<__trans phrase="Version [_1]" params="$VERSION_ID">
-<__trans phrase="https://www.movabletype.com/">
-SLUG
-}
-
 sub build_id {
     my $build_id = '__BUILD_ID__';
     $build_id = '' if $build_id eq '__BUILD_' . 'ID__';
