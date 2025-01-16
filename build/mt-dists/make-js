@@ -94,6 +94,21 @@ if ( opendir DH, $addon_path ) {
     closedir DH;
 }
 
+my $plugin_path = File::Spec->catdir('plugins');
+my @plugins;
+if ( opendir DH, $plugin_path ) {
+    my @p = readdir DH;
+    foreach my $p (@p) {
+        next if $p eq '.' || $p eq '..';
+        my $full_path = File::Spec->catdir( $plugin_path, $p );
+        if ( -d $full_path ) {
+            push @plugins, $p;
+        }
+    }
+    closedir DH;
+}
+
+
 $js .= `cat $_` foreach @files;
 
 foreach my $lang (qw(en_us ja)) {
@@ -110,6 +125,19 @@ foreach my $lang (qw(en_us ja)) {
         next if $@;
         my $conv;
         $conv = eval '\%{MT::' . $addon . '::L10N::' . $lang . '::Lexicon}';
+        if (%$conv) {
+            $lex = { %$lex, %$conv, };
+        }
+    }
+
+    foreach my $plugin (@plugins) {
+        eval {
+            unshift @INC, "plugins/$plugin/lib";
+            require "./plugins/$plugin/lib/MT/$plugin/L10N/$lang.pm";
+        };
+        next if $@;
+        my $conv;
+        $conv = eval '\%{MT::' . $plugin . '::L10N::' . $lang . '::Lexicon}';
         if (%$conv) {
             $lex = { %$lex, %$conv, };
         }
