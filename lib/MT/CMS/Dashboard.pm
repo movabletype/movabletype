@@ -387,23 +387,6 @@ sub generate_site_stats_data {
     1;
 }
 
-sub regenerate_site_stats_data {
-    my $app = shift;
-
-    require MT::Util::Deprecated;
-    MT::Util::Deprecated::warning(since => '8.5.0');
-
-    $app->validate_magic() or return;
-
-    my $param;
-    $param->{blog_id} = $app->param('blog_id');
-
-    generate_site_stats_data( $app, $param ) or return;
-
-    my $result = { stat_url => $param->{stat_url} };
-    return $app->json_result($result);
-}
-
 sub site_stats_widget_lines {
     my $app = shift;
     my $pkg = 'MT::CMS::Dashboard::';

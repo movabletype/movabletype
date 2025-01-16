@@ -321,12 +321,6 @@ sub core_methods {
             app_mode => 'JSON',
         },
 
-        ## DEPRECATED since 8.5.0
-        'regenerate_site_stats_data' => {
-            code     => "${pkg}Dashboard::regenerate_site_stats_data",
-            app_mode => 'JSON',
-        },
-
         # declared in MT::App
         'update_widget_prefs' =>
             sub { return shift->update_widget_prefs(@_) },
