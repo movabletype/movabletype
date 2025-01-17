@@ -123,7 +123,6 @@ BEGIN {
             'category_archive_list' => { label => 'Category Archives', },
             'current_category_monthly_archive_list' =>
                 { label => 'Current Category Monthly Archives', },
-            'creative_commons' => { label => 'Creative Commons', },
             'main_index_widgets_group' =>
                 { label => 'Home Page Widgets Group', },
             'monthly_archive_dropdown' =>

@@ -123,8 +123,6 @@ elements:
                         label: Calendar
                     category_archive_list:
                         label: Category Archives
-                    creative_commons:
-                        label: Creative Commons
                     current_author_monthly_archive_list:
                         label: Current Author Monthly Archives
                     current_category_monthly_archive_list:
