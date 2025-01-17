@@ -150,7 +150,7 @@ sub global_perms {
         my ($scope) = @_;
         my @perms;
         if ( my $perms = __PACKAGE__->perms_from_registry() ) {
-            foreach my $p (%$perms) {
+            foreach my $p (keys %$perms) {
                 my ( $s, $name ) = split /\./, $p;
                 next unless $s && $name;
                 next unless $s eq $scope;
