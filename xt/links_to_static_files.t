@@ -46,7 +46,7 @@ my %copied_but_unused = map { $_ => 1 } qw(
     bootstrap5/js/bootstrap.min.js
 );
 
-my %used_in_archetype = map {$_ => 1} qw(css/editor/editor-content.css);
+my %used_in_archetype = map {$_ => 1} qw(archetype/css/editor-content.css);
 
 # though empty now...
 my %made_by_rollup = map {$_ => 1} qw(
