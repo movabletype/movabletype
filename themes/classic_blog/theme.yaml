@@ -137,8 +137,6 @@ elements:
                         label: Monthly Archives Dropdown
                     monthly_archive_list:
                         label: Monthly Archives
-                    openid:
-                        label: OpenID Accepted
                     pages_list:
                         label: Page Listing
                     powered_by:
@@ -168,7 +166,6 @@ elements:
                             - Archive Widgets Group
                             - Page Listing
                             - Syndication
-                            - OpenID Accepted
                             - Powered By
                     3column_layout_primary_sidebar:
                         label: '3-column layout - Primary Sidebar'
@@ -177,7 +174,6 @@ elements:
                             - Archive Widgets Group
                             - Page Listing
                             - Syndication
-                            - OpenID Accepted
                             - Powered By
                     3column_layout_secondary_sidebar:
                         label: '3-column layout - Secondary Sidebar'
