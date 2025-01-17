@@ -10,6 +10,8 @@ use Encode;
 use MT;
 use MT::Util qw(encode_js);
 
+my $admin_theme_id = 'admin2023/';
+
 my $js = `cat mt-static/mt.js`;
 $js .= `cat mt-static/jquery/jquery.mt.js`;
 $js .= `cat mt-static/js/dialog.js`;
@@ -39,28 +41,28 @@ $js .= `cat mt-static/plugins/TinyMCE6/lib/js/tinymce/plugins/mt/plugin.js`;
 $js .= `cat mt-static/plugins/TinyMCE6/lib/js/tinymce/plugins/mt/langs/plugin.js`;
 $js .= `cat mt-static/plugins/TinyMCE6/lib/js/tinymce/plugins/mt_fullscreen/plugin.js`;
 $js .= `cat mt-static/plugins/TinyMCE6/lib/js/tinymce/plugins/mt_fullscreen/langs/plugin.js`;
-$js .= `cat plugins/BlockEditor/tmpl/cms/dialog/asset_modal.tmpl`;
+$js .= `cat plugins/BlockEditor/tmpl/${admin_theme_id}cms/dialog/asset_modal.tmpl`;
 $js
-    .= `cat plugins/BlockEditor/tmpl/cms/dialog/include/asset_upload_panel.tmpl`;
+    .= `cat plugins/BlockEditor/tmpl/${admin_theme_id}cms/dialog/include/asset_upload_panel.tmpl`;
 $js
-    .= `cat plugins/BlockEditor/tmpl/cms/field_html/field_html_multi_line_text.tmpl`;
+    .= `cat plugins/BlockEditor/tmpl/${admin_theme_id}cms/field_html/field_html_multi_line_text.tmpl`;
 $js .= `cat plugins/FormattedText/tmpl/cms/edit_formatted_text.tmpl`;
-$js .= `cat tmpl/cms/edit_commenter.tmpl`;
-$js .= `cat tmpl/cms/edit_content_data.tmpl`;
-$js .= `cat tmpl/cms/edit_content_type.tmpl`;
-$js .= `cat tmpl/cms/edit_entry.tmpl`;
-$js .= `cat tmpl/cms/edit_template.tmpl`;
-$js .= `cat tmpl/cms/field_html/field_html_asset.tmpl`;
-$js .= `cat tmpl/cms/field_html/field_html_categories.tmpl`;
-$js .= `cat tmpl/cms/field_html/field_html_content_type.tmpl`;
-$js .= `cat tmpl/cms/field_html/field_html_multi_line_text.tmpl`;
-$js .= `cat tmpl/cms/include/asset_upload.tmpl`;
-$js .= `cat tmpl/cms/include/async_asset_list.tmpl`;
-$js .= `cat tmpl/cms/include/async_asset_upload.tmpl`;
-$js .= `cat tmpl/cms/include/category_selector.tmpl`;
-$js .= `cat tmpl/cms/include/content_data_list.tmpl`;
-$js .= `cat tmpl/cms/list_category.tmpl`;
-$js .= `cat tmpl/cms/listing/tag_list_header.tmpl`;
+$js .= `cat tmpl/${admin_theme_id}cms/edit_commenter.tmpl`;
+$js .= `cat tmpl/${admin_theme_id}cms/edit_content_data.tmpl`;
+$js .= `cat tmpl/${admin_theme_id}cms/edit_content_type.tmpl`;
+$js .= `cat tmpl/${admin_theme_id}cms/edit_entry.tmpl`;
+$js .= `cat tmpl/${admin_theme_id}cms/edit_template.tmpl`;
+$js .= `cat tmpl/${admin_theme_id}cms/field_html/field_html_asset.tmpl`;
+$js .= `cat tmpl/${admin_theme_id}cms/field_html/field_html_categories.tmpl`;
+$js .= `cat tmpl/${admin_theme_id}cms/field_html/field_html_content_type.tmpl`;
+$js .= `cat tmpl/${admin_theme_id}cms/field_html/field_html_multi_line_text.tmpl`;
+$js .= `cat tmpl/${admin_theme_id}cms/include/asset_upload.tmpl`;
+$js .= `cat tmpl/${admin_theme_id}cms/include/async_asset_list.tmpl`;
+$js .= `cat tmpl/${admin_theme_id}cms/include/async_asset_upload.tmpl`;
+$js .= `cat tmpl/${admin_theme_id}cms/include/category_selector.tmpl`;
+$js .= `cat tmpl/${admin_theme_id}cms/include/content_data_list.tmpl`;
+$js .= `cat tmpl/${admin_theme_id}cms/list_category.tmpl`;
+$js .= `cat tmpl/${admin_theme_id}cms/listing/tag_list_header.tmpl`;
 
 my $addon_path = File::Spec->catdir('addons');
 local *DH;
@@ -94,6 +96,21 @@ if ( opendir DH, $addon_path ) {
     closedir DH;
 }
 
+my $plugin_path = File::Spec->catdir('plugins');
+my @plugins;
+if ( opendir DH, $plugin_path ) {
+    my @p = readdir DH;
+    foreach my $p (@p) {
+        next if $p eq '.' || $p eq '..';
+        my $full_path = File::Spec->catdir( $plugin_path, $p );
+        if ( -d $full_path ) {
+            push @plugins, $p;
+        }
+    }
+    closedir DH;
+}
+
+
 $js .= `cat $_` foreach @files;
 
 foreach my $lang (qw(en_us ja)) {
@@ -110,6 +127,19 @@ foreach my $lang (qw(en_us ja)) {
         next if $@;
         my $conv;
         $conv = eval '\%{MT::' . $addon . '::L10N::' . $lang . '::Lexicon}';
+        if (%$conv) {
+            $lex = { %$lex, %$conv, };
+        }
+    }
+
+    foreach my $plugin (@plugins) {
+        eval {
+            unshift @INC, "plugins/$plugin/lib";
+            require "./plugins/$plugin/lib/MT/$plugin/L10N/$lang.pm";
+        };
+        next if $@;
+        my $conv;
+        $conv = eval '\%{MT::' . $plugin . '::L10N::' . $lang . '::Lexicon}';
         if (%$conv) {
             $lex = { %$lex, %$conv, };
         }
