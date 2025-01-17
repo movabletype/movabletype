@@ -149,13 +149,11 @@ sub global_perms {
     sub _all_perms {
         my ($scope) = @_;
         my @perms;
-        if ( my $perms = __PACKAGE__->perms_from_registry() ) {
-            foreach my $p (keys %$perms) {
-                my ( $s, $name ) = split /\./, $p;
-                next unless $s && $name;
-                next unless $s eq $scope;
-                push @perms, "'$name'";
-            }
+        foreach my $p (keys %{ __PACKAGE__->perms_from_registry() }) {
+            my ($s, $name) = split /\./, $p;
+            next unless $s && $name;
+            next unless $s eq $scope;
+            push @perms, "'$name'";
         }
         return join ',', sort @perms;
     }
