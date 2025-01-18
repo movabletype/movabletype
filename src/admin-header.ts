@@ -3,6 +3,7 @@ import { svelteMountCreateButton } from "./buttons/create-button";
 import { svelteMountSidebar } from "./sidebar/sidebar";
 import { svelteMountSearchButton } from "./buttons/search-button";
 import { svelteMountSiteListButton } from "./buttons/site-list-button";
+import { svelteMountBreadcrumbsButton } from "./buttons/breadcrumbs-button";
 
 const getTarget = (selector: string): Element | null => {
   const target = document.querySelector(selector);
@@ -19,6 +20,14 @@ document.addEventListener("DOMContentLoaded", () => {
   );
   if (sidebarTarget !== null) {
     svelteMountSidebar(sidebarTarget);
+  }
+
+  // Breadcrumbs
+  const breadcrumbsTarget = getTarget('[data-is="breadcrumbs"]');
+  if (breadcrumbsTarget !== null) {
+    svelteMountBreadcrumbsButton({
+      target: breadcrumbsTarget,
+    });
   }
 
   const currentScript = document.querySelector(
@@ -75,4 +84,5 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
+
 });
