@@ -35,6 +35,7 @@ document.addEventListener("DOMContentLoaded", () => {
   ) as HTMLScriptElement;
   const blogId = currentScript.getAttribute("data-blog-id") ?? "";
   const magicToken = currentScript.getAttribute("data-magic-token") ?? "";
+  const scopeType = currentScript.getAttribute("data-scope-type") ?? "";
 
   if (magicToken === "") {
     console.error("data-magic-token is not set");
@@ -52,15 +53,19 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  if (scopeType === "user" || scopeType === "system") {
+    return;
+  }
+
+  if(blogId === "") {
+    console.error("data-blog-id is not set");
+    return;
+  }
+
   const createButtonTarget = getTarget('[data-is="create-button"]');
   const searchButtonTarget = getTarget('[data-is="search-button"]');
 
   if (createButtonTarget !== null || searchButtonTarget !== null) {
-    if (blogId === "") {
-      console.error("data-blog-id is not set");
-      return;
-    }
-
     fetchContentTypes({
       blogId: blogId,
       magicToken: magicToken,
@@ -84,5 +89,4 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
-
 });

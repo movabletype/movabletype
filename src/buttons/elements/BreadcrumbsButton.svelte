@@ -28,8 +28,6 @@
     const buttonRect = buttonRef.getBoundingClientRect();
     modalLeft = buttonRect.left + (buttonRect.width - modalRef.offsetWidth) / 2;
   }
-
-  console.table(breadcrumbs);
 </script>
 
 <span class="mt-breadcrumb-button-wrapper">
