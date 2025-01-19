@@ -1,7 +1,7 @@
 <mt:setvarblock name="user_screen_name"><mt:if name="author_display_name"><mt:var name="author_display_name" escape="html"><mt:else><mt:var name="author_name" escape="html"></mt:if></mt:setvarblock>
 
 <mt:if name="scope_type" ne="user">
-<div class="mt-primaryNavigation">
+<div class="mt-primaryNavigation" data-is="primary-navigation">
   <mt:if name="scope_type" ne="system">
   <div class="mt-primaryNavigation__body">
     <div class="mt-primaryNavigation__control">
@@ -56,6 +56,6 @@
       </mt:loop>
     </ul>
   </div>
+  <div data-is="primary-navigation-toggle"></div>
 </div>
-<div data-is="primary-navigation-toggle"></div>
 </mt:if>

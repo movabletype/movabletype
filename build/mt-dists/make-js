@@ -27,6 +27,7 @@ $js .= `cat mt-static/js/admin2023/listing/tag/*.tag`;
 $js .= `cat mt-static/js/admin2025/contenttype/tag/*.tag`;
 $js .= `cat mt-static/js/admin2025/listing/tag/*.tag`;
 $js .= `cat src/buttons/elements/*.svelte`;
+$js .= `cat src/sidebar/elements/*.svelte`;
 $js .= `cat src/listing/elements/*.svelte`;
 $js .= `cat mt-static/js/mt/util.js`;
 $js .= `cat mt-static/js/tc/mixer/display.js`;

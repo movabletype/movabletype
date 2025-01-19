@@ -1,16 +1,15 @@
 <script lang="ts">
   import { onMount } from "svelte";
+  import { portal } from "svelte-portal";
 
   const sessionName = "collapsed";
   const sessionCollapsed = sessionStorage.getItem(sessionName);
   let collapsed = sessionCollapsed === "true" ? true : false;
 
-  let collapseStart = false;
-
   const handleCollapse = (overwrite: boolean | null = null) => {
     const updateClassList = (addClass: boolean) => {
       const contentWrapper = document.querySelector(
-        ".mt-contentWrapper"
+        '[data-is="content-wrapper"]'
       ) as HTMLElement;
       if (addClass) {
         contentWrapper.classList.add("collapsed");
@@ -32,19 +31,16 @@
   };
 
   const handleMouseEnter = () => {
-    collapseStart = true;
     if (collapsed) {
       handleCollapse(false);
-      setTimeout(() => {
-        collapseStart = false;
-      }, 1000);
-    } else {
-      collapseStart = false;
+      document
+        .querySelector('[data-is="primary-navigation"]')
+        ?.addEventListener("mouseleave", handleMouseLeave, { once: true });
     }
   };
 
   const handleMouseLeave = () => {
-    if (collapsed && !collapseStart) {
+    if (collapsed) {
       handleCollapse(true);
     }
   };
@@ -54,13 +50,6 @@
       collapsed = true;
     }
     handleCollapse();
-
-    document
-      .querySelector(".mt-primaryNavigation")
-      ?.addEventListener("mouseover", handleMouseEnter);
-    document
-      .querySelector(".mt-primaryNavigation")
-      ?.addEventListener("mouseout", handleMouseLeave);
   });
 </script>
 
@@ -71,7 +60,17 @@
 <!-- svelte-ignore a11y-mouse-events-have-key-events -->
 <div
   class="mt-primaryNavigation__toggle_bar"
+  class:open={!collapsed}
+  class:close={collapsed}
   on:click={handleClick}
-  on:mouseover={handleMouseEnter}
-  on:mouseout={handleMouseLeave}
+  title={collapsed ? window.trans("Collapse") : window.trans("Close")}
+></div>
+
+<!-- svelte-ignore a11y-no-static-element-interactions -->
+<!-- svelte-ignore a11y-mouse-events-have-key-events -->
+<div
+  class="mt-primaryNavigation-overlay"
+  use:portal={"body"}
+  on:mouseenter={handleMouseEnter}
+  style={`display: ${collapsed ? "block" : "none"}`}
 ></div>

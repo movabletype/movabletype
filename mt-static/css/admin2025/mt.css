@@ -10613,6 +10613,8 @@ Adjustments
   --minimal-left-bar-width: 0px;
   --control-height: 50px;
   --header-height: 48px;
+  --left-bar-toggle-width: 13px;
+  --left-bar-mouseover-width: 13px;
 }
 
 html {
@@ -10973,8 +10975,8 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper .mt-prim
 }
 
 .mt-primaryNavigation__toggle_bar {
-  position: fixed;
-  top: calc(var(--header-height) + 2px);
+  position: absolute;
+  top: 0;
   left: var(--left-bar-width);
   width: 1px;
   height: 100vh;
@@ -10996,12 +10998,19 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper .mt-prim
   display: block;
   width: 26px;
   height: 26px;
-  background-image: url(/mt-static/images/admin2025/icons/ic_close.svg);
   background-repeat: no-repeat;
   position: absolute;
   top: 13px;
   right: 0;
   transform: translate(50%, 0);
+}
+
+.mt-primaryNavigation__toggle_bar.open:after {
+  background-image: url(/mt-static/images/admin2025/icons/ic_close.svg);
+}
+
+.mt-primaryNavigation__toggle_bar.close:after {
+  background-image: url(/mt-static/images/admin2025/icons/ic_open.svg);
 }
 
 html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper .mt-primaryNavigation,
@@ -11012,14 +11021,9 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper .mt-prim
 
 html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper .mt-primaryNavigation__toggle_bar,
 .mt-contentWrapper.collapsed .mt-primaryNavigation__toggle_bar {
-  width: 13px;
+  width: var(--left-bar-toggle-width);
   background-color: #F4F4F4;
   left: var(--minimal-left-bar-width);
-}
-
-html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper .mt-primaryNavigation__toggle_bar:after,
-.mt-contentWrapper.collapsed .mt-primaryNavigation__toggle_bar:after {
-  background-image: url(/mt-static/images/admin2025/icons/ic_open.svg);
 }
 
 html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper .mt-primaryNavigation__body,
@@ -11502,6 +11506,12 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper .mt-main
 }
 
 /* Footer Navigation */
+.mt-footerWrapper {
+  padding: 0 32px;
+  margin: 0;
+  bottom: 0;
+}
+
 .mt-footer {
   padding: 1rem;
   border: 0;
@@ -13252,6 +13262,16 @@ li.nav-item, .mt-sharedPreviewNav .mt-sharedPreviewNav__rightNav li.mt-sharedPre
 }
 
 /** admin-header */
+.mt-primaryNavigation-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: calc(var(--left-bar-toggle-width) + var(--left-bar-mouseover-width));
+  height: 100%;
+  background-color: transparent;
+  z-index: 0;
+}
+
 .create-button-modal {
   position: fixed;
   top: 50px;
