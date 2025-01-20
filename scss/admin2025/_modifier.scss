@@ -266,7 +266,7 @@ li{
 }
 
 %mt-primaryNavigationAnimation {
-  transition: transform 0.6s ease, opacity 0.3s ease, width 0.3s ease;
+  transition: transform 0.3s ease;
 }
 .mt-primaryNavigation{
   @extend %mt-primaryNavigation;
@@ -394,18 +394,16 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper,
 
   .mt-primaryNavigation {
     transform: translateX(-100%);
-    width: var(--minimal-left-bar-width);
   }
 
   .mt-primaryNavigation__toggle_bar {
     width: var(--left-bar-toggle-width);
     background-color: $gray-lightest;
-    left: var(--minimal-left-bar-width);
+    @extend %mt-primaryNavigationAnimation;
   }
   .mt-primaryNavigation__body,
   .mt-primaryNavigation__content {
     overflow: hidden;
-    transform: translateX(-100%);
     @extend %mt-primaryNavigationAnimation;
   }
 

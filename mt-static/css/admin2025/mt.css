@@ -10866,11 +10866,12 @@ li {
   }
 }
 
-.mt-primaryNavigation, html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper .mt-primaryNavigation__body,
+.mt-primaryNavigation, html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper .mt-primaryNavigation__toggle_bar,
+.mt-contentWrapper.collapsed .mt-primaryNavigation__toggle_bar, html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper .mt-primaryNavigation__body,
 html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper .mt-primaryNavigation__content,
 .mt-contentWrapper.collapsed .mt-primaryNavigation__body,
 .mt-contentWrapper.collapsed .mt-primaryNavigation__content, .mt-primaryNavigation__container, .mt-primaryNavigation__body, .mt-primaryNavigation__control, .mt-primaryNavigation__control--invert {
-  transition: transform 0.6s ease, opacity 0.3s ease, width 0.3s ease;
+  transition: transform 0.3s ease;
 }
 
 .mt-primaryNavigation {
@@ -11016,14 +11017,12 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper .mt-prim
 html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper .mt-primaryNavigation,
 .mt-contentWrapper.collapsed .mt-primaryNavigation {
   transform: translateX(-100%);
-  width: var(--minimal-left-bar-width);
 }
 
 html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper .mt-primaryNavigation__toggle_bar,
 .mt-contentWrapper.collapsed .mt-primaryNavigation__toggle_bar {
   width: var(--left-bar-toggle-width);
   background-color: #F4F4F4;
-  left: var(--minimal-left-bar-width);
 }
 
 html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper .mt-primaryNavigation__body,
@@ -11031,7 +11030,6 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper .mt-prim
 .mt-contentWrapper.collapsed .mt-primaryNavigation__body,
 .mt-contentWrapper.collapsed .mt-primaryNavigation__content {
   overflow: hidden;
-  transform: translateX(-100%);
 }
 
 html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper .mt-mainContentWrapper,
