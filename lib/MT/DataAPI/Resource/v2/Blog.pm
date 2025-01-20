@@ -482,16 +482,7 @@ sub fields {
         },
 
         # template tags
-        {   name        => 'ccLicenseImage',
-            from_object => sub {
-                my ($obj) = @_;
-                my $cc = $obj->cc_license or return '';
-                require MT::Util::Deprecated;
-                MT::Util::Deprecated::cc_image($cc);
-            },
-        },
         qw(
-            ccLicenseUrl
             dateLanguage
             ),
         {   name        => 'host',

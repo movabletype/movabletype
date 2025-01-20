@@ -586,29 +586,6 @@ sub on_upload {
     if ( $thumb && !$thumb_width ) {
         undef $thumb;
     }
-    if ( $param->{image_defaults} ) {
-        require MT::Util::Deprecated;
-        MT::Util::Deprecated::warning(since => '8.5.0', name => 'image_defaults');
-
-        # Save new defaults if requested.
-        $blog->image_default_wrap_text( $param->{wrap_text} ? 1 : 0 );
-        $blog->image_default_align( $param->{align} || MT::Blog::ALIGN() );
-        if ($thumb) {
-            $blog->image_default_thumb(1);
-            $blog->image_default_width($thumb_width);
-            $blog->image_default_wunits( $param->{thumb_width_type}
-                    || MT::Blog::UNITS() );
-        }
-        else {
-            $blog->image_default_thumb(0);
-            $blog->image_default_width(0);
-            $blog->image_default_wunits( MT::Blog::UNITS() );
-        }
-
-        #$blog->image_default_constrain($param->{constrain} ? 1 : 0);
-        $blog->image_default_popup( $param->{popup} ? 1 : 0 );
-        $blog->save or die $blog->errstr;
-    }
     my $fmgr = $blog->file_mgr;
     require MT::Util;
 

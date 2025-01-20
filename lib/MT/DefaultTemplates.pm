@@ -123,7 +123,6 @@ BEGIN {
             'category_archive_list' => { label => 'Category Archives', },
             'current_category_monthly_archive_list' =>
                 { label => 'Current Category Monthly Archives', },
-            'creative_commons' => { label => 'Creative Commons', },
             'main_index_widgets_group' =>
                 { label => 'Home Page Widgets Group', },
             'monthly_archive_dropdown' =>
@@ -141,7 +140,6 @@ BEGIN {
                 { label => 'Date-Based Author Archives', },
             'date_based_category_archives' =>
                 { label => 'Date-Based Category Archives', },
-            'openid' => { label => 'OpenID Accepted', },
         },
         'widgetset' => {
             '2column_layout_sidebar' => {
@@ -154,7 +152,6 @@ BEGIN {
                     'Archive Widgets Group',
                     'Page Listing',
                     'Syndication',
-                    'OpenID Accepted',
                     'Powered By',
                 ],
             },
@@ -165,7 +162,6 @@ BEGIN {
                     'Archive Widgets Group',
                     'Page Listing',
                     'Syndication',
-                    'OpenID Accepted',
                     'Powered By',
                 ],
             },
