@@ -1489,14 +1489,17 @@ sub _upload_file_compat {
             if (my $ext_new = $image_info->{ext}) {
                 my $asset_class = MT::Asset->handler_for_file("test.$ext_new");
                 if ($asset_class eq 'MT::Asset::Image' && !MT->config->DisableFileExtensionConversion) {
-                    my $ext_old = (File::Basename::fileparse($basename, qr/[A-Za-z0-9]+$/))[2];
+                    require MT::Asset::Image;
+                    my $ext = MT::Asset::Image->extensions;
+                    my ( $filename, undef, $ext_old ) = File::Basename::fileparse($basename, @$ext);
+                    $ext_old = "" unless $filename =~ /\.$/;
                     if (   $ext_new ne lc($ext_old)
                         && !(lc($ext_old) eq 'jpeg' && $ext_new eq 'jpg')
                         && !(lc($ext_old) eq 'ico'  && $ext_new =~ /^(bmp|png|gif)$/)
                         && !(lc($ext_old) eq 'mpeg' && $ext_new eq 'mpg')
                         && !(lc($ext_old) eq 'swf'  && $ext_new eq 'cws'))
                     {
-                        if ($basename eq $ext_old) {
+                        if ( (not $ext_old) or ($basename eq $ext_old) ) {
                             $basename .= '.' . $ext_new;
                             $ext_old = $app->translate('none');
                         } else {
@@ -2037,7 +2040,10 @@ sub _upload_file {
     if (my $ext_new = $image_info->{ext}) {
         my $asset_class = MT::Asset->handler_for_file("test.$ext_new");
         if ($asset_class eq 'MT::Asset::Image' && !MT->config->DisableFileExtensionConversion) {
-            my $ext_old = (File::Basename::fileparse($basename, qr/[A-Za-z0-9]+$/))[2];
+            require MT::Asset::Image;
+            my $ext = MT::Asset::Image->extensions;
+            my ( $filename, undef, $ext_old ) = File::Basename::fileparse($basename, @$ext);
+            $ext_old = "" unless $filename =~ /\.$/;
 
             if (   $ext_new ne lc($ext_old)
                 && !(lc($ext_old) eq 'jpeg' && $ext_new eq 'jpg')
@@ -2045,7 +2051,7 @@ sub _upload_file {
                 && !(lc($ext_old) eq 'mpeg' && $ext_new eq 'mpg')
                 && !(lc($ext_old) eq 'swf'  && $ext_new eq 'cws'))
             {
-                if ($basename eq $ext_old) {
+                if ( (not $ext_old) or ($basename eq $ext_old) ) {
                     $basename .= '.' . $ext_new;
                     $ext_old = $app->translate('none');
                 } else {
