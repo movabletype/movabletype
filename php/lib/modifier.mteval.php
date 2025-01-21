@@ -14,13 +14,6 @@ function smarty_modifier_mteval($text, $arg) {
     if (!$ctx->_compile_source('evaluated template', $text, $_var_compiled)) {
         return $ctx->error("Error compiling text '$text'");
     }
-    if ($ctx->mt->config('DynamicTemplateAllowPHP')) {
-        ob_start();
-        eval('?>' . $_var_compiled);
-        $_contents = ob_get_clean();
-    } else {
-        $_contents = $_var_compiled;
-    }
-    return $_contents;
+    return $_var_compiled;
 }
 ?>
