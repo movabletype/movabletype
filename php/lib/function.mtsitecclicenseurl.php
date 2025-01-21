@@ -6,6 +6,6 @@
 # $Id$
 
 function smarty_function_mtsitecclicenseurl($args, &$ctx) {
-    return smarty_function_mtblogcclicenseurl($args, $ctx);
+    return '';
 }
 ?>
