@@ -186,7 +186,7 @@ subtest search => sub {
 
     subtest 'limit' => sub {
         my $cms_search_limit_org = MT->config('CMSSearchLimit');
-        MT->config('CMSSearchLimit', 3);
+        $test_env->update_config(CMSSearchLimit => 3);
 
         my $app = MT::Test::App->new('MT::App::CMS');
         $app->login($admin);
@@ -212,7 +212,7 @@ subtest search => sub {
             ok !$app->have_more_link_exists;
         };
 
-        MT->config('CMSSearchLimit', $cms_search_limit_org);
+        $test_env->update_config(CMSSearchLimit => $cms_search_limit_org);
     };
 
     subtest 'with daterange' => sub {
