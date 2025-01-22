@@ -98,7 +98,7 @@ subtest 'content_data' => sub {
 
         subtest 'CMSSearchLimit is 1' => sub {
             my $cms_search_limit_org = MT->config('CMSSearchLimit');
-            MT->config('CMSSearchLimit', 1);
+            $test_env->update_config(CMSSearchLimit => 1);
 
             $app->get_ok({ __mode => 'search_replace', blog_id => $blog_id });
             $app->change_tab('content_data');
@@ -118,7 +118,7 @@ subtest 'content_data' => sub {
                 ok $app->have_more_link_exists;
             };
 
-            MT->config('CMSSearchLimit', $cms_search_limit_org);
+            $test_env->update_config(CMSSearchLimit => $cms_search_limit_org);
         };
 
         $cd->remove();
