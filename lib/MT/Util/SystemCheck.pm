@@ -64,7 +64,10 @@ sub check_os_version {
         return $param->{os} = join " ", "macOS", map { chomp; $_ } @versions;
     } elsif ($^O eq 'MSWin32') {
         if (eval { require Win32; 1; }) {
-            return $param->{os} = Win32::GetOSDisplayName();
+            my $name = Win32::GetOSDisplayName();
+            my ($build_version) = $name =~ /Build (\d+)/;
+            $name =~ s/Windows 10/Windows 11/ if $build_version and $build_version >= 22000;
+            return $param->{os} = $name;
         }
     } else {
         if (-f '/etc/os-release' and open my $fh, '<', '/etc/os-release') {
