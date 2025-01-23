@@ -254,17 +254,17 @@ sub global_perms {
         $perms->$column( "'" . join( "','", @permissions ) . "'" );
     }
 
-    sub remove_permissions {
+    sub clear_these_permissions {
         my $perms = shift;
-        __PACKAGE__->_remove_these($perms, 'permissions', @_);
+        __PACKAGE__->_clear_these_list($perms, 'permissions', @_);
     }
 
-    sub remove_restrictions {
+    sub clear_these_restrictions {
         my $perms = shift;
-        __PACKAGE__->_remove_these($perms, 'restrictions', @_);
+        __PACKAGE__->_clear_these_list($perms, 'restrictions', @_);
     }
 
-    sub _remove_these {
+    sub _clear_these_list {
         my $pkg   = shift;
         my $perms = shift;
         my ($column, @perms) = @_;
@@ -274,6 +274,11 @@ sub global_perms {
             $val =~ s/'$perm_name',?//i;
         }
         $perms->$column($val);
+    }
+
+    {
+        no warnings 'once';
+        *remove_restrictions = *clear_these_restrictions;
     }
 
     # Clears all permissions or those in a particular set
@@ -606,7 +611,7 @@ sub can_upload {
             $perms->set_these_permissions('upload');
         }
         else {
-            $perms->remove_permissions('upload');
+            $perms->clear_these_permissions('upload');
         }
     }
     return $perms->can_do('upload');

@@ -26,7 +26,7 @@ subtest 'can_upload' => sub {
     ok !$perm->has('upload'), 'has no upload permission after call "can_upload(0)"';
 };
 
-subtest 'remove_permissions' => sub {
+subtest 'clear_these_permissions' => sub {
     my $perm = MT::Permission->new(author_id => 1, blog_id => 1);
     ok !$perm->permissions, 'has no permissions';
 
@@ -36,7 +36,7 @@ subtest 'remove_permissions' => sub {
     ok $perm->has('rebuild'),        'has rebuild permission';
     ok $perm->has('create_site'),    'has create_site permissions';
 
-    $perm->remove_permissions('create_post', 'rebuild', 'manage_users');
+    $perm->clear_these_permissions('create_post', 'rebuild', 'manage_users');
     ok !$perm->has('create_post'),   'has no create_post permission';
     ok $perm->has('edit_templates'), 'has edit_templates permission';
     ok !$perm->has('rebuild'),       'has no rebuild permission';
@@ -44,22 +44,24 @@ subtest 'remove_permissions' => sub {
     ok !$perm->has('manage_users'),  'has no manage_users permission';
 };
 
-subtest 'remove_restrictions' => sub {
-    my $perm = MT::Permission->new(author_id => 1, blog_id => 1);
-    ok !$perm->restrictions, 'has no restrictions';
+for my $method (qw/clear_these_restrictions remove_restrictions/) {
+    subtest $method => sub {
+        my $perm = MT::Permission->new(author_id => 1, blog_id => 1);
+        ok !$perm->restrictions, 'has no restrictions';
 
-    $perm->set_these_restrictions('create_post', 'edit_templates', 'rebuild', 'create_site');
-    ok $perm->is_restricted('create_post'),    'has create_post restriction';
-    ok $perm->is_restricted('edit_templates'), 'has edit_templates restriction';
-    ok $perm->is_restricted('rebuild'),        'has rebuild restriction';
-    ok $perm->is_restricted('create_site'),    'has create_site restriction';
+        $perm->set_these_restrictions('create_post', 'edit_templates', 'rebuild', 'create_site');
+        ok $perm->is_restricted('create_post'),    'has create_post restriction';
+        ok $perm->is_restricted('edit_templates'), 'has edit_templates restriction';
+        ok $perm->is_restricted('rebuild'),        'has rebuild restriction';
+        ok $perm->is_restricted('create_site'),    'has create_site restriction';
 
-    $perm->remove_restrictions('create_post', 'rebuild', 'manage_users');
-    ok !$perm->is_restricted('create_post'),   'has no create_post restriction';
-    ok $perm->is_restricted('edit_templates'), 'has edit_templates restriction';
-    ok !$perm->is_restricted('rebuild'),       'has no rebuild restriction';
-    ok $perm->is_restricted('create_site'),    'has create_site restriction';
-    ok !$perm->is_restricted('manage_users'),  'has no manage_users restriction';
-};
+        $perm->$method('create_post', 'rebuild', 'manage_users');
+        ok !$perm->is_restricted('create_post'),   'has no create_post restriction';
+        ok $perm->is_restricted('edit_templates'), 'has edit_templates restriction';
+        ok !$perm->is_restricted('rebuild'),       'has no rebuild restriction';
+        ok $perm->is_restricted('create_site'),    'has create_site restriction';
+        ok !$perm->is_restricted('manage_users'),  'has no manage_users restriction';
+    };
+}
 
 done_testing;
