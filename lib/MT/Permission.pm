@@ -1091,6 +1091,12 @@ Adds permissions (enabling them) to the existing permission object.
 
     $perms->set_these_permissions('view_blog_log', 'create_post');
 
+=head2 $perms->clear_these_permissions(@permission_names)
+
+Clears permissions (disabling them) to the existing permission object.
+
+    $perms->clear_these_permissions('view_blog_log', 'create_post');
+
 =head2 MT::Permission->rebuild($assoc)
 
 Rebuilds permission objects affected by the given L<MT::Association> object.
