@@ -1093,7 +1093,7 @@ Adds permissions (enabling them) to the existing permission object.
 
 =head2 $perms->clear_these_permissions(@permission_names)
 
-Clears permissions (disabling them) to the existing permission object.
+Clears permissions (disabling them) from the existing permission object.
 
     $perms->clear_these_permissions('view_blog_log', 'create_post');
 
