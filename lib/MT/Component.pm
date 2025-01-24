@@ -45,12 +45,7 @@ sub new {
     my $class = shift;
     my ($self) = ref $_[0] ? @_ : {@_};
     bless $self, $class;
-    if ($self->isa('MT::Plugin')) {
-        $self->load_required_meta;
-    }
-    else {
-        $self->init;
-    }
+    $self->init unless $self->isa('MT::Plugin');
     $self;
 }
 
