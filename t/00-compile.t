@@ -242,7 +242,6 @@ SKIP: {
 }
 use_ok('MT::Image');
 use_ok('MT::Image::GD');
-use_ok('MT::Image::NetPBM');
 use_ok('MT::Image::Imager');
 use_ok('MT::Image::ImageMagick');
 use_ok('MT::Image::GraphicsMagick');

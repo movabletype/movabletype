@@ -1269,7 +1269,7 @@ use vars qw( @ISA %Lexicon );
 	q{Name '[_1]' is already used.} => q{'[_1]'はすでに存在します},
 
 ## lib/MT/CMS/Dashboard.pm
-	'An image processing toolkit, often specified by the ImageDriver configuration directive, is not present on your server or is configured incorrectly. A toolkit must be installed to ensure proper operation of the userpics feature. Please install Graphics::Magick, Image::Magick, NetPBM, GD, or Imager, then set the ImageDriver configuration directive accordingly.' => 'ImageDriverに設定された画像処理ツールが存在しないかまたは正しく設定されていないため、Movable Typeのユーザー画像機能を利用できません。この機能を利用するには、Graphics::Magick、Image::Magick、NetPBM、GD、Imagerのいずれかをインストールする必要があります。',
+	'An image processing toolkit, often specified by the ImageDriver configuration directive, is not present on your server or is configured incorrectly. A toolkit must be installed to ensure proper operation of the userpics feature. Please install Graphics::Magick, Image::Magick, GD, or Imager, then set the ImageDriver configuration directive accordingly.' => 'ImageDriverに設定された画像処理ツールが存在しないかまたは正しく設定されていないため、Movable Typeのユーザー画像機能を利用できません。この機能を利用するには、Graphics::Magick、Image::Magick、GD、Imagerのいずれかをインストールする必要があります。',
 	'Can verify SSL certificate, but verification is disabled.' => 'SSL 証明書の検証を行う準備ができていますが、環境変数で SSL 証明書の検証が無効に設定されています。',
 	'Cannot verify SSL certificate.' => 'SSL 証明書の検証ができません。',
 	'Error: This child site does not have a parent site.' => '親サイトが存在しません。',
@@ -2267,12 +2267,6 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/Image/Imager.pm
 	'Cannot load Imager: [_1]' => 'Imagerをロードできません: [_1]',
 
-## lib/MT/Image/NetPBM.pm
-	'Cannot load IPC::Run: [_1]' => 'IPC::Runをロードできません: [_1]',
-	'Cropping to [_1]x[_2] failed: [_3]' => '[_1]x[_2] にトリミングできませんでした: [_3]',
-	'Reading alpha channel of image failed: [_1]' => 'アルファチャンネルを読み込めませんでした: [_1]',
-	'You do not have a valid path to the NetPBM tools on your machine.' => 'NetPBMツールへのパスが正しく設定されていません。',
-
 ## lib/MT/Import.pm
 	'Another system (Movable Type format)' => '他のシステム(Movable Type形式)',
 	'Could not resolve import format [_1]' => 'インポート形式[_1]を処理できませんでした。',
@@ -2990,7 +2984,6 @@ use vars qw( @ISA %Lexicon );
 	'HTML::Entities is required by CGI.pm' => 'HTML::Entitiesは、CGI.pm の動作に必要です。',
 	'IO::Compress::Gzip is required in order to compress files during an export operation.' => 'IO::Compress::Gzipはエクスポート中にファイルを圧縮するのに必要です。',
 	'IO::Uncompress::Gunzip is required in order to decompress files during an import operation.' => 'IO::Uncompress::Gunzipはインポート中にファイルを展開するのに必要です。',
-	'IPC::Run is optional; It is needed if you would like to use NetPBM as the image processor for Movable Type.' => 'IPC::RunのインストールはMTのイメージドライバとしてNetPBMを利用する場合に必要となります。',
 	'Image::ExifTool is used to manipulate image metadata.' => 'Image::ExifToolは画像のメタデータを操作するのに使われます。',
 	'Image::Size is sometimes required to determine the size of images in different formats.' => 'Image::Sizeはさまざまな形式の画像の大きさを調べるのに必要になることがあります。',
 	'JSON is required to use DataAPI, Content Type, and listing framework.' => 'JSONはDataAPIやコンテンツタイプ、リスティングフレームワークの利用に必要です。',
@@ -3783,8 +3776,6 @@ use vars qw( @ISA %Lexicon );
 	'Your plugin settings have been saved.' => 'プラグインの設定を保存しました。',
 	'Your plugins have been reconfigured.' => 'プラグインを再設定しました。',
 	'_PLUGIN_DIRECTORY_URL' => 'https://plugins.movabletype.jp/',
-	q{Your plugins have been reconfigured. Since you're running mod_perl, you must restart your web server for these changes to take effect.} => q{プラグインの設定が変更されました。mod_perlを利用している場合は、設定変更を有効にするためにウェブサーバーを再起動する必要があります。},
-	q{Your plugins have been reconfigured. Since you're running mod_perl, you will need to restart your web server for these changes to take effect.} => q{プラグインを再設定しました。mod_perl環境下でお使いの場合は、設定を反映させるためにウェブサーバーを再起動してください。},
 
 ## tmpl/admin2023/cms/cfg_prefs.tmpl
 	'Active Server Page Includes' => 'ASPのインクルード',

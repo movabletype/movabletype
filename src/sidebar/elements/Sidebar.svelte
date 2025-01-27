@@ -6,10 +6,10 @@
   const sessionCollapsed = sessionStorage.getItem(sessionName);
   let collapsed = sessionCollapsed === "true" ? true : false;
 
-  const handleCollapse = (overwrite: boolean | null = null) => {
-    const updateClassList = (addClass: boolean) => {
+  const handleCollapse = (overwrite: boolean | null = null): void => {
+    const updateClassList = (addClass: boolean): void => {
       const contentWrapper = document.querySelector(
-        '[data-is="content-wrapper"]'
+        '[data-is="content-wrapper"]',
       ) as HTMLElement;
       if (addClass) {
         contentWrapper.classList.add("collapsed");
@@ -24,13 +24,13 @@
     }
   };
 
-  const handleClick = () => {
+  const handleClick = (): void => {
     collapsed = !collapsed;
     sessionStorage.setItem(sessionName, collapsed.toString());
     handleCollapse(collapsed);
   };
 
-  const handleMouseEnter = () => {
+  const handleMouseEnter = (): void => {
     if (collapsed) {
       handleCollapse(false);
       document
@@ -39,7 +39,7 @@
     }
   };
 
-  const handleMouseLeave = () => {
+  const handleMouseLeave = (): void => {
     if (collapsed) {
       handleCollapse(true);
     }

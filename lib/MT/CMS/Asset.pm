@@ -1790,7 +1790,6 @@ sub _upload_file_compat {
         Fmgr   => $fmgr,
         Local  => $local_file,
         Max    => $upload_param{max_size},
-        MaxDim => $upload_param{max_image_dimension},
         Info   => $image_info,
     );
 
@@ -2352,7 +2351,6 @@ sub _upload_file {
         Fmgr   => $fmgr,
         Local  => $local_file,
         Max    => $upload_param{max_size},
-        MaxDim => $upload_param{max_image_dimension},
         Info   => $image_info,
     );
 

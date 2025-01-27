@@ -39,7 +39,7 @@ our $plugins_installed;
 BEGIN {
     $plugins_installed = 0;
 
-    ( $VERSION, $SCHEMA_VERSION ) = ( '8.004001', '8.0001' );
+    ( $VERSION, $SCHEMA_VERSION ) = ( '8.004001', '8.9991' );
     (   $PRODUCT_NAME, $PRODUCT_CODE,   $PRODUCT_VERSION,
         $VERSION_ID,   $RELEASE_NUMBER, $PORTAL_URL,
         $RELEASE_VERSION_ID
@@ -124,17 +124,6 @@ sub id {
     $id =~ s/^MT::App:://;
     $id =~ s!::!/!g;
     return lc $id;
-}
-
-sub version_slug {
-    require MT::Util::Deprecated;
-    MT::Util::Deprecated::warning(since => '8.3.0');
-
-    return MT->translate_templatized(<<"SLUG");
-<__trans phrase="Powered by [_1]" params="$PRODUCT_NAME">
-<__trans phrase="Version [_1]" params="$VERSION_ID">
-<__trans phrase="https://www.movabletype.com/">
-SLUG
 }
 
 sub build_id {
@@ -929,10 +918,7 @@ sub init_config {
                 . $DBI::VERSION
                 . "; DBD/"
                 . $drh->{Version} . "\n";
-            if ( MT::Util::is_mod_perl1() ) {
-                print $PERFLOG "# App Mode: mod_perl\n";
-            }
-            elsif ( $ENV{FAST_CGI} ) {
+            if ( $ENV{FAST_CGI} ) {
                 print $PERFLOG "# App Mode: FastCGI\n";
             }
             elsif ( $ENV{'psgi.input'} ) {

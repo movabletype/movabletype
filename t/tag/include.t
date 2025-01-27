@@ -25,6 +25,7 @@ my $app = MT->instance;
 $test_env->prepare_fixture('db');
 
 my $blog = MT::Blog->load(1);
+$blog->site_path($test_env->root);
 $blog->include_cache(1);
 $blog->include_system('php');
 $blog->save;
@@ -119,8 +120,6 @@ left File include is disabled by "AllowFileInclude" config directive. right
 <mt:Include ssi="1" file="PATH">
 --- expected
 7
---- expected_php_todo
-<?php echo 3+4;
 
 === test 883-4 include php file
 --- file_content

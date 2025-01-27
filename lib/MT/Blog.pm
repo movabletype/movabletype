@@ -918,12 +918,6 @@ sub comment_text_filters {
     }
 }
 
-sub cc_license_url {
-    my $cc = $_[0]->cc_license or return '';
-    require MT::Util::Deprecated;
-    MT::Util::Deprecated::cc_url($cc);
-}
-
 sub email_all_comments {
     return $_[0]->email_new_comments == 1;
 }
@@ -2296,11 +2290,6 @@ with '/' on Unix, etc)
 
 Returns an arrayref containing the names of the text filters to be
 applied to comments
-
-=head2 $blog->cc_license_url
-
-Returns a URL to a website explaining about the Creative Commons license
-that was chosen for this blog
 
 =head2 $blog->email_all_comments
 
