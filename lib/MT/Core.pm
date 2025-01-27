@@ -1912,7 +1912,6 @@ BEGIN {
             'ImageQualityJpeg'       => { default => 85 },
             'ImageQualityPng'        => { default => 7 },
             'AutoChangeImageQuality' => { default => 1 },
-            'NetPBMPath'             => undef,
             'AdminScript'            => { default => 'mt.cgi', },
             'CommentScript'          => { default => 'mt-comments.cgi', },
             'TrackbackScript'        => { default => 'mt-tb.cgi', },

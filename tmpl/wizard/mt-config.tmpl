@@ -18,11 +18,8 @@ StaticWebPath  <mt:var name="static_web_path">
 StaticFilePath <mt:var name="static_file_path"><mt:if name="publish_charset">
 PublishCharset <mt:var name="publish_charset"></mt:if><mt:if name="non_cgi_suffix">
 
-#======== SCRIPT NAMES ===============<mt:if name="mod_perl">
-# Since you're using mod_perl, these names
-# must map to your mod_perl handlers.
-# Adjust as necessary.
-</mt:if><mt:loop name="script_loop">
+#======== SCRIPT NAMES ===============
+<mt:loop name="script_loop">
 <mt:var name="name"> <mt:var name="path"></mt:loop></mt:if>
 
 #======== DATABASE SETTINGS ==========<mt:if name="use_dbms">
