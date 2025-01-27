@@ -8,16 +8,16 @@
   export let blog_id: string;
 
   let open = false;
-  const handleClick = () => {
+  const handleClick = (): void => {
     open = true;
   };
-  const handleClose = () => {
+  const handleClose = (): void => {
     open = false;
   };
 
   let buttonRef: HTMLElement | null = null;
   let modalRef: HTMLElement | null = null;
-  const clickEvent = (e: MouseEvent) => {
+  const clickEvent = (e: MouseEvent): void => {
     const eventTarget = e.target as Node;
     if (open && isOuterClick([buttonRef, modalRef], eventTarget)) {
       handleClose();

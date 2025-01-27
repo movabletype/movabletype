@@ -13,10 +13,10 @@
   export let blogName: string = "";
 
   let open = false;
-  const handleClick = () => {
+  const handleClick = (): void => {
     open = true;
   };
-  const handleClose = () => {
+  const handleClose = (): void => {
     open = false;
   };
 
