@@ -312,7 +312,7 @@
 
       Template.templates.categoryList = '<mt:section encode_js="1">
           [# if ( !items.length ) { #]
-              <span class="text-muted disabled">[#|h trans("None selected") #]</span>
+              <span class="text-body-secondary disabled">[#|h trans("None selected") #]</span>
               [#* return #]
           [# } #]
           [# if (MT.App.objectType == 'entry') { #]
@@ -1548,7 +1548,7 @@ div.mce-notification-error {
       <div class="mt-draggable__content">
         <mt:var name="field_html">
   <mt:if name="show_hint">
-        <small class="form-text text-muted"><mt:var name="desc_encoded"></small>
+        <small class="form-text text-body-secondary"><mt:var name="desc_encoded"></small>
   </mt:if>
       </div>
     </div>

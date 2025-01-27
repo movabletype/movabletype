@@ -43,7 +43,6 @@ requires 'List::Util';
 
 requires 'GD';
 requires 'Imager';
-requires 'IPC::Run';
 requires 'Storable';
 requires 'Crypt::DSA';
 

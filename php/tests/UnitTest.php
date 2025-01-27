@@ -874,11 +874,6 @@ class UnitTest extends TestCase {
         $this->assertTrue($a instanceof ArchiveType);
     }
 
-    public function testCC() {
-        require_once('cc_lib.php');
-        $this->assertEquals(cc_name('by'), 'Attribution');
-    }
-
     public function testDatetimeToTimestamp() {
         require_once('MTUtil.php');
 

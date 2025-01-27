@@ -204,7 +204,7 @@ h1.dialog-title {
       </mt:if>
       </div>
     </mtapp:setting>
-    <small id="uploadDestination" class="form-text text-muted"><__trans phrase="_USAGE_UPLOAD"></small>
+    <small id="uploadDestination" class="form-text text-body-secondary"><__trans phrase="_USAGE_UPLOAD"></small>
   <mt:else>
     <div id="site_path-field" class="field field-top-label">
       <div class="field-content">
@@ -462,7 +462,7 @@ function createUploadBlock () {
   this.rightPanel   = jQuery('<div class="col-auto text-end upload-status-block-right-panel"></div>').appendTo(this.uploadBlock);
   this.leftContent  = jQuery('<div class="upload-status-block-left-content"></div>').appendTo(this.leftPanel);
 
-  this.progressbar  = jQuery('<div class="mt-progress mt-4"><div class="progress"><div class="progress-bar" data-role="progressbar" aria-valuemin="0" aria-valuemax="100"></div></div></div>').appendTo(this.leftContent);
+  this.progressbar  = jQuery('<div class="mt-progress mt-4"><div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar"></div></div></div>').appendTo(this.leftContent);
 
   this.filename     = jQuery('<div class="upload-filename"></div>').appendTo(this.leftContent);
   this.thumbnail    = jQuery('<div class="upload-thumbnail text-truncate"></div>').appendTo(this.leftContent);
@@ -475,7 +475,7 @@ function createUploadBlock () {
   this.editAsset.hide();
 </mt:unless>
   this.progressbar.find('.progress-bar').css('width', '0')
-                                        .attr('aria-valuenow', '0');
+                                        .parent().attr('aria-valuenow', '0');
   jQuery('#upload-progress').prepend(this.uploadBlockPanel);
 
   // Recalculate block height
@@ -491,7 +491,7 @@ function createUploadBlock () {
 
   this.setProgress = function(val) {
     this.progressbar.find('.progress-bar').css('width', val + '%')
-                                          .attr('aria-valuenow', parseInt(val));
+                                          .parent().attr('aria-valuenow', parseInt(val));
     if( parseInt(val) >= 100 ) {
       this.cancelUpload.hide();
     }

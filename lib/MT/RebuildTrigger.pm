@@ -47,7 +47,6 @@ __PACKAGE__->install_properties({
         'blog_id'        => 'integer not null',
         'object_type'    => 'integer',
         'ct_id'          => 'integer',
-        'ct_unique_id'   => 'string(40)',
         'action'         => 'integer',
         'event'          => 'integer',
         'target'         => 'integer',

@@ -244,35 +244,6 @@ sub check_upload {
         ) unless is_valid_image( $params{Fh} );
     }
 
-    ## If the image exceeds the dimension limit, resize it before writing.
-    if ( my $max_dim = $params{MaxDim} ) {
-        if (   defined($w)
-            && defined($h)
-            && ( $w > $max_dim || $h > $max_dim ) )
-        {
-            require MT::Util::Deprecated;
-            MT::Util::Deprecated::warning(name => 'MaxDim support', since => '8.3.0');
-            my $uploaded_data = eval { local $/; <$fh> };
-            my $img = $class->new( Data => $uploaded_data )
-                or return $class->error( $class->errstr );
-
-            if ( $params{Square} ) {
-                ( undef, $w, $h ) = $img->make_square()
-                    or return $class->error( $img->errstr );
-            }
-            ( my ($resized_data), $w, $h )
-                = $img->scale(
-                ( ( $w > $h ) ? 'Width' : 'Height' ) => $max_dim )
-                or return $class->error( $img->errstr );
-
-            $write_file = sub {
-                $params{Fmgr}
-                    ->put_data( $resized_data, $params{Local}, 'upload' );
-            };
-            $file_size = length $resized_data;
-        }
-    }
-
     if ( my $max_size = $params{Max} ) {
         if ( $max_size < $file_size ) {
             return $class->error(
@@ -346,9 +317,9 @@ MT::Image - Movable Type image manipulation routines
 =head1 DESCRIPTION
 
 I<MT::Image> contains image manipulation routines using either the
-I<NetPBM> tools, the I<ImageMagick> and I<Image::Magick> Perl module,
+I<ImageMagick> and I<Image::Magick> Perl module,
 or the I<GD> and I<GD> Perl module.
-The backend framework used (NetPBM, ImageMagick, GD) depends on the value of
+The backend framework used (ImageMagick, GD) depends on the value of
 the I<ImageDriver> setting in the F<mt.cfg> file (or, correspondingly, set
 on an instance of the I<MT::ConfigMgr> class).
 
