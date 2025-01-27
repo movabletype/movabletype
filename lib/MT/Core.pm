@@ -2102,7 +2102,6 @@ BEGIN {
                 { handler => \&PerformanceLoggingPath },
             'PerformanceLoggingThreshold' => { default => 0.1 },
             'ProcessMemoryCommand' => { default => \&ProcessMemoryCommand },
-            'PublishCommenterIcon' => { default => 1 },
             'EnableAddressBook'    => { default => 0 },
             'SingleCommunity'      => { default => 1 },
             'DefaultWebsiteTheme'  => { default => 'mont-blanc' },
