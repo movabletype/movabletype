@@ -13,7 +13,7 @@ const lruCacheWrapper = new LRUCacheWrapper();
 const cacheManager = new CacheManager({ cache: lruCacheWrapper });
 
 export const fetchContentTypes = async (
-  props: FetchContentTypesProps
+  props: FetchContentTypesProps,
 ): Promise<ContentTypes> => {
   const fetchParams = {
     __mode: "filtered_list",
@@ -47,7 +47,7 @@ export const fetchContentTypes = async (
             id: object[0],
             name: name,
           };
-        }
+        },
       );
       return {
         count: Number.parseInt(result.result.count),

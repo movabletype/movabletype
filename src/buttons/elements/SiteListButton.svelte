@@ -11,12 +11,12 @@
 
   let open = false;
   let oldOverflow: string;
-  const handleClick = () => {
+  const handleClick = (): void => {
     open = true;
     oldOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
   };
-  const handleClose = () => {
+  const handleClose = (): void => {
     open = false;
     document.body.style.overflow = oldOverflow;
   };
@@ -39,23 +39,23 @@
   let buttonRef: HTMLElement | null = null;
   let modalRef: HTMLElement | null = null;
 
-  const nextPage = () => {
+  const nextPage = (): void => {
     page++;
     _fetchSites();
   };
-  const lastPage = () => {
+  const lastPage = (): void => {
     page = pageMax;
     _fetchSites();
   };
-  const prevPage = () => {
+  const prevPage = (): void => {
     page--;
     _fetchSites();
   };
-  const firstPage = () => {
+  const firstPage = (): void => {
     page = 1;
     _fetchSites();
   };
-  const filterApply = () => {
+  const filterApply = (): void => {
     items = [];
     if (siteType === "blog") {
       items = [{ type: "parent_website", args: { value: "" } }];
@@ -71,7 +71,7 @@
     _fetchSites();
   };
 
-  const _fetchSites = async () => {
+  const _fetchSites = async (): Promise<void> => {
     loading = true;
 
     // data loading
@@ -91,7 +91,7 @@
     loading = false;
   };
 
-  const clickEvent = (e: MouseEvent) => {
+  const clickEvent = (e: MouseEvent): void => {
     const eventTarget = e.target as Node;
     if (open && isOuterClick([buttonRef, modalRef], eventTarget)) {
       handleClose();
