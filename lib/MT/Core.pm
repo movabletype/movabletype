@@ -1889,7 +1889,6 @@ BEGIN {
             'NoTempFiles'            => { default => 0, },
             'TempDir'                => { default => '/tmp', },
             'ExportTempDir'          => { default => undef },
-            'RichTextEditor'         => { default => 'archetype', },
             'WYSIWYGEditor'          => undef,
             'SourceEditor'           => undef,
             'Editor'                 => { default => 'tinymce', },
@@ -2352,12 +2351,6 @@ BEGIN {
                     my ($type) = @_;
                     return 1 if $type && ( $type ne 'comment' );
                 },
-            },
-        },
-        richtext_editors => {
-            'archetype' => {
-                label    => 'Movable Type Default',
-                template => 'archetype_editor.tmpl',
             },
         },
         commenter_authenticators => \&load_core_commenter_auth,
