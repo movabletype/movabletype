@@ -18,7 +18,7 @@ $js .= `cat mt-static/js/dialog.js`;
 $js .= `cat mt-static/js/assetdetail.js`;
 $js .= `cat mt-static/js/upload_settings.js`;
 $js .= `cat mt-static/js/edit.js`;
-$js .= `cat mt-static/js/archetype_editor.js`;
+$js .= `cat mt-static/archetype/js/archetype_editor.js`;
 $js .= `cat mt-static/js/cms.js`;
 
 $js .= `cat mt-static/js/admin2023/contenttype/tag/*.tag`;
