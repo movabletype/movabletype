@@ -2224,7 +2224,7 @@ a:hover .mt-icon--secondary{
 .mt-thumbnail--border{
   @extend .mt-thumbnail;
   border: 1px solid $gray-light;
-  border-radius: $border-radius/2;
+  border-radius: calc($border-radius/2);
 }
 
 /* User Badge */
