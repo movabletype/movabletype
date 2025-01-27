@@ -8,7 +8,7 @@ export class LRUCacheWrapper implements Cache {
   constructor(options?: { ttl?: number }) {
     this.cache = new LRUCache({
       ttl: options?.ttl ?? 1000 * 60, // 1min
-      ttlAutopurge: false,
+      ttlAutopurge: true,
       allowStale: false,
     });
   }

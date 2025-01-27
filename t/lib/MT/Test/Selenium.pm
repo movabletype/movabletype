@@ -413,10 +413,6 @@ sub get_browser_error_log {
         if ($log->{source} eq 'console-api' && $log->{level} =~ qr{INFO|WARNING}) {
             next;
         }
-        if (MT->config('AdminThemeId') eq 'admin2025' && $log->{message} =~ /LRU_CACHE_UNBOUNDED/) {
-            # TODO MTC-30136
-            next;
-        }
         push(@filtered, $log);
     }
     return @filtered;
