@@ -9,7 +9,7 @@
   const handleCollapse = (overwrite: boolean | null = null) => {
     const updateClassList = (addClass: boolean) => {
       const contentWrapper = document.querySelector(
-        '[data-is="content-wrapper"]'
+        '[data-is="content-wrapper"]',
       ) as HTMLElement;
       if (addClass) {
         contentWrapper.classList.add("collapsed");

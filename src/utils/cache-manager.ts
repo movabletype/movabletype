@@ -22,7 +22,7 @@ export class CacheManager {
           return acc;
         },
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        {} as Record<string, any>
+        {} as Record<string, any>,
       );
 
     return `${prefix}_${JSON.stringify(normalizedParams)}`;

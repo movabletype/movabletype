@@ -16,7 +16,7 @@ const getTarget = (selector: string): Element | null => {
 document.addEventListener("DOMContentLoaded", () => {
   // Sidebar toggle
   const sidebarTarget = document.querySelector(
-    '[data-is="primary-navigation-toggle"]'
+    '[data-is="primary-navigation-toggle"]',
   );
   if (sidebarTarget !== null) {
     svelteMountSidebar(sidebarTarget);
@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   const currentScript = document.querySelector(
-    '[data-script="admin-header"]'
+    '[data-script="admin-header"]',
   ) as HTMLScriptElement;
   const blogId = currentScript.getAttribute("data-blog-id") ?? "";
   const magicToken = currentScript.getAttribute("data-magic-token") ?? "";
@@ -57,7 +57,7 @@ document.addEventListener("DOMContentLoaded", () => {
     return;
   }
 
-  if(blogId === "") {
+  if (blogId === "") {
     console.error("data-blog-id is not set");
     return;
   }
