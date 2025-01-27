@@ -2046,15 +2046,6 @@ BEGIN {
             #'UseJcodeModule'  => { default => 0, },
             'DefaultTimezone'    => { default => '0', },
             'CategoryNameNodash' => { default => '0', },
-            'DefaultListPrefs'   => { type    => 'HASH', },
-            'DefaultEntryPrefs'  => {
-                type    => 'HASH',
-                default => {
-                    type   => 'Default',    # Default|All|Custom
-                    button => 'Below',      # Above|Below|Both
-                    height => 162,          # textarea height
-                },
-            },
             'DeleteFilesAfterRebuild'   => { default => 0, },
             'DeleteFilesAtRebuild'      => { default => 1, },
             'RebuildAtDelete'           => { default => 1, },
