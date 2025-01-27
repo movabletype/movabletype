@@ -2001,8 +2001,6 @@ BEGIN {
             },
             'SearchContentTypes' => undef,
             'CMSSearchLimit'     => { default => 125 },
-            'OneHourMaxPings'    => { default => 10, },
-            'OneDayMaxPings'     => { default => 50, },
             'SupportURL'         => undef,
             'NewsURL'            => undef,
             'NewsboxURL'         => undef,
