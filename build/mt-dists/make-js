@@ -12,61 +12,59 @@ use MT::Util qw(encode_js);
 
 my $admin_theme_id = 'admin2023/';
 
-my $js = `cat mt-static/mt.js`;
-$js .= `cat mt-static/jquery/jquery.mt.js`;
-$js .= `cat mt-static/js/dialog.js`;
-$js .= `cat mt-static/js/assetdetail.js`;
-$js .= `cat mt-static/js/upload_settings.js`;
-$js .= `cat mt-static/js/edit.js`;
-$js .= `cat mt-static/archetype/js/archetype_editor.js`;
-$js .= `cat mt-static/js/cms.js`;
+my @files = (
+    "mt-static/mt.js",
+    "mt-static/jquery/jquery.mt.js",
+    "mt-static/js/dialog.js",
+    "mt-static/js/assetdetail.js",
+    "mt-static/js/upload_settings.js",
+    "mt-static/js/edit.js",
+    "mt-static/archetype/js/archetype_editor.js",
+    "mt-static/js/cms.js",
 
-$js .= `cat mt-static/js/admin2023/contenttype/tag/*.tag`;
-$js .= `cat src/contenttype/elements/*.svelte`;
-$js .= `cat mt-static/js/admin2023/listing/tag/*.tag`;
-$js .= `cat src/listing/elements/*.svelte`;
-$js .= `cat mt-static/js/mt/util.js`;
-$js .= `cat mt-static/plugins/BlockEditor/lib/js/blockeditor_field.js`;
-$js
-    .= `cat mt-static/plugins/BlockEditor/lib/js/blockeditor_field_manager.js`;
-$js .= `cat mt-static/plugins/BlockEditor/lib/js/fields/embed.js`;
-$js .= `cat mt-static/plugins/BlockEditor/lib/js/fields/header.js`;
-$js .= `cat mt-static/plugins/BlockEditor/lib/js/fields/horizon.js`;
-$js .= `cat mt-static/plugins/BlockEditor/lib/js/fields/image.js`;
-$js .= `cat mt-static/plugins/BlockEditor/lib/js/fields/text.js`;
-$js .= `cat mt-static/plugins/BlockEditor/lib/js/jquery.blockeditor.js`;
-$js .= `cat mt-static/plugins/BlockEditor/lib/js/modal_window.js`;
-$js .= `cat mt-static/plugins/FormattedTextForTinyMCE6/extension.js`;
-$js .= `cat mt-static/plugins/TinyMCE6/lib/js/tinymce/plugins/mt/plugin.js`;
-$js .= `cat mt-static/plugins/TinyMCE6/lib/js/tinymce/plugins/mt/langs/plugin.js`;
-$js .= `cat mt-static/plugins/TinyMCE6/lib/js/tinymce/plugins/mt_fullscreen/plugin.js`;
-$js .= `cat mt-static/plugins/TinyMCE6/lib/js/tinymce/plugins/mt_fullscreen/langs/plugin.js`;
-$js .= `cat plugins/BlockEditor/tmpl/${admin_theme_id}cms/dialog/asset_modal.tmpl`;
-$js
-    .= `cat plugins/BlockEditor/tmpl/${admin_theme_id}cms/dialog/include/asset_upload_panel.tmpl`;
-$js
-    .= `cat plugins/BlockEditor/tmpl/${admin_theme_id}cms/field_html/field_html_multi_line_text.tmpl`;
-$js .= `cat plugins/FormattedText/tmpl/cms/edit_formatted_text.tmpl`;
-$js .= `cat tmpl/${admin_theme_id}cms/edit_commenter.tmpl`;
-$js .= `cat tmpl/${admin_theme_id}cms/edit_content_data.tmpl`;
-$js .= `cat tmpl/${admin_theme_id}cms/edit_content_type.tmpl`;
-$js .= `cat tmpl/${admin_theme_id}cms/edit_entry.tmpl`;
-$js .= `cat tmpl/${admin_theme_id}cms/edit_template.tmpl`;
-$js .= `cat tmpl/${admin_theme_id}cms/field_html/field_html_asset.tmpl`;
-$js .= `cat tmpl/${admin_theme_id}cms/field_html/field_html_categories.tmpl`;
-$js .= `cat tmpl/${admin_theme_id}cms/field_html/field_html_content_type.tmpl`;
-$js .= `cat tmpl/${admin_theme_id}cms/field_html/field_html_multi_line_text.tmpl`;
-$js .= `cat tmpl/${admin_theme_id}cms/include/asset_upload.tmpl`;
-$js .= `cat tmpl/${admin_theme_id}cms/include/async_asset_list.tmpl`;
-$js .= `cat tmpl/${admin_theme_id}cms/include/async_asset_upload.tmpl`;
-$js .= `cat tmpl/${admin_theme_id}cms/include/category_selector.tmpl`;
-$js .= `cat tmpl/${admin_theme_id}cms/include/content_data_list.tmpl`;
-$js .= `cat tmpl/${admin_theme_id}cms/list_category.tmpl`;
-$js .= `cat tmpl/${admin_theme_id}cms/listing/tag_list_header.tmpl`;
+    glob("mt-static/js/admin2023/contenttype/tag/*.tag"),
+    glob("src/contenttype/elements/*.svelte"),
+    glob("mt-static/js/admin2023/listing/tag/*.tag"),
+    glob("src/listing/elements/*.svelte"),
+    "mt-static/js/mt/util.js",
+    "mt-static/plugins/BlockEditor/lib/js/blockeditor_field.js",
+    "mt-static/plugins/BlockEditor/lib/js/blockeditor_field_manager.js",
+    "mt-static/plugins/BlockEditor/lib/js/fields/embed.js",
+    "mt-static/plugins/BlockEditor/lib/js/fields/header.js",
+    "mt-static/plugins/BlockEditor/lib/js/fields/horizon.js",
+    "mt-static/plugins/BlockEditor/lib/js/fields/image.js",
+    "mt-static/plugins/BlockEditor/lib/js/fields/text.js",
+    "mt-static/plugins/BlockEditor/lib/js/jquery.blockeditor.js",
+    "mt-static/plugins/BlockEditor/lib/js/modal_window.js",
+    "mt-static/plugins/FormattedTextForTinyMCE6/extension.js",
+    "mt-static/plugins/TinyMCE6/lib/js/tinymce/plugins/mt/plugin.js",
+    "mt-static/plugins/TinyMCE6/lib/js/tinymce/plugins/mt/langs/plugin.js",
+    "mt-static/plugins/TinyMCE6/lib/js/tinymce/plugins/mt_fullscreen/plugin.js",
+    "mt-static/plugins/TinyMCE6/lib/js/tinymce/plugins/mt_fullscreen/langs/plugin.js",
+    "plugins/BlockEditor/tmpl/${admin_theme_id}cms/dialog/asset_modal.tmpl",
+    "plugins/BlockEditor/tmpl/${admin_theme_id}cms/dialog/include/asset_upload_panel.tmpl",
+    "plugins/BlockEditor/tmpl/${admin_theme_id}cms/field_html/field_html_multi_line_text.tmpl",
+    "plugins/FormattedText/tmpl/cms/edit_formatted_text.tmpl",
+    "tmpl/${admin_theme_id}cms/edit_commenter.tmpl",
+    "tmpl/${admin_theme_id}cms/edit_content_data.tmpl",
+    "tmpl/${admin_theme_id}cms/edit_content_type.tmpl",
+    "tmpl/${admin_theme_id}cms/edit_entry.tmpl",
+    "tmpl/${admin_theme_id}cms/edit_template.tmpl",
+    "tmpl/${admin_theme_id}cms/field_html/field_html_asset.tmpl",
+    "tmpl/${admin_theme_id}cms/field_html/field_html_categories.tmpl",
+    "tmpl/${admin_theme_id}cms/field_html/field_html_content_type.tmpl",
+    "tmpl/${admin_theme_id}cms/field_html/field_html_multi_line_text.tmpl",
+    "tmpl/${admin_theme_id}cms/include/asset_upload.tmpl",
+    "tmpl/${admin_theme_id}cms/include/async_asset_list.tmpl",
+    "tmpl/${admin_theme_id}cms/include/async_asset_upload.tmpl",
+    "tmpl/${admin_theme_id}cms/include/category_selector.tmpl",
+    "tmpl/${admin_theme_id}cms/include/content_data_list.tmpl",
+    "tmpl/${admin_theme_id}cms/list_category.tmpl",
+    "tmpl/${admin_theme_id}cms/listing/tag_list_header.tmpl",
+);
 
 my $addon_path = File::Spec->catdir('addons');
 local *DH;
-my @files;
 my @addons;
 if ( opendir DH, $addon_path ) {
     my @p = readdir DH;
@@ -110,8 +108,12 @@ if ( opendir DH, $plugin_path ) {
     closedir DH;
 }
 
-
-$js .= `cat $_` foreach @files;
+my $js = '';
+for my $file (@files) {
+    open my $fh, '<', $file or die "$file: $!";
+    local $/;
+    $js .= <$fh>;
+}
 
 foreach my $lang (qw(en_us ja)) {
     eval 'require MT::L10N::' . $lang
