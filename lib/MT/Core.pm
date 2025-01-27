@@ -1952,7 +1952,7 @@ BEGIN {
             'ContentDataIncludeBlogs' => {
                 default => sub { $_[0]->IncludeBlogs }
             },
-            'MaxResults'          => { default => '20', },
+            'MaxResults'          => { alias => 'SearchMaxResults' },
             'SearchSortBy'            => undef,
             'ContentDataSearchSortBy' => {
                 default => sub { $_[0]->SearchSortBy }
@@ -1969,7 +1969,7 @@ BEGIN {
             'SearchDefaultTemplate' => { default => 'default.tmpl', },
             'ContentDataSearchDefaultTemplate' =>
                 { default => 'content_data_default.tmpl' },
-            'SearchMaxResults'            => { alias => 'MaxResults', },
+            'SearchMaxResults'            => { default => 20 },
             'ContentDataSearchMaxResults' => {
                 default => sub { $_[0]->SearchMaxResults }
             },
