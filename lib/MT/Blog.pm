@@ -312,8 +312,7 @@ sub list_props {
                     $parent_names{$_} = '' unless defined $parent_names{$_};
                 }
                 my @sorted = sort {
-                    $parent_names{ $a->parent_id }
-                        cmp $parent_names{ $b->parent_id }
+                    ($parent_names{ $a->parent_id || 0 } || '') cmp ($parent_names{ $b->parent_id || 0 } || '')
                 } @$objs;
                 return @sorted;
             },
