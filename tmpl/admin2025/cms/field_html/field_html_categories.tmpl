@@ -127,7 +127,7 @@ jQuery(window).on('load resize', function () {
           /* <![CDATA[ */
               Template.templates.categoryList = '<mt:section encode_js="1">
                   [# if ( !items.length ) { #]
-                      <span class="ms-3 text-muted disabled">[#|h trans("None selected") #]</span>
+                      <span class="ms-3 text-body-secondary disabled">[#|h trans("None selected") #]</span>
                       [#* return #]
                   [# } #]
                   <p class="h5 ms-3 py-3">[#|h trans("Selected Categories") #]</p>
@@ -281,7 +281,7 @@ jQuery(window).on('load resize', function () {
                   <mt:unless name="options{can_add}">
                   if ( categoryList.length === 0 ) {
                       jQuery('#category-list-' + contentFieldId).html(
-                          '<span class="text-muted"><__trans phrase="[_1] is missing" params="<__trans phrase="Category">"></span>'
+                          '<span class="text-body-secondary"><__trans phrase="[_1] is missing" params="<__trans phrase="Category">"></span>'
                       );
                   }
                   </mt:unless>
