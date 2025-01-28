@@ -47,9 +47,8 @@ sub _v8_image_size {
             limit  => $MIGRATE_META_BATCH_SIZE,
         },
     );
-    my @ids       = map { $_->id } @image_assets;
     my @meta_rows = $meta_class->search({
-            asset_id => \@ids,
+            asset_id => [ map { $_->id } @image_assets ],
             type     => [qw(image_width image_height)],
         }, {
             fetchonly => [qw(asset_id type vinteger)],
@@ -62,8 +61,10 @@ sub _v8_image_size {
 
     $asset_image_class->begin_work;
     eval {
+        my @ids;
         for my $image (@image_assets) {
             my $meta = $meta_map{ $image->id } or next;
+            push @ids, $image->id;
             $image->width($meta->{image_width});
             $image->height($meta->{image_height});
             $image->save;
