@@ -85,7 +85,7 @@
     // data setting
     totalCount = result.count;
     pageMax = result.pageMax;
-    page = result.page;
+    page = pageMax !== 0 ? result.page : 0;
     sites = result.sites;
 
     loading = false;
@@ -146,13 +146,13 @@
                 type="button"
                 on:click={firstPage}
                 on:keydown={(e) => e.key === "Enter" && firstPage()}
-                disabled={page === 1}>&lt;&lt;</button
+                disabled={page <= 1}>&lt;&lt;</button
               >
               <button
                 type="button"
                 on:click={prevPage}
                 on:keydown={(e) => e.key === "Enter" && prevPage()}
-                disabled={page === 1}>&lt;</button
+                disabled={page <= 1}>&lt;</button
               >
               <span class="page-num"
                 ><span class="current">{page}</span>/{pageMax}</span
