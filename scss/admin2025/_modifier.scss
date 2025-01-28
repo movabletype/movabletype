@@ -462,7 +462,7 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper,
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  width: 100%;
+  width: calc(100% - 20px);
 
 
   @extend %mt-primaryNavigationAnimation;
@@ -478,7 +478,7 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper,
     font-size: 12px;
     line-height: 100%;
     text-decoration: none;
-    flex-basis: 90px;
+    flex:1;
     padding: 7px 0;
 
     svg {
@@ -494,7 +494,7 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper,
     }
   }
   [data-is="create-button"] {
-    flex-basis: 90px;
+    flex:1;
   }
 
 }
