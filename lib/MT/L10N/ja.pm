@@ -5740,7 +5740,7 @@ use vars qw( @ISA %Lexicon );
 	'New [_1] creation' => '[_1]を新規作成',
 
 ## tmpl/admin2025/cms/include/system-header-actions.tmpl
-	'Select target and search text' => '対象を選択して検索テキストを入力',
+	'Select target and search text...' => '対象を選んでテキスト検索...',
 	'[_1]Site' => '[_1]サイト',
 	'All Sites' => 'すべてのサイト',
 	'Child Sites Only' => '子サイトのみ',

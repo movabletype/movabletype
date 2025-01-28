@@ -113,7 +113,7 @@
         <div class="search-text-box">
           <input
             type="text"
-            placeholder={window.trans("Select target and search text")}
+            placeholder={window.trans("Select target and search text...")}
             name="search"
           />
           <button type="submit">
