@@ -546,10 +546,14 @@ sub _path {
 
 sub _version_path {
     my ($app) = @_;
-    my $path = $app->_path;
+    my $path = $app->path_info;
 
-    $path =~ s{\A/?v(\d+)}{};
-    ( $1, $path );
+    my $length = length($app->DEFAULT_VERSION);
+    $path =~ s{\A/?v([0-9]{1,$length})([^/]?)}{};
+    my ($version, $garbage) = ($1, $2);
+    $version = 0 if defined $garbage && $garbage ne '';
+    $version = 0 if defined $version && ($version =~ /^0/ or $version > $app->DEFAULT_VERSION);
+    ( $version, $path );
 }
 
 sub resource_object {
@@ -938,6 +942,8 @@ sub api {
 
     return $app->print_error( 'API Version is required', 400 )
         unless defined $version;
+
+    return $app->print_error( 'API Version is invalid', 400 ) unless $version;
 
     my $request_method = $app->_request_method
         or return;
