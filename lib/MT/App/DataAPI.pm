@@ -537,13 +537,6 @@ sub _request_method {
     $method;
 }
 
-sub _path {
-    my ($app) = @_;
-    my $path = $app->path_info;
-    $path =~ s{.+(?=/v\d+/)}{};
-    $path;
-}
-
 sub _version_path {
     my ($app) = @_;
     my $path = $app->path_info;
