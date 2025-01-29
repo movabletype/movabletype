@@ -921,7 +921,7 @@ sub api {
     my ( $version, $path ) = $app->_version_path;
 
     # Special handler for get version information.
-    if ( $path eq '/version' ) {
+    if ( $path eq '/version' and (!defined $version or $version) ) {
         my $raw = {
             endpointVersion => 'v' . $app->DEFAULT_VERSION(),
             apiVersion      => $app->API_VERSION(),
