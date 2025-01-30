@@ -2035,6 +2035,12 @@ sub _upload_file {
     my $image_info = MT::Image->get_image_info(Fh => $fh) || {};
     if (my $ext_new = $image_info->{ext}) {
         my $asset_class = MT::Asset->handler_for_file("test.$ext_new");
+        if (my $type = $app->param('require_type')) {
+            if ($asset_class->class_type ne $type) {
+                $eh->($app, %param, error => $app->translate("[_1] is not a valid [_2] file.", $basename, $app->translate($type)));
+                return;
+            }
+        }
         if ($asset_class eq 'MT::Asset::Image' && !MT->config->DisableFileExtensionConversion) {
             my $ext_old = (File::Basename::fileparse($basename, qr/[A-Za-z0-9]+$/))[2];
 
