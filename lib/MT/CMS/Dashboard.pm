@@ -147,40 +147,18 @@ sub create_stats_directory {
     my $user    = $app->user;
     my $user_id = $user->id;
 
-    my $static_file_path = $app->static_file_path;
-
-    if ( -f File::Spec->catfile( $static_file_path, "mt.js" ) ) {
-        $param->{static_file_path} = $static_file_path;
-    }
-    else {
-        return;
-    }
 
     my $low_dir = sprintf( "%03d", $user_id % 1000 );
     my $sub_dir = sprintf( "%03d", $blog_id % 1000 );
     my $top_dir = $blog_id > $sub_dir ? $blog_id - $sub_dir : 0;
-    $param->{support_path}
-        = File::Spec->catdir( $app->support_directory_path(),
-        'dashboard', 'stats', $top_dir, $sub_dir, $low_dir );
+    my $tmpdir = File::Spec->catdir( $app->config->TempDir, 'dashboard', 'stats', $top_dir, $sub_dir, $low_dir );
 
     require MT::FileMgr;
     my $fmgr = MT::FileMgr->new('Local');
-    unless ( $fmgr->exists( $param->{support_path} ) ) {
-        $fmgr->mkpath( $param->{support_path} );
-        unless ( $fmgr->exists( $param->{support_path} ) ) {
-
-            # the path didn't exist - change the warning a little
-            $param->{support_path} = $app->support_directory_path();
-            return;
-        }
+    unless ( $fmgr->exists($tmpdir) ) {
+        $fmgr->mkpath($tmpdir) or return;
     }
-
-    return
-          $app->support_directory_url()
-        . 'dashboard/stats/'
-        . $top_dir . '/'
-        . $sub_dir . '/'
-        . $low_dir;
+    $tmpdir;
 }
 
 sub site_stats_widget {
@@ -208,17 +186,15 @@ sub generate_site_stats_data {
     my $perms   = $app->user->permissions($blog_id);
 
     my $cache_time = 60 * MT->config('StatsCacheTTL');   # cache for x minutes
-    my $stats_static_path = create_stats_directory( $app, $param ) or return;
+    my $tmpdir = create_stats_directory( $app, $param ) or return;
 
     my $file = "data_" . $blog_id . ".json";
-    $param->{stat_url} = $stats_static_path . '/' . $file;
-    my $path = File::Spec->catfile( $param->{support_path}, $file );
+    my $path = File::Spec->catfile( $tmpdir, $file );
 
     require MT::FileMgr;
     my $fmgr = MT::FileMgr->new('Local');
     my $time;
     $time = $fmgr->file_mod_time($path) if -f $path;
-
 
     # Get readied provider
     require MT::App::DataAPI;
@@ -380,6 +356,10 @@ sub generate_site_stats_data {
             $path
         );
     }
+
+    my $data = $fmgr->get_data($path, 'output');
+    $data =~ s/^widget_site_stats_draw_graph\((.+)\)/$1/;
+    $param->{site_stat_data_json} = $1;
 
     delete $param->{provider};
     $param->{stats_provider} = $provider->id if $provider;

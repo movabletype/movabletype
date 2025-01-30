@@ -2481,7 +2481,7 @@ sub clear_site_stats_widget_cache {
         my $top_dir = $site_id > $sub_dir ? $site_id - $sub_dir : 0;
         @parts = ($top_dir, $sub_dir);
     }
-    my $dir = File::Spec->catdir( MT->app->support_directory_path, 'dashboard', 'stats', @parts );
+    my $dir = File::Spec->catdir( MT->app->config->TempDir, 'dashboard', 'stats', @parts );
     if (-d $dir) {
         require File::Path;
         File::Path::rmtree($dir);
