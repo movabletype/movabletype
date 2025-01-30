@@ -810,7 +810,7 @@ for my $clear_cache ( 0, 1 ) {
 
 my $fmgr = MT::FileMgr->new('Local');
 {
-    my $dir = File::Spec->catfile( MT->app->support_directory_path,
+    my $dir = File::Spec->catfile( MT->config->TempDir,
         'dashboard', 'stats', 0, '001', '001' );
     if ( !$fmgr->exists($dir) ) {
         $fmgr->mkpath($dir);
@@ -825,7 +825,7 @@ my $fmgr = MT::FileMgr->new('Local');
 }
 
 {
-    my $dir = File::Spec->catdir( MT->app->support_directory_path,
+    my $dir = File::Spec->catdir( MT->config->TempDir,
         'dashboard', 'stats' );
     if ( !$fmgr->exists($dir) ) {
         $fmgr->mkpath($dir);
