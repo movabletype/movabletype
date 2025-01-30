@@ -3753,7 +3753,6 @@ sub list_pref {
     my $mode = $app->mode;
 
     # defaults:
-    my $d = $app->config->DefaultListPrefs || {};
     my %default = (
         Rows       => 25,
         Format     => 'Compact',
@@ -3764,7 +3763,6 @@ sub list_pref {
     if ( ( $list eq 'comment' ) || ( $list eq 'ping' ) ) {
         $default{Format} = 'expanded';
     }
-    $default{$_} = lc( $d->{$_} ) for keys %$d;
     my $list_pref;
     if ( $list eq 'main_menu' ) {
         $list_pref = {
@@ -3969,8 +3967,6 @@ sub load_default_entry_prefs {
     $blog_id = $app->blog->id if $app->blog;
     my $perm
         = MT::Permission->load( { blog_id => $blog_id, author_id => 0 } );
-    my %default = %{ $app->config->DefaultEntryPrefs };
-    %default = map { lc $_ => $default{$_} } keys %default;
 
     if ( $perm && $perm->entry_prefs ) {
         $prefs = $perm->entry_prefs;
@@ -3982,32 +3978,6 @@ sub load_default_entry_prefs {
                 $prefs =~ s/\btitle\b/title,text/;
             }
         }
-    }
-    else {
-        if ( lc( $default{type} ) eq 'custom' ) {
-            my %map = (
-                Category   => 'category',
-                Excerpt    => 'excerpt',
-                Keywords   => 'keywords',
-                Tags       => 'tags',
-                Publishing => 'publishing',
-                Feedback   => 'feedback',
-                Assets     => 'assets',
-            );
-            my @p;
-            foreach my $p ( keys %map ) {
-                push @p, $map{$p} . ':' . $default{ lc $p }
-                    if $default{ lc $p };
-            }
-            $prefs = join ',', @p;
-            $prefs ||= 'Custom';
-        }
-        elsif ( lc( $default{type} ) ne 'default' ) {
-            $prefs = 'Advanced';
-        }
-        $default{button} = 'Bottom' if lc( $default{button} ) eq 'below';
-        $default{button} = 'Top'    if lc( $default{button} ) eq 'above';
-        $prefs .= '|' . $default{button} if $prefs;
     }
     $prefs ||= 'Default|Bottom';
     return $prefs;
@@ -4021,8 +3991,6 @@ sub load_default_page_prefs {
     $blog_id = $app->blog->id if $app->blog;
     my $perm
         = MT::Permission->load( { blog_id => $blog_id, author_id => 0 } );
-    my %default = %{ $app->config->DefaultEntryPrefs };
-    %default = map { lc $_ => $default{$_} } keys %default;
 
     if ( $perm && $perm->page_prefs ) {
         $prefs = $perm->page_prefs;
@@ -4034,32 +4002,6 @@ sub load_default_page_prefs {
                 $prefs =~ s/\btitle\b/title,text/;
             }
         }
-    }
-    else {
-        if ( lc( $default{type} ) eq 'custom' ) {
-            my %map = (
-                Category   => 'category',
-                Excerpt    => 'excerpt',
-                Keywords   => 'keywords',
-                Tags       => 'tags',
-                Publishing => 'publishing',
-                Feedback   => 'feedback',
-                Assets     => 'assets',
-            );
-            my @p;
-            foreach my $p ( keys %map ) {
-                push @p, $map{$p} . ':' . $default{ lc $p }
-                    if $default{ lc $p };
-            }
-            $prefs = join ',', @p;
-            $prefs ||= 'Custom';
-        }
-        elsif ( lc( $default{type} ) ne 'default' ) {
-            $prefs = 'Advanced';
-        }
-        $default{button} = 'Bottom' if lc( $default{button} ) eq 'below';
-        $default{button} = 'Top'    if lc( $default{button} ) eq 'above';
-        $prefs .= '|' . $default{button} if $prefs;
     }
     $prefs ||= 'Default|Bottom';
     return $prefs;
