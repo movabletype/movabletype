@@ -5,6 +5,8 @@
 #
 # $Id$
 
+require_once 'vendor/autoload.php';
+
 /***
  * Loading exception classes
  */
@@ -401,10 +403,7 @@ class MT {
         }
         ini_set('include_path',
             $cfg['phpdir'] . DIRECTORY_SEPARATOR . "lib" . $path_sep .
-            $cfg['phpdir'] . DIRECTORY_SEPARATOR . "extlib" . $path_sep .
-            $cfg['phpdir'] . DIRECTORY_SEPARATOR . "extlib" . DIRECTORY_SEPARATOR . "smarty" . DIRECTORY_SEPARATOR . "libs" . $path_sep .
-            $cfg['phpdir'] . DIRECTORY_SEPARATOR . "extlib" . DIRECTORY_SEPARATOR . "adodb5" . $path_sep .
-            $cfg['phpdir'] . DIRECTORY_SEPARATOR . "extlib" . DIRECTORY_SEPARATOR . "FirePHPCore" . $path_sep .
+            $cfg['phpdir'] . DIRECTORY_SEPARATOR . "vendor" . DIRECTORY_SEPARATOR . 'adodb'. DIRECTORY_SEPARATOR. 'adodb-php' . $path_sep .
             ini_get('include_path')
         );
 
@@ -478,8 +477,6 @@ class MT {
             $cfg['signonurl'] = 'https://www.typekey.com/t/typekey/login?';
         isset($cfg['signoffurl']) or
             $cfg['signoffurl'] = 'https://www.typekey.com/t/typekey/logout?';
-        isset($cfg['publishcommentericon']) or
-            $cfg['publishcommentericon'] = '1';
         isset($cfg['allowcomments']) or
             $cfg['allowcomments'] = '1';
         isset($cfg['allowpings']) or

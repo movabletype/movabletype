@@ -326,13 +326,6 @@ sub edit_role {
 
     $param{'loaded_permissions'} = \@perms;
 
-    my $all_perm_flags = MT::Permission->perms('blog');
-
-    for my $ref (@$all_perm_flags) {
-        $param{ 'have_access-' . $ref->[0] }
-            = ( $role && $role->has( $ref->[0] ) ) ? 1 : 0;
-        $param{ 'prompt-' . $ref->[0] } = $ref->[1];
-    }
     $param{saved}          = $app->param('saved');
     $param{nav_privileges} = 1;
     $app->add_breadcrumb(

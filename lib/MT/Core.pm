@@ -1889,7 +1889,6 @@ BEGIN {
             'NoTempFiles'            => { default => 0, },
             'TempDir'                => { default => '/tmp', },
             'ExportTempDir'          => { default => undef },
-            'RichTextEditor'         => { default => 'archetype', },
             'WYSIWYGEditor'          => undef,
             'SourceEditor'           => undef,
             'Editor'                 => { default => 'tinymce', },
@@ -1952,7 +1951,7 @@ BEGIN {
             'ContentDataIncludeBlogs' => {
                 default => sub { $_[0]->IncludeBlogs }
             },
-            'MaxResults'          => { default => '20', },
+            'MaxResults'          => { alias => 'SearchMaxResults' },
             'SearchSortBy'            => undef,
             'ContentDataSearchSortBy' => {
                 default => sub { $_[0]->SearchSortBy }
@@ -1969,7 +1968,7 @@ BEGIN {
             'SearchDefaultTemplate' => { default => 'default.tmpl', },
             'ContentDataSearchDefaultTemplate' =>
                 { default => 'content_data_default.tmpl' },
-            'SearchMaxResults'            => { alias => 'MaxResults', },
+            'SearchMaxResults'            => { default => 20 },
             'ContentDataSearchMaxResults' => {
                 default => sub { $_[0]->SearchMaxResults }
             },
@@ -2001,8 +2000,6 @@ BEGIN {
             },
             'SearchContentTypes' => undef,
             'CMSSearchLimit'     => { default => 125 },
-            'OneHourMaxPings'    => { default => 10, },
-            'OneDayMaxPings'     => { default => 50, },
             'SupportURL'         => undef,
             'NewsURL'            => undef,
             'NewsboxURL'         => undef,
@@ -2046,19 +2043,9 @@ BEGIN {
             #'UseJcodeModule'  => { default => 0, },
             'DefaultTimezone'    => { default => '0', },
             'CategoryNameNodash' => { default => '0', },
-            'DefaultListPrefs'   => { type    => 'HASH', },
-            'DefaultEntryPrefs'  => {
-                type    => 'HASH',
-                default => {
-                    type   => 'Default',    # Default|All|Custom
-                    button => 'Below',      # Above|Below|Both
-                    height => 162,          # textarea height
-                },
-            },
             'DeleteFilesAfterRebuild'   => { default => 0, },
             'DeleteFilesAtRebuild'      => { default => 1, },
             'RebuildAtDelete'           => { default => 1, },
-            'MaxTagAutoCompletionItems' => { default => 1000, }, ## DEPRECATED
             'NewUserDefaultWebsiteId' => undef,                  ## DEPRECATED
             'DefaultSiteURL'          => undef,                  ## DEPRECATED
             'DefaultSiteRoot'         => undef,                  ## DEPRECATED
@@ -2111,7 +2098,6 @@ BEGIN {
                 { handler => \&PerformanceLoggingPath },
             'PerformanceLoggingThreshold' => { default => 0.1 },
             'ProcessMemoryCommand' => { default => \&ProcessMemoryCommand },
-            'PublishCommenterIcon' => { default => 1 },
             'EnableAddressBook'    => { default => 0 },
             'SingleCommunity'      => { default => 1 },
             'DefaultWebsiteTheme'  => { default => 'mont-blanc' },
@@ -2352,12 +2338,6 @@ BEGIN {
                     my ($type) = @_;
                     return 1 if $type && ( $type ne 'comment' );
                 },
-            },
-        },
-        richtext_editors => {
-            'archetype' => {
-                label    => 'Movable Type Default',
-                template => 'archetype_editor.tmpl',
             },
         },
         commenter_authenticators => \&load_core_commenter_auth,

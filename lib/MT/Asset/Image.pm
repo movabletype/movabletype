@@ -14,15 +14,10 @@ use MT::Blog;
 use MT::Website;
 use POSIX qw( floor );
 
-__PACKAGE__->install_properties(
-    {   class_type  => 'image',
-        column_defs => {
-            'image_width'  => 'integer meta',
-            'image_height' => 'integer meta',
-        },
-        child_of => [ 'MT::Blog', 'MT::Website', ],
-    }
-);
+__PACKAGE__->install_properties({
+    class_type => 'image',
+    child_of   => ['MT::Blog', 'MT::Website',],
+});
 
 # List of supported file extensions (to aid the stock 'can_handle' method.)
 sub extensions {
