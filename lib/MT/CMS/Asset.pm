@@ -9,7 +9,7 @@ use strict;
 use warnings;
 use Symbol;
 use MT::Util
-    qw( epoch2ts encode_url format_ts relative_date perl_sha1_digest_hex);
+    qw( epoch2ts encode_url format_ts relative_date perl_sha1_digest_hex trim_path );
 use MT::Util::Encode;
 
 my $default_thumbnail_size = 60;
@@ -1432,6 +1432,7 @@ sub _upload_file_compat {
     my $basename = $app->param('file') || $app->param('fname');
     $basename =~ s!\\!/!g;    ## Change backslashes to forward slashes
     $basename =~ s!^.*/!!;    ## Get rid of full directory paths
+    $basename = trim_path($basename) if MT->config->TrimFilePath;
     if ( $basename =~ m!\.\.|\0|\|! ) {
         return $eh->(
             $app, %param,
@@ -2023,6 +2024,7 @@ sub _upload_file {
     my $basename = $app->param('file') || $app->param('fname');
     $basename =~ s!\\!/!g;    ## Change backslashes to forward slashes
     $basename =~ s!^.*/!!;    ## Get rid of full directory paths
+    $basename = trim_path($basename) if MT->config->TrimFilePath;
     if ( $basename =~ m!\.\.|\0|\|! ) {
         return $eh->(
             $app, %param,
