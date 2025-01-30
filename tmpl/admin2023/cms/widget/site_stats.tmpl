@@ -3,7 +3,7 @@
   label="<__trans phrase="Site Stats">"
   can_close="1">
 <div class="row up-column">
-  <div id="statistics_settings_link" class="col-12 text-end">
+  <div id="statistics_settings_link" class="col-12 text-end"<mt:unless name="can_edit_config"> style="display:none"</mt:unless>>
     <a href="<mt:var name="mt_url">?__mode=cfg_web_services&amp;blog_id=<mt:var name="blog_id">"><__trans phrase="Statistics Settings"></a>
   </div>
 </div>
@@ -92,9 +92,6 @@
         end: data.graph_data[9].x
       }
       new MT.ChartAPI.Graph(config, range).trigger('APPEND_TO', jQuery('#graph'));
-      if (data.can_edit_config) {
-        jQuery('#statistics_settings_link').show();
-      }
     }
 
   });

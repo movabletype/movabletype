@@ -144,14 +144,10 @@ sub create_stats_directory {
         = $app->blog        ? $app->blog->id
         : $param->{blog_id} ? $param->{blog_id}
         :                     0;
-    my $user    = $app->user;
-    my $user_id = $user->id;
 
-
-    my $low_dir = sprintf( "%03d", $user_id % 1000 );
     my $sub_dir = sprintf( "%03d", $blog_id % 1000 );
     my $top_dir = $blog_id > $sub_dir ? $blog_id - $sub_dir : 0;
-    my $tmpdir = File::Spec->catdir( $app->config->TempDir, 'dashboard', 'stats', $top_dir, $sub_dir, $low_dir );
+    my $tmpdir = File::Spec->catdir( $app->config->TempDir, 'dashboard', 'stats', $top_dir, $sub_dir );
 
     require MT::FileMgr;
     my $fmgr = MT::FileMgr->new('Local');
@@ -343,11 +339,6 @@ sub generate_site_stats_data {
         $result->{pv_today}        = $pv_today;
         $result->{pv_yesterday}    = $pv_yesterday;
         $result->{reg_keys}        = \@reg_keys;
-        $result->{can_edit_config} = 1
-            if $perms->can_do('edit_config')
-            || $perms->can_do('set_publish_paths')
-            || $perms->can_do('administer_site')
-            || $perms->can_do('administer');
         $result->{error} = $app->errstr if $app->errstr;
 
         $fmgr->put_data(
@@ -360,6 +351,11 @@ sub generate_site_stats_data {
     my $data = $fmgr->get_data($path, 'output');
     $data =~ s/^widget_site_stats_draw_graph\((.+)\)/$1/;
     $param->{site_stat_data_json} = $1;
+    $param->{can_edit_config} = 1
+        if $perms->can_do('edit_config')
+        || $perms->can_do('set_publish_paths')
+        || $perms->can_do('administer_site')
+        || $perms->can_do('administer');
 
     delete $param->{provider};
     $param->{stats_provider} = $provider->id if $provider;
