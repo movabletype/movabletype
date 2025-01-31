@@ -2912,6 +2912,9 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/Upgrade/v8.pm
 	'Migrating image width/height meta data...' => '画像の幅/高さを移行しています...',
 
+## lib/MT/Upgrade/v9.pm
+	'Migrating site boolean meta data...' => 'サイトのboolean型のメタデータを移行しています...',
+
 ## lib/MT/Util.pm
 	'[quant,_1,day,days] from now' => '[quant,_1,日,日]後',
 	'[quant,_1,day,days]' => '[quant,_1,日,日]',
