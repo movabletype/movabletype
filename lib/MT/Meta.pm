@@ -147,6 +147,7 @@ sub register {
 
     foreach my $field ( @{$fields} ) {
         my $name = $field->{name};
+        my $org  = $field->{org_type};
         my $type = $field->{type};
         my $zip  = $field->{zip};
 
@@ -168,7 +169,8 @@ sub register {
             type    => $Types{$type_id},
             pkg     => $pkg,
         };
-        $value->{zip} = $zip if defined $zip;
+        $value->{zip}      = $zip if defined $zip;
+        $value->{org_type} = $org if $org;
 
         $Registry->{$key}{$pkg}{$name} = $value;
     }
