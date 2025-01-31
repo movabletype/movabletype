@@ -52,6 +52,7 @@ BEGIN {
     # some other aliases
     $TypesByName{string}           = TYPE_VCHAR;
     $TypesByName{integer}          = TYPE_VINTEGER;
+    $TypesByName{boolean}          = TYPE_VINTEGER;
     $TypesByName{datetime}         = TYPE_VDATETIME;
     $TypesByName{float}            = TYPE_VFLOAT;
     $TypesByName{string_indexed}   = TYPE_VCHAR_INDEXED;
