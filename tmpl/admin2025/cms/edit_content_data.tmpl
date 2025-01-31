@@ -647,7 +647,7 @@ Template.templates.autoSave = '<mt:section encode_js="1">
       label_class="no-header"
       required="1">
         <input type="text" class="form-control required" id="data_label" name="data_label" value="<mt:var name="data_label" escape="html">" required>
-        <small id="data_label-help" class="form-text text-muted"><__trans phrase="Enter a label to identify this data"></small>
+        <small id="data_label-help" class="form-text text-body-secondary"><__trans phrase="Enter a label to identify this data"></small>
     </mtapp:setting>
   <mt:else>
     <mtapp:setting
@@ -678,7 +678,7 @@ Template.templates.autoSave = '<mt:section encode_js="1">
   <input type="number" step="any" name="content-field-<mt:var name="content_field_id">" class="form-control text short html5-form content-field" value="<mt:var name="value">" mt:watch-change="1" mt:raw-name="1" <mt:if name="options{required}">required</mt:if> <mt:if name="options{max_value}" ne="">max="<mt:var name="options{max_value}" escape="html">"</mt:if> <mt:if name="options{min_value}" ne="">min="<mt:var name="options{min_value}" escape="html">"</mt:if>/>
       </mt:if>
 
-  <small class="form-text text-muted">
+  <small class="form-text text-body-secondary">
       <mt:var name="new_line" value="0">
       <mt:if name="options{min_length}">
         <mt:var name="new_line" value="1">
