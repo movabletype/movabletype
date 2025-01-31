@@ -11867,10 +11867,10 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper .mt-prim
   transform: translate(50%, 0);
 }
 .mt-primaryNavigation__toggle_bar.open:after {
-  background-image: url(/mt-static/images/admin2025/icons/ic_close.svg);
+  background-image: url(../../images/admin2025/icons/ic_close.svg);
 }
 .mt-primaryNavigation__toggle_bar.close:after {
-  background-image: url(/mt-static/images/admin2025/icons/ic_open.svg);
+  background-image: url(../../images/admin2025/icons/ic_open.svg);
 }
 
 html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper .mt-primaryNavigation,
