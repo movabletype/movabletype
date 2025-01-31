@@ -1,0 +1,53 @@
+<mt:setvarblock name="js_include" append="1">
+<mt:if name="optimize_ui">
+<mt:script type="text/javascript" path="plugins/TinyMCE6/tiny_mce/tinymce.min.js">
+<mt:else>
+<mt:script type="text/javascript" path="plugins/TinyMCE6/tiny_mce/tinymce.js">
+</mt:if>
+<mt:script type="text/javascript" path="plugins/TinyMCE6/lib/js/adapter.js">
+<script type="text/javascript">
+MT.Editor.TinyMCE.config.init_instance_callback = function (inst) {
+  inst.dom.addStyle('@media (max-width: 767.98px) { body { font-size: 16px!important; } }');
+};
+jQuery.extend(MT.Editor.TinyMCE.config, <mt:Var name="config" to_json="1" mteval="1" />, {
+  plugin_mt_can_upload: <mt:If name="can_upload">true<mt:Else>false</mt:If>
+});
+</script>
+</mt:setvarblock>
+
+<mt:setvarblock name="css_include" append="1">
+<style>
+/*
+  tinymce toolbars
+  1: source mode change button
+  2: source mode buttons
+  3~: wysiwyg buttons
+*/
+.tox .tox-toolbar:nth-of-type(-n+3) {
+  background-image: none !important;
+}
+.tox-tinymce {
+  border-top-left-radius: 0 !important;
+}
+.editor-header {
+  z-index: 1 !important;
+}
+.editor-header .tab {
+  line-height: 28px !important;
+  margin-bottom: -2px !important;
+  border: 2px solid #eee !important;
+  background-color: #f3f3f3 !important;
+  border-bottom: none !important;
+}
+.editor-header .selected-tab {
+  background-color: #fff !important;
+  border-bottom: none !important;
+}
+.editor-header .selected-tab a {
+  font-weight: bold !important;
+}
+.mt-block-editor-wrap-entry {
+  border: 2px solid #eee !important;
+}
+</style>
+</mt:setvarblock>

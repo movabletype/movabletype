@@ -1,0 +1,14 @@
+<mt:setvarblock name="js_include" append="1">
+<mt:if name="optimize_ui">
+<mt:script type="text/javascript" path="plugins/TinyMCE5/tiny_mce/tinymce.min.js">
+<mt:else>
+<mt:script type="text/javascript" path="plugins/TinyMCE5/tiny_mce/tinymce.js">
+</mt:if>
+<mt:script type="text/javascript" path="plugins/TinyMCE5/lib/js/adapter.js">
+<script type="text/javascript">
+MT.Editor.TinyMCE.config.init_instance_callback = function (inst) {
+  inst.dom.addStyle('@media (max-width: 767.98px) { body { font-size: 16px!important; } }');
+};
+jQuery.extend(MT.Editor.TinyMCE.config, <mt:Var name="config" to_json="1" mteval="1" />);
+</script>
+</mt:setvarblock>
