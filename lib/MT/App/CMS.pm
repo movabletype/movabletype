@@ -5051,12 +5051,10 @@ sub setup_editor_param {
         }
 
         if ( %{ $param->{editors} } ) {
-            my $editor = lc( $app->config('Editor') );
-            $param->{wysiwyg_editor}
-                = lc( $app->config('WYSIWYGEditor') || $editor );
-            $param->{source_editor}
-                = lc( $app->config('SourceEditor') || $editor );
-            $param->{editor_strategy} = lc( $app->config('EditorStrategy') );
+            require MT::Util::Editor;
+            $param->{wysiwyg_editor}  = lc(MT::Util::Editor::current_wysiwyg_editor());
+            $param->{source_editor}   = lc(MT::Util::Editor::current_source_editor());
+            $param->{editor_strategy} = lc($app->config('EditorStrategy'));
         }
         else {
             delete $param->{editors};

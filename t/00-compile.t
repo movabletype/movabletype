@@ -212,6 +212,7 @@ use_ok('MT::Util::Encode');
 use_ok('MT::Util::SystemCheck');
 use_ok('MT::Util::UniqueID');
 use_ok('MT::Util::Mail');
+use_ok('MT::Util::Editor');
 use_ok('MT::Template::Tags::Common');
 use_ok('MT::version');
 
