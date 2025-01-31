@@ -84,11 +84,7 @@ function smarty_function_mtfiletemplate($args, &$ctx) {
         }
     }
 
-    ob_start();
-    $ctx->_eval('?>' . $_var_compiled);
-    $file = ob_get_contents();
-    ob_end_clean();
-
+    $file = $_var_compiled;
     $file = preg_replace('/\/{2,}/', '/', $file);
     $file = preg_replace('/(^\/|\/$)/', '', $file);
     return $file;

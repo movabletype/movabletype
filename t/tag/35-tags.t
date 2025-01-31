@@ -14,7 +14,6 @@ BEGIN {
 use MT::Test::Tag;
 use MT::Test::PHP;
 use MT::Test::Permission;
-use MT::Test::Util::CreativeCommons;
 use MT::Util qw(ts2epoch epoch2ts);
 
 $test_env->prepare_fixture('db_data');
@@ -29,7 +28,6 @@ $server_path =~ s|\\|/|g if $^O eq 'MSWin32';
 
 my $blog = MT::Blog->load(1);
 $blog->captcha_provider('mt_default');
-$blog->include_system('php');
 $blog->save;
 
 my $asset = MT::Asset->load(1);
@@ -85,32 +83,9 @@ filters {
     expected_php => [qw( var )],
 };
 
-sub embed_path {
-    my $in = shift;
-    my $cont = filter_arguments;
-    require File::Temp;
-    my ( $fh, $file ) = File::Temp::tempfile();
-    print $fh $cont;
-    close $fh;
-    $in =~ s{PATH}{$file};
-    $in;
-}
-
-sub embed_path_to_php_test {
-    my $in = shift;
-    require File::Temp;
-    my ( $fh, $file ) = File::Temp::tempfile();
-    print $fh '<?php echo 3+4;';
-    close $fh;
-    $in =~ s{PATH}{$file};
-    $in;
-}
-
 sub fix_path { File::Spec->canonpath(shift) }
 
 my $blog_id = 1;
-
-MT::Test::Util::CreativeCommons->set_cc_license('by_nc_sa_20');
 
 MT::Test::Tag->run_perl_tests($blog_id);
 MT::Test::Tag->run_php_tests($blog_id);
@@ -287,30 +262,6 @@ narnia.na
 --- expected
 6
 
-=== test 34
---- SKIP
---- template
-<MTBlogs><MTBlogIfCCLicense><MTBlogCCLicenseURL>
-<MTBlogCCLicenseImage>
-<MTCCLicenseRDF></MTBlogIfCCLicense></MTBlogs>
---- expected
-http://creativecommons.org/licenses/by-nc-sa/2.0/
-http://creativecommons.org/images/public/somerights20.gif
-<!--
-<rdf:RDF xmlns="http://web.resource.org/cc/"
-         xmlns:dc="http://purl.org/dc/elements/1.1/"
-         xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"><
-Work rdf:about="http://narnia.na/nana/">
-<dc:title>none</dc:title>
-<dc:description>Narnia None Test Blog</dc:description>
-<license rdf:resource="http://creativecommons.org/licenses/by-nc-sa/2.0/" />
-</Work>
-<License rdf:about="http://creativecommons.org/licenses/by-nc-sa/2.0/">
-</License>
-</rdf:RDF>
--->
-
-
 === test 35
 --- template
 <MTArchiveList archive_type="Monthly"><MTArchiveListHeader>(Header)</MTArchiveListHeader><MTArchiveListFooter>(Footer)</MTArchiveListFooter><MTArchiveTitle>|</MTArchiveList>
@@ -390,45 +341,6 @@ x-var
 <MTBlogLanguage>
 --- expected
 en_us
-
-=== test 47
---- template
-<MTBlogCCLicenseURL>
---- expected
-http://creativecommons.org/licenses/by-nc-sa/2.0/
-
-=== test 48
---- template
-<MTBlogCCLicenseImage>
---- expected
-http://creativecommons.org/images/public/somerights20.gif
-
-=== test 49
---- template
-<MTEntries lastn="1" offset="1"><MTCCLicenseRDF></MTEntries>
---- expected
-<!--
-<rdf:RDF xmlns="http://web.resource.org/cc/"
-         xmlns:dc="http://purl.org/dc/elements/1.1/"
-         xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
-<Work rdf:about="http://narnia.na/nana/archives/1965/01/verse-5.html">
-<dc:title>Verse 5</dc:title>
-<dc:description></dc:description>
-<dc:creator>Chucky Dee</dc:creator>
-<dc:date>1965-01-31T07:45:01-03:30</dc:date>
-<license rdf:resource="http://creativecommons.org/licenses/by-nc-sa/2.0/" />
-</Work>
-<License rdf:about="http://creativecommons.org/licenses/by-nc-sa/2.0/">
-</License>
-</rdf:RDF>
--->
-
-
-=== test 50
---- template
-<MTBlogIfCCLicense>1</MTBlogIfCCLicense>
---- expected
-1
 
 === test 51
 --- template
@@ -2528,24 +2440,6 @@ en_US
 --- expected
 1
 
-=== test 440
---- template
-<mt:Websites><MTWebsiteCCLicenseURL></mt:Websites>
---- expected
-http://creativecommons.org/licenses/by-nc-sa/2.0/
-
-=== test 441
---- template
-<mt:Websites><MTWebsiteCCLicenseImage></mt:Websites>
---- expected
-http://creativecommons.org/images/public/somerights20.gif
-
-=== test 442
---- template
-<mt:Websites><MTWebsiteIfCCLicense>1</MTWebsiteIfCCLicense></mt:Websites>
---- expected
-1
-
 === test 443
 --- template
 <mt:Websites><mt:WebsiteFileExtension></mt:Websites>
@@ -3747,24 +3641,6 @@ TEST_ROOT/
 --- expected
 -0330
 
-=== test 669
---- template
-<MTWebsiteIfCCLicense>1</MTWebsiteIfCCLicense>
---- expected
-1
-
-=== test 670
---- template
-<MTWebsiteCCLicenseURL>
---- expected
-http://creativecommons.org/licenses/by-nc-sa/2.0/
-
-=== test 671
---- template
-<MTWebsiteCCLicenseImage>
---- expected
-http://creativecommons.org/images/public/somerights20.gif
-
 === test 672
 --- template
 <MTWebsiteFileExtension>
@@ -4945,34 +4821,6 @@ Test <a href="/foo/foo.php">FOO:FOO</a>bBar String
 <mt:Calendar><mt:CalendarIfToday><strong></mt:CalendarIfToday></mt:Calendar>
 --- expected
 <strong>
-
-=== test 883-1
---- mt_config
-{AllowFileInclude => 1}
---- template embed_path=FILE-CONTENT
-left <mt:Include file="PATH"> right
---- expected
-left FILE-CONTENT right
-
-=== test 883-2
---- mt_config
-{AllowFileInclude => 0}
---- template
-left <mt:Include file="PATH"> right
---- expected_error
-File inclusion is disabled by "AllowFileInclude" config directive.
---- expected_php_error
-left File include is disabled by "AllowFileInclude" config directive. right
-
-=== test 883-3 include php file
---- mt_config
-{AllowFileInclude => 1}
---- template embed_path_to_php_test
-<mt:Include ssi="1" file="PATH">
---- expected
-<?php echo 3+4;
---- expected_php
-7
 
 === test 884
 --- template

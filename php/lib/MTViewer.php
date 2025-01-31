@@ -5,7 +5,6 @@
 #
 # $Id$
 
-include_once("Smarty.class.php");
 class MTViewer extends Smarty {
     var $varstack = array();
     var $stash_var_stack = array();
@@ -985,6 +984,7 @@ EOT;
      * @return mixed
      */
     function _eval($code, $params=null) {
+        trigger_error('function _eval is deprecated', E_USER_DEPRECATED);
         return eval($code);
     }
 

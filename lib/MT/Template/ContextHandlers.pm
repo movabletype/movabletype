@@ -75,21 +75,18 @@ sub core_tags {
             'SitesIfLocalSite?' =>
                 '$Core::MT::Template::Tags::Site::_hdlr_sites_if_local_site',
             'SiteIfCommentsOpen?' => sub {''},
-            'SiteIfCCLicense?' =>
-                '$Core::MT::Template::Tags::Blog::_hdlr_blog_if_cc_license',  # deprecated
+            'SiteIfCCLicense?' => sub {''},
 
             ## Blog
             Blogs     => '$Core::MT::Template::Tags::Blog::_hdlr_blogs',
             'IfBlog?' => '$Core::MT::Template::Tags::Blog::_hdlr_if_blog',
-            'BlogIfCCLicense?' =>
-                '$Core::MT::Template::Tags::Blog::_hdlr_blog_if_cc_license',  # deprecated
+            'BlogIfCCLicense?' => sub {''},
 
             ## Website
             Websites => '$Core::MT::Template::Tags::Website::_hdlr_websites',
             'IfWebsite?' =>
                 '$Core::MT::Template::Tags::Website::_hdlr_if_website',
-            'WebsiteIfCCLicense?' =>
-                '$Core::MT::Template::Tags::Website::_hdlr_website_if_cc_license',  # deprecated
+            'WebsiteIfCCLicense?' => sub {''},
             'WebsiteHasBlog?' =>
                 '$Core::MT::Template::Tags::Website::_hdlr_website_has_blog',
             BlogParentWebsite =>
@@ -468,10 +465,8 @@ sub core_tags {
             SiteHost => '$Core::MT::Template::Tags::Blog::_hdlr_blog_host',
             SiteTimezone =>
                 '$Core::MT::Template::Tags::Blog::_hdlr_blog_timezone',
-            SiteCCLicenseURL =>
-                '$Core::MT::Template::Tags::Blog::_hdlr_blog_cc_license_url',  # deprecated
-            SiteCCLicenseImage =>
-                '$Core::MT::Template::Tags::Blog::_hdlr_blog_cc_license_image',  # deprecated
+            SiteCCLicenseURL   => sub {''},
+            SiteCCLicenseImage => sub {''},
             SiteFileExtension =>
                 '$Core::MT::Template::Tags::Blog::_hdlr_blog_file_extension',
             SiteThemeID =>
@@ -520,12 +515,9 @@ sub core_tags {
             BlogHost => '$Core::MT::Template::Tags::Blog::_hdlr_blog_host',
             BlogTimezone =>
                 '$Core::MT::Template::Tags::Blog::_hdlr_blog_timezone',
-            BlogCCLicenseURL =>
-                '$Core::MT::Template::Tags::Blog::_hdlr_blog_cc_license_url',  # deprecated
-            BlogCCLicenseImage =>
-                '$Core::MT::Template::Tags::Blog::_hdlr_blog_cc_license_image',  # deprecated
-            CCLicenseRDF =>
-                '$Core::MT::Template::Tags::Blog::_hdlr_cc_license_rdf',  # deprecated
+            BlogCCLicenseURL   => sub {''},
+            BlogCCLicenseImage => sub {''},
+            CCLicenseRDF       => sub {''},
             BlogFileExtension =>
                 '$Core::MT::Template::Tags::Blog::_hdlr_blog_file_extension',
             BlogTemplateSetID =>
@@ -550,10 +542,8 @@ sub core_tags {
                 '$Core::MT::Template::Tags::Website::_hdlr_website_path',
             WebsiteTimezone =>
                 '$Core::MT::Template::Tags::Website::_hdlr_website_timezone',
-            WebsiteCCLicenseURL =>
-                '$Core::MT::Template::Tags::Website::_hdlr_website_cc_license_url',  # deprecated
-            WebsiteCCLicenseImage =>
-                '$Core::MT::Template::Tags::Website::_hdlr_website_cc_license_image',  # deprecated
+            WebsiteCCLicenseURL   => sub {''},
+            WebsiteCCLicenseImage => sub {''},
             WebsiteFileExtension =>
                 '$Core::MT::Template::Tags::Website::_hdlr_website_file_extension',
             WebsiteHost =>
@@ -1896,9 +1886,9 @@ sub _hdlr_else {
     delete $args->{'@'};
     if (%$args) {
         defined( my $res = _hdlr_if(@_) ) or return;
-        return $res ? $ctx->slurp(@_) : $ctx->else();
+        return $res ? $ctx->slurp($args, $cond) : $ctx->else();
     }
-    return $ctx->slurp(@_);
+    return $ctx->slurp($args, $cond);
 }
 
 ###########################################################################

@@ -1260,12 +1260,6 @@ Upgrade function to handle the assignment of the authentication type
 Upgrade function that removes some old table constraints for pre-3.2
 MT schemas.
 
-=head2 MT::Upgrade->core_set_enable_archive_paths
-
-Upgrade function that enables the C<EnableArchivePaths> configuration
-setting, if the existing schema version is 3.2 or earlier (preserves
-'archive path', 'archive url' blog settings fields).
-
 =head1 CALLBACKS
 
 The upgrade module defines the following MT callbacks:

@@ -79,32 +79,35 @@ function smarty_function_mtinclude($args, &$ctx) {
     require_once('MTUtil.php');
     $ssi_enable = false;
     $include_file = '';
-    if (!empty($load_type) &&
-        isset($blog) && $blog->blog_include_system == 'php' &&
-        ((isset($args['ssi']) && $args['ssi']) || $tmpl_meta->include_with_ssi)) {
+
+    if (isset($blog) && $blog->blog_include_system == 'php' &&
+        (isset($args['ssi']) && $args['ssi']) || (!empty($load_type) && $tmpl_meta->include_with_ssi)) {
 
         $ssi_enable = true;
 
-        // Generates include path using Key
-        $base_path = '';
-        if (isset($args['key'])) {
-            $base_path = $args['key'];
-        } elseif(isset($args['cache_key'])) {
-            $base_path or $base_path = $args['cache_key'];
-        }
-        $include_path_array = _include_path($base_path);
+        if (!empty($load_type)) {
 
-        $filename = dirify($tmpl_meta->template_name);
-        $filename or $filename = 'template_' . $tmpl_meta->template_id;
-        $filename .= '.'.$blog->blog_file_extension;
+            // Generates include path using Key
+            $base_path = '';
+            if (isset($args['key'])) {
+                $base_path = $args['key'];
+            } elseif(isset($args['cache_key'])) {
+                $base_path or $base_path = $args['cache_key'];
+            }
+            $include_path_array = _include_path($base_path);
 
-        $include_path = $blog->site_path();
-        if (substr($include_path, strlen($include_path) - 1, 1) != DIRECTORY_SEPARATOR)
-            $include_path .= DIRECTORY_SEPARATOR;
-        foreach ($include_path_array as $p) {
-            $include_path .= $p . DIRECTORY_SEPARATOR;
+            $filename = dirify($tmpl_meta->template_name);
+            $filename or $filename = 'template_' . $tmpl_meta->template_id;
+            $filename .= '.'.$blog->blog_file_extension;
+
+            $include_path = $blog->site_path();
+            if (substr($include_path, strlen($include_path) - 1, 1) != DIRECTORY_SEPARATOR)
+                $include_path .= DIRECTORY_SEPARATOR;
+            foreach ($include_path_array as $p) {
+                $include_path .= $p . DIRECTORY_SEPARATOR;
+            }
+            $include_file = $include_path . $filename;
         }
-        $include_file = $include_path . $filename;
     }
 
     # Try to read from cache
@@ -253,10 +256,13 @@ function smarty_function_mtinclude($args, &$ctx) {
         }
     }
 
-    ob_start();
-    $ctx->_eval('?>' . $_var_compiled);
-    $_contents = ob_get_contents();
-    ob_end_clean();
+    if ($ssi_enable) {
+        ob_start();
+        eval('?>' . $_var_compiled);
+        $_contents = ob_get_clean();
+    } else {
+        $_contents = $_var_compiled;
+    }
 
     _clear_vars($ctx, $ext_args);
 
@@ -264,7 +270,7 @@ function smarty_function_mtinclude($args, &$ctx) {
         $cache_driver->set($cache_key, $_contents, $ttl_for_set);
     }
 
-    if ($ssi_enable) {
+    if ($ssi_enable && !empty($load_type)) {
         $include_dir = dirname($include_file);
         if (!file_exists($include_dir) && !is_dir($include_dir)) {
             mkpath($include_dir, 0777);

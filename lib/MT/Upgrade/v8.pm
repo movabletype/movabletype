@@ -47,19 +47,26 @@ sub _v8_image_size {
             limit  => $MIGRATE_META_BATCH_SIZE,
         },
     );
+    my @meta_rows = $meta_class->search({
+            asset_id => [ map { $_->id } @image_assets ],
+            type     => [qw(image_width image_height)],
+        }, {
+            fetchonly => [qw(asset_id type vinteger)],
+        },
+    );
+    my %meta_map;
+    for my $row (@meta_rows) {
+        $meta_map{ $row->asset_id }{ $row->type } = $row->vinteger;
+    }
 
-    require MT::Meta::Proxy;
-
-    MT::Meta::Proxy->bulk_load_meta_objects(\@image_assets);
     $asset_image_class->begin_work;
     eval {
         my @ids;
         for my $image (@image_assets) {
-            next unless defined($image->meta('image_width')) || defined($image->meta('image_height'));
-
+            my $meta = $meta_map{ $image->id } or next;
             push @ids, $image->id;
-            $image->width($image->meta('image_width'));
-            $image->height($image->meta('image_height'));
+            $image->width($meta->{image_width});
+            $image->height($meta->{image_height});
             $image->save;
         }
         if (@ids) {

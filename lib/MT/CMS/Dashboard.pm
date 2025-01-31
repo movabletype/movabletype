@@ -387,23 +387,6 @@ sub generate_site_stats_data {
     1;
 }
 
-sub regenerate_site_stats_data {
-    my $app = shift;
-
-    require MT::Util::Deprecated;
-    MT::Util::Deprecated::warning(since => '8.5.0');
-
-    $app->validate_magic() or return;
-
-    my $param;
-    $param->{blog_id} = $app->param('blog_id');
-
-    generate_site_stats_data( $app, $param ) or return;
-
-    my $result = { stat_url => $param->{stat_url} };
-    return $app->json_result($result);
-}
-
 sub site_stats_widget_lines {
     my $app = shift;
     my $pkg = 'MT::CMS::Dashboard::';
@@ -548,7 +531,7 @@ sub notification_widget {
         if ( $user && $user->is_superuser ) {
             $message->{detail}
                 = $app->translate(
-                'An image processing toolkit, often specified by the ImageDriver configuration directive, is not present on your server or is configured incorrectly. A toolkit must be installed to ensure proper operation of the userpics feature. Please install Graphics::Magick, Image::Magick, NetPBM, GD, or Imager, then set the ImageDriver configuration directive accordingly.'
+                'An image processing toolkit, often specified by the ImageDriver configuration directive, is not present on your server or is configured incorrectly. A toolkit must be installed to ensure proper operation of the userpics feature. Please install Graphics::Magick, Image::Magick, GD, or Imager, then set the ImageDriver configuration directive accordingly.'
                 );
         }
         else {
@@ -713,10 +696,7 @@ sub system_information_widget {
     $param->{total_content_types} = $ct_class->count();
 
     # Server model
-    if ( $ENV{MOD_PERL} ) {
-        $param->{server_model} = 'mod_perl';
-    }
-    elsif ( $ENV{FAST_CGI} ) {
+    if ( $ENV{FAST_CGI} ) {
         $param->{server_model} = 'FastCGI';
     }
     elsif ( $ENV{'psgi.version'} ) {

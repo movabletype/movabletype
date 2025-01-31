@@ -441,7 +441,7 @@ sub tag_handler_asset {
         $i++;
     }
     if ( !@ordered_assets ) {
-        return $ctx->_hdlr_pass_tokens_else(@_);
+        return $ctx->_hdlr_pass_tokens_else($args, $cond);
     }
 
     $res;

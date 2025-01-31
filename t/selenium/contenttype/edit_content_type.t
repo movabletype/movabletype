@@ -361,8 +361,6 @@ $author->save or die $author->errstr;
 
 $test_env->clear_mt_cache;
 
-use Class::Inspector;
-
 subtest 'On Edit Content type ' => sub {
     subtest 'Duplicate Field' => sub {
         my $selenium = MT::Test::Selenium->new($test_env);

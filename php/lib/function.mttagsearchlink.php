@@ -60,7 +60,7 @@ function smarty_function_mttagsearchlink($args, &$ctx) {
     $search .= $ctx->mt->config('SearchScript');
     $link = $search . '?' . $param . ($param ? '&amp;' : '')
         . 'tag=' . urlencode($name);
-    $link .= '&amp;limit=' . $ctx->mt->config('MaxResults');
+    $link .= '&amp;limit=' . $ctx->mt->config('SearchMaxResults');
     if ( $tmpl_blog_id )
         $link .= '&amp;blog_id=' . $tmpl_blog_id;
     return $link;
