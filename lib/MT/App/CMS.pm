@@ -5025,7 +5025,7 @@ sub setup_editor_param {
                     {
                         push(
                             @{ $tmpls->{ $k . 's' } },
-                            { %$conf, tmpl => $tmpl }
+                            { %$conf, tmpl => $tmpl, version => $plugin->version }
                         );
                     }
                 }
