@@ -63,13 +63,15 @@
       {#if contentTypes.length > 0}
         <ul class="create-button-list">
           {#each contentTypes as contentType}
-            <li>
-              <a
-                href={`${window.CMSScriptURI}?__mode=edit&_type=content_data&content_type_id=${contentType.id}&type=content_data_${contentType.id}&blog_id=${blog_id}`}
-              >
-                {window.trans("New [_1] creation", contentType.name)}
-              </a>
-            </li>
+            {#if contentType.can_create === 1}
+              <li>
+                <a
+                  href={`${window.CMSScriptURI}?__mode=view&_type=content_data&content_type_id=${contentType.id}&type=content_data_${contentType.id}&blog_id=${blog_id}`}
+                >
+                  {window.trans("New [_1] creation", contentType.name)}
+                </a>
+              </li>
+            {/if}
           {/each}
         </ul>
       {:else}
@@ -80,12 +82,12 @@
       </p>
       <ul class="create-button-list">
         <li>
-          <a href={`${window.CMSScriptURI}?__mode=edit&_type=entry&blog_id=2`}>
+          <a href={`${window.CMSScriptURI}?__mode=view&_type=entry&blog_id=2`}>
             {window.trans("New [_1] creation", window.trans("Entry"))}
           </a>
         </li>
         <li>
-          <a href={`${window.CMSScriptURI}?__mode=edit&_type=page&blog_id=2`}>
+          <a href={`${window.CMSScriptURI}?__mode=view&_type=page&blog_id=2`}>
             {window.trans("New [_1] creation", window.trans("Page"))}
           </a>
         </li>

@@ -143,7 +143,9 @@
             >
               {#if contentTypes.length > 0}
                 {#each contentTypes as contentType}
-                  <option value={contentType.id}>{contentType.name}</option>
+                  {#if contentType.can_search === 1}
+                    <option value={contentType.id}>{contentType.name}</option>
+                  {/if}
                 {/each}
               {:else}
                 <option value=""
