@@ -53,7 +53,6 @@
                           editorOptions: {
                             richtext: {
                               inline: true,
-                              toolbar: ['bold italic underline strikethrough | blockquote bullist numlist hr | link unlink'],
                             }
                           },
                           wrap: true,
