@@ -12239,14 +12239,15 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper .mt-main
 .mt-systemHeaderActions {
   flex: 0 0 auto;
   width: auto;
-  margin: 4px 0;
+  margin: 0;
   padding: 0;
   display: flex;
   flex-direction: row;
+  height: 100%;
 }
 .mt-systemHeaderActions .mt-systemHeaderAction {
-  margin: 0 4px 0 0;
-  padding: 0px 8px;
+  margin: 0;
+  padding: 0;
 }
 .mt-systemHeaderActions .mt-systemHeaderAction .action {
   display: flex;
@@ -12256,6 +12257,8 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper .mt-main
   color: #212529;
   font-size: 12px;
   line-height: 100%;
+  padding: 4px 0;
+  width: 48px;
 }
 .mt-systemHeaderActions .mt-systemHeaderAction .action .mt-icon, .mt-systemHeaderActions .mt-systemHeaderAction .action .mt-icon--inverse, .mt-systemHeaderActions .mt-systemHeaderAction .action .mt-icon--danger, .mt-systemHeaderActions .mt-systemHeaderAction .action .mt-icon--warning, .mt-systemHeaderActions .mt-systemHeaderAction .action .mt-icon--info, .mt-systemHeaderActions .mt-systemHeaderAction .action .mt-icon--success, .mt-systemHeaderActions .mt-systemHeaderAction .action .mt-icon--secondary, .mt-systemHeaderActions .mt-systemHeaderAction .action .mt-icon--primary {
   width: 19px;
@@ -12267,6 +12270,15 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper .mt-main
   padding: 0;
   background: none;
   border: none;
+}
+.mt-systemHeaderActions .mt-systemHeaderAction:not(.mt-systemHeaderActions__user):has(.open), .mt-systemHeaderActions .mt-systemHeaderAction:not(.mt-systemHeaderActions__user):hover {
+  background-color: #595959;
+}
+.mt-systemHeaderActions .mt-systemHeaderAction:not(.mt-systemHeaderActions__user):has(.open) .action, .mt-systemHeaderActions .mt-systemHeaderAction:not(.mt-systemHeaderActions__user):hover .action {
+  color: #FFFFFF;
+}
+.mt-systemHeaderActions .mt-systemHeaderAction:not(.mt-systemHeaderActions__user):has(.open) .action svg, .mt-systemHeaderActions .mt-systemHeaderAction:not(.mt-systemHeaderActions__user):hover .action svg {
+  fill: #FFFFFF;
 }
 
 .mt-mainContentBody {

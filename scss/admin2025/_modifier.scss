@@ -797,15 +797,15 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper,
 
 .mt-systemHeaderActions {
   @include make-col-auto();
-  margin: 4px 0;
+  margin: 0;
   padding: 0;
-
   display: flex;
   flex-direction: row;
+  height: 100%;
 
   .mt-systemHeaderAction {
-    margin: 0 4px 0 0;
-    padding: 0px 8px;
+    margin: 0;
+    padding: 0;
     .action {
       display: flex;
       flex-direction: column;
@@ -814,6 +814,8 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper,
       color: $gray-900;
       font-size: 12px;
       line-height: 100%;
+      padding: 4px 0;
+      width: 48px;
 
       .mt-icon {
         width: 19px;
@@ -827,6 +829,20 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper,
       padding: 0;
       background: none;
       border: none;
+    }
+
+
+    &:not(.mt-systemHeaderActions__user) {
+      &:has(.open),
+      &:hover {
+        background-color: $gray-darker;
+        .action {
+          color: $white;
+          svg {
+            fill: $white;
+          }
+        }
+      }
     }
   }
 }
