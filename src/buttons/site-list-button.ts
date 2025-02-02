@@ -6,7 +6,7 @@ type SiteListButtonProps = {
 };
 
 export function svelteMountSiteListButton(
-  target: Element,
+  target: HTMLElement,
   props: SiteListButtonProps,
 ): void {
   new SiteListButton({

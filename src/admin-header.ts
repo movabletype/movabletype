@@ -5,8 +5,8 @@ import { svelteMountSearchButton } from "./buttons/search-button";
 import { svelteMountSiteListButton } from "./buttons/site-list-button";
 import { svelteMountBreadcrumbsButton } from "./buttons/breadcrumbs-button";
 
-const getTarget = (selector: string): Element | null => {
-  const target = document.querySelector(selector);
+const getTarget = (selector: string): HTMLElement | null => {
+  const target = document.querySelector(selector) as HTMLElement;
   if (!target) {
     return null;
   }

@@ -10,7 +10,7 @@ export const svelteMountCreateButton = ({
   target,
   props,
 }: {
-  target: Element;
+  target: HTMLElement;
   props: CreateButtonProps;
 }): void => {
   new CreateButton({
