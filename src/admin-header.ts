@@ -64,7 +64,12 @@ document.addEventListener("DOMContentLoaded", () => {
       if (createButtonTarget !== null) {
         svelteMountCreateButton({
           target: createButtonTarget,
-          props: { blog_id: blogId, contentTypes: data.contentTypes },
+          props: {
+            blog_id: blogId,
+            contentTypes: data.contentTypes.filter(
+              (contentType) => contentType.can_create === 1,
+            ),
+          },
         });
       }
       // Search button

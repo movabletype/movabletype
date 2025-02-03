@@ -63,15 +63,13 @@
       {#if contentTypes.length > 0}
         <ul class="create-button-list">
           {#each contentTypes as contentType}
-            {#if contentType.can_create === 1}
-              <li>
-                <a
-                  href={`${window.CMSScriptURI}?__mode=view&_type=content_data&content_type_id=${contentType.id}&type=content_data_${contentType.id}&blog_id=${blog_id}`}
-                >
-                  {window.trans("New [_1] creation", contentType.name)}
-                </a>
-              </li>
-            {/if}
+            <li>
+              <a
+                href={`${window.CMSScriptURI}?__mode=view&_type=content_data&content_type_id=${contentType.id}&type=content_data_${contentType.id}&blog_id=${blog_id}`}
+              >
+                {window.trans("New [_1] creation", contentType.name)}
+              </a>
+            </li>
           {/each}
         </ul>
       {:else}
