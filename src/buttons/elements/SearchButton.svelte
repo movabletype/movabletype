@@ -73,7 +73,7 @@
 <a
   href="#"
   class="action mt-actionSearch"
-  class:open={open}
+  class:open
   on:click={handleClick}
   bind:this={buttonRef}
 >
