@@ -5067,6 +5067,11 @@ sub setup_editor_param {
 sub archetype_editor_is_enabled {
     my ( $app, $param ) = @_;
 
+    if ( !$param->{editors} ) {
+        $param = {};
+        $app->setup_editor_param($param);
+    }
+
     return !$param->{editors};
 }
 
