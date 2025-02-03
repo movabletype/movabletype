@@ -5,17 +5,9 @@ import { svelteMountSearchButton } from "./buttons/search-button";
 import { svelteMountSiteListButton } from "./buttons/site-list-button";
 import { svelteMountBreadcrumbsButton } from "./buttons/breadcrumbs-button";
 
-const getTarget = (selector: string): HTMLElement | null => {
-  const target = document.querySelector(selector) as HTMLElement;
-  if (!target) {
-    return null;
-  }
-  return target;
-};
-
 document.addEventListener("DOMContentLoaded", () => {
   // Sidebar toggle
-  const sidebarTarget = document.querySelector(
+  const sidebarTarget = document.querySelector<HTMLElement>(
     '[data-is="primary-navigation-toggle"]',
   );
   if (sidebarTarget !== null) {
@@ -23,16 +15,22 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // Breadcrumbs
-  const breadcrumbsTarget = getTarget('[data-is="breadcrumbs"]');
+  const breadcrumbsTarget = document.querySelector<HTMLElement>(
+    '[data-is="breadcrumbs"]',
+  );
   if (breadcrumbsTarget !== null) {
     svelteMountBreadcrumbsButton({
       target: breadcrumbsTarget,
     });
   }
 
-  const currentScript = document.querySelector(
+  const currentScript = document.querySelector<HTMLScriptElement>(
     '[data-script="admin-header"]',
-  ) as HTMLScriptElement;
+  );
+  if (currentScript === null) {
+    console.error("data-script='admin-header' is not set");
+    return;
+  }
   const blogId = currentScript.getAttribute("data-blog-id") ?? "";
   const magicToken = currentScript.getAttribute("data-magic-token") ?? "";
   const scopeType = currentScript.getAttribute("data-scope-type") ?? "";
@@ -45,7 +43,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const limit = currentScript.getAttribute("data-blog-id") || "50";
 
   // Site list button
-  const siteListButtonTarget = getTarget('[data-is="site-list-button"]');
+  const siteListButtonTarget = document.querySelector<HTMLElement>(
+    '[data-is="site-list-button"]',
+  );
   if (siteListButtonTarget !== null) {
     svelteMountSiteListButton(siteListButtonTarget, {
       magicToken: magicToken,
@@ -62,8 +62,12 @@ document.addEventListener("DOMContentLoaded", () => {
     return;
   }
 
-  const createButtonTarget = getTarget('[data-is="create-button"]');
-  const searchButtonTarget = getTarget('[data-is="search-button"]');
+  const createButtonTarget = document.querySelector<HTMLElement>(
+    '[data-is="create-button"]',
+  );
+  const searchButtonTarget = document.querySelector<HTMLElement>(
+    '[data-is="search-button"]',
+  );
 
   if (createButtonTarget !== null || searchButtonTarget !== null) {
     fetchContentTypes({

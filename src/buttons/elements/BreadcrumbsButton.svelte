@@ -12,8 +12,6 @@
   export let blogID: string = "";
   export let blogName: string = "";
 
-  console.log(breadcrumbs);
-
   let open = false;
   const handleClick = (): void => {
     open = true;
