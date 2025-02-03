@@ -9,10 +9,10 @@
 
   const addContentWrapperClass = (
     className: string,
-    addClass: boolean
+    addClass: boolean,
   ): void => {
     const contentWrapper = document.querySelector(
-      '[data-is="content-wrapper"]'
+      '[data-is="content-wrapper"]',
     ) as HTMLElement;
     if (addClass) {
       contentWrapper.classList.add(className);
