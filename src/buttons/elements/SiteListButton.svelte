@@ -5,6 +5,7 @@
   import { isOuterClick } from "../outerClick";
   import { fetchSites } from "src/utils/fetch-sites";
   import { Site } from "src/@types/site";
+  import Svg from "../../svg/elements/SVG.svelte";
 
   export let magicToken: string;
   export let limit: number = 50;
@@ -107,22 +108,15 @@
 <a
   href="#"
   class="action mt-actionSite"
+  class:open
   on:click={handleClick}
   bind:this={buttonRef}
 >
-  <svg
-    width="20"
-    height="19"
-    viewBox="0 0 20 19"
-    xmlns="http://www.w3.org/2000/svg"
-    role="img"
+  <Svg
+    title={window.trans("Site")}
     class="mt-icon"
-  >
-    <path
-      d="M11.75 16.25V14H8.75V6.5H7.25V8.75H2V2.75H7.25V5H11.75V2.75H17V8.75H11.75V6.5H10.25V12.5H11.75V10.25H17V16.25H11.75Z"
-      fill="#212529"
-    />
-  </svg>
+    href={`${window.StaticURI}images/admin2025/sprite.svg#ic_site-list`}
+  />
   {window.trans("Site")}
 </a>
 

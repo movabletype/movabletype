@@ -2,6 +2,7 @@
   import { Breadcrumb } from "../../@types/breadcrumbs";
   import { portal } from "svelte-portal";
   import SVG from "../../svg/elements/SVG.svelte";
+  import { isOuterClick } from "../outerClick";
 
   export let breadcrumbs: Breadcrumb[] = [];
   export let scopeType: string = "";
@@ -28,8 +29,16 @@
     const buttonRect = buttonRef.getBoundingClientRect();
     modalLeft = buttonRect.left + (buttonRect.width - modalRef.offsetWidth) / 2;
   }
+
+  const clickEvent = (e: MouseEvent): void => {
+    const eventTarget = e.target as Node;
+    if (open && isOuterClick([buttonRef, modalRef], eventTarget)) {
+      handleClose();
+    }
+  };
 </script>
 
+<svelte:body on:click={clickEvent} />
 <span class="mt-breadcrumb-button-wrapper">
   <button
     type="button"
