@@ -33,16 +33,15 @@ document.addEventListener("DOMContentLoaded", () => {
   const currentScript = document.querySelector(
     '[data-script="admin-header"]',
   ) as HTMLScriptElement;
-  const blogId = currentScript.getAttribute("data-blog-id") ?? "";
+  const blogId = currentScript.getAttribute("data-blog-id") ?? "0";
   const magicToken = currentScript.getAttribute("data-magic-token") ?? "";
-  const scopeType = currentScript.getAttribute("data-scope-type") ?? "";
 
   if (magicToken === "") {
     console.error("data-magic-token is not set");
     return;
   }
 
-  const limit = currentScript.getAttribute("data-blog-id") || "50";
+  const limit = currentScript.getAttribute("data-limit") || "50";
 
   // Site list button
   const siteListButtonTarget = getTarget('[data-is="site-list-button"]');
@@ -53,15 +52,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  if (scopeType === "user" || scopeType === "system") {
-    return;
-  }
-
-  if (blogId === "") {
-    console.error("data-blog-id is not set");
-    return;
-  }
-
   const createButtonTarget = getTarget('[data-is="create-button"]');
   const searchButtonTarget = getTarget('[data-is="search-button"]');
 
@@ -69,14 +59,17 @@ document.addEventListener("DOMContentLoaded", () => {
     fetchContentTypes({
       blogId: blogId,
       magicToken: magicToken,
-      page: 1,
-      limit: Number.parseInt(limit),
     }).then((data) => {
       // Create button
       if (createButtonTarget !== null) {
         svelteMountCreateButton({
           target: createButtonTarget,
-          props: { blog_id: blogId, contentTypes: data.contentTypes },
+          props: {
+            blog_id: blogId,
+            contentTypes: data.contentTypes.filter(
+              (contentType) => contentType.can_create === 1,
+            ),
+          },
         });
       }
       // Search button
@@ -84,7 +77,9 @@ document.addEventListener("DOMContentLoaded", () => {
         svelteMountSearchButton(searchButtonTarget, {
           blogId: blogId,
           magicToken: magicToken,
-          contentTypes: data.contentTypes,
+          contentTypes: data.contentTypes.filter(
+            (contentType) => contentType.can_search === 1,
+          ),
         });
       }
     });

@@ -96,12 +96,11 @@ export interface Type {
 }
 
 export interface ContentTypes {
-  count: number;
-  page: number;
-  pageMax: number;
   contentTypes: ContentType[];
 }
 export interface ContentType {
   id: string;
   name: string;
+  can_create: number;
+  can_search: number;
 }
