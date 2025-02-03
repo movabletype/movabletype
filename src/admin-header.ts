@@ -42,7 +42,7 @@ document.addEventListener("DOMContentLoaded", () => {
     return;
   }
 
-  const limit = currentScript.getAttribute("data-blog-id") || "50";
+  const limit = "50";
 
   // Site list button
   const siteListButtonTarget = getTarget('[data-is="site-list-button"]');
