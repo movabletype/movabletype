@@ -667,6 +667,7 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper,
   height: 100%;
   position: relative;
   background-color: $gray-lightest;
+  padding-bottom: 160px;
 }
 
 .mt-primaryNavigation__sites{
@@ -741,6 +742,13 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper,
   .mt-icon{
     margin-right: 0.5rem;
     fill: $gray-dark;
+  }
+
+  &:last-of-type {
+    .mt-primaryNavigation__child:last-of-type {
+      border-bottom: none;
+    }
+
   }
 }
 
