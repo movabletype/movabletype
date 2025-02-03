@@ -1052,7 +1052,7 @@ div.mce-notification-error {
 </mt:setvarblock>
 
 <mt:unless name="editors">
-<mt:include name="include/archetype_editor.tmpl">
+<mt:if name="rich_editor"><mt:var name="rich_editor_tmpl"><mt:else><mt:include name="include/archetype_editor.tmpl"></mt:if>
 <mt:else>
 <mt:include name="include/editor_script.tmpl" id="editor_script_include">
 <mt:setvarblock name="editor_content">
