@@ -16,7 +16,7 @@ const getTarget = (selector: string): Element | null => {
 document.addEventListener("DOMContentLoaded", () => {
   // Sidebar toggle
   const sidebarTarget = document.querySelector(
-    '[data-is="primary-navigation-toggle"]'
+    '[data-is="primary-navigation-toggle"]',
   );
   if (sidebarTarget !== null) {
     svelteMountSidebar(sidebarTarget);
@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   const currentScript = document.querySelector(
-    '[data-script="admin-header"]'
+    '[data-script="admin-header"]',
   ) as HTMLScriptElement;
   const blogId = currentScript.getAttribute("data-blog-id") ?? "0";
   const magicToken = currentScript.getAttribute("data-magic-token") ?? "";
@@ -72,7 +72,9 @@ document.addEventListener("DOMContentLoaded", () => {
         svelteMountSearchButton(searchButtonTarget, {
           blogId: blogId,
           magicToken: magicToken,
-          contentTypes: data.contentTypes,
+          contentTypes: data.contentTypes.filter(
+            (contentType) => contentType.can_search === 1,
+          ),
         });
       }
     });

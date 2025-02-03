@@ -1,3 +1,8 @@
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
+#
+# $Id$
 package MT::CMS::AdminHeader;
 use strict;
 use warnings;
@@ -11,16 +16,16 @@ sub fetch_admin_header_content_types {
     my $blog_id = $app->param('blog_id');
     my $user    = $app->user;
     my @content_types;
-    my $iter  = MT->model('content_type')->load_iter({ blog_id => $blog_id || \'> 0' }, { sort => 'name' });
-    my $perms = $user->permissions($blog_id);
-
-    my $user_can_create_new_content_data = $perms->can_do('create_new_content_data');
-    my $user_can_manage_content_data =
-           $user->is_superuser
-        || $user->permissions(0)->can_do('manage_content_data')
-        || $perms->can_do('manage_content_data');
+    my $iter = MT->model('content_type')->load_iter({ blog_id => $blog_id || \'> 0' }, { sort => 'name' });
 
     while (my $ct = $iter->()) {
+        my $perms                            = $user->permissions($ct->blog_id);
+        my $user_can_create_new_content_data = $perms->can_do('create_new_content_data');
+        my $user_can_manage_content_data =
+               $user->is_superuser
+            || $user->permissions(0)->can_do('manage_content_data')
+            || $perms->can_do('manage_content_data');
+
         push @content_types,
             +{
             id         => $ct->id,
@@ -33,4 +38,3 @@ sub fetch_admin_header_content_types {
 }
 
 1;
-

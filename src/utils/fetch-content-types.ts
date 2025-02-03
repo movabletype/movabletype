@@ -11,7 +11,7 @@ const lruCacheWrapper = new LRUCacheWrapper();
 const cacheManager = new CacheManager({ cache: lruCacheWrapper });
 
 export const fetchContentTypes = async (
-  props: FetchContentTypesProps
+  props: FetchContentTypesProps,
 ): Promise<ContentTypes> => {
   const fetchParams = {
     __mode: "fetch_admin_header_content_types",
