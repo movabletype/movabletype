@@ -5,34 +5,40 @@
   const sessionName = "collapsed";
   const sessionCollapsed = sessionStorage.getItem(sessionName);
   let collapsed = sessionCollapsed === "true" ? true : false;
+  let mouseOver = false;
 
-  const handleCollapse = (overwrite: boolean | null = null): void => {
-    const updateClassList = (addClass: boolean): void => {
-      const contentWrapper = document.querySelector(
-        '[data-is="content-wrapper"]',
-      ) as HTMLElement;
-      if (addClass) {
-        contentWrapper.classList.add("collapsed");
-      } else {
-        contentWrapper.classList.remove("collapsed");
-      }
-    };
-    if (overwrite !== null) {
-      updateClassList(overwrite);
+  const addContentWrapperClass = (
+    className: string,
+    addClass: boolean
+  ): void => {
+    const contentWrapper = document.querySelector(
+      '[data-is="content-wrapper"]'
+    ) as HTMLElement;
+    if (addClass) {
+      contentWrapper.classList.add(className);
     } else {
-      updateClassList(collapsed);
+      contentWrapper.classList.remove(className);
     }
+  };
+
+  const handleCollapse = (): void => {
+    addContentWrapperClass("collapsed", collapsed);
+  };
+
+  const handleMouseEnterLeave = (): void => {
+    addContentWrapperClass("mouseover", mouseOver);
   };
 
   const handleClick = (): void => {
     collapsed = !collapsed;
     sessionStorage.setItem(sessionName, collapsed.toString());
-    handleCollapse(collapsed);
+    handleCollapse();
   };
 
   const handleMouseEnter = (): void => {
     if (collapsed) {
-      handleCollapse(false);
+      mouseOver = true;
+      handleMouseEnterLeave();
       document
         .querySelector('[data-is="primary-navigation"]')
         ?.addEventListener("mouseleave", handleMouseLeave, { once: true });
@@ -40,9 +46,8 @@
   };
 
   const handleMouseLeave = (): void => {
-    if (collapsed) {
-      handleCollapse(true);
-    }
+    mouseOver = false;
+    handleMouseEnterLeave();
   };
 
   onMount(() => {
