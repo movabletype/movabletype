@@ -60,12 +60,20 @@
       label: window.trans("Child Site"),
     },
   ];
+
+  let searchTextRef: HTMLInputElement | null = null;
   let objectType = "entry";
   onMount(async () => {
     if (contentTypes.length > 0) {
       objectType = "content_data";
     }
   });
+
+  $: {
+    if (open && searchTextRef) {
+      searchTextRef.focus();
+    }
+  }
 </script>
 
 <svelte:body on:click={clickEvent} />
@@ -170,6 +178,7 @@
             type="text"
             placeholder={window.trans("Select target and search text...")}
             name="search"
+            bind:this={searchTextRef}
           />
         </div>
         <div class="submit-button">
