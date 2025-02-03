@@ -106,7 +106,6 @@
     "lru-cache": "^10.4.3",
     "mt-chart-api": "github:movabletype/mt-chart-api-sdk-js#v1.0.2",
     "mt-data-api-sdk": "https://github.com/movabletype/mt-data-api-sdk-js.git",
-    "node-sass": "^9.0.0",
     "popper.js": "^1.16.1",
     "riot": "3.7.4",
     "svelte-portal": "^2.2.1",
