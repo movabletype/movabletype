@@ -108,7 +108,7 @@
 <a
   href="#"
   class="action mt-actionSite"
-  class:open={open}
+  class:open
   on:click={handleClick}
   bind:this={buttonRef}
 >

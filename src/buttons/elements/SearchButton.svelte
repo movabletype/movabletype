@@ -73,7 +73,7 @@
 <a
   href="#"
   class="action mt-actionSearch"
-  class:open={open}
+  class:open
   on:click={handleClick}
   bind:this={buttonRef}
 >
@@ -99,6 +99,17 @@
     bind:this={modalRef}
     use:portal={"body"}
   >
+    <div class="modal-header">
+      <button
+        type="button"
+        class="close"
+        data-dismiss="modal"
+        aria-label="Close"
+        on:click={handleClose}
+      >
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
     <div class="modal-body">
       <form class="search-form" method="post" action={window.ScriptURI}>
         <input type="hidden" name="__mode" value="search_replace" />
@@ -111,20 +122,6 @@
         <input type="hidden" name="do_search" value="1" />
         <input type="hidden" name="magic_token" value={magicToken} />
 
-        <div class="search-text-box">
-          <input
-            type="text"
-            placeholder={window.trans("Select target and search text...")}
-            name="search"
-          />
-          <button type="submit">
-            <SVG
-              title={window.trans("Search")}
-              class="mt-icon"
-              href={`${window.StaticURI}images/sprite.svg#ic_search`}
-            />
-          </button>
-        </div>
         <div class="search-type">
           <label>
             <input
@@ -136,25 +133,7 @@
               disabled={contentTypes.length === 0}
             />
             {window.trans("Content Data")}
-            <select
-              class:disabled={objectType !== "content_data"}
-              name="content_type_id"
-              disabled={objectType !== "content_data" ||
-                contentTypes.length === 0}
-            >
-              {#if contentTypes.length > 0}
-                {#each contentTypes as contentType}
-                  <option value={contentType.id}>{contentType.name}</option>
-                {/each}
-              {:else}
-                <option value=""
-                  >{window.trans("No Content Type could be found.")}</option
-                >
-              {/if}
-            </select>
           </label>
-        </div>
-        <div class="search-type">
           {#each objectTypes.slice(1) as type}
             <label>
               <input
@@ -167,6 +146,41 @@
               {type.label}
             </label>
           {/each}
+        </div>
+        <div class="search-content-type">
+          <select
+            class:disabled={objectType !== "content_data"}
+            name="content_type_id"
+            disabled={objectType !== "content_data" ||
+              contentTypes.length === 0}
+          >
+            {#if contentTypes.length > 0}
+              {#each contentTypes as contentType}
+                <option value={contentType.id}>{contentType.name}</option>
+              {/each}
+            {:else}
+              <option value=""
+                >{window.trans("No Content Type could be found.")}</option
+              >
+            {/if}
+          </select>
+        </div>
+        <div class="search-text-box">
+          <input
+            type="text"
+            placeholder={window.trans("Select target and search text...")}
+            name="search"
+          />
+        </div>
+        <div class="submit-button">
+          <button type="submit" class="btn btn-primary">
+            <SVG
+              title={window.trans("Search")}
+              class="mt-icon mt-icon--sm"
+              href={`${window.StaticURI}images/sprite.svg#ic_search`}
+            />
+            <span>{window.trans("Search")}</span>
+          </button>
         </div>
       </form>
     </div>
