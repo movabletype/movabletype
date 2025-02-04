@@ -14,7 +14,6 @@ GetOptions( "old:s" => \my($old_config),
 
 use FindBin;
 use lib ("$FindBin::Bin/../lib", "$FindBin::Bin/../extlib");
-use File::Spec;
 use MT;
 
 unless ($new_config) {
