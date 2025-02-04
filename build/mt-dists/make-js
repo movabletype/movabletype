@@ -1,7 +1,7 @@
 #!/usr/bin/env perl -w
 
 use strict;
-
+use warnings;
 use lib 'lib';
 use lib 'extlib';
 use open qw(:utf8);

@@ -6,7 +6,7 @@
 package MT::CLITest;
 
 use strict;
-
+use warnings;
 use Data::Dumper;
 $Data::Dumper::Deparse  = 1;
 $Data::Dumper::Terse    = 1;

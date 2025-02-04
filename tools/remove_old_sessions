@@ -8,7 +8,7 @@
 
 package MT::Tool::RemoveOldSessions;
 use strict;
-
+use warnings;
 use FindBin;
 use lib ("$FindBin::Bin/../lib", "$FindBin::Bin/../extlib");
 use base qw( MT::Tool );

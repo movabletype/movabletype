@@ -7,7 +7,7 @@
 # $Id$
 
 use strict;
-
+use warnings;
 use Getopt::Long;
 GetOptions( "old:s" => \my($old_config),
             "new:s" => \my($new_config));
