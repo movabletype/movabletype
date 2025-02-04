@@ -19,7 +19,7 @@ use MT::DataAPI::Endpoint::Common;
 use MT::DataAPI::Resource;
 
 sub _set_default_params {
-    my ( $app, $blog ) = @_;
+    my ($app, $blog) = @_;
 
     my @save_params = qw(
         theme_name    theme_id    theme_author_name theme_author_link
@@ -29,34 +29,33 @@ sub _set_default_params {
 
     my $saved_settings    = $blog->theme_export_settings;
     my $saved_core_values = $saved_settings->{core};
-    my $default_basename  = [ File::Spec->splitdir( $blog->site_path ) ]->[-1]
-        || dirify( $blog->name );
+    my $default_basename  = [File::Spec->splitdir($blog->site_path)]->[-1]
+        || dirify($blog->name);
     my %param_default = (
-        theme_name => $app->translate( 'Theme from [_1]', $blog->name ),
+        theme_name => $app->translate('Theme from [_1]', $blog->name),
         theme_id   => $default_basename
         ? 'theme_from_' . $default_basename
         : 'new_theme',
         theme_author_name => '',
         theme_author_link => '',
         theme_version     => '1.0',
-        ( $saved_settings ? () : ( include_all => 1 ) ),
+        ($saved_settings ? () : (include_all => 1)),
     );
 
     for my $param (@save_params) {
         next if defined $app->param($param);
-        my $val
-            = $saved_core_values->{$param}
+        my $val =
+               $saved_core_values->{$param}
             || $param_default{$param}
             || '';
-        if ( $param eq 'include' ) {
-            if ( ref $val ) {
-                $app->multi_param( 'include', @$val );
-            }
-            else {
+        if ($param eq 'include') {
+            if (ref $val) {
+                $app->multi_param('include', @$val);
+            } else {
                 my $hdlrs = MT->registry('theme_element_handlers');
                 my @exporter_ids;
-                for my $hdlr ( keys %$hdlrs ) {
-                    my $exporter = MT->registry( theme_element_handlers => $hdlr => 'exporter' );
+                for my $hdlr (keys %$hdlrs) {
+                    my $exporter = MT->registry(theme_element_handlers => $hdlr => 'exporter');
                     next unless $exporter;
 
                     my $cond = $exporter->{condition};
@@ -65,33 +64,30 @@ sub _set_default_params {
 
                     push @exporter_ids, $hdlr;
                 }
-                $app->multi_param( 'include', @exporter_ids );
+                $app->multi_param('include', @exporter_ids);
             }
-        }
-        else {
-            $app->param( $param, ref $val ? $val->[0] : $val );
+        } else {
+            $app->param($param, ref $val ? $val->[0] : $val);
         }
     }
 }
 
 sub _check_params {
-    my ( $app, $theme_id, $theme_name, $theme_version ) = @_;
+    my ($app, $theme_id, $theme_name, $theme_version) = @_;
 
-    if ( !defined($theme_id) || $theme_id eq '' ) {
+    if (!defined($theme_id) || $theme_id eq '') {
         return $app->error(
-            $app->translate( 'A parameter "[_1]" is required.', 'theme_id' ),
+            $app->translate('A parameter "[_1]" is required.', 'theme_id'),
             400
         );
     }
-    if ( !defined($theme_name) || $theme_name eq '' ) {
+    if (!defined($theme_name) || $theme_name eq '') {
         return $app->error(
-            $app->translate(
-                'A parameter "[_1]" is required.', 'theme_name'
-            ),
+            $app->translate('A parameter "[_1]" is required.', 'theme_name'),
             400
         );
     }
-    if ( !defined($theme_version) || $theme_version eq '' ) {
+    if (!defined($theme_version) || $theme_version eq '') {
         return $app->error(
             $app->translate(
                 'A parameter "[_1]" is required.',
@@ -101,28 +97,24 @@ sub _check_params {
         );
     }
 
-    if ( $theme_id !~ m/^[a-zA-Z][a-zA-Z0-9_-]*$/ ) {
+    if ($theme_id !~ m/^[a-zA-Z][a-zA-Z0-9_-]*$/) {
         return $app->error(
-            $app->translate(
-                'theme_id may only contain letters, numbers, and the dash or underscore character. The theme_id must begin with a letter.'
-            ),
+            $app->translate('theme_id may only contain letters, numbers, and the dash or underscore character. The theme_id must begin with a letter.'),
             400
         );
     }
 
-    if ( $theme_version !~ m/^[\w\._-]+$/ ) {
+    if ($theme_version !~ m/^[\w\._-]+$/) {
         return $app->error(
-            $app->translate(
-                'theme_version may only contain letters, numbers, and the dash or underscore character.'
-            ),
+            $app->translate('theme_version may only contain letters, numbers, and the dash or underscore character.'),
             400
         );
     }
 
     my $all_themes = MT::Theme->load_all_themes;
-    for my $t ( values %$all_themes ) {
+    for my $t (values %$all_themes) {
         next if $t->{type} eq 'package' && !$t->{protected};
-        if ( $t->id eq $theme_id ) {
+        if ($t->id eq $theme_id) {
             return $app->error(
                 $app->translate(
                     'Cannot install new theme with existing (and protected) theme\'s basename: [_1]',
@@ -169,9 +161,9 @@ DESCRIPTION
                             theme_author_name => { type => 'string' },
                             theme_author_link => { type => 'string' },
                             description       => { type => 'string' },
-                            include_all => {
-                                type => 'integer',
-                                enum => [0, 1],
+                            include_all       => {
+                                type        => 'integer',
+                                enum        => [0, 1],
                                 description => "If '1' is specified, all options will be included in the export target.",
                             },
                             output => {
@@ -219,24 +211,24 @@ DESCRIPTION
 }
 
 sub export {
-    my ( $app, $endpoint ) = @_;
+    my ($app, $endpoint) = @_;
 
     return $app->error(403) if !$app->can_do('do_export_theme');
 
     my $cfg  = $app->config;
     my $blog = $app->blog;
 
-    if ( !( $blog && $blog->id ) ) {
-        return $app->error( $app->translate('Site not found'), 404 );
+    if (!($blog && $blog->id)) {
+        return $app->error($app->translate('Site not found'), 404);
     }
 
-    _set_default_params( $app, $blog );
+    _set_default_params($app, $blog);
 
     my $theme_id      = $app->param('theme_id');
     my $theme_name    = $app->param('theme_name');
     my $theme_version = $app->param('theme_version');
 
-    return if !_check_params( $app, $theme_id, $theme_name, $theme_version );
+    return if !_check_params($app, $theme_id, $theme_name, $theme_version);
 
     $theme_id = dirify($theme_id);
 
@@ -246,26 +238,25 @@ sub export {
     my $output = $app->param('output') || 'themedir';
 
     ## Abort if theme directory is not okey for output.
-    my ( $theme_dir, $output_path );
-    if ( $output eq 'themedir' ) {
+    my ($theme_dir, $output_path);
+    if ($output eq 'themedir') {
 
         my @dir_list = $cfg->ThemesDirectory;
         my ($default_dir) = $cfg->default('ThemesDirectory');
-        if ( grep $_ eq $default_dir, @dir_list ) {
-            @dir_list
-                = ( $default_dir, grep( $_ ne $default_dir, @dir_list ) );
+        if (grep $_ eq $default_dir, @dir_list) {
+            @dir_list = ($default_dir, grep($_ ne $default_dir, @dir_list));
         }
         unshift @dir_list, $cfg->UserThemesDirectory if $cfg->UserTHemesDirectory;
 
         foreach my $dir (@dir_list) {
-            my $path = File::Spec->catdir( $dir, $theme_id );
-            if ( $fmgr->can_write($dir) ) {
+            my $path = File::Spec->catdir($dir, $theme_id);
+            if ($fmgr->can_write($dir)) {
                 $theme_dir = $dir;
                 last;
             }
         }
-        if ( not defined $theme_dir ) {
-            if ( scalar(@dir_list) == 1 ) {
+        if (not defined $theme_dir) {
+            if (scalar(@dir_list) == 1) {
                 return $app->error(
                     $app->translate(
                         'Themes directory [_1] is not writable.',
@@ -273,23 +264,20 @@ sub export {
                     ),
                     403
                 );
-            }
-            else {
+            } else {
                 return $app->error(
-                    $app->translate(
-                        'All themes directories are not writable.'),
+                    $app->translate('All themes directories are not writable.'),
                     403
                 );
             }
         }
-        $output_path = File::Spec->catdir( $theme_dir, $theme_id );
+        $output_path = File::Spec->catdir($theme_dir, $theme_id);
 
-        if ( $fmgr->exists($output_path) ) {
-            if ( $app->param('overwrite_yes') ) {
+        if ($fmgr->exists($output_path)) {
+            if ($app->param('overwrite_yes')) {
                 use File::Path 'rmtree';
                 rmtree($output_path);
-            }
-            else {
+            } else {
                 return $app->error(
                     $app->translate(
                         "Export theme folder already exists '[_1]'. You can overwrite an existing theme with 'overwrite_yes=1' parameter, or change the Basename.",
@@ -302,16 +290,14 @@ sub export {
     }
 
     ## Pick up settings.
-    my $hdlrs = MT->registry('theme_element_handlers');
+    my $hdlrs    = MT->registry('theme_element_handlers');
     my %includes = map { $_ => 1 } $app->multi_param('include');
     my %exporter;
     my $settings = $blog->theme_export_settings || {};
     my $elements = {};
 
-    for my $exporter_id ( keys %$hdlrs ) {
-        my $exporter
-            = MT->registry(
-            theme_element_handlers => $exporter_id => 'exporter' )
+    for my $exporter_id (keys %$hdlrs) {
+        my $exporter = MT->registry(theme_element_handlers => $exporter_id => 'exporter')
             or next;
         $exporter{$exporter_id} = $exporter;
         next unless $includes{$exporter_id};
@@ -325,32 +311,33 @@ sub export {
         id    => $theme_id,
         name  => $theme_name,
         label => $theme_name,
-        (   $theme_author_name
-            ? ( author_name => $theme_author_name )
+        (
+            $theme_author_name
+            ? (author_name => $theme_author_name)
             : ()
         ),
         author_link => $theme_author_link || '',
-        version => $theme_version,
-        class => ( $blog->is_blog ? 'blog' : 'website' ),
+        version     => $theme_version,
+        class       => ($blog->is_blog ? 'blog' : 'website'),
         description => $description || '',
     };
 
     my $include_all = $app->param('include_all');
-    for my $exporter_id ( keys %$hdlrs ) {
+    for my $exporter_id (keys %$hdlrs) {
         next if !$include_all && !$includes{$exporter_id};
         my $exporter = $exporter{$exporter_id};
         next unless $exporter;
         my $code = $exporter->{export};
-        if ( !ref $code ) {
+        if (!ref $code) {
             $code = MT->handler_to_coderef($code);
         }
         delete $settings->{$exporter_id} if $include_all;
-        my $setting
-            = exists $settings->{$exporter_id}
+        my $setting =
+            exists $settings->{$exporter_id}
             ? $settings->{$exporter_id}
             : undef;
         my $data;
-        eval { $data = $code->( $app, $blog, $setting ); };
+        eval { $data = $code->($app, $blog, $setting); };
         return $app->error(
             $app->translate(
                 'Error occurred during exporting [_1]: [_2]', $exporter_id,
@@ -373,25 +360,20 @@ sub export {
         DIR     => $parent,
         CLEANUP => 1
     );
-    my $tmpdir = File::Spec->catdir( $tmproot, $theme_id );
+    my $tmpdir = File::Spec->catdir($tmproot, $theme_id);
     $fmgr->mkpath($tmpdir);
-    my $yaml_path = File::Spec->catfile( $tmpdir, 'theme.yaml' );
+    my $yaml_path = File::Spec->catfile($tmpdir, 'theme.yaml');
 
-    for my $hdlr ( keys %$hdlrs ) {
-        my $exporter
-            = MT->registry( theme_element_handlers => $hdlr => 'exporter' );
+    for my $hdlr (keys %$hdlrs) {
+        my $exporter = MT->registry(theme_element_handlers => $hdlr => 'exporter');
         next unless $exporter;
         my $code = $exporter->{finalize};
         next unless $code;
-        if ( !ref $code ) {
+        if (!ref $code) {
             $code = MT->handler_to_coderef($code);
         }
         my $finalize;
-        eval {
-            $finalize = $code->(
-                $app, $blog, $theme_hash, $tmpdir, $settings->{$hdlr}
-            );
-        };
+        eval { $finalize = $code->($app, $blog, $theme_hash, $tmpdir, $settings->{$hdlr}); };
         if ($@) {
             return $app->error(
                 $app->translate(
@@ -401,7 +383,7 @@ sub export {
                 500
             );
         }
-        if ( !defined $finalize ) {
+        if (!defined $finalize) {
             return $app->error(
                 $app->translate(
                     'Error occurred during finalizing [_1]: [_2]', $hdlr,
@@ -413,7 +395,7 @@ sub export {
     }
 
     require MT::Util::YAML;
-    $fmgr->put_data( MT::Util::YAML::Dump($theme_hash), $yaml_path )
+    $fmgr->put_data(MT::Util::YAML::Dump($theme_hash), $yaml_path)
         or return $app->error(
         $app->translate(
             'Error occurred while publishing theme: [_1]',
@@ -423,28 +405,24 @@ sub export {
         );
 
     my $printed;
-    if ( $output eq 'themedir' ) {
+    if ($output eq 'themedir') {
         require File::Copy::Recursive;
-        my $num = File::Copy::Recursive::dircopy( $tmpdir, $output_path );
+        my $num = File::Copy::Recursive::dircopy($tmpdir, $output_path);
         return $app->error(
             $app->translate(
                 'Themes Directory [_1] is not writable.', $theme_dir,
             ),
             403
         ) unless $num;
-    }
-    elsif ( $output =~ /^download/ ) {
+    } elsif ($output =~ /^download/) {
         my ($arctype) = $output =~ /\.(.*)$/;
-        my $arc_info = MT->registry( archivers => $arctype )
-            or return $app->error(
-            $app->translate( "Unknown archiver type: [_1]", $arctype ), 400 );
+        my $arc_info = MT->registry(archivers => $arctype)
+            or return $app->error($app->translate("Unknown archiver type: [_1]", $arctype), 400);
         require MT::Util::Archive;
-        my $arcfile = File::Temp::tempnam( $tmproot, $theme_id );
-        my $arc = MT::Util::Archive->new( $arctype, $arcfile )
+        my $arcfile = File::Temp::tempnam($tmproot, $theme_id);
+        my $arc     = MT::Util::Archive->new($arctype, $arcfile)
             or return $app->error(
-            $app->translate(
-                "Cannot load archiver : " . MT::Util::Archive->errstr
-            ),
+            $app->translate("Cannot load archiver : " . MT::Util::Archive->errstr),
             500
             );
         $arc->add_tree($tmproot);
@@ -455,12 +433,11 @@ sub export {
         open my $fh, "<", $arcfile or die "Couldn't open $arcfile: $!";
         binmode $fh;
         $app->{no_print_body} = 1;
-        $app->set_header(
-            "Content-Disposition" => "attachment; filename=$newfilename" );
-        $app->send_http_header( $arc_info->{mimetype} );
+        $app->set_header("Content-Disposition" => "attachment; filename=$newfilename");
+        $app->send_http_header($arc_info->{mimetype});
         my $data;
 
-        while ( read $fh, my ($chunk), 8192 ) {
+        while (read $fh, my ($chunk), 8192) {
             $data .= $chunk;
         }
         close $fh;
@@ -474,7 +451,7 @@ sub export {
         output        include_all
     );
     for my $param (@core_params) {
-        $settings->{core}{$param} = [ $app->multi_param($param) ];
+        $settings->{core}{$param} = [$app->multi_param($param)];
     }
     $blog->theme_export_settings($settings);
     $blog->save
