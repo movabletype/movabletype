@@ -2,11 +2,12 @@
   import { Breadcrumb } from "../../@types/breadcrumbs";
   import { portal } from "svelte-portal";
   import SVG from "../../svg/elements/SVG.svelte";
+  import { isOuterClick } from "../outerClick";
 
   export let breadcrumbs: Breadcrumb[] = [];
   export let scopeType: string = "";
   export let canAccessToSystemDashboard: boolean = false;
-  export let canCurrentWebSiteLink: boolean = false;
+  export let canCurrentWebsiteLink: boolean = false;
   export let currentWebsiteID: string = "";
   export let currentWebsiteName: string = "";
   export let blogID: string = "";
@@ -28,8 +29,16 @@
     const buttonRect = buttonRef.getBoundingClientRect();
     modalLeft = buttonRect.left + (buttonRect.width - modalRef.offsetWidth) / 2;
   }
+
+  const clickEvent = (e: MouseEvent): void => {
+    const eventTarget = e.target as Node;
+    if (open && isOuterClick([buttonRef, modalRef], eventTarget)) {
+      handleClose();
+    }
+  };
 </script>
 
+<svelte:body on:click={clickEvent} />
 <span class="mt-breadcrumb-button-wrapper">
   <button
     type="button"
@@ -95,7 +104,7 @@
           {#if scopeType === "blog"}
             <li class="breadcrumb-list-item">
               <span class="mt-icon icon-circle">&nbsp;</span>
-              {#if canCurrentWebSiteLink}
+              {#if canCurrentWebsiteLink}
                 <a
                   href="{window.ScriptURI}?__mode=dashboard&blog_id={currentWebsiteID}"
                 >

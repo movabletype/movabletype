@@ -8,7 +8,7 @@ type SearchButtonProps = {
 };
 
 export function svelteMountSearchButton(
-  target: Element,
+  target: HTMLElement,
   props: SearchButtonProps,
 ): void {
   new SearchButton({

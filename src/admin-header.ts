@@ -5,17 +5,9 @@ import { svelteMountSearchButton } from "./buttons/search-button";
 import { svelteMountSiteListButton } from "./buttons/site-list-button";
 import { svelteMountBreadcrumbsButton } from "./buttons/breadcrumbs-button";
 
-const getTarget = (selector: string): Element | null => {
-  const target = document.querySelector(selector);
-  if (!target) {
-    return null;
-  }
-  return target;
-};
-
 document.addEventListener("DOMContentLoaded", () => {
   // Sidebar toggle
-  const sidebarTarget = document.querySelector(
+  const sidebarTarget = document.querySelector<HTMLElement>(
     '[data-is="primary-navigation-toggle"]',
   );
   if (sidebarTarget !== null) {
@@ -23,19 +15,24 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // Breadcrumbs
-  const breadcrumbsTarget = getTarget('[data-is="breadcrumbs"]');
+  const breadcrumbsTarget = document.querySelector<HTMLElement>(
+    '[data-is="breadcrumbs"]',
+  );
   if (breadcrumbsTarget !== null) {
     svelteMountBreadcrumbsButton({
       target: breadcrumbsTarget,
     });
   }
 
-  const currentScript = document.querySelector(
+  const currentScript = document.querySelector<HTMLScriptElement>(
     '[data-script="admin-header"]',
-  ) as HTMLScriptElement;
+  );
+  if (currentScript === null) {
+    console.error("data-script='admin-header' is not set");
+    return;
+  }
   const blogId = currentScript.getAttribute("data-blog-id") ?? "";
   const magicToken = currentScript.getAttribute("data-magic-token") ?? "";
-  const scopeType = currentScript.getAttribute("data-scope-type") ?? "";
 
   if (magicToken === "") {
     console.error("data-magic-token is not set");
@@ -45,7 +42,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const limit = "50";
 
   // Site list button
-  const siteListButtonTarget = getTarget('[data-is="site-list-button"]');
+  const siteListButtonTarget = document.querySelector<HTMLElement>(
+    '[data-is="site-list-button"]',
+  );
   if (siteListButtonTarget !== null) {
     svelteMountSiteListButton(siteListButtonTarget, {
       magicToken: magicToken,
@@ -53,30 +52,28 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  if (scopeType === "user" || scopeType === "system") {
-    return;
-  }
-
-  if (blogId === "") {
-    console.error("data-blog-id is not set");
-    return;
-  }
-
-  const createButtonTarget = getTarget('[data-is="create-button"]');
-  const searchButtonTarget = getTarget('[data-is="search-button"]');
+  const createButtonTarget = document.querySelector<HTMLElement>(
+    '[data-is="create-button"]',
+  );
+  const searchButtonTarget = document.querySelector<HTMLElement>(
+    '[data-is="search-button"]',
+  );
 
   if (createButtonTarget !== null || searchButtonTarget !== null) {
     fetchContentTypes({
       blogId: blogId,
       magicToken: magicToken,
-      page: 1,
-      limit: Number.parseInt(limit),
     }).then((data) => {
       // Create button
       if (createButtonTarget !== null) {
         svelteMountCreateButton({
           target: createButtonTarget,
-          props: { blog_id: blogId, contentTypes: data.contentTypes },
+          props: {
+            blog_id: blogId,
+            contentTypes: data.contentTypes.filter(
+              (contentType) => contentType.can_create === 1,
+            ),
+          },
         });
       }
       // Search button
@@ -84,7 +81,9 @@ document.addEventListener("DOMContentLoaded", () => {
         svelteMountSearchButton(searchButtonTarget, {
           blogId: blogId,
           magicToken: magicToken,
-          contentTypes: data.contentTypes,
+          contentTypes: data.contentTypes.filter(
+            (contentType) => contentType.can_search === 1,
+          ),
         });
       }
     });
