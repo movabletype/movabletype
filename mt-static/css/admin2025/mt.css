@@ -12120,6 +12120,7 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper.mouseove
   height: 100%;
   position: relative;
   background-color: #F4F4F4;
+  padding-bottom: 160px;
 }
 
 .mt-primaryNavigation__sites {
@@ -12188,6 +12189,9 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper.mouseove
 .mt-primaryNavigation__item .mt-icon, .mt-primaryNavigation__item .mt-icon--inverse, .mt-primaryNavigation__item .mt-icon--danger, .mt-primaryNavigation__item .mt-icon--warning, .mt-primaryNavigation__item .mt-icon--info, .mt-primaryNavigation__item .mt-icon--success, .mt-primaryNavigation__item .mt-icon--secondary, .mt-primaryNavigation__item .mt-icon--primary {
   margin-right: 0.5rem;
   fill: #737373;
+}
+.mt-primaryNavigation__item:last-of-type .mt-primaryNavigation__child:last-of-type {
+  border-bottom: none;
 }
 
 .mt-primaryNavigation__child {
