@@ -457,8 +457,8 @@ sub do_export {
 
         if ( $fmgr->exists($output_path) ) {
             if ( $app->param('overwrite_yes') ) {
-                use File::Path 'rmtree';
-                rmtree($output_path);
+                require File::Path;
+                File::Path::rmtree($output_path);
             }
             elsif ( $app->param('overwrite_no') ) {
                 return $app->redirect(

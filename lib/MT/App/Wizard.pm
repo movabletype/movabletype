@@ -252,7 +252,7 @@ sub pre_start {
         }
     }
 
-    eval { use File::Spec; };
+    require File::Spec;
     my ($static_file_path);
     if ( !$@ ) {
         $static_file_path = File::Spec->catfile( $app->static_file_path );
@@ -1238,7 +1238,7 @@ sub is_valid_static_path {
 sub is_config_exists {
     my $app = shift;
 
-    eval { use File::Spec; };
+    require File::Spec;
     my ( $cfg, $cfg_exists, $static_file_path );
     if ( !$@ ) {
         $cfg = File::Spec->catfile( $app->{mt_dir}, 'mt-config.cgi' );
