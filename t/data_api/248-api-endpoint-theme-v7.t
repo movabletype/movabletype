@@ -9,7 +9,6 @@ use Test::Deep            qw(cmp_deeply);
 use File::Copy::Recursive qw(dircopy);
 use File::Spec;
 use MT::Test::Env;
-use MT::Util::YAML;
 our $test_env;
 BEGIN {
     $test_env = MT::Test::Env->new(
@@ -18,18 +17,22 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
+use MT::Util::YAML;
+use MT::Test::App;
 use MT::Test::DataAPI;
+use MT::App::DataAPI;
 
 $test_env->prepare_fixture('db_data');
 
-use MT::App::DataAPI;
 my $app = MT::App::DataAPI->new;
 
 # preparation.
-my $admin = MT->model('author')->load(1);
-my $site  = MT->model('site')->load(2);
+my $admin      = MT->model('author')->load(1);
+my $site       = MT->model('site')->load(2);
+my @categories = MT->model('category')->load;
+$site->category_order(join ',', map { $_->id } @categories);
+$site->save;
 
-use MT::Test::App;
 my $cms_app = MT::Test::App->new('MT::App::CMS');
 $cms_app->login($admin);
 
