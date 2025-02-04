@@ -102,7 +102,7 @@ sub install_properties {
     # Legacy MT::Object types only define 'columns'; we still support that
     # but they aren't handled properly with the upgrade system as a result.
     if ( !exists $props->{column_defs} ) {
-        map { $props->{column_defs}{$_} = () } @{ $props->{columns} };
+        $props->{column_defs}{$_} = () for @{ $props->{columns} };
     }
     $props->{columns} = [ keys %{ $props->{column_defs} } ];
 
