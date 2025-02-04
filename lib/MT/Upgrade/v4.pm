@@ -654,10 +654,10 @@ sub rename_php_plugin_filenames {
     # If PHP plugins directory doesn't exist, return without failing
     return 0 if !-d $plugin_path;
 
-    opendir( DIR, $plugin_path )
+    opendir( my $dir, $plugin_path )
         or return 0;
-    my @files = grep {/^(?:function|block)\.(.*)\.php$/} readdir(DIR);
-    closedir(DIR);
+    my @files = grep {/^(?:function|block)\.(.*)\.php$/} readdir($dir);
+    closedir($dir);
 
     return 0 unless @files;
 
