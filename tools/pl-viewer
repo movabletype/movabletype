@@ -18,9 +18,9 @@ if ( !$logs_path ) {
     exit;
 }
 
-opendir DIRH, $logs_path or die "couldn't open $logs_path: $!";
-my @dir = readdir DIRH;
-closedir DIRH;
+opendir my $DIRH, $logs_path or die "couldn't open $logs_path: $!";
+my @dir = readdir $DIRH;
+closedir $DIRH;
 
 foreach my $file (@dir) {
     next if $file eq '.' or $file eq '..';
