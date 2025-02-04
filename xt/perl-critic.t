@@ -4,7 +4,7 @@ use FindBin;
 
 use File::Find;
 use Test::More;
-use Test::Perl::Critic (-profile => "$FindBin::Bin/../.perlcriticrc", -verbose => 6 );
+use Test::Perl::Critic (-profile => "$FindBin::Bin/../.perlcriticrc", -verbose => '[%p] %f %l:%c (%s)' );
 
 my @files;
 for my $dir (qw( lib tools t xt build addons plugins )) {
