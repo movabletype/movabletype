@@ -161,6 +161,19 @@ sub load_registry {
     return $y;
 }
 
+sub load_required_meta {
+    my $c = shift;
+    my $r = $c->load_registry("config.yaml");
+    if ( !$r ) {
+        return 1;
+    }
+
+    # map key required elements into metadata
+    $c->version( $r->{version} ) if exists $r->{version};
+    $c->{registry}{name} = $r->{name} if exists $r->{name};
+    return 1;
+}
+
 sub init_registry {
     my $c = shift;
     my $r = $c->load_registry("config.yaml");
