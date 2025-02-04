@@ -455,7 +455,9 @@ sub _connect_info_pg {
         $self->_prepare_pg_database($dbh);
         $dsn =~ s/^DBI:Pg://i;
         my %opts = map { split '=', $_ } split ';', $dsn;
-        $opts{dbname} = $info{Database};
+        if ($opts{dbname}) {
+            $info{Database} = $opts{dbname};
+        }
         if ($opts{host}) {
             $info{DBHost} = $opts{host};
         }
