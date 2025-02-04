@@ -702,12 +702,13 @@ sub install_meta {
             $type =~ s/\s.*//;   # take first keyword, ignoring anything after
             $type .= '_indexed'
                 if $cols->{$col} =~ m/\bindexed\b/;
-            $type = $meta_class->normalize_type($type);
+            my $normalized = $meta_class->normalize_type($type);
 
             push @{ $params->{fields} },
                 {
-                name => $col,
-                type => $type,
+                name     => $col,
+                type     => $normalized,
+                org_type => $type,
                 };
 
             # $props->{fields}{$col} = $type;

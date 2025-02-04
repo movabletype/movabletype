@@ -117,8 +117,7 @@ __PACKAGE__->install_properties(
             'category_order'           => 'text meta',
             'folder_order'             => 'text meta',
             'publish_empty_archive'    => 'boolean meta',
-            'upload_destination' =>
-                'boolean meta',   # not really boolean but blob field is good.
+            'upload_destination'        => 'text meta',
             'extra_path'                => 'string meta',
             'allow_to_change_at_upload' => 'boolean meta',
             'operation_if_exists'       => 'integer meta',
