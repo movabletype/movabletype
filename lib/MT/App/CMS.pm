@@ -5062,41 +5062,17 @@ sub setup_editor_param {
             delete $param->{editors};
         }
     }
-
-    if ( !$param->{editors} ) {
-        my $rte;
-        if ( defined $param->{convert_breaks}
-            && $param->{convert_breaks} =~ m/richtext/ )
-        {
-            ## Rich Text editor
-            $rte = lc( $app->config('RichTextEditor') );
-        }
-        else {
-            $rte = 'archetype';
-        }
-        my $editors = $app->registry("richtext_editors");
-        my $edit_reg = $editors->{$rte} || $editors->{archetype};
-
-        my $rich_editor_tmpl;
-        if ( $rich_editor_tmpl
-            = $edit_reg->{plugin}->load_tmpl( $edit_reg->{template} ) )
-        {
-            $param->{rich_editor}      = $rte;
-            $param->{rich_editor_tmpl} = $rich_editor_tmpl;
-        }
-    }
 }
 
 sub archetype_editor_is_enabled {
     my ( $app, $param ) = @_;
 
-    if ( !( $param->{editors} || $param->{rich_editor} ) ) {
+    if ( !$param->{editors} ) {
         $param = {};
         $app->setup_editor_param($param);
     }
 
-    return !$param->{editors}
-        && lc( $app->config('RichTextEditor') ) eq 'archetype';
+    return !$param->{editors};
 }
 
 sub sanitize_tainted_param {
