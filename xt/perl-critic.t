@@ -26,5 +26,9 @@ sub _find {
     if ( $File::Find::name =~ /\.(?:cgi|pl|pm)\z/ ) {
         push @files, $File::Find::name;
     }
+    if ( $File::Find::name =~ /\b(?:build|tools)\b/ ) {
+        my $script = do { open my $fh, '<', $File::Find::name; local $/; <$fh> };
+        push @files, $File::Find::name if $script && $script =~ /^#!.*perl/m;
+    }
 }
 
