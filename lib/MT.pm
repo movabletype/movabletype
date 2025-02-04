@@ -1188,6 +1188,7 @@ __END_OF_EVAL__
 # bugid:111140
 # Shorten the time of process which uses OpenSSL when using Azure and FastCGI.
 # This hack makes the starting time of FastCGI process long.
+            ## no critic(TooMuchCode::ProhibitUnusedInclude)
             eval { require IO::Socket::SSL };
 
             eval {

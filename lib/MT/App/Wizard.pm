@@ -837,6 +837,7 @@ sub optional {
         };
     }
 
+    ## no critic(TooMuchCode::ProhibitUnusedInclude)
     $param{has_auth_modules} = eval { require Authen::SASL; require MIME::Base64; 1 } ? 1 : 0;
     $param{has_ssl_modules}  = eval { require IO::Socket::SSL; require Net::SSLeay; 1 } ? 1 : 0;
 
