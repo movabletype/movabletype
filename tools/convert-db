@@ -46,7 +46,7 @@ eval {
     MT::Object->driver($cfg->ObjectDriver)
         or die MT::ObjectDriver->errstr;
 
-    use MT::Upgrade;
+    require MT::Upgrade;
     print "Loading database schema...\n\n";
     MT::Upgrade->do_upgrade(Install => 1) or die MT::Upgrade->errstr;
 

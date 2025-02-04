@@ -40,13 +40,13 @@ GetOptions(
 );
 
 if ($usage || !$username || !$password) {
-    use Pod::Usage;
-    pod2usage(1);
+    require Pod::Usage;
+    Pod::Usage::pod2usage(1);
     exit;
 }
 
 if ($elapse) {
-    use Time::HiRes;
+    require Time::HiRes;
 }
 
 ### Creates MT object.
