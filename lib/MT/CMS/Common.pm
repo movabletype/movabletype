@@ -2475,7 +2475,7 @@ sub is_enabled_mode {
 sub is_within_base_sitepath {
     my ( $app, $s_path ) = @_;
     return unless (defined $s_path && $s_path ne '');
-    
+
     my $l_path = $app->config->BaseSitePath;
 
     # making sure that we have a '/' in the end of the paths

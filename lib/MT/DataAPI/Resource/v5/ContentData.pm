@@ -53,7 +53,7 @@ sub fields {
                         if ($user && $user->id) {
                             $chunk->{format} = $convert_breaks;
                         }
-                        $chunk->{data} = _apply_text_filters($app, $user, $chunk->{data}, $convert_breaks); 
+                        $chunk->{data} = _apply_text_filters($app, $user, $chunk->{data}, $convert_breaks);
                     }
                     push @data, $chunk;
                 }

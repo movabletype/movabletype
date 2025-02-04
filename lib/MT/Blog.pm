@@ -1776,7 +1776,7 @@ sub can_popup_image {
         type    => 'popup_image'
     );
     my $tmpl = MT->model('template')->load(\%tmpl_param);
-    
+
     if ($tmpl && $tmpl->text ne '') {
         return 1;
     }
