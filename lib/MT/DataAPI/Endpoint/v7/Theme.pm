@@ -169,22 +169,6 @@ DESCRIPTION
                             theme_author_name => { type => 'string' },
                             theme_author_link => { type => 'string' },
                             description       => { type => 'string' },
-                            include           => {
-                                type  => 'array',
-                                items => {
-                                    type => 'string',
-                                    enum => [
-                                        'default_folders',
-                                        'default_categories',
-                                        'default_category_sets',
-                                        'default_content_types',
-                                        'template_set',
-                                        'blog_static_files',
-                                    ],
-                                },
-                                example => [ 'template_set' ],
-                                description => "Options for inclusion in the export target can be set. The values defined in the enum are valid options, but they may be considered invalid if they do not meet the system's conditions.",
-                            },
                             include_all => {
                                 type => 'integer',
                                 enum => [0, 1],
