@@ -39,7 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
     return;
   }
 
-  const limit = currentScript.getAttribute("data-limit") || "50";
+  const limit = "50";
 
   // Site list button
   const siteListButtonTarget = document.querySelector<HTMLElement>(
