@@ -19,7 +19,7 @@ use MT::DataAPI::Endpoint::Common;
 use MT::DataAPI::Resource;
 
 sub _set_default_params {
-    my ( $app, $blog, $params ) = @_;
+    my ( $app, $blog ) = @_;
 
     my @save_params = qw(
         theme_name    theme_id    theme_author_name theme_author_link
@@ -43,14 +43,14 @@ sub _set_default_params {
     );
 
     for my $param (@save_params) {
-        next if defined $params->{$param};
+        next if defined $app->param($param);
         my $val
             = $saved_core_values->{$param}
             || $param_default{$param}
             || '';
         if ( $param eq 'include' ) {
             if ( ref $val ) {
-                $params->{include} = @$val;
+                $app->multi_param( 'include', @$val );
             }
             else {
                 my $hdlrs = MT->registry('theme_element_handlers');
@@ -65,11 +65,11 @@ sub _set_default_params {
 
                     push @exporter_ids, $hdlr;
                 }
-                $params->{include} = @exporter_ids;
+                $app->multi_param( 'include', @exporter_ids );
             }
         }
         else {
-            $params->{$param} = ref $val ? $val->[0] : $val;
+            $app->param( $param, ref $val ? $val->[0] : $val );
         }
     }
 }
@@ -150,7 +150,7 @@ sub export_openapi_spec {
 DESCRIPTION
         requestBody => {
             content => {
-                'application/json' => {
+                'application/x-www-form-urlencoded' => {
                     schema => {
                         type       => 'object',
                         properties => {
@@ -246,20 +246,18 @@ sub export {
         return $app->error( $app->translate('Site not found'), 404 );
     }
 
-    my $postdata = $app->param("POSTDATA");
-    my $params = $app->current_format->{unserialize}->($postdata);
-    _set_default_params( $app, $blog, $params );
+    _set_default_params( $app, $blog );
 
-    my $theme_id      = $params->{theme_id};
-    my $theme_name    = $params->{theme_name};
-    my $theme_version = $params->{theme_version};
+    my $theme_id      = $app->param('theme_id');
+    my $theme_name    = $app->param('theme_name');
+    my $theme_version = $app->param('theme_version');
 
     return if !_check_params( $app, $theme_id, $theme_name, $theme_version );
 
     my $fmgr = MT::FileMgr->new('Local');
 
     ## $output should have 'themedir' or 'zipdownload'.
-    my $output = $params->{output} || 'themedir';
+    my $output = $app->param('output') || 'themedir';
 
     ## Abort if theme directory is not okey for output.
     my ( $theme_dir, $output_path );
@@ -301,7 +299,7 @@ sub export {
         $output_path = File::Spec->catdir( $theme_dir, $theme_id );
 
         if ( $fmgr->exists($output_path) ) {
-            if ( $params->{overwrite_yes}) {
+            if ( $app->param('overwrite_yes') ) {
                 use File::Path 'rmtree';
                 rmtree($output_path);
             }
@@ -319,7 +317,7 @@ sub export {
 
     ## Pick up settings.
     my $hdlrs = MT->registry('theme_element_handlers');
-    my %includes = map { $_ => 1 } @{$params->{include}};
+    my %includes = map { $_ => 1 } $app->multi_param('include');
     my %exporter;
     my $settings = $blog->theme_export_settings || {};
     my $elements = {};
@@ -334,9 +332,9 @@ sub export {
     }
 
     ## Build data.
-    my $theme_author_name = $params->{theme_author_name};
-    my $theme_author_link = $params->{theme_author_link};
-    my $description       = $params->{description};
+    my $theme_author_name = $app->param('theme_author_name');
+    my $theme_author_link = $app->param('theme_author_link');
+    my $description       = $app->param('description');
     my $theme_hash        = {
         id    => $theme_id,
         name  => $theme_name,
@@ -351,7 +349,7 @@ sub export {
         description => $description || '',
     };
 
-    my $include_all = $params->{include_all};
+    my $include_all = $app->param('include_all');
     for my $exporter_id ( keys %$hdlrs ) {
         next if !$include_all && !$includes{$exporter_id};
         my $exporter = $exporter{$exporter_id};
@@ -490,7 +488,7 @@ sub export {
         output
     );
     for my $param (@core_params) {
-        $settings->{core}{$param} = ref $params->{$param} ? $params->{$param} : [ $params->{$param} ];
+        $settings->{core}{$param} = [ $app->multi_param($param) ];
     }
     $blog->theme_export_settings($settings);
     $blog->save
