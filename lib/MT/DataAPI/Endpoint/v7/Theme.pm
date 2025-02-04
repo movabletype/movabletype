@@ -254,6 +254,8 @@ sub export {
 
     return if !_check_params( $app, $theme_id, $theme_name, $theme_version );
 
+    $theme_id = dirify($theme_id);
+
     my $fmgr = MT::FileMgr->new('Local');
 
     ## $output should have 'themedir' or 'zipdownload'.
