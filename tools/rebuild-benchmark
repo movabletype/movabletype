@@ -178,7 +178,7 @@ sub run_rebuild {
                     $url = undef;
                 }
                 elsif ( $res->{status_error} ) {
-                    logging("\t" 
+                    logging("\t"
                           . $at
                           . " built failed. "
                           . $res->{status_error}
@@ -186,7 +186,7 @@ sub run_rebuild {
                     $url = undef;
                 }
                 else {
-                    logging("\t" 
+                    logging("\t"
                           . $at
                           . " built failed.\n"
                           . $resp->content()

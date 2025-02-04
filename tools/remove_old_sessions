@@ -79,7 +79,7 @@ sub main {
     while ( my ($count, $kind ) = $group_iter->() ) {
         # Don't remove user session records in this script
         # unless explicitly specified
-        next if !@kinds && 
+        next if !@kinds &&
              ( ( $kind eq 'US' ) || ( $kind eq 'UA' ) || ( $kind eq 'SI' ) );
         $kinds{$kind} = $count;
     }
@@ -94,8 +94,8 @@ sub main {
         print "\t$key: $val\n";
     }
     print "Proceed? [n]: ";
-    my $proceed = <STDIN>; 
-    chomp($proceed); 
+    my $proceed = <STDIN>;
+    chomp($proceed);
     exit unless $proceed =~ /^[Yy][Ee]?[Ss]?$/;
 
     $terms->{kind} = [ keys %kinds ] unless @kinds;

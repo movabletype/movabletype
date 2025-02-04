@@ -28,7 +28,7 @@ $ARGV[1] =~ s/^[(.*)]$/$1/;
 
 my ($email, $name, $nick, $ts, $token) = split '::', $ARGV[0];
 
-my $validation = MT::App::Comments::_validate_signature($mt, 
+my $validation = MT::App::Comments::_validate_signature($mt,
                                                         $ARGV[1],
                                                         email => $email,
                                                         name => $name,

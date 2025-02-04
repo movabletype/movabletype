@@ -45,7 +45,7 @@ sub main {
             : $action     ? $class->action($action, $verbose)
             : $permission ? $class->permission($permission, $verbose)
             :               $class->show_help()
-            ; 
+            ;
     print "$out\n";
 }
 
