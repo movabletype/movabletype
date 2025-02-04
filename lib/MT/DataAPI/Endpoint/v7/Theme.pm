@@ -487,7 +487,7 @@ sub export {
     my @core_params = qw(
         theme_name    theme_id    theme_author_name theme_author_link
         theme_version theme_class description       include
-        output
+        output        include_all
     );
     for my $param (@core_params) {
         $settings->{core}{$param} = [ $app->multi_param($param) ];
