@@ -3551,8 +3551,13 @@ sub ProcessMemoryCommand {
 
 sub SecretToken {
     my $cfg    = shift;
-    my @alpha  = ( 'a' .. 'z', 'A' .. 'Z', 0 .. 9 );
-    my $secret = join '', map $alpha[ rand @alpha ], 1 .. 40;
+    require MIME::Base64;
+    require Crypt::URandom;
+    my $secret = eval { MIME::Base64::encode_base64url(Crypt::URandom::urandom(30)) };
+    if (!$secret) {
+        require MT::Util::UniqueID;
+        $secret = MT::Util::UniqueID::create_sha1_id( MT::Util::UniqueID::MT_SITE_SECRET_NS() );
+    }
     $secret = $cfg->set_internal( 'SecretToken', $secret, 1 );
     $cfg->save_config();
     return $secret;
