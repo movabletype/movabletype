@@ -80,12 +80,16 @@
       </p>
       <ul class="create-button-list">
         <li>
-          <a href={`${window.CMSScriptURI}?__mode=view&_type=entry&blog_id=2`}>
+          <a
+            href={`${window.CMSScriptURI}?__mode=view&_type=entry&blog_id=${blog_id}`}
+          >
             {window.trans("New [_1] creation", window.trans("Entry"))}
           </a>
         </li>
         <li>
-          <a href={`${window.CMSScriptURI}?__mode=view&_type=page&blog_id=2`}>
+          <a
+            href={`${window.CMSScriptURI}?__mode=view&_type=page&blog_id=${blog_id}`}
+          >
             {window.trans("New [_1] creation", window.trans("Page"))}
           </a>
         </li>
