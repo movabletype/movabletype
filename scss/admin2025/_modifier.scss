@@ -443,15 +443,6 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper,
   padding: 0;
   list-style: none;
 }
-.mt-primaryNavigation__container{
-  display: flex;
-  align-items: stretch;
-  flex-direction: column;
-  width: 100%;
-  height: 100%;
-  @extend %mt-primaryNavigationAnimation;
-
-}
 .mt-primaryNavigation__body,
 .mt-primaryNavigation__content {
   white-space: nowrap;
