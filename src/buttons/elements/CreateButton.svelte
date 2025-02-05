@@ -59,8 +59,8 @@
       </button>
     </div>
     <div class="modal-body">
-      <p class="block-title">{window.trans("Content Data")}</p>
       {#if contentTypes.length > 0}
+        <p class="block-title">{window.trans("Content Data")}</p>
         <ul class="create-button-list">
           {#each contentTypes as contentType}
             <li>
@@ -72,20 +72,22 @@
             </li>
           {/each}
         </ul>
-      {:else}
-        <p>{window.trans("No Content Type could be found.")}</p>
       {/if}
       <p class="block-title">
         {`${window.trans("Entry")}・${window.trans("Page")}`}
       </p>
       <ul class="create-button-list">
         <li>
-          <a href={`${window.CMSScriptURI}?__mode=view&_type=entry&blog_id=2`}>
+          <a
+            href={`${window.CMSScriptURI}?__mode=view&_type=entry&blog_id=${blog_id}`}
+          >
             {window.trans("New [_1] creation", window.trans("Entry"))}
           </a>
         </li>
         <li>
-          <a href={`${window.CMSScriptURI}?__mode=view&_type=page&blog_id=2`}>
+          <a
+            href={`${window.CMSScriptURI}?__mode=view&_type=page&blog_id=${blog_id}`}
+          >
             {window.trans("New [_1] creation", window.trans("Page"))}
           </a>
         </li>
