@@ -468,29 +468,22 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper,
   @extend .row, .justify-content-between;
   padding: 1rem 1rem 0.5rem;
 }
-.mt-primaryNavigation__body,
-.mt-primaryNavigation__content {
+.mt-primaryNavigation__control{
   white-space: nowrap;
   overflow: visible;
   text-overflow: ellipsis;
-}
-.mt-primaryNavigation__body{
+
   border-bottom: 1px solid $gray-lightest;
   position: sticky;
-  padding: 0;
+  padding: 0 20px 0 0;
   background: $white;
   z-index: 2;
   width: var(--left-bar-width);
 
-  @extend %mt-primaryNavigationAnimation;
-}
-.mt-primaryNavigation__control{
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  width: calc(100% - 20px);
-
 
   @extend %mt-primaryNavigationAnimation;
 
