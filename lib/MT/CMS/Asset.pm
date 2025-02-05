@@ -1532,7 +1532,9 @@ sub _upload_file_compat {
             )
         ) unless -d $root_path;
         $relative_path = $app->param('extra_path')  || '';
+        $relative_path = trim_path($relative_path) if MT->config->TrimFilePath;
         $middle_path   = $app->param('middle_path') || '';
+        $middle_path = trim_path($middle_path) if MT->config->TrimFilePath;
         my $relative_path_save = $relative_path;
         if ( $middle_path ne '' ) {
             $relative_path = $middle_path
@@ -2115,6 +2117,7 @@ sub _upload_file {
 
         ## Build upload destination path
         my $dest = $app->param('destination');
+        $dest = trim_path($dest) if MT->config->TrimFilePath;
         my $root_path;
         my $is_sitepath;
         if ( $dest =~ m/^%s/i ) {
@@ -2131,6 +2134,7 @@ sub _upload_file {
 
         # Make directory if not exists
         $extra_path = $app->param('extra_path') || '';
+        $extra_path = trim_path($extra_path) if MT->config->TrimFilePath;
         if ( $dest ne '' ) {
             $extra_path = File::Spec->catdir( $dest, $extra_path );
         }

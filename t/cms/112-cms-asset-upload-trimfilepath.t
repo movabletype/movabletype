@@ -198,4 +198,87 @@ subtest '"Exists after applying path_trim with "Overwrite, do nothing"' => sub {
     ok(!$created_asset, 'Overwrite, do nothing');
 };
 
+subtest "'destination' with spaces (Testing for 'Custom')" => sub {
+    my $newest_asset = MT::Asset->load(
+        { class => '*' },
+        { sort  => [{ column => 'id', desc => 'DESC' }] },
+    );
+
+    my $test_image = $test_env->path('destination-with-spaces.jpg');
+    MT::Test::Image->write(file => $test_image);
+
+    my $app = MT::Test::App->new('CMS');
+    $app->login($admin);
+    $app->js_post_ok({
+        __test_upload => [file => $test_image],
+        __mode        => 'js_upload_file',
+        blog_id       => $blog->id,
+        destination   => '%a/ yyyy/mm / dd ',
+    });
+
+    my $created_asset = MT::Asset->load(
+        { id   => { '>' => $newest_asset->id } },
+        { sort => [{ column => 'id', desc => 'DESC' }] },
+    );
+    ok($created_asset, 'An asset is created');
+
+    my $expected_values = {
+        'file_ext'   => 'jpg',
+        'file_path'  => File::Spec->catfile(qw/ %a yyyy mm dd destination-with-spaces.jpg /),
+        'file_name'  => 'destination-with-spaces.jpg',
+        'url'        => '%a/yyyy/mm/dd/destination-with-spaces.jpg'
+    };
+    my $result_values = do {
+        return +{} unless $created_asset;
+        my $values = $created_asset->column_values();
+        +{ map { $_ => $values->{$_} } keys %$expected_values };
+    };
+    is_deeply(
+        $result_values, $expected_values,
+        "Created asset's column values"
+    );
+};
+
+subtest "'extra_path' with spaces" => sub {
+    my $newest_asset = MT::Asset->load(
+        { class => '*' },
+        { sort  => [{ column => 'id', desc => 'DESC' }] },
+    );
+
+    my $test_image = $test_env->path('extra-path-with-spaces.jpg');
+    MT::Test::Image->write(file => $test_image);
+
+    my $app = MT::Test::App->new('CMS');
+    $app->login($admin);
+    $app->js_post_ok({
+        __test_upload => [file => $test_image],
+        __mode        => 'js_upload_file',
+        blog_id       => $blog->id,
+        destination   => '%a',
+        extra_path    => ' a/b / c ',
+    });
+
+    my $created_asset = MT::Asset->load(
+        { id   => { '>' => $newest_asset->id } },
+        { sort => [{ column => 'id', desc => 'DESC' }] },
+    );
+    ok($created_asset, 'An asset is created');
+
+    my $expected_values = {
+        'file_ext'   => 'jpg',
+        'file_path'  => File::Spec->catfile(qw/ %a a b c extra-path-with-spaces.jpg /),
+        'file_name'  => 'extra-path-with-spaces.jpg',
+        'url'        => '%a/a/b/c/extra-path-with-spaces.jpg'
+    };
+    my $result_values = do {
+        return +{} unless $created_asset;
+        my $values = $created_asset->column_values();
+        +{ map { $_ => $values->{$_} } keys %$expected_values };
+    };
+    is_deeply(
+        $result_values, $expected_values,
+        "Created asset's column values"
+    );
+};
+
 done_testing();
