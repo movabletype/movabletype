@@ -163,10 +163,10 @@ li{
   &.site {
     background: $white;
     &>* {
-      border-top: 4px solid #0176BF;
+      border-top: 4px solid var(--bs-info);
     }
     .mt-header__logo {
-      border-top: 4px solid var(--bs-info);
+      border-top: 4px solid #0176BF;
     }
   }
   .mt-header__logo {
