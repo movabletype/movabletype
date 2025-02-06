@@ -2903,6 +2903,7 @@ li.nav-item {
         height: 32px;
         border: 1px solid #cbcbcb;
         border-radius: 7px;
+        background-color: $white;
         flex-grow: 1;
 
         &.disabled {
@@ -3044,6 +3045,7 @@ li.nav-item {
     height: 100%;
     border: 1px solid #cbcbcb;
     border-radius: 7px;
+    background-color: $white;
   }
   .site-name-filter {
     position: relative;
