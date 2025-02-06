@@ -15,6 +15,15 @@
     <__trans phrase="Your changes have been saved.">
   </mtapp:statusmsg>
 </mt:if>
+<mt:if name="config.disablecontentfieldpermission">
+  <mt:if name="has_content_field_permission">
+    <mtapp:statusmsg
+      id="disabled-content-field-permissions"
+      class="alert">
+      <__trans phrase="This role has content field permissions. Content field permissions are disabled now, so you cannot confirm/change them. You can change permissions for other than content field or delete roles.">
+    </mtapp:statusmsg>
+  </mt:if>
+</mt:if>
 </mt:setvarblock>
 
 
@@ -239,6 +248,7 @@ function init() {
                     </mt:loop>
                     </div>
 
+            <mt:unless name="config.disablecontentfieldpermission">
                     <hr class="manage_content_data_bottom">
                     <h4 class="ms-5"><__trans phrase="Content Field Privileges"></h4>
 
@@ -256,6 +266,7 @@ function init() {
                         </mt:loop>
                         </div>
                     </div>
+            </mt:unless>
                 </div>
           </div>
         </mtapp:setting>

@@ -4695,6 +4695,7 @@ use vars qw( @ISA %Lexicon );
 	'Privileges' => '権限',
 	'Role Details' => 'ロールの詳細',
 	'Save changes to this role (s)' => 'ロールへの変更を保存 (s)',
+	'This role has content field permissions. Content field permissions are disabled now, so you cannot confirm/change them. You can change permissions for other than content field or delete roles.' => 'このロールにはコンテンツフィールド権限が設定されています。現在コンテンツフィールド権限は無効化されているため、コンテンツフィールド権限の確認や変更をすることはできません。コンテンツフィールド権限以外の変更やロールの削除をすることは可能です。',
 	'Uncheck All' => 'チェックを外す',
 	'You have changed the privileges for this role. This will alter what it is that the users associated with this role will be able to do. If you prefer, you can save this role with a different name.  Otherwise, be aware of any changes to users with this role.' => 'このロールの権限を変更しました。これによって、このロールに関連付けられているユーザーの権限も変化します。このロールに異なる名前を付けて保存したほうがいいかもしれません。このロールに関連付けられているユーザーの権限が変更されていることに注意してください。',
 
