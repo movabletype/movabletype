@@ -129,7 +129,14 @@ sub _check_params {
 }
 
 sub export_openapi_spec {
-    +{
+    my $handlers = MT->registry('theme_element_handlers');
+    my @include_options;
+    for my $handler (sort keys %$handlers) {
+        my $exporter = MT->registry('theme_element_handlers' => $handler => 'exporter');
+        next unless $exporter;
+        push @include_options, $handler;
+    }
+    return +{
         tags        => ['Themes'],
         summary     => "Export site's theme",
         description => <<'DESCRIPTION',
@@ -161,7 +168,14 @@ DESCRIPTION
                             theme_author_name => { type => 'string' },
                             theme_author_link => { type => 'string' },
                             description       => { type => 'string' },
-                            include_all       => {
+                            include           => {
+                                type  => 'array',
+                                items => {
+                                    type => 'string',
+                                    enum => \@include_options,
+                                },
+                            },
+                            include_all => {
                                 type        => 'integer',
                                 enum        => [0, 1],
                                 description => "If '1' is specified, all options will be included in the export target.",
