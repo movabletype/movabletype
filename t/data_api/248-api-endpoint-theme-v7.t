@@ -111,6 +111,7 @@ sub suite {
                 description       => 'test for export theme',
                 theme_author_name => 'Melody',
                 theme_author_link => 'http://example.com/',
+                includes          => ['default_category_sets'],
                 overwrite_yes     => 1,
             },
             result => sub {
@@ -128,6 +129,29 @@ sub suite {
                 is($theme_yaml->{description}, 'test for export theme');
                 is($theme_yaml->{author_name}, 'Melody');
                 is($theme_yaml->{author_link}, 'http://example.com/');
+                eq_array([keys %{ $theme_yaml->{elements} }], ['default_category_sets']);
+                is(scalar(grep { $_ =~ /\/template_set\// } @outputs), 0);
+            }
+        },
+
+        # export_site_theme - include_all tests
+        {
+            path   => '/v7/sites/2/export_theme',
+            method => 'POST',
+            params => {
+                include_all   => 0,
+                overwrite_yes => 1,
+            },
+            result => sub {
+                +{ status => 'success' };
+            },
+            complete => sub {
+                my @outputs = $test_env->files("$ENV{MT_TEST_ROOT}/themes");
+                isnt(scalar @outputs, 0);
+                my $theme_yaml_path = (grep { $_ =~ /theme.yaml/ } @outputs)[0];
+                my $theme_yaml      = MT::Util::YAML::LoadFile($theme_yaml_path);
+                is(scalar(keys %{ $theme_yaml->{elements} }),          0);
+                is(scalar(grep { $_ =~ /\/template_set\// } @outputs), 0);
             }
         },
 
