@@ -1,13 +1,49 @@
 severity = 1
 only = 1
 
-[Variables::ProhibitUnusedVariables]
+# from https://metacpan.org/dist/Perl-Critic
 
-[ValuesAndExpressions::ProhibitDuplicateHashKeys]
+#TODO: [BuiltinFunctions::ProhibitVoidGrep]
+
+#TODO: [BuiltinFunctions::ProhibitVoidMap]
+
+#TODO: [ClassHierarchies::ProhibitExplicitISA]
+
+#TODO: [CodeLayout::ProhibitHardTabs]
+
+[CodeLayout::ProhibitTrailingWhitespace]
+
+[CodeLayout::RequireConsistentNewlines]
+
+#TODO: [ControlStructures::ProhibitUnreachableCode]
+
+#TODO: [InputOutput::ProhibitBacktickOperators]
+
+[InputOutput::ProhibitBarewordDirHandles]
+
+[InputOutput::ProhibitBarewordFileHandles]
 
 [InputOutput::ProhibitTwoArgOpen]
 
-[InputOutput::ProhibitBarewordFileHandles]
+#TODO: [Miscellanea::ProhibitUnrestrictedNoCritic]
+
+#TODO: [Miscellanea::ProhibitUselessNoCritic]
+
+[Modules::ProhibitConditionalUseStatements]
+
+#TODO: [Modules::RequireFilenameMatchesPackage]
+
+#TODO: [Objects::ProhibitIndirectSyntax]
+
+#TODO: [RegularExpressions::ProhibitUnusedCapture]
+
+#TODO: [Subroutines::ProhibitReturnSort]
+
+#TODO: [TestingAndDebugging::ProhibitNoStrict]
+
+#TODO: [TestingAndDebugging::ProhibitNoWarnings]
+
+#TODO: [TestingAndDebugging::ProhibitProlongedStrictureOverride]
 
 [TestingAndDebugging::RequireUseStrict]
 equivalent_modules = Modern::Perl
@@ -15,7 +51,51 @@ equivalent_modules = Modern::Perl
 [TestingAndDebugging::RequireUseWarnings]
 equivalent_modules = Modern::Perl
 
+#TODO: [ValuesAndExpressions::ProhibitCommaSeparatedStatements]
+
+#TODO: [ValuesAndExpressions::ProhibitMixedBooleanOperators]
+
+#TODO: [ValuesAndExpressions::RequireQuotedHeredocTerminator]
+
+#TODO: [ValuesAndExpressions::RequireUpperCaseHeredocTerminator]
+
+[Variables::ProhibitConditionalDeclarations]
+
+#TODO: [Variables::ProhibitMatchVars]
+
+#TODO: [Variables::ProhibitReusedNames]
+
+[Variables::ProhibitUnusedVariables]
+
+# from https://metacpan.org/dist/Perl-Critic-Pulp
+
+#TODO: [Compatibility::ProhibitUnixDevNull]
+
+#TODO: [Modules::ProhibitModuleShebang]
+
+[Modules::ProhibitUseQuotedVersion]
+
+[ValuesAndExpressions::ProhibitDuplicateHashKeys]
+
+#TODO: [ValuesAndExpressions::ProhibitEmptyCommas]
+
+#TODO: [ValuesAndExpressions::ProhibitNullStatements]
+
+# from https://metacpan.org/dist/Perl-Critic-TooMuchCode
+
+[TooMuchCode::ProhibitDuplicateSub]
+
+[TooMuchCode::ProhibitExcessiveColons]
+
+#TODO: [TooMuchCode::ProhibitLargeBlock]
+
+#TODO: [TooMuchCode::ProhibitUnnecessaryScalarKeyword]
+
+#TODO: [TooMuchCode::ProhibitUnnecessaryUTF8Pragma]
+
 [TooMuchCode::ProhibitUnusedConstant]
 
 [TooMuchCode::ProhibitUnusedImport]
 ignored_modules = MT::Test::App
+
+[TooMuchCode::ProhibitUnusedInclude]

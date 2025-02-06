@@ -982,7 +982,7 @@ sub _v7_migrate_rebuild_trigger_unserialize {
     my @event_elems = split(/_/, $event);
 
     require MT::RebuildTrigger;
-    
+
     $action =
           $action eq 'ri'  ? MT::RebuildTrigger::ACTION_RI()
         : $action eq 'rip' ? MT::RebuildTrigger::ACTION_RIP()

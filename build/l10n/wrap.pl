@@ -61,7 +61,7 @@ while (<>) {
         print $l;
     }
     if (/^[#\s]+['|q\{](.+)['|}] => ['|q\{](.*)['|}],($|\s*\#)/) { # Now also reads empty/to be translated strings
-        my $base = $1; 
+        my $base = $1;
         my $trans = $2;
         if ( !exists($conv{$base}) && !exists($pgconv{$base}) ) {
             print $_;

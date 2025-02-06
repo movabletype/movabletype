@@ -994,7 +994,6 @@ sub build_asset_hasher {
     ) = @param{qw( ThumbWidth ThumbHeight PreviewWidth PreviewHeight NoTags )};
 
     require File::Basename;
-    require JSON;
     my %blogs;
     return sub {
         my ( $obj, $row, %param ) = @_;
