@@ -2046,9 +2046,6 @@ BEGIN {
             'DeleteFilesAfterRebuild'   => { default => 0, },
             'DeleteFilesAtRebuild'      => { default => 1, },
             'RebuildAtDelete'           => { default => 1, },
-            'NewUserDefaultWebsiteId' => undef,                  ## DEPRECATED
-            'DefaultSiteURL'          => undef,                  ## DEPRECATED
-            'DefaultSiteRoot'         => undef,                  ## DEPRECATED
             'DefaultUserLanguage'     => undef,
             'DefaultUserTagDelimiter' => {
                 handler => \&DefaultUserTagDelimiter,
