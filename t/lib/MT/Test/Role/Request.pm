@@ -35,9 +35,9 @@ sub get {
 }
 
 sub get_ok {
-    my ( $self, $params ) = @_;
+    my ( $self, $params, $message ) = @_;
     my $res = $self->get($params);
-    ok !$res->is_error, "get succeeded";
+    ok !$res->is_error, $message // "get succeeded";
     my $header_title = $self->header_title();
     note $header_title if $header_title;
     $res;
@@ -51,9 +51,9 @@ sub post {
 }
 
 sub post_ok {
-    my ( $self, $params ) = @_;
+    my ( $self, $params, $message ) = @_;
     my $res = $self->post($params);
-    ok !$res->is_error, "post succeeded";
+    ok !$res->is_error, $message // "post succeeded";
     my $header_title = $self->header_title();
     note $header_title if $header_title;
     $res;
@@ -61,7 +61,7 @@ sub post_ok {
 
 sub post_form_ok {
     my $self = shift;
-    my ( $form_id, $params ) = ref $_[0] ? ( undef, @_ ) : @_;
+    my ( $form_id, $params, $message ) = ref $_[0] ? ( undef, @_ ) : @_;
     my $form = $self->form($form_id);
     ok $form, "found form" or return;
 
@@ -81,26 +81,26 @@ sub post_form_ok {
     }
 
     my $res = $self->post( $form->click );
-    ok $res->is_success, "post succeeded";
+    ok $res->is_success, $message // "post succeeded";
     $res;
 }
 
 sub js_get_ok {
-    my ( $self, $params ) = @_;
+    my ( $self, $params, $message ) = @_;
     local $ENV{HTTP_X_REQUESTED_WITH} = 'XMLHttpRequest';
-    $self->get_ok($params);
+    $self->get_ok($params, $message);
 }
 
 sub js_post_ok {
-    my ( $self, $params ) = @_;
+    my ( $self, $params, $message ) = @_;
     local $ENV{HTTP_X_REQUESTED_WITH} = 'XMLHttpRequest';
-    $self->post_ok($params);
+    $self->post_ok($params, $message);
 }
 
 sub js_post_form_ok {
-    my ( $self, $params ) = @_;
+    my ( $self, $params, $message ) = @_;
     local $ENV{HTTP_X_REQUESTED_WITH} = 'XMLHttpRequest';
-    $self->post_form_ok($params);
+    $self->post_form_ok($params, $message);
 }
 
 sub forms {
@@ -162,9 +162,10 @@ sub content_doesnt_expose {
 }
 
 sub api_request {
-    my ( $self, $method, $path, $key, $body_params ) = @_;
-    my $params = {};
-    if ( $key && $body_params ) {
+    my ( $self, $method, $path, $params, $body_params ) = @_;
+    if ( $method =~ /POST|PUT/i && $params && !ref $params && $body_params && ref $body_params ) {
+        my $key = $params;
+        $params = {};
         $params->{$key} = JSON::encode_json($body_params);
     }
     $params = _convert_params($params);
@@ -176,7 +177,8 @@ sub api_request {
 sub api_request_ok {
     my $self = shift;
     my $res = $self->api_request(@_);
-    ok $res->is_success, "request succeeded";
+    my $message = (@_ > 2 && !ref $_[-1]) ? pop @_ : undef;
+    ok $res->is_success, $message // "request succeeded";
     return JSON::decode_json($res->decoded_content);
 }
 
