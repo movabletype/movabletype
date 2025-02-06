@@ -445,6 +445,7 @@ sub core_tags {
                 \&MT::Template::Tags::App::_hdlr_app_action_bar,
             'App:Link'    => \&MT::Template::Tags::App::_hdlr_app_link,
             'App:SVGIcon' => \&MT::Template::Tags::App::_hdlr_app_svg_icon,
+            'App:EmbedJsonResponse' => \&MT::Template::Tags::App::_hdlr_app_embed_json_response,
 
             ## Site
             SiteID   => '$Core::MT::Template::Tags::Blog::_hdlr_blog_id',
@@ -4064,6 +4065,89 @@ sub _hdlr_app_svg_icon {
     my $static_uri = MT->static_path;
 
     qq{<svg role="img" class="mt-icon${color_class_suffix}${size_class}">$title_attr<use xlink:href="${static_uri}images/sprite.svg#$id"></use></svg>};
+}
+
+###########################################################################
+
+sub _hdlr_app_embed_json_response {
+    my ($ctx, $args, $cond) = @_;
+
+    require MT::Util;
+    my $mode = $args->{mode} or return MT::Util::to_json( { error => MT->translate('mode is required') } );
+
+    my $app = MT->app;
+    my $handlers = $app->handlers_for_mode($mode);
+    my $handler;
+    if (ref $handlers eq 'ARRAY') {
+        return MT::Util::to_json( { error => MT->translate('mode [_1] is ambiguous', $mode) } ) if @$handlers > 1;
+        $handler = $handlers->[0];
+    } else {
+        $handler = $handlers;
+    }
+
+    my $info = (ref $handler eq 'HASH') ? $handler : {};
+
+    # XXX: or maybe test $info->{embeddable} or something?
+    if (!$info->{app_mode} or $info->{app_mode} ne 'JSON') {
+        return MT::Util::to_json( { error => MT->translate('mode [_1] does not return JSON', $mode) } );
+    }
+
+    my $local_component;
+    $local_component = $info->{component} if $info->{component};
+    my $code = $info->{code} || $info->{handler};
+
+    my $set = $info->{permission} || $info->{permit_action};
+    if ($set) {
+        my $user  = $app->user;
+        my $perms = $app->permissions;
+        my $site  = $app->blog;
+        my $allowed;
+        if ($user) {
+            my $admin = $user->is_superuser() || ( $site && $perms && $perms->can_administer_site() );
+            if ($admin) {
+                $allowed = 1;
+            } elsif ($perms) {
+                my @actions = split /,/, $set;
+                for my $action (@actions) {
+                    if ($perms->can_do($action)) {
+                        $allowed = 1;
+                        last;
+                    }
+                }
+            }
+        }
+        return MT::Util::to_json( { error => MT->translate('Permission denied') } ) unless $allowed;
+    }
+
+    if (ref $code ne 'CODE') {
+        $code = $app->handler_to_coderef($code);
+    }
+
+    return MT::Util::to_json( { error => MT->translate('Unknown action [_1]', $mode) } ) unless $code;
+
+    my $error;
+    my $json = do {
+        no warnings 'redefine';
+        local *MT::App::json_result = sub { my $app = shift; return shift };
+        local *MT::App::json_error  = sub { my $app = shift; my ($error, $status) = @_; return {error => $error, status => $status}; };
+        local $app->{component} = $local_component if $local_component;
+        my $res = $code->($app);
+        if (ref $res) {
+            require MT::Util;
+            $res = eval { MT::Util::to_json($res) };
+            $error = $@ if $@;
+        }
+        $res;
+    };
+
+    if ($error || $app->errstr) {
+        require MT::Util::Log;
+        MT::Util::Log::init();
+        MT::Util::Log->error($error || $app->errstr);
+        return MT::Util::to_json( { error => MT->translate('Invalid response') } );
+    }
+
+    $json;
 }
 
 ###########################################################################
