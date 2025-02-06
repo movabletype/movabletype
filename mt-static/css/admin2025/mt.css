@@ -14208,6 +14208,7 @@ li.nav-item, .mt-sharedPreviewNav .mt-sharedPreviewNav__rightNav li.mt-sharedPre
   height: 32px;
   border: 1px solid #cbcbcb;
   border-radius: 7px;
+  background-color: #FFFFFF;
   flex-grow: 1;
 }
 .search-button-modal .search-form .search-content-type select.disabled {
@@ -14340,6 +14341,7 @@ li.nav-item, .mt-sharedPreviewNav .mt-sharedPreviewNav__rightNav li.mt-sharedPre
   height: 100%;
   border: 1px solid #cbcbcb;
   border-radius: 7px;
+  background-color: #FFFFFF;
 }
 .site-list-button-modal .site-name-filter {
   position: relative;
