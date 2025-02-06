@@ -24,7 +24,8 @@ jobs:
           - {image: centos7}  # Perl 5.16 / PHP 7.1 / MariaDB 5.5
         test: 
           - "t/*.t"
-          - "t/mt7/[^t]*"
+          - "t/mt7/[^td]*"
+          - "t/mt7/d*"
           - "t/mt7/t*"
           - "t/admin_theme_id/ t/app/ t/class/ t/cms/ t/model/ t/mt_object/ t/object_driver/ t/task/ t/template/ t/tools t/util t/upgrade"
           - "t/cms_permission/"
@@ -73,7 +74,8 @@ jobs:
           - {image: buster,   mt_test_env: 'MT_TEST_RUN_APP_AS_CGI=1'}   # Perl 5.28.0 / PHP 7.3 / MariaDB 10.3
         test: 
           - "t/*.t"
-          - "t/mt7/[^t]*"
+          - "t/mt7/[^td]*"
+          - "t/mt7/d*"
           - "t/mt7/t*"
           - "t/admin_theme_id/ t/app/ t/class/ t/cms/ t/model/ t/mt_object/ t/object_driver/ t/task/ t/template/ t/tools t/util t/upgrade"
           - "t/cms_permission/"
@@ -130,7 +132,8 @@ jobs:
           - {image: fedora35, mt_test_env: 'MT_TEST_FORCE_DATAAPI_VERSION=5'}   # Perl 5.34 / PHP 8.0 / MySQL 8.0
         test:
           - "t/*.t"
-          - "t/mt7/[^t]*"
+          - "t/mt7/[^td]*"
+          - "t/mt7/d*"
           - "t/mt7/t*"
           - "t/admin_theme_id/ t/app/ t/class/ t/cms/ t/model/ t/mt_object/ t/object_driver/ t/task/ t/template/ t/tools t/util t/upgrade"
           - "t/cms_permission/"

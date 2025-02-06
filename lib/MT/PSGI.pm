@@ -18,7 +18,6 @@ use FindBin;
 use CGI::PSGI;
 use CGI::Parse::PSGI;
 use Plack::Builder;
-use Plack::Request;
 use Plack::App::URLMap;
 use Plack::App::WrapCGI;
 use IPC::Open3;
