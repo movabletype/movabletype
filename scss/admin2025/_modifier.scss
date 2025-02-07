@@ -281,7 +281,7 @@ li{
   @extend %mt-primaryNavigationAnimation;
   position: fixed;
   height: 100vh;
-  z-index: 3;
+  z-index: 1101;
   background-color: $white;
 
   &.minimal {
