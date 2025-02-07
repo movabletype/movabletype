@@ -3,7 +3,6 @@
 <mt:if name="scope_type" ne="user">
 <div class="mt-primaryNavigation" data-is="primary-navigation">
   <mt:if name="scope_type" ne="system">
-  <div class="mt-primaryNavigation__body">
     <div class="mt-primaryNavigation__control">
         <div data-is="create-button"></div>
         <a href="<mt:var name="mt_url">?__mode=rebuild_confirm<mt:if name="blog_id" ne="">&blog_id=<mt:var name="blog_id"></mt:if>" class="menu_actions__button rebuild mt-rebuild">
@@ -22,7 +21,6 @@
           <__trans phrase="View Your Site">
         </a>
     </div>
-  </div>
   </mt:if>
 
   <div class="mt-primaryNavigation__content">

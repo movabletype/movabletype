@@ -11757,7 +11757,7 @@ li {
   }
 }
 
-.mt-primaryNavigation__control, .mt-primaryNavigation__control--invert, .mt-primaryNavigation__body, html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper .mt-primaryNavigation__body,
+.mt-primaryNavigation__control, .mt-primaryNavigation__control--invert, html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper .mt-primaryNavigation__body,
 html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper .mt-primaryNavigation__content,
 .mt-contentWrapper.collapsed .mt-primaryNavigation__body,
 .mt-contentWrapper.collapsed .mt-primaryNavigation__content, html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper .mt-primaryNavigation__toggle_bar,
@@ -11919,28 +11919,20 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper.mouseove
   list-style: none;
 }
 
-.mt-primaryNavigation__body,
-.mt-primaryNavigation__content {
+.mt-primaryNavigation__control, .mt-primaryNavigation__control--invert {
   white-space: nowrap;
   overflow: visible;
   text-overflow: ellipsis;
-}
-
-.mt-primaryNavigation__body {
   border-bottom: 1px solid #F4F4F4;
   position: sticky;
-  padding: 0;
+  padding: 0 20px 0 0;
   background: #FFFFFF;
   z-index: 2;
   width: var(--left-bar-width);
-}
-
-.mt-primaryNavigation__control, .mt-primaryNavigation__control--invert {
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  width: calc(100% - 20px);
 }
 .mt-primaryNavigation__control .menu_actions__button, .mt-primaryNavigation__control--invert .menu_actions__button {
   display: flex;
@@ -14177,6 +14169,7 @@ li.nav-item, .mt-sharedPreviewNav .mt-sharedPreviewNav__rightNav li.mt-sharedPre
   height: 32px;
   border: 1px solid #cbcbcb;
   border-radius: 7px;
+  background-color: #FFFFFF;
   flex-grow: 1;
 }
 .search-button-modal .search-form .search-content-type select.disabled {
@@ -14309,6 +14302,7 @@ li.nav-item, .mt-sharedPreviewNav .mt-sharedPreviewNav__rightNav li.mt-sharedPre
   height: 100%;
   border: 1px solid #cbcbcb;
   border-radius: 7px;
+  background-color: #FFFFFF;
 }
 .site-list-button-modal .site-name-filter {
   position: relative;

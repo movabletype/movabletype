@@ -443,29 +443,22 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper,
   padding: 0;
   list-style: none;
 }
-.mt-primaryNavigation__body,
-.mt-primaryNavigation__content {
+.mt-primaryNavigation__control{
   white-space: nowrap;
   overflow: visible;
   text-overflow: ellipsis;
-}
-.mt-primaryNavigation__body{
+
   border-bottom: 1px solid $gray-lightest;
   position: sticky;
-  padding: 0;
+  padding: 0 20px 0 0;
   background: $white;
   z-index: 2;
   width: var(--left-bar-width);
 
-  @extend %mt-primaryNavigationAnimation;
-}
-.mt-primaryNavigation__control{
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  width: calc(100% - 20px);
-
 
   @extend %mt-primaryNavigationAnimation;
 
@@ -2876,6 +2869,7 @@ li.nav-item {
         height: 32px;
         border: 1px solid #cbcbcb;
         border-radius: 7px;
+        background-color: $white;
         flex-grow: 1;
 
         &.disabled {
@@ -3017,6 +3011,7 @@ li.nav-item {
     height: 100%;
     border: 1px solid #cbcbcb;
     border-radius: 7px;
+    background-color: $white;
   }
   .site-name-filter {
     position: relative;
