@@ -176,8 +176,8 @@ sub api_request {
 
 sub api_request_ok {
     my $self = shift;
-    my $res = $self->api_request(@_);
     my $message = (@_ > 2 && !ref $_[-1]) ? pop @_ : undef;
+    my $res = $self->api_request(@_);
     ok $res->is_success, $message // "request succeeded";
     return JSON::decode_json($res->decoded_content);
 }
