@@ -11771,7 +11771,7 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper .mt-prim
 .mt-primaryNavigation {
   position: fixed;
   height: 100vh;
-  z-index: 1101;
+  z-index: var(--left-bar-z-index);
   background-color: #FFFFFF;
 }
 .mt-primaryNavigation.minimal {
