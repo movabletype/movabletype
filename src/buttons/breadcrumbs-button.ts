@@ -8,7 +8,7 @@ export const svelteMountBreadcrumbsButton = ({
   const {
     breadcrumbs,
     canAccessToSystemDashboard,
-    canCurrentWebsiteLink,
+    currWebsiteCanLink,
     ...rest
   } = target.dataset;
 
@@ -17,7 +17,7 @@ export const svelteMountBreadcrumbsButton = ({
     props: {
       breadcrumbs: JSON.parse(breadcrumbs ?? "[]"),
       canAccessToSystemDashboard: canAccessToSystemDashboard === "1",
-      canCurrentWebsiteLink: canCurrentWebsiteLink === "1",
+      canCurrWebsiteLink: currWebsiteCanLink === "1",
       ...rest,
     },
   });
