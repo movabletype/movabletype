@@ -7,9 +7,9 @@
   export let breadcrumbs: Breadcrumb[] = [];
   export let scopeType: string = "";
   export let canAccessToSystemDashboard: boolean = false;
-  export let canCurrentWebsiteLink: boolean = false;
-  export let currentWebsiteID: string = "";
-  export let currentWebsiteName: string = "";
+  export let canCurrWebsiteLink: boolean = false;
+  export let currWebsiteId: string = "";
+  export let currWebsiteName: string = "";
   export let blogID: string = "";
   export let blogName: string = "";
 
@@ -104,14 +104,14 @@
           {#if scopeType === "blog"}
             <li class="breadcrumb-list-item">
               <span class="mt-icon icon-circle">&nbsp;</span>
-              {#if canCurrentWebsiteLink}
+              {#if canCurrWebsiteLink}
                 <a
-                  href="{window.ScriptURI}?__mode=dashboard&blog_id={currentWebsiteID}"
+                  href="{window.ScriptURI}?__mode=dashboard&blog_id={currWebsiteId}"
                 >
-                  {currentWebsiteName}
+                  {currWebsiteName}
                 </a>
               {:else}
-                {currentWebsiteName}
+                {currWebsiteName}
               {/if}
             </li>
           {/if}
