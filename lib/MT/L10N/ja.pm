@@ -4917,7 +4917,7 @@ use vars qw( @ISA %Lexicon );
 	'Drag and drop here' => 'ファイルをドロップしてください',
 	'Operation for a file exists' => '既存ファイルの処理',
 	'Upload Options' => 'アップロードオプション',
-	'Upload Settings' => 'アップロードの設定',
+	'Change Upload Settings' => 'アップロードの設定を変更する',
 
 ## tmpl/admin2023/cms/include/author_table.tmpl
 	'Disable selected users (d)' => '選択したユーザーを無効化 (d)',
