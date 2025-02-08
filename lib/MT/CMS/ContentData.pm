@@ -554,6 +554,12 @@ sub save {
         unpublished_on_year   => [qw/MAYBE_STRING/],
     }) or return;
 
+    if ( MT->config->TrimFilePath == 2 ) {
+        my $basename = $app->param('identifier');
+        return $app->error( $app->translate('The identifier contains an inappropriate whitespace.') )
+            if $basename ne MT::Util::trim_path( $basename );
+    }
+
     my $blog  = $app->blog;
     my $cfg   = $app->config;
     my $param = {};
