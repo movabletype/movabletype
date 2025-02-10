@@ -5738,6 +5738,20 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/listing/ts_job_list_header.tmpl
 	'The job(s) has been deleted from the database.' => 'ジョブをデータベースから削除しました。',
 	q{You can't delete running job(s). (ID: [_1])} => q{実行中のジョブは削除できません(ID: [_1])},
+
+## tmpl/admin2025/cms/include/content-header.tmpl
+	'New [_1] creation' => '[_1]を新規作成',
+
+## tmpl/admin2025/cms/include/primary_navigation.tmpl
+	'View Your Site' => 'サイトを見る',
+
+## tmpl/admin2025/cms/include/system-header-actions.tmpl
+	'Select target and search text...' => '対象を選んでテキスト検索...',
+	'[_1]Site' => '[_1]サイト',
+	'All Sites' => 'すべてのサイト',
+	'Child Sites Only' => '子サイトのみ',
+	'Filter by site name' => 'サイト名で絞り込む',
 );
+
 
 1;

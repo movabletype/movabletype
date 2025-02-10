@@ -1,0 +1,67 @@
+<mtapp:widget
+   id="$status_widget_id"
+   class="status-widget d-none d-md-flex"
+   label="<__trans phrase="Status">">
+  <div class="status">
+  <mt:unless name="new_object">
+    <mt:if name="status_draft">
+    <span class="icon-left-wide icon-draft">
+      <mtapp:svgicon id="ic_draft" title="<__trans phrase="Unpublished (Draft)">" size="sm">
+      <__trans phrase="Unpublished (Draft)">
+    </span>
+    <mt:else name="status_review">
+    <span class="icon-left-wide icon-warning">
+      <mtapp:svgicon id="ic_error" title="<__trans phrase="Unpublished (Review)">" color="warning" size="sm">
+      <__trans phrase="Unpublished (Review)">
+    </span>
+    <mt:else name="status_future">
+    <span class="icon-left-wide icon-future">
+      <mtapp:svgicon id="ic_clock" title="<__trans phrase="Scheduled">" color="info" size="sm">
+      <__trans phrase="Scheduled">
+    </span>
+    <mt:else name="status_publish">
+    <span class="icon-left-wide icon-success">
+      <mtapp:svgicon id="ic_checkbox" title="<__trans phrase="Published">" color="success" size="sm">
+      <__trans phrase="Published">
+    </span>
+    <mt:else name="status_spam">
+    <span class="icon-left-wide icon-spam">
+      <mtapp:svgicon id="ic_error" title="<__trans phrase="Unpublished (Spam)">" color="warning" size="sm">
+      <__trans phrase="Unpublished (Spam)">
+    </span>
+    <mt:else name="status_unpublish">
+    <span class="icon-left-wide icon-unpublish">
+      <mtapp:svgicon id="ic_stop" title="<__trans phrase="Unpublished (End)">" color="danger" size="sm">
+      <__trans phrase="Unpublished (End)">
+    </span>
+    </mt:if>
+  </mt:unless>
+  </div>
+  <mt:if name="new_object">
+  <p class="zero-state-widget"><__trans phrase="New [_1]" params="<mt:var name="object_label" escape="html">"></p>
+  <mt:else>
+    <mt:if name="use_revision">
+  <div class="revision-info">
+      <mt:if name="rev_date">
+    <p><__trans phrase="Revision: <strong>[_1]</strong>" params="<mt:var name="rev_date" escape="html">"></p>
+    <a href="<mt:var name="script_url">?__mode=list_revision&_type=<mt:var name="object_type" escape="url">&id=<$mt:var name="id" escape="url"$>&blog_id=<$mt:var name="blog_id"$>&r=<mt:var name="rev_number" escape="html">" class="mt-open-dialog mt-modal-open" data-mt-modal-large title="<__trans phrase="View revisions of this [_1]" params="<mt:var name="object_label">">">
+      <__trans phrase="View revisions">
+    </a>
+      <mt:else>
+    <p class="zero-state-rev"><__trans phrase="No revision(s) associated with this [_1]" params="<mt:var name="object_label" lower_case="1" escape="html">"></p>
+      </mt:if>
+  </div>
+    <mt:else>
+  <ul>
+    <li><__trans phrase="[_1] - Created by [_2]" params="<$mt:date ts="$created_on_ts" relative="1" _default="$created_on_formatted" format="%b %e %Y"$>%%<$mt:var name="created_by" escape="html" escape="html"$>"></li>
+      <mt:if name="status_publish">
+    <li><__trans phrase="[_1] - Published by [_2]" params="<$MTDate ts="$authored_on_ts" relative="1" _default="$authored_on_formatted" format="%b %e %Y"$>%%<$mt:var name="authored_by" escape="html" escape="html"$>"></li>
+      </mt:if>
+      <mt:if name="modified_by">
+    <li><__trans phrase="[_1] - Edited by [_2]" params="<$MTDate ts="$modified_on_ts" relative="1" _default="$modified_on_formatted" format="%b %e %Y"$>%%<$mt:var name="modified_by" escape="html" escape="html"$>"></li>
+      </mt:if>
+  </ul>
+    </mt:if>
+  </mt:if>
+</mtapp:widget>
+

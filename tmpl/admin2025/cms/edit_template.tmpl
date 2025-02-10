@@ -1,0 +1,1319 @@
+<mt:setvar name="edit_screen" value="1">
+
+<mt:setvarblock name="page_title">
+<mt:if name="template_group" eq="widget">
+  <mt:if name="id">
+<__trans phrase="Edit Widget">
+  <mt:else>
+<__trans phrase="Create Widget">
+  </mt:if>
+<mt:else>
+  <mt:if name="id">
+<__trans phrase="Edit Template">
+  <mt:else>
+    <mt:if name="type" eq="index">
+<__trans phrase="Create Index Template">
+    <mt:elseif name="type" eq="individual">
+<__trans phrase="Create Entry Archive Template">
+    <mt:elseif name="type" eq="archive">
+<__trans phrase="Create Entry Listing Archive Template">
+    <mt:elseif name="type" eq="page">
+<__trans phrase="Create Page Archive Template">
+    <mt:elseif name="type" eq="ct">
+<__trans phrase="Create Content Type Archive Template">
+    <mt:elseif name="type" eq="ct_archive">
+<__trans phrase="Create Content Type Listing Archive Template">
+    <mt:elseif name="type" eq="custom">
+<__trans phrase="Create Template Module">
+    <mt:else>
+<__trans phrase="Create Template">
+    </mt:if>
+  </mt:if>
+</mt:if>
+</mt:setvarblock>
+
+<mt:setvarblock name="html_title"><mt:if name="id"><mt:if name="name"><mt:var name="name" escape="html"><mt:else><mt:var name="template_name"></mt:if> - <mt:if name="template_group" eq="widget"><__trans phrase="Edit Widget"><mt:else><__trans phrase="Edit Template"></mt:if><mt:else><mt:if name="template_group" eq="widget"><__trans phrase="Create Widget"><mt:else><__trans phrase="Create Template"></mt:if></mt:if></mt:setvarblock>
+
+<mt:var name="position_actions_bottom" value="1">
+<mt:setvarblock name="system_msg">
+<mt:unless name="recovered_object">
+  <mt:if name="autosaved_object_exists">
+  <mtapp:statusmsg
+     id="autosaved-object-exists"
+     class="info">
+    <mt:if name="autosaved_object_is_outdated">
+    <__trans phrase="A saved version of this [_1] was auto-saved [_3] but it is outdated.<br><a href="[_2]" class="alert-link">Recover auto-saved content</a> / <a href="[_4]" class="alert-link">Discard auto-saved content</a>" params="<mt:var name="object_label">%%<mt:var name="script_url">?__mode=view&amp;_type=template&amp;_recover=1&amp;blog_id=<mt:var name="blog_id" escape="url"><mt:if name="id">&amp;id=<mt:var name="id" escape="url"></mt:if>%%<mt:If name="blog_id"><mt:date ts="$autosaved_object_ts" relative="1" offset_blog_id="<$mt:var name="blog_id"$>"></mt:If>%%<mt:var name="script_url">?__mode=view&amp;_type=template&amp;_discard=1&amp;blog_id=<mt:var name="blog_id" escape="url"><mt:if name="id">&amp;id=<mt:var name="id" escape="url"></mt:if>">
+    <mt:else>
+    <__trans phrase="A saved version of this [_1] was auto-saved [_3]. <a href="[_2]" class="alert-link">Recover auto-saved content</a>" params="<mt:var name="object_label">%%<mt:var name="script_url">?__mode=view&amp;_type=template&amp;_recover=1&amp;blog_id=<mt:var name="blog_id" escape="url"><mt:if name="id">&amp;id=<mt:var name="id" escape="url"></mt:if>%%<mt:If name="blog_id"><mt:date ts="$autosaved_object_ts" relative="1" offset_blog_id="<$mt:var name="blog_id"$>"></mt:If>">
+    </mt:if>
+  </mtapp:statusmsg>
+  </mt:if>
+  <mt:if name="is_also_edited_by">
+    <mt:unless name="error">
+  <mtapp:statusmsg
+     id="someone-is-also-editing"
+     class="warning">
+    <__trans phrase="[_1] is also editing the same template (last updated at [_2])." params="<mt:var name="is_also_edited_by" escape="html">%%<mt:var name="is_also_edited_at" escape="html">">
+  </mtapp:statusmsg>
+    </mt:unless>
+  </mt:if>
+</mt:unless>
+<mt:if name="recovered_object">
+  <mtapp:statusmsg
+     id="recovered-object"
+     class="success">
+    <__trans phrase="You have successfully recovered your saved [_1]." params="<mt:var name="object_label">">
+  </mtapp:statusmsg>
+</mt:if>
+<mt:if name="recovered_failed">
+  <mtapp:statusmsg
+     id="recovered-failed"
+     class="error"
+     can_close="0">
+    <__trans phrase="An error occurred while trying to recover your saved [_1]." params="<mt:var name="object_label">">
+  </mtapp:statusmsg>
+</mt:if>
+<mt:if name="loaded_revision">
+  <mtapp:statusmsg
+     id="loaded_revision"
+     class="info">
+    <__trans phrase="Restored revision (Date:[_1])." params="<$mt:var name="rev_date" escape="html"$>">
+  </mtapp:statusmsg>
+</mt:if>
+<mt:if name="saved">
+  <mt:if name="error">
+  <mtapp:statusmsg
+     id="generic-error"
+     class="error"
+     can_close="0">
+    <__trans phrase="Your changes have been saved.">
+      <mt:var name="error">
+  </mtapp:statusmsg>
+  <mt:else>
+  <mtapp:statusmsg
+     id="saved"
+     class="success">
+    <__trans phrase="Your changes have been saved.">
+    <mt:unless name="build_dynamic">
+      <mt:unless name="build_type_0">
+        <mt:if name="has_rebuild">
+          <mt:if name="can_rebuild">
+          <__trans phrase="<a href="[_1]" class="rebuild-link">Publish</a> this template." params="<mt:var name="script_url">?__mode=start_rebuild&amp;ott=<mt:var name="ott" escape="url">&amp;blog_id=<mt:var name="blog_id" escape="url">&amp;next=0&amp;type=index-<mt:var name="id" escape="url">&amp;tmpl_id=<mt:var name="id" escape="url">&amp;single_template=1&amp;content_type_id=<mt:var name="content_type_id" escape="url">">
+          </mt:if>
+        </mt:if>
+      </mt:unless>
+    </mt:unless>
+  </mtapp:statusmsg>
+  </mt:if>
+<mt:else>
+  <mt:if name="error">
+  <mtapp:statusmsg
+     id="generic-error"
+     class="error"
+     can_close="0">
+    <mt:var name="error">
+  </mtapp:statusmsg>
+  </mt:if>
+</mt:if>
+<mt:if name="message">
+  <mtapp:statusmsg
+     id="message"
+     class="alert">
+    <mt:var name="message">
+  </mtapp:statusmsg>
+</mt:if>
+<mt:if name="saved_rebuild">
+  <mtapp:statusmsg
+     id="saved-rebuild"
+     class="success">
+    <__trans phrase="Your [_1] has been published." params="<mt:var name="name" escape="html" escape="html">">
+  </mtapp:statusmsg>
+</mt:if>
+</mt:setvarblock>
+
+<mt:setvarblock name="related_content">
+<mt:if name="use_revision">
+<mtapp:widget
+   id="template-status-widget"
+   class="status-widget"
+   label="<__trans phrase="Status">">
+  <mt:if name="new_object">
+    <p class="zero-state-widget"><__trans phrase="New Template"></p>
+  <mt:else>
+    <div class="revision-info">
+    <mt:if name="rev_date">
+      <p><__trans phrase="Revision: <strong>[_1]</strong>" params="<mt:var name="rev_date" escape="html">"></p>
+      <a href="<mt:var name="script_url">?__mode=list_revision&_type=<mt:var name="object_type" default="entry">&id=<$mt:var name="id" escape="html"$>&blog_id=<$mt:var name="blog_id"$>&r=<mt:var name="rev_number" escape="html">" class="mt-open-dialog mt-modal-open" data-mt-modal-large title="<__trans phrase="View revisions of this template">">
+        <__trans phrase="View revisions">
+      </a>
+    <mt:else>
+      <p class="zero-state-rev"><__trans phrase="No revision(s) associated with this template"></p>
+    </mt:if>
+    </div>
+  </mt:if>
+</mtapp:widget>
+</mt:if>
+
+<mtapp:widget
+   id="useful-links"
+   label="<__trans phrase="Useful Links">">
+  <ul class="list-unstyled">
+  <mt:if name="type" eq="backup">
+    <mt:setvarblock name="list_templates_label"><__trans phrase="List [_1] templates" params="<$mt:var name="template_group_trans"$>"></mt:setvarblock>
+    <li>
+      <a href="<mt:var name="script_url">?__mode=list_template&amp;filter_key=backup_templates&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-related d-inline-block">
+        <mtapp:svgicon id="ic_related" title="$list_templates_label" size="sm">
+        <mt:var name="list_templates_label">
+      </a>
+    </li>
+  </mt:if>
+  <mt:if name="template_group" eq="widget">
+    <li>
+      <a href="<mt:var name="script_url">?__mode=list_template&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-related d-inline-block">
+        <mtapp:svgicon id="ic_related" title="<__trans phrase="List all templates">" size="sm">
+        <__trans phrase="List all templates">
+      </a>
+    </li>
+    <mt:if name="scope_type" ne="system"><mt:if name="can_edit_config">
+    <li>
+      <a href="<mt:var name="script_url">?__mode=cfg_prefs&amp;blog_id=<mt:var name="blog_id">#module-option-settings" class="icon-left icon-related d-inline-block">
+        <mtapp:svgicon id="ic_related" title="<__trans phrase="Module Option Settings">" size="sm">
+        <__trans phrase="Module Option Settings">
+      </a>
+    </li>
+    </mt:if></mt:if>
+  <mt:elseif name="template_group" eq="module">
+    <mt:setvarblock name="template_group_label"><__trans phrase="List [_1] templates" params="<$mt:var name="template_group_trans"$>"></mt:setvarblock>
+    <li>
+      <a href="<mt:var name="script_url">?__mode=list_template&amp;blog_id=<mt:var name="blog_id">#<$mt:var name="template_group"$>" class="icon-left icon-related d-inline-block">
+        <mtapp:svgicon id="ic_related" title="$template_group_label" size="sm">
+        <mt:var name="template_group_label">
+      </a>
+    </li>
+    <li>
+      <a href="<mt:var name="script_url">?__mode=list_template&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-related d-inline-block">
+        <mtapp:svgicon id="ic_related" title="<__trans phrase="List all templates">" size="sm">
+        <__trans phrase="List all templates">
+      </a>
+    </li>
+    <mt:if name="scope_type" ne="system"><mt:if name="can_edit_config">
+    <li>
+      <a href="<mt:var name="script_url">?__mode=cfg_prefs&amp;blog_id=<mt:var name="blog_id">#module-option-settings" class="icon-left icon-related d-inline-block">
+        <mtapp:svgicon id="ic_related" title="<__trans phrase="Module Option Settings">" size="sm">
+        <__trans phrase="Module Option Settings">
+      </a>
+    </li>
+    </mt:if></mt:if>
+  <mt:else>
+    <mt:unless name="type" eq="backup">
+    <mt:setvarblock name="template_group_label"><__trans phrase="List [_1] templates" params="<$mt:var name="template_group_trans"$>"></mt:setvarblock>
+    <li>
+      <a href="<mt:var name="script_url">?__mode=list_template&amp;blog_id=<mt:var name="blog_id">#<$mt:var name="template_group"$>" class="icon-left icon-related d-inline-block">
+        <mtapp:svgicon id="ic_related" title="$template_group_label" size="sm">
+        <mt:var name="template_group_label">
+      </a>
+    </li>
+    </mt:unless>
+    <li>
+      <a href="<mt:var name="script_url">?__mode=list_template&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-related d-inline-block">
+        <mtapp:svgicon id="ic_related" title="<__trans phrase="List all templates">" size="sm">
+        <__trans phrase="List all templates">
+      </a>
+    </li>
+  </mt:if>
+  <mt:if name="published_url">
+    <li>
+      <a href="<mt:var name="published_url" escape="html" />" class="icon-left icon-related d-inline-block" target="_blank">
+        <mtapp:svgicon id="ic_related" title="<__trans phrase="View Published Template">" size="sm">
+        <__trans phrase="View Published Template">
+      </a>
+    </li>
+  </mt:if>
+  </ul>
+</mtapp:widget>
+
+<mt:if name="have_includes">
+<mtapp:widget
+   id="template-includes"
+   label="<__trans phrase="Included Templates">">
+  <ul class="list-unstyled">
+  <mt:loop name="include_loop">
+  <mt:setvarblock name="include_scope_type"><mt:if name="include_from" eq="self"><mt:if name="scope_type" eq="system">global<mt:else><mt:var name="scope_type"></mt:if><mt:else><mt:var name="include_from"></mt:if></mt:setvarblock>
+  <mt:setvarblock name="template_status_icon">
+    <mt:if name="include_scope_type" eq="global">
+      <mtapp:svgicon id="ic_template" title="<__trans phrase="Included Templates">" size="sm">
+    <mt:elseif name="include_scope_type" eq="website">
+      <mtapp:svgicon id="ic_template" title="<__trans phrase="Included Templates">" size="sm" color="success">
+    <mt:elseif name="include_scope_type" eq="blog">
+      <mtapp:svgicon id="ic_template" title="<__trans phrase="Included Templates">" size="sm" color="primary">
+    </mt:if>
+  </mt:setvarblock>
+    <li>
+  <mt:if name="include_link">
+    <mt:if name="can_link">
+      <a href="<mt:var name="include_link">" class="tmpl-label icon-left-xwide <mt:var name="include_scope_type">-tmpl">
+        <mt:var name="template_status_icon">
+        <mt:var name="include_module">
+      </a>
+    <mt:else>
+      <mt:var name="template_status_icon">
+      <span class="tmpl-label icon-left-xwide <mt:var name="include_scope_type">-tmpl"><mt:var name="include_module"></span>
+    </mt:if>
+      <mt:if name="include_from" ne="self"><span class="include-from">(<mt:var name="include_blog_name">)</span></mt:if>
+  <mt:else>
+      <mtapp:svgicon id="ic_stop" title="<__trans phrase="Error">" size="sm" color="danger">
+      <span class="tmpl-label icon-left-xwide <mt:var name="include_scope_type">-tmpl error"><mt:var name="include_module"></span><mt:unless name="include_from" eq="error"> (<a href="<mt:var name="create_link">"><__trans phrase="create"></a>)</mt:unless>
+      <mt:if name="include_from" ne="self"><span class="include-from <mt:var name="include_from">">(<mt:var name="include_blog_name">)</span></mt:if>
+  </mt:if>
+    </li>
+  </mt:loop>
+  <mt:loop name="widget_loop">
+  <mt:setvarblock name="include_scope_type"><mt:if name="include_from" eq="self"><mt:var name="scope_type"><mt:else><mt:var name="include_from"></mt:if></mt:setvarblock>
+    <li>
+  <mt:if name="include_link">
+      <a href="<mt:var name="include_link">" class="tmpl-label icon-left-xwide <mt:var name="include_scope_type">-tmpl"><mt:var name="include_module"></a>
+      <mt:if name="include_from" ne="self"><span class="include-from <mt:var name="include_from">">(<mt:var name="include_blog_name">)</span></mt:if>
+  <mt:else>
+      <span class="tmpl-label icon-left-xwide <mt:var name="include_scope_type">-tmpl error"><mt:var name="include_module"></span><mt:unless name="include_from" eq="error"> (<a href="<mt:var name="create_link">"><__trans phrase="create"></a>)</mt:unless>
+      <mt:if name="include_from" ne="self"><span class="include-from <mt:var name="include_from">">(<mt:var name="include_blog_name">)</span></mt:if>
+  </mt:if>
+    </li>
+  </mt:loop>
+  <mt:loop name="widget_set_loop">
+  <mt:setvarblock name="include_scope_type"><mt:if name="include_from" eq="self"><mt:var name="scope_type"><mt:else><mt:var name="include_from"></mt:if></mt:setvarblock>
+    <li>
+  <mt:if name="include_link">
+      <a href="<mt:var name="include_link">" class="tmpl-label icon-left-xwide <mt:var name="include_scope_type">-tmpl"><mt:var name="include_module"></a>
+      <mt:if name="include_from" ne="self"><span class="include-from <mt:var name="include_from">">(<mt:var name="include_blog_name">)</span></mt:if>
+  <mt:else>
+      <span class="tmpl-label icon-left-xwide <mt:var name="include_scope_type">-tmpl error"><mt:var name="include_module"></span><mt:unless name="include_from" eq="error"> (<a href="<mt:var name="create_link">"><__trans phrase="create"></a>)</mt:unless>
+      <mt:if name="include_from" ne="self"><span class="include-from <mt:var name="include_from">">(<mt:var name="include_blog_name">)</span></mt:if>
+  </mt:if>
+    </li>
+  </mt:loop>
+  </ul>
+</mtapp:widget>
+</mt:if>
+
+<$MTApp:PageActions from="edit_template"$>
+</mt:setvarblock>
+
+<mt:setvartemplate name="action_buttons">
+<mt:if name="new_object">
+  <button
+     type="submit"
+     accesskey="s"
+     title="<__trans phrase="Save (s)">"
+     class="btn btn-primary save action primary button">
+    <__trans phrase="Save"></button>
+<mt:else>
+  <button
+     type="submit"
+     accesskey="s"
+     title="<__trans phrase="Save Changes (s)">"
+     class="btn btn-primary save action primary button">
+    <__trans phrase="Save Changes"></button>
+</mt:if>
+<mt:if name="can_preview">
+  <button
+     name="preview_template"
+     type="submit"
+     accesskey="v"
+     title="<__trans phrase="Preview">"
+     class="btn btn-default preview action button">
+    <__trans phrase="Preview"></button>
+</mt:if>
+<mt:unless name="build_type_0">
+  <mt:if name="static_maps">
+    <mt:if name="can_rebuild">
+      <mt:if name="template_group" like="/^(archive|index|ct)$/">
+  <button
+     type="submit"
+     accesskey="r"
+     title="<__trans phrase="Save and Publish this template (r)">"
+     class="btn btn-default publish action button">
+    <__trans phrase="Save &amp; Publish"></button>
+      </mt:if>
+    </mt:if>
+  </mt:if>
+</mt:unless>
+</mt:setvartemplate>
+
+<mt:setvarblock name="html_head" append="1">
+<mt:script type="text/javascript" path="codemirror/lib/codemirror.js">
+<mt:stylesheet path="codemirror/lib/codemirror.css">
+
+<mt:script type="text/javascript" path="codemirror/mt/xml.js">
+<mt:script type="text/javascript" path="codemirror/mt/javascript.js">
+<mt:script type="text/javascript" path="codemirror/mt/css.js">
+<mt:script type="text/javascript" path="codemirror/mt/htmlmixed.js">
+<mt:stylesheet path="codemirror/mt/mt.css">
+
+<mt:script type="text/javascript" path="js/tc/client.js">
+<script type="text/javascript">
+/* <![CDATA[ */
+var tag_inserts = {};
+
+if ( !window.Editor )
+    Editor = { strings: {} };
+Editor.strings.unsavedChanges = '<__trans phrase="You have unsaved changes to this template that will be lost." escape="js">';
+
+var fieldStorage = {};
+var dirty = false;
+
+function setRebuild(f) {
+    f['rebuild'].value = 'Y';
+}
+
+function validate (f, rebuild) {
+    if (f.name && !f.name.value) {
+        alert('<__trans phrase="You must set the Template Name." escape="js">');
+        return false;
+    }
+    if (f.content_type_id && !f.content_type_id.value) {
+        alert('<__trans phrase="You must select the Content Type." escape="js">');
+        return false;
+    }
+    if (f.outfile && !f.outfile.value) {
+        alert('<__trans phrase="You must set the template Output File." escape="js">');
+        return false;
+    }
+
+    app.clearDirty();
+    var area = DOM.getElement('text');
+    var str = area.value;
+    if ( !defined( str ) ) str = '';
+    str = str.replace(/[\0-\x08\x0B\x0C\x0E-\x1F\x7F]/g, "");
+    area.value = str;
+    str = editor.getValue();
+    if ( !defined( str ) ) str = '';
+    str = str.replace(/[\0-\x08\x0B\x0C\x0E-\x1F\x7F]/g, "");
+    editor.setValue(str);
+    if (rebuild) setRebuild(f);
+    return true;
+}
+function setCreateMode () {
+    var el = getByID('map-message');
+    if (el) el.style.display = 'none';
+}
+
+function togglePreferred(checkbox, mapid) {
+    var frm = document.forms['template-listing-form'];
+    if (!frm) return false;
+    var checkboxes = frm[checkbox.name];
+    if (checkbox.length == undefined) {
+        for (var j = 0; j < frm[checkbox.id].length; ++j) {
+            if (frm[checkbox.id][j].type == 'hidden') {
+                frm[checkbox.id][j].value = checkbox.checked ? '1' : '0';
+                if (checkbox.checked) {
+                  jQuery(checkbox).parent().parent().parent().addClass("mt-archivemapping--priority");
+                  jQuery(checkbox).parent().find("span").removeClass("invisible");
+                }
+                else {
+                  jQuery(checkbox).parent().parent().parent().removeClass("mt-archivemapping--priority");
+                  jQuery(checkbox).parent().find("span").addClass("invisible");
+                }
+            }
+        }
+    } else {
+        for (var i = 0; i < checkboxes.length; ++i) {
+            if (checkboxes[i] != checkbox)
+                checkboxes[i].checked = false;
+            for (var j = 0; j < frm[checkboxes[i].id].length; ++j) {
+                if (frm[checkboxes[i].id][j].type == 'hidden') {
+                    frm[checkboxes[i].id][j].value = checkboxes[i].checked ? '1' : '0';
+                    if (checkboxes[i].checked) {
+                      jQuery(checkboxes[i]).parent().parent().parent().addClass("mt-archivemapping--priority");
+                      jQuery(checkboxes[i]).parent().find("span").removeClass("invisible");
+                    }
+                    else {
+                      jQuery(checkboxes[i]).parent().parent().parent().removeClass("mt-archivemapping--priority");
+                      jQuery(checkboxes[i]).parent().find("span").addClass("invisible");
+                    }
+                }
+            }
+        }
+    }
+}
+
+function toggleCache(id) {
+    if ("expire-time" == id) {
+        toggleDisable('cache-time-value', 0);
+        toggleDisable('cache-time-unit', 0);
+    } else {
+        toggleDisable('cache-time-value', 1);
+        toggleDisable('cache-time-unit', 1);
+    }
+    var es = DOM.getElement('cache-events').getElementsByTagName('input');
+    for (var i=0, len=es.length; i<len; i++)
+        toggleDisable( es[i].id, "expire-event" != id )
+    return false;
+}
+
+function setSyntaxHighlight(on_or_off) {
+    syncEditor();
+    var wrapper = editor.getWrapperElement();
+    if (on_or_off == 'off') {
+        jQuery('#text').show();
+        jQuery(wrapper).hide();
+    } else {
+        jQuery('#text').hide();
+        jQuery(wrapper).show();
+    }
+    return false;
+}
+
+    Template.templates.autoSave = '<mt:section encode_js="1">
+    [# if ( saving ) { #]
+        [#= trans("Auto-saving..." ) #]
+    [# } else { #]
+        [#= trans("Last auto-save at [_1]:[_2]:[_3]", hh, mm, ss ) #]
+    [# } #]
+    </mt:section>';
+/* ]]> */
+</script>
+</mt:setvarblock>
+
+<mt:setvarblock name="page_content">
+<mt:if name="dirty">
+  <script type="text/javascript">
+  /* <![CDATA[ */
+    MT.App.dirty = true;
+  /* ]]> */
+  </script>
+</mt:if>
+
+<form name="template-listing-form" id="template-listing-form" method="post" action="<mt:var name="script_url">"<mt:unless name="config.previewinnewwindow"> mt:once="1"</mt:unless> mt:auto-save="1" mt:auto-save-delay="<$mt:var name="autosave_frequency"$>000">
+  <input type="hidden" name="id" value="<mt:var name="id" escape="html">" />
+  <input type="hidden" name="blog_id" value="<mt:var name="blog_id" escape="html" default="0">" />
+  <input type="hidden" name="type" value="<mt:var name="type" escape="html">" />
+  <input type="hidden" name="__mode" value="save" />
+  <input type="hidden" name="_type" value="template" />
+  <input type="hidden" name="rebuild" value="" />
+  <input type="hidden" name="action_name" value="" />
+  <input type="hidden" name="action_input" value="" />
+<mt:if name="use_revision">
+  <input type="hidden" name="save_revision" id="save_revision" value="1" />
+  <input type="hidden" name="current_revision" id="current_revision" value="<mt:ifNonEmpty name="current_revision"><mt:var name="current_revision" escape="html"><mt:else>0</mt:IfNonEmpty>" />
+</mt:if>
+  <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
+  <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+
+  <mtapp:setting
+     id="title"
+     label="<__trans phrase="Template Name">"
+     label_for="title"
+     label_class="no-header">
+  <mt:if name="has_name">
+    <input type="text" name="name" id="title" class="form-control title text full" value="<mt:var name="name" escape="html">" placeholder="<__trans phrase="Template Name">"  maxlength="255" mt:watch-change="1" />
+  <mt:else>
+    <input type="hidden" name="name" value="<$mt:var name="name" escape="html"$>" />
+    <input type="text" name="name_display" id="title" class="form-control title text full" value="<$mt:var name="name" escape="html">" disabled="disabled" />
+  </mt:if>
+  </mtapp:setting>
+
+<mt:if name="type" like="^ct">
+  <mtapp:setting
+     id="content_type_id"
+     label="<__trans phrase="Content Type">"
+     label_for="content_type_id">
+  <mt:if name="archive_types">
+    <div>
+    <input type="text" name="content_type_name" id="content_type_name" class="form-control text full" value="<$mt:var name="content_type_name" escape="html">" disabled="disabled" />
+    <input type="hidden" name="content_type_id" id="content_type_id" value="<$mt:var name="content_type_id" escape="html"$>" />
+    </div>
+  <mt:else>
+    <select name="content_type_id" id="content_type_id" class="custom-select form-control form-select">
+  <mt:loop name="content_types">
+      <option value="<mt:var name="id" escape="html">"><mt:var name="name" escape="html"></option>
+  </mt:loop>
+    </select>
+  </mt:if>
+  </mtapp:setting>
+</mt:if>
+
+<mt:if name="type_custom">
+  <$mt:setvar name="template_name" value="<__trans phrase="Module Body">"$>
+<mt:else>
+  <$mt:setvar name="template_name" value="<__trans phrase="Template Body">"$>
+</mt:if>
+
+  <mtapp:setting
+     id="template-body"
+     label="$template_name"
+     label_for="text"
+     label_class="no-header">
+    <div class="card">
+      <div class="card-header me-0">
+        <div class="custom-control float-end me-0">
+          <span class="custom-control-description me-2"><__trans phrase="Code Highlight"></span>
+          <input type="checkbox" class="mt-switch" id="code-highlight-switch" />
+          <label for="code-highlight-switch" class="form-label"><__trans phrase="Code Highlight"></label>
+        </div>
+      </div>
+      <div id="textarea-enclosure" class="editor">
+        <textarea name="text" style="height: 550px;" id="text" class="form-control monospace text full" spellcheck="false" mt:watch-change="1" mt:editor="codemirror" mt:editor-options="lang:<mt:var name="template_lang"> autocomplete:off" ><mt:var name="text" escape="html"></textarea>
+      </div>
+    </div>
+  </mtapp:setting>
+
+<mt:if name="error">
+  <$mt:setvar name="template_options_active" value="1"$>
+<mt:else name="id">
+  <$mt:setvar name="template_options_active" value="0"$>
+<mt:else>
+  <$mt:setvar name="template_options_active" value="1"$>
+</mt:if>
+
+  <div id="template-options">
+    <div id="template-options-content" class="card-block">
+    <mt:if name="has_outfile">
+      <mtapp:setting
+         id="outfile"
+         label="<__trans phrase="Output File">"
+         label_for="outfile"
+         label_class="top-label">
+        <input type="text" name="outfile" id="outfile" class="form-control text" value="<mt:var name="outfile" escape="html">" mt:watch-change="1" />
+      </mtapp:setting>
+    </mt:if>
+    <mt:if name="type" eq="index">
+      <mtapp:setting
+         label="<__trans phrase="Template Type">"
+         label_for="identifier"
+         label_class="top-label"
+         id="identifier">
+        <select name="identifier" id="identifier" class="custom-select form-control form-select">
+          <option value="" <mt:unless name="identifier">selected="selected"</mt:unless>><__trans phrase="Custom Index Template"></option>
+        <mt:loop name="index_identifiers">
+          <option value="<mt:var name="key" escape="html">" <mt:if name="selected">selected="selected"</mt:if>><$mt:var name="label" escape="html"$> (<$mt:var name="key" escape="html"$>)</option>
+        </mt:loop>
+        </select>
+      </mtapp:setting>
+    </mt:if>
+
+      <mtapp:setting
+         id="linked_file"
+         label="<__trans phrase="Link to File">"
+         label_for="linked_file"
+         label_class="top-label">
+        <input type="text" name="linked_file" id="linked_file" class="form-control text" value="<mt:var name="linked_file" escape="html">" maxlength="255" mt:watch-change="1" />
+      </mtapp:setting>
+
+<mt:setvarblock name="publishing_hint"><__trans phrase="Learn more about <a href="https://www.movabletype.org/documentation/administrator/publishing/settings.html" target="_blank">publishing settings</a>"></mt:setvarblock>
+<mt:setvarblock name="archive_path_hint"><__trans phrase="Learn more about <a href="https://www.movabletype.org/documentation/appendices/archive-file-path-specifiers.html" target="_blank">Archive File Path Specifiers</a>"></mt:setvarblock>
+
+    <mt:if name="archive_types">
+    <mtapp:setting
+       id="archive_mapping"
+       label="<__trans phrase="Archive Mapping">"
+       label_for="new_archive_type"
+       label_class="top-label">
+      <div id="template-maps">
+        <mt:include name="include/archive_maps.tmpl">
+      </div>
+      <div id="msg-block"></div>
+      <div class="mb-3 collapse" id="create-inline-mapping">
+        <mtapp:setting
+           id="new_archive_type"
+           class="new_archive_type"
+           label="<__trans phrase="Type">"
+           label_for="new_archive_type"
+           label_class="top-label">
+        <mt:if name="type" eq="ct">
+          <div class="fw-bold">
+          <__trans phrase="CONTENTTYPE_ADV">
+          <input type="hidden" name="new_archive_type" id="new_archive_type" value="ContentType" />
+          </div>
+        <mt:else>
+        <select name="new_archive_type" id="new_archive_type" class="custom-select form-control form-select">
+        <mt:loop name="archive_types">
+          <option value="<mt:var name="archive_type" escape="html">"><mt:var name="archive_type_translated" escape="html"></option>
+        </mt:loop>
+        </select>
+        </mt:if>
+        </mtapp:setting>
+        <mt:if name="type" like="^ct">
+
+        <mtapp:setting
+           id="archive_file_sel"
+           class="archive_file_sel"
+           label="<__trans phrase="Path">"
+           label_for="archive_file_sel"
+           label_class="top-label">
+          <select name="archive_file_sel" id="archive_file_sel" class="custom-select form-control form-select">
+          </select>
+          <input type="text" id="archive_file_tmpl" name="archive_file_tmpl" class="form-control tmpl-path tmpl-path-custom last-child" value="" style="display:none;" />
+          <input type="hidden" id="custom_path" />
+        </mtapp:setting>
+
+        <mtapp:setting
+           id="cat_field_id"
+           class="cat_field_id"
+           label="<__trans phrase="Category Field">"
+           label_for="cat_field_id"
+           label_class="top-label"
+           shown="0">
+          <select name="cat_field_id" id="cat_field_id" class="custom-select form-control form-select">
+          </select>
+        </mtapp:setting>
+
+        <mtapp:setting
+           id="dt_field_id"
+           class="dt_field_id"
+           label="<__trans phrase="Date & Time Field">"
+           label_for="dt_field_id"
+           label_class="top-label"
+           shown="0">
+          <select name="dt_field_id" id="dt_field_id" class="custom-select form-control form-select">
+          </select>
+        </mtapp:setting>
+
+        <div>
+        </mt:if>
+        <span class="buttons">
+          <button class="btn btn-default" type="button" data-bs-toggle="collapse" data-bs-target="#create-inline-mapping" aria-expanded="false" aria-controls="create-inline-mapping"><__trans phrase="Cancel"></button>
+          <a href="javascript:void(0)"
+             id="add_map"
+             class="btn btn-primary button">
+            <__trans phrase="Add"></a>
+        </span>
+        <mt:if name="type" like="^ct"></div></mt:if>
+      </div>
+
+      <div class="row">
+        <div class="col">
+          <a class="btn btn-link d-inline-block" id="link-create-archive-mapping" data-bs-toggle="collapse" href="#create-inline-mapping" aria-expanded="false" aria-controls="create-inline-mapping" onclick="return setCreateMode()">
+            <mtapp:svgicon id="ic_add" title="<__trans phrase="Create Archive Mapping">" size="sm">
+            <__trans phrase="Create Archive Mapping">
+          </a>
+        </div>
+        <div class="col-auto">
+          <div class="hint">&#x25B6; <$mt:var name="publishing_hint"$></div>
+          <div class="hint">&#x25B6; <$mt:var name="archive_path_hint"$></div>
+        </div>
+      </div>
+    </mtapp:setting>
+    <mt:else>
+      <mt:if name="template_group" eq="index">
+    <mtapp:setting
+       id="build_dynamic"
+       label="<__trans phrase="Publishing">"
+       label_for="build-type"
+       label_class="top-label"
+       hint="$publishing_hint"
+       hint_id="publishingHint"
+       show_hint="1">
+      <select name="build_type" id="build-type" class="custom-select form-control fhalf-width form-select" aria-describedby="publishingHint">
+        <option value="1"<mt:if name="build_type_1"> selected="selected"</mt:if>><__trans phrase="Statically (default)"></option>
+      <mt:if name="publish_queue_available">
+        <option value="4"<mt:if name="build_type_4"> selected="selected"</mt:if>><__trans phrase="Via Publish Queue"></option>
+<mt:ignore>
+<!-- untested features -->
+  <option value="5"<mt:if name="build_type_5"> selected="selected"</mt:if>><__trans phrase="On a schedule"></option>
+  <!-- This code needs to be shown if the "On a schedule" has been selected -->
+  <__trans phrase=": every "><input name="schedule_interval" id="schedule_interval" value="<mt:var name="schedule_interval" escape="html">" maxlength="10" class="quarter-width" mt:watch-change="1" />
+    <select name="schedule_period" id="schedule_period" class="custom-select form-control form-select">
+      <option value="minutes"<mt:if name="schedule_period_minutes"> selected="selected"</mt:if>><__trans phrase="minutes"></option>
+      <option value="hours"<mt:if name="schedule_period_hours"> selected="selected"</mt:if>><__trans phrase="hours"></option>
+      <option value="days"<mt:if name="schedule_period_days"> selected="selected"</mt:if>><__trans phrase="days"></option>
+    </select>
+</mt:ignore>
+      </mt:if>
+        <option value="3"<mt:if name="build_type_3"> selected="selected"</mt:if>><__trans phrase="Dynamically"></option>
+        <option value="2"<mt:if name="build_type_2"> selected="selected"</mt:if>><__trans phrase="Manually"></option>
+        <option value="0"<mt:if name="build_type_0"> selected="selected"</mt:if>><__trans phrase="Do Not Publish"></option>
+      </select>
+    </mtapp:setting>
+      </mt:if>
+    </mt:if>
+    <mt:if name="template_group" like="(module|widget)">
+      <mt:if name="include_system">
+    <mtapp:setting
+       id="server_side_include"
+       label="<__trans phrase="Server Side Include">"
+       label_class="top-label">
+      <div class="mb-3">
+        <div class="form-check">
+          <input type="checkbox" id="server-side-include" name="include_with_ssi" class="form-check-input" value="1" onclick="toggleHidden('include_cache_path-field')"<mt:if name="include_with_ssi"> checked</mt:if> />
+          <label class="form-check-label" for="server-side-include"><__trans phrase="Process as <strong>[_1]</strong> include" params="<$mt:var name="ssi_type"$>"></label>
+        </div>
+      </div>
+    </mtapp:setting>
+  <mt:ignore>
+    <mtapp:setting
+       id="include_cache_path"
+       label="<__trans phrase="Include cache path">"
+       label_for="include-cache-path"
+       label_class="top-label"
+       shown="<mt:if name="include_with_ssi">0<mt:else>1</mt:if>">
+      <div class="textarea-wrapper">
+        <input type="text" id="include-cache-path" name="cache_path" value="<mt:var name="cache_path" escape="html">" maxlength="255" class="full-width" mt:watch-change="1" />
+      </div>
+    </mtapp:setting>
+  </mt:ignore>
+      </mt:if>
+      <mt:if name="include_cache">
+    <mtapp:setting
+       id="caching"
+       label="<__trans phrase="Module Caching">"
+       label_class="top-label">
+    <mt:if name="caching_disabled">
+      <__trans phrase="Disabled (<a href="[_1]">change publishing settings</a>)" params="<mt:var name="script_url">?__mode=cfg_prefs&amp;blog_id=<mt:var name="blog_id">">
+    <mt:else>
+      <ul id="cache-options" class="list-unstyled">
+        <li>
+          <div class="custom-control custom-radio">
+            <input type="radio" value="0" name="cache_expire_type" id="no-cache" class="form-check-input" onclick="toggleCache('cache-none');"<mt:if name="cache_expire_type" eq="0"> checked="checked"</mt:if>>
+            <label class="form-check-label" for="no-cache"><__trans phrase="No caching"></label>
+          </div>
+        </li>
+        <li>
+          <div class="row align-items-center">
+            <div class="col-auto">
+              <div class="custom-control custom-radio">
+                <input type="radio" value="1" name="cache_expire_type" id="expire-time" class="form-check-input" onclick="toggleCache('expire-time');"<mt:if name="cache_expire_type" eq="1"> checked="checked"</mt:if>>
+                <label class="form-check-label" for="expire-time"><__trans phrase="Expire after"></label>
+              </div>
+            </div>
+            <div class="col-3 ps-0">
+              <input type="text" id="cache-time-value" class="text num form-control" name="cache_expire_interval" value="<$mt:var name="cache_expire_interval" escape="html">" maxlength="3" <mt:unless name="cache_expire_type" eq="1"> disabled="disabled"</mt:unless> />
+            </div>
+            <div class="col-3 ps-0">
+              <select id="cache-time-unit" class="custom-select form-control form-select" name="cache_expire_period"<mt:unless name="cache_expire_type" eq="1"> disabled="disabled"</mt:unless>>
+                <option value="minutes"<mt:if name="cache_expire_period" eq="minutes"> selected="selected"</mt:if>><__trans phrase="minutes"></option>
+                <option value="hours"<mt:if name="cache_expire_period" eq="hours"> selected="selected"</mt:if>><__trans phrase="hours"></option>
+                <option value="days"<mt:if name="cache_expire_period" eq="days"> selected="selected"</mt:if>><__trans phrase="days"></option>
+              </select>
+            </div>
+            <div class="col"></div>
+            <div class="col"></div>
+          </div>
+        </li>
+        <li>
+          <div class="custom-control custom-radio">
+            <input type="radio" value="2" name="cache_expire_type" id="expire-event" class="form-check-input" onclick="toggleCache('expire-event');"<mt:if name="cache_expire_type" eq="2"> checked="checked"</mt:if>>
+            <label class="form-check-label" for="expire-event"><__trans phrase="Expire upon creation or modification of:"></label>
+          </div>
+          <div id="cache-events" class="mb-3">
+            <div class="form-check form-check-inline">
+              <div class="form-check">
+                <input type="checkbox" value="entry" name="cache_expire_event" id="cache-event-entry" class="form-check-input" onclick=""<mt:if name="cache_expire_event_entry"> checked="checked"</mt:if><mt:unless name="cache_expire_type" eq="2"> disabled="disabled"</mt:unless>>
+                <label class="form-check-label" for="cache-event-entry"><__trans phrase="Entry"></label>
+              </div>
+            </div>
+            <mt:if name="enabled_plugins{Comments}">
+            <div class="form-check form-check-inline">
+              <div class="form-check">
+                <input type="checkbox" value="comment" name="cache_expire_event" id="cache-event-comment" class="form-check-input" onclick=""<mt:if name="cache_expire_event_comment"> checked="checked"</mt:if><mt:unless name="cache_expire_type" eq="2"> disabled="disabled"</mt:unless>>
+                <label class="form-check-label" for="cache-event-comment"><__trans phrase="Comment"></label>
+              </div>
+            </div>
+            </mt:if>
+            <mt:if name="enabled_plugins{Trackback}">
+            <div class="form-check form-check-inline">
+              <div class="form-check">
+                <input type="checkbox" value="tbping" name="cache_expire_event" id="cache-event-trackback" class="form-check-input" onclick=""<mt:if name="cache_expire_event_tbping"> checked="checked"</mt:if><mt:unless name="cache_expire_type" eq="2"> disabled="disabled"</mt:unless>>
+                <label class="form-check-label" for="cache-event-trackback"><__trans phrase="TrackBack"></label>
+              </div>
+            </div>
+            </mt:if>
+            <div class="form-check form-check-inline">
+              <div class="form-check">
+                <input type="checkbox" value="page" name="cache_expire_event" id="cache-event-page" class="form-check-input" onclick=""<mt:if name="cache_expire_event_page"> checked="checked"</mt:if><mt:unless name="cache_expire_type" eq="2"> disabled="disabled"</mt:unless>>
+                <label class="form-check-label" for="cache-event-page"><__trans phrase="Page"></label>
+              </div>
+            </div>
+            <div class="form-check form-check-inline">
+              <div class="form-check">
+                <input type="checkbox" value="author" name="cache_expire_event" id="cache-event-author" class="form-check-input" onclick=""<mt:if name="cache_expire_event_author"> checked="checked"</mt:if><mt:unless name="cache_expire_type" eq="2"> disabled="disabled"</mt:unless>>
+                <label class="form-check-label" for="cache-event-author"><__trans phrase="User"></label>
+              </div>
+            </div>
+            <div class="form-check form-check-inline">
+              <div class="form-check">
+                <input type="checkbox" value="category" name="cache_expire_event" id="cache-event-category" class="form-check-input" onclick=""<mt:if name="cache_expire_event_category"> checked="checked"</mt:if><mt:unless name="cache_expire_type" eq="2"> disabled="disabled"</mt:unless>>
+                <label class="form-check-label" for="cache-event-category"><__trans phrase="Category"></label>
+              </div>
+            </div>
+            <div class="form-check form-check-inline">
+              <div class="form-check">
+                <input type="checkbox" value="folder" name="cache_expire_event" id="cache-event-folder" class="form-check-input" onclick=""<mt:if name="cache_expire_event_folder"> checked="checked"</mt:if><mt:unless name="cache_expire_type" eq="2"> disabled="disabled"</mt:unless>>
+                <label class="form-check-label" for="cache-event-folder"><__trans phrase="Folder"></label>
+              </div>
+            </div>
+            <div class="form-check form-check-inline">
+              <div class="form-check">
+                <input type="checkbox" value="asset" name="cache_expire_event" id="cache-event-asset" class="form-check-input" onclick=""<mt:if name="cache_expire_event_asset"> checked="checked"</mt:if><mt:unless name="cache_expire_type" eq="2"> disabled="disabled"</mt:unless>>
+                <label class="form-check-label" for="cache-event-asset"><__trans phrase="Asset"></label>
+              </div>
+            </div>
+      <mt:loop name="cache_expire_event_ct_loop">
+            <div class="form-check form-check-inline">
+              <div class="form-check">
+                <input type="checkbox" value="<mt:var name="type" escape="html">" name="cache_expire_event" id="cache-event-<mt:var name="type" escape="html">" class="form-check-input"<mt:if name="enabled"> checked="checked"</mt:if><mt:unless name="cache_expire_type" eq="2"> disabled="disabled"</mt:unless>>
+                <label class="form-check-label" for="cache-event-<mt:var name="type" escape="html">"><mt:var name="label" escape="html"></Label>
+              </div>
+            </div>
+      </mt:loop>
+          </div>
+        </li>
+      </ul>
+    </mt:if>
+    </mtapp:setting>
+      </mt:if>
+    </mt:if>
+    </div>
+  </div>
+
+<mt:if name="use_revision">
+  <mtapp:setting
+     id="revision-note"
+     label="<__trans phrase="Change note">"
+     label_for="revision-note"
+     label_class="top-label">
+    <input type="text" name="revision-note" id="revision-note" class="form-control text full" value="<mt:var name="revision-note" escape="html">"<mt:if name="save_revision" eq="0"> style="display:none"</mt:if> />
+  </mtapp:setting>
+</mt:if>
+
+  <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" pull_right_action="1">
+
+  <div id="autosave-notification-<$mt:var name="bar_position" escape="html" default="top"$>" class="autosave-notification"></div>
+</form>
+
+<form name="archive_map_form" method="post" action="<mt:var name="script_url">">
+  <input type="hidden" name="__mode" value="" />
+  <input type="hidden" name="_type" value="<mt:var name="object_type">" />
+  <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
+  <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+</form>
+
+<script type="text/javascript">
+/* <![CDATA[ */
+App.singletonConstructor =
+MT.App = new Class( MT.App, {
+
+    initComponents: function() {
+        arguments.callee.applySuper( this, arguments );
+    },
+
+    autoSave: function() {
+        arguments.callee.applySuper( this, arguments );
+    }
+
+} );
+
+var options = jQuery('#text').attr('mt:editor-options');
+var editor_params = {
+    lineNumbers: true,
+    lineWrapping: false,
+    tabMode: "default",
+    indentUnit: 0,
+    pollForIME: true,
+    mode: "text/html",
+    viewportMargin: Infinity
+};
+if (options.match('lang:css')) {
+    editor_params['mode'] = 'text/css';
+} else if (options.match('lang:javascript')) {
+    editor_params['mode'] = 'text/javascript';
+}
+
+var editor = CodeMirror.fromTextArea(jQuery('#text').get(0), editor_params);
+
+function syncEditor() {
+    var wrapper = editor.getWrapperElement();
+    if ( jQuery(wrapper).css('display') == 'none') {
+        editor.setValue(jQuery('#text').val());
+    } else {
+        jQuery('#text').val(editor.getValue());
+    }
+}
+
+function saveTemplatePrefs( sync ) {
+  jQuery.ajax({
+    type: 'POST',
+    contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+    url: '<mt:var name="script_url">',
+    dataType: 'json',
+    data: {
+      __mode: 'save_template_prefs',
+      blog_id: <mt:if name="blog_id"><mt:var name="blog_id"><mt:else>0</mt:if>,
+      syntax_highlight: sync,
+      magic_token: '<mt:var name="magic_token">'
+    }
+  });
+}
+
+/* ]]> */
+</script>
+</mt:setvarblock>
+
+<mt:setvarblock name="jq_js_include" append="1">
+    jQuery('button.save, button.publish').on('click', function() {
+        syncEditor();
+        jQuery('form#template-listing-form > input[name=__mode]').val('save');
+  <mt:if name="config.previewinnewwindow">
+        jQuery('form#template-listing-form').removeAttr('target');
+  </mt:if>
+        jQuery('button.save').attr('disabled', 'disabled');
+        jQuery('button.publish').attr('disabled', 'disabled');
+        var rebuild = 0;
+        if(jQuery(this).hasClass('publish')){
+          rebuild = 1;
+        }
+        if(validate(this.form, rebuild)){
+          jQuery('form#template-listing-form').trigger('submit');
+          return true;
+        }
+        jQuery('button.save').prop('disabled', false);
+        jQuery('button.publish').prop('disabled', false);
+        return false;
+    });
+    jQuery('button.preview').on('click', function() {
+        syncEditor();
+        jQuery('form#template-listing-form > input[name=__mode]').val('preview_template');
+  <mt:if name="config.previewinnewwindow">
+        jQuery('form#template-listing-form').attr('target', 'mt_preview_template_<mt:var name="blog_id" escape="js" default="0">_<mt:var name="id" escape="js" default="0">');
+  </mt:if>
+        if(validate(this.form)){
+          jQuery('form#template-listing-form').trigger('submit');
+          return true;
+        }
+        return false;
+    });
+    jQuery('input#save_revision').on('click', function() {
+        jQuery('input#revision-note').toggle();
+    });
+    jQuery('button.mt-template-listing-form-action').mtDoPluginAction({
+        plural: 'Templates',
+        phrase: 'to act upon'
+    });
+    jQuery('#code-highlight-switch').on('change', function() {
+        var syntax = this.checked ? 'on' : 'off';
+        setSyntaxHighlight( syntax );
+        saveTemplatePrefs( syntax );
+        return false;
+    });
+    jQuery('#syntaxon, #syntaxoff').on('click', function() {
+        syncEditor();
+        var wrapper = editor.getWrapperElement();
+        jQuery('#syntaxon, #syntaxoff').removeClass('active');
+        var id = jQuery(this).addClass('active').attr('id');
+        var syntax;
+        if (id == 'syntaxon') {
+            jQuery('#text').hide();
+            jQuery(wrapper).show();
+            syntax = 'on';
+        } else {
+            jQuery('#text').show();
+            jQuery(wrapper).hide();
+            syntax = 'off';
+        }
+        saveTemplatePrefs( syntax );
+        return false;
+    });
+<mt:if name="disp_prefs_syntax" ne="off">
+    jQuery('#code-highlight-switch').prop('checked', 'checked');
+<mt:else>
+    setSyntaxHighlight('off');
+</mt:if>
+    jQuery(window).on('pre_autosave', function(){
+        syncEditor();
+    });
+    function saveArchiveMapChange(param) {
+        showMsg('<__trans phrase="Processing request..." escape="js">', 'map-message', 'success')
+
+        // TBD: we need to get the blog id from the selector control
+        // itself
+        var params = { uri: '<mt:var name="script_url">', method: 'POST', arguments: param, load: savedArchiveMapChange };
+        TC.Client.call(params);
+    }
+    function savedArchiveMapChange(c) {
+        var res = c.responseText;
+        if (res == '')
+            message = '<__trans phrase="Error occurred while updating archive maps." escape="js">';
+        else
+            message = '<__trans phrase="Archive map has been successfully updated." escape="js">';
+        showMsg(message, 'map-message', 'success');
+        var map = getByID('template-maps');
+        if (map)
+            map.innerHTML = res;
+        jQuery("[id^=toggle_edit_mapping_]").on('click', function(){
+          toggleEditMapping(jQuery(this).attr('id').match(/\d+/));
+        });
+        jQuery("[id^=delete_map_]").on('click', function(){
+          deleteMap(jQuery(this).attr('id').match(/\d+/));
+        });
+        jQuery("[id^=archive_file_sel]").on('change', function(){
+          selectArchiveFile(this);
+        });
+        jQuery("[id^=archive_file_label_]").each(function(){
+          setArchiveFileLabel(jQuery(this).attr('id').match(/\d+/));
+        });
+    }
+    function toggleEditMapping(mapid) {
+      var link = jQuery("#toggle_edit_mapping_" + mapid);
+      if (link.attr('aria-expanded') == 'false') {
+        jQuery("#archive_file_sel_" + mapid).css("display", "none");
+        jQuery("#archive_file_tmpl_" + mapid).css("display", "none");
+        var label = jQuery("#archive_file_sel_" + mapid).val() ? jQuery("#archive_file_sel_" + mapid + " option:selected").text() : jQuery("#archive_file_tmpl_" + mapid).val();
+        jQuery("#archive_file_label_" + mapid).val(label).css("display", "block");
+      }
+      else {
+        jQuery("#archive_file_label_" + mapid).css("display", "none");
+        jQuery("#archive_file_sel_" + mapid).css("display", "block");
+        if (!jQuery("#archive_file_sel_" + mapid).val()) {
+          jQuery("#archive_file_tmpl_" + mapid).css("display", "block");
+        }
+      }
+    }
+    function deleteMap(mapid) {
+        if (!confirm('<__trans phrase="Are you sure you want to remove this template map?" escape="js">'))
+            return;
+        var tr = getByID(mapid);
+        if (tr) {
+            var tbody = tr.parentNode;
+            if (tbody)
+                tbody.deleteRow(tr.rowIndex - 1); // thead has a row - subtract it
+        }
+        var frm = document.forms['archive_map_form'];
+        if (!frm) return false;
+        var param = '__mode=delete_map'
+            + '&blog_id=' + frm['blog_id'].value
+            + '&template_id=<mt:var name="id" escape="url">'
+            + '&id=' + mapid
+            + '&magic_token=<mt:var name="magic_token" escape="url">';
+        saveArchiveMapChange(param);
+    }
+    function addMap() {
+        var block = getByID('create-inline-mapping');
+        block.classList.remove('show');
+        var link = getByID('link-create-archive-mapping');
+        link.classList.add('collapsed');
+        //getByID('create-inline-mapping').style.display = 'none';
+        var f = document.forms['template-listing-form'];
+        var frm = document.forms['archive_map_form'];
+        if (!frm) return false;
+        var param = '__mode=add_map'
+            + '&blog_id=' + frm['blog_id'].value
+            + '&template_id=<mt:var name="id" escape="url">'
+            + '&new_archive_type=' + f['new_archive_type'].value
+            <mt:if name="type" like="^ct">
+            + '&content_type_id=' + f['content_type_id'].value
+            + '&file_template=' + encodeURIComponent( f['archive_file_tmpl'].value )
+            + '&cat_field_id=' + f['cat_field_id'].value
+            + '&dt_field_id=' + f['dt_field_id'].value
+            </mt:if>
+            + '&magic_token=<mt:var name="magic_token" escape="url">';
+        saveArchiveMapChange(param);
+    }
+    function selectArchiveFile(sel) {
+      var archive_file_sel = jQuery(sel).val();
+      var archiveFileTempl;
+      var customPath;
+      if ( !jQuery(sel).attr('id') || jQuery(sel).attr('id') === 'archive_file_sel' ) {
+        archiveFileTempl = jQuery("#archive_file_tmpl");
+        customPath       = jQuery("#custom_path");
+      }
+      else {
+        var map_id        = jQuery(sel).attr('id').match(/\d+/);
+        archiveFileTempl = jQuery("#archive_file_tmpl_" + map_id);
+        customPath       = jQuery("#custom_path_" + map_id);
+      }
+      var custom_path_val = customPath.val();
+      if (!archive_file_sel) {
+        if (custom_path_val) {
+          archiveFileTempl.val(customPath.val());
+        }
+        else {
+          customPath.val(archiveFileTempl.val());
+        }
+        archiveFileTempl.css("display", "block");
+      }
+      else {
+        if (custom_path_val) {
+          customPath.val(archiveFileTempl.val());
+        }
+        archiveFileTempl.css("display", "none");
+        archiveFileTempl.val(archive_file_sel);
+      }
+      <mt:if name="type" like="^ct">
+      getContentFields(sel);
+      </mt:if>
+    }
+    function setArchiveFileLabel(mapid) {
+      var label = jQuery("#archive_file_sel_" + mapid).val() ? jQuery("#archive_file_sel_" + mapid + " option:selected").text() : jQuery("#archive_file_tmpl_" + mapid).val();
+      jQuery("#archive_file_label_" + mapid).val(label);
+    }
+    jQuery("[id^=toggle_edit_mapping_]").on('click', function(){
+      toggleEditMapping(jQuery(this).attr('id').match(/\d+/));
+    });
+    jQuery("[id^=delete_map_]").on('click', function(){
+      deleteMap(jQuery(this).attr('id').match(/\d+/));
+    });
+    jQuery("[id^=archive_file_sel]").on('change', function(){
+      selectArchiveFile(this);
+    });
+    jQuery("#add_map").on('click', function(){
+      addMap();
+    });
+    jQuery("[id^=archive_file_label_]").each(function(){
+      setArchiveFileLabel(jQuery(this).attr('id').match(/\d+/));
+    });
+
+    <mt:if name="blog_id">
+    <mt:if name="ct_selects">
+    function setContentTypeInfo() {
+      var ct_data = JSON.parse(decodeURIComponent("<mt:var name="ct_data" escape="js">"));
+      var id = jQuery("#content_type_sel").val();
+      jQuery("#ct_label").text(ct_data[id].label);
+      jQuery("#ct_id").text(ct_data[id].id);
+      jQuery("#ct_unique_id").val(ct_data[id].unique_id);
+      setContentFieldSelect(id);
+    }
+
+    function setContentFieldSelect(id) {
+      var cf_selects = JSON.parse(decodeURIComponent("<mt:var name="cf_selects" escape="js">"));
+      jQuery("#content_field_sel").empty();
+      if (cf_selects && cf_selects[id]) {
+        jQuery.each( cf_selects[id], function( index, cf_select ) {
+          var option = jQuery("<option/>").attr("value", cf_select.id).text(cf_select.label);
+          jQuery("#content_field_sel").append(option);
+        });
+      }
+      setContentFieldInfo();
+    }
+
+    function setContentFieldInfo() {
+      var cf_data = JSON.parse(decodeURIComponent("<mt:var name="cf_data" escape="js">"));
+      var id = jQuery("#content_field_sel").val();
+      if (cf_data && cf_data[id]) {
+        jQuery("#cf_label").text(cf_data[id].label);
+        jQuery("#cf_id").text(cf_data[id].id);
+        jQuery("#cf_unique_id").val(cf_data[id].unique_id);
+        jQuery("#cf_type").text(cf_data[id].type);
+      } else {
+        jQuery("#cf_label").text('');
+        jQuery("#cf_id").text('');
+        jQuery("#cf_unique_id").val('');
+        jQuery("#cf_type").text('');
+      }
+    }
+
+    jQuery("#content_type_id").on('change', function(){
+      setContentTypeInfo();
+    });
+    jQuery("#content_type_sel").on('change', function(){
+      setContentTypeInfo();
+    });
+    jQuery("#content_field_sel").on('change', function(){
+      setContentFieldInfo();
+    });
+    jQuery("#copy_ct_unique_id").on('click', function(){
+      jQuery('#ct_unique_id').trigger('select');
+      document.execCommand('copy');
+    });
+    jQuery("#copy_cf_unique_id").on('click', function(){
+      jQuery('#cf_unique_id').trigger('select');
+      document.execCommand('copy');
+    });
+
+    setContentTypeInfo();
+    </mt:if>
+    </mt:if>
+
+    <mt:if name="archive_types">
+    jQuery("#new_archive_type").on('change', function(){
+      jQuery("#archive_file_sel").css("display", "block");
+      jQuery("#archive_file_tmpl").css("display", "none");
+      getDefaultArchiveTemplates();
+      selectArchiveFile(jQuery("#archive_file_sel"));
+    });
+
+    function getDefaultArchiveTemplates() {
+      var tmpls = <mt:var name="default_archive_templates">;
+      var archive_type = jQuery("#new_archive_type").val();
+      var archive_tmpls = tmpls[archive_type];
+      jQuery("#archive_file_sel").empty();
+      jQuery.each( archive_tmpls, function( index, tmpl) {
+        var option = jQuery("<option/>").attr("value", tmpl.value).text(tmpl.name);
+        if (tmpl.default) {
+          option.prop("selected", "selected");
+        }
+        jQuery("#archive_file_sel").append(option);
+      });
+      jQuery("#archive_file_sel").append(
+        jQuery("<option/>").attr( "value", "" ).text("<__trans phrase="Custom...">")
+      );
+    }
+
+    function getContentFields(sel) {
+      var required_fields = <mt:var name="required_fields">;
+      var content_fields  = <mt:var name="content_fields">;
+      var archive_type;
+      var cat_field_id_sel;
+      var dt_field_id_sel;
+      if ( !jQuery(sel).attr('id') || jQuery(sel).attr('id') === 'archive_file_sel' ) {
+        archive_type      = jQuery("#new_archive_type").val();
+        cat_field_id_sel  = 'cat_field_id';
+        dt_field_id_sel   = 'dt_field_id';
+      }
+      else {
+        var map_id        = jQuery(sel).attr('id').match(/\d+/);
+        archive_type      = jQuery("#archive_type_" + map_id).val();
+        cat_field_id_sel  = 'cat_field_id_' + map_id;
+        dt_field_id_sel   = 'dt_field_id_' + map_id;
+      }
+      var content_type_id  = jQuery("#content_type_id").val();
+      var archive_file_sel = jQuery(sel).val();
+      var cat_field = 0;
+      var dt_field = 0;
+      if (!archive_file_sel) {
+        cat_field = 1;
+        dt_field  = 1;
+      }
+      else {
+        var rf = required_fields[archive_file_sel];
+        if ( rf && rf.category ) {
+          cat_field = 1;
+        }
+        if ( rf && rf.date_and_time ) {
+          dt_field = 1;
+        }
+      }
+      var categories     = content_fields.categories || [];
+      var date_and_times = content_fields.date_and_times || [];
+      jQuery('#' + cat_field_id_sel).children().remove();
+      jQuery('#' + dt_field_id_sel).children().remove();
+      jQuery.each(categories, function(index, value){
+        $option = jQuery('<option>').val(value.id).text(value.label);
+        jQuery('#' + cat_field_id_sel).append($option);
+      });
+      $option = jQuery('<option>').val(0).text("<__trans phrase="Published Date">");
+      jQuery('#' + dt_field_id_sel).append($option);
+      jQuery.each(date_and_times, function(index, value){
+        $option = jQuery('<option>').val(value.id).text(value.label);
+        jQuery('#' + dt_field_id_sel).append($option);
+      });
+      if ( cat_field && categories.length ) {
+        jQuery("#" + cat_field_id_sel + "-field").css('display', 'block');
+      }
+      else {
+        jQuery("#" + cat_field_id_sel + "-field").css('display', 'none');
+      }
+      if (dt_field) {
+        jQuery("#" + dt_field_id_sel + "-field").css('display', 'block');
+      }
+      else {
+        jQuery("#" + dt_field_id_sel + "-field").css('display', 'none');
+      }
+    }
+
+    getDefaultArchiveTemplates();
+    selectArchiveFile(jQuery("#archive_file_sel"));
+    </mt:if>
+
+</mt:setvarblock>
+
+<mt:include name="layout/default.tmpl">
+<mt:var name="layout">

@@ -385,6 +385,11 @@ sub core_methods {
             code     => "${pkg}Mobile::change_to_pc_view",
             app_mode => 'JSON',
         },
+
+        'fetch_admin_header_content_types' => {
+            code     => "${pkg}AdminHeader::fetch_admin_header_content_types",
+            app_mode => 'JSON',
+        },
     };
 }
 

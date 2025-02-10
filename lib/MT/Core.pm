@@ -2232,7 +2232,7 @@ BEGIN {
             'PHPErrorLogFilePath' => undef,
             'LogEachFilePublishedInTheBackground' => undef,
             'TrimFilePath' => { default => 0 },
-            'UseRiot' => { default => 1 },
+            'UseRiot' => undef,
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {

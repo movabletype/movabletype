@@ -1,0 +1,38 @@
+<nav aria-label="Page Navigation">
+  <ul id="pagination-<$mt:var name="bar_position" default="top"$>" class="pagination">
+
+<mt:unless name="limit_none">
+  <mt:unless name="pager_json">
+    <mt:if name="offset">
+  <a href="<$mt:var name="script_url"$>?offset=0&amp;<$mt:var name="return_args" escape="html"$>" class="pagenav start">&laquo; <__trans phrase="First"></a>
+    <mt:else>
+  <span class="pagenav start disabled">&laquo; <__trans phrase="First"></span>
+    </mt:if>
+    <mt:if name="prev_offset">
+  <a href="<$mt:var name="script_url"$>?offset=<$mt:var name="prev_offset_val"$>&amp;<$mt:var name="return_args" escape="html"$>" class="pagenav to-start">&lsaquo; <__trans phrase="Prev"></a>
+    <mt:else>
+  <span class="pagenav to-start disabled">&lsaquo; <__trans phrase="Prev"></span>
+    </mt:if>
+  <span class="current-rows"><__trans phrase="[_1] &ndash; [_2] of [_3]" params="<$mt:var name="list_start"$>%%<$mt:var name="list_end"$>%%<$mt:var name="list_total"$>"></span>
+    <mt:if name="next_offset">
+  <a href="<$mt:var name="script_url"$>?offset=<$mt:var name="next_offset_val"$>&amp;<$mt:var name="return_args" escape="html"$>" class="pagenav to-end"><__trans phrase="Next"> &rsaquo;</a>
+    <mt:else>
+  <span class="pagenav to-end disabled"><__trans phrase="Next"> &rsaquo;</span>
+    </mt:if>
+    <mt:if name="next_max">
+  <a href="<$mt:var name="script_url"$>?offset=<$mt:var name="next_max"$>&amp;<$mt:var name="return_args" escape="html"$>" class="pagenav end"><__trans phrase="Last"> &raquo;</a>
+    <mt:else>
+  <span class="pagenav end disabled"><__trans phrase="Last"> &raquo;</span>
+    </mt:if>
+  </mt:unless>
+</mt:unless>
+  </ul>
+</nav>
+<mt:if name="pager_json">
+<script type="text/javascript" charset="utf-8">
+/* <![CDATA[ */
+    pager_<$mt:var name="bar_position" default="top"$> = new Pager(TC.elementOrId('pagination-<$mt:var name="bar_position" default="top"$>'));
+    pager_<$mt:var name="bar_position" default="top"$>.setState(<$mt:var name="pager_json"$>);
+/* ]]> */
+</script>
+</mt:if>

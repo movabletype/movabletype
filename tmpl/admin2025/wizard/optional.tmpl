@@ -1,0 +1,366 @@
+<mt:setvarblock name="page_title"><__trans phrase="Mail Configuration"></mt:setvarblock>
+
+<mt:setvarblock name="page_content">
+<form id="optional_form" method="post">
+  <input type="hidden" name="__mode" value="" />
+  <input type="hidden" name="step" value="optional" />
+  <input type="hidden" name="set_static_uri_to" id="set_static_uri_to" value="<mt:var name="static_uri" escape="html">" />
+  <input type="hidden" name="default_language" value="<mt:var name="default_language" escape="html">" />
+  <input type="hidden" name="config" value="<mt:var name="config" escape="html">" />
+<mt:if name="success">
+  <p class="intro"><span class="ready"><__trans phrase="Your mail configuration is complete."></span> <__trans phrase="Check your email to confirm receipt of a test email from Movable Type and then proceed to the next step."></p>
+  <p id="more"><a href="javascript:void(0)" onclick="hideByID('buttons'); hideByID('more'); showByID('settings');"><__trans phrase="Show current mail settings"></a></p>
+  <div id="buttons" class="actions-bar text-end">
+    <button
+       name="continue"
+       type="submit"
+       onclick="go('next_step');"
+       class="continue action primary button btn btn-primary">
+      <__trans phrase="Continue">
+    </button>
+    <button
+       name="back"
+       type="submit"
+       onclick="this.form.reset(); go('previous_step');"
+       class="goback action button btn btn-default">
+      <__trans phrase="Back">
+    </button>
+  </div>
+</mt:if>
+
+  <div id="settings"<mt:if name="success"> style="display: none;"</mt:if>>
+    <p class="intro"><__trans phrase="Periodically Movable Type will send email for password recovery, to inform authors of new comments, and other events. If not using Sendmail (default on unix servers), an SMTP Server must be specified."></p>
+  <mt:if name="send_error">
+    <mtapp:statusmsg
+       id="send_error"
+       class="error"
+       can_close="0">
+      <__trans phrase="An error occurred while attempting to send mail: "><mt:var name="error" escape="html">
+    </mtapp:statusmsg>
+  <mt:else>
+    <mt:if name="error">
+    <mtapp:statusmsg
+       id="error"
+       class="error"
+       can_close="0">
+      <mt:var name="error" escape="html">
+    </mtapp:statusmsg>
+    </mt:if>
+  </mt:if>
+
+    <!-- EmailAddressMain -->
+      <mtapp:setting
+         id="email_address_main"
+         label="<__trans phrase="System Email Address">"
+         label_class="top-label"
+         required="1"
+         hint="<__trans phrase="This email address is used in the 'From:' header of each email sent by Movable Type.  Email may be sent for password recovery, commenter registration, comment and trackback notification, user or IP address lockout, and a few other minor events.">"
+         hint_id="emailAddressMain"
+         show_hint="1">
+        <input type="text" id="email_address_main" class="form-control text full email required" name="email_address_main" value="<mt:if name="email_address_main"><mt:var name="email_address_main" escape="html"></mt:if>" aria-describedby="emailAddressMain" />
+      </mtapp:setting>
+
+    <!-- MailTransfer -->
+      <mtapp:setting
+         id="mail_transfer"
+         label="<__trans phrase="Send mail via:">"
+         label_class="top-label">
+        <select id="mail_transfer" class="custom-select form-control form-select" name="mail_transfer">
+          <option value=""><__trans phrase="Select One..."></option>
+        <mt:loop name="mail_loop">
+          <option value="<mt:var name="ID">" <mt:if name="selected">selected="selected"</mt:if>><mt:var name="name"></option>
+        </mt:loop>
+        </select>
+      </mtapp:setting>
+
+      <div id="params" <mt:unless name="mail_transfer">style="display: none"</mt:unless>>
+      <!-- SendMailPath -->
+        <div id="sendmail_path" <mt:unless name="use_sendmail">style="display: none"</mt:unless>>
+          <mtapp:setting
+             id="sendmail_path"
+             label="<__trans phrase="Sendmail Path">"
+             label_class="top-label"
+             required="1">
+            <input type="text" id="sendmail_path" class="form-control text full" name="sendmail_path" value="<mt:if name="sendmail_path"><mt:var name="sendmail_path" escape="html"></mt:if>" />
+          </mtapp:setting>
+        </div>
+
+      <!-- SMTPServer -->
+        <div id="smtp_server" <mt:unless name="use_smtp">style="display: none"</mt:unless>>
+          <mtapp:setting
+             id="smtp_server"
+             label="<__trans phrase="Outbound Mail Server (SMTP)">"
+             label_class="top-label"
+             required="1"
+             hint="<__trans phrase="Address of your SMTP Server.">"
+             hint_id="smtpServer"
+             show_hint="1">
+            <input type="text" id="smtp_server" class="form-control text full" name="smtp_server" value="<mt:if name="smtp_server"><mt:var name="smtp_server" escape="html"></mt:if>" aria-describedby="smtpServer" />
+          </mtapp:setting>
+
+      <!-- SMTPPort -->
+          <mtapp:setting
+             id="smtp_port"
+             label="<__trans phrase="Port number for Outbound Mail Server">"
+             label_class="top-label"
+             required="1"
+             hint="<__trans phrase="Port number of your SMTP Server.">"
+             hint_id="smtpPort"
+             show_hint="1">
+            <input type="text" id="smtp_port" class="form-control text full" name="smtp_port" value="<mt:if name="smtp_port"><mt:var name="smtp_port" escape="html"></mt:if>" aria-describedby="smtpPort" />
+          </mtapp:setting>
+
+
+      <!-- SSL -->
+          <mt:if name="has_ssl_modules">
+            <mtapp:setting
+              id="smtp_ssl"
+              label="<__trans phrase="SSL Connection">"
+              label_class="top-label">
+              <select id="smtp_ssl" class="custom-select form-control form-select" name="smtp_ssl">
+                <option value="0"<mt:if name="smtp_ssl" eq="0"> selected="selected"</mt:if>><__trans phrase="Do not use SSL"></option>
+                <option value="ssl"<mt:if name="smtp_ssl" eq="ssl"> selected="selected"</mt:if>><__trans phrase="Use SSL"></option>
+                <option value="starttls"<mt:if name="smtp_ssl" eq="starttls"> selected="selected"</mt:if>><__trans phrase="Use STARTTLS"></option>
+              </select>
+            </mtapp:setting>
+          </mt:if>
+
+      <!-- SMTPAuth -->
+          <mt:if name="has_auth_modules">
+            <p>
+              <div class="form-check">
+                <input type="checkbox" name="smtp_auth" id="smtp_auth" class="form-check-input cb" value="1" <mt:if name="smtp_auth">checked</mt:if> />
+                <label class="form-check-label" for="smtp_auth"><__trans phrase="Use SMTP Auth"></label>
+              </div>
+            </p>
+            <div id="smtpauth_params" <mt:unless name="smtp_auth">style="display: none"</mt:unless>>
+      <!-- SMTPAuth Username -->
+              <mtapp:setting
+                 id="smtp_auth_username"
+                 label="<__trans phrase="SMTP Auth Username">"
+                 label_class="top-label"
+                 required="1"
+                 hint="<__trans phrase="Username for your SMTP Server.">"
+                 hint_id="smtpAuthUsername"
+                 show_hint="1">
+                <input type="text" id="smtp_auth_username" class="form-control text full" name="smtp_auth_username" value="<mt:if name="smtp_auth_username"><mt:var name="smtp_auth_username" escape="html"></mt:if>" aria-describedby="smtpAuthUsername" autocorrect="off" autocapitalize="off" />
+              </mtapp:setting>
+
+      <!-- SMTPAuth Password -->
+              <mtapp:setting
+                 id="smtp_auth_password"
+                 label="<__trans phrase="SMTP Auth Password">"
+                 label_class="top-label"
+                 required="1"
+                 hint="<__trans phrase="Password for your SMTP Server.">"
+                 hint_id="smtpAuthPassword"
+                 show_hint="1">
+                <input type="password" id="smtp_auth_password" class="form-control text full" name="smtp_auth_password" value="<mt:if name="smtp_auth_password"><mt:var name="smtp_auth_password" escape="html"></mt:if>" aria-describedby="smtpAuthPassword" />
+              </mtapp:setting>
+            </div>
+          </mt:if>
+        </div>
+      </div>
+
+      <div id="goback" class="actions-bar text-end" <mt:if name="mail_transfer">style="display: none"</mt:if>>
+        <button
+           name="continue"
+           type="submit"
+           onclick="go('next_step');"
+           class="continue action primary button btn btn-primary">
+          <__trans phrase="Continue">
+        </button>
+        <button
+           name="back"
+           type="submit"
+           onclick="this.form.reset(); go('previous_step');"
+           class="goback action button btn btn-default">
+          <__trans phrase="Back">
+        </button>
+      </div>
+
+      <div id="submit" class="actions-bar text-end" <mt:unless name="mail_transfer">style="display: none"</mt:unless>>
+        <button
+           name="continue"
+           type="submit"
+           onclick="go('next_step');"
+           class="continue action primary button btn btn-primary">
+          <__trans phrase="Continue">
+        </button>
+        <button
+           id="go_to_testing"
+           name="test"
+           type="button"
+           value="1"
+           class="test action primary button btn btn-primary">
+          <__trans phrase="Send Test Email">
+        </button>
+        <button
+           name="back"
+           type="submit"
+           onclick="this.form.reset(); go('previous_step');"
+           class="goback action button btn btn-default">
+          <__trans phrase="Back">
+        </button>
+      </div>
+  </div>
+
+  <div id="testing" style="display: none;">
+      <!-- Test Address -->
+      <mtapp:setting
+         id="test_email_address"
+         label="<__trans phrase="Mail address to which test email should be sent">"
+         label_class="top-label">
+        <input type="text" id="test_mail_address" class="form-control text full" name="test_mail_address" value="<mt:if name="test_mail_address"><mt:var name="test_mail_address" escape="html"></mt:if>" />
+      </mtapp:setting>
+
+      <div id="submit" class="actions-bar text-end">
+        <button
+           name="test"
+           type="submit"
+           value="1"
+           onclick="go('test')"
+           class="test action primary button btn btn-primary">
+          <__trans phrase="Send">
+        </button>
+        <button
+           name="continue"
+           type="submit"
+           onclick="go('next_step');"
+           class="continue action primary button btn btn-primary">
+          <__trans phrase="Skip">
+        </button>
+        <button
+           id="back_to_settings"
+           name="back"
+           type="button"
+           class="goback action button btn btn-default">
+          <__trans phrase="Back">
+        </button>
+      </div>
+  </div>
+</form>
+</mt:setvarblock>
+
+<mt:setvarblock name="js_include" append="1">
+<script type="text/javascript">
+/* <![CDATA[ */
+function go(mode) {
+    var f = document.forms[0];
+    f['__mode'].value = mode;
+}
+
+jQuery(function() {
+    jQuery('#mail_transfer').on('change', function() {
+        var type = jQuery(':selected', this).val();
+        if ((type == "smtp")) {
+            jQuery('#sendmail_path').hide();
+            jQuery('#goback').hide();
+            jQuery('#smtp_server').show();
+            jQuery('#smtp_port').show();
+            jQuery('#submit').show();
+            jQuery('#params').show();
+            jQuery('#smtp_server').trigger('focus');
+        } else if (type == "sendmail") {
+            jQuery('#sendmail_path').show();
+            jQuery('#goback').hide();
+            jQuery('#smtp_server').hide();
+            jQuery('#smtp_port').hide();
+            jQuery('#submit').show();
+            jQuery('#params').show();
+            jQuery('#sendmail_path').trigger('focus');
+        } else {
+            jQuery('#goback').show();
+            jQuery('#submit').hide();
+            jQuery('#params').hide();
+        }
+    });
+
+    jQuery('#smtp_auth').on('click', function() {
+        if ( jQuery(this).is(':checked') ) {
+            jQuery('#smtpauth_params').show();
+        } else {
+            jQuery('#smtpauth_params').hide();
+        }
+    });
+
+    jQuery('#smtp_ssl').on('change', function() {
+        var type = jQuery(':selected', this).val();
+        if ( type == "ssl" && ( jQuery('#smtp_port').val().length == 0 || jQuery('#smtp_port').val() == 25 ) ) {
+            jQuery('#smtp_port').val(465).mtUnvalidate();
+        } else if( type == '0' && ( jQuery('#smtp_port').val().length == 0 || jQuery('#smtp_port').val() == 465 ) ) {
+            jQuery('#smtp_port').val(25).mtUnvalidate();
+        }
+    });
+
+    jQuery('#back_to_settings').on('click', function() {
+        jQuery('#settings').show();
+        jQuery('#testing').hide();
+    });
+
+    jQuery('#go_to_testing').on('click', function() {
+        if ( jQuery('#optional_form').find('input:visible, select:visible').mtValidate('simple') ) {
+            jQuery('#settings').hide();
+            jQuery('#testing').show();
+        }
+    });
+
+    jQuery('#optional_form').on('submit', function () {
+        if ( !( jQuery(this).find('input[name="__mode"]').val() == 'previous_step' ) ) {
+            if ( !jQuery(this).find('input:visible, select:visible').mtValidate('simple') )
+                return false;
+        }
+    });
+
+    jQuery.mtValidateAddRules({
+        "#sendmail_path": function($e) {
+            if ( jQuery('#mail_transfer :selected').val() == 'sendmail' ) {
+                return $e.val().trim() == '' ? false : true;
+            }
+            return true;
+        },
+        "#smtp_server": function($e) {
+            if ( jQuery('#mail_transfer :selected').val() == 'smtp' ) {
+                return $e.val().trim() == '' ? false : true;
+            }
+            return true;
+        },
+        "#smtp_port": function($e) {
+            if ( jQuery('#mail_transfer :selected').val() == 'smtp' ) {
+                if ( $e.val().trim() == '' ) {
+                    return this.raise('<__trans phrase="You must set the SMTP server port number." escape="singlequotes">');
+                }
+                if ( !( /^\d+$/.test($e.val()) ) ) {
+                    return this.raise('<__trans phrase="This field must be an integer." escape="singlequotes">');
+                }
+            }
+            return true;
+        },
+        "#smtp_auth_username": function($e) {
+            if ( jQuery('#smtp_auth').is(':checked') ) {
+                return $e.val().trim() == '' ? false : true;
+            }
+            return true;
+        },
+        "#smtp_auth_password": function($e) {
+            if ( jQuery('#smtp_auth').is(':checked') ) {
+                return $e.val().trim() == '' ? false : true;
+            }
+            return true;
+        }
+    });
+
+    jQuery.mtValidateAddMessages({
+        "#email_address_main.required": '<__trans phrase="You must set the system email address." escape="singlequotes">',
+        "#sendmail_path": '<__trans phrase="You must set the Sendmail path." escape="singlequotes">',
+        "#smtp_server": '<__trans phrase="You must set the SMTP server address." escape="singlequotes">',
+        "#smtp_auth_username": '<__trans phrase="You must set a username for the SMTP server." escape="singlequotes">',
+        "#smtp_auth_password": '<__trans phrase="You must set a password for the SMTP server." escape="singlequotes">'
+    });
+});
+/* ]]> */
+</script>
+</mt:setvarblock>
+
+<mt:include name="layout/chromeless.tmpl">
+<mt:var name="layout">

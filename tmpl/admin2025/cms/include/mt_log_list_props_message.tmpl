@@ -1,0 +1,14 @@
+<mt:if name="desc">
+<div class="log-message can-select">
+  <a href="#log-detail-<mt:var name="id">" class="dropdown-toggle toggle-link icon-left icon-spinner detail-link" data-bs-toggle="collapse" aria-expanded="false" aria-controls="log-detail-<mt:var name="id">">
+    <mt:var name="msg">
+  </a>
+  <div id="log-detail-<mt:var name="id">" class="collapse log-metadata detail">
+    <div class="card card-block bg-light mt-2 p-2">
+      <pre class="pre-scrollable pb-4 mb-0"><code><mt:var name="desc"></code></pre>
+    </div>
+  </div>
+</div>
+<mt:else>
+<div class="log-message can-select"><mt:var name="msg"></div>
+</mt:if>

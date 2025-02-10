@@ -1,0 +1,48 @@
+<$mt:setvar name="screen_type" value="dialog-screen list-revision-dialog"$>
+<mt:setvarblock name="page_title"><__trans phrase="Revision History"></mt:setvarblock>
+
+<mt:setvarblock name="modal_body">
+<p class="hint"><__trans phrase="Select the revision to populate the values of the Edit screen."></p>
+<mt:include name="include/revision_table.tmpl" show_actions="0">
+<mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1">
+</mt:setvarblock>
+
+<mt:setvarblock name="modal_footer">
+        <button
+            type="submit"
+            accesskey="x"
+            class="cancel action button mt-close-dialog btn btn-default"
+            data-mt-modal-close
+            title="<__trans phrase="Cancel (x)">"
+            ><__trans phrase="Cancel"></button>
+</mt:setvarblock>
+
+<mt:setvarblock name="css_include" append="1">
+<style type="text/css">
+@media (max-width: 767.98px) {
+  .mt-table tbody tr:active,
+  .mt-table tbody tr:hover {
+    background-color: #E3F2F4;
+  }
+}
+</style>
+</mt:setvarblock>
+
+<mt:setvarblock name="jq_js_include" append="1">
+jQuery('.mt-table').on('click', 'tbody tr', function (e) {
+  if (!MT.Util.isMobileView()) {
+    return;
+  }
+  if (e.target.tagName == 'A') {
+    return;
+  }
+  var $editLink = jQuery(this).find('td.datetime a.revision-number');
+  if ($editLink.length > 0) {
+    $editLink.get(0).click();
+    return false;
+  }
+ });
+</mt:setvarblock>
+
+<mt:include name="layout/modal.tmpl">
+<mt:var name="layout">

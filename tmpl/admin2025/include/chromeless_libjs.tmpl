@@ -1,0 +1,46 @@
+<mt:unless name="cfg_exists">
+  <link rel="icon" href="<$mt:var name="static_uri"$>images/favicon.ico" type="image/ico" />
+  <!--[if IE]>
+  <mt:stylesheet path="css/hacks/ie.css">
+  <![endif]-->
+  <mt:script type="text/javascript" path="js/tc.js">
+</mt:unless>
+
+<mt:unless name="optimize_ui">
+  <mt:script type="text/javascript" path="jquery/jquery.js">
+  <mt:script type="text/javascript" path="jquery/jquery-migrate.js">
+  <mt:script type="text/javascript" path="jqueryui/jquery-ui.js">
+  <mt:script type="text/javascript" path="jquery/jquery.validate.js">
+<mt:if name="use_svg4everybody">
+  <mt:script type="text/javascript" path="svg4everybody/svg4everybody.js">
+</mt:if>
+<mt:else>
+  <mt:script type="text/javascript" path="jquery/jquery.min.js">
+  <mt:script type="text/javascript" path="jquery/jquery-migrate.min.js">
+  <mt:script type="text/javascript" path="jqueryui/jquery-ui.js">
+  <mt:script type="text/javascript" path="jquery/jquery.validate.min.js">
+<mt:if name="use_svg4everybody">
+  <mt:script type="text/javascript" path="svg4everybody/svg4everybody.min.js">
+</mt:if>
+</mt:unless>
+<mt:unless name="cfg_exists">
+  <mt:script type="text/javascript" path="js/common/Core.js">
+</mt:unless>
+
+<mt:unless name="cfg_exists">
+  <mt:script type="text/javascript" path="mt.js">
+  <mt:script type="text/javascript" path="mt_%l.js">
+  <mt:unless name="optimize_ui">
+    <mt:script type="text/javascript" path="jquery/jquery.mt.js">
+  <mt:else>
+    <mt:script type="text/javascript" path="jquery/jquery.mt.min.js">
+  </mt:unless>
+</mt:unless>
+
+<mt:unless name="optimize_ui">
+  <mt:script type="text/javascript" path="popper/popper.js">
+  <mt:script type="text/javascript" path="bootstrap5/js/bootstrap.bundle.js">
+<mt:else>
+  <mt:script type="text/javascript" path="popper/popper.min.js">
+  <mt:script type="text/javascript" path="bootstrap5/js/bootstrap.bundle.min.js">
+</mt:unless>

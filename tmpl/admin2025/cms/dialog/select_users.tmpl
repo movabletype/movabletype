@@ -1,0 +1,92 @@
+<mt:setvarblock name="page_title"><mt:var name="dialog_title"></mt:setvarblock>
+
+<mt:setvarblock name="js_include" append="1">
+<mt:if name="use_jquery_json">
+<mt:script type="text/javascript" path="jquery/jquery.json.js">
+</mt:if>
+<mt:script type="text/javascript" path="js/tc/client.js">
+<mt:script type="text/javascript" path="js/dialog.js">
+<script type="text/javascript">
+/* <![CDATA[ */
+var dialog;
+
+function returnMemberSelection(ok) {
+    if (ok) {
+<mt:unless name="idfield">
+        var frm = document.forms['members'];
+        var added = dialog.panels[0].selectionList.items();
+        for (var i = 0; i < added.length; i++)
+            added[i] = added[i].replace(/\D/g, '');
+        frm.elements['ids'].value = added.join(",");
+        frm.submit();
+<mt:else>
+        var el_id = parent.jQuery('#<mt:var name="idfield" escape="js">')[0];
+        <mt:if name="namefield">var el_name = parent.jQuery('#<mt:var name="namefield" escape="js">')[0];</mt:if>
+        if (el_id) {
+            var ids = new Array();
+            var names = new Array();
+            if (dialog.panels[0].selectionList) {
+                var items = dialog.panels[0].selectionList.items();
+                var itemHash = dialog.panels[0].selectionList.itemHash;
+                for (var i = 0; i < items.length; i++) {
+                    ids[i] = items[i].replace(/\D/g, '');
+                    names.push(itemHash[items[i]].label + ' (' + ids[i] + ')');
+                }
+            } else {
+                var inputs = dialog.panels[0].tableSelect.selected();
+                for (var i = 0; i < inputs.length; ++i) {
+                    var inp = inputs[i];
+                    if (inp.id == 'select_all_author') continue;
+                    var row = jQuery(inp).parents('tr')[0];
+                    if (!row) continue;
+                    names.push(jQuery(row).find('.panel-label').text() + ' (' + inp.value + ')');
+                    ids.push(inp.value);
+                }
+            }
+            el_id.value = ids.join(',');
+            <mt:if name="namefield">el_name.innerHTML = names.join(',');</mt:if>
+        }
+        jQuery.fn.mtModal.close();
+</mt:unless>
+    } else {
+        jQuery.fn.mtModal.close();
+    }
+}
+
+function init() {
+    // setup
+    dialog = new Dialog.MultiPanel("select-member");
+    var userPanel = new ListingPanel("author");
+    userPanel.pager.setState(<mt:var name="pager_json">);
+    dialog.setPanels([userPanel]);
+    dialog.open({}, returnMemberSelection);
+}
+/* ]]> */
+</script>
+</mt:setvarblock>
+
+<mt:setvarblock name="modal_body">
+<form name="members" id="members" action="<mt:var name="script_url">" method="post" target="_top">
+<input type="hidden" name="__mode" value="add_member" />
+<input type="hidden" name="ids" value="" />
+<input type="hidden" name="group_id" value="<mt:var name="group_id" escape="html">" />
+<input type="hidden" name="magic_token" value="<mt:var name="magic_token" escape="html">" />
+</form>
+
+<div class="modal_width" id="select-member-dialog">
+<mt:include name="include/listing_panel.tmpl">
+</div><!-- /modal_width#dialog-select-member -->
+</mt:setvarblock>
+
+<mt:setvarblock name="js_include" append="1">
+<script type="text/javascript">
+/* <![CDATA[ */
+jQuery(function() {
+    init();
+});
+/* ]]> */
+</script>
+</mt:setvarblock>
+
+<mt:include name="layout/modal.tmpl">
+<mt:var name="layout">

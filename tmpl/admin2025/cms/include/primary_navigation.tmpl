@@ -1,0 +1,59 @@
+<mt:setvarblock name="user_screen_name"><mt:if name="author_display_name"><mt:var name="author_display_name" escape="html"><mt:else><mt:var name="author_name" escape="html"></mt:if></mt:setvarblock>
+
+<mt:if name="scope_type" ne="user">
+<div class="mt-primaryNavigation" data-is="primary-navigation">
+  <mt:if name="scope_type" ne="system">
+    <div class="mt-primaryNavigation__control">
+        <div data-is="create-button"></div>
+        <a href="<mt:var name="mt_url">?__mode=rebuild_confirm<mt:if name="blog_id" ne="">&blog_id=<mt:var name="blog_id"></mt:if>" class="menu_actions__button rebuild mt-rebuild">
+
+          <svg role="img" class="mt-icon">
+            <title><__trans phrase="Rebuild"></title>
+            <use xlink:href="<mt:var name="static_uri">images/admin2025/sprite.svg#ic_rebuild"></use>
+          </svg>
+          <__trans phrase="Rebuild">
+        </a>
+        <a href="<mt:var name="blog_url">" class="menu_actions__button view_site" target="_blank">
+          <svg role="img" class="mt-icon">
+            <title><__trans phrase="View Your Site"></title>
+            <use xlink:href="<mt:var name="static_uri">images/admin2025/sprite.svg#ic_site-link"></use>
+          </svg>
+          <__trans phrase="View Your Site">
+        </a>
+    </div>
+  </mt:if>
+
+  <div class="mt-primaryNavigation__content">
+    <ul id="primaryNavigation" class="mt-primaryNavigation__list" data-children=".item">
+      <mt:loop name="top_nav_loop">
+        <li id="menu-<mt:var name="id" escape="html">" class="item mt-primaryNavigation__item">
+          <a data-bs-toggle="collapse" data-parent="#primaryNavigation" href="#primaryNavigation-item<mt:var name="__counter__">" aria-expanded="<mt:if name="screen_group" eq="$id">true<mt:else>false</mt:if>" aria-controls="primaryNavigation-item<mt:var name="__counter__">">
+            <mt:setvarblock name="escaped_label"><mt:var name="label" escape="html"></mt:setvarblock>
+            <mt:if name="icon">
+              <mt:setvarblock name="escaped_icon"><mt:var name="icon" escape="html"></mt:setvarblock>
+              <mtapp:svgicon id="$escaped_icon" title="$escaped_label" size="sm">
+            <mt:else>
+              <mtapp:svgicon id="ic_box" title="$escaped_label" size="sm">
+            </mt:if>
+            <mt:var name="escaped_label">
+          </a>
+          <div id="primaryNavigation-item<mt:var name="__counter__">" class="collapse<mt:if name="screen_group" eq="$id"> show</mt:if>" data-role="tabpanel">
+            <ul class="mt-primaryNavigation__child">
+              <mt:loop name="sub_nav_loop">
+                <mt:if name="allowed">
+                  <li id="menu-<mt:var name="id" escape="html" replace=":","_">">
+                    <a href="<mt:var name="link" escape="html">"<mt:if name="current"> class="selected"<mt:elseif name="dialog"> class="mt-modal-open" data-mt-modal-large</mt:if>>
+                      <mt:var name="label" escape="html">
+                    </a>
+                  </li>
+                </mt:if>
+              </mt:loop>
+            </ul>
+          </div>
+        </li>
+      </mt:loop>
+    </ul>
+  </div>
+  <div data-is="primary-navigation-toggle"></div>
+</div>
+</mt:if>

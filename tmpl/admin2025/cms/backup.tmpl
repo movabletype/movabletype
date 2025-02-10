@@ -1,0 +1,97 @@
+<mt:setvarblock name="page_title"><mt:if name="blog_id"><__trans phrase="Export Site"><mt:else><__trans phrase="Export Sites"></mt:if></mt:setvarblock>
+<mt:setvar name="position_actions_bottom" value="1">
+<mt:setvar name="backup" value="1">
+
+<mt:setvarblock name="page_content">
+
+<mt:if name="error">
+  <mtapp:statusmsg
+     id="generic-error"
+     class="danger"
+     can_close="0">
+    <mt:var name="error">
+  </mtapp:statusmsg>
+</mt:if>
+
+<div id="backup-panel">
+  <p class="page-desc"><__trans phrase="Not all the tables are exported. If you need to back up everything (including config, session values, logs, and so on), consider using a database utility. You can also download public logs from the <a href="[_1]">Log</a> menu." params="<mt:var name="script_url">?__mode=list&_type=log<mt:if name="blog_id">&blog_id=<mt:var name="blog_id" escape="html"></mt:if>"></p>
+  <form method="post" action="<mt:var name="script_url">">
+    <input type="hidden" name="__mode" value="backup" />
+    <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+  <mt:if name="blog_id">
+    <input type="hidden" id="blog_id" name="blog_id" value="<mt:var name="blog_id">" />
+    <input type="hidden" id="selected_blog_ids" name="backup_what" value="<mt:var name="backup_what">" />
+  <mt:else>
+    <input type="hidden" id="blog_id" name="blog_id" value="0" />
+    <mtapp:setting
+       id="backup_what"
+       label="<__trans phrase="What to Export">">
+      <div>
+        <input type="hidden" id="selected_blog_ids" name="backup_what" value="" />
+        <span id="selected_blogs"><__trans phrase="Everything"></span>
+        <span id="selected_blogs_link" style="display: none;"><a href="javascript:void(0);" onclick="document.getElementById( 'selected_blogs_link').style.display='none';var e=document.getElementById('selected_blogs');e.innerHTML='<__trans phrase="Everything" escape="js">';document.getElementById('selected_blog_ids').value='';return false;"><__trans phrase="Reset"></a> |</span>
+        <a href="<mt:var name="script_url">?__mode=dialog_select_website&amp;multi=1&amp;idfield=selected_blog_ids&amp;namefield=selected_blogs" class="mt-open-dialog mt-modal-open" data-mt-modal-large>
+          <__trans phrase="Choose sites...">
+        </a>
+      </div>
+    </mtapp:setting>
+  </mt:if>
+
+    <mtapp:setting
+       id="backup_archive_format"
+       label="<__trans phrase="Archive Format">">
+      <div class="mb-3">
+      <mt:loop name="archive_formats">
+        <div class="custom-control custom-radio">
+          <input type="radio" id="<mt:var name="key">" class="form-check-input" name="backup_archive_format" value="<mt:var name="key">"<mt:if name="error"> disabled="disabled"<mt:elseif name="__first__"> checked="checked"</mt:if> />
+          <label class="form-check-label" for="<mt:var name="key" escape="html">"><mt:var name="label" escape="html">
+          <mt:if name="error">(<mt:var name="error" escape="html">)</mt:if></label>
+        </div>
+        <mt:if name="__last__">
+          <mt:setvar name="format_available">
+        </mt:if>
+      </mt:loop>
+        <div class="custom-control custom-radio">
+          <input type="radio" id="no_archive" class="form-check-input" name="backup_archive_format" value="0"<mt:unless name="format_available"> checked="checked"</mt:unless> />
+          <label class="form-check-label" for="no_archive"><__trans phrase="Don't compress"></label>
+        </div>
+      </div>
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="size_limit"
+       label="<__trans phrase="Target File Size">"
+       label_for="size_limit">
+      <select name="size_limit" id="size_limit" class="custom-select form-control form-select">
+        <option value="0" selected="selected"><__trans phrase="No size limit"></option>
+      <mt:if name="OVER_300">
+        <option value="300">300KB</option>
+        <mt:if name="OVER_500">
+        <option value="500">500KB</option>
+          <mt:if name="OVER_1024">
+        <option value="1024">1MB</option>
+            <mt:if name="OVER_2048">
+        <option value="2048">2MB</option>
+            </mt:if>
+          </mt:if>
+        </mt:if>
+      </mt:if>
+      </select>
+    </mtapp:setting>
+
+    <mt:setvarblock name="action_buttons">
+      <button
+         type="submit"
+         accesskey="e"
+         title="<__trans phrase="Export (e)">"
+         class="action primary button btn btn-primary">
+        <__trans phrase="Export">
+      </button>
+    </mt:setvarblock>
+    <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
+  </form>
+</div>
+</mt:setvarblock>
+
+<mt:include name="layout/default.tmpl">
+<mt:var name="layout">

@@ -1,0 +1,16 @@
+<mt:setvar name="page_title" value="<__trans phrase="Upload File">">
+<mt:setvarblock name="html_head" append="1">
+<script type="text/javascript">
+/* <![CDATA[ */
+function submit_form(f, command) {
+    f['overwrite_' + command].value = 1;
+    return true;
+}
+/* ]]> */
+</script>
+</mt:setvarblock>
+<mt:include name="dialog/header.tmpl">
+
+<mt:include name="include/asset_replace.tmpl" dialog="1">
+
+<mt:include name="dialog/footer.tmpl">

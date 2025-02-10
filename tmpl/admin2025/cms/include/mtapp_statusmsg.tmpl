@@ -1,0 +1,25 @@
+<div <mt:if name="id">id=<$mt:var name="id"></mt:if> class="alert <mt:if name="class">alert-<$mt:var name="class"><mt:else>alert-info</mt:if> <mt:if name="can_close">alert-dismissible</mt:if>" <mt:if name="hidden">style="display: none;"</mt:if> <mt:if name="class" like="\bwarning|\bdanger">role="alert"</mt:if>>
+    <mt:if name="can_close">
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    </mt:if>
+    <$mt:var name="msg">
+    <mt:if name="did_replace">
+        <mt:unless name="no_link">
+            <__trans phrase="[_1]Publish[_2] your [_3] to see these changes take effect." params="<a href="<mt:var name="mt_url">?__mode=rebuild_confirm&blog_id=<mt:var name="blog_id">&prompt=index" class="mt-rebuild alert-link">%%</a>%%<$mt:if name="rebuild" eq="blog"><__trans phrase="blog(s)"><mt:else><__trans phrase="website(s)"></mt:if>">
+        </mt:unless>
+    <mt:elseif name="can_rebuild">
+        <mt:if name="rebuild" eq="cfg_prefs">
+            <__trans phrase="[_1]Publish[_2] your site to see these changes take effect, even when publishing profile is dynamic publishing." params="<a href="<mt:var name="mt_url">?__mode=rebuild_confirm&blog_id=<mt:var name="blog_id">" class="mt-rebuild alert-link">%%</a>">
+        <mt:elseif name="rebuild" eq="all">
+            <mt:unless name="dynamic_all">
+                <__trans phrase="[_1]Publish[_2] your site to see these changes take effect." params="<a href="<mt:var name="mt_url">?__mode=rebuild_confirm&blog_id=<mt:var name="blog_id">" class="mt-rebuild alert-link">%%</a>">
+            </mt:unless>
+        <mt:elseif name="rebuild" eq="index">
+            <mt:unless name="dynamic_all">
+                <__trans phrase="[_1]Publish[_2] your site to see these changes take effect." params="<a href="<mt:var name="mt_url">?__mode=rebuild_confirm&blog_id=<mt:var name="blog_id">&prompt=index" class="mt-rebuild alert-link">%%</a>">
+            </mt:unless>
+        <mt:else>
+          <$mt:var name="rebuild">
+        </mt:if>
+    </mt:if>
+</div>

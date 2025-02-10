@@ -1,0 +1,546 @@
+<mt:unless name="json">
+<mt:setvar name="screen_type" value="dialog-screen insert-asset-dialog">
+
+<mt:unless name="filter" eq="userpic">
+<div class="float-md-left me-4 mb-3">
+  <form action="" method="get" id="modal-type-filter" class="form-inline">
+    <span class="me-3"><__trans phrase="Asset Type: "></span>
+    <select name="asset-class" id="asset-class" class="custom-select form-control w-50 form-select">
+      <option value="">
+        <__trans phrase="All Types">
+      </option>
+<mt:loop name="class_filter_loop">
+      <option value="<mt:var name="key" escape="html">"<mt:if name="filter"><mt:if name="filter_val" eq="$key"> selected="selected"</mt:if></mt:if>>
+        <mt:var name="label">
+      </option>
+</mt:loop>
+    </select>
+  </form>
+</div>
+<div>
+  <form action="" method="get" id="modal-search" class="form-inline">
+    <input type="text" id="search" name="search" class="form-control search-input text" style="width: 40%" value="" placeholder="<__trans phrase="Search">" />
+    <a href="javascript:void(0)" class="d-inline-block" onclick="jQuery('#search-button:enabled').trigger('click'); return false;">
+      <mtapp:svgicon id="ic_search" title="Search">
+    </a>
+    <button id="search-button" class="search-command search-submit" style="display: none;">
+      <span class="visually-hidden">
+        <__trans phrase="Search">
+      </span>
+    </button>
+    <a href="javascript:void(0)" class="search-reset hidden ms-4" style="display: none;"><__trans phrase="Reset"></a>
+  </form>
+</div>
+</mt:unless>
+
+<mt:setvarblock name="list_actions">
+        <div class="col indicator">
+          <img alt="<__trans phrase="Loading...">" src="<mt:var name="static_uri">images/ic_loading-xsm.gif" width="16" height="16" />
+          <__trans phrase="Loading...">
+        </div>
+        <div class="pagination_container col-auto mx-auto mt-5 mt-md-3">
+          <nav aria-label="Asset List">
+            <ul class="pagination d-none d-md-flex"></ul>
+            <ul class="pagination__mobile d-md-none d-flex"></ul>
+          </nav>
+        </div>
+</mt:setvarblock>
+
+<div id="listing" class="listing line has-filter mt-5 mt-md-3">
+  <div class="unit size1of1">
+    <div id="listing-table" class="listing-table-block">
+      <div id="listing-table-overlay" class="overlay"></div>
+      <div class="mt-table--outline w-100">
+        <table id="asset-table" class="table mt-table listing-table">
+          <thead>
+            <th class="head cb mt-table__control">&nbsp;</th>
+            <th class="head si file-status" scope="col">
+              <mtapp:svgicon id="ic_flag" size="sm" title="<__trans phrase="Status">">
+            </th>
+            <th class="head primary string" scope="col">
+              <span class="col-label"><__trans phrase="label"></span>
+              <span id="page-status" class="float-end d-md-none"></span>
+            </th>
+          </thead>
+</mt:unless>
+          <tbody>
+<mt:if name="object_loop">
+  <mt:loop name="object_loop">
+            <tr id="asset-<mt:var name="id" escape="html">">
+    <mt:if name="can_multi">
+              <td class="cb">
+                <input type="hidden" id="asset-<mt:var name="id" escape="html">-json" value="<mt:var name="metadata_json" escape="html">" />
+                <div class="form-check">
+                  <input type="checkbox" name="id" value="<mt:var name="id" escape="html">" class="form-check-input select" id="asset-select-<mt:var name="id" escape="html">" onchange="toggleSelectedRow(this);" />
+                  <label class="form-check-label" for="asset-select-<mt:var name="id" escape="html">"><span class="visually-hidden"><__trans phrase="Select"></span></label>
+                </div>
+              </td>
+    <mt:else>
+              <td class="cb">
+                <input type="hidden" id="asset-<mt:var name="id" escape="html">-json" value="<mt:var name="metadata_json" escape="html">" />
+                <div class="form-check">
+                  <input type="radio" name="id" value="<mt:var name="id" escape="html">" class="form-check-input select" id="asset-select-<mt:var name="id" escape="html">" onchange="toggleSelectedRow(this);" />
+                  <label class="form-check-label" for="asset-select-<mt:var name="id" escape="html">"><span class="visually-hidden"><__trans phrase="Select"></span></label>
+                </div>
+              </td>
+    </mt:if>
+              <td class="si status-<mt:if name="file_is_missing">missing<mt:else>publish</mt:if>">
+    <mt:if name="file_is_missing">
+                <mtapp:svgicon id="ic_error" size="sm" color="warning">
+    <mt:else>
+                <mtapp:svgicon id="ic_checkbox" size="sm" color="success">
+    </mt:if>
+              </td>
+              <td class="asset-label primary">
+    <mt:if name="has_thumbnail">
+                <a href="javascript:void(0)" onclick="return toggleAssetDetails('<mt:var name="id" escape="html" escape="js">');" title="<$mt:var name="file_name" escape="html"$>">
+                  <$mt:var name="label" escape="html"$>
+                </a>
+                <div id="asset-<mt:var name="id" escape="html">-preview" class="asset-preview"></div>
+    <mt:else>
+                <mt:var name="label" escape="html">
+    </mt:if>
+              </td>
+            </tr>
+  </mt:loop>
+<mt:else>
+            <tr class="odd">
+              <td class="fullwidth-row" colspan="3">
+                <__trans phrase="No [_1] could be found." params="<mt:if name="upload_mode" eq="upload_userpic"><__trans phrase="Userpic"><mt:else><__trans phrase="Assets"></mt:if>">
+              </td>
+            </tr>
+</mt:if>
+          </tbody>
+<mt:unless name="json">
+        </table>
+      </div>
+    </div>
+    <div id="actions-bar" class="row line">
+  <mt:var name="list_actions">
+    </div>
+  </div>
+</div>
+
+<mt:setvarblock name="js_include" append="1">
+<mt:script path="js/list_table.js">
+</mt:setvarblock>
+
+<mt:setvarblock name="jq_js_include" append="1">
+isModal = getByID("list-assets-dialog");
+
+function toggleClassOfPaginationContainer() {
+  var $paginationContainer = jQuery('.pagination__mobile').parents('div').first();
+  var $pageItems = $paginationContainer.find('.pagination__mobile .page-item');
+  if (jQuery(window).width() < 400 && $pageItems.length >= 7) {
+    $paginationContainer.addClass('w-100');
+    $pageItems.addClass('me-auto');
+  } else {
+    $paginationContainer.removeClass('w-100');
+    $pageItems.removeClass('me-auto');
+  }
+}
+
+var checked = [];
+var currentPage = 1;
+
+function loadAssetList(offset) {
+  jQuery('.indicator, #listing-table-overlay').show();
+  jQuery('.pagination_container').hide();
+  jQuery('#asset-class').attr("disabled", "disabled");
+  jQuery('#search').attr("disabled", "disabled");
+  jQuery('#search-button').attr("disabled", "disabled");
+  <mt:unless name="can_multi">
+  jQuery('.actions-bar button.primary').attr('disabled','disabled').addClass('disabled');
+  </mt:unless>
+
+  var opts= {
+    offset: offset,
+    __mode: 'dialog_list_asset',
+    _type: 'asset',
+<mt:if name="edit_field">
+      edit_field: '<mt:var name="edit_field" escape="html">',
+</mt:if>
+<mt:if name="blog_id">
+      blog_id: <mt:var name="blog_id" escape="html">,
+</mt:if>
+<mt:if name="content_field_id">
+      content_field_id: '<mt:var name="content_field_id" escape="html">',
+</mt:if>
+      dialog_view: 1,
+<mt:if name="upload_mode">
+      upload_mode: '<mt:var name="upload_mode" escape="html">',
+</mt:if>
+    dialog: 1,
+    json: 1,
+    can_multi: <mt:var name="can_multi" default="0" escape="html">
+  };
+
+<mt:if name="filter" eq="userpic">
+    opts.filter = 'userpic';
+    opts.filter_val = '<mt:var name="filter_val" escape="html" escape="js">';
+<mt:else>
+  if(jQuery('#search').val().length > 0) {
+    opts.search = jQuery('#search').val();
+  }
+
+  if(jQuery('#asset-class').val().length > 0) {
+    opts.filter = 'class';
+    opts.filter_val = jQuery('#asset-class').val();
+  }
+  else {
+    opts.filter = '';
+    opts.filter_val = '';
+  }
+</mt:if>
+
+  var canPaginate = true;
+  jQuery.ajax({
+    type: 'POST',
+    contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+    url: '<mt:var name="script_url">',
+    dataType: 'json',
+    data: opts,
+    success: function(data) {
+      if (data.html) {
+        jQuery('#asset-table tbody').remove();
+        jQuery('#asset-table').append(data.html);
+        if (data.pager) {
+          renderPagination(data.pager);
+          renderPaginationForMobile(data.pager);
+        }
+        else {
+          canPaginate = false;
+        }
+      }
+    },
+    complete: function() {
+      jQuery('.indicator, #listing-table-overlay').hide();
+      if (canPaginate) {
+        jQuery('.pagination_container').show();
+      }
+      jQuery('#asset-class').prop('disabled', false);
+      jQuery('#search').prop('disabled', false);
+      jQuery('#search-button').prop('disabled', false);
+
+      jQuery('table.listing-table tbody tr input[name="id"]').on('change', function(){
+        if (jQuery('table.listing-table tbody tr input:checked').length > 0) {
+          // Enable submit button
+          jQuery('.actions-bar button.primary')
+            .prop('disabled', false)
+            .removeClass('disabled');
+        }
+        else {
+          // Disable submit button
+          jQuery('.actions-bar button.primary')
+            .attr('disabled','disabled')
+            .addClass('disabled');
+        }
+        saveChecked(currentPage);
+      });
+      <mt:if name="can_multi">
+      if(checked.length > 0 && currentPage in checked){
+        jQuery('table.listing-table tbody tr input[name="id"]').map(function(index, elm){
+          let id = jQuery(elm).closest('tr').attr('id');
+          if( id in checked[currentPage]){
+            jQuery(elm).prop('checked', true);
+          }
+        });
+      }
+      </mt:if>
+
+      toggleClassOfPaginationContainer();
+    },
+    error: function(xhr, status, error) {
+      console.log('error: ' + status + ":" + error);
+    }
+  });
+}
+
+function renderPagination(pager) {
+  var $pagination = jQuery('.pagination').empty();
+
+  if ( pager.rows == 0 ) {
+    return;
+  }
+
+  var usefirst = false;
+  var uselast = false;
+  var prevPos = 0;
+  var nextPos = 0;
+  var start;
+  var end;
+  var page = parseInt(pager.offset / pager.limit) + 1;
+  var maxPage = Math.ceil(pager.listTotal / pager.limit);
+  currentPage = page;
+
+  if ( page > 1 ) {
+    usefirst = true;
+    prevPos = pager.offset - pager.limit;
+    start = pager.offset + 1;
+  }
+  else {
+    prevPos = 0;
+    start = 1;
+  }
+
+  if (page < maxPage) {
+    uselast = true;
+    nextPos = pager.offset + pager.limit;
+    end = pager.offset + pager.limit;
+    last = (maxPage-1) * pager.limit;
+  }
+  else {
+    nextPos = pager.offset + pager.limit;
+    end = pager.listTotal;
+    last = (maxPage-1) * pager.limit;
+  }
+
+  $pagination.append('<li class="page-item"><a href="#" class="page-link pagenav to-start"><__trans phrase="Previous" escape="js"></a></li>');
+
+  if (page - 2 >= 1) {
+    $pagination.append('<li class="page-item first-last"><a href="#" class="page-link start">1</a></li>');
+  }
+  if (page - 3 >= 1) {
+    $pagination.append('<li class="page-item" aria-hidden="true">...</li>');
+  }
+
+  if (page - 1 >= 1) {
+    var firstLastClass = page - 1 == 1 ? ' first-last' : '';
+    $pagination.append('<li class="page-item' + firstLastClass + '"><a href="#" class="page-link to-start">' + String(page - 1) + '</a></li>');
+  }
+
+  $pagination.append('<li class="page-item active"><a href="#" class="page-link">' + page + '<span class="visually-hidden">(current)</span></a></li>');
+
+  if (page + 1 <= maxPage) {
+    var firstLastClass = page + 1 == maxPage ? ' first-last' : '';
+    $pagination.append('<li class="page-item' + firstLastClass + '"><a href="#" class="page-link to-end">' + String(page + 1) + '</a></li>');
+  }
+
+  if (page + 3 <= maxPage) {
+    $pagination.append('<li class="page-item" aria-hidden="true">...</li>');
+  }
+  if (page + 2 <= maxPage) {
+    $pagination.append('<li class="page-item first-last"><a href="#" class="page-link end">' + maxPage + '</a></li>');
+  }
+
+  $pagination.append('<li class="page-item"><a href="#" class="page-link pagenav to-end"><__trans phrase="Next" escape="js"></a></li>');
+
+  jQuery('a.start').on('click', function() {
+    saveChecked(page);
+    loadAssetList(0);
+    return false;
+  });
+  jQuery('a.to-start').on('click', function() {
+    if (!usefirst) {
+      return false;
+    }
+    saveChecked(page);
+    loadAssetList(prevPos);
+    return false;
+  });
+  jQuery('a.to-end').on('click', function() {
+    if (!uselast) {
+      return false;
+    }
+    saveChecked(page);
+    loadAssetList(nextPos);
+    return false;
+  });
+  jQuery('a.end').on('click', function() {
+    saveChecked(page);
+    loadAssetList(last);
+    return false;
+  });
+}
+
+function renderPaginationForMobile(pager) {
+  var $paginationMobile = jQuery('.pagination__mobile').empty();
+
+  if ( pager.rows == 0 ) {
+    return;
+  }
+
+  var page = parseInt(pager.offset / pager.limit) + 1;
+  var maxPage = Math.ceil(pager.listTotal / pager.limit);
+  var start = page > 1 ? pager.offset + 1 : 1;
+  var end = page < maxPage ? pager.offset + pager.limit : pager.listTotal;
+
+  var page_status = trans('[_1] - [_2] of [_3]', start, end, pager.listTotal);
+  jQuery('#page-status').text(page_status);
+
+  var setMrAuto = jQuery(window).width() < 400 && maxPage >= 5;
+
+  $paginationMobile.append(
+    generateMobilePageLinkTriangle(page - 1, setMrAuto, false)
+  );
+  if (page - 4 >= 1 && maxPage - page < 1) {
+    $paginationMobile.append(
+      generateMobilePageLink(page - 4, setMrAuto)
+    );
+  }
+  if (page - 3 >= 1 && maxPage - page < 2) {
+    $paginationMobile.append(
+      generateMobilePageLink(page - 3, setMrAuto)
+    );
+  }
+  if (page - 2 >= 1) {
+    $paginationMobile.append(
+      generateMobilePageLink(page - 2, setMrAuto)
+    );
+  }
+  if (page - 1 >= 1) {
+    $paginationMobile.append(
+      generateMobilePageLink(page - 1, setMrAuto)
+    );
+  }
+  $paginationMobile.append(
+    generateMobilePageLink(page, setMrAuto, true)
+  );
+  if (page + 1 <= maxPage) {
+    $paginationMobile.append(
+      generateMobilePageLink(page + 1, setMrAuto)
+    );
+  }
+  if (page + 2 <= maxPage) {
+    $paginationMobile.append(
+      generateMobilePageLink(page + 2, setMrAuto)
+    );
+  }
+  if (page + 3 <= maxPage && page <= 2) {
+    $paginationMobile.append(
+      generateMobilePageLink(page + 3, setMrAuto)
+    );
+  }
+  if (page + 4 <= maxPage && page <= 1) {
+    $paginationMobile.append(
+      generateMobilePageLink(page + 4, setMrAuto)
+    );
+  }
+  $paginationMobile.append(
+    generateMobilePageLinkTriangle(page + 1, false, true)
+  );
+
+  jQuery('.pagination__mobile a.page-link').on('click', function () {
+    var nextPage = this.dataset.mtNextPage || this.text;
+    if (nextPage.match(/\d+/) && nextPage > 0 && nextPage <= maxPage) {
+      saveChecked(page);
+      loadAssetList((nextPage - 1) * pager.limit);
+    }
+    return false;
+  });
+}
+
+function generateMobilePageLink(page, setMrAuto, current) {
+  var mrAutoClass = setMrAuto ? ' me-auto' : '';
+  if (current) {
+    return '<li class="page-item' + mrAutoClass + ' active"><a href="#" class="page-link">' + page + '<span class="visually-hidden">(current)</span></a></li>';
+  } else {
+    return '<li class="page-item' + mrAutoClass + '"><a href="#" class="page-link">' + page + '</a></li>';
+  }
+}
+
+function generateMobilePageLinkTriangle(page, setMrAuto, next) {
+  var mrAutoClass = setMrAuto ? ' me-auto' : '';
+  var iconId = next ? 'ic_tri-right' : 'ic_tri-left';
+  return '<li class="page-item' + mrAutoClass + '"><a class="page-link" href="#" aria-hidden="true" data-mt-next-page="' + page + '"><svg role="img" class="mt-icon--inverse mt-icon--sm"><title>next</title><use xlink:href="<mt:var name="static_uri">/images/sprite.svg#' + iconId + '"></use></svg></a></li>'
+}
+
+function saveChecked(page) {
+  checked[page] = [];
+  jQuery('table.listing-table tbody tr input:checked').each(function() {
+    var id = jQuery(this).parents('tr').attr('id');
+    checked[page][id] = jQuery(this).val();
+  });
+}
+
+jQuery('#asset-class').on('change', function() {
+  checked = [];
+  loadAssetList(0);
+});
+
+<mt:unless name="filter" eq="userpic">
+jQuery('#modal-search').on('submit', function(){
+  checked = [];
+  loadAssetList(0);
+  jQuery('.search-reset').removeClass('hidden').show();
+  return false;
+})
+
+
+jQuery('.search-reset').on('click', function() {
+  checked = [];
+  jQuery('#search').val('');
+  loadAssetList(0);
+  jQuery('.search-reset').addClass('hidden').hide();
+});
+</mt:unless>
+
+jQuery('.actions-bar button.primary').on('click', function() {
+  if ( currentPanel != '#list-asset-panel' ) {
+    return;
+  }
+
+<mt:if name="can_multi">
+  var ids = [];
+  var page_keys = Object.keys(checked);
+  for(i=0; i < page_keys.length; i++) {
+    var item_keys = Object.keys(checked[page_keys[i]]);
+    for(j=0;j < item_keys.length; j++) {
+      ids.push(checked[page_keys[i]][item_keys[j]]);
+    }
+  }
+  // Set asset ID
+  jQuery('#select_asset input[name="id"]').val(ids.join(','));
+<mt:else>
+  var item_keys = Object.keys(checked[currentPage]);
+  jQuery('#select_asset input[name="id"]').val(checked[currentPage][item_keys[0]]);
+</mt:if>
+})
+
+jQuery('#asset-table').on('click', 'td.cb', function (e) {
+  if (!MT.Util.isMobileView()) {
+    return;
+  }
+  if (e.target.tagName == 'INPUT' && (e.target.type == 'checkbox' || e.target.type == 'radio')) {
+    return;
+  }
+  var $input = jQuery(this).find('div.form-check input');
+  $input.trigger('click');
+
+  MT.Util.refreshModalBodyOnIos();
+
+  return false;
+});
+
+jQuery('#asset-table').on('click', 'td:not(.cb)', function (e) {
+  if (!MT.Util.isMobileView()) {
+    return;
+  }
+  if (e.target.tagName == 'A') {
+    return;
+  }
+  var $link = jQuery(this).parents('tr').find('a');
+  if ($link.length > 0) {
+    $link.get(0).click();
+    return false;
+  }
+});
+
+jQuery('#list-asset-panel').on('changePanel', function(){
+  if(jQuery('table.listing-table tbody tr input[name="id"]:checked').length > 0){
+    jQuery('.actions-bar button.primary').prop('disabled', false).removeClass('disabled');
+  }
+});
+
+if (MT.Util.isIos()) {
+  jQuery(window).on('resize orientationchange', toggleClassOfPaginationContainer);
+} else {
+  jQuery(window).on('resize', toggleClassOfPaginationContainer);
+}
+
+// Initial loading
+loadAssetList(0);
+
+</mt:setvarblock>
+
+</mt:unless>

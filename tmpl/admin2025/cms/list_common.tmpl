@@ -1,0 +1,445 @@
+<mt:if name="page_title">
+<mt:setvarblock name="page_title"><mt:var name="page_title" escape="html"></mt:setvarblock>
+<mt:else>
+<mt:setvarblock name="page_title"><__trans phrase="Manage [_1]" params="<mt:var name="object_label_plural" escape="html">"></mt:setvarblock>
+</mt:if>
+<mt:setvar name="show_display_options_link" value="0">
+
+<mt:if name="build_user_menus">
+<mt:setvarblock name="related_content">
+  <mtapp:widget
+     id="user-properties"
+     label="<__trans phrase="User properties">">
+    <mt:include name="include/users_content_nav.tmpl">
+  </mtapp:widget>
+</mt:setvarblock>
+</mt:if>
+
+<mt:if name="use_actions">
+  <mt:if name="content_actions">
+    <mt:setvarblock name="content_header">
+    <ul id="content-actions" class="list-inline action-link-list">
+    <mt:loop name="content_actions">
+      <li class="list-inline-item">
+        <a href="<mt:var name="url" default="javascript:void(0)">"
+          class="icon-left d-inline-block<mt:if name="class"> <mt:var name="class"></mt:if><mt:if name="dialog"> mt-open-dialog mt-modal-open</mt:if>"
+          <mt:if name="dialog">data-mt-modal-large</mt:if>
+          <mt:if name="id"> id="<mt:var name="id">"</mt:if>
+          <mt:if name="confirm_msg"> onclick="return confirm('<mt:var name="confirm_msg" escape="js">')"</mt:if>
+        >
+        <mt:setvarblock name="escaped_label"><mt:var name="label" escape="html"></mt:setvarblock>
+        <mt:if name="icon">
+          <mtapp:svgicon id="$icon" size="sm" title="$escaped_label">
+        <mt:else>
+          <mtapp:svgicon id="ic_setting" size="sm" title="$escaped_label">
+        </mt:if>
+          <mt:var name="escaped_label">
+        </a>
+      </li>
+    </mt:loop>
+    </ul>
+    </mt:setvarblock>
+  </mt:if>
+</mt:if>
+
+<mt:setvarblock name="listing_footer_content"></mt:setvarblock>
+
+<mt:loop name="list_headers">
+  <mt:if name="filename">
+    <mt:include name="$filename" component="$component">
+  </mt:if>
+</mt:loop>
+
+<mt:unless name="system_msg">
+<mt:setvarblock name="system_msg" append="1">
+<div id="msg-block"></div>
+</mt:setvarblock>
+</mt:unless>
+
+<mt:include name="include/basic_filter_forms.tmpl">
+
+<mt:setvarblock name="page_content">
+
+  <div data-is="list-top"></div>
+
+  <mt:if name="listing_footer_content">
+  <div class="row d-none d-md-flex">
+    <div class="col-12">
+      <div class="card">
+        <ul id="listing-footer" class="footer-links mod list-group list-group-flush">
+        <mt:var name="listing_footer_content">
+        </ul>
+      </div>
+    </div>
+  </div>
+  </mt:if>
+</mt:setvarblock>
+
+<mt:setvarblock name="css_include" append="1">
+<mt:stylesheet path="css/list_common.css">
+<mt:stylesheet path="css/msg-balloon.css">
+</mt:setvarblock>
+
+<mt:setvarblock name="js_include" append="1">
+<mt:script type="text/javascript" path="js/listing/list_client.js">
+<mt:script type="text/javascript" path="js/listing/list_action_client.js">
+<mt:script type="text/javascript" path="js/listing/list_data.js">
+<mt:script type="text/javascript" path="js/listing/list_store.js">
+
+<mt:if name="config.useriot">
+  <mt:unless name="debug_riot">
+  <mt:script type="text/javascript" path="riot/riot.min.js">
+  <mt:script type="text/javascript" path="js/ss/ss.js">
+  <mt:script type="text/javascript" path="js/admin2025/listing/listing.js">
+  <mt:else>
+  <mt:script type="riot/tag" path="js/ss/tag/ss.tag">
+  <mt:script type="riot/tag" path="js/admin2025/listing/tag/raw.tag">
+  <mt:script type="riot/tag" path="js/admin2025/listing/tag/list-top.tag">
+  <mt:script type="riot/tag" path="js/admin2025/listing/tag/display-options.tag">
+  <mt:script type="riot/tag" path="js/admin2025/listing/tag/display-options-for-mobile.tag">
+  <mt:script type="riot/tag" path="js/admin2025/listing/tag/list-actions.tag">
+  <mt:script type="riot/tag" path="js/admin2025/listing/tag/list-actions-for-pc.tag">
+  <mt:script type="riot/tag" path="js/admin2025/listing/tag/list-actions-for-mobile.tag">
+  <mt:script type="riot/tag" path="js/admin2025/listing/tag/list-pagination.tag">
+  <mt:script type="riot/tag" path="js/admin2025/listing/tag/list-pagination-for-pc.tag">
+  <mt:script type="riot/tag" path="js/admin2025/listing/tag/list-pagination-for-mobile.tag">
+  <mt:script type="riot/tag" path="js/admin2025/listing/tag/list-filter.tag">
+  <mt:script type="riot/tag" path="js/admin2025/listing/tag/list-table.tag">
+  <mt:script type="text/javascript" path="riot/riot-compiler.js">
+  </mt:unless>
+<mt:else>
+  <mt:script type="module" path="js/build/listing.js">
+</mt:if>
+
+<mt:loop name="filter_types">
+<mt:setvarblock name="label"><mt:var name="label" encode_html="1"></mt:setvarblock>
+<script id="filter_types_field_<mt:var name="type">" type="text/html"><mt:var name="field" mteval="1"></script>
+</mt:loop>
+
+<script>
+var listStore;
+
+jQuery.event.special.listReady = {
+  setup: function ( data, ns ) {
+    return false;
+  },
+  teardown: function ( ns ) {
+    return false;
+  }
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+  var listColumns = <mt:var name="list_columns_json">;
+  var listSortBy = '<mt:var name="sort_by" escape="js">';
+  var listSortOrder = '<mt:var name="sort_order" escape="js">';
+
+  var objectType = '<mt:var name="object_type" escape="js">';
+  var objectTypeForTableClass = '<mt:var name="object_type_for_table_class" escape="js">';
+
+  var listClient = new ListClient({
+    url: '<mt:var name="script_url">',
+    siteId: '<mt:var name="blog_id">',
+    datasource: '<mt:var name="list_type" escape="js">',
+    objectType: objectType,
+    magicToken: '<mt:var name="magic_token">',
+    returnArgs: '<mt:var name="return_args">',
+    subType: '<mt:if name="subtype"><mt:var name="subtype"></mt:if>'
+  });
+
+  var listActionClient = new ListActionClient({
+    url: listClient.url,
+    siteId: listClient.siteId,
+    datasource: listClient.datasource,
+    objectType: listClient.objectType,
+    magicToken: listClient.magicToken,
+    returnArgs: listClient.returnArgs,
+    subType: '<mt:if name="subtype"><mt:var name="subtype"></mt:if>'
+  });
+
+  <mt:if name="zero_state">
+  var zeroStateLabel = '<mt:var name="zero_state" escape="js">';
+  <mt:else>
+  var zeroStateLabel = '<mt:var name="object_label" lower_case="1" escape="js">';
+  </mt:if>
+
+  var buttonActions = {};
+  <mt:loop name="button_actions">
+  buttonActions['<mt:var name="key">'] = {
+    type:'core',
+    js_message: '<__trans phrase="<mt:var name="js_message">" escape="js">'
+    <mt:if name="action_mode">,mode:'<mt:var name="action_mode">'</mt:if>
+    <mt:if name="input">,input:'<mt:var name="input_label" escape="js">'</mt:if>
+    <mt:if name="continue_prompt">,continue_prompt:"<mt:var name="continue_prompt" escape="js">"</mt:if>
+    <mt:if name="no_prompt">,no_prompt:"<mt:var name="no_prompt" escape="js">"</mt:if>
+    <mt:if name="dialog">,dialog:1</mt:if>
+    <mt:if name="js">,js:'<mt:var name="js" escape="js">'</mt:if>
+    <mt:if name="min">,min:'<mt:var name="min" escape="js">'</mt:if>
+    <mt:if name="max">,max:'<mt:var name="max" escape="js">'</mt:if>
+    <mt:if name="xhr">, xhr:true</mt:if>
+    <mt:if name="label">, label: '<mt:var name="label" escape="js">'</mt:if>
+    <mt:if name="mobile">, mobile: true</mt:if>
+  };
+  </mt:loop>
+
+  var listActions = {};
+  <mt:loop name="list_actions">
+  listActions['<mt:var name="key">'] = {
+    type:'core'
+    <mt:if name="action_mode">,mode:'<mt:var name="action_mode">'</mt:if>
+    <mt:if name="input">,input:'<mt:var name="input_label" escape="js">'</mt:if>
+    <mt:if name="continue_prompt">,continue_prompt:"<mt:var name="continue_prompt" escape="js">"</mt:if>
+    <mt:if name="no_prompt">,no_prompt:"<mt:var name="no_prompt" escape="js">"</mt:if>
+    <mt:if name="dialog">,dialog:1</mt:if>
+    <mt:if name="js">,js:'<mt:var name="js" escape="js">'</mt:if>
+    <mt:if name="min">,min:'<mt:var name="min" escape="js">'</mt:if>
+    <mt:if name="max">,max:'<mt:var name="max" escape="js">'</mt:if>
+    <mt:if name="xhr">, xhr:true</mt:if>
+    <mt:if name="label">, label: '<mt:var name="label" escape="js">'</mt:if>
+    <mt:if name="mobile">, mobile: true</mt:if>
+  };
+  </mt:loop>
+
+  var moreListActions = {};
+  <mt:loop name="more_list_actions">
+  moreListActions['<mt:var name="key">'] = {
+    type:'core'
+    <mt:if name="action_mode">,mode:'<mt:var name="action_mode">'</mt:if>
+    <mt:if name="input">,input:'<mt:var name="input_label" escape="js">'</mt:if>
+    <mt:if name="continue_prompt">,continue_prompt:"<mt:var name="continue_prompt" escape="js">"</mt:if>
+    <mt:if name="no_prompt">,no_prompt:"<mt:var name="no_prompt" escape="js">"</mt:if>
+    <mt:if name="dialog">,dialog:1</mt:if>
+    <mt:if name="js">,js:'<mt:var name="js" escape="js">'</mt:if>
+    <mt:if name="min">,min:'<mt:var name="min" escape="js">'</mt:if>
+    <mt:if name="max">,max:'<mt:var name="max" escape="js">'</mt:if>
+    <mt:if name="xhr">, xhr:true</mt:if>
+    <mt:if name="label">, label: '<mt:var name="label" escape="js">'</mt:if>
+    <mt:if name="mobile">, mobile: true</mt:if>
+    };
+  </mt:loop>
+
+  <mt:if name="has_list_actions">
+  var hasListActions = true;
+  <mt:else>
+  var hasListActions = false;
+  </mt:if>
+
+  <mt:if name="has_pulldown_actions">
+  var hasPulldownActions = true;
+  <mt:else>
+  var hasPulldownActions = false;
+  </mt:if>
+
+  <mt:if name="has_mobile_pulldown_actions">
+  var hasMobilePulldownActions = true;
+  <mt:else>
+  var hasMobilePulldownActions = false;
+  </mt:if>
+
+  <mt:if name="use_actions">
+  var useActions = true;
+  <mt:else>
+  var useActions = false;
+  </mt:if>
+
+  <mt:if name="action_label">
+    var singular = '<mt:var name="action_label">';
+  <mt:else>
+    var singular = '<mt:var name="object_label" lower_case="1" escape="js">';
+  </mt:if>
+
+  <mt:if name="action_label_plural">
+  var plural = '<mt:var name="action_label_plural">';
+  <mt:else>
+  var plural = '<mt:var name="object_label_plural" lower_case="1" escape="js">';
+  </mt:if>
+
+  var objectLabel = '<mt:var name="object_label" escape="js">';
+
+  var filterTypes = [];
+  <mt:loop name="filter_types">
+  filterTypes.push({
+    baseType: '<mt:var name="base_type">',
+    <mt:if name="editable">editable: true,</mt:if>
+    field: document.getElementById("filter_types_field_<mt:var name="type">").textContent,
+    label: '<mt:var name="label" encode_html="1" encode_js="1">',
+    <mt:if name="singleton">singleton: true,</mt:if>
+    type: '<mt:var name="type">'
+  });
+  </mt:loop>
+  var filters = <mt:var name="filters">;
+  var initialFilter = <mt:var name="initial_filter">;
+  var allpassFilter = <mt:var name="allpass_filter">;
+
+  var localeCalendarHeader = [ <__trans phrase="_LOCALE_CALENDAR_HEADER_"> ];
+
+  <mt:if name="disable_user_disp_option">
+  var disableUserDispOption = true;
+  <mt:else>
+  var disableUserDispOption = false;
+  </mt:if>
+
+  <mt:if name="use_filters">
+  var useFilters = true;
+  <mt:else>
+  var useFilters = false;
+  </mt:if>
+
+  listStore = new ListStore({
+    listClient: listClient,
+
+    columns: listColumns,
+    limit: <mt:var name="limit" escape="js">,
+    page: 1,
+    sortBy: listSortBy,
+    sortOrder: listSortOrder,
+
+    allpassFilter: allpassFilter,
+    currentFilter: initialFilter,
+    filters: filters,
+
+    disableUserDispOption: disableUserDispOption
+  });
+
+  const opts = {
+    listActionClient: listActionClient,
+
+    zeroStateLabel: zeroStateLabel,
+
+    buttonActions: buttonActions,
+    hasListActions: hasListActions,
+    hasPulldownActions: hasPulldownActions,
+    hasMobilePulldownActions: hasMobilePulldownActions,
+    listActions: listActions,
+    moreListActions: moreListActions,
+    plural: plural,
+    useActions: useActions,
+    useFilters: useFilters,
+    singular: singular,
+    store: listStore,
+
+    filterTypes: filterTypes,
+
+    localeCalendarHeader: localeCalendarHeader,
+    objectLabel: objectLabel,
+    objectType: objectType,
+    objectTypeForTableClass: objectTypeForTableClass,
+    disableUserDispOption: disableUserDispOption
+  };
+
+<mt:if name="config.useriot">
+  riot.mount('list-top', opts);
+<mt:else>
+  svelteMountListTop(opts);
+</mt:if>
+});
+
+var initial_load = true;
+
+function handleMessages( data, additional_class ) {
+  if ( initial_load ) {
+    initial_load = false;
+  }
+  else {
+    jQuery('#msg-block .msg-success').remove();
+    jQuery('#msg-container .msg-success').remove();
+  }
+
+  if ( data.error ) {
+    var error_cls = 'error';
+    if ( additional_class ) error_cls += ' ' + additional_class;
+    showMessage( data.error, error_cls);
+    return false;
+  }
+  if ( !data.result ) return false;
+  var messages = data.result.messages;
+  if ( !data.result.messages ) return true;
+  for ( var i=0; i < messages.length; i++ ) {
+    var msg   = messages[i];
+    var cls = msg.cls;
+    if ( additional_class ) cls += ' ' + additional_class;
+    showMessage(msg.msg, cls);
+  }
+  return true;
+}
+
+function loginAgain(fn) {
+  jQuery(window)
+    .off('dialogReady.loginAgain')
+    .on('dialogReady.loginAgain', function(){
+      var dialog = jQuery('#mt-dialog-iframe').contents();
+      dialog
+        .find('#sign-in-button')
+          .text('<__trans phrase="Continue" escape="js">')
+          .off()
+          .on('click', function(){
+            dialog.find('#msg-block').empty();
+            jQuery.ajax({
+              type: 'POST',
+              contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+              url: '<mt:var name="script_url">',
+              dataType: 'json',
+              data: {
+                __mode: 'login_json',
+                username: dialog.find('#username').val(),
+                password: dialog.find('#password').val()
+              },
+              success: function(data) {
+                var token = data.result['magic_token'];
+                if (token) {
+                  jQuery('input[name="magic_token"]').val(token);
+                  jQuery('a[href*="magic_token="]').each(function() {
+                    var replace = jQuery(this)
+                      .attr('href')
+                      .replace(/magic_token=[\d\w]+/, 'magic_token=' + token);
+                    jQuery(this).attr('href', replace);
+                  });
+                }
+                jQuery.fn.mtModal.close();
+                fn(data);
+                return false;
+              },
+              error: function(data) {
+                dialog.find('#password').val('');
+                dialog
+                  .find('#msg-block')
+                  .append('<div class="msg msg-error"><__trans phrase="Invalid login." escape="js"></div>');
+              }
+            });
+            return false;
+          });
+    });
+  jQuery.fn.mtModal.open(
+    '<mt:var name="script_url">?__mode=dashboard',
+    { large: true }
+  );
+}
+
+function showMessage( content, cls ){
+  var error_block;
+  jQuery('#msg-block').append(
+    error_block = jQuery('<div />')
+    .attr('class', 'alert alert-dismissible alert-' + cls )
+    .append(
+      jQuery('<button class="btn-close" data-bs-dismiss="alert" aria-label="Close" />')
+        .append('<span aria-hidden="true">&times;</span>')
+    )
+    .append(content)
+  );
+  return error_block;
+}
+
+<mt:if name="system_messages">
+jQuery(document).ready(function () {
+  var system_messages = <mt:var name="system_messages">;
+  for ( var i=0; i < system_messages.length; i++ ) {
+      var message = system_messages[i];
+      showMessage( message.msg, message.cls );
+  }
+});
+</mt:if>
+
+</script>
+</mt:setvarblock>
+
+<mt:include name="layout/default.tmpl">
+<mt:var name="layout">
