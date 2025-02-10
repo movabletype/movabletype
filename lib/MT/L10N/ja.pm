@@ -3791,6 +3791,7 @@ use vars qw( @ISA %Lexicon );
 	'Advanced Archive Publishing' => '高度な公開の設定',
 	'Allow properly configured template modules to be cached to enhance publishing performance.' => '再構築の速度向上のために、テンプレートモジュール毎のキャッシュ設定を有効にする',
 	'Allow to change at upload' => 'アップロード時に変更を許可する',
+	'Trim spaces before and after path' => 'パスの前後の空白を除去する',
 	'Apache Server-Side Includes' => 'ApacheのSSI',
 	'Archive Settings' => 'アーカイブ設定',
 	'Archive URL' => 'アーカイブURL',
@@ -3898,6 +3899,7 @@ use vars qw( @ISA %Lexicon );
 	q{The path where your index files will be published. Do not end with '/' or '\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog} => q{インデックスファイルが公開されるパスです。末尾には'/'や'\'を含めません。},
 	q{Used to generate URLs (permalinks) for this child site's archived entries. Choose one of the archive types used in this child site's archive templates.} => q{記事にリンクするときのURLとして使われます。このサイトで使われているアーカイブテンプレートの中から選択してください。},
 	q{Used to generate URLs (permalinks) for this site's archived entries. Choose one of the archive types used in this site's archive templates.} => q{記事にリンクするときのURLとして使われます。このサイトで使われているアーカイブテンプレートの中から選択してください。},
+	q{This should be enabled as deleting files or directory will fail if the path contains spaces.} => q{パスにスペースが含まれているとファイルまたはディレクトリの削除が失敗するため、有効にしてください。},
 
 ## tmpl/admin2023/cms/cfg_rebuild_trigger.tmpl
 	'Action' => 'アクション',
