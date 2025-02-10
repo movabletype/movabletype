@@ -234,15 +234,7 @@ sub contents_label_plural {
     MT->translate("Entries");
 }
 
-sub basename_prefix {
-    my $this   = shift;
-    my ($dash) = @_;
-    my $prefix = 'cat';
-    if ($dash) {
-        $prefix .= MT->instance->config('CategoryNameNodash') ? '' : '-';
-    }
-    $prefix;
-}
+sub basename_prefix { 'cat'; }
 
 sub ping_url_list {
     my $cat = shift;

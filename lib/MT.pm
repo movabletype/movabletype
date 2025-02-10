@@ -1097,7 +1097,6 @@ sub i18n_default_settings {
         'TimeOffset'         => 'DEFAULT_TIMEZONE',
         'ExportEncoding'     => 'EXPORT_ENCODING',
         'LogExportEncoding'  => 'LOG_EXPORT_ENCODING',
-        'CategoryNameNodash' => 'CATEGORY_NAME_NODASH',
         'PublishCharset'     => 'PUBLISH_CHARSET',
         'FeedbackURL'        => 'FEEDBACK_URL',
     );

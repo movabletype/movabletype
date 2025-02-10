@@ -2827,7 +2827,6 @@ use vars qw( @ISA %Lexicon );
 	'Generated a website [_1]' => '作成されたウェブサイト: [_1]',
 	'Generic Website' => '標準のウェブサイト',
 	'Granting new role to system administrator...' => 'システム管理者に新しいロールを付与しています...',
-	'Migrating DefaultSiteURL/DefaultSiteRoot to website...' => 'DefaultSiteURL/DefaultSiteRootをウェブサイト用に移行しています...',
 	'Migrating [_1]([_2]).' => '[_1]([_2])を移行しています。',
 	'Migrating existing [quant,_1,blog,blogs] into websites and their children...' => '既存のブログをウェブサイトで管理できるように移行しています。',
 	'Migrating mtview.php to MT5 style...' => 'mtview.phpをMT5で利用できるように移行しています...',
