@@ -2227,7 +2227,7 @@ BEGIN {
             'DisableMetaRefresh' => { default => 1 },
             'DynamicTemplateAllowPHP' => { default => 1 },
             'DynamicTemplateAllowSmartyTags' => { default => 1 },
-            'AdminThemeId' => { default => 'admin2023' },
+            'AdminThemeId' => { default => 'admin2025' },
             'FallbackAdminThemeIds' => { type => 'ARRAY', default => 'admin2023' },
             'PHPErrorLogFilePath' => undef,
             'LogEachFilePublishedInTheBackground' => undef,
