@@ -41,6 +41,9 @@ Adjustments
   --header-height: 48px;
   --left-bar-toggle-width: 13px;
   --left-bar-mouseover-width: 13px;
+  --modal-z-index: 1102;
+  --left-bar-z-index: 1101;
+  --header-z-index: 1101;
 }
 
 html{
@@ -140,7 +143,7 @@ li{
   position: fixed;
   top: 0px;
   background-color: #FFFFFF;
-  z-index: 2;
+  z-index: var(--header-z-index);
   width: 100%;
 }
 
@@ -281,7 +284,7 @@ li{
   @extend %mt-primaryNavigationAnimation;
   position: fixed;
   height: 100vh;
-  z-index: 3;
+  z-index: var(--left-bar-z-index);
   background-color: $white;
 
   &.minimal {
@@ -2603,7 +2606,7 @@ li.nav-item {
   width: 313px;
   height: 500px;
   background-color: #ffffff;
-  z-index: 1001;
+  z-index: var(--modal-z-index);
   display: block;
   overflow: auto;
   border-width: 1px 1px 1px 0px;
@@ -2696,7 +2699,7 @@ li.nav-item {
   width: 400px;
   height: auto;
   background-color: #ffffff;
-  z-index: 1002;
+  z-index: var(--modal-z-index);
   display: block;
   overflow: visible;
   border-width: 1px 1px 1px 0px;
@@ -2790,7 +2793,7 @@ li.nav-item {
   width: 100vw;
   height: 100vh;
   background-color: rgba(0, 0, 0, 0.5);
-  z-index: 1001;
+  z-index: var(--modal-z-index);
 }
 
 .search-button-modal {
@@ -2800,7 +2803,7 @@ li.nav-item {
   width: 100vw;
   height: auto;
   background-color: #ffffff;
-  z-index: 1002;
+  z-index: var(--modal-z-index);
   display: block;
   overflow: auto;
   border-width: 1px 1px 1px 0px;
@@ -2922,7 +2925,7 @@ li.nav-item {
   height: 100vh;
   overflow: hidden;
   background-color: #ffffff;
-  z-index: 1001;
+  z-index: var(--modal-z-index);
   display: block;
   overflow: auto;
   border-width: 1px 1px 1px 0px;
