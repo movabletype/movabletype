@@ -5052,8 +5052,8 @@ sub setup_editor_param {
 
         if ( %{ $param->{editors} } ) {
             require MT::Util::Editor;
-            $param->{wysiwyg_editor}  = lc(MT::Util::Editor::current_wysiwyg_editor());
-            $param->{source_editor}   = lc(MT::Util::Editor::current_source_editor());
+            $param->{wysiwyg_editor}  = lc(MT::Util::Editor::current_wysiwyg_editor($app));
+            $param->{source_editor}   = lc(MT::Util::Editor::current_source_editor($app));
             $param->{editor_strategy} = lc($app->config('EditorStrategy'));
         }
         else {

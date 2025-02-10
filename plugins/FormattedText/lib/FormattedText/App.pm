@@ -21,7 +21,7 @@ sub is_enabled {
     return $status if defined $status;
 
     require MT::Util::Editor;
-    my $current_editor = lc(MT::Util::Editor::current_wysiwyg_editor());
+    my $current_editor = lc(MT::Util::Editor::current_wysiwyg_editor($app));
     my $settings       = $app->registry( 'editors', $current_editor );
     $status = $settings->{template}
         && $settings->{formatted_text}{enabled} ? 1 : 0;
