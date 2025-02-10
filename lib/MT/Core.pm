@@ -1891,7 +1891,7 @@ BEGIN {
             'ExportTempDir'          => { default => undef },
             'WYSIWYGEditor'          => undef,
             'SourceEditor'           => undef,
-            'Editor'                 => { default => 'tinymce', },
+            'Editor'                 => { default => 'mt_rich_text_editor', },
             'EditorStrategy'         => { default => 'Multi', },
             'EntriesPerRebuild'      => { default => 40, },
             'UseNFSSafeLocking'      => { default => 0, },

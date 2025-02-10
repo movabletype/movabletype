@@ -101,9 +101,6 @@ Editor = new Class( Component, {
     },
 
 
-    reload: function() {},
-
-
     updateToolbar: function() {},
 
 
