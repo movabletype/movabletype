@@ -647,7 +647,7 @@ sub edit {
     }
 
     $app->setup_editor_param($param);
-    if ( $app->archetype_editor_is_enabled ) {
+    if ( $app->archetype_editor_is_enabled($param) ) {
         $app->sanitize_tainted_param( $param, [qw(text text_more)] );
     }
 

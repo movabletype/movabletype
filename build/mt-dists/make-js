@@ -1,7 +1,7 @@
 #!/usr/bin/env perl -w
 
 use strict;
-
+use warnings;
 use lib 'lib';
 use lib 'extlib';
 use open qw(:utf8);
@@ -70,8 +70,8 @@ my @files = (
 my $addon_path = File::Spec->catdir('addons');
 local *DH;
 my @addons;
-if ( opendir DH, $addon_path ) {
-    my @p = readdir DH;
+if ( opendir my $dh, $addon_path ) {
+    my @p = readdir $dh;
     foreach my $p (@p) {
         next if $p eq '.' || $p eq '..';
         my $full_path = File::Spec->catdir( $addon_path, $p );
@@ -95,13 +95,13 @@ if ( opendir DH, $addon_path ) {
             }
         }
     }
-    closedir DH;
+    closedir $dh;
 }
 
 my $plugin_path = File::Spec->catdir('plugins');
 my @plugins;
-if ( opendir DH, $plugin_path ) {
-    my @p = readdir DH;
+if ( opendir my $dh, $plugin_path ) {
+    my @p = readdir $dh;
     foreach my $p (@p) {
         next if $p eq '.' || $p eq '..';
         my $full_path = File::Spec->catdir( $plugin_path, $p );
@@ -109,7 +109,7 @@ if ( opendir DH, $plugin_path ) {
             push @plugins, $p;
         }
     }
-    closedir DH;
+    closedir $dh;
 }
 
 my $js = '';

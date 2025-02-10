@@ -460,8 +460,8 @@ sub _remove_news_widget_cache {
 sub _uri_unescape_utf8 {
     my ($text) = @_;
     unless ($MT::Upgrade::CLI) {
-        use URI::Escape;
-        $text = uri_unescape($text);
+        require URI::Escape;
+        $text = URI::Escape::uri_unescape($text);
     }
     return MT::Util::Encode::decode_utf8_unless_flagged($text);
 }

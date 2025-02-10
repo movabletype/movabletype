@@ -4,7 +4,6 @@ use strict;
 use warnings;
 use FindBin;
 use lib "$FindBin::Bin/lib"; # t/lib
-use Test::More;
 use MT::Test::Env;
 my $test_env;
 BEGIN {

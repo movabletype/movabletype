@@ -7,6 +7,7 @@
 # $Id$
 
 use strict;
+use warnings;
 use lib 'extlib', 'lib';
 use ExtUtils::Manifest qw( maniread manicopy mkmanifest );
 use File::Copy;

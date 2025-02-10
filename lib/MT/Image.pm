@@ -150,6 +150,8 @@ sub _needs_rescan {
     my ($class, $exif) = @_;
     require MT::Asset;
     my $ext = $exif->GetValue('FileTypeExtension') or return;
+    # riff represents various things such as webp, wave, avi...
+    return 1 if lc $ext eq 'riff';
     my $handler = MT::Asset->handler_for_file("dummy.$ext") or return;
     return $handler =~ /^MT::Asset::(?:Image|Video)/;
 }

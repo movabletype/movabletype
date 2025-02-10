@@ -34,7 +34,7 @@ sub send {
     my %hdrs = map { $_ => $hdrs_arg->{$_} } keys %$hdrs_arg;
     foreach my $h ( keys %hdrs ) {
         if ( ref( $hdrs{$h} ) eq 'ARRAY' ) {
-            map {y/\n\r/  /} @{ $hdrs{$h} };
+            y/\n\r/  / for @{ $hdrs{$h} };
         }
         else {
             $hdrs{$h} =~ y/\n\r/  / unless ( ref( $hdrs{$h} ) );

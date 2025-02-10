@@ -478,7 +478,7 @@ sub dialog_select_website {
     if (   !$user->is_superuser
         && !$user->permissions(0)->can_do('edit_templates') )
     {
-        use MT::Permission;
+        require MT::Permission;
         $args->{join} = MT::Permission->join_on( 'blog_id',
             { author_id => $user->id } );
     }

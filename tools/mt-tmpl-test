@@ -6,7 +6,7 @@
 package MT::CLITest;
 
 use strict;
-
+use warnings;
 use Data::Dumper;
 $Data::Dumper::Deparse  = 1;
 $Data::Dumper::Terse    = 1;
@@ -441,8 +441,10 @@ sub _make_tracker {
         my ($ctx, $args, $cond) = @_;
         my $tagname = lc $ctx->stash('tag');
         pre_process_tag($ctx, $args, $cond);
-        my $meth = MT->handler_to_coderef($original_method)
-            unless $original_method eq 'CODEREF';
+        my $meth = $original_method;
+        unless (ref $meth eq 'CODE') {
+            $meth = MT->handler_to_coderef($original_method);
+        }
         my $res = $meth->($ctx, $args, $cond);
         post_process_tag($res);
         return $res;
@@ -457,8 +459,10 @@ sub _filter_tracker {
             local $ctx->{__stash}{tag} = " * $tagname";
             pre_process_tag($ctx, $args, undef);
         }
-        my $meth = MT->handler_to_coderef($original_method)
-            unless $original_method eq 'CODEREF';
+        my $meth = $original_method;
+        unless (ref $original_method eq 'CODE') {
+            $meth = MT->handler_to_coderef($original_method);
+        }
         my $res = $meth->(@_);
         post_process_tag($res);
         return $res;

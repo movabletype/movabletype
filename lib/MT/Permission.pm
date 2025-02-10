@@ -360,8 +360,7 @@ sub global_perms {
                         if ( ( $meth ne 'can_administer' )
                         && $author->is_superuser );
                     return 1
-                        if ( ( $_[0]->blog && $_[0]->blog->is_blog )
-                        && $_[0]->has('administer_site') );
+                        if ( $_[0]->blog && $_[0]->has('administer_site') );
                 }
             }
 

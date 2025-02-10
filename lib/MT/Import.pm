@@ -106,7 +106,7 @@ sub _get_stream_iterator {
             my @files_to_import;
             my $dir = $stream;
             $stream = undef;
-            opendir DH,
+            opendir my $dh,
                 $dir
                 or return $class->error(
                 MT->translate(
@@ -114,12 +114,12 @@ sub _get_stream_iterator {
                     $dir, "$!"
                 )
                 );
-            for my $f ( readdir DH ) {
+            for my $f ( readdir $dh ) {
                 next if $f =~ /^\./;
                 my $file = File::Spec->catfile( $dir, $f );
                 push @files_to_import, $file if -r $file;
             }
-            closedir DH;
+            closedir $dh;
             unless (@files_to_import) {
                 return $class->error(
                     MT->translate(

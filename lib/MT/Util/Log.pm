@@ -21,7 +21,7 @@ BEGIN {
         NONE   => 99,
     );
 }
-use constant \%LoggerLevels; ## no critic
+use constant \%LoggerLevels;  ## no critic(TooMuchCode::ProhibitUnusedConstant)
 
 our ( $Initialized, $Logger, $LoggerLevel, $LoggerLevelStr, $LoggerPathDate );
 

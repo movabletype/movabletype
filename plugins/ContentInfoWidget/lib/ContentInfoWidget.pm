@@ -2,7 +2,6 @@ package ContentInfoWidget;
 
 use strict;
 use warnings;
-use File::Spec;
 use MT::Util;
 
 sub edit_template_param {

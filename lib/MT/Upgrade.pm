@@ -9,7 +9,6 @@ package MT::Upgrade;
 use strict;
 use warnings;
 use base qw( MT::ErrorHandler );
-use File::Spec;
 
 # The upgrade process...
 #

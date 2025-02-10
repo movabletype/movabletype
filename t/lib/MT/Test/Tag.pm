@@ -176,7 +176,7 @@ SKIP: {
 
                 my $log;
                 require MT::Util::UniqueID;
-                local $ENV{MT_TEST_PHP_ERROR_LOG_FILE_PATH} = $ENV{MT_TEST_PHP_ERROR_LOG_FILE_PATH} 
+                local $ENV{MT_TEST_PHP_ERROR_LOG_FILE_PATH} = $ENV{MT_TEST_PHP_ERROR_LOG_FILE_PATH}
                     ? $ENV{MT_TEST_PHP_ERROR_LOG_FILE_PATH}
                     : $log = File::Spec->catfile($ENV{MT_TEST_ROOT}, 'php-' . MT::Util::UniqueID::create_session_id() . '.log');
                 my $block_name = $block->name || $block->seq_num;

@@ -1,8 +1,9 @@
 #!/usr/bin/perl -d
 
 # This needs to load first on Centos for some reason
+use strict;
+use warnings;
 use Term::ReadLine;
-
 use FindBin qw( $Bin );
 use Cwd;
 use lib map { Cwd::realpath("$Bin/../$_") } qw( extlib lib ../lib );
