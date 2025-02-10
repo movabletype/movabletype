@@ -1024,15 +1024,15 @@ sub list {
             || $_->registry( system_filters  => $type . $subtype )
     } MT::Component->select;
 
-    my $cfg            = MT->config;
-    my @theme_ids      = ("");
-    my $admin_theme_id = $cfg->AdminThemeId;
-    unshift @theme_ids, $admin_theme_id if $admin_theme_id;
+    my %seen;
+    my $cfg       = MT->config;
+    my @theme_ids = grep { defined $_ && !$seen{$_}++ } ($cfg->AdminThemeId, $cfg->FallbackAdminThemeIds, '');
 
     my @list_headers;
     my @template_paths = grep { defined $_ and $_ ne '' } ($cfg->UserTemplatePath, $cfg->AltTemplatePath, $cfg->TemplatePath);
 LOOP:
     for my $template_path (@template_paths) {
+        next unless -d $template_path;
         for my $theme_id (@theme_ids) {
             my $core_include = File::Spec->catfile(
                 $template_path, $theme_id,
@@ -1049,9 +1049,11 @@ LOOP:
     }
 
     for my $c (@list_components) {
+        my $c_path_tmpl = File::Spec->catdir($c->path, 'tmpl');
+        next unless -d $c_path_tmpl;
         for my $theme_id (@theme_ids) {
             my $f = File::Spec->catfile(
-                $c->path, 'tmpl', $theme_id, 'listing',
+                $c_path_tmpl, $theme_id, 'listing',
                 $type . '_list_header.tmpl'
             );
             if (-e $f) {
@@ -2475,7 +2477,7 @@ sub is_enabled_mode {
 sub is_within_base_sitepath {
     my ( $app, $s_path ) = @_;
     return unless (defined $s_path && $s_path ne '');
-    
+
     my $l_path = $app->config->BaseSitePath;
 
     # making sure that we have a '/' in the end of the paths

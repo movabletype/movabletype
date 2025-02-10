@@ -100,6 +100,11 @@ my @removed_from_core = qw(
     SiteIfCommentsOpen WebsiteIfCommentsOpen
 
     XMLRPCScript AtomScript
+
+    BlogCCLicenseImage BlogCCLicenseURL BlogIfCCLicense
+    SiteCCLicenseImage SiteCCLicenseURL SiteIfCCLicense
+    WebsiteCCLicenseImage WebsiteCCLicenseURL WebsiteIfCCLicense
+    CCLicenseRDF
 );
 
 my %is_removed = map { $_ => 1 } @removed_from_core;

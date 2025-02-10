@@ -894,7 +894,7 @@ sub dialog_list_content_data {
         blog_id         => $blog->id,
         content_type_id => $content_type_id,
     };
-    
+
     if (my $search_cols = $app->param('search_cols')) {
         my @cols = split(',', $search_cols);
         if (!grep { $_ =~ /^__field:/ } @cols) {

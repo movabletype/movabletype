@@ -1,0 +1,57 @@
+<div class="mt-systemHeaderActions">
+    <div class="mt-systemHeaderAction mt-systemHeaderActions__search">
+        <div data-is="search-button"></div>
+    </div>
+    <div class="mt-systemHeaderAction mt-systemHeaderActions__site">
+        <div data-is="site-list-button"></div>
+    </div>
+
+    <div class="mt-systemHeaderAction mt-systemHeaderActions__system">
+        <a href="<mt:var name="script_url">?__mode=dashboard&blog_id=0" class="action mt-actionSystem">
+            <svg role="img" class="mt-icon">
+                <title><__trans phrase="System"></title>
+                <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="<$mt:var name="static_uri"$>images/sprite.svg#ic_setting"></use>
+            </svg>
+            <__trans phrase="System">
+        </a>
+    </div>
+    <div class="mt-systemHeaderAction mt-systemHeaderActions__user">
+        <div class="action mt-actionUser">
+            <button class="userActionButton" type="button" id="userDropdownMenu" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <mt:if name="author_userpic_url">
+                <img src="<mt:var name="author_userpic_url" escape="html">" alt="" width="36" height="34" class="">
+            <mt:else>
+                <img src="<mt:var name="static_uri">images/user-default.svg" alt="" width="36" height="34" class="">
+            </mt:if>
+            </button>
+            <div class="dropdown-menu dropdown-menu-right mt-primaryNavigation__user" aria-labelledby="userDropdownMenu">
+            <mt:if name="user_actions">
+                <ul>
+            </mt:if>
+                <li>
+                    <span>
+                        <mt:if name="author_userpic_url">
+                            <img src="<mt:var name="author_userpic_url" escape="html">" alt="" width="21" height="21" class="">
+                        <mt:else>
+                            <img src="<mt:var name="static_uri">images/user-default.svg" alt="" width="21" height="21" class="">
+                        </mt:if>
+                        <span class="mt-author-name"><mt:var name="author_name" escape="html"></span>
+                    </span>
+                </li>
+            <mt:loop name="user_actions">
+                <mt:setvarblock name="user_action_href"><mt:if name="href"><mt:var name="href" escape="none"><mt:elseif name="mode"><mt:var name="mt_url">?__mode=<mt:var name="mode" escape="none"><mt:else>javascript:void(0)</mt:if></mt:setvarblock>
+                    <li id="menu-<mt:var name="id" escape="html">">
+                        <a href="<mt:var name="user_action_href" escape="html">"<mt:if name="target"> target="<mt:var name="target" escape="html">"</mt:if> class="dropdown-item">
+                          <mt:var name="label" escape="html">
+                        </a>
+                    </li>
+            </mt:loop>
+            <mt:if name="user_actions">
+                </ul>
+            </mt:if>
+            </div>
+        </div>
+    </div>
+
+
+</div>

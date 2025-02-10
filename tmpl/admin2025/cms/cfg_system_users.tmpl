@@ -1,0 +1,236 @@
+<mt:setvar name="page_title" value="<__trans phrase="User Settings">">
+<mt:setvar name="position_actions_bottom" value="1">
+<mt:setvar name="system-user-settings" value="1">
+
+<mt:setvarblock name="system_msg">
+<mt:if name="error">
+  <mtapp:statusmsg
+     id="generic-error"
+     class="error"
+     can_close="0">
+    <mt:var name="error" escape="html">
+  </mtapp:statusmsg>
+</mt:if>
+<mt:if name="saved">
+  <mtapp:statusmsg
+     id="saved"
+     class="success">
+    <__trans phrase="Your settings have been saved.">
+  </mtapp:statusmsg>
+</mt:if>
+<mt:unless name="hide_config_warnings">
+  <mt:if name="config_warning">
+    <mtapp:statusmsg
+       id="info"
+       class="info"
+       can_close="0">
+      <mt:var name="config_warning">
+    </mtapp:statusmsg>
+  </mt:if>
+</mt:unless>
+</mt:setvarblock>
+
+<mt:setvarblock name="js_include" append="1">
+<script type="text/javascript">
+/* <![CDATA[ */
+function clearNotifyUsers() {
+    var el_name = MT.Util.getByID("notify_user_name");
+    var el_id = MT.Util.getByID("notify_user_id");
+    if (el_name && el_id) {
+        el_id.value = "";
+        el_name.innerHTML = "<__trans phrase="(None selected)">";
+    }
+}
+/* ]]> */
+</script>
+</mt:setvarblock>
+
+<mt:setvarblock name="page_content">
+<form id="cfg_user_settings" action="<mt:var name="script_url">" method="post">
+  <input type="hidden" name="__mode" value="save_cfg_system_users" />
+  <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
+  <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+
+<mt:unless name="external_user_management">
+  <mt:if name="enabled_plugins{Comments}">
+  <mtapp:settinggroup id="external-user-management">
+    <legend class="h3"><__trans phrase="User Registration"></legend>
+    <mtapp:setting
+       id="registration"
+       label="<__trans phrase="Allow Registration">">
+      <div>
+        <input type="hidden" id="notify_user_id" name="notify_user_id" value="<mt:var name="notify_user_id" escape="html">" />
+        <div class="form-check">
+          <input type="checkbox" id="registration" class="form-check-input" name="registration"<mt:if name="registration"> checked="checked"</mt:if><mt:if name="commenter_registration_readonly"> disabled="disabled"</mt:if> />
+          <label class="form-check-label" for="registration"><__trans phrase="Allow commenters to register on this system."></label>
+        </div>
+        <p><__trans phrase="Notify the following system administrators when a commenter registers:"></p>
+        <span id="notify_user_name">
+        <mt:if name="notify_user_id">
+          <strong><mt:var name="notify_user_name" escape="html"></strong>
+          <mt:unless name="commenter_registration_readonly">
+          <a href="javascript:void(0)" onclick="return clearNotifyUsers()"><__trans phrase="Clear"></a> |
+          </mt:unless>
+        <mt:else>
+          <__trans phrase="(None selected)">
+        </mt:if>
+        </span>
+        <mt:unless name="commenter_registration_readonly">
+        <a href="<mt:var name="script_url">?__mode=dialog_select_sysadmin&amp;multi=1&amp;idfield=notify_user_id&amp;namefield=notify_user_name" class="mt-open-dialog mt-modal-open" data-mt-modal-large>
+          <__trans phrase="Select system administrators">
+        </a>
+        </mt:unless>
+        <mt:if name="system_no_email">
+          <div class="alert-warning-inline icon-left icon-warning">
+            <__trans phrase="Note: System Email Address is not set in System > General Settings. Emails will not be sent.">
+            </div>
+        </mt:if>
+      </div>
+    </mtapp:setting>
+  </mtapp:settinggroup>
+  </mt:if>
+</mt:unless>
+
+<mt:if name="auth_mode_mt">
+  <mtapp:settinggroup id="password-validation">
+    <legend class="h3"><__trans phrase="Password Validation"></legend>
+    <mtapp:setting
+       id="password-validation-options"
+       label="<__trans phrase="Options">">
+      <ul id="password-validation-options-setting-list" class="list-unstyled setting-list">
+        <li>
+          <div class="form-check">
+            <input type="checkbox" name="combo_upper_lower" id="combo-upper-lower" class="form-check-input"<mt:if name="combo_upper_lower"> checked="checked"</mt:if><mt:if name="user_password_validation_readonly"> disabled="disabled"</mt:if>>
+            <label class="form-check-label" for="combo-upper-lower"><__trans phrase="Should contain uppercase and lowercase letters."></label>
+          </div>
+        </li>
+        <li>
+          <div class="form-check">
+            <input type="checkbox" name="combo_letter_number" id="combo-letter-number" class="form-check-input"<mt:if name="combo_letter_number"> checked="checked"</mt:if><mt:if name="user_password_validation_readonly"> disabled="disabled"</mt:if>>
+            <label class="form-check-label" for="combo-letter-number"><__trans phrase="Should contain letters and numbers."></label>
+          </div>
+        </li>
+        <li>
+          <div class="form-check">
+            <input type="checkbox" name="require_special_characters" id="require-special-characters" class="form-check-input"<mt:if name="require_special_characters"> checked="checked"</mt:if><mt:if name="user_password_validation_readonly"> disabled="disabled"</mt:if>>
+            <label class="form-check-label" for="require-special-characters"><__trans phrase="Should contain special characters."></label>
+          </div>
+        </li>
+      </ul>
+    </mtapp:setting>
+    <mtapp:setting
+       id="minimum-length"
+       label="<__trans phrase="Minimum Length">"
+       label_for="minimum-length">
+         <input type="text" name="minimum_length" id="minimum-length" class="form-control positive-num num" value="<mt:var name="minimum_length">"<mt:if name="user_password_min_length_readonly"> disabled="disabled"</mt:if>>
+    </mtapp:setting>
+  </mtapp:settinggroup>
+
+  <mt:setvarblock name="js_include" append="1">
+<script>
+    jQuery.mtValidateAddRules({
+      '.positive-num': function ($e) {
+        return /^\d+$/.test($e.val()) && ($e.val() > 0);
+      }
+    });
+    jQuery.mtValidateAddMessages({
+        '.positive-num': '<__trans phrase="This field must be a positive integer.">'
+    });
+
+    jQuery('#cfg_user_settings').on('submit', function () {
+        var ok = true;
+        jQuery(this).find('input:visible, select:visible').each( function () {
+            if ( jQuery(this).is('.positive-num') ) {
+                if ( !jQuery(this).mtValidate('simple', { '.digit, .num': function () { return true } } ) ) ok = false;
+            }
+            else {
+                if ( !jQuery(this).mtValidate('simple') ) ok = false;
+            }
+        });
+        return ok;
+    });
+</script>
+  </mt:setvarblock>
+</mt:if>
+
+  <mtapp:settinggroup id="new-user-defaults">
+    <legend class="h3"><__trans phrase="New User Defaults"></legend>
+
+    <mtapp:setting
+       id="default_language"
+       label="<__trans phrase="Default User Language">"
+       label_for="default_language">
+      <select id="default_language" class="custom-select form-control form-select" name="default_language"<mt:if name="default_language_readonly"> disabled="disabled"</mt:if>>
+      <mt:loop name="languages">
+        <option value="<mt:var name="l_tag">" <mt:if name="l_selected">selected="selected"</mt:if>><mt:var name="l_name" escape="html"></option>
+      </mt:loop>
+      </select>
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="default_time_zone"
+       label="<__trans phrase="Default Time Zone">"
+       label_for="default_time_zone">
+      <select name="default_time_zone" class="custom-select form-control form-select" id="default_time_zone"<mt:if name="default_time_zone_readonly"> disabled="disabled"</mt:if>>
+      <mt:if name="server_offset_">
+        <option value=""><__trans phrase="Time zone not selected"></option>
+      </mt:if>
+        <option value="13"<mt:if name="SERVER_OFFSET_13"> selected="selected"</mt:if>><__trans phrase="UTC+13 (New Zealand Daylight Savings Time)"></option>
+        <option value="12"<mt:if name="SERVER_OFFSET_12"> selected="selected"</mt:if>><__trans phrase="UTC+12 (International Date Line East)"></option>
+        <option value="11"<mt:if name="SERVER_OFFSET_11"> selected="selected"</mt:if>><__trans phrase="UTC+11"></option>
+        <option value="10"<mt:if name="SERVER_OFFSET_10"> selected="selected"</mt:if>><__trans phrase="UTC+10 (East Australian Time)"></option>
+        <option value="9.5"<mt:if name="SERVER_OFFSET_9_5"> selected="selected"</mt:if>><__trans phrase="UTC+9.5 (Central Australian Time)"></option>
+        <option value="9"<mt:if name="SERVER_OFFSET_9"> selected="selected"</mt:if>><__trans phrase="UTC+9 (Japan Time)"></option>
+        <option value="8"<mt:if name="SERVER_OFFSET_8"> selected="selected"</mt:if>><__trans phrase="UTC+8 (China Coast Time)"></option>
+        <option value="7"<mt:if name="SERVER_OFFSET_7"> selected="selected"</mt:if>><__trans phrase="UTC+7 (West Australian Time)"></option>
+        <option value="6.5"<mt:if name="SERVER_OFFSET_6_5"> selected="selected"</mt:if>><__trans phrase="UTC+6.5 (North Sumatra)"></option>
+        <option value="6"<mt:if name="SERVER_OFFSET_6"> selected="selected"</mt:if>><__trans phrase="UTC+6 (Russian Federation Zone 5)"></option>
+        <option value="5.5"<mt:if name="SERVER_OFFSET_5_5"> selected="selected"</mt:if>><__trans phrase="UTC+5.5 (Indian)"></option>
+        <option value="5"<mt:if name="SERVER_OFFSET_5"> selected="selected"</mt:if>><__trans phrase="UTC+5 (Russian Federation Zone 4)"></option>
+        <option value="4"<mt:if name="SERVER_OFFSET_4"> selected="selected"</mt:if>><__trans phrase="UTC+4 (Russian Federation Zone 3)"></option>
+        <option value="3.5"<mt:if name="SERVER_OFFSET_3_5"> selected="selected"</mt:if>><__trans phrase="UTC+3.5 (Iran)"></option>
+        <option value="3"<mt:if name="SERVER_OFFSET_3"> selected="selected"</mt:if>><__trans phrase="UTC+3 (Baghdad Time/Moscow Time)"></option>
+        <option value="2"<mt:if name="SERVER_OFFSET_2"> selected="selected"</mt:if>><__trans phrase="UTC+2 (Eastern Europe Time)"></option>
+        <option value="1"<mt:if name="SERVER_OFFSET_1"> selected="selected"</mt:if>><__trans phrase="UTC+1 (Central European Time)"></option>
+        <option value="0"<mt:if name="SERVER_OFFSET_0"> selected="selected"</mt:if>><__trans phrase="UTC+0 (Universal Time Coordinated)"></option>
+        <option value="-1"<mt:if name="SERVER_OFFSET__1"> selected="selected"</mt:if>><__trans phrase="UTC-1 (West Africa Time)"></option>
+        <option value="-2"<mt:if name="SERVER_OFFSET__2"> selected="selected"</mt:if>><__trans phrase="UTC-2 (Azores Time)"></option>
+        <option value="-3"<mt:if name="SERVER_OFFSET__3"> selected="selected"</mt:if>><__trans phrase="UTC-3 (Atlantic Time)"></option>
+        <option value="-3.5"<mt:if name="SERVER_OFFSET__3_5"> selected="selected"</mt:if>><__trans phrase="UTC-3.5 (Newfoundland)"></option>
+        <option value="-4"<mt:if name="SERVER_OFFSET__4"> selected="selected"</mt:if>><__trans phrase="UTC-4 (Atlantic Time)"></option>
+        <option value="-5"<mt:if name="SERVER_OFFSET__5"> selected="selected"</mt:if>><__trans phrase="UTC-5 (Eastern Time)"></option>
+        <option value="-6"<mt:if name="SERVER_OFFSET__6"> selected="selected"</mt:if>><__trans phrase="UTC-6 (Central Time)"></option>
+        <option value="-7"<mt:if name="SERVER_OFFSET__7"> selected="selected"</mt:if>><__trans phrase="UTC-7 (Mountain Time)"></option>
+        <option value="-8"<mt:if name="SERVER_OFFSET__8"> selected="selected"</mt:if>><__trans phrase="UTC-8 (Pacific Time)"></option>
+        <option value="-9"<mt:if name="SERVER_OFFSET__9"> selected="selected"</mt:if>><__trans phrase="UTC-9 (Alaskan Time)"></option>
+        <option value="-10"<mt:if name="SERVER_OFFSET__10"> selected="selected"</mt:if>><__trans phrase="UTC-10 (Aleutians-Hawaii Time)"></option>
+        <option value="-11"<mt:if name="SERVER_OFFSET__11"> selected="selected"</mt:if>><__trans phrase="UTC-11 (Nome Time)"></option>
+      </select>
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="tag_delim"
+       label="<__trans phrase="Default Tag Delimiter">"
+       label_for="tag_delim">
+      <select name="default_user_tag_delimiter" class="custom-select form-control form-select" id="tag_delim" <mt:if name="default_user_tag_delimiter_readonly">disabled="disabled"</mt:if>>
+        <option value="comma"<mt:if name="tag_delim_comma"> selected="selected"</mt:if>><__trans phrase="Comma"></option>
+        <option value="space"<mt:if name="tag_delim_space"> selected="selected"</mt:if>><__trans phrase="Space"></option>
+      </select>
+    </mtapp:setting>
+</mtapp:settinggroup>
+
+<mt:setvarblock name="action_buttons">
+  <button
+     type="submit"
+     accesskey="s"
+     title="<__trans phrase="Save changes to these settings (s)">"
+     class="save action primary button btn btn-primary">
+    <__trans phrase="Save Changes">
+  </button>
+</mt:setvarblock>
+<mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
+</form>
+</mt:setvarblock>
+
+<mt:include name="layout/default.tmpl">
+<mt:var name="layout">

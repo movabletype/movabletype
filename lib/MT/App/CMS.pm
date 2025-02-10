@@ -385,6 +385,11 @@ sub core_methods {
             code     => "${pkg}Mobile::change_to_pc_view",
             app_mode => 'JSON',
         },
+
+        'fetch_admin_header_content_types' => {
+            code     => "${pkg}AdminHeader::fetch_admin_header_content_types",
+            app_mode => 'JSON',
+        },
     };
 }
 
@@ -5064,6 +5069,11 @@ sub setup_editor_param {
 
 sub archetype_editor_is_enabled {
     my ( $app, $param ) = @_;
+
+    if ( !$param->{editors} ) {
+        $param = {};
+        $app->setup_editor_param($param);
+    }
 
     return !$param->{editors};
 }

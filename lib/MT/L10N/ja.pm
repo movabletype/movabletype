@@ -2912,6 +2912,9 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/Upgrade/v8.pm
 	'Migrating image width/height meta data...' => '画像の幅/高さを移行しています...',
 
+## lib/MT/Upgrade/v9.pm
+	'Migrating site boolean meta data...' => 'サイトのboolean型のメタデータを移行しています...',
+
 ## lib/MT/Util.pm
 	'[quant,_1,day,days] from now' => '[quant,_1,日,日]後',
 	'[quant,_1,day,days]' => '[quant,_1,日,日]',
@@ -5735,6 +5738,20 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/listing/ts_job_list_header.tmpl
 	'The job(s) has been deleted from the database.' => 'ジョブをデータベースから削除しました。',
 	q{You can't delete running job(s). (ID: [_1])} => q{実行中のジョブは削除できません(ID: [_1])},
+
+## tmpl/admin2025/cms/include/content-header.tmpl
+	'New [_1] creation' => '[_1]を新規作成',
+
+## tmpl/admin2025/cms/include/primary_navigation.tmpl
+	'View Your Site' => 'サイトを見る',
+
+## tmpl/admin2025/cms/include/system-header-actions.tmpl
+	'Select target and search text...' => '対象を選んでテキスト検索...',
+	'[_1]Site' => '[_1]サイト',
+	'All Sites' => 'すべてのサイト',
+	'Child Sites Only' => '子サイトのみ',
+	'Filter by site name' => 'サイト名で絞り込む',
 );
+
 
 1;

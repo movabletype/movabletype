@@ -1,0 +1,37 @@
+<mt:setvarblock name="system_msg" append="1">
+    <mt:if name="request.saved_status" eq="disabled">
+        <mtapp:statusmsg
+            id="saved-status-disabled"
+            class="success">
+            <__trans phrase="You successfully disabled the selected group(s).">
+        </mtapp:statusmsg>
+    </mt:if>
+    <mt:if name="request.saved_status" eq="enabled">
+        <mtapp:statusmsg
+            id="saved-status-disabled"
+            class="success">
+            <__trans phrase="You successfully enabled the selected group(s).">
+        </mtapp:statusmsg>
+    </mt:if>
+    <mt:if name="request.saved_deleted">
+        <mtapp:statusmsg
+            id="saved-deleted"
+            class="success">
+            <__trans phrase="You successfully deleted the groups from the Movable Type system.">
+        </mtapp:statusmsg>
+    </mt:if>
+    <mt:if name="request.synchronized">
+        <mtapp:statusmsg
+            id="synchronized"
+            class="success">
+            <__trans phrase="You successfully synchronized the groups' information with the external directory.">
+        </mtapp:statusmsg>
+    </mt:if>
+    <mt:if name="request.error">
+        <mtapp:statusmsg
+            id="error"
+            class="error">
+            <__trans phrase="An error occurred during synchronization.  See the <a href='[_1]'>activity log</a> for detailed information." params="<mt:var name="script_url">?__mode=list&_type=log&blog_id=0">
+        </mtapp:statusmsg>
+    </mt:if>
+</mt:setvarblock>

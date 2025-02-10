@@ -252,7 +252,7 @@ sub pre_start {
         }
     }
 
-    eval { use File::Spec; };
+    require File::Spec;
     my ($static_file_path);
     if ( !$@ ) {
         $static_file_path = File::Spec->catfile( $app->static_file_path );
@@ -837,6 +837,7 @@ sub optional {
         };
     }
 
+    ## no critic(TooMuchCode::ProhibitUnusedInclude)
     $param{has_auth_modules} = eval { require Authen::SASL; require MIME::Base64; 1 } ? 1 : 0;
     $param{has_ssl_modules}  = eval { require IO::Socket::SSL; require Net::SSLeay; 1 } ? 1 : 0;
 
@@ -1237,7 +1238,7 @@ sub is_valid_static_path {
 sub is_config_exists {
     my $app = shift;
 
-    eval { use File::Spec; };
+    require File::Spec;
     my ( $cfg, $cfg_exists, $static_file_path );
     if ( !$@ ) {
         $cfg = File::Spec->catfile( $app->{mt_dir}, 'mt-config.cgi' );

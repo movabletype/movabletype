@@ -94,3 +94,13 @@ export interface Type {
 
   warning?: string;
 }
+
+export interface ContentTypes {
+  contentTypes: ContentType[];
+}
+export interface ContentType {
+  id: string;
+  name: string;
+  can_create: number;
+  can_search: number;
+}

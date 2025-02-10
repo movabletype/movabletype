@@ -55,6 +55,7 @@ use_ok('MT::CMS::Theme');
 use_ok('MT::CMS::Filter');
 use_ok('MT::CMS::RebuildTrigger');
 use_ok('MT::CMS::Group');
+use_ok('MT::CMS::AdminHeader');
 
 # Supporting applications
 use_ok('MT::App::Upgrader');
@@ -470,6 +471,7 @@ use_ok('MT::Upgrade::v5');
 use_ok('MT::Upgrade::v6');
 use_ok('MT::Upgrade::v7');
 use_ok('MT::Upgrade::v8');
+use_ok('MT::Upgrade::v9');
 
 # Revision Management Framework
 use_ok('MT::Revisable');

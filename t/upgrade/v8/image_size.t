@@ -133,7 +133,7 @@ subtest 'upgrade' => sub {
         MT::Test::Upgrade->upgrade(from => 8.0000);
 
         is $commit_count, 5;
-        is_deeply [grep { /^Migrating/ } @progress_messages], [
+        is_deeply [grep { /^Migrating image width/ } @progress_messages], [
             'Migrating image width/height meta data...',
             'Migrating image width/height meta data... (22%)',
             'Migrating image width/height meta data... (44%)',

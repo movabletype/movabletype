@@ -1,0 +1,74 @@
+<mt:setvarblock name="page_title"><mt:var name="dialog_title"></mt:setvarblock>
+
+<mt:setvarblock name="js_include" append="1">
+<mt:if name="use_jquery_json">
+<mt:script type="text/javascript" path="jquery/jquery.json.js">
+</mt:if>
+<mt:script type="text/javascript" path="js/tc/client.js">
+<mt:script type="text/javascript" path="js/dialog.js">
+
+<script type="text/javascript">
+/* <![CDATA[ */
+var dialog;
+
+function returnMoveBlogs(ok) {
+    if (ok) {
+        var frm = document.forms['blogs'];
+        var added = dialog.panels[0].tableSelect.selected();
+        for (var i = 0; i < added.length; i++)
+            added[i] = added[i].value.replace(/\D/g, '');
+        frm.elements['ids'].value = added.join(",");
+        frm.submit();
+    }
+
+    parent.jQuery.fn.mtDialog.close();
+}
+
+function init() {
+    // setup
+    dialog = new Dialog.MultiPanel("select-weblog");
+    var blogPanel = new ListingPanel("blog", "website");
+    blogPanel.pager.setState(<mt:var name="pager_json">);
+    dialog.setPanels([blogPanel]);
+    dialog.open({}, returnMoveBlogs);
+}
+
+/* ]]> */
+</script>
+</mt:setvarblock>
+
+<mt:setvarblock name="modal_body">
+<mtapp:statusmsg
+    id="moved-warning"
+    class="alert"
+    can_close="0">
+    <__trans phrase="Warning: You need to copy uploaded assets to the new path manually. It is also recommended not to delete files in the old path to avoid broken links.">
+</mtapp:statusmsg>
+
+<form name="blogs" id="members" action="<mt:var name="script_url">" method="post" target="_top">
+<input type="hidden" name="__mode" value="start_move_blogs" />
+<input type="hidden" name="blog_ids" value="<mt:var name="blog_ids">" />
+<input type="hidden" name="ids" value="" />
+<input type="hidden" name="return_args" value="<mt:var name="return_url" escape="html">" />
+<input type="hidden" name="magic_token" value="<mt:var name="magic_token" escape="html">" />
+</form>
+
+<div class="modal_width" id="select-weblog-dialog">
+
+<mt:include name="include/listing_panel.tmpl">
+
+</div>
+</mt:setvarblock>
+
+<mt:setvarblock name="js_include" append="1">
+<script type="text/javascript">
+/* <![CDATA[ */
+jQuery(function() {
+    init();
+});
+/* ]]> */
+</script>
+</mt:setvarblock>
+
+<mt:include name="layout/modal.tmpl">
+<mt:var name="layout">

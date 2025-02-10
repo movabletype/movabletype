@@ -20,7 +20,7 @@ sub render {
     my ($header, $body) = @args{qw(header body)};
     my $conf = MT->config;
     my $mail_enc = lc($conf->MailEncoding || 'utf-8');
- 
+
     my $msg;
 
     eval {

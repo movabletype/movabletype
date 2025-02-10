@@ -1,0 +1,59 @@
+@import "../../node_modules/bootstrap5/scss/mixins/banner";
+@include bsBanner("");
+
+// 1. Include functions first (so you can manipulate colors, SVGs, calc, etc)
+@import "../../node_modules/bootstrap5/scss/functions";
+
+// 2. Include any default variable overrides here
+@import "variables";
+
+// 3. Include remainder of required Bootstrap stylesheets
+@import "../../node_modules/bootstrap5/scss/variables";
+
+
+// Optional Bootstrap components here
+@import "../../node_modules/bootstrap5/scss/maps";
+@import "../../node_modules/bootstrap5/scss/mixins";
+@import "../../node_modules/bootstrap5/scss/utilities";
+@import "utilities";
+@import "../../node_modules/bootstrap5/scss/root";
+
+// 6. Optionally include any other parts as needed
+@import "../../node_modules/bootstrap5/scss/reboot";
+@import "../../node_modules/bootstrap5/scss/type";
+@import "../../node_modules/bootstrap5/scss/images";
+@import "../../node_modules/bootstrap5/scss/containers";
+@import "../../node_modules/bootstrap5/scss/grid";
+@import "../../node_modules/bootstrap5/scss/tables";
+@import "../../node_modules/bootstrap5/scss/forms";
+@import "../../node_modules/bootstrap5/scss/buttons";
+@import "../../node_modules/bootstrap5/scss/transitions";
+@import "../../node_modules/bootstrap5/scss/dropdown";
+@import "../../node_modules/bootstrap5/scss/button-group";
+@import "../../node_modules/bootstrap5/scss/nav";
+@import "../../node_modules/bootstrap5/scss/navbar";
+@import "../../node_modules/bootstrap5/scss/card";
+@import "../../node_modules/bootstrap5/scss/breadcrumb";
+@import "../../node_modules/bootstrap5/scss/pagination";
+@import "../../node_modules/bootstrap5/scss/badge";
+@import "../../node_modules/bootstrap5/scss/alert";
+@import "../../node_modules/bootstrap5/scss/progress";
+@import "../../node_modules/bootstrap5/scss/list-group";
+@import "../../node_modules/bootstrap5/scss/close";
+@import "../../node_modules/bootstrap5/scss/modal";
+@import "../../node_modules/bootstrap5/scss/tooltip";
+@import "../../node_modules/bootstrap5/scss/popover";
+@import "../../node_modules/bootstrap5/scss/utilities/api";
+@import "../../node_modules/bootstrap5/scss/helpers";
+
+// Movable Type modifiers
+@import "modifier";
+
+// selector.css
+@import "mt/selector";
+
+// caret.css
+@import "mt/caret";
+
+// datepicker.css
+@import "mt/datepicker";

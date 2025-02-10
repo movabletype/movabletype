@@ -1,0 +1,104 @@
+<mt:setvarblock name="page_title"><__trans phrase="An error occurred"></mt:setvarblock>
+<mt:setvar name="complete" value="1">
+<mt:setvar name="error_page" value="1">
+<mt:if name="mode" eq="rebuild">
+  <mt:setvar name="screen_type" value="popup-screen">
+<mt:else>
+  <mt:unless name="screen_type">
+    <mt:setvar name="screen_type" value="chromeless-screen">
+  </mt:unless>
+</mt:if>
+
+<mt:setvarblock name="page_content">
+
+<mtapp:statusmsg
+   id="generic-error"
+   class="error"
+   can_close="0">
+<mt:if name="enable_pre">
+  <pre>
+</mt:if>
+    <mt:var name="error" escape="html">
+<mt:if name="enable_pre">
+  </pre>
+</mt:if>
+</mtapp:statusmsg>
+
+<mt:setvarblock name="action_buttons">
+<mt:unless var="hide_goback_button">
+<button
+   id="goback-button"
+   onclick="backSessionHistoryFallback(); <mt:var name="goback">"
+   type="submit"
+   accesskey="s"
+   class="goback action primary button btn btn-primary">
+  <mt:var name="value">
+</button>
+</mt:unless>
+<mt:if name="button_loop">
+<mt:loop name="button_loop">
+<button
+   type="submit"
+<mt:if name="dialog">
+   onclick="if ( window.opener ) { window.close(); } else { parent.jQuery.fn.mtModal.close('<mt:var name="link" escape="js">'); }; return false;"
+<mt:elseif name="fs">
+   onclick="window.location='<mt:var name="link" escape="js">'; return false;"
+<mt:else>
+   onclick="if ( window.opener ) { window.opener.location.href='<mt:var name="link" escape="js">'; window.close(); } else { window.open('<mt:var name="link" escape="js">') }; return false;"
+</mt:if>
+   class="action button btn btn-default">
+  <mt:var name="label" escape="html">
+</button>
+</mt:loop>
+</mt:if>
+<mt:unless name="dialog">
+<button
+   id="close-button"
+   onclick="if ( window.opener || is_toplevel_new_window() ) { window.close(); } else { parent.jQuery.fn.mtModal.close(); }"
+   type="submit"
+   accesskey="x"
+   class="action button btn btn-default"
+   title="<__trans phrase="Close (x)">">
+  <__trans phrase="Close">
+</button>
+</mt:unless>
+</mt:setvarblock>
+
+<mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
+
+</mt:setvarblock>
+
+<mt:setvarblock name="js_include" append="1">
+<script type="text/javascript">
+    function is_toplevel_new_window() {
+        return (window == window.parent)
+            && (window == window.top)
+            && (! window.opener)
+            && (history.length == 1);
+    }
+    /* <![CDATA[ */
+    // hide the close button unless error is in modal or popup
+    if ( window == window.parent && !window.opener && !is_toplevel_new_window() ) {
+        jQuery('#close-button').hide();
+    }
+
+    jQuery(window).on('change_to_pc_view', function () {
+      if (!MT.Util.isSmartphone()) {
+        jQuery('button').removeClass('btn__mobile').addClass('btn');
+      }
+    });
+    jQuery(window).on('change_to_mobile_view', function () {
+      if (MT.Util.isSmartphone()) {
+        jQuery('button').removeClass('btn').addClass('btn__mobile');
+      }
+    });
+    if (MT.Util.isSmartphone()) {
+      jQuery('button').removeClass('btn').addClass('btn__mobile');
+    }
+
+    /* ]]> */
+</script>
+</mt:setvarblock>
+
+<mt:include name="layout/chromeless.tmpl">
+<mt:var name="layout">

@@ -7,14 +7,13 @@
 # $Id$
 
 use strict;
-
+use warnings;
 use Getopt::Long;
 GetOptions( "old:s" => \my($old_config),
             "new:s" => \my($new_config));
 
 use FindBin;
 use lib ("$FindBin::Bin/../lib", "$FindBin::Bin/../extlib");
-use File::Spec;
 use MT;
 
 unless ($new_config) {
@@ -46,7 +45,7 @@ eval {
     MT::Object->driver($cfg->ObjectDriver)
         or die MT::ObjectDriver->errstr;
 
-    use MT::Upgrade;
+    require MT::Upgrade;
     print "Loading database schema...\n\n";
     MT::Upgrade->do_upgrade(Install => 1) or die MT::Upgrade->errstr;
 

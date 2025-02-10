@@ -85,7 +85,7 @@ sub _build_theme_table {
         }
         my @keys = qw( id author_name author_link version );
         my %theme;
-        map { $theme{$_} = $theme->{$_} } @keys;
+        $theme{$_} = $theme->{$_} for @keys;
         delete $theme{author_link} if !is_valid_url( $theme{author_link} );
         $theme{theme_id} = $theme->id;
         $theme{current} = $theme->id eq ( $current || '' ) ? 1 : 0;
@@ -457,8 +457,8 @@ sub do_export {
 
         if ( $fmgr->exists($output_path) ) {
             if ( $app->param('overwrite_yes') ) {
-                use File::Path 'rmtree';
-                rmtree($output_path);
+                require File::Path;
+                File::Path::rmtree($output_path);
             }
             elsif ( $app->param('overwrite_no') ) {
                 return $app->redirect(

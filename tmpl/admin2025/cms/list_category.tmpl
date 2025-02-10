@@ -1,0 +1,1008 @@
+<mt:setvarblock name="system_msg">
+<div id="msg-block"></div>
+</mt:setvarblock>
+
+<mt:loop name="list_headers">
+  <mt:include name="$filename" component="$component">
+</mt:loop>
+
+<mt:setvarblock name="list_actions">
+        <div class="my-4 button-actions actions">
+          <button type="button" class="btn btn-primary save action primary button disabled" disabled="disabled">
+            <__trans phrase="Save Changes">
+          </button>
+        </div>
+        <div class="indicator"><img alt="<__trans phrase="Loading...">" src="<mt:var name="static_uri">images/ic_loading-xsm.gif" width="16" height="16" /> <__trans phrase="Loading..."></div>
+</mt:setvarblock>
+
+<mt:include name="include/basic_filter_forms.tmpl">
+
+<mt:setvarblock name="page_content">
+
+<div class="listing line mt-3">
+  <div class="unit size1of1">
+    <form id="<mt:var name="object_type">-listing-form" method="POST" action="<mt:var name="script_url">">
+      <input type="hidden" name="__mode" value="" />
+      <input type="hidden" name="_type" value="<mt:var name="object_type">" />
+      <input type="hidden" name="action_name" value="" />
+      <input type="hidden" name="itemset_action_input" value="" />
+      <input type="hidden" name="items" value="" />
+      <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+      <mt:if name="return_args"><input type="hidden" name="return_args" value="<mt:var name="return_args">" /></mt:if>
+      <mt:if name="blog_id"><input type="hidden" name="blog_id" value="<mt:var name="blog_id">" /></mt:if>
+
+<mt:setvarblock name="list_categories_block">
+      <div id="area-action" class="mb-5 mb-md-3 form-inline mod sortable-header">
+        <select id="itemlist" name="itemlist" class="me-2 custom-select form-control disabled form-select" disabled="disabled">
+          <option id="opt-0" value="0"><__trans phrase="Top Level"></option>
+        </select>
+        <input type="text" name="<mt:var name="object_type" lower_case="1">_label" class="category-label me-2 form-control text short disabled" disabled="disabled" placeholder="<__trans phrase="[_1] label" params="<mt:var name="object_label">">">
+        <button type="submit" class="btn btn-default add button disabled" disabled="disabled"><__trans phrase="Add"></button>
+      </div>
+
+      <mt:ignore>same min-height value as old one</mt:ignore>
+      <div id="root" class="sortable" style="min-height: 250px;"></div>
+
+      <div id="actions-bar-bottom" class="actions-bar actions-bar-bottom line">
+        <mt:var name="list_actions">
+      </div>
+</mt:setvarblock>
+
+      <mt:if name="is_category_set">
+        <mtapp:setting
+          id="set_name"
+          label="<__trans phrase="Name">"
+          label_for="set_name"
+          required="1">
+          <input type="text" class="form-control text required" id="set_name" name="set_name" value="<mt:var name="set_name">" />
+        </mtapp:setting>
+
+        <mtapp:setting
+          id="categories"
+          label="<__trans phrase="Categories">">
+          <mt:var name="list_categories_block">
+        </mtapp:setting>
+      <mt:else>
+        <mt:var name="list_categories_block">
+      </mt:if>
+
+    </form>
+  </div>
+</div>
+
+<div id="modal-change-basename" class="modal" data-role="dialog" aria-hidden="true" tabindex="-1">
+  <div class="modal-dialog" data-role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title"><__trans phrase="Alert"></h4>
+      </div>
+      <div class="modal-body">
+        <mt:if name="object_type" eq="category">
+          <mtapp:setting
+             id="new-label"
+             label="<__trans phrase="Label">"
+             label_class="top-label">
+            <input type="text" id="new-label" class="form-control text full required">
+          </mtapp:setting>
+        </mt:if>
+          <mtapp:setting
+             id="new-basename"
+             label="<__trans phrase="_CATEGORY_BASENAME">"
+             label_class="top-label">
+            <input type="text" id="new-basename" class="form-control text full required">
+          </mtapp:setting>
+      </div>
+      <div class="modal-footer">
+        <button
+           type="submit"
+           id="change-and-move"
+           class="btn btn-primary action primary button">
+          <__trans phrase="Change and move">
+        </button>
+        <button
+           type="button"
+           id="cancel-move"
+           class="btn btn-default action button">
+          <__trans phrase="Cancel">
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+</mt:setvarblock>
+
+<mt:setvarblock name="css_include" append="1">
+<mt:stylesheet path="css/list_category.css">
+<mt:stylesheet path="css/msg-balloon.css">
+<mt:ignore>
+<mt:stylesheet path="css/sortable.css">
+</mt:ignore>
+</mt:setvarblock>
+
+<mt:setvarblock name="js_include" append="1">
+<mt:unless name="optimize_ui">
+  <mt:script type="text/javascript" path="jqueryui/jquery.ui.touch-punch.js">
+<mt:else>
+  <mt:script type="text/javascript" path="jqueryui/jquery.ui.touch-punch.min.js">
+</mt:unless>
+</mt:setvarblock>
+
+<mt:setvarblock name="jq_js_include" append="1">
+var indicator = jQuery('div.indicator').hide();
+jQuery(document)
+  .ajaxStart(function(){ indicator.show(); })
+  .ajaxStop(function(){ indicator.hide(); });
+
+var dummy = 1;
+var checksum = '';
+var isdirty = false;
+var indent = 35;
+var root_pos = jQuery('#root').position();
+<mt:if name="is_category_set">
+var categorySetId = <mt:if name="id"><mt:var name="id" escape="js"><mt:else>0</mt:if>;
+</mt:if>
+
+function setDirty( dirty ) {
+    isdirty = dirty;
+    if ( isdirty ) {
+        jQuery('button.save').prop('disabled', false).removeClass('disabled');
+    }
+    else {
+        jQuery('button.save').attr('disabled', 'disabled').addClass('disabled');
+    }
+}
+
+function loginAgain(fn) {
+  jQuery(window)
+    .off('dialogReady.loginAgain')
+    .on('dialogReady.loginAgain', function(){
+      var dialog = jQuery('#mt-dialog-iframe').contents();
+      dialog
+        .find('#sign-in-button')
+          .text('<__trans phrase="Continue" escape="js">')
+          .off()
+          .on('click', function(){
+            dialog.find('#msg-block').empty();
+            jQuery.ajax({
+              type: 'POST',
+              contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+              url: '<mt:var name="script_url">',
+              dataType: 'json',
+              data: {
+                __mode: 'login_json',
+                username: dialog.find('#username').val(),
+                password: dialog.find('#password').val()
+              },
+              success: function(data) {
+                var token = data.result['magic_token'];
+                if (token) {
+                  jQuery('input[name="magic_token"]').val(token);
+                  jQuery('a[href*="magic_token="]').each(function() {
+                    var replace = jQuery(this)
+                      .attr('href')
+                      .replace(/magic_token=[\d\w]+/, 'magic_token=' + token);
+                    jQuery(this).attr('href', replace);
+                  });
+                }
+                jQuery.fn.mtModal.close();
+                fn(data);
+                return false;
+              },
+              error: function(data) {
+                dialog.find('#password').val('');
+                dialog
+                  .find('#msg-block')
+                  .append('<div class="alert alert-danger msg msg-error"><__trans phrase="Invalid login." escape="js"></div>');
+              }
+            });
+            return false;
+          });
+    });
+  jQuery.fn.mtModal.open(
+    '<mt:var name="script_url">?__mode=dashboard',
+    { large: true }
+  );
+}
+
+function handleMessages( data ) {
+  jQuery('#msg-block').empty();
+  if ( data.error ) {
+    jQuery('#msg-block').append(
+      '<div class="alert alert-danger msg msg-error">'
+      + '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'
+      + '<p class="msg-text">'
+      + data.error
+      + '</p>'
+      + '</div>');
+    return false;
+  }
+  if ( !data.result ) return false;
+  var messages = data.result.messages;
+  if ( !data.result.messages ) return true;
+  for ( var i=0; i < messages.length; i++ ) {
+    var msg   = messages[i];
+    var text  = msg.msg;
+    var cls   = msg.cls;
+    var alertCls = cls;
+    if (alertCls == 'alert') {
+      alertCls = 'warning';
+    } else if (alertCls == 'error') {
+      alertCls = 'danger;'
+    }
+    jQuery('#msg-block').append(
+      '<div class="alert alert-' + alertCls + ' msg msg-' + cls + '">'
+      + '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'
+      + '<p class="msg-text">'
+      + text
+      + '</p>'
+      + '</div>');
+  }
+  return true;
+}
+
+function fixInteractions( options ) {
+  var defaults = {
+    sortable: true,
+    closeInlineForms: true
+  };
+  var opts = jQuery.extend(defaults, options);
+  if ( opts.closeInlineForms ) {
+    jQuery('div.edit-form button.cancel').trigger('click');
+    jQuery('div.add-form button.cancel').trigger('click');
+  }
+
+  if ( opts.sortable ) {
+    jQuery('.col-auto').css('visibility', 'visible');
+    jQuery('#root').sortable('enable')
+                   .children().attr('draggable', true)
+                              .css('cursor', 'move');
+  }
+  else {
+    jQuery('.col-auto').css('visibility', 'hidden');
+    jQuery('#root').sortable('disable')
+                   .children().attr('draggable', false)
+                              .css('cursor', 'default');
+  }
+}
+
+jQuery('div#area-action input[name=category_label]').on('focus', function() {
+  fixInteractions();
+});
+
+// id and parent should be numbers
+function createItem(id, parent, label, basename, number) {
+  var line = '<span class="item-label text-truncate me-2">'+label+'</span>';
+  if ( basename )
+    line += '<span class="item-basename text-truncate me-3"><span class="item-basename-text-container"><span class="item-basename-text">'+basename+'</span></span></span>';
+  line += ' <span class="item-ctrl text-truncate"></span>';
+  <mt:unless name="is_category_set">
+  line += ' <span class="count float-end d-none d-md-block me-2">'+number+'</span>';
+  </mt:unless>
+  var $item = jQuery('<div id="cat-'+id+'" class="pcat-'+parent+' sortable-item mt-draggable" draggable="true" aria-grabbed="false"></div>');
+  $item.append('<div class="col-auto"><mtapp:svgicon id="ic_move" title="<__trans phrase="Draggable">" strip_linefeeds="1"></div>');
+  $item.append(jQuery('<div class="col"></div>').append(line));
+  return $item;
+}
+
+function setMaxWidth($items) {
+  var maxWidth;
+  if (MT.Util.isMobileView()) {
+    maxWidth = jQuery(window).width() - 110;
+  } else {
+    maxWidth = (jQuery(window).width() - 580) / 2;
+  }
+  $items.find('.item-label').css('max-width', maxWidth + 'px');
+  $items.find('.item-basename').css('max-width', maxWidth + 'px');
+}
+
+function initItem($item) {
+  var id = $item.attr('id');
+  var catid = id.slice(4);
+  $item.attr('class').match(/\bpcat-(\w+)\b/);
+  var parent = RegExp.$1;
+  var nest = countNested(parent, []);
+  $item.css('margin-left', nest.length*indent)
+    .addClass(jQuery.map(nest, function (a){ return 'pcat-'+a; }).join(' '))
+    .addClass('lv-'+nest.length)
+    .addClass('sortable-item mt-draggable');
+  $item.find('.item-ctrl, .edit-form').remove();
+<mt:if name="is_category_set">
+  $item.children('.col').append('<span class="item-ctrl text-truncate" />');
+<mt:else>
+  jQuery('<span class="item-ctrl text-truncate" />').insertBefore($item.find('.count'));
+</mt:if>
+
+  jQuery('<a href="#" class="item-action edit-link clickable me-2"><__trans phrase="Rename" escape="js"></a>')
+    .appendTo($item.find('.item-ctrl'))
+    .on('click', function() {
+      fixInteractions({
+        sortable: false
+      });
+      var $element = jQuery(this).parent('.item-ctrl').parents('.sortable-item');
+      var $label = $element.find('.item-label a').length ? $element.find('.item-label a') : $element.find('.item-label');
+      var $basename = $element.find('.item-basename-text');
+      var $children = $element.children().hide();
+      var $form = jQuery('<div class="form-inline edit-form"/>')
+        .append(jQuery('<input type="text" name="<mt:var name="object_type" lower_case="1">_label" class="form-control text short cat-label mx-2" placeholder="<__trans phrase="Label" escape="js">" />'));
+      $form.find('.cat-label').val($label.text());
+      $form.append(jQuery('<input type="text" name="<mt:var name="object_type" lower_case="1">_basename" class="form-control text short basename me-2" placeholder="<__trans phrase="Basename" escape="js">" />'));
+      $form.find('.basename').val($basename.text());
+<mt:if name="object_type" eq="category">
+      jQuery.mtValidateRules['.cat-label'] = function ($e) {
+        if ( !$e.val().length ) return this.raise('<__trans phrase="Label is required." escape="js">');
+        if ( $e.val().length > 100 ) return this.raise('<__trans phrase="Label is too long." escape="js">');
+        return hasDupe(parent, catid, $e.val()) ? this.raise('<__trans phrase="Duplicated label on this level." escape="js">') : true;
+      };
+<mt:else>
+      jQuery.mtValidateRules['.cat-label'] = function ($e) {
+        if ( !$e.val().length ) return this.raise('<__trans phrase="Label is required." escape="js">');
+        return true;
+      };
+</mt:if>
+      jQuery.mtValidateRules['.basename'] = function ($e) {
+        if ( !$e.val().length ) return this.raise('<__trans phrase="Basename is required." escape="js">');
+        if ( $e.val().match(/[^\w\-]/) ) return this.raise('<__trans phrase="Invalid Basename." escape="js">');
+        return hasDupe(parent, catid, null, $e.val()) ? this.raise('<__trans phrase="Duplicated basename on this level." escape="js">') : true;
+      };
+
+      jQuery('<button type="submit" class="btn btn-secondary rename button me-2"><__trans phrase="Rename" escape="js"></button>')
+        .on('click', function() {
+          if ( !$element.find('input.cat-label, input.basename').mtValidate() ) return false;
+          fixInteractions({ closeInlineForms: false });
+          $basename.text( $element.find('input.basename').val() );
+          $label.text( $element.find('input.cat-label').val() );
+          $children.show();
+          initItem($item);
+          setItemList();
+          setDirty(true);
+        })
+        .appendTo($form);
+      jQuery('<button type="button" class="btn btn-default cancel button"><__trans phrase="Cancel" escape="js"></button>')
+        .on('click', function() {
+          fixInteractions({ closeInlineForms: false });
+          $children.show();
+          initItem($item);
+        })
+        .appendTo($form);
+      $form.appendTo($element);
+      $form.find('.cat-label, .basename').on('keypress', function (e) {
+        if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
+          $form.find('button.rename').trigger('click');
+          return false;
+        }
+      });
+      $form.find('.cat-label').trigger('focus');
+      return false;
+    });
+
+<mt:setvarblock name="add_icon_title"><__trans phrase="Add child [_1]" params="<mt:var name="object_label">" escape="js"></mt:setvarblock>
+  jQuery('<span class="item-action plus clickable icon-plus icon16 action-icon d-inline-block" style="cursor: pointer;"><mtapp:svgicon id="ic_add" size="sm" title="$add_icon_title"></span>')
+    .appendTo($item.find('.item-ctrl'))
+    .on('click', function() {
+      fixInteractions({ sortable: false });
+      var $element = jQuery(this).parent('.item-ctrl').parents('.sortable-item');
+      var parent = $element.attr('id').slice(4);
+      var $form = jQuery('<div class="mt-draggable form-inline mod add-form" style="cursor: default;"><input type="text" name="<mt:var name="object_type" lower_case="1">_label" class="form-control text short mx-2" placeholder="<__trans phrase="[_1] label" params="<mt:var name="object_label">" escape="js">" />\n</div>');
+      $form.css('margin-left', (nest.length+1)*indent).insertAfter($element).find('input[name=<mt:var name="object_type" lower_case="1">_label]').trigger('focus');
+      jQuery('<button type="button" class="btn btn-secondary add button me-2"><__trans phrase="Add" escape="js"></button>')
+        .on('click', function() {
+          var label = jQuery(this).parent('.add-form').find('input').val();
+          // sort of hack to do HTML escape.
+          label = jQuery('<div />').text(label).html();
+          if ( addItem(parent, label) ) {
+              jQuery(this).parent('.add-form').remove();
+              fixInteractions({ closeInlineForms: false });
+          }
+        })
+        .appendTo($form);
+      jQuery('<button type="button" class="btn btn-default cancel button"><__trans phrase="Cancel" escape="js"></button>')
+        .on('click', function() {
+            fixInteractions({ closeInlineForms: false });
+            jQuery('#msg-block').empty();
+            jQuery(this).parent('.add-form').remove();
+        })
+        .appendTo($form);
+      $form.find('input[name=<mt:var name="object_type" lower_case="1">_label]').on('keypress', function (e) {
+        if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
+          $form.find('button.add').trigger('click');
+          return false;
+        }
+      });
+
+      jQuery('.button').button();
+    });
+
+<mt:setvarblock name="remove_icon_title"><__trans phrase="Remove [_1]" params="<mt:var name="object_label_plural">" escape="js"></mt:setvarblock>
+  jQuery('<span class="item-action delete clickable icon-delete icon16 action-icon d-inline-block" style="cursor: pointer;"><mtapp:svgicon id="ic_trash" size="sm" title="$remove_icon_title"></span>')
+    .appendTo($item.find('.item-ctrl'))
+    .on('click', function() {
+      fixInteractions();
+      var id = jQuery(this).parents('.sortable-item').attr('id').slice(4);
+      removeItems(id);
+    });
+  setHoverAction($item);
+  setMaxWidth($item);
+}
+
+// parent and id should be numbers
+function hasDupe( parent, id, label, basename ) {
+  var $parent = jQuery('#cat-' + parent);
+  $parent.attr('class').match(/lv-(\w+)/);
+  var parent_level = parseInt(RegExp.$1);
+  if ( isNaN(parent_level) ) parent_level = -1;
+  var level = parent_level + 1;
+  var dupe = false;
+  jQuery('.pcat-' + parent + '.lv-' + level).each( function () {
+      if ( id && ( ('cat-'+id) == jQuery(this).attr('id') ) ) return true;
+<mt:if name="object_type" eq="category">
+      var sibling_label = jQuery(this).find('.item-label').text();
+      if ( ( label && sibling_label == label ) ) {
+        dupe = true;
+        return false;
+      }
+</mt:if>
+      var sibling_basename = jQuery(this).find('.item-basename-text').text();
+      if ( ( basename && sibling_basename == basename ) ) {
+        dupe = true;
+        return false;
+      }
+  });
+  return dupe;
+}
+
+function makeBasename( parent, id, label ) {
+  var limit = <mt:var name="basename_limit" />;
+  var basename = dirify( label ).substr( 0, limit );
+  if ( !basename.length ) basename = '<mt:var name="basename_prefix">';
+  var $parent = jQuery('#cat-' + parent);
+  $parent.attr('class').match(/lv-(\w+)/);
+  var parent_level = parseInt(RegExp.$1);
+  if ( isNaN(parent_level) ) parent_level = -1;
+  var level = parent_level + 1;
+
+  var max = -1;
+  var re = new RegExp( '^' + basename + '(<mt:unless name="config.CategoryNameNodash">\\-</mt:unless>([1-9][0-9]*))?$' );
+  jQuery('.pcat-' + parent + '.lv-' + level).each( function () {
+    if ( id && id == jQuery(this).attr('id') ) return true;
+    var sibling_basename = jQuery(this).find('.item-basename-text').text();
+    if ( sibling_basename.match(re) ) {
+      var num = parseInt(RegExp.$2) || 0;
+      if ( max < num ) max = num;
+    }
+    return true;
+  });
+  max++;
+  return max > 0 ? basename <mt:unless name="config.CategoryNameNodash">+ '-' </mt:unless>+ max : basename;
+}
+
+// parent should be a number
+function addItem(parent, label) {
+  jQuery('#msg-block .additem-error').remove();
+  if ( hasDupe( parent, 0, label) ) {
+    jQuery('#msg-block').append('<div class="alert alert-danger msg msg-error additem-error">'+trans("[_1] '[_2]' already exists.", '<mt:var name="object_label">', label)+'</div>');
+    return false;
+  }
+  if ( !label.length ) {
+    jQuery('#msg-block').append('<div class="alert alert-danger msg msg-error additem-error">'+trans("Label is required.")+'</div>');
+    return false;
+  }
+  if ( label.length > 100 ){
+    jQuery('#msg-block').append("<div class='alert alert-danger msg msg-error additem-error'><__trans phrase="Label is too long." escapse="js"></div>");
+    return false;
+  }
+  var id = 'x'+dummy;
+  var basename = makeBasename(parent, id, label);
+  var $item = createItem(id, parent, label, basename, '');
+  initItem($item);
+  $item.insertAfter(jQuery('#cat-'+parent));
+
+  var nest = countNested(parent, []);
+  var nestLevel = nest.length;
+  jQuery('#opt-'+parent).after('<option id="opt-'+id+'" value="'+id+'">'+nestedLabel(nestLevel, label)+'</option>');
+
+  dummy++;
+  setDirty(true);
+  fixZeroStateMessage();
+  return true;
+}
+
+DOM.addEventListener( jQuery('div#area-action input[name=category_label]').get(0), "keydown", function(e){
+    if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
+        jQuery('div#area-action button.add[type="submit"]').trigger('click');
+        return false;
+    }
+});
+
+// id should be numeric / x1
+function removeItems(id) {
+  var singlar = '<mt:var name="object_label" lower_case="1" escape="js">';
+  var plural = '<mt:var name="object_label_plural" lower_case="1" escape="js">';
+  var $items = jQuery('.pcat-'+id);
+  var count = $items.length + 1;
+  var label = jQuery('#cat-'+id).find('.item-label').text();
+  var message = (count == 1)
+    ? trans('Are you sure you want to remove [_1] [_2]?', singlar, label)
+    : trans('Are you sure you want to remove [_1] [_2] with [_3] sub [_4]?', singlar, label, count - 1, (count > 2 ? plural : singlar));
+  if (!confirm(message)) {
+      return;
+  }
+  $items.remove();
+  jQuery('#cat-'+id).next('.add-form').remove().end().remove();
+  jQuery('.col-auto').css('visibility', 'visible');
+  setItemList();
+  setDirty(true);
+  fixZeroStateMessage();
+}
+
+function setItemList() {
+  jQuery('#itemlist option').not(':first').remove();
+  jQuery('.sortable-item:visible').each(function() {
+    var $item = jQuery(this);
+    var id = $item.attr('id');
+    var catid = id.slice(4);
+    var label = $item.find('.item-label').html();
+    var nest = countNested(catid, []);
+    var nestLevel = nest.length - 1;
+    jQuery('#itemlist').append('<option id="opt-'+catid+'" value="'+catid+'">'+nestedLabel(nestLevel, label)+'</option>');
+  });
+}
+
+// id should be a number, nest a list
+function countNested(id, nest) {
+  if (id == 0) {
+    return nest;
+  }
+  jQuery('#cat-'+id).attr('class').match(/\bpcat-(\w+)\b/);
+  var parent = RegExp.$1;
+  nest.push(parent);
+  return countNested(parent, nest);
+}
+
+function nestedLabel( level, label ) {
+  ret = '';
+  for( i = 0; i < level; i++ ) {
+    ret = '-&nbsp;'+ret;
+  }
+  return ret + label;
+}
+
+function initMoving() {
+  var place;
+  var original_class;
+  jQuery('.sortable').sortable({
+    delay: MT.Util.isMobileView() ? 100 : 0,
+    distance: 3,
+    handle: MT.Util.isMobileView() ? '.col-auto' : false,
+    opacity: 0.8,
+    placeholder: 'ui-state-highlight',
+    scrollSpeed: MT.Util.isMobileView() ? 10 : 20,
+    start: function(event, ui) {
+      var $item = jQuery(ui.item);
+      $item.attr('aria-grabbed', true);
+      original_class = $item.attr('class');
+      var id = $item.attr('id').slice(4);
+      var count = jQuery('.pcat-'+id).css('cssText', 'display: none !important').length;
+      if (count) {
+        var label = (count == 1)
+          ? '<mt:var name="object_label" lower_case="1" escape="js">'
+          : '<mt:var name="object_label_plural" lower_case="1" escape="js">';
+        jQuery('<span class="badge"> + '+count+' '+label+' </span>').insertAfter($item.find('.item-basename'));
+      }
+      $item.find('.item-ctrl').hide();
+    },
+    stop: function(event, ui) {
+      var $item = jQuery(ui.item);
+      var id = $item.attr('id');
+      var catid = id.slice(4);
+      $item.attr('aria-grabbed', false);
+      if (!place) place = 0;
+      if (catid == place) {
+        jQuery('.pcat-'+catid).css('display', '');
+        return;
+      }
+      function _stop() {
+        $item.find('.badge').remove();
+        $item.find('.item-basename, .plus, .delete').show();
+        $item.attr('class', ('pcat-'+place));
+        initItem($item);
+        var $last = $item;
+        jQuery('.pcat-'+catid).each(function() {
+          var $this = jQuery(this).clone();
+          jQuery(this).remove();
+          $this.attr('class').match(/\bpcat-(\w+)\b/);
+          var parent = RegExp.$1;
+          $this.attr('class', ('pcat-'+parent));
+          initItem($this);
+          $this.insertAfter($last).show();
+          $last = $this;
+        });
+        setHoverAction(jQuery('.pcat-'+catid));
+        setItemList();
+        setDirty(true);
+      }
+
+      if (
+<mt:if name="object_type" eq="category">
+        hasDupe( place, catid, $item.find('.item-label').text() )
+        || hasDupe( place, catid, null, $item.find('.item-basename-text').text() )
+<mt:else>
+        hasDupe(place, catid, null, $item.find('.item-basename-text').text() )
+</mt:if>
+      ) {
+
+        $item.attr('class', ('pcat-'+place));
+        $item.addClass('sortable-item mt-draggable');
+        $item.attr({ draggrable: true, 'aria-grabbed': false });
+        initItem($item);
+<mt:if name="object_type" eq="category">
+        jQuery.mtValidateRules['#new-label'] = function ($e) {
+          return hasDupe(place, catid, $e.val()) ? this.raise('<__trans phrase="Duplicated label on this level." escape="js">') : true;
+        };
+</mt:if>
+        jQuery.mtValidateRules['#new-basename'] = function ($e) {
+          return hasDupe(place, catid, null, $e.val()) ? this.raise('<__trans phrase="Duplicated basename on this level." escape="js">') : true;
+        };
+        jQuery('#new-label').val($item.find('.item-label').text())
+        jQuery('#new-basename').val($item.find('.item-basename-text').text())
+        jQuery('#change-and-move')
+          .off('click')
+          .on( 'click', function(){
+<mt:if name="object_type" eq="category">
+            if ( jQuery('#new-label').mtValidate('simple') && jQuery('#new-basename').mtValidate('simple') ) {
+              var $label = $item.find('.item-label a').length ? $item.find('.item-label a') : $item.find('.item-label');
+              $label.text( jQuery('#new-label').val() );
+              var $basename = $item.find('.item-basename-text');
+              $basename.text( jQuery('#new-basename').val() );
+              _stop();
+              jQuery('#modal-change-basename').modal('hide');
+            }
+<mt:else>
+            if ( jQuery('#new-basename').mtValidate('simple') ) {
+              var $basename = $item.find('.item-basename-text');
+              $basename.text( jQuery('#new-basename').val() );
+              _stop();
+              jQuery('#modal-change-basename').modal('hide');
+            }
+</mt:if>
+            return false;
+          });
+        jQuery('#cancel-move')
+          .off('click')
+          .on('click', function () {
+            jQuery('.sortable').sortable('cancel');
+            $item.attr('class', original_class);
+            jQuery('.pcat-'+catid).show();
+            $item.find('.badge').remove();
+            $item.find('.plus, .delete').show();
+            initItem($item);
+            setHoverAction(jQuery('.pcat-'+catid));
+            setItemList();
+            jQuery('#modal-change-basename').modal('hide');
+          });
+        jQuery('#modal-change-basename').modal({
+          backdrop: 'static',
+          keyboard: false
+        });
+<mt:if name="object_type" eq="category">
+        jQuery('#new-label, #new-basename').mtValidate('simple');
+<mt:else>
+        jQuery('#new-basename').mtValidate('simple');
+</mt:if>
+      }
+      else {
+        _stop();
+      }
+    },
+    sort: function(event, ui) {
+      var $item = jQuery(ui.item);
+      $item.attr('class').match(/\bpcat-(\w+)\b/);
+      var parent = RegExp.$1;
+      $item.attr('class').match(/lv-(\w+)/);
+      var level = parseInt(RegExp.$1);
+
+      var $place = jQuery(ui.placeholder);
+      var $prev = $place.prevAll().not($item).not(':hidden').filter(':first');
+      var prev_id = 0;
+      var prev_parent = 0;
+      var prev_level = 0;
+      if ($prev.length) {
+        var prev_id = $prev.attr('id').slice(4);
+        $prev.attr('class').match(/\bpcat-(\w+)\b/);
+        prev_parent = RegExp.$1;
+        $prev.attr('class').match(/lv-(\w+)/);
+        prev_level = parseInt(RegExp.$1);
+      }
+      var nest = countNested(prev_parent, []);
+      nest.pop();
+      nest.unshift(prev_parent);
+
+      var $next = $place.nextAll().not($item).not(':hidden').filter(':first');
+      var next_parent = 0;
+      var next_level = 0;
+      if ($next.length) {
+        $next.attr('class').match(/\bpcat-(\w+)\b/);
+        next_parent = RegExp.$1;
+        $next.attr('class').match(/lv-(\w+)/);
+        next_level = parseInt(RegExp.$1);
+      }
+
+      var left = ui.position.left - root_pos.left;
+      var idx = parseInt(Math.abs(left)/indent);
+      var d = prev_level < level ? 0 : prev_level - level + 1;
+      var pos = 0;
+
+      if (prev_level < next_level) {
+        place = prev_id;
+        pos = prev_level + 1;
+      } else if (prev_level == next_level) {
+        if (left > 0) {
+          place = prev_id;
+          pos = prev_level + 1;
+        } else {
+          place = prev_parent;
+          pos = prev_level;
+        }
+        if (prev_id == 0) {
+          place = prev_parent;
+          pos = prev_level;
+        }
+      } else {
+        if (left > 0) {
+          if (idx < d) {
+            place = nest[d - idx - 1];
+            pos = nest.length - (d - idx -1);
+          } else {
+            place = prev_id;
+            pos = nest.length + 1;
+          }
+        } else if (left < 0) {
+          if (idx + d < nest.length) {
+            place = nest[idx + d];
+            pos = nest.length - (idx + d);
+          } else {
+            place = next_parent;
+            pos = next_level;
+          }
+        } else {
+          place = parent;
+          pos = level;
+        }
+      }
+      jQuery('<div class="target"><span class="marker"></span></div>').css('width', pos*indent).appendTo($place.empty());
+    }
+  });
+}
+
+function setHoverAction($elements) {
+  $elements.on({
+    'mouseenter': function() {
+      var parent = jQuery(this).addClass('highlight on').attr('id').slice(4);
+      jQuery('.pcat-'+parent).addClass('highlight');
+    },
+    'mouseleave': function() {
+      var parent = jQuery(this).removeClass('highlight on').attr('id').slice(4);
+      jQuery('.pcat-'+parent).removeClass('highlight');
+    }
+  });
+}
+
+function renderItems(data) {
+  jQuery('#root').empty();
+  jQuery('#itemlist option').not(':first').remove();
+  jQuery('<div id="cat-0" class="pcat-0 sortable-item" />').hide().appendTo('#root');
+  var objs = data.result.objects;
+  var count = objs.length;
+  for (var i = 0; i < count; i++) {
+    var id = parseInt(objs[i][0]);
+    var parent = parseInt(objs[i][1]);
+    var label = objs[i][2];
+    var basename = objs[i][3];
+    var number = objs[i][4]
+    var $item = createItem(id, parent, label, basename, number);
+    initItem($item);
+    $item.appendTo('#root');
+    var nest = countNested(parent, []);
+    var nestLevel = nest.length;
+    jQuery('#itemlist').append('<option id="opt-'+id+'" value="'+id+'">'+nestedLabel(nestLevel, label)+'</option>');
+  }
+  fixZeroStateMessage();
+  checksum = data.result.checksum;
+  setHoverAction(jQuery('.sortable-item'));
+
+  jQuery('#area-action').children().removeClass('disabled').prop('disabled', false);
+}
+
+function fixZeroStateMessage () {
+  if ( jQuery('#root div.sortable-item').length <= 1 ) {
+    if( !jQuery('#zero-state-message').length ) {
+      var message = trans('No [_1] could be found.', '<mt:var name="object_label" lower_case="1" escape="js">');
+      jQuery('<p id="zero-state-message">'+message+'</p>').insertBefore('#root');
+    }
+  }
+  else
+    jQuery('#zero-state-message').remove();
+}
+
+function renderNestedList() {
+  var params = {
+    __mode: 'filtered_list',
+    datasource: '<mt:var name="list_type">',
+  <mt:if name="is_category_set">
+    is_category_set: 1,
+    set_id: categorySetId,
+  </mt:if>
+    blog_id: <mt:var name="blog_id">
+  };
+  jQuery.ajax({
+    type: 'POST',
+    contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+    url: '<mt:var name="script_url">',
+    dataType: 'json',
+    data: params,
+    success: function(data) {
+      if ( !handleMessages(data) ) return;
+<mt:if name="config.debugmode">
+      if (data.result.debug) {
+        jQuery('#listing-debug-block').text(data.result.debug);
+      }
+</mt:if>
+      renderItems(data);
+    },
+    complete: function() {
+      jQuery(window).trigger('listReady');
+      initMoving();
+    },
+    error: function(xhr, status) {
+      if ( xhr.status == 401 ) {
+        loginAgain(function(){
+          renderNestedList();
+        });
+      }
+      else if ( xhr.status == 0 ) {
+        // Maybe this is user abort. do nothing.
+      }
+      else {
+        alert('Ajax error: ' + xhr.status + ': ' + status);
+      }
+    }
+  });
+}
+
+jQuery('.add').on('click', function() {
+  var $focusParent = jQuery(':focus').parent('div');
+  var parent = '';
+  var label = '';
+  if ( $focusParent.hasClass('add-form') ) {
+    // add a sub category by hitting enter key.
+    parent = $focusParent.prev().attr('id').slice(4);
+    label = $focusParent.find('input').val();
+  } else {
+    parent = jQuery(this).parent('#area-action').find('select').val();
+    label = jQuery(this).parent('#area-action').find('input').val();
+  }
+  // sort of hack to do HTML escape.
+  label = jQuery('<div />').text(label).html();
+  if ( addItem(parent, label) ) {
+    if ( $focusParent.hasClass('add-form') ) {
+      // add a sub category by hitting enter key.
+      $focusParent.remove();
+      fixInteractions({ closeInlineForms: false });
+    } else {
+      fixInteractions();
+      jQuery(this).parent('#area-action').find('input').val('');
+    }
+  }
+  return false;
+});
+
+jQuery('.save').on('click', bulkUpdateCategories );
+
+function bulkUpdateCategories() {
+  if ( !jQuery('#set_name').mtValidate('simple') ) {
+    return false;
+  }
+  jQuery('#area-action').children().addClass('disabled').attr('disabled', 'disabled');
+  var items = [];
+  jQuery('.sortable-item:visible').each(function() {
+    var $item = jQuery(this);
+    var myid = $item.attr('id').slice(4);
+    $item.attr('class').match(/\bpcat-(\w+)\b/);
+    var parentid = RegExp.$1;
+    items.push({id: myid, parent: parentid, label: $item.find('.item-label').text(), basename: $item.find('.item-basename-text').text() });
+  });
+  jQuery.ajax({
+    type: 'POST',
+    contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+    url: '<mt:var name="script_url">',
+    dataType: 'json',
+    data: {
+      __mode: 'bulk_update_<mt:var name="object_type">',
+      datasource: '<mt:var name="list_type">',
+  <mt:if name="is_category_set">
+      is_category_set: 1,
+      set_name: jQuery('#set_name').val(),
+      set_id: categorySetId,
+  </mt:if>
+      blog_id: <mt:var name="blog_id">,
+      checksum: checksum,
+      objects: <mt:if name="use_jquery_json">jQuery.toJSON(items)<mt:else>JSON.stringify(items)</mt:if>,
+      magic_token: jQuery('input[name="magic_token"]').val()
+    },
+    success: function(data) {
+      if ( !handleMessages(data) ) return;
+      renderItems(data);
+      setDirty(false);
+<mt:if name="is_category_set">
+  <mt:unless name="id">
+      if (!categorySetId && data.result.category_set_id) {
+        categorySetId = data.result.category_set_id;
+
+        var queryParams = {
+          __mode: 'view',
+          _type: 'category_set',
+          blog_id: <mt:var name="blog_id">,
+          id: categorySetId
+        };
+        var newUrl = '<mt:var name="script_url">?' + jQuery.param(queryParams);
+        window.history.replaceState(undefined, undefined, newUrl);
+      }
+  </mt:unless>
+</mt:if>
+    },
+    complete: function() {
+      jQuery('#set_name').mtUnvalidate();
+      initMoving();
+    },
+    error: function(xhr, status) {
+      if ( xhr.status == 401 ) {
+        loginAgain(function(){
+          bulkUpdateCategories();
+        });
+      }
+      else
+        alert('Ajax error: ' + status);
+    }
+  });
+  return false;
+}
+
+jQuery('#root').on('click', '.mt-draggable', function (e) {
+  if (!MT.Util.isMobileView()) {
+    return;
+  }
+  if (e.target.tagName == 'A') {
+    return;
+  }
+  var $editLink = jQuery(this).find('.item-label a');
+  if ($editLink.length > 0) {
+    $editLink.get(0).click();
+    return false;
+  }
+});
+
+jQuery(window).on('resize', function () {
+  var $items = jQuery('.sortable-item');
+  setMaxWidth($items);
+});
+
+  <mt:if name="is_category_set">
+jQuery('#set_name').on('keyup', function() {
+  setDirty(true);
+});
+  </mt:if>
+
+jQuery(window).on('beforeunload', function() {
+  if (isdirty) {
+    return trans('You have unsaved changes to this page that will be lost.');
+  }
+});
+
+jQuery(window).on('listReady', function() {
+  jQuery('#area-action').children().removeClass('disabled').prop('disabled', false);
+});
+renderNestedList();
+</mt:setvarblock>
+
+<mt:include name="layout/default.tmpl">
+<mt:var name="layout">
