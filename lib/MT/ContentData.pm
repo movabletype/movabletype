@@ -372,6 +372,9 @@ sub _update_cf_idx {
             content_field_id => $f->{id},
         );
 
+        if ($cf_idx_data_col eq 'value_varchar' && length($new_value) > 255) {
+            $new_value = substr($new_value, 0, 255);
+        }
         $cf_idx->$cf_idx_data_col($new_value);
 
         # Week Number for Content Field
