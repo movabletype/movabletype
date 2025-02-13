@@ -1,7 +1,12 @@
 <?php
 
-$backend = strtolower(getenv('MT_TEST_BACKEND'));
-$MT_CONFIG = ($backend === 'oracle') ? 'oracle-test.cfg' : (($backend === 'pg') ? 'postgresql-test.cfg' : 'mysql-test.cfg');
+$cfgs = [
+    'mysql' => 'mysql-test.cfg',
+    'oracle' => 'oracle-test.cfg',
+    'pg' => 'postgresql-test.cfg',
+];
+$MT_CONFIG = $cfgs[strtolower(getenv('MT_TEST_BACKEND') ?? 'mysql')];
+$MT_CONFIG ??= $cfgs['mysql'];
 
 system("MT_CONFIG=$MT_CONFIG". ' perl -It/lib -Ilib -Iextlib -MMT::Test=:db -E "say \"Initialized test DB.\""');
 
