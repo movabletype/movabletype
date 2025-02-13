@@ -527,6 +527,7 @@ use vars qw( @ISA %Lexicon );
 	q{Failed login attempt by locked-out user '[_1]'} => q{ロックされたユーザー「[_1]」がサインインしようとしました。},
 	q{Failed login attempt by pending user '[_1]'} => q{保留中のユーザー「[_1]」がサインインしようとしました。},
 	q{Failed login attempt by unknown user '[_1]'} => q{未登録のユーザー [_1] がサインインしようとしました。},
+	q{Failed login attempt by user '[_1]' (probably session expired)} => q{ユーザー「[_1]」がサインインに失敗しました（おそらくセッションの有効期限が過ぎていました）。},
 	q{Failed login attempt by user '[_1]'} => q{ユーザー「[_1]」がサインインに失敗しました。},
 	q{Failed to open monitoring file that specified by IISFastCGIMonitoringFilePath directive '[_1]': [_2]} => q{IISFastCGIMonitoringFilePath で指定されたモニタリングファイル ([_1]) が開けません: [_2]},
 	q{Invalid login attempt from user '[_1]'} => q{'[_1]'がサインインに失敗しました。},
