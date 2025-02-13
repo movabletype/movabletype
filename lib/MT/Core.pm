@@ -41,7 +41,7 @@ BEGIN {
                 label          => 'PostgreSQL Database',
                 dbd_package    => 'DBD::Pg',
                 dbd_version    => '1.32',
-                config_package => 'DBI::postgres',
+                config_package => 'DBI::Pg',
                 display =>
                     [ 'dbserver', 'dbname', 'dbuser', 'dbpass', 'dbport' ],
             },

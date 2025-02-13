@@ -7,7 +7,7 @@
 
 require_once('mtdb.base.php');
 
-class MTDatabasepostgres extends MTDatabase {
+class MTDatabasepg extends MTDatabase {
 
     public function unserialize($data) {
         $data = stream_get_contents($data);

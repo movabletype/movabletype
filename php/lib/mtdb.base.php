@@ -61,11 +61,12 @@ abstract class MTDatabase {
                     $this->connect($user, $password, $dbname, $host, $port, $sock);
                 }
             } catch (Exception $e ) {
+                trigger_error('DB connection failed: '. $e->getMessage(), E_USER_WARNING);
                 sleep( $retry_int );
             }
         }
-        if ( empty($this->conn) || ( !empty($this->conn) && !$this->conn->IsConnected() ) ) {
-            throw new MTDBException( $this->conn->ErrorMsg() , 0);
+        if (empty($this->conn) || !$this->conn->IsConnected()) {
+            throw new MTDBException('DB connection failed', 0);
         }
 
         ADOdb_Active_Record::SetDatabaseAdapter($this->conn);
