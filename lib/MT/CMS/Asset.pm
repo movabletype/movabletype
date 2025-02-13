@@ -1384,6 +1384,9 @@ sub _set_start_upload_params {
         $param->{auto_rename_non_ascii} = 1;
     }
 
+    $param->{force_trim_file_path} = $app->config->TrimFilePath;
+
+    $param->{trim_file_path}  = 1;
     $param->{max_upload_size} = $app->config->CGIMaxUpload;
 
     $param;
@@ -1429,10 +1432,13 @@ sub _upload_file_compat {
         $app, %param,
         error => $app->translate("Please select a file to upload.")
     ) if !$fh && !$has_overwrite;
+
+    $param{trim_file_path} = my $trim_file_path = MT->config->TrimFilePath || $app->param('trim_file_path');
+
     my $basename = $app->param('file') || $app->param('fname');
     $basename =~ s!\\!/!g;    ## Change backslashes to forward slashes
     $basename =~ s!^.*/!!;    ## Get rid of full directory paths
-    $basename = trim_path($basename) if MT->config->TrimFilePath;
+    $basename = trim_path($basename) if $trim_file_path;
     if ( $basename =~ m!\.\.|\0|\|! ) {
         return $eh->(
             $app, %param,
@@ -1532,9 +1538,9 @@ sub _upload_file_compat {
             )
         ) unless -d $root_path;
         $relative_path = $app->param('extra_path')  || '';
-        $relative_path = trim_path($relative_path) if MT->config->TrimFilePath;
+        $relative_path = trim_path($relative_path) if $trim_file_path;
         $middle_path   = $app->param('middle_path') || '';
-        $middle_path = trim_path($middle_path) if MT->config->TrimFilePath;
+        $middle_path = trim_path($middle_path) if $trim_file_path;
         my $relative_path_save = $relative_path;
         if ( $middle_path ne '' ) {
             $relative_path = $middle_path
@@ -2023,10 +2029,12 @@ sub _upload_file {
         error => $app->translate("Please select a file to upload.")
     ) if !$fh;
 
+    $param{trim_file_path} = my $trim_file_path = MT->config->TrimFilePath || $app->param('trim_file_path');
+
     my $basename = $app->param('file') || $app->param('fname');
     $basename =~ s!\\!/!g;    ## Change backslashes to forward slashes
     $basename =~ s!^.*/!!;    ## Get rid of full directory paths
-    $basename = trim_path($basename) if MT->config->TrimFilePath;
+    $basename = trim_path($basename) if $trim_file_path;
     if ( $basename =~ m!\.\.|\0|\|! ) {
         return $eh->(
             $app, %param,
@@ -2117,7 +2125,7 @@ sub _upload_file {
 
         ## Build upload destination path
         my $dest = $app->param('destination');
-        $dest = trim_path($dest) if MT->config->TrimFilePath;
+        $dest = trim_path($dest) if $trim_file_path;
         my $root_path;
         my $is_sitepath;
         if ( $dest =~ m/^%s/i ) {
@@ -2134,7 +2142,7 @@ sub _upload_file {
 
         # Make directory if not exists
         $extra_path = $app->param('extra_path') || '';
-        $extra_path = trim_path($extra_path) if MT->config->TrimFilePath;
+        $extra_path = trim_path($extra_path) if $trim_file_path;
         if ( $dest ne '' ) {
             $extra_path = File::Spec->catdir( $dest, $extra_path );
         }
