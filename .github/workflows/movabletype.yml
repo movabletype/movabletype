@@ -33,6 +33,9 @@ jobs:
           - "t/tag/"
           - "plugins/*/t"
           - php
+        exclude:
+          - config: {image: centos7}
+            test: php
         include:
           - config: {image: chromiumdriver}
             test: selenium
@@ -141,9 +144,6 @@ jobs:
           - "t/tag/"
           - "plugins/*/t"
           - php
-        exclude:
-          - config: {image: centos7, mt_test_env: 'MT_TEST_DISABLE_OBJECT_CACHE=1'}
-            test: php
     steps:
       - name: checkout
         uses: actions/checkout@v4.1.0
