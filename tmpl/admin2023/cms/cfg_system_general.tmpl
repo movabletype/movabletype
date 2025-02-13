@@ -135,18 +135,6 @@
         </div>
       </div>
     </mtapp:setting>
-
-    <mtapp:setting
-       id="trim-file-path"
-       label="<__trans phrase="Upload">">
-      <div class="mb-3">
-        <div class="form-check">
-          <input type="checkbox"<mt:if name="trim_file_path" eq="1"> disabled="disabled"</mt:if> name="trim_file_path" id="trim_file_path" checked="checked" class="form-check-input" />
-          <label class="form-check-label" for="trim_file_path"><__trans phrase="Trim spaces before and after path"></label>
-        </div>
-        <small class="form-text text-muted hint"><__trans phrase="This should be enabled as deleting files or directory will fail if the path contains spaces."></small>
-      </div>
-    </mtapp:setting>
 </mtapp:settinggroup>
 
 <mt:unless name="sitepath_limit_hidden">

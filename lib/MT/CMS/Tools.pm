@@ -483,7 +483,6 @@ sub cfg_system_general {
     $param{system_performance_logging_threshold}
         = $cfg->PerformanceLoggingThreshold;
     $param{track_revisions}        = $cfg->TrackRevisions;
-    $param{trim_file_path}         = $cfg->TrimFilePath;
     $param{saved}                  = $app->param('saved');
     $param{error}                  = $app->param('error');
     $param{warning_sitepath_limit} = $app->param('warning_sitepath_limit');
@@ -561,8 +560,6 @@ sub save_cfg_system_general {
         unless $app->user->is_superuser();
     my $cfg = $app->config;
     $app->config( 'TrackRevisions', $app->param('track_revisions') ? 1 : 0,
-        1 );
-    $app->config( 'TrimFilePath', $app->param('trim_file_path') ? 1 : 0,
         1 );
     my $args = {};
 
