@@ -1406,6 +1406,10 @@ sub init_plugins {
 
                 delete $Plugins{$plugin_sig};
                 delete $Components{ lc $dup->id };
+                my $disabled_sig = "$plugin_sig ($dup->{full_path})";
+                $Plugins{$disabled_sig}{enabled} = 0;
+                $Plugins{$disabled_sig}{full_path} = $dup->{full_path};
+                $Plugins{$disabled_sig}{system_error} = $error;
 
                 @Components = grep { ($_->{plugin_sig} || '') ne $plugin_sig } @Components;
             }
@@ -1416,6 +1420,11 @@ sub init_plugins {
                     MT::Util::Log::init();
                     MT::Util::Log->error($error);
                 };
+
+                my $disabled_sig = "$plugin_sig ($plugin_full_path)";
+                $Plugins{$disabled_sig}{enabled} = 0;
+                $Plugins{$disabled_sig}{full_path} = $plugin_full_path;
+                $Plugins{$disabled_sig}{system_error} = $error;
 
                 return 1;
             }
