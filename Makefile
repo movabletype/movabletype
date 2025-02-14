@@ -25,7 +25,7 @@ core_js = mt-static/js/common/Core.js \
           mt-static/js/tc.js \
           mt-static/js/tc/tableselect.js
 
-bs5_core_js = mt-static/js/common/Core.js \
+admin2023_core_js = mt-static/js/common/Core.js \
           mt-static/js/common/Timer.js \
           mt-static/js/common/Cookie.js \
           mt-static/js/common/DOM.js \
@@ -39,6 +39,21 @@ bs5_core_js = mt-static/js/common/Core.js \
           mt-static/js/common/Template.js \
           mt-static/js/tc.js \
           mt-static/js/admin2023/tc/tableselect.js
+
+admin2025_core_js = mt-static/js/common/Core.js \
+          mt-static/js/common/Timer.js \
+          mt-static/js/common/Cookie.js \
+          mt-static/js/common/DOM.js \
+          mt-static/js/common/Observable.js \
+          mt-static/js/common/Autolayout.js \
+          mt-static/js/common/Component.js \
+          mt-static/js/common/List.js \
+          mt-static/js/common/App.js \
+          mt-static/js/common/Cache.js \
+          mt-static/js/common/Client.js \
+          mt-static/js/common/Template.js \
+          mt-static/js/tc.js \
+          mt-static/js/admin2025/tc/tableselect.js
 
 editor_js = mt-static/js/editor/editor_manager.js \
           mt-static/js/editor/editor_command.js \
@@ -54,7 +69,9 @@ editor_js = mt-static/js/editor/editor_manager.js \
 
 jquery_js = mt-static/jquery/jquery.mt.js
 
-bs5_jquery_js = mt-static/js/admin2023/jquery/jquery.mt.js
+admin2023_jquery_js = mt-static/js/admin2023/jquery/jquery.mt.js
+
+admin2025_jquery_js = mt-static/js/admin2025/jquery/jquery.mt.js
 
 tinymce6_plugin_mt_js = mt-static/plugins/TinyMCE6/lib/js/tinymce/plugins/mt/plugin.js
 
@@ -84,8 +101,12 @@ mt-static/js/mt_core_compact.js: $(core_js)
 	./build/minifier.pl mt-static/js/mt_core_compact.js
 
 mt-static/js/admin2023/mt_core_compact.js: $(bs5_core_js)
-	cat $(bs5_core_js) > mt-static/js/admin2023/mt_core_compact.js
+	cat $(admin2023_core_js) > mt-static/js/admin2023/mt_core_compact.js
 	./build/minifier.pl mt-static/js/admin2023/mt_core_compact.js
+
+mt-static/js/admin2025/mt_core_compact.js: $(admin2025_core_js)
+	cat $(admin2025_core_js) > mt-static/js/admin2025/mt_core_compact.js
+	./build/minifier.pl mt-static/js/admin2025/mt_core_compact.js
 
 mt-static/js/editor.js: $(editor_js)
 	cat $(editor_js) > mt-static/js/editor.js
@@ -96,8 +117,12 @@ mt-static/jquery/jquery.mt.min.js: $(jquery_js)
 	./build/minifier.pl mt-static/jquery/jquery.mt.min.js
 
 mt-static/js/admin2023/jquery/jquery.mt.min.js: $(bs5_jquery_js)
-	cat $(bs5_jquery_js) > mt-static/js/admin2023/jquery/jquery.mt.min.js
+	cat $(admin2023_jquery_js) > mt-static/js/admin2023/jquery/jquery.mt.min.js
 	./build/minifier.pl mt-static/js/admin2023/jquery/jquery.mt.min.js
+
+mt-static/js/admin2025/jquery/jquery.mt.min.js: $(admin2025_jquery_js)
+	cat $(admin2025_jquery_js) > mt-static/js/admin2025/jquery/jquery.mt.min.js
+	./build/minifier.pl mt-static/js/admin2025/jquery/jquery.mt.min.js
 
 mt-static/plugins/TinyMCE6/lib/js/tinymce/plugins/mt/plugin.min.js: $(tinymce6_plugin_mt_js)
 	cat $(tinymce6_plugin_mt_js) > mt-static/plugins/TinyMCE6/lib/js/tinymce/plugins/mt/plugin.min.js
@@ -120,9 +145,11 @@ mt-static/css/simple.css: $(simple_css)
 code_common = lib/MT.pm php/mt.php mt-check.cgi version_file \
         mt-static/js/mt_core_compact.js \
         mt-static/js/admin2023/mt_core_compact.js \
+        mt-static/js/admin2025/mt_core_compact.js \
         mt-static/js/editor.js \
         mt-static/jquery/jquery.mt.min.js \
         mt-static/js/admin2023/jquery/jquery.mt.min.js \
+        mt-static/js/admin2025/jquery/jquery.mt.min.js \
         mt-static/plugins/TinyMCE6/lib/js/tinymce/plugins/mt/plugin.min.js \
         mt-static/plugins/TinyMCE6/lib/js/tinymce/plugins/mt_fullscreen/plugin.min.js \
         mt-static/css/main.css \
@@ -202,9 +229,11 @@ clean:
 	-rm -rf $(local_js)
 	-rm -rf mt-static/js/mt_core_compact.js
 	-rm -rf mt-static/js/admin2023/mt_core_compact.js
+	-rm -rf mt-static/js/admin2025/mt_core_compact.js
 	-rm -rf mt-static/js/editor.js
 	-rm -f mt-static/jquery/jquery.mt.min.js
 	-rm -f mt-static/js/admin2023/jquery/jquery.mt.min.js
+	-rm -f mt-static/js/admin2025/jquery/jquery.mt.min.js
 	-rm -f mt-static/plugins/TinyMCE6/lib/js/tinymce/plugins/mt/plugin.min.js
 	-rm -f mt-static/plugins/TinyMCE6/lib/js/tinymce/plugins/mt_fullscreen/plugin.min.js
 	-rm -rf mt-static/css/main.css mt-static/css/simple.css
