@@ -229,7 +229,7 @@
             var blogId = $('[name=blog_id]').val() || 0
 
             editor.execCommand('mtSaveBookmark')
-            openDialog('dialog_asset_modal', '_type=asset&amp;edit_field=' + editor.id + '&amp;blog_id=' + blogId + '&amp;dialog_view=1&amp;filter=class&amp;filter_val=image&amp;can_multi=1')
+            openDialog('dialog_asset_modal', '_type=asset&amp;edit_field=' + editor.id + '&amp;blog_id=' + blogId + '&amp;dialog_view=1&amp;filter=class&amp;filter_val=image&amp;can_multi=1&amp;require_type=image')
 
             var dialogIframe = document.querySelector(
                 "#mt-dialog-iframe"
@@ -360,7 +360,7 @@
             tooltip: 'insert_image',
             onAction: function () {
                 editor.execCommand('mtSaveBookmark')
-                openDialog('dialog_asset_modal', '_type=asset&amp;edit_field=' + id + '&amp;blog_id=' + blogId + '&amp;dialog_view=1&amp;filter=class&amp;filter_val=image&amp;can_multi=1')
+                openDialog('dialog_asset_modal', '_type=asset&amp;edit_field=' + id + '&amp;blog_id=' + blogId + '&amp;dialog_view=1&amp;filter=class&amp;filter_val=image&amp;can_multi=1&amp;require_type=image')
             }
         })
 
