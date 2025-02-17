@@ -1399,8 +1399,9 @@ sub init_plugins {
             my $dup_version = eval { version->parse($dup->version    || 0) } || 0;
             my $cur_version = eval { version->parse($plugin->version || 0) } || 0;
             if ( $cur_version > $dup_version ) {
-                my $file  = $dup->{plugin_file} || $dup->{full_path};
-                my $error = MT->translate("Conflicted plugin [_1] [_2] is disabled by the system", $dup->{full_path}, $dup_version);
+                my $file          = $dup->{plugin_file} || $dup->{full_path};
+                my $error         = MT->translate("Conflicted plugin [_1] [_2] is disabled by the system", $file, $dup_version);
+                my $visible_error = $MT::DebugMode ? $error : MT->translate("Conflicted plugin [_1] [_2] is disabled by the system", $dup->name, $dup_version);
                 eval {
                     require MT::Util::Log;
                     MT::Util::Log::init();
@@ -1410,15 +1411,16 @@ sub init_plugins {
                 delete $Plugins{$plugin_sig};
                 delete $Components{ lc $dup->id };
                 my $disabled_sig = "$plugin_sig ($file)";
-                $Plugins{$disabled_sig}{enabled} = 0;
-                $Plugins{$disabled_sig}{full_path} = $dup->{full_path};
-                $Plugins{$disabled_sig}{system_error} = $error;
+                $Plugins{$disabled_sig}{enabled}      = 0;
+                $Plugins{$disabled_sig}{full_path}    = $dup->{full_path};
+                $Plugins{$disabled_sig}{system_error} = $visible_error;
 
                 @Components = grep { ($_->{plugin_sig} || '') ne $plugin_sig } @Components;
             }
             else {
-                my $file  = $plugin_file || $plugin_full_path;
-                my $error = MT->translate("Conflicted plugin [_1] [_2] is disabled by the system", $plugin_full_path, $cur_version);
+                my $file          = $plugin_file || $plugin_full_path;
+                my $error         = MT->translate("Conflicted plugin [_1] [_2] is disabled by the system", $file, $cur_version);
+                my $visible_error = $MT::DebugMode ? $error : MT->translate("Conflicted plugin [_1] [_2] is disabled by the system", $plugin->name, $cur_version);
                 eval {
                     require MT::Util::Log;
                     MT::Util::Log::init();
@@ -1426,9 +1428,9 @@ sub init_plugins {
                 };
 
                 my $disabled_sig = "$plugin_sig ($file)";
-                $Plugins{$disabled_sig}{enabled} = 0;
-                $Plugins{$disabled_sig}{full_path} = $plugin_full_path;
-                $Plugins{$disabled_sig}{system_error} = $error;
+                $Plugins{$disabled_sig}{enabled}      = 0;
+                $Plugins{$disabled_sig}{full_path}    = $plugin_full_path;
+                $Plugins{$disabled_sig}{system_error} = $visible_error;
 
                 return 1;
             }
@@ -1634,7 +1636,8 @@ sub init_plugins {
                 my $version_to_drop   = $plugin_to_drop->version || '';
                 my $sig_to_drop       = $plugin_to_drop->{plugin_sig};
                 my $full_path_to_drop = $plugin_to_drop->{plugin_file} || $plugin_to_drop->{full_path};
-                my $error = $mt->translate("Conflicted plugin [_1] [_2] is disabled by the system", $full_path_to_drop, $version_to_drop);
+                my $error             = $mt->translate("Conflicted plugin [_1] [_2] is disabled by the system", $full_path_to_drop, $version_to_drop);
+                my $visible_error     = $MT::DebugMode ? $error : $mt->translate("Conflicted plugin [_1] [_2] is disabled by the system", $plugin_to_drop->name, $version_to_drop);
 
                 eval {
                     require MT::Util::Log;
@@ -1642,7 +1645,7 @@ sub init_plugins {
                     MT::Util::Log->error($error);
                 };
                 $Plugins{$sig_to_drop}{enabled} = 0;
-                $Plugins{$sig_to_drop}{system_error} = $error;
+                $Plugins{$sig_to_drop}{system_error} = $visible_error;
                 delete $Plugins{$sig_to_drop}{object};
                 $PluginSwitch->{$sig_to_drop} = 0;
                 @Components = grep { ($_->{plugin_sig} || '') ne $sig_to_drop } @Components;
