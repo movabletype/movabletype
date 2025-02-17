@@ -1624,17 +1624,16 @@ sub init_plugins {
                 require version;
                 my $dup_version = eval { version->parse($dup->version    || 0) } || 0;
                 my $cur_version = eval { version->parse($plugin->version || 0) } || 0;
-                my ($version_to_drop, $sig_to_drop, $full_path_to_drop);
+                my $plugin_to_drop;
                 if ($cur_version > $dup_version) {
                     $deduped_plugins{$name} = $plugin;
-                    $version_to_drop        = $dup->version || '';
-                    $sig_to_drop            = $dup->{plugin_sig};
-                    $full_path_to_drop      = $dup->{plugin_file} || $dup->{full_path};
+                    $plugin_to_drop         = $dup;
                 } else {
-                    $version_to_drop   = $plugin->version || '';
-                    $sig_to_drop       = $plugin->{plugin_sig};
-                    $full_path_to_drop = $plugin->{plugin_file} || $plugin->{full_path};
+                    $plugin_to_drop = $plugin;
                 }
+                my $version_to_drop   = $plugin_to_drop->version || '';
+                my $sig_to_drop       = $plugin_to_drop->{plugin_sig};
+                my $full_path_to_drop = $plugin_to_drop->{plugin_file} || $plugin_to_drop->{full_path};
                 my $error = $mt->translate("Conflicted plugin [_1] [_2] is disabled by the system", $full_path_to_drop, $version_to_drop);
 
                 eval {
