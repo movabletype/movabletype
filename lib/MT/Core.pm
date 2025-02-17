@@ -1849,6 +1849,8 @@ BEGIN {
             'HidePerformanceLoggingSettings' => { default => 0, },
             'CookieDomain'          => undef,
             'CookiePath'            => undef,
+            'CookieHttpOnly'        => { default => 0 },
+            'CookieSameSite'        => { default => 'Lax' },
             'MailModule'            => { default => 'MIME::Lite', },
             'MailEncoding'          => { default => 'UTF-8', },
             'MailTransfer'          => { default => 'sendmail' },
