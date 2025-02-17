@@ -2796,6 +2796,12 @@ sub bake_cookie {
     if (!$param{-domain} && $cfg->CookieDomain) {
         $param{-domain} = $cfg->CookieDomain;
     }
+    if ( !defined $param{-httponly} && $cfg->CookieHttpOnly ) {
+        $param{-httponly} = $cfg->CookieHttpOnly;
+    }
+    if ( !defined $param{-samesite} && $cfg->CookieSameSite ) {
+        $param{-samesite} = $cfg->CookieSameSite;
+    }
     require CGI::Cookie;
     my $cookie = CGI::Cookie->new(%param);
     $app->set_header('-cookie', $cookie);
