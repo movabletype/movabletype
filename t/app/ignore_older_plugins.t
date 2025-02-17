@@ -40,19 +40,19 @@ note 'MyPlugin1: dirctory/plugin.pl, dirctory/config.yaml';
 
 ok !$switch->{'MyPlugin1-0.1/MyPlugin.pl'}, "older version is listed in PluginSwitch but is 0";
 ok $switch->{'MyPlugin1-1.0'},  "newer version is listed in PluginSwitch";
-like $log => qr/Conflicted plugin MyPlugin1 0.1 is disabled/, "logged correctly";
+like $log => qr/Conflicted plugin \S+?MyPlugin1-0.1\/MyPlugin1.pl 0.1 is disabled/, "logged correctly";
 
 note 'MyPlugin2: dirctory/plugin.pl, plugin.pl';
 
 ok !$switch->{'MyPlugin2-0.1/MyPlugin.pl'}, "older version is listed in PluginSwitch but is 0";
 ok $switch->{'MyPlugin2-1.0.pl'},  "newer version is listed in PluginSwitch";
-like $log => qr/Conflicted plugin MyPlugin2 0.1 is disabled/, "logged correctly";
+like $log => qr/Conflicted plugin \S+?MyPlugin2-0.1\/MyPlugin2.pl 0.1 is disabled/, "logged correctly";
 
 note 'MyPlugin3: dirctory/config.yaml, plugin.pl';
 
 ok !$switch->{'MyPlugin3-1.0.pl'}, "older version is listed in PluginSwitch but is 0";
 ok $switch->{'MyPlugin3-2.0'},  "newer version is listed in PluginSwitch";
-like $log => qr/Conflicted plugin MyPlugin3 1.0 is disabled/, "logged correctly";
+like $log => qr/Conflicted plugin \S+?MyPlugin3-1.0.pl 1.0 is disabled/, "logged correctly";
 
 done_testing;
 

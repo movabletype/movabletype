@@ -42,7 +42,7 @@ like $log => qr/plugins-1\/MyPlugin1.pl 0.1 is disabled/, "logged correctly";
 note 'MyPlugin2: Conflicts between dirctory/plugin.pl';
 
 ok $switch->{'MyPlugin2/MyPlugin2.pl'}, "MyPlugin2 is listed in PluginSwitch";
-like $log => qr/plugins-1\/MyPlugin2 0.1 is disabled/, "logged correctly";
+like $log => qr/plugins-1\/MyPlugin2\/MyPlugin2.pl 0.1 is disabled/, "logged correctly";
 
 note 'MyPlugin3: Conflicts between dirctory/config.yaml';
 
