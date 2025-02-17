@@ -525,10 +525,13 @@ sub filtered_list {
         _restrict_site( $app, $class, $filter );
     }
 
+    my $sort_by = $app->param('sortBy') || '';
+    $sort_by = _camel_to_snake($sort_by);
+
     my %load_options = (
         terms => { %$terms, @blog_id_term },
         args  => {%$args},
-        sort_by    => $app->param('sortBy')    || '',
+        sort_by    => $sort_by,
         sort_order => $app->param('sortOrder') || '',
         limit      => $limit,
         offset     => $offset,
@@ -657,6 +660,13 @@ sub remove_autosave_session_obj {
     require MT::Session;
     my $sess_obj = MT::Session->load( { id => $ident, kind => 'AS' } );
     $sess_obj->remove if $sess_obj;
+}
+
+sub _camel_to_snake {
+    my ($str) = @_;
+    return $str if $str =~ /^[A-Z]/;
+    $str =~ s/([A-Z])/_\l$1/g;
+    return $str;
 }
 
 1;
