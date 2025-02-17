@@ -2220,15 +2220,6 @@ MT.App.TabContainer = new Class( Object, {
                 this.selectTab( es[ i ], t );
                 continue;
             }
-
-            if ( t = es[ i ].getAttribute( "mt:persist-tab-cookie" ) ) {
-                log( 'found persisted tab setting: '+t);
-                t = Cookie.fetch( t );
-                if ( t && t.value && t.value != "" ) {
-                    log( 'cookie: '+t.value);
-                    this.selectTab( es[ i ], t.value );
-                }
-            }
         }
     },
 
@@ -2258,12 +2249,6 @@ MT.App.TabContainer = new Class( Object, {
 
                 if ( tab ) {
                     this.selectTab( event.attributeElement, tab );
-                    var cookie = event.attributeElement.getAttribute( "mt:persist-tab-cookie" );
-                    if ( cookie ) {
-                        var d = new Date();
-                        d.setYear( d.getYear() + 1902 ); /* two years */
-                        Cookie.bake( cookie, tab, undefined, undefined, d );
-                    }
                 }
 
                 event.stop();
