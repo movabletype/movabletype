@@ -1370,6 +1370,7 @@ sub init_plugins {
 
 {
     my $plugin_full_path;
+    my $plugin_file;
     my %added_plugins;
 
     sub add_plugin {
@@ -1381,6 +1382,7 @@ sub init_plugins {
         }
         $plugin->{name} ||= $plugin_sig;
         $plugin->{plugin_sig} = $plugin_sig;
+        $plugin->{plugin_file} = $plugin_file;
 
         my $id = $plugin->id;
         unless ($plugin_envelope) {
@@ -1397,6 +1399,7 @@ sub init_plugins {
             my $dup_version = eval { version->parse($dup->version    || 0) } || 0;
             my $cur_version = eval { version->parse($plugin->version || 0) } || 0;
             if ( $cur_version > $dup_version ) {
+                my $file  = $dup->{plugin_file} || $dup->{full_path};
                 my $error = MT->translate("Conflicted plugin [_1] [_2] is disabled by the system", $dup->{full_path}, $dup_version);
                 eval {
                     require MT::Util::Log;
@@ -1406,7 +1409,7 @@ sub init_plugins {
 
                 delete $Plugins{$plugin_sig};
                 delete $Components{ lc $dup->id };
-                my $disabled_sig = "$plugin_sig ($dup->{full_path})";
+                my $disabled_sig = "$plugin_sig ($file)";
                 $Plugins{$disabled_sig}{enabled} = 0;
                 $Plugins{$disabled_sig}{full_path} = $dup->{full_path};
                 $Plugins{$disabled_sig}{system_error} = $error;
@@ -1414,6 +1417,7 @@ sub init_plugins {
                 @Components = grep { ($_->{plugin_sig} || '') ne $plugin_sig } @Components;
             }
             else {
+                my $file  = $plugin_file || $plugin_full_path;
                 my $error = MT->translate("Conflicted plugin [_1] [_2] is disabled by the system", $plugin_full_path, $cur_version);
                 eval {
                     require MT::Util::Log;
@@ -1421,7 +1425,7 @@ sub init_plugins {
                     MT::Util::Log->error($error);
                 };
 
-                my $disabled_sig = "$plugin_sig ($plugin_full_path)";
+                my $disabled_sig = "$plugin_sig ($file)";
                 $Plugins{$disabled_sig}{enabled} = 0;
                 $Plugins{$disabled_sig}{full_path} = $plugin_full_path;
                 $Plugins{$disabled_sig}{system_error} = $error;
@@ -1568,6 +1572,7 @@ sub init_plugins {
                         next if exists $Plugins{$plugin} && $Plugins{$plugin}{error};
                         $plugin_envelope = $plugin_lastdir;
                         if ($plugin_full_path =~ /\.pl$/) {
+                            $plugin_file = $plugin_full_path;
                             __load_plugin( $mt, $timer, $PluginSwitch, $use_plugins, $plugin_full_path, $plugin );
                             push @errors, [$plugin_full_path, $Plugins{$plugin}{error}] if $Plugins{$plugin}{error};
                         }
@@ -1582,6 +1587,7 @@ sub init_plugins {
                         'config.yaml' );
 
                     if ( -f $yaml ) {
+                        $plugin_file = '';
                         __load_plugin_with_yaml( $use_plugins, $PluginSwitch, $plugin_dir );
                         next;
                     }
@@ -1596,7 +1602,7 @@ sub init_plugins {
                     }
                     for my $plugin (@plugins) {
                         next if $plugin !~ /\.pl$/;
-                        my $plugin_file
+                        $plugin_file
                             = File::Spec->catfile( $plugin_full_path,
                             $plugin );
                         if ( -f $plugin_file ) {
@@ -1623,11 +1629,11 @@ sub init_plugins {
                     $deduped_plugins{$name} = $plugin;
                     $version_to_drop        = $dup->version || '';
                     $sig_to_drop            = $dup->{plugin_sig};
-                    $full_path_to_drop      = $dup->{full_path};
+                    $full_path_to_drop      = $dup->{plugin_file} || $dup->{full_path};
                 } else {
                     $version_to_drop   = $plugin->version || '';
                     $sig_to_drop       = $plugin->{plugin_sig};
-                    $full_path_to_drop = $plugin->{full_path};
+                    $full_path_to_drop = $plugin->{plugin_file} || $plugin->{full_path};
                 }
                 my $error = $mt->translate("Conflicted plugin [_1] [_2] is disabled by the system", $full_path_to_drop, $version_to_drop);
 
