@@ -45,6 +45,7 @@ sub core_methods {
         'run_actions'  => \&run_actions,
         'init_user'    => \&init_user,
         'init_website' => \&init_website,
+        'redirect'     => \&redirect_to_mt,
     };
 }
 
@@ -609,9 +610,27 @@ sub finish {
         my $author     = MT::Author->load( $app->{author}->id );
         my $cookie_obj = $app->start_session($author);
         my $response   = $app->response;
+        # DEPRECATED: only for the older admin template
         $response->{cookie}
             = { map { $_ => $cookie_obj->{$_} } ( keys %$cookie_obj ) };
+        $response->{redirect} = {
+            session_id => $app->session->id,
+            author_id  => $author->id,
+        };
     }
+}
+
+sub redirect_to_mt {
+    my $app = shift;
+    my $author_id  = $app->param('author_id');
+    my $session_id = $app->param('session_id');
+    require MT::Author;
+    my $author = MT::Author->load($author_id) or return $app->errtrans('Invalid request.');
+    if ($app->session_user($author, $session_id)) {
+        $app->start_session($author);
+        return $app->redirect( ( $app->config->AdminCGIPath || $app->config->CGIPath ) . $app->config->AdminScript );
+    }
+    return $app->errtrans('Invalid request.');
 }
 
 sub run_actions {
