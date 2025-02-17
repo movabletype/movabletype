@@ -50,6 +50,11 @@
                   if(MT.EditorManager){
                       var editor = new MT.EditorManager(this.id, {
                           format: 'richtext',
+                          editorOptions: {
+                            richtext: {
+                              inline: true,
+                            }
+                          },
                           wrap: true,
                       });
                       self.editors.push(editor);
