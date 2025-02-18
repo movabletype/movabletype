@@ -7,11 +7,18 @@ import { svelteMountBreadcrumbsButton } from "./buttons/breadcrumbs-button";
 
 document.addEventListener("DOMContentLoaded", () => {
   // Sidebar toggle
-  const sidebarTarget = document.querySelector<HTMLElement>(
+  const sidebarTarget = document.querySelector<HTMLButtonElement>(
     '[data-is="primary-navigation-toggle"]',
   );
   if (sidebarTarget !== null) {
-    svelteMountSidebar(sidebarTarget);
+    const sessionName = "collapsed";
+    const sessionCollapsed = sessionStorage.getItem(sessionName);
+
+    svelteMountSidebar(sidebarTarget, {
+      collapsed: sessionCollapsed === "true",
+      buttonRef: sidebarTarget,
+      sessionName: sessionName,
+    });
   }
 
   // Breadcrumbs
@@ -46,9 +53,15 @@ document.addEventListener("DOMContentLoaded", () => {
     '[data-is="site-list-button"]',
   );
   if (siteListButtonTarget !== null) {
+    const siteListButtonAnchor =
+      siteListButtonTarget.getElementsByTagName("a")[0];
     svelteMountSiteListButton(siteListButtonTarget, {
       magicToken: magicToken,
       limit: Number.parseInt(limit),
+      open: false,
+      oldOverflow: document.body.style.overflow,
+      buttonRef: siteListButtonTarget,
+      anchorRef: siteListButtonAnchor,
     });
   }
 
@@ -73,17 +86,24 @@ document.addEventListener("DOMContentLoaded", () => {
             contentTypes: data.contentTypes.filter(
               (contentType) => contentType.can_create === 1,
             ),
+            open: false,
+            buttonRef: createButtonTarget,
           },
         });
       }
       // Search button
       if (searchButtonTarget !== null) {
+        const searchButtonAnchor =
+          searchButtonTarget.getElementsByTagName("a")[0];
         svelteMountSearchButton(searchButtonTarget, {
           blogId: blogId,
           magicToken: magicToken,
           contentTypes: data.contentTypes.filter(
             (contentType) => contentType.can_search === 1,
           ),
+          open: false,
+          buttonRef: searchButtonTarget,
+          anchorRef: searchButtonAnchor,
         });
       }
     });

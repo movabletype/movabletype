@@ -2,9 +2,8 @@
   import { onMount } from "svelte";
   import { portal } from "svelte-portal";
 
-  const sessionName = "collapsed";
-  const sessionCollapsed = sessionStorage.getItem(sessionName);
-  let collapsed = sessionCollapsed === "true" ? true : false;
+  export let buttonRef: HTMLButtonElement;
+  export let collapsed = false;
   let mouseOver = false;
 
   const addContentWrapperClass = (
@@ -29,11 +28,21 @@
     addContentWrapperClass("mouseover", mouseOver);
   };
 
-  const handleClick = (): void => {
-    collapsed = !collapsed;
-    sessionStorage.setItem(sessionName, collapsed.toString());
+  $: {
     handleCollapse();
-  };
+    mouseOver = false;
+    handleMouseEnterLeave();
+
+    if (buttonRef) {
+      if (collapsed) {
+        buttonRef.classList.remove("expanded");
+        buttonRef.classList.add("collapsed");
+      } else {
+        buttonRef.classList.remove("collapsed");
+        buttonRef.classList.add("expanded");
+      }
+    }
+  }
 
   const handleMouseEnter = (): void => {
     if (collapsed) {
@@ -57,19 +66,6 @@
     handleCollapse();
   });
 </script>
-
-<!-- svelte-ignore a11y-mouse-events-have-key-events -->
-<!-- svelte-ignore a11y-no-static-element-interactions -->
-<!-- svelte-ignore a11y-click-events-have-key-events -->
-<!-- svelte-ignore a11y-no-static-element-interactions -->
-<!-- svelte-ignore a11y-mouse-events-have-key-events -->
-<div
-  class="mt-primaryNavigation__toggle_bar"
-  class:open={!collapsed}
-  class:close={collapsed}
-  on:click={handleClick}
-  title={collapsed ? window.trans("Collapse") : window.trans("Close")}
-></div>
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <!-- svelte-ignore a11y-mouse-events-have-key-events -->

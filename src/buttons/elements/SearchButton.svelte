@@ -8,16 +8,23 @@
   export let blogId: string;
   export let magicToken: string;
   export let contentTypes: ContentType[] = [];
+  export let open: boolean = false;
+  export let buttonRef: HTMLElement;
+  export let anchorRef: HTMLElement;
+  $: {
+    if (anchorRef) {
+      if (open) {
+        anchorRef.classList.add("open");
+      } else {
+        anchorRef.classList.remove("open");
+      }
+    }
+  }
 
-  let open = false;
-  const handleClick = (): void => {
-    open = true;
-  };
   const handleClose = (): void => {
     open = false;
   };
 
-  let buttonRef: HTMLElement | null = null;
   let modalRef: HTMLElement | null = null;
   const clickEvent = (e: MouseEvent): void => {
     const eventTarget = e.target as Node;
@@ -77,22 +84,6 @@
 </script>
 
 <svelte:body on:click={clickEvent} />
-<!-- svelte-ignore a11y-invalid-attribute -->
-<a
-  href="#"
-  class="action mt-actionSearch"
-  class:open
-  on:click={handleClick}
-  bind:this={buttonRef}
->
-  <SVG
-    title={window.trans("Search")}
-    class="mt-icon"
-    href={`${window.StaticURI}images/sprite.svg#ic_search`}
-  />
-
-  {window.trans("Search")}
-</a>
 
 {#if open}
   <!-- svelte-ignore a11y-click-events-have-key-events -->

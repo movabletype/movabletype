@@ -2,20 +2,16 @@
   import { portal } from "svelte-portal";
   import { isOuterClick } from "../outerClick";
   import { type ContentType } from "../../@types/contenttype";
-  import SVG from "../../svg/elements/SVG.svelte";
 
   export let contentTypes: ContentType[] = [];
   export let blog_id: string;
+  export let open: boolean = false;
+  export let buttonRef: HTMLElement | null = null;
 
-  let open = false;
-  const handleClick = (): void => {
-    open = true;
-  };
   const handleClose = (): void => {
     open = false;
   };
 
-  let buttonRef: HTMLElement | null = null;
   let modalRef: HTMLElement | null = null;
   const clickEvent = (e: MouseEvent): void => {
     const eventTarget = e.target as Node;
@@ -26,20 +22,6 @@
 </script>
 
 <svelte:body on:click={clickEvent} />
-<!-- svelte-ignore a11y-invalid-attribute -->
-<a
-  href="#"
-  class="menu_actions__button create"
-  on:click={handleClick}
-  bind:this={buttonRef}
->
-  <SVG
-    title={window.trans("Create New")}
-    class="mt-icon"
-    href={`${window.StaticURI}images/admin2025/sprite.svg#ic_create`}
-  />
-  {window.trans("Create New")}
-</a>
 
 {#if open}
   <div

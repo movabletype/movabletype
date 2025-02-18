@@ -11846,33 +11846,55 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper .mt-prim
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
   z-index: 3;
   transition: left 0.3s ease;
   padding: 0 10px;
+  border: none;
   border-left: 1px solid #F4F4F4;
+  outline: none;
 }
 .mt-primaryNavigation__toggle_bar:hover {
   border-left: 1px solid #E0E0E0;
 }
-.mt-primaryNavigation__toggle_bar:after {
-  content: "";
-  display: block;
-  width: 26px;
-  height: 26px;
-  background-repeat: no-repeat;
-  background-position: left center;
+.mt-primaryNavigation__toggle_bar .mt-primaryNavigation__toggle_icon_wrapper {
   position: absolute;
   top: 0;
   left: 0;
-  transform: translateX(-14px);
-  padding: 28px 20px;
+  transform: translateX(-50%);
+  padding: 18px 10px;
 }
-.mt-primaryNavigation__toggle_bar.open:after {
-  background-image: url(../../images/admin2025/icons/ic_close.svg);
+.mt-primaryNavigation__toggle_bar .mt-primaryNavigation__toggle_icon_wrapper .mt-primaryNavigation__toggle_icon_border {
+  border: 1px solid #000;
+  border-radius: 50%;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+  width: 24px;
+  height: 24px;
+  background-color: #FFFFFF;
 }
-.mt-primaryNavigation__toggle_bar.close:after {
-  background-image: url(../../images/admin2025/icons/ic_open.svg);
+.mt-primaryNavigation__toggle_bar .mt-primaryNavigation__toggle_icon_wrapper .mt-primaryNavigation__toggle_icon {
+  -webkit-mask-position: center;
+          mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+          mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+          mask-size: contain;
+  background-color: #004B9A;
+  -webkit-mask-image: url(../../images/admin2025/icons/ic_close.svg);
+          mask-image: url(../../images/admin2025/icons/ic_close.svg);
+}
+.mt-primaryNavigation__toggle_bar:hover .mt-primaryNavigation__toggle_icon_border {
+  background-color: #004B9A;
+}
+.mt-primaryNavigation__toggle_bar:hover .mt-primaryNavigation__toggle_icon {
+  background-color: #FFFFFF;
+}
+.mt-primaryNavigation__toggle_bar.expanded .mt-primaryNavigation__toggle_icon {
+  -webkit-mask-image: url(../../images/admin2025/icons/ic_close.svg);
+          mask-image: url(../../images/admin2025/icons/ic_close.svg);
+}
+.mt-primaryNavigation__toggle_bar.collapsed .mt-primaryNavigation__toggle_icon {
+  -webkit-mask-image: url(../../images/admin2025/icons/ic_open.svg);
+          mask-image: url(../../images/admin2025/icons/ic_open.svg);
 }
 
 html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper .mt-primaryNavigation,
@@ -11885,9 +11907,10 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper .mt-prim
   padding: 0;
   background-color: #F4F4F4;
 }
-html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper .mt-primaryNavigation__toggle_bar:after,
-.mt-contentWrapper.collapsed .mt-primaryNavigation__toggle_bar:after {
+html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper .mt-primaryNavigation__toggle_bar .mt-primaryNavigation__toggle_icon_wrapper,
+.mt-contentWrapper.collapsed .mt-primaryNavigation__toggle_bar .mt-primaryNavigation__toggle_icon_wrapper {
   transform: translateX(0);
+  padding-left: 0;
 }
 html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper .mt-mainContentWrapper,
 .mt-contentWrapper.collapsed .mt-mainContentWrapper {
@@ -11903,9 +11926,10 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper.mouseove
   width: 1px;
   background-color: transparent;
 }
-html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper.mouseover .mt-primaryNavigation__toggle_bar:after,
-.mt-contentWrapper.collapsed.mouseover .mt-primaryNavigation__toggle_bar:after {
-  transform: translateX(-14px);
+html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper.mouseover .mt-primaryNavigation__toggle_bar .mt-primaryNavigation__toggle_icon_wrapper,
+.mt-contentWrapper.collapsed.mouseover .mt-primaryNavigation__toggle_bar .mt-primaryNavigation__toggle_icon_wrapper {
+  transform: translateX(-50%);
+  left: 5px;
 }
 
 .mt-primaryNavigation__sites {

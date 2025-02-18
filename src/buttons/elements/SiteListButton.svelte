@@ -9,14 +9,20 @@
 
   export let magicToken: string;
   export let limit: number = 50;
+  export let open: boolean = false;
+  export let oldOverflow: string;
+  export let buttonRef: HTMLElement;
+  export let anchorRef: HTMLElement;
+  $: {
+    if (anchorRef) {
+      if (open) {
+        anchorRef.classList.add("open");
+      } else {
+        anchorRef.classList.remove("open");
+      }
+    }
+  }
 
-  let open = false;
-  let oldOverflow: string;
-  const handleClick = (): void => {
-    open = true;
-    oldOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-  };
   const handleClose = (): void => {
     open = false;
     document.body.style.overflow = oldOverflow;
@@ -37,7 +43,6 @@
     };
   }> = [];
   let loading = false;
-  let buttonRef: HTMLElement | null = null;
   let modalRef: HTMLElement | null = null;
 
   const nextPage = (): void => {
@@ -104,21 +109,6 @@
 </script>
 
 <svelte:body on:click={clickEvent} />
-<!-- svelte-ignore a11y-invalid-attribute -->
-<a
-  href="#"
-  class="action mt-actionSite"
-  class:open
-  on:click={handleClick}
-  bind:this={buttonRef}
->
-  <Svg
-    title={window.trans("Site")}
-    class="mt-icon"
-    href={`${window.StaticURI}images/admin2025/sprite.svg#ic_site-list`}
-  />
-  {window.trans("Site")}
-</a>
 
 {#if open}
   <div
