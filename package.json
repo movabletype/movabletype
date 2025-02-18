@@ -106,7 +106,7 @@
     "codemirror": "5.61.1",
     "jquery": "3.7.0",
     "jquery-migrate": "3.5.2",
-    "jquery-ui": "1.13.2",
+    "jquery-ui": "1.14.1",
     "jquery-ui-touch-punch": "github:movabletype/jquery-ui-touch-punch",
     "jquery-validation": "1.20.0",
     "js-cookie": "3.0.1",
