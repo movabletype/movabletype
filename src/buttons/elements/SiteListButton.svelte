@@ -5,7 +5,6 @@
   import { isOuterClick } from "../outerClick";
   import { fetchSites } from "src/utils/fetch-sites";
   import { Site } from "src/@types/site";
-  import Svg from "../../svg/elements/SVG.svelte";
 
   export let magicToken: string;
   export let limit: number = 50;
