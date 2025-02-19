@@ -282,8 +282,10 @@ sub _hdlr_tags {
     if ( $type eq 'content_type' ) {
         my $class   = MT->model('content_type');
         my $blog_id = $blog_terms{blog_id};
-        $ct         = $class->load_by_id_or_name( $args->{content_type}, $blog_id );
-        return $ctx->_no_content_type_error unless $ct;
+        if ($args->{content_type}) {
+            $ct = $class->load_by_id_or_name( $args->{content_type}, $blog_id );
+            return $ctx->_no_content_type_error unless $ct;
+        }
     }
     local $ctx->{__stash}{content_type_id} = $ct->id if $ct;
     local $ctx->{__stash}{content_type}    = $ct     if $ct;
