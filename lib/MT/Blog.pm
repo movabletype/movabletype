@@ -369,6 +369,12 @@ sub list_props {
             fields  => [qw( name archivePath )],
             display => 'none',
         },
+        site_url => {
+            auto            => 1,
+            display         => 'none',
+            filter_editable => 0,
+            label           => 'Site URL',
+        },
     };
 }
 
