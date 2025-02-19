@@ -242,7 +242,7 @@ sub convert {
         # Set quality parameter for new type.
         $image->_set_quality or return;
 
-        $blob = $magick->ImageToBlob;
+        $blob = $magick->ImageToBlob(magick => uc $type);
     };
     return $image->error(
         MT->translate( "Converting image to [_1] failed: [_2]", $type, $@ ) )
