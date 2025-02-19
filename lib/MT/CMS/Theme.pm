@@ -242,7 +242,7 @@ sub export {
     my @save_params       = qw(
         theme_name    theme_id    theme_author_name theme_author_link
         theme_version theme_class description       include
-        output
+        output        include_all
     );
     my $default_basename = [ File::Spec->splitdir( $blog->site_path ) ]->[-1]
         || dirify( $blog->name );
@@ -254,6 +254,7 @@ sub export {
         theme_author_name => '',
         theme_author_link => '',
         theme_version     => '1.0',
+        ( $saved_core_values ? () : ( include_all => 1 ) ),
     );
 
     for my $param (@save_params) {
@@ -408,6 +409,7 @@ sub do_export {
     my $theme_author_name = $app->param('theme_author_name');
     my $theme_author_link = $app->param('theme_author_link') || '';
     my $description       = $app->param('description') || '';
+    my $include_all       = $app->param('include_all') || 0;
 
     $theme_id
         = dirify($theme_id)
@@ -514,13 +516,14 @@ sub do_export {
     };
 
     for my $exporter_id ( keys %$hdlrs ) {
-        next unless $includes{$exporter_id};
+        next if !$include_all && !$includes{$exporter_id};
         my $exporter = $exporter{$exporter_id};
         next unless $exporter;
         my $code = $exporter->{export};
         if ( !ref $code ) {
             $code = MT->handler_to_coderef($code);
         }
+        delete $settings->{$exporter_id} if $include_all;
         my $setting
             = exists $settings->{$exporter_id}
             ? $settings->{$exporter_id}
@@ -636,7 +639,7 @@ sub do_export {
     my @core_params = qw(
         theme_name    theme_id    theme_author_name theme_author_link
         theme_version theme_class description       include
-        output
+        output        include_all
     );
     for my $param (@core_params) {
         $settings->{core}{$param} = [ $app->multi_param($param) ];

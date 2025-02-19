@@ -168,7 +168,8 @@ h1.dialog-title {
 
 <p class="d-md-none">
   <a id="uploadSettingsLink" class="btn btn-link ps-0" href="javascript:void(0);" aria-expanded="true" aria-controls="uploadSettings" onclick="toggleUploadSettings(); return false;">
-    <__trans phrase="Upload Settings">
+    <svg role="img" class="mt-icon"><use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_tri-down"></use></svg>
+    <__trans phrase="Change Upload Settings">
   </a>
 </p>
 
@@ -568,7 +569,11 @@ function uploadFiles(files, items) {
 
     if (MT.Util.isMobileView()) {
         jQuery('#uploadSettings').hide();
-        jQuery('#uploadSettingsLink').attr('aria-expanded', 'false');
+        var $link = jQuery('#uploadSettingsLink');
+        $link.attr('aria-expanded', 'false');
+        var $icon = $link.find('.mt-icon > use');
+        var icon_path = $icon.attr('xlink:href').split('#')[0];
+        $icon.attr('xlink:href', icon_path + '#ic_tri-right');
     }
 
 <mt:if name="can_multi">
@@ -713,6 +718,10 @@ function toggleUploadSettings() {
   } else {
     $link.attr('aria-expanded', 'false');
   }
+  var $icon = $link.find('.mt-icon > use');
+  var [icon_path, icon_id] = $icon.attr('xlink:href').split('#');
+  icon_id = icon_id === 'ic_tri-down' ? 'ic_tri-right' : 'ic_tri-down';
+  $icon.attr('xlink:href', icon_path + '#' + icon_id);
 }
 /* ]]> */
 </script>
