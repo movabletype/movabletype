@@ -565,8 +565,8 @@ sub js_upload_file {
     my $thumb_size = $app->param('thumbnail_size') || $default_thumbnail_size;
     if ( $asset->has_thumbnail && $asset->can_create_thumbnail ) {
         $asset->remove_broken_png_metadata;
-        my ( $orig_width, $orig_height )
-            = ( $asset->image_width, $asset->image_height );
+        my $orig_width  = $asset->image_width || 0;
+        my $orig_height = $asset->image_height || 0;
         if ( $orig_width > $thumb_size && $orig_height > $thumb_size ) {
             ($thumb_url) = $asset->thumbnail_url(
                 Height => $thumb_size,
