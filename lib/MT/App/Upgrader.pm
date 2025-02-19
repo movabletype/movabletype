@@ -604,32 +604,46 @@ sub finish {
 
     $app->reboot();
 
-    if ( $app->{author} ) {
+    if ($app->{author}) {
         require MT::Author;
-        my $author     = MT::Author->load( $app->{author}->id );
-        my $cookie_obj = $app->start_session($author);
-        my $response   = $app->response;
+        require MT::Session;
+        require MT::Util::UniqueID;
+        my $author = MT::Author->load($app->{author}->id);
+        my $token  = MT::Util::UniqueID::create_magic_token();
+        my $ott    = MT::Session->new(
+            id       => $token,
+            kind     => 'OT',
+            start    => time,
+            duration => time + 5 * 60,
+        );
+        $ott->set(author_id => $author->id);
+        $ott->save;
+
+        my $response = $app->response;
         # DEPRECATED: only for the older admin template
-        $response->{cookie}
-            = { map { $_ => $cookie_obj->{$_} } ( keys %$cookie_obj ) };
+        my $cookie_obj = $app->start_session($author);
+        $response->{cookie} =
+            { map { $_ => $cookie_obj->{$_} } (keys %$cookie_obj) };
+
         $response->{redirect} = {
-            session_id => $app->session->id,
-            author_id  => $author->id,
+            token => $token,
         };
     }
 }
 
 sub redirect_to_mt {
-    my $app = shift;
-    my $author_id  = $app->param('author_id');
-    my $session_id = $app->param('session_id');
+    my $app   = shift;
+    my $token = $app->param('token') or return $app->errtrans('Invalid request.');
+    return $app->errtrans('Invalid request.') unless uc $app->request_method eq 'POST';
+
     require MT::Author;
+    require MT::Session;
+    my $session   = MT::Session::get_unexpired_value(5 * 60, { id => $token, kind => 'OT' }) or return $app->errtrans('Invalid request.');
+    my $author_id = $session->get('author_id');
+
     my $author = MT::Author->load($author_id) or return $app->errtrans('Invalid request.');
-    if ($app->session_user($author, $session_id)) {
-        $app->start_session($author);
-        return $app->redirect( ( $app->config->AdminCGIPath || $app->config->CGIPath ) . $app->config->AdminScript );
-    }
-    return $app->errtrans('Invalid request.');
+    $app->start_session($author);
+    return $app->redirect(($app->config->AdminCGIPath || $app->config->CGIPath) . $app->config->AdminScript);
 }
 
 sub run_actions {
