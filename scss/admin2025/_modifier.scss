@@ -359,35 +359,59 @@ li{
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
   z-index: 3;
   transition: left 0.3s ease;
   padding: 0 10px;
+  border: none;
   border-left: 1px solid $gray-lightest;
+  outline: none;
 
   &:hover {
     border-left: 1px solid $gray-lighter;
   }
 
-  &:after {
-    content: "";
-    display: block;
-    width: 26px;
-    height: 26px;
-    background-repeat: no-repeat;
-    background-position: left center;
+  .mt-primaryNavigation__toggle_icon_wrapper {
     position: absolute;
     top: 0;
     left: 0;
-    transform: translateX(-14px);
-    padding: 28px 20px;
+    transform: translateX(-50%);
+    padding: 18px 10px;
+
+    .mt-primaryNavigation__toggle_icon_border {
+      border: 1px solid #000;
+      border-radius: 50%;
+      box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+      width: 24px;
+      height: 24px;
+      background-color: $white;
+    }
+    .mt-primaryNavigation__toggle_icon {
+      mask-position: center;
+      mask-repeat: no-repeat;
+      mask-size: contain;
+      background-color: $cobalt;
+      mask-image: url(../../images/admin2025/icons/ic_close.svg);
+    }
   }
 
-  &.open:after {
-    background-image: url(../../images/admin2025/icons/ic_close.svg);
+  &:hover {
+    .mt-primaryNavigation__toggle_icon_border {
+      background-color: $cobalt;
+    }
+    .mt-primaryNavigation__toggle_icon {
+      background-color: $white;
+    }
   }
-  &.close:after {
-    background-image: url(../../images/admin2025/icons/ic_open.svg);
+
+  &.expanded {
+    .mt-primaryNavigation__toggle_icon {
+      mask-image: url(../../images/admin2025/icons/ic_close.svg);
+    }
+  }
+  &.collapsed {
+    .mt-primaryNavigation__toggle_icon {
+      mask-image: url(../../images/admin2025/icons/ic_open.svg);
+    }
   }
 }
 
@@ -405,8 +429,9 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper,
     background-color: $gray-lightest;
     @extend %mt-primaryNavigationAnimation;
 
-    &:after {
+    .mt-primaryNavigation__toggle_icon_wrapper {
       transform: translateX(0);
+      padding-left: 0;
     }
   }
   .mt-primaryNavigation__body,
@@ -426,8 +451,9 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper,
     .mt-primaryNavigation__toggle_bar {
       width: 1px;
       background-color: transparent;
-      &:after {
-        transform: translateX(-14px);
+      .mt-primaryNavigation__toggle_icon_wrapper {
+        transform: translateX(-50%);
+        left: 5px;
       }
     }
   }

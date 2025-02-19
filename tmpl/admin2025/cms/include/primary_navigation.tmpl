@@ -4,7 +4,15 @@
 <div class="mt-primaryNavigation" data-is="primary-navigation">
   <mt:if name="scope_type" ne="system">
     <div class="mt-primaryNavigation__control">
-        <div data-is="create-button"></div>
+        <div data-is="create-button">
+            <a href="#" class="menu_actions__button create">
+                <svg role="img" class="mt-icon">
+                    <title><__trans phrase="Create New"></title>
+                    <use xlink:href="<mt:var name="static_uri">images/admin2025/sprite.svg#ic_create"></use>
+                </svg>
+                <__trans phrase="Create New">
+            </a>
+        </div>
         <a href="<mt:var name="mt_url">?__mode=rebuild_confirm<mt:if name="blog_id" ne="">&blog_id=<mt:var name="blog_id"></mt:if>" class="menu_actions__button rebuild mt-rebuild">
 
           <svg role="img" class="mt-icon">
@@ -16,7 +24,7 @@
         <a href="<mt:var name="blog_url">" class="menu_actions__button view_site" target="_blank">
           <svg role="img" class="mt-icon">
             <title><__trans phrase="View Your Site"></title>
-            <use xlink:href="<mt:var name="static_uri">images/admin2025/sprite.svg#ic_site-link"></use>
+            <use xlink:href="<mt:var name="static_uri">images/admin2025/sprite.svg#ic_view"></use>
           </svg>
           <__trans phrase="View Your Site">
         </a>
@@ -54,6 +62,19 @@
       </mt:loop>
     </ul>
   </div>
-  <div data-is="primary-navigation-toggle"></div>
+
+<button
+  type="button"
+  class="mt-primaryNavigation__toggle_bar"
+  data-is="primary-navigation-toggle"
+>
+  <div class="mt-primaryNavigation__toggle_icon_wrapper">
+    <div class="mt-primaryNavigation__toggle_icon_border">
+      <div class="mt-primaryNavigation__toggle_icon mt-icon"></div>
+    </div>
+  </div>
+</button>
+
+
 </div>
 </mt:if>
