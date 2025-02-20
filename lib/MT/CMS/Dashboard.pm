@@ -389,6 +389,10 @@ sub generate_site_stats_data {
 
 sub regenerate_site_stats_data {
     my $app = shift;
+
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::warning(since => '8.5.0');
+
     $app->validate_magic() or return;
 
     my $param;
@@ -1027,18 +1031,18 @@ sub site_list_widget {
             }
         );
 
+        my $user_can_create_new_content_data     = $user_permissions->can_do('create_new_content_data');
+        my $user_can_access_to_content_data_list = $user_permissions->can_do('access_to_content_data_list');
+
         while ( my $ct = $ct_iter->() ) {
             my $item;
             $item->{name} = $ct->name;
-            $item->{can_create}
-                = $user_permissions->can_do( "create_new_content_data_" . $ct->unique_id )
-                || $user_permissions->can_do('create_new_content_data')
+            $item->{can_create} =
+                $user_can_create_new_content_data || $user_permissions->can_do("create_new_content_data_" . $ct->unique_id)
                 ? 1
                 : 0;
-            $item->{can_list}
-                = $user_permissions->can_do(
-                "access_to_content_data_list_" . $ct->unique_id )
-                || $user_permissions->can_do('access_to_content_data_list')
+            $item->{can_list} =
+                $user_can_create_new_content_data || $user_permissions->can_do("access_to_content_data_list_" . $ct->unique_id)
                 ? 1
                 : 0;
             $item->{type_id}         = 'content_data_' . $ct->id;

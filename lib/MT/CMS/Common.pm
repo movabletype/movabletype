@@ -1479,7 +1479,7 @@ LOOP:
 
 sub filtered_list {
     my $app              = shift;
-    my (%forward_params) = @_;
+    my (%forward_params) = ref $_[0] ? %{$_[0]} : @_;
     my $blog_id          = $app->param('blog_id') || 0;
     my $filter_id        = $app->param('fid') || $forward_params{saved_fid};
     my $blog             = $blog_id ? $app->blog : undef;

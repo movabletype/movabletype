@@ -303,6 +303,7 @@ sub core_methods {
         'dialog_list_asset'          => "${pkg}Asset::dialog_list_asset",
         'dialog_edit_image'          => "${pkg}Asset::dialog_edit_image",
         'dialog_list_deprecated_log' => "${pkg}Log::dialog_list_deprecated_log",
+        'dialog_export_log'          => "${pkg}Log::dialog_export_log",
 
         'thumbnail_image' =>
             "${pkg}Asset::thumbnail_image",    # Used in Edit Image dialog.
@@ -319,6 +320,8 @@ sub core_methods {
             code     => "${pkg}Tools::login_json",
             app_mode => 'JSON',
         },
+
+        ## DEPRECATED since 8.5.0
         'regenerate_site_stats_data' => {
             code     => "${pkg}Dashboard::regenerate_site_stats_data",
             app_mode => 'JSON',
@@ -805,13 +808,14 @@ sub core_content_actions {
                 class         => 'icon-download',
                 label         => 'Download Log (CSV)',
                 icon          => 'ic_download',
-                mode          => 'export_log',
+                mode          => 'dialog_export_log',
                 order         => 200,
                 permit_action => {
                     permit_action => 'export_blog_log',
                     include_all   => 1,
                     system_action => 'export_system_log',
                 },
+                dialog => 1,
             },
         },
         'banlist' => {
@@ -3265,7 +3269,7 @@ sub build_menus {
     my $blog         = $app->blog;
     my $blog_id      = $blog ? $blog->id : 0;
     my $theme        = $blog ? $blog->theme : undef;
-    my $theme_modify = $theme ? $theme->{menu_modification} : {};
+    my $theme_modify = $theme ? $theme->{menus_modification} || $theme->{menu_modification} : {};
     my $mode         = $app->mode;
 
     my @top_ids = grep { !/:/ } keys %$menus;
@@ -3687,23 +3691,28 @@ sub build_actions {
         my $cond   = $action->{condition};
         if ( defined $cond ) {
             next unless $cond;
+            $cond = MT->handler_to_coderef($cond) unless ref $cond;
             next if ref $cond eq 'CODE' && !$cond->( $app, $param );
         }
 
         my $href = $action->{href};
-        if ( $href && ref $href eq 'CODE' ) {
-            $href = $href->( $app, $param );
+        if (defined $href) {
+            $href = MT->handler_to_coderef($href) unless ref $href;
+            $href = $href->( $app, $param ) if ref $href eq 'CODE';
         }
         $action->{id} = $id;
         $action->{order} ||= 0;
 
-        push @valid_actions, $action;
+        push @valid_actions, { %$action, href => $href };
     }
 
     @valid_actions
         = sort { $a->{order} <=> $b->{order} or $a->{id} cmp $b->{id} }
         @valid_actions;
 
+    if ($registry_key eq 'menu_actions') {
+        $param->{"${registry_key}_for_mobile"} = [grep { !exists $_->{mobile} || $_->{mobile} } @valid_actions];
+    }
     $param->{$registry_key} = \@valid_actions;
 }
 

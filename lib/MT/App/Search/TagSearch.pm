@@ -126,9 +126,9 @@ sub search_terms {
     $app->{search_string} = $search_string;
 
     my @or_tag_names;
-    if (   ( $search_string =~ /\s+OR\s+/ )
-        || ( $search_string =~ /\s+AND\s+/ )
-        || ( $search_string =~ /\s*"\s*/ ) )
+    if (   ( $search_string =~ /\sOR\s/ )
+        || ( $search_string =~ /\sAND\s/ )
+        || ( $search_string =~ /"/ ) )
     {
         @or_tag_names = &_process_lucene_query($search_string);
     }

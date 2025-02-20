@@ -1,4 +1,4 @@
-# Copyrights 1999-2022 by [Mark Overmeer <markov@cpan.org>].
+# Copyrights 1999-2024 by [Mark Overmeer <markov@cpan.org>].
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
 # Pod stripped from pm file by OODoc 2.03.
@@ -8,7 +8,7 @@
 
 package MIME::Type;
 use vars '$VERSION';
-$VERSION = '2.24';
+$VERSION = '2.26';
 
 
 use strict;

@@ -42,6 +42,14 @@ list_properties:
       order: 999
       auto: 1
 YAML
+
+    # MTC-9667
+    $test_env->save_file("plugins/IllegalObjectType/config.yaml", <<'YAML');
+id: IllegalObjectType
+object_types:
+    asset.image:
+        enabled_image_protection: integer meta
+YAML
 }
 
 use MT::Test;
@@ -75,6 +83,21 @@ subtest 'content_type' => sub {
     });
     my @logs = $test_env->slurp_logfile;
     ok grep(/unsupported column type/, @logs), "unsupported column type error is logged";
+};
+
+subtest 'dialog_asset_modal' => sub {
+    my $app = MT::Test::App->new;
+    $app->login($admin);
+    $app->get_ok({
+        __mode      => 'dialog_asset_modal',
+        _type       => 'asset',
+        edit_field  => 'editor-input-content',
+        blog_id     => 1,
+        dialog_view => 1,
+        can_multi   => 1,
+        dialog      => 1,
+    });
+    ok !$app->generic_error, "No 'class_label_plural' errors";
 };
 
 done_testing;

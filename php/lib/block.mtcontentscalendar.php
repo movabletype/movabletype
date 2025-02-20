@@ -167,7 +167,7 @@ function smarty_block_mtcontentcalendar($args, $content, &$ctx, &$repeat) {
         if(isset($args['category']))
           $contents_args['category'] = $args['category'];
 
-        $iter = $ctx->mt->db()->fetch_contents($contents_args, isset($content_type_id) ? $content_type_id : null);
+        $iter = $ctx->mt->db()->fetch_contents($contents_args, isset($content_type) ? $content_type->id : null);
         $dt_field    = 'cd_authored_on';
         $dt_field_id = 0;
         if ( !empty($args['date_field']) && ($arg = $args['date_field']) ) {

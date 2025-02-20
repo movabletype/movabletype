@@ -565,7 +565,7 @@ sub js_upload_file {
     my $thumb_size = $app->param('thumbnail_size') || $default_thumbnail_size;
     if ( $asset->has_thumbnail && $asset->can_create_thumbnail ) {
         $asset->remove_broken_png_metadata;
-        my ( $orig_height, $orig_width )
+        my ( $orig_width, $orig_height )
             = ( $asset->image_width, $asset->image_height );
         if ( $orig_width > $thumb_size && $orig_height > $thumb_size ) {
             ($thumb_url) = $asset->thumbnail_url(
@@ -1349,40 +1349,37 @@ sub _set_start_upload_params {
     my $app = shift;
     my ($param) = @_;
 
-    if ( my $perms = $app->permissions ) {
-        my $blog_id = $app->param('blog_id');
-        if ($blog_id) {
-            my $blog = $app->blog or return $app->error( $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
+    my $blog_id = $app->param('blog_id');
+    if ($blog_id) {
+        my $blog = $app->blog or return $app->error($app->translate('Cannot load blog #[_1].', $blog_id));
 
-            # Make a list of upload destination
-            my @dest_root = _make_upload_destinations( $app, $blog, 1 );
-            $param->{destination_loop} = \@dest_root;
+        # Make a list of upload destination
+        my @dest_root = _make_upload_destinations($app, $blog, 1);
+        $param->{destination_loop} = \@dest_root;
 
-            # Set default upload options
-            $param->{allow_to_change_at_upload}
-                = defined $blog->allow_to_change_at_upload
-                ? $blog->allow_to_change_at_upload
-                : 1;
-            if ( !$param->{allow_to_change_at_upload} ) {
-                foreach my $opt ( grep { $_->{selected} } @dest_root ) {
-                    $param->{upload_destination_label} = $opt->{label};
-                    $param->{upload_destination_value} = $opt->{path};
-                }
+        # Set default upload options
+        $param->{allow_to_change_at_upload} =
+            defined $blog->allow_to_change_at_upload
+            ? $blog->allow_to_change_at_upload
+            : 1;
+        if (!$param->{allow_to_change_at_upload}) {
+            foreach my $opt (grep { $_->{selected} } @dest_root) {
+                $param->{upload_destination_label} = $opt->{label};
+                $param->{upload_destination_value} = $opt->{path};
             }
-            $param->{destination}         = $blog->upload_destination;
-            $param->{extra_path}          = $blog->extra_path;
-            $param->{operation_if_exists} = $blog->operation_if_exists;
-            $param->{normalize_orientation}
-                = defined $blog->normalize_orientation
-                ? $blog->normalize_orientation
-                : 1;
-            $param->{auto_rename_non_ascii}
-                = defined $blog->auto_rename_non_ascii
-                ? $blog->auto_rename_non_ascii
-                : 1;
         }
-    }
-    else {
+        $param->{destination}         = $blog->upload_destination;
+        $param->{extra_path}          = $blog->extra_path;
+        $param->{operation_if_exists} = $blog->operation_if_exists;
+        $param->{normalize_orientation} =
+            defined $blog->normalize_orientation
+            ? $blog->normalize_orientation
+            : 1;
+        $param->{auto_rename_non_ascii} =
+            defined $blog->auto_rename_non_ascii
+            ? $blog->auto_rename_non_ascii
+            : 1;
+    } else {
         $param->{normalize_orientation} = 1;
         $param->{auto_rename_non_ascii} = 1;
     }
@@ -2725,7 +2722,7 @@ sub dialog_edit_asset {
         $asset->remove_broken_png_metadata;
         my ( $thumb_url, $thumb_w, $thumb_h );
         my $thumb_size = 240;
-        my ( $orig_height, $orig_width )
+        my ( $orig_width, $orig_height )
             = ( $asset->image_width, $asset->image_height );
         if ( $orig_width > $thumb_size && $orig_height > $thumb_size ) {
             ( $thumb_url, $thumb_w, $thumb_h ) = $asset->thumbnail_url(
@@ -3007,6 +3004,11 @@ sub transform_image {
     $actions = eval { MT::Util::from_json($actions) };
     if ( !$actions || ref $actions ne 'ARRAY' ) {
         return $app->errtrans('Invalid request.');
+    }
+
+    # normalize the image first if it is rotated
+    if ($asset->is_rotated_90_degrees) {
+        $asset->normalize_orientation;
     }
 
     $asset->transform(@$actions)
@@ -3376,7 +3378,7 @@ sub _make_thumbnail_url {
 
     if ( $asset->has_thumbnail && $asset->can_create_thumbnail ) {
         $asset->remove_broken_png_metadata;
-        my ( $orig_height, $orig_width )
+        my ( $orig_width, $orig_height )
             = ( $asset->image_width, $asset->image_height );
         if ( $orig_width > $thumb_size && $orig_height > $thumb_size ) {
             ($thumb_url) = $asset->thumbnail_url(

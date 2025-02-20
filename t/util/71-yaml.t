@@ -13,16 +13,19 @@ BEGIN {
 }
 
 use MT::Test;
-plan tests => 17;
 use Encode;
+use Data::Visitor::Tiny;
+use File::Find;
 
 require_ok('MT::Util::YAML');
 
 my @classes = qw( YAML::Tiny YAML::Syck );
+my @files = ((glob "plugins/*/*.yaml"), (glob "addons/*/*.yaml"));
+
 for my $class ( @classes ) {
     SKIP: {
         eval { MT::Util::YAML::_find_module($class) };
-        skip "$class isn't installed.", 8 if $@;
+        skip "$class isn't installed." if $@;
         my $data;
         ok(($data) = MT::Util::YAML::LoadFile('t/util/71-yaml.yaml'), "$class: Loadfile");
         ok( 'HASH' eq ref $data, "$class: returns HASHREF");
@@ -33,6 +36,22 @@ for my $class ( @classes ) {
         my $str;
         ok( $str = MT::Util::YAML::Dump( $data ), "$class: Dump" );
         ok( Encode::is_utf8($str), "$class: Output of Dump is utf-8");
+
+        for my $file (@files) {
+            my $data = eval { MT::Util::YAML::LoadFile($file) };
+            ok $data && ref $data, "$class: load $file";
+            visit(
+                $data,
+                sub {
+                    my ($key, $valueref) = @_;
+                    return unless defined $$valueref;
+                    if ($$valueref =~ /sub\s+\{/) {
+                        eval "no strict; no warnings; $$valueref; 1" or fail "$class: $$valueref is broken: $@";
+                    }
+                },
+            );
+        }
     }
 }
 
+done_testing;

@@ -66,5 +66,22 @@ subtest 'forbid creating content_field with not unique unique_id' => sub {
     ok( $cf2->errstr, 'unique_id column must be unique' );
 };
 
-done_testing;
+subtest 'remove an orphan content field' => sub {
+    my $cf1 = MT::ContentField->new(
+        blog_id         => 1,
+        content_type_id => 9999,
+        name            => 'test4-1',
+    );
+    $cf1->save or die $cf1->errstr;
+    my $old_id = $cf1->id;
 
+    $test_env->remove_logfile;
+
+    ok $cf1->remove;
+
+    unlike $test_env->slurp_logfile => qr/Can't call method "unique_id" on an undefined value/, "no known warnings";
+
+    ok !MT::ContentField->load($old_id), "cf is removed";
+};
+
+done_testing;

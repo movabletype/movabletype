@@ -2,7 +2,7 @@ package LWP::Protocol::http;
 
 use strict;
 
-our $VERSION = '6.76';
+our $VERSION = '6.77';
 
 require HTTP::Response;
 require HTTP::Status;

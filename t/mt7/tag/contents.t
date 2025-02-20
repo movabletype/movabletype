@@ -570,3 +570,8 @@ test single line text 2
 test single line text 4
 test single line text 2
 
+=== MT:Contents found no content types
+--- template
+<mt:Contents blog_id="99"><mt:ContentID></mt:Contents>
+--- expected
+Content Type was not found. Blog ID: 99

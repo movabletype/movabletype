@@ -48,6 +48,7 @@ if ($ENV{MT_TEST_SMTPUSER} and $ENV{MT_TEST_SMTPPASSWORD}) {
 }
 
 my $server = MT::Test::MailPitServer->run(%mailpit_opts);
+$server->test_connection or plan skip_all => 'Mailpit seems not working';
 
 MT->config(SMTPPort => $server->port);
 

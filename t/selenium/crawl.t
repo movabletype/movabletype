@@ -103,7 +103,7 @@ sub assert_no_errors {
     ok(!scalar(@logs), 'no browser error occurs');
     ok(!$extra->{error}, 'no generic errors');
     $summary = 'test_number_' . $num . ': ' . $summary;
-    if (@logs) {
+    if (@logs || defined($extra->{error})) {
         diag($summary);
         diag(explain($extra));
         diag sprintf("<%s> %s", $_->{source}, $_->{message})  for grep { $_->{source} } @logs;

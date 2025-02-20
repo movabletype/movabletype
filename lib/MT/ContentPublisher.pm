@@ -951,6 +951,9 @@ sub rebuild_file {
             my $category_set = MT->model('category_set')
                 ->load( $category->category_set_id );
             $ctx->{__stash}{category_set} = $category_set;
+            if ($args{ContentType}) {
+                $ctx->{__stash}{content_type} = $args{ContentType};
+            }
         }
     }
     if ( $archiver->entry_based or $args{Entry} ) {
@@ -1713,6 +1716,7 @@ sub _rebuild_content_archive_type {
     }
     return 1 unless @map;
 
+    my %ct_map;
     my @map_build;
     my $done = MT->instance->request( '__published:' . $blog->id )
         || MT->instance->request( '__published:' . $blog->id, {} );
@@ -1726,6 +1730,7 @@ sub _rebuild_content_archive_type {
                 && $content_data
                 && $template->content_type_id ne
                 $content_data->content_type_id;
+            $ct_map{$map->template_id} ||= MT->model('content_type')->load($template->content_type_id);
         }
 
         my $ts
@@ -1808,6 +1813,7 @@ sub _rebuild_content_archive_type {
             !$param{NoStatic},
             Category    => $param{Category},
             ContentData => $content_data,
+            ContentType => $ct_map{$map->template_id},
             Author      => $param{Author},
             StartDate   => $start,
             EndDate     => $end,

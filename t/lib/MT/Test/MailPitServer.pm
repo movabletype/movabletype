@@ -92,14 +92,14 @@ sub slurp_logfile {
 
 sub last_sent_mail {
     my $self = shift;
-    my $mail = $self->list_messages->[0];
+    my $mail = $self->list_messages->[0] or return;
     my $id   = $mail->{ID};
     $self->get_raw_message($id)->decoded_content; 
 }
 
 sub last_sent_recipients {
     my $self = shift;
-    my $mail = $self->list_messages->[0];
+    my $mail = $self->list_messages->[0] or return;
     my @recipients;
     for my $type (qw(To Cc Bcc)) {
         push @recipients, map {$_->{Address}} @{ $mail->{$type} || [] };
@@ -112,6 +112,10 @@ sub list_messages {
     my $ui_port = $self->{ui_port};
     my $ua = LWP::UserAgent->new;
     my $res = $ua->get("http://localhost:$ui_port/api/v1/messages");
+    unless ($res->is_success) {
+        diag $res->status_line;
+        return;
+    }
     decode_json($res->decoded_content)->{messages};
 }
 
@@ -132,6 +136,19 @@ sub get_raw_message {
 sub stop {
     my $self = shift;
     delete $self->{guard};
+}
+
+sub test_connection {
+    my $self = shift;
+    my $ct = 5;
+    while($ct--) {
+        if (Net::EmptyPort::check_port($self->{ui_port})) {
+            my $res = $self->list_messages;
+            return 1 if ref $res;
+        }
+        sleep 1;
+    }
+    return;
 }
 
 1;

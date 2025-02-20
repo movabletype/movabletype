@@ -197,6 +197,7 @@
       self.page = 1;
     }
 
+    var isFirstLoading = true;
     this.listClient.filteredList({
       columns: self.getCheckedColumnIds(),
       filter: self.currentFilter,
@@ -215,7 +216,8 @@
       },
       always: function () {
         self.updateIsLoading(false);
-        if (refreshCurrentFilter) {
+        if (isFirstLoading || refreshCurrentFilter) {
+          isFirstLoading = false;
           self.trigger('refresh_current_filter')
         }
         self.trigger('refresh_view', { moveToPagination: moveToPagination });

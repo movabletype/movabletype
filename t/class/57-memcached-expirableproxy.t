@@ -6,19 +6,19 @@ use FindBin;
 use lib "$FindBin::Bin/../lib"; # t/lib
 use Test::More;
 use MT::Test::Env;
+use MT::Test::Memcached;
+
 our $test_env;
+my $memcached;
 BEGIN {
-    $test_env = MT::Test::Env->new;
+    $memcached = MT::Test::Memcached->new or plan skip_all => "Memcached is not available";
+    $test_env = MT::Test::Env->new( MemcachedServers => $memcached->address );
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
 use Test::MockTime::HiRes;
 use MT::Test;
 use MT::Memcached::ExpirableProxy;
-use MT::Test::Memcached;
-
-my $memcached = MT::Test::Memcached->new or plan skip_all => "Memcached is not available";
-MT->config(MemcachedServers => $memcached->address);
 
 my $m = MT::Memcached->instance;
 $m->set( __FILE__, __FILE__, 1 );

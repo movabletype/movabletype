@@ -111,8 +111,9 @@ sub column_defs {
     while ( my $row = $sth->fetchrow_hashref ) {
         my $colname = lc $row->{name};
         $colname =~ s/^\Q$field_prefix\E_//i;
-        my $coltype = $ddl->db2type( $row->{type} );
-        if ( $row->{type} =~ m/\((\d+)\)/ ) {
+        my $lc_type = lc $row->{type};
+        my $coltype = $ddl->db2type( $lc_type );
+        if ( $lc_type =~ m/\((\d+)\)/ ) {
             $defs->{$colname}{size} = $1;
         }
         $defs->{$colname}{type} = $coltype;

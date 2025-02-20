@@ -156,6 +156,7 @@
     contentIndex: string,
   ): void => {
     currentFilter.items[itemIndex].args.items.splice(contentIndex, 1);
+    update();
   };
 
   const showMessage = (content: string, cls: string): JQuery<HTMLElement> => {

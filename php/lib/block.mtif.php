@@ -12,6 +12,7 @@ function smarty_block_mtif($args, $content, &$ctx, &$repeat) {
           ? $args['name'] : (isset($args['var']) ? $args['var'] : null);
         if (isset($name)) {
             unset($ctx->__stash['__cond_tag__']);
+            $ctx->__stash['__cond_name__'] = $name;
 
             # pick off any {...} or [...] from the name.
             if (preg_match('/^(.+)([\[\{])(.+)[\]\}]$/', $name, $matches)) {
@@ -83,7 +84,10 @@ function smarty_block_mtif($args, $content, &$ctx, &$repeat) {
                 $val = '';
             }
 
+            $ctx->__stash['__cond_tag__'] = $tag;
             restore_error_handler();
+        } else {
+            $val = $ctx->__stash['__cond_value__'];
         }
         if ( !empty($value) && !is_array($value) && preg_match('/^smarty_fun_[a-f0-9]+$/', $value) ) {
             if (function_exists($val)) {
@@ -96,15 +100,6 @@ function smarty_block_mtif($args, $content, &$ctx, &$repeat) {
             }
         }
 
-        if(isset($args['tag']))
-            $ctx->__stash['__cond_tag__'] = $args['tag'];
-        else {
-            if (isset($args['name']))
-                $var_key = $args['name'];
-            else if(isset($args['var']))
-                $var_key = $args['var'];
-            $ctx->__stash['__cond_name__'] = $var_key;
-        }
         $ctx->__stash['__cond_value__'] = isset($val) ? $val : null;
 
         if ( array_key_exists('op', $args) ) {
@@ -146,12 +141,12 @@ function smarty_block_mtif($args, $content, &$ctx, &$repeat) {
                 $patt = preg_replace("!/!", "\\/", $patt);
             }
             $result = preg_match("/$patt/$opt", $val) ? 1 : 0;
-        } elseif (array_key_exists('test', $args)) {
+        } elseif (array_key_exists('test', $args) && !empty(MT::get_instance()->config('AllowTestModifier'))) {
             $expr = 'return (' . $args['test'] . ') ? 1 : 0;';
             // export vars into local variable namespace, then eval expr
             extract($ctx->__stash['vars']);
             $result = eval($expr);
-            if ($result === FALSE) {
+            if ($result === null) { // eval returns null for parse errors since PHP7
                 die("error in expression [" . $args['test'] . "]");
             }
         } else {

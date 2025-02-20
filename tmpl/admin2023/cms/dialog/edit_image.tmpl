@@ -147,7 +147,7 @@
            disabled="disabled">
           <__trans phrase="Save"></button>
         <button
-           type="submit"
+           type="button"
            accesskey="x"
            class="cancel action button image-editor-close-dialog btn btn-default"
            title="<__trans phrase="Cancel (x)">"
@@ -358,7 +358,7 @@
 
         // Confirm before closing dialog.
         window.onbeforeunload = function () {
-            if (isDirty || resizing || image.getPlugin('crop').hasFocus()) {
+            if (isDirty || resizing || (image.plugins && image.getPlugin('crop').hasFocus())) {
                 var message = '<__trans phrase="You have unsaved changes to this image that will be lost. Are you sure you want to close this dialog?">';
                 if (confirm(message)) {
                     return true;

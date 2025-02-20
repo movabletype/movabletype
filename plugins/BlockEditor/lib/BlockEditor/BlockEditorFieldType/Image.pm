@@ -492,7 +492,7 @@ sub _insert_options {
     if (!defined($param->{height})) {
         $param->{height} =
             $blog->image_default_width
-            ? ($blog->image_height * $asset->image_width / $blog->image_default_width)
+            ? int($asset->image_height / $asset->image_width * $blog->image_default_width)
             : ($asset->image_height || 0);
     }
     my $cur_aspect_ratio = $param->{width} && $param->{height} && ($param->{width} / $param->{height}) || 0;

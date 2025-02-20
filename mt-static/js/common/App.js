@@ -88,7 +88,7 @@ App = new Class( Component, Component.Delegator, {
     initEventListeners: function() {
         arguments.callee.applySuper( this, arguments );
         this.addEventListener( window, "resize", "eventResize" );
-        this.addEventListener( window, "unload", "eventUnload" );
+        this.addEventListener( window, "pagehide", "eventPagehide" );
     },
     
     
@@ -104,12 +104,18 @@ App = new Class( Component, Component.Delegator, {
     
 
     /* event listeners */
-    
+    eventPagehide: function( event ) {
+        if ( !event.persisted ) {
+            this.destroy();
+        }
+    },
+
     eventResize: function( event ) {
         return this.reflow( event );
     },
     
     
+    // deprecated since MT 8.4.2 and 8.5.0
     eventUnload: function( event ) {
         this.destroy();
     },

@@ -232,8 +232,9 @@ function _get_content_type( $ctx, $args, $blog_terms ) {
             $content_types[] = $ct;
         } else {
             $content_types = $ctx->mt->db()->fetch_content_types($blog_terms);
-            if (!isset($content_types))
-                $not_found_blog_ids[] = $blog_id;
+            if (!isset($content_types)) {
+                $not_found_blog_ids = $blog_ids;
+            }
         }
     }
 

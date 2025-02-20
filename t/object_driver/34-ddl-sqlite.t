@@ -13,8 +13,6 @@ use lib "$FindBin::Bin/../lib"; # t/lib
 use Test::More;
 use MT::Test::Env;
 BEGIN {
-    plan skip_all => "Test for 'sqlite' is not actively maintained";
-
     my $module = 'DBD::SQLite';
     eval "require $module;";
     plan skip_all => "Database driver '$module' not found."

@@ -39,14 +39,14 @@ our $plugins_installed;
 BEGIN {
     $plugins_installed = 0;
 
-    ( $VERSION, $SCHEMA_VERSION ) = ( '8.004001', '8.0001' );
+    ( $VERSION, $SCHEMA_VERSION ) = ( '8.005000', '8.0001' );
     (   $PRODUCT_NAME, $PRODUCT_CODE,   $PRODUCT_VERSION,
         $VERSION_ID,   $RELEASE_NUMBER, $PORTAL_URL,
         $RELEASE_VERSION_ID
         )
         = (
         '__PRODUCT_NAME__',   '__PRODUCT_CODE__',
-        '8.4.1',              '__PRODUCT_VERSION_ID__',
+        '8.5.0',              '__PRODUCT_VERSION_ID__',
         '__RELEASE_NUMBER__', '__PORTAL_URL__',
         '__RELEASE_VERSION_ID__',
         );
@@ -848,7 +848,7 @@ sub init_config {
 }
 
 {
-    my ($memory_start);
+    my $memory_start = '';
 
     sub log_times {
         my $pkg = shift;
@@ -1359,6 +1359,9 @@ sub init_plugins {
         if (my $model = $mt->model('config')) {
             if (!$mt->isa('MT::App::Wizard') && $model->driver->table_exists($model)) {
                 $mt->config->save_config;
+            }
+            else {
+                $mt->config->clear_dirty;
             }
         }
     }

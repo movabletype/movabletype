@@ -458,6 +458,7 @@ sub global_perms {
 
 sub can_do {
     my $self = shift;
+    return 1 if $self->user && $self->user->is_superuser;
     return unless $self->permissions;
 
     my $action = shift;
@@ -829,15 +830,20 @@ sub load_same {
 }
 
 sub to_hash {
-    my $perms     = shift;
-    my $hash      = {};                        # $perms->SUPER::to_hash(@_);
-    my $all_perms = MT::Permission->perms();
-    foreach (@$all_perms) {
-        my $perm = $_->[0];
-        $perm = 'can_' . $perm;
-        $hash->{"permission.$perm"} = $perms->$perm();
-    }
-    $hash;
+    my $perms = shift;
+    $perms->cache_property(
+        'to_hash',
+        sub {
+            my $hash      = {};                        # $perms->SUPER::to_hash(@_);
+            my $all_perms = MT::Permission->perms();
+            foreach (@$all_perms) {
+                my $perm = $_->[0];
+                $perm = 'can_' . $perm;
+                $hash->{"permission.$perm"} = $perms->$perm();
+            }
+            $hash;
+        },
+    );
 }
 
 sub _load_inheritance_permissions {

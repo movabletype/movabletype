@@ -197,20 +197,13 @@
         })
 
         editor.on('drop paste', function (e) {
-            if (
-              !MT.Editor.TinyMCE.config['plugin_mt_can_upload'] ||
-              editor.options.get('inline')
-            ) {
-                return true;
-            }
-
             var files = []
             var dataTransfer = e.dataTransfer || e.clipboardData
             for (var i = 0; i < dataTransfer.items.length; i++) {
                 var item = dataTransfer.items[i]
                 if (item.kind === 'string' && item.type === 'text/plain') {
-                    var plainTextContent = item.getData('text/plain')
-                    if (!plainTextContent && !plainTextContent.startsWith('file://')) {
+                    var plainTextContent = dataTransfer.getData('text/plain')
+                    if (plainTextContent && !plainTextContent.startsWith('file://')) {
                         return true; // paste as text
                     }
                 }
@@ -224,6 +217,13 @@
 
             if (files.length === 0) {
                 return true;
+            }
+
+            if (
+              !MT.Editor.TinyMCE.config['plugin_mt_can_upload'] ||
+              editor.options.get('inline')
+            ) {
+                return false;
             }
 
             var blogId = $('[name=blog_id]').val() || 0

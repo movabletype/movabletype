@@ -59,7 +59,17 @@ sub render {
             );
         }
     };
-    return $class->error(MT->translate('Failed to encode mail' . ($@ ? ':' . $@ : ''))) if $@ || !$msg;
+    if ( $@ || !$msg ) {
+        require MT::Log;
+        MT->log(
+            {   message => MT->translate('Failed to encode mail' . ($@ ? ':' . $@ : '')),
+                class    => 'system',
+                category => 'email',
+                level    => MT::Log::ERROR(),
+            }
+        );
+        return;
+    }
 
     my $encoded = $msg->as_string;
     $encoded =~ s{\x0d(?!\x0a)|(?<!\x0d)\x0a}{$crlf}g;

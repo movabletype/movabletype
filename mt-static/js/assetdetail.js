@@ -25,25 +25,21 @@ function toggleScrollBar(which) {
 var opened = false;
 var asset_id = '';
 var detailRowClass = '';
-var orgiRowClass = '';
 function hasOpened(id) {
     opened = true;
     asset_id = id;
     detailRowClass = getByID("asset-" + asset_id);
-    origRowClass = detailRowClass.className;
 }
 
 function notOpened(id) {
     opened = false;
     asset_id = '';
     detailRowClass = '';
-    origRowClass = '';
 }
 
 function checkOpened() {
     if (opened) {
         hide('asset-' + asset_id + '-preview');
-        detailRowClass.className = origRowClass;
         notOpened(asset_id);
         toggleScrollBar('right');
     }
@@ -54,7 +50,6 @@ function toggleAssetDetails(id) {
     var button_val = true;
     if (asset_id == id) {
         hide('asset-' + asset_id + '-preview');
-        detailRowClass.className = origRowClass;
         notOpened(asset_id);
         if (isModal) {
             toggleScrollBar('right');

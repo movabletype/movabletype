@@ -62,6 +62,9 @@ function smarty_prefilter_mt_to_smarty($tpl_source, $ctx2) {
         $tpl_source = preg_replace('/<MT:?Ignore\b[^>]*?>((?!<MT:?Ignore\b[^>]*?>).)*?<\/MT:?Ignore>/is', '', $tpl_source);
     }
 
+    if (!$mt->config('DynamicTemplateAllowSmartyTags')) {
+        $tpl_source = _escapeDelimiter($tpl_source, $ldelim, $rdelim);
+    }
 
     if ($parts = preg_split('!(<(?:\$?|/)MT(?:(?:<[^>]*?>|\'[^\']*?\'|"[^"]*?"|.)+?)(?:\$?|/)>)!is', $tpl_source, -1,
                        PREG_SPLIT_DELIM_CAPTURE)) {
@@ -94,6 +97,9 @@ function smarty_prefilter_mt_to_smarty($tpl_source, $ctx2) {
                         $attr = $arglist[$a][1];
                         $attr = strtolower(preg_replace('/:/', '___', $attr));
                         $attrs[$attr] = $arglist[$a][3];
+                        if ($mt->config('DynamicTemplateAllowSmartyTags')) {
+                            $attrs[$attr] = _escapeDelimiter($attrs[$attr], $ldelim, $rdelim);
+                        }
                         $quote = $arglist[$a][2];
                     }
                     if (preg_match('/^\$([A-Za-z_](\w|\.)*)$/', $attrs[$attr], $matches)) {
@@ -368,4 +374,9 @@ function _block_handler_exists(&$smarty, $name) {
     } 
     return false;
 }
-?>
+
+function _escapeDelimiter($str, $ldelim, $rdelim) {
+    return preg_replace_callback("/{$ldelim}|{$rdelim}/", function ($matches) use ($ldelim, $rdelim) {
+        return $ldelim. ($matches[0] === $ldelim ? 'ldelim' : 'rdelim'). $rdelim;
+    }, $str);
+}

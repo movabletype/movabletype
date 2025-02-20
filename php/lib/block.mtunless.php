@@ -59,12 +59,12 @@ function smarty_block_mtunless($args, $content, &$ctx, &$repeat) {
                 $patt = preg_replace("!/!", "\\/", $patt);
             }
             $result = preg_match("/$patt/$opt", $val) ? 1 : 0;
-        } elseif (array_key_exists('test', $args)) {
+        } elseif (array_key_exists('test', $args) && !empty(MT::get_instance()->config('AllowTestModifier'))) {
             $expr = 'return (' . $args['test'] . ') ? 1 : 0;';
             // export vars into local variable namespace, then eval expr
             extract($ctx->__stash['vars']);
             $result = eval($expr);
-            if ($result === FALSE) {
+            if ($result === null) { // eval returns null for parse errors since PHP7
                 die("error in expression [" . $args['test'] . "]");
             }
         } else {

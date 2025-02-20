@@ -756,33 +756,16 @@ $Languages = array(
             "%k:%M",
           ),
 
-    'jp' => array(
-            array('&#26085;&#26332;&#26085;', '&#26376;&#26332;&#26085;',
-              '&#28779;&#26332;&#26085;', '&#27700;&#26332;&#26085;',
-              '&#26408;&#26332;&#26085;', '&#37329;&#26332;&#26085;',
-              '&#22303;&#26332;&#26085;'),
-            array('1','2','3','4','5','6','7','8','9','10','11','12'),
-            array('AM','PM'),
-            "%Y&#24180;%b&#26376;%e&#26085; %H:%M",
-            "%Y&#24180;%b&#26376;%e&#26085;",
-            "%H:%M",
-            "%Y&#24180;%b&#26376;",
-            "%b&#26376;%e&#26085;",
-          ),
-
-    'ja' => array(
-            array('&#26085;&#26332;&#26085;', '&#26376;&#26332;&#26085;',
-              '&#28779;&#26332;&#26085;', '&#27700;&#26332;&#26085;',
-              '&#26408;&#26332;&#26085;', '&#37329;&#26332;&#26085;',
-              '&#22303;&#26332;&#26085;'),
-            array('1','2','3','4','5','6','7','8','9','10','11','12'),
-            array('AM','PM'),
-            "%Y&#24180;%b&#26376;%e&#26085; %H:%M",
-            "%Y&#24180;%b&#26376;%e&#26085;",
-            "%H:%M",
-            "%Y&#24180;%b&#26376;",
-            "%b&#26376;%e&#26085;",
-          ),
+    'jp' => [
+        ['日曜日', '月曜日', '火曜日', '水曜日', '木曜日', '金曜日', '土曜日'],
+        ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
+        ['AM', 'PM'],
+        "%Y年%b月%e日 %H:%M",
+        "%Y年%b月%e日",
+        "%H:%M",
+        "%Y年%b月",
+        "%b月%e日",
+    ],
 
     'et' => array(
             array('ip&uuml;hap&auml;ev','esmasp&auml;ev','teisip&auml;ev',
@@ -796,6 +779,8 @@ $Languages = array(
             "%H:%M",
           ),
 );
+
+$Languages['ja'] = $Languages['jp'];
 
 global $_encode_xml_Map;
 $_encode_xml_Map = array('&' => '&amp;', '"' => '&quot;',
@@ -1335,14 +1320,56 @@ function tagarray_name_sort($a, $b) {
     return strcmp(strtolower($a->tag_name), strtolower($b->tag_name));
 }
 
+# sorts by length of tag name in descending
+function tagarray_name_length_sort($a, $b) {
+    return length_text($b->tag_name) <=> length_text($a->tag_name);
+}
+
 function create_tag_expr_function($expr, &$tags, $datasource = 'entry') {
     $tags_used = array();
     $orig_expr = $expr;
 
+    # Sort in descending order by length
+    usort($tags, 'tagarray_name_length_sort');
+
     $tags_dict = array();
     foreach ($tags as $tag) {
         $tags_dict[$tag->tag_name] = $tag;
+
+        $name = $tag->tag_name;
+        ## FIXME: this implementation can't handle tags which starts
+        ## with hash mark and numbers related. because they could break
+        ## our mid-compiled expression. now just skip them.
+        if (preg_match('/^\s*\#\d+\s*$/', $name)) continue;
+
+        ## search for tags from expression and replace them with its IDs.
+        ## allowed only existing tag name and some logical operators
+        ## ( AND, OR, NOT, and round brackets ).
+        $id = '#' . $tag->tag_id;
+        $count = 0;
+        $expr = preg_replace('/
+            (
+                \sAND\s
+                | \sOR\s
+                | \s?NOT\s
+                | \(
+                | \A
+            )
+            \s*?\Q'.$name.'\E\s*?
+            (
+                \Z
+                | \)
+                | \sAND\s
+                | \sOR\s
+                | \sNOT\s
+            )/ix', "$1$id$2", $expr, -1, $count); # Change all matches to #$id (e.g. #932)
+
+        if (0 < $count) {
+            unset($tags_dict[$tag->tag_name]);
+            $tags_dict[$id] = $tag;
+        }
     }
+
     $tokens = preg_split('/\b(AND|NOT|OR|\(\))\b/i', $expr, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
     $result = '';
     foreach ($tokens as $t) {

@@ -206,7 +206,7 @@ foreach($ctx_stash as $k => $v) {
 }
 
 if ($ctx->_compile_source('evaluated template', $tmpl, $_var_compiled)) {
-    $ctx->_eval('?>' . $_var_compiled);
+    print($_var_compiled);
 } else {
     print('Error compiling template module.');
 }

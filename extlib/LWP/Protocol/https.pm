@@ -3,9 +3,9 @@ package LWP::Protocol::https;
 use strict;
 use warnings;
 
-our $VERSION = '6.12';
+our $VERSION = '6.14';
 
-use base qw(LWP::Protocol::http);
+use parent qw(LWP::Protocol::http);
 require Net::HTTPS;
 
 sub socket_type
@@ -98,7 +98,7 @@ if ( $Net::HTTPS::SSL_SOCKET_CLASS->can('start_SSL')) {
 	my ($self,$sock,$url) = @_;
     # SNI should be passed there only if it is not an IP address.
     # Details: https://github.com/libwww-perl/libwww-perl/issues/449#issuecomment-1896175509
-	my $host = $url->host_port() =~ m/:|^[\d.]+$/s ? undef : $url->host();
+	my $host = $url->host() =~ m/:|^[\d.]+$/s ? undef : $url->host();
 	$sock = LWP::Protocol::https::Socket->start_SSL( $sock,
 	    SSL_verifycn_name => $url->host,
 	    SSL_hostname => $host,
@@ -112,7 +112,7 @@ if ( $Net::HTTPS::SSL_SOCKET_CLASS->can('start_SSL')) {
 #-----------------------------------------------------------
 package LWP::Protocol::https::Socket;
 
-use base qw(Net::HTTPS LWP::Protocol::http::SocketMethods);
+use parent -norequire, qw(Net::HTTPS LWP::Protocol::http::SocketMethods);
 
 1;
 

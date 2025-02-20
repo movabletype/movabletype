@@ -92,7 +92,7 @@ $entry->entry_convert_breaks = 'markdown';
 $ctx->stash('entry', $entry);
 
 if ($ctx->_compile_source('evaluated template', $tmpl, $_var_compiled)) {
-    $ctx->_eval('?>' . $_var_compiled);
+    print($_var_compiled);
 } else {
     print('Error compiling template module.');
 }

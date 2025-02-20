@@ -10,6 +10,10 @@ require_once('mtdb.base.php');
 class MTDatabasemysql extends MTDatabase {
 
     protected function connect($user, $password = '', $dbname = '', $host = '', $port = '', $sock = '') {
+        $this->connect_with_options($user, $password, $dbname, $host, $port, $sock);
+    }
+
+    protected function connect_with_options($user, $password = '', $dbname = '', $host = '', $port = '', $sock = '', $options = []) {
         if (extension_loaded('pdo') && extension_loaded('pdo_mysql')) {
             $this->pdo_enabled = true;
             $this->conn = ADONewConnection('pdo');
@@ -22,6 +26,21 @@ class MTDatabasemysql extends MTDatabase {
                 $dsn = "host=$host";
             }
             $dsn = "mysql:$dsn";
+            if (!empty($options['mysql_ssl'])) {
+                $pdo_params = [
+                    PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => !empty($options['mysql_ssl_verify_server_cert'])
+                ];
+                if (!empty($options['mysql_ssl_client_key'])) {
+                    $pdo_params[PDO::MYSQL_ATTR_SSL_KEY] = $options['mysql_ssl_client_key'];
+                }
+                if (!empty($options['mysql_ssl_client_cert'])) {
+                    $pdo_params[PDO::MYSQL_ATTR_SSL_CERT] = $options['mysql_ssl_client_cert'];
+                }
+                if (!empty($options['mysql_ssl_ca_file'])) {
+                    $pdo_params[PDO::MYSQL_ATTR_SSL_CA] = $options['mysql_ssl_ca_file'];
+                }
+                $this->conn->pdoParameters = $pdo_params;
+            }
             $this->conn->Connect($dsn, $user, $password, $dbname);
         } elseif (extension_loaded('mysqli')) {
             $this->conn = ADONewConnection('mysqli');
@@ -32,6 +51,17 @@ class MTDatabasemysql extends MTDatabase {
                 $dsn = "$host";
                 if (!empty($port))
                     $host .= ":$port";
+            }
+            if (!empty($options['mysql_ssl'])) {
+                if (!empty($options['mysql_ssl_client_key'])) {
+                    $this->conn->ssl_key = $options['mysql_ssl_client_key'];
+                }
+                if (!empty($options['mysql_ssl_client_cert'])) {
+                    $this->conn->ssl_cert = $options['mysql_ssl_client_cert'];
+                }
+                if (!empty($options['mysql_ssl_ca_file'])) {
+                    $this->conn->ssl_ca = $options['mysql_ssl_ca_file'];
+                }
             }
             $this->conn->Connect($dsn, $user, $password, $dbname);
         } else {

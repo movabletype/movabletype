@@ -48,14 +48,18 @@ abstract class MTDatabase {
     private $_cd_tag_cache;
 
     // Construction
-    public function __construct($user, $password = '', $dbname = '', $host = '', $port = '', $sock = '', $retry = 3, $retry_int = 1) {
+    public function __construct($user, $password = '', $dbname = '', $host = '', $port = '', $sock = '', $retry = 3, $retry_int = 1, $options = []) {
         global $ADODB_QUOTE_FIELDNAMES;
         $ADODB_QUOTE_FIELDNAMES = $this->_adodb_quote_fieldnames;
         $this->id = md5(uniqid('MTDatabase',true));
         $retry_cnt = 0;
         while ( ( empty($this->conn) || ( !empty($this->conn) && !$this->conn->IsConnected() ) ) && $retry_cnt++ < $retry ) {
             try {
-                $this->connect($user, $password, $dbname, $host, $port, $sock);
+                if (method_exists($this, 'connect_with_options')) {
+                    $this->connect_with_options($user, $password, $dbname, $host, $port, $sock, $options);
+                } else {
+                    $this->connect($user, $password, $dbname, $host, $port, $sock);
+                }
             } catch (Exception $e ) {
                 sleep( $retry_int );
             }
@@ -69,6 +73,7 @@ abstract class MTDatabase {
     }
 
     // Abstract method
+//    abstract protected function connect_with_options($user, $password = '', $dbname = '', $host = '', $port = '', $sock = '', $options = []);
     abstract protected function connect($user, $password = '', $dbname = '', $host = '', $port = '', $sock = '');
     abstract public function set_names($mt);
 
@@ -1217,13 +1222,20 @@ abstract class MTDatabase {
             $not_clause = preg_match('/\bNOT\b/i', $tag_arg);
 
             $include_private = 0;
-            $tag_array = tag_split($tag_arg);
+            if ( preg_match('/\b(AND|OR|NOT)\b|\(|\)/i', $tag_arg) ) {
+                $tag_array = preg_split('/\b(AND|OR|NOT)\b|\(|\)/i', $tag_arg, -1, PREG_SPLIT_NO_EMPTY);
+            } else {
+                # Only comma separated.
+                $tag_array = tag_split($tag_arg);
+                $tag_arg = implode(" or ", $tag_array);
+            }
             foreach ($tag_array as $tag) {
-                $tag_body = trim(preg_replace('/\bNOT\b/i','',$tag));
+                $tag_body = trim($tag);
                 if ($tag_body && (substr($tag_body,0,1) == '@')) {
                     $include_private = 1;
                 }
             }
+
             if (isset($blog_ctx_arg))
                 $tags = $this->fetch_entry_tags(array_merge($blog_ctx_arg, array('tag' => $tag_arg, 'include_private' => $include_private, 'class' => $args['class'])));
             else
