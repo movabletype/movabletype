@@ -16,6 +16,20 @@ sub upgrade_functions {
             priority      => 5,
             code          => \&_v9_boolean_meta,
         },
+        v9_list_field_indexes => {
+            version_limit => 8.9994,
+            priority      => 5,
+            updater       => {
+                type      => 'content_data',
+                label     => 'Migrating list field index data...',
+                condition => sub {
+                    my ($cd) = @_;
+                    my $removed = _remove_list_field_indexes($cd);
+                    return $removed;
+                },
+                code => sub { },    # do save only when regenerating list field indexes
+            },
+        },
     };
 }
 
@@ -53,6 +67,31 @@ sub _v9_boolean_meta {
         $row->vblob(undef);
         $row->save;
     }
+    return 1;
+}
+
+sub _remove_list_field_indexes {
+    my ($cd) = @_;
+
+    my @list_fields = MT->model('content_field')->load({
+        content_type_id => $cd->content_type_id,
+        type            => 'list',
+    });
+    return unless @list_fields;
+
+    my %list_field_ids = map { $_->id => 1 } @list_fields;
+    my $removed        = MT->model('content_field_index')->remove({
+        content_data_id  => $cd->id,
+        content_field_id => [keys %list_field_ids],
+    });
+    unless ($removed) {
+        return MT::Upgrade->error(MT::Upgrade->translate_escape(
+            "Error removing list field index record for content data # [_1]: [_2]...",
+            $cd->id,
+            MT->model('content_field_index')->errstr,
+        ));
+    }
+
     return 1;
 }
 
