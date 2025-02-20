@@ -10,7 +10,8 @@ use strict;
 use warnings;
 use base qw( MT::App );
 
-use MT::Util qw( encode_html encode_url perl_sha1_digest_hex );
+use MT::Util qw( encode_html encode_url );
+use MT::Util::Digest::SHA qw( sha1_hex );
 use MT::Util::Encode;
 use MT::App::Search::Common;
 
@@ -183,8 +184,15 @@ sub init_request {
     foreach my $param (qw( IncludeBlogs ExcludeBlogs )) {
         my $val = $app->param($param);
         next unless defined $val && ( $val ne '' );
-        return $app->errtrans( 'Invalid [_1] parameter.', $param )
-            if ( $val !~ m/^(\d+,?)+$/ && $val ne 'all' );
+        return $app->errtrans('Invalid [_1] parameter.', $param)
+            if (
+            $val ne 'all'
+
+            # Revise "!~ m/^(\d+,?)+$/" to the following for performance improvement
+            && (   substr($val, 0, 1) !~ /[0-9]/
+                || substr($val, -1, 1) !~ /[0-9]/
+                || $val                =~ /,,/
+                || $val                !~ /^[0-9,]+$/));
     }
 
     # invalid request if they are given Zero as blog_id
@@ -307,8 +315,8 @@ sub generate_cache_keys {
     $key       .= $app_key_param;
     $count_key .= $app_key_param;
 
-    $key       = perl_sha1_digest_hex($key);
-    $count_key = perl_sha1_digest_hex($count_key);
+    $key       = sha1_hex($key);
+    $count_key = sha1_hex($count_key);
 
     $app->{cache_keys} = {
         result       => $key,
