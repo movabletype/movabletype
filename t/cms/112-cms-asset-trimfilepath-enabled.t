@@ -8,6 +8,7 @@ use MT::Test::Env;
 
 our $test_env;
 BEGIN {
+    # If TrimFilePath is not set, TrimFilePath is enabled by default.
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
@@ -18,9 +19,6 @@ use File::Path;
 use MT::Test;
 use MT::Test::Image;
 use MT::Test::App;
-
-MT->config('TrimFilePath' => 1);
-is(MT->config('TrimFilePath') => 1, "TrimFilePath is set correctly");
 
 $test_env->prepare_fixture('db_data');
 
