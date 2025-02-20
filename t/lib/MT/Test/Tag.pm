@@ -114,6 +114,10 @@ sub run_perl_tests {
 
                 $got =~ s/^(\r\n|\r|\n|\s)+|(\r\n|\r|\n|\s)+\z//g if defined $got;
 
+                if ($ENV{MT_TEST_ENABLE_SSI_PHP_MOCK} && $blog->include_system eq 'php') {
+                    $got = MT::Test::PHP->run($got);
+                }
+
                 local $TODO = "may fail" if $expected_method =~ /^expected_todo/;
 
                 my $expected     = _filter_vars($block->$expected_method);
