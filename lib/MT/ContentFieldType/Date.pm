@@ -118,10 +118,6 @@ sub options_pre_load_handler {
 
 sub feed_value_handler {
     my ( $app, $field_data, $value ) = @_;
-
-    require MT::Util::Deprecated;
-    MT::Util::Deprecated::warning(since => '8.6.0');
-
     return MT::Util::format_ts( '%Y-%m-%d', $value, $app->blog );
 }
 

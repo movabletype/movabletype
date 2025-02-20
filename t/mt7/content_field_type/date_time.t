@@ -113,7 +113,6 @@ subtest 'options_pre_load_handler' => sub {
     }
 };
 
-# DEPRECATED
 subtest 'feed_value_handler' => sub {
     my $field_data = {
         id      => 1,

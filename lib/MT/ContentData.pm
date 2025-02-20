@@ -166,10 +166,6 @@ sub class_label_plural {
 
 sub to_hash {
     my $self = shift;
-
-    require MT::Util::Deprecated;
-    MT::Util::Deprecated::warning(since => '8.6.0');
-
     my $hash = $self->SUPER::to_hash();
 
     $hash->{'content_data.content_html'} = $self->_generate_content_html;
@@ -194,11 +190,7 @@ sub to_hash {
 }
 
 sub _generate_content_html {
-    my $self = shift;
-
-    require MT::Util::Deprecated;
-    MT::Util::Deprecated::warning(since => '8.6.0');
-
+    my $self           = shift;
     my $field_registry = MT->registry('content_field_types');
 
     my $html = '';

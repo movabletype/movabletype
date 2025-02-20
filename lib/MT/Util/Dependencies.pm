@@ -391,11 +391,10 @@ our %Requirements = (
         url        => "https://metacpan.org/pod/Time::HiRes",
     },
     "URI" => {
-        extlib  => 5.29,
-        label   => "This module is sometimes used to parse URI.",
-        tags    => ["HTTP", "URI"],
-        url     => "https://metacpan.org/pod/URI",
-        version => "5.12",
+        extlib => 5.29,
+        label  => "This module is sometimes used to parse URI.",
+        tags   => ["HTTP", "URI"],
+        url    => "https://metacpan.org/pod/URI",
     },
     "XML::LibXML::SAX" => {
         label   => "This module is optional; It is one of the modules required to import an exported site and such.",

@@ -591,10 +591,6 @@ sub _post_remove {
 
 sub generate_object_log_class {
     my $self = shift;
-
-    require MT::Util::Deprecated;
-    MT::Util::Deprecated::warning(since => '8.6.0');
-
     return unless $self->id;
 
     eval $self->_generate_object_log_code;
@@ -603,10 +599,6 @@ sub generate_object_log_class {
 
 sub _generate_object_log_code {
     my $self = shift;
-
-    require MT::Util::Deprecated;
-    MT::Util::Deprecated::warning(since => '8.6.0');
-
     my $id   = $self->id;
 
     return <<"__CODE__";
