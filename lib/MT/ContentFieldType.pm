@@ -51,7 +51,8 @@ sub _content_type_registry {
             '$Core::MT::ContentFieldType::ContentType::ss_validator',
         tag_handler =>
             '$Core::MT::ContentFieldType::ContentType::tag_handler',
-        feed_value_handler => '$Core::MT::ContentFieldType::ContentType::feed_value_handler',    # DEPRECATED
+        feed_value_handler =>
+            '$Core::MT::ContentFieldType::ContentType::feed_value_handler',
         preview_handler =>
             '$Core::MT::ContentFieldType::ContentType::preview_handler',
         search_result_handler =>
@@ -258,7 +259,8 @@ sub _date_time_registry {
             '$Core::MT::ContentFieldType::Common::field_value_handler_datetime',
         data_load_handler =>
             '$Core::MT::ContentFieldType::DateTime::data_load_handler',
-        feed_value_handler => '$Core::MT::ContentFieldType::DateTime::feed_value_handler',    # DEPRECATED
+        feed_value_handler =>
+            '$Core::MT::ContentFieldType::DateTime::feed_value_handler',
         preview_handler =>
             '$Core::MT::ContentFieldType::DateTime::preview_handler',
         ss_validator =>
@@ -306,7 +308,8 @@ sub _date_registry {
             '$Core::MT::ContentFieldType::Common::field_value_handler_datetime',
         data_load_handler =>
             '$Core::MT::ContentFieldType::Date::data_load_handler',
-        feed_value_handler => '$Core::MT::ContentFieldType::Date::feed_value_handler',    # DEPRECATED
+        feed_value_handler =>
+            '$Core::MT::ContentFieldType::Date::feed_value_handler',
         preview_handler =>
             '$Core::MT::ContentFieldType::Date::preview_handler',
         ss_validator =>
@@ -354,7 +357,8 @@ sub _time_registry {
             '$Core::MT::ContentFieldType::Common::field_value_handler_datetime',
         data_load_handler =>
             '$Core::MT::ContentFieldType::Time::data_load_handler',
-        feed_value_handler => '$Core::MT::ContentFieldType::Time::feed_value_handler',    # DEPRECATED
+        feed_value_handler =>
+            '$Core::MT::ContentFieldType::Time::feed_value_handler',
         preview_handler =>
             '$Core::MT::ContentFieldType::Time::preview_handler',
         ss_validator =>
@@ -402,7 +406,8 @@ sub _select_box_registry {
             '$Core::MT::ContentFieldType::SelectBox::ss_validator_multiple',
         tag_handler =>
             '$Core::MT::ContentFieldType::Common::tag_handler_multiple',
-        feed_value_handler => '$Core::MT::ContentFieldType::Common::feed_value_handler_multiple',    # DEPRECATED
+        feed_value_handler =>
+            '$Core::MT::ContentFieldType::Common::feed_value_handler_multiple',
         preview_handler =>
             '$Core::MT::ContentFieldType::Common::preview_handler_multiple',
         search_result_handler =>
@@ -452,7 +457,8 @@ sub _radio_button_registry {
             '$Core::MT::ContentFieldType::Common::ss_validator_values',
         tag_handler =>
             '$Core::MT::ContentFieldType::Common::tag_handler_multiple',
-        feed_value_handler => '$Core::MT::ContentFieldType::Common::feed_value_handler_multiple',    # DEPRECATED
+        feed_value_handler =>
+            '$Core::MT::ContentFieldType::Common::feed_value_handler_multiple',
         preview_handler =>
             '$Core::MT::ContentFieldType::Common::preview_handler_multiple',
         search_result_handler =>
@@ -501,7 +507,8 @@ sub _checkboxes_registry {
             '$Core::MT::ContentFieldType::Common::ss_validator_multiple',
         tag_handler =>
             '$Core::MT::ContentFieldType::Common::tag_handler_multiple',
-        feed_value_handler => '$Core::MT::ContentFieldType::Common::feed_value_handler_multiple',    # DEPRECATED
+        feed_value_handler =>
+            '$Core::MT::ContentFieldType::Common::feed_value_handler_multiple',
         preview_handler =>
             '$Core::MT::ContentFieldType::Common::preview_handler_multiple',
         search_result_handler =>
@@ -556,7 +563,8 @@ sub _asset_registry {
         ss_validator => '$Core::MT::ContentFieldType::Asset::ss_validator',
         tag_handler =>
             '$Core::MT::ContentFieldType::Common::tag_handler_asset',
-        feed_value_handler => '$Core::MT::ContentFieldType::Asset::feed_value_handler',    # DEPRECATED
+        feed_value_handler =>
+            '$Core::MT::ContentFieldType::Asset::feed_value_handler',
         preview_handler =>
             '$Core::MT::ContentFieldType::Asset::preview_handler',
         search_result_handler =>
@@ -674,7 +682,8 @@ sub _audio_registry {
         ss_validator => '$Core::MT::ContentFieldType::Asset::ss_validator',
         tag_handler =>
             '$Core::MT::ContentFieldType::Common::tag_handler_asset',
-        feed_value_handler => '$Core::MT::ContentFieldType::Asset::feed_value_handler',    # DEPRECATED
+        feed_value_handler =>
+            '$Core::MT::ContentFieldType::Asset::feed_value_handler',
         preview_handler =>
             '$Core::MT::ContentFieldType::Asset::preview_handler',
         search_result_handler =>
@@ -790,7 +799,8 @@ sub _video_registry {
         ss_validator => '$Core::MT::ContentFieldType::Asset::ss_validator',
         tag_handler =>
             '$Core::MT::ContentFieldType::Common::tag_handler_asset',
-        feed_value_handler => '$Core::MT::ContentFieldType::Asset::feed_value_handler',    # DEPRECATED
+        feed_value_handler =>
+            '$Core::MT::ContentFieldType::Asset::feed_value_handler',
         preview_handler =>
             '$Core::MT::ContentFieldType::Asset::preview_handler',
         search_result_handler =>
@@ -907,7 +917,8 @@ sub _image_registry {
         ss_validator => '$Core::MT::ContentFieldType::Asset::ss_validator',
         tag_handler =>
             '$Core::MT::ContentFieldType::Common::tag_handler_asset',
-        feed_value_handler => '$Core::MT::ContentFieldType::Asset::feed_value_handler',    # DEPRECATED
+        feed_value_handler =>
+            '$Core::MT::ContentFieldType::Asset::feed_value_handler',
         preview_handler =>
             '$Core::MT::ContentFieldType::Asset::preview_handler',
         search_result_handler =>
@@ -1066,7 +1077,8 @@ sub _categories_registry {
         ss_validator =>
             '$Core::MT::ContentFieldType::Categories::ss_validator',
         tag_handler => '$Core::MT::ContentFieldType::Categories::tag_handler',
-        feed_value_handler => '$Core::MT::ContentFieldType::Categories::feed_value_handler',    # DEPRECATED
+        feed_value_handler =>
+            '$Core::MT::ContentFieldType::Categories::feed_value_handler',
         preview_handler =>
             '$Core::MT::ContentFieldType::Categories::preview_handler',
         search_result_handler =>
@@ -1128,7 +1140,8 @@ sub _tags_registry {
             '$Core::MT::ContentFieldType::Tags::field_html_params',
         field_value_handler =>
             '$Core::MT::ContentFieldType::Tags::field_value_handler',
-        feed_value_handler => '$Core::MT::ContentFieldType::Tags::feed_value_handler',    # DEPRECATED
+        feed_value_handler =>
+            '$Core::MT::ContentFieldType::Tags::feed_value_handler',
         preview_handler =>
             '$Core::MT::ContentFieldType::Tags::preview_handler',
         search_result_handler =>
@@ -1181,7 +1194,8 @@ sub _list_registry {
         field_html_params =>
             '$Core::MT::ContentFieldType::List::field_html_params',
         tag_handler => '$Core::MT::ContentFieldType::List::tag_handler',
-        feed_value_handler => '$Core::MT::ContentFieldType::List::feed_value_handler',    # DEPRECATED
+        feed_value_handler =>
+            '$Core::MT::ContentFieldType::List::feed_value_handler',
         preview_handler =>
             '$Core::MT::ContentFieldType::List::preview_handler',
         search_result_handler =>
@@ -1222,7 +1236,8 @@ sub _table_registry {
         field_html_params =>
             '$Core::MT::ContentFieldType::Table::field_html_params',
         tag_handler => '$Core::MT::ContentFieldType::Table::tag_handler',
-        feed_value_handler => '$Core::MT::ContentFieldType::Table::feed_value_handler',    # DEPRECATED
+        feed_value_handler =>
+            '$Core::MT::ContentFieldType::Table::feed_value_handler',
         preview_handler =>
             '$Core::MT::ContentFieldType::Table::preview_handler',
         search_result_handler =>
@@ -1267,7 +1282,8 @@ sub _text_label_registry {
         field_html_params =>
           '$Core::MT::ContentFieldType::TextLabel::field_html_params',
         tag_handler => '$Core::MT::ContentFieldType::TextLabel::tag_handler',
-        feed_value_handler => '$Core::MT::ContentFieldType::TextLabel::feed_value_handler',    # DEPRECATED
+        feed_value_handler =>
+          '$Core::MT::ContentFieldType::TextLabel::feed_value_handler',
         preview_handler =>
           '$Core::MT::ContentFieldType::TextLabel::preview_handler',
         options_html => 'content_field_type_options/text_label.tmpl',

@@ -12,7 +12,6 @@ sub check_all {
 
     $class->check_mt($param);
     $class->check_perl($param);
-    $class->check_os_version($param);
     $class->check_memcached($param);
     $class->check_server_model($param);
     $class->check_dependencies($param);
@@ -25,6 +24,7 @@ sub check_mt {
     require MT;
     $param->{version}                   = MT->version_id;
     $param->{mt_home}                   = $ENV{MT_HOME};
+    $param->{os}                        = $^O;
     $param->{current_working_directory} = _mt_getcwd();
 
     $param;
@@ -55,36 +55,6 @@ sub check_perl {
     $param->{perl_include_path} = [grep { !$seen{$_}++ } @INC];
 
     $param;
-}
-
-sub check_os_version {
-    my ($class, $param) = @_;
-    if ($^O eq 'darwin') {
-        my @versions = (`sw_vers -ProductVersion`, `sw_vers -BuildVersion`);
-        return $param->{os} = join " ", "macOS", map { chomp; $_ } @versions;
-    } elsif ($^O eq 'MSWin32') {
-        if (eval { require Win32; 1; }) {
-            my $name = Win32::GetOSDisplayName();
-            my ($build_version) = $name =~ /Build (\d+)/;
-            $name =~ s/Windows 10/Windows 11/ if $build_version and $build_version >= 22000;
-            return $param->{os} = $name;
-        }
-    } else {
-        if (-f '/etc/os-release' and open my $fh, '<', '/etc/os-release') {
-            my %release;
-            while(<$fh>) {
-                chomp;
-                next unless /=/;
-                my ($key, $value) = split /=/, $_, 2;
-                $value =~ s/^"//;
-                $value =~ s/"$//;
-                $release{$key} = $value;
-            }
-            return $param->{os} = join " ", $release{NAME}, $release{VERSION} || $release{VERSION_ID};
-        }
-    }
-    require Config;
-    return $param->{os} = "Unknown (" . (join " ", $Config::Config{osname}, $Config::Config{osvers}) . ")";
 }
 
 sub check_memcached {

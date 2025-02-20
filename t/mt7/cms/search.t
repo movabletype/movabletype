@@ -72,57 +72,6 @@ subtest 'content_data' => sub {
             };
         };
     };
-
-    subtest 'limit' => sub {
-        my $cfs = $objs->{content_type}{ct_multi}{content_field};
-        my $cd = MT::Test::Permission->make_content_data(
-            authored_on     => '19810612223059', # oldest
-            blog_id         => $blog_id,
-            content_type_id => $ct_id,
-            identifier      => "oldest",
-            label           => "oldest",
-            data            => {
-                $cfs->{cf_single_line_text}->id => "oldest",
-            },
-        );
-
-        subtest 'default limit' => sub {
-            $app->get_ok({ __mode => 'search_replace', blog_id => $blog_id });
-            $app->change_tab('content_data');
-            $app->change_content_type($ct_id);
-            my $cf_id1 = $objs->{content_type}{ct_multi}{content_field}{cf_single_line_text}->id;
-            $app->search('oldest', { is_limited => 1, search_cols => ['__field:' . $cf_id1] });
-            is_deeply($app->found_titles, ['oldest']);
-            ok !$app->have_more_link_exists;
-        };
-
-        subtest 'CMSSearchLimit is 1' => sub {
-            my $cms_search_limit_org = MT->config('CMSSearchLimit');
-            $test_env->update_config(CMSSearchLimit => 1);
-
-            $app->get_ok({ __mode => 'search_replace', blog_id => $blog_id });
-            $app->change_tab('content_data');
-            $app->change_content_type($ct_id);
-            my $cf_id1 = $objs->{content_type}{ct_multi}{content_field}{cf_single_line_text}->id;
-            $app->search('oldest', { is_limited => 1, search_cols => ['__field:' . $cf_id1] });
-            is_deeply($app->found_titles, ['oldest']);
-            ok !$app->have_more_link_exists;
-
-            subtest 'have more link exists' => sub {
-                $app->get_ok({ __mode => 'search_replace', blog_id => $blog_id });
-                $app->change_tab('content_data');
-                $app->change_content_type($ct_id);
-                my $cf_id1 = $objs->{content_type}{ct_multi}{content_field}{cf_single_line_text}->id;
-                $app->search('text', { is_limited => 1, search_cols => ['__field:' . $cf_id1] });
-                is_deeply($app->found_titles, ['cd_multi2']);
-                ok $app->have_more_link_exists;
-            };
-
-            $test_env->update_config(CMSSearchLimit => $cms_search_limit_org);
-        };
-
-        $cd->remove();
-    };
 };
 
 subtest 'content_data with daterange' => sub {

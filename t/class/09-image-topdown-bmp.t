@@ -15,12 +15,6 @@ use MT::Image;
 use MT::Test::Image;
 use Image::Size;
 
-BEGIN {
-    # Actually both GD and NetPBM supports BMP but MT::Image:: drivrers for them don't recognize it
-    my $driver = MT->config->ImageDriver;
-    plan skip_all => "$driver (for MT) does not support BMP" if $driver =~ /GD|NetPBM/;
-}
-
 my ($guard, $img_file) = MT::Test::Image->tempfile(
     DIR     => $test_env->root,
     SUFFIX  => ".bmp",
