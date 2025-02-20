@@ -711,7 +711,7 @@ sub _hdlr_if_archive_type {
     return 0 unless $at && $cat;
     return 0 if lc $at ne lc $cat;
 
-    if ( $at =~ /ContentType/ ) {
+    if ( $at =~ /ContentType/i ) {
         if ( defined $args->{content_type} && $args->{content_type} ne '' ) {
             my $content_type = $ctx->stash('content_type');
             return defined $content_type
