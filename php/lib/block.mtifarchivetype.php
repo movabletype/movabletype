@@ -31,14 +31,6 @@ function smarty_block_mtifarchivetype($args, $content, &$ctx, &$repeat) {
                 else {
                     $same = false;
                 }
-            } else {
-              $repeat = false;
-              return $ctx->error(
-                $ctx->mt->translate(
-                  "You used an [_1] tag without a valid [_2] attribute.",
-                  array("<MTIfArchiveType>", "content_type")
-                )
-              );
             }
         }
         return $ctx->_hdlr_if($args, $content, $ctx, $repeat, $same);

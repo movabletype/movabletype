@@ -719,14 +719,6 @@ sub _hdlr_if_archive_type {
                 || $args->{content_type} eq $content_type->id
                 || $args->{content_type} eq $content_type->name );
         }
-        else {
-            return $ctx->error(
-                MT->translate(
-                    "You used an [_1] tag without a valid [_2] attribute.",
-                    "<MTIfArchiveType>", "content_type"
-                )
-            );
-        }
     }
     1;
 }
