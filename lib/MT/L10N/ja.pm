@@ -2225,7 +2225,7 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/Filter.pm
 	'"editable_terms" and "editable_filters" cannot be specified at the same time.' => '"editable_terms"と"editable_filters"は、同時に指定できません。',
 	'Invalid filter type [_1]:[_2]' => '不正なフィルタタイプです。[_1]:[_2]',
-	'Invalid sort key [_1]:[_2]' => '不正ななソートキーです。[_1]:[_2]',
+	'Invalid sort key [_1]:[_2]' => '不正なソートキーです。[_1]:[_2]',
 
 ## lib/MT/Group.pm
 	'Active Groups' => '有効なグループ',
