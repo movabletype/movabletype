@@ -2135,24 +2135,14 @@ sub login {
         );
         return $app->error($message);
     }
-    elsif ( $res == MT::Auth::INVALID_PASSWORD() ) {
+    elsif ($res == MT::Auth::INVALID_PASSWORD()
+        || $res == MT::Auth::SESSION_EXPIRED() )
+    {
+
         # Login invalid (password error, etc...)
         $app->log(
             {   message => $app->translate(
                     "Failed login attempt by user '[_1]'", $user
-                ),
-                level    => MT::Log::SECURITY(),
-                category => 'login_user',
-                class    => 'author',
-            }
-        );
-        return $app->error( $app->translate('Invalid login.') );
-    }
-    elsif ( $res == MT::Auth::SESSION_EXPIRED() ) {
-        # Session expired
-        $app->log(
-            {   message => $app->translate(
-                    "Failed login attempt by user '[_1]' (probably session expired)", $user
                 ),
                 level    => MT::Log::SECURITY(),
                 category => 'login_user',

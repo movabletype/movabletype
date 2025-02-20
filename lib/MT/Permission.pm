@@ -149,11 +149,13 @@ sub global_perms {
     sub _all_perms {
         my ($scope) = @_;
         my @perms;
-        foreach my $p (keys %{ __PACKAGE__->perms_from_registry() }) {
-            my ($s, $name) = split /\./, $p;
-            next unless $s && $name;
-            next unless $s eq $scope;
-            push @perms, "'$name'";
+        if ( my $perms = __PACKAGE__->perms_from_registry() ) {
+            foreach my $p (%$perms) {
+                my ( $s, $name ) = split /\./, $p;
+                next unless $s && $name;
+                next unless $s eq $scope;
+                push @perms, "'$name'";
+            }
         }
         return join ',', sort @perms;
     }
@@ -252,31 +254,15 @@ sub global_perms {
         $perms->$column( "'" . join( "','", @permissions ) . "'" );
     }
 
-    sub clear_these_permissions {
-        my $perms = shift;
-        __PACKAGE__->_clear_these_list($perms, 'permissions', @_);
-    }
-
-    sub clear_these_restrictions {
-        my $perms = shift;
-        __PACKAGE__->_clear_these_list($perms, 'restrictions', @_);
-    }
-
-    sub _clear_these_list {
-        my $pkg   = shift;
-        my $perms = shift;
-        my ($column, @perms) = @_;
-        my $val = $perms->$column;
-        return unless $val;
+    sub remove_restrictions {
+        my $perms    = shift;
+        my (@perms)  = @_;
+        my $cur_rest = $perms->restrictions;
+        return unless $cur_rest;
         for my $perm_name (@perms) {
-            $val =~ s/'$perm_name',?//i;
+            $cur_rest =~ s/'$perm_name',?//i;
         }
-        $perms->$column($val);
-    }
-
-    {
-        no warnings 'once';
-        *remove_restrictions = *clear_these_restrictions;
+        $perms->restrictions($cur_rest);
     }
 
     # Clears all permissions or those in a particular set
@@ -608,7 +594,7 @@ sub can_upload {
             $perms->set_these_permissions('upload');
         }
         else {
-            $perms->clear_these_permissions('upload');
+            $perms->clear_permissions('upload');
         }
     }
     return $perms->can_do('upload');
@@ -1087,12 +1073,6 @@ Adds C<$more_perms> to C<$perms>.
 Adds permissions (enabling them) to the existing permission object.
 
     $perms->set_these_permissions('view_blog_log', 'create_post');
-
-=head2 $perms->clear_these_permissions(@permission_names)
-
-Clears permissions (disabling them) from the existing permission object.
-
-    $perms->clear_these_permissions('view_blog_log', 'create_post');
 
 =head2 MT::Permission->rebuild($assoc)
 

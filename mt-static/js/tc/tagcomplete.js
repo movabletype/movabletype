@@ -101,7 +101,7 @@ TC.TagComplete.prototype.keyDown = function( evt )
         this.currentWord = '';
         this.clearCompletions();
     }
-    else if ( evt.keyCode == 40 || evt.isComposing || evt.keyCode == 229 ) {  // down arrow key
+    else if ( evt.keyCode == 40 ) {  // down arrow key
         if (this.hasCompletions) {
             this.selectCompletion( 1 );
         } else {

@@ -747,10 +747,6 @@ sub _validate_content_field_type_options {
 
 sub select_list_content_type {
     my ($app) = @_;
-
-    require MT::Util::Deprecated;
-    MT::Util::Deprecated::warning(since => '8.6.0');
-
     my $cfg   = $app->config;
     my $param = {};
 
@@ -770,10 +766,6 @@ sub select_list_content_type {
 
 sub select_edit_content_type {
     my ($app) = @_;
-
-    require MT::Util::Deprecated;
-    MT::Util::Deprecated::warning(since => '8.6.0');
-
     my $cfg   = $app->config;
     my $param = {};
 

@@ -30,10 +30,6 @@ sub tag_handler {
 
 sub feed_value_handler {
     my ( $app, $field_data, $values ) = @_;
-
-    require MT::Util::Deprecated;
-    MT::Util::Deprecated::warning(since => '8.6.0');
-
     return '';
 }
 

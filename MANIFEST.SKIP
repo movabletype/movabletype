@@ -258,7 +258,6 @@ themes/broken_blog_theme
 
 ^schemas/
 ^scss/
-^src/
 \bknown-issues
 ^t/
 .*/t/
