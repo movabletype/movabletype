@@ -522,7 +522,7 @@ sub _parse_search_content_types {
     return
         unless defined $search_content_types && $search_content_types ne '';
 
-    my $can_search_by_id = $search_content_types =~ /^(?:[0-9]+|AND|OR|NOT|[ \(\)])+$/i ? 1 : 0;
+    my $can_search_by_id = $search_content_types =~ /^(?:[0-9]|AND|OR|NOT|[ \(\)])+$/i ? 1 : 0;
 
     my $lucene_struct
         = eval { Lucene::QueryParser::parse_query($search_content_types) };
