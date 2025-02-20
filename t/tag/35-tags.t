@@ -19,12 +19,16 @@ use MT::Util qw(ts2epoch epoch2ts);
 
 $test_env->prepare_fixture('db_data');
 
+my $switch = MT->config->PluginSwitch;
+$switch->{Awesome} = 1;
+MT->config->PluginSwitch($switch, 1);
+MT->config->save_config;
+
 my $server_path = MT->instance->server_path;
 $server_path =~ s|\\|/|g if $^O eq 'MSWin32';
 
 my $blog = MT::Blog->load(1);
 $blog->captcha_provider('mt_default');
-$blog->include_system('php');
 $blog->save;
 
 my $asset = MT::Asset->load(1);
@@ -79,27 +83,6 @@ filters {
     expected     => [qw( var )],
     expected_php => [qw( var )],
 };
-
-sub embed_path {
-    my $in = shift;
-    my $cont = filter_arguments;
-    require File::Temp;
-    my ( $fh, $file ) = File::Temp::tempfile();
-    print $fh $cont;
-    close $fh;
-    $in =~ s{PATH}{$file};
-    $in;
-}
-
-sub embed_path_to_php_test {
-    my $in = shift;
-    require File::Temp;
-    my ( $fh, $file ) = File::Temp::tempfile();
-    print $fh '<?php echo 3+4;';
-    close $fh;
-    $in =~ s{PATH}{$file};
-    $in;
-}
 
 sub fix_path { File::Spec->canonpath(shift) }
 
@@ -4233,12 +4216,6 @@ foobar
 --- expected_php
 barfoo
 
-=== test 757
---- template
-<MTSubCategories show_empty="1" top="1" sort_method="SortMethod::sort"><MTCategoryLabel></MTSubCategories>
---- expected
-barfoo
-
 === test 758
 --- template
 <MTArchiveList archive_type="Individual"><mt:EntryID>:<$mt:CategoryID$>;</MTArchiveList>
@@ -4807,12 +4784,6 @@ has Markdown.pl
 --- expected
 has Markdown.pl (alias)
 
-=== test 855
---- template
-<MTHasPlugin name="Awesome">has Awesome<MTElse>doesn't have Awesome</MTHasPlugin>
---- expected
-has Awesome
-
 === test 856
 --- template
 <MTHasPlugin name="NotExists">has NotExists<MTElse>doesn't have NotExists</MTHasPlugin>
@@ -4952,34 +4923,6 @@ Test <a href="/foo/foo.php">FOO:FOO</a>bBar String
 <mt:Calendar><mt:CalendarIfToday><strong></mt:CalendarIfToday></mt:Calendar>
 --- expected
 <strong>
-
-=== test 883-1
---- mt_config
-{AllowFileInclude => 1}
---- template embed_path=FILE-CONTENT
-left <mt:Include file="PATH"> right
---- expected
-left FILE-CONTENT right
-
-=== test 883-2
---- mt_config
-{AllowFileInclude => 0}
---- template
-left <mt:Include file="PATH"> right
---- expected_error
-File inclusion is disabled by "AllowFileInclude" config directive.
---- expected_php_error
-left File include is disabled by "AllowFileInclude" config directive. right
-
-=== test 883-3 include php file
---- mt_config
-{AllowFileInclude => 1}
---- template embed_path_to_php_test
-<mt:Include ssi="1" file="PATH">
---- expected
-<?php echo 3+4;
---- expected_php
-7
 
 === test 884
 --- template

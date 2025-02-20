@@ -1,4 +1,0 @@
-id: IllegalObjectType
-object_types:
-    asset.image:
-        enabled_image_protection: integer meta

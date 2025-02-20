@@ -13,17 +13,16 @@ concurrency:
   cancel-in-progress: true
 env:
   MT_TEST_IGNORE_FIXTURE: '0'
-  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 jobs:
-  # Perl 5.38 / PHP 8.2 / MySQL 8.0
-  fedora39:
-    env:
-      TEST_IMAGE_NAME: fedora39
+  test_job1:
     if: ${{ always() }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        test:
+        config:
+          - {image: fedora39} # Perl 5.38 / PHP 8.2 / MySQL 8.0
+          - {image: centos7}  # Perl 5.16 / PHP 7.1 / MariaDB 5.5
+        test: 
           - "t/*.t"
           - "t/mt7/[^t]*"
           - "t/mt7/t*"
@@ -32,28 +31,31 @@ jobs:
           - "t/data_api/"
           - "t/tag/"
           - "plugins/*/t"
-          - selenium
           - php
+        include:
+          - config: {image: chromiumdriver}
+            test: selenium
     steps:
       - name: checkout
         uses: actions/checkout@v4.1.0
-      - name: docker pull
-        uses: ./.github/actions/docker-mt-test
+      - name: docker login
+        uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567
         with:
-          tag: ${{ env.TEST_IMAGE_NAME }}
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
       - name: test
-        if: ${{ (matrix.test != 'php' && matrix.test != 'selenium') }}
-        run: docker run -t -v $PWD:/mt -w /mt ghcr.io/movabletype/movabletype/test:$TEST_IMAGE_NAME bash -c "prove -lr -j4 -PMySQLPool=MT::Test::Env -It/lib ${{ matrix.test }}"
+        if: ${{ matrix.test != 'php' && matrix.test != 'selenium' }}
+        run: docker run -t -v $PWD:/mt -w /mt ghcr.io/movabletype/movabletype/test:${{ matrix.config.image }} bash -c "prove -lr -j4 -PMySQLPool=MT::Test::Env -It/lib ${{ matrix.test }}"
+      - name: test php
+        if: ${{ matrix.test == 'php' }}
+        run: docker run -t -v $PWD:/mt -w /mt ghcr.io/movabletype/movabletype/test:${{ matrix.config.image }} bash -c "phpunit && make test-php-lint"
       - name: test selenium
         if: ${{ matrix.test == 'selenium' }}
-        run: docker run -t -v $PWD:/mt -w /mt ghcr.io/movabletype/movabletype/test:chromiumdriver bash -c "MT_TEST_SELENIUM_MAX_RETRY=5 prove -lr -j1 -PMySQLPool=MT::Test::Env -It/lib t/selenium"
-      - name: test php
-        if: ${{ matrix.test == 'php' }}
-        run: docker run -t -v $PWD:/mt -w /mt ghcr.io/movabletype/movabletype/test:$TEST_IMAGE_NAME bash -c "phpunit && make test-php-lint"
+        run: docker run -t -v $PWD:/mt -w /mt ghcr.io/movabletype/movabletype/test:${{ matrix.config.image }} bash -c "MT_TEST_SELENIUM_MAX_RETRY=5 prove -lr -j1 -PMySQLPool=MT::Test::Env -It/lib t/selenium"
 
-  # Perl 5.38 / PHP 8.3 / MySQL 8.0
-  fedora40:
-    needs: [fedora39]
+  test_job2:
+    needs: [test_job1]
     if: >-
       ${{
         github.event_name == 'schedule'
@@ -63,11 +65,13 @@ jobs:
         || contains(github.ref_name, 'cron')
       }}
     runs-on: ubuntu-latest
-    env:
-      TEST_IMAGE_NAME: fedora40
     strategy:
       matrix:
-        test:
+        config:
+          - {image: cloud7}
+          - {image: fedora41, mt_test_env: 'MT_TEST_ADMIN_THEME_ID=0'}   # Perl 5.40 / PHP 8.3 / MySQL 8.4
+          - {image: buster,   mt_test_env: 'MT_TEST_RUN_APP_AS_CGI=1'}   # Perl 5.28.0 / PHP 7.3 / MariaDB 10.3
+        test: 
           - "t/*.t"
           - "t/mt7/[^t]*"
           - "t/mt7/t*"
@@ -77,284 +81,84 @@ jobs:
           - "t/tag/"
           - "plugins/*/t"
           - php
+        include:
+          - config: {image: chromiumdriver}
+            test: selenium
+          - config: {image: buster}
+            test: xt
     steps:
       - name: checkout
         uses: actions/checkout@v4.1.0
-      - name: docker pull
-        uses: ./.github/actions/docker-mt-test
+      - name: docker login
+        uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567
         with:
-          tag: ${{ env.TEST_IMAGE_NAME }}
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
       - name: test
-        if: ${{ matrix.test != 'php' }}
-        run: docker run -t -v $PWD:/mt -w /mt ghcr.io/movabletype/movabletype/test:$TEST_IMAGE_NAME bash -c "prove -lr -j4 -PMySQLPool=MT::Test::Env -It/lib ${{ matrix.test }}"
+        if: ${{ matrix.test != 'php' && matrix.test != 'selenium' && matrix.test != 'xt' }}
+        run: docker run -t -v $PWD:/mt -w /mt ghcr.io/movabletype/movabletype/test:${{ matrix.config.image }} bash -c "${{ matrix.config.mt_test_env }} prove -lr -j4 -PMySQLPool=MT::Test::Env -It/lib ${{ matrix.test }}"
       - name: test php
         if: ${{ matrix.test == 'php' }}
-        run: docker run -t -v $PWD:/mt -w /mt ghcr.io/movabletype/movabletype/test:$TEST_IMAGE_NAME bash -c "phpunit && make test-php-lint"
-
-  # Perl 5.34 / PHP 8.0 / MySQL 8.0
-  fedora35:
-    needs: [fedora39]
-    if: >-
-      ${{
-        github.event_name == 'schedule'
-        || startsWith(github.ref_name, 'support-')
-        || startsWith(github.ref_name, 'release-')
-        || (github.ref_name == 'develop')
-        || contains(github.ref_name, 'cron')
-      }}
-    runs-on: ubuntu-latest
-    env:
-      TEST_IMAGE_NAME: fedora35
-    strategy:
-      matrix:
-        test:
-          - "t/*.t"
-          - "t/mt7/[^t]*"
-          - "t/mt7/t*"
-          - "t/admin_theme_id/ t/app/ t/class/ t/cms/ t/model/ t/mt_object/ t/object_driver/ t/task/ t/template/ t/tools t/util t/upgrade"
-          - "t/cms_permission/"
-          - "t/data_api/"
-          - "t/tag/"
-          - "plugins/*/t"
-          - php
-    steps:
-      - name: checkout
-        uses: actions/checkout@v4.1.0
-      - name: docker pull
-        uses: ./.github/actions/docker-mt-test
-        with:
-          tag: ${{ env.TEST_IMAGE_NAME }}
-      - name: test
-        if: ${{ matrix.test != 'php' }}
-        run: docker run -t -v $PWD:/mt -w /mt ghcr.io/movabletype/movabletype/test:$TEST_IMAGE_NAME bash -c "MT_TEST_RUN_APP_AS_CGI=1 prove -lr -j4 -PMySQLPool=MT::Test::Env -It/lib ${{ matrix.test }}"
-      - name: test php
-        if: ${{ matrix.test == 'php' }}
-        run: docker run -t -v $PWD:/mt -w /mt ghcr.io/movabletype/movabletype/test:$TEST_IMAGE_NAME bash -c "phpunit && make test-php-lint"
-
-  # Perl 5.36 / PHP 8.1 / MySQL 8.0
-  fedora37:
-    needs: [fedora39]
-    if: >-
-      ${{
-        github.event_name == 'schedule'
-        || startsWith(github.ref_name, 'support-')
-        || startsWith(github.ref_name, 'release-')
-        || (github.ref_name == 'develop')
-        || contains(github.ref_name, 'cron')
-      }}
-    runs-on: ubuntu-latest
-    env:
-      TEST_IMAGE_NAME: fedora37
-    strategy:
-      matrix:
-        test:
-          - "t/*.t"
-          - "t/mt7/[^t]*"
-          - "t/mt7/t*"
-          - "t/admin_theme_id/ t/app/ t/class/ t/cms/ t/model/ t/mt_object/ t/object_driver/ t/task/ t/template/ t/tools t/util t/upgrade"
-          - "t/cms_permission/"
-          - "t/data_api/"
-          - "t/tag/"
-          - "plugins/*/t"
-          - php
-
-    steps:
-      - name: checkout
-        uses: actions/checkout@v4.1.0
-      - name: docker pull
-        uses: ./.github/actions/docker-mt-test
-        with:
-          tag: ${{ env.TEST_IMAGE_NAME }}
-      - name: test
-        if: ${{ matrix.test != 'php' }}
-        run: docker run -t -v $PWD:/mt -w /mt ghcr.io/movabletype/movabletype/test:$TEST_IMAGE_NAME bash -c "MT_TEST_BUILDER=MT::Builder::Fast prove -lr -j4 -PMySQLPool=MT::Test::Env -It/lib ${{ matrix.test }}"
-      - name: test php
-        if: ${{ matrix.test == 'php' }}
-        run: docker run -t -v $PWD:/mt -w /mt ghcr.io/movabletype/movabletype/test:$TEST_IMAGE_NAME bash -c "phpunit && make test-php-lint"
-
-  # Perl 5.16 / PHP 7.1 / MariaDB 5.5
-  centos7:
-    needs: [fedora39]
-    if: >-
-      ${{
-        github.event_name == 'schedule'
-        || startsWith(github.ref_name, 'support-')
-        || startsWith(github.ref_name, 'release-')
-        || (github.ref_name == 'develop')
-        || contains(github.ref_name, 'cron')
-      }}
-    runs-on: ubuntu-latest
-    env:
-      TEST_IMAGE_NAME: centos7
-    strategy:
-      matrix:
-        test:
-          - "t/*.t"
-          - "t/mt7/[^t]*"
-          - "t/mt7/t*"
-          - "t/admin_theme_id/ t/app/ t/class/ t/cms/ t/model/ t/mt_object/ t/object_driver/ t/task/ t/template/ t/tools t/util t/upgrade"
-          - "t/cms_permission/"
-          - "t/data_api/"
-          - "t/tag/"
-          - "plugins/*/t"
-    steps:
-      - name: checkout
-        uses: actions/checkout@v4.1.0
-      - name: docker pull
-        uses: ./.github/actions/docker-mt-test
-        with:
-          tag: ${{ env.TEST_IMAGE_NAME }}
-      - name: test
-        run: docker run -t -v $PWD:/mt -w /mt ghcr.io/movabletype/movabletype/test:$TEST_IMAGE_NAME bash -c "MT_TEST_DISABLE_OBJECT_CACHE=1 prove -lr -j4 -PMySQLPool=MT::Test::Env -It/lib ${{ matrix.test }}"
-
-  # Perl 5.32 / PHP 7.4 / MariaDB 10.5
-  bullseye:
-    needs: [fedora39]
-    if: >-
-      ${{
-        github.event_name == 'schedule'
-        || startsWith(github.ref_name, 'support-')
-        || startsWith(github.ref_name, 'release-')
-        || (github.ref_name == 'develop')
-        || contains(github.ref_name, 'cron')
-      }}
-    runs-on: ubuntu-latest
-    env:
-      TEST_IMAGE_NAME: bullseye
-    strategy:
-      matrix:
-        test:
-          - "t/*.t"
-          - "t/mt7/[^t]*"
-          - "t/mt7/t*"
-          - "t/admin_theme_id/ t/app/ t/class/ t/cms/ t/model/ t/mt_object/ t/object_driver/ t/task/ t/template/ t/tools t/util t/upgrade"
-          - "t/cms_permission/"
-          - "t/data_api/"
-          - "t/tag/"
-          - "plugins/*/t"
-          - php
-    steps:
-      - name: checkout
-        uses: actions/checkout@v4.1.0
-      - name: docker pull
-        uses: ./.github/actions/docker-mt-test
-        with:
-          tag: ${{ env.TEST_IMAGE_NAME }}
-      - name: test
-        if: ${{ matrix.test != 'php' }}
-        run: docker run -t -v $PWD:/mt -w /mt ghcr.io/movabletype/movabletype/test:$TEST_IMAGE_NAME bash -c "MT_TEST_ADMIN_THEME_ID=0 prove -lr -j4 -PMySQLPool=MT::Test::Env -It/lib ${{ matrix.test }}"
-      - name: test php
-        if: ${{ matrix.test == 'php' }}
-        run: docker run -t -v $PWD:/mt -w /mt ghcr.io/movabletype/movabletype/test:$TEST_IMAGE_NAME bash -c "phpunit && make test-php-lint"
-
-  # Perl 5.28.0 / PHP 7.3 / MariaDB 10.3
-  buster:
-    needs: [fedora39]
-    if: >-
-      ${{
-        github.event_name == 'schedule'
-        || startsWith(github.ref_name, 'support-')
-        || startsWith(github.ref_name, 'release-')
-        || (github.ref_name == 'develop')
-        || contains(github.ref_name, 'cron')
-      }}
-    runs-on: ubuntu-latest
-    env:
-      TEST_IMAGE_NAME: buster
-    strategy:
-      matrix:
-        test:
-          - "t/*.t"
-          - "t/mt7/[^t]*"
-          - "t/mt7/t*"
-          - "t/admin_theme_id/ t/app/ t/class/ t/cms/ t/model/ t/mt_object/ t/object_driver/ t/task/ t/template/ t/tools t/util t/upgrade"
-          - "t/cms_permission/"
-          - "t/data_api/"
-          - "t/tag/"
-          - "plugins/*/t"
-          - php
-    steps:
-      - name: checkout
-        uses: actions/checkout@v4.1.0
-      - name: docker pull
-        uses: ./.github/actions/docker-mt-test
-        with:
-          tag: ${{ env.TEST_IMAGE_NAME }}
-      - name: test
-        if: ${{ matrix.test != 'php' }}
-        run: docker run -t -v $PWD:/mt -w /mt ghcr.io/movabletype/movabletype/test:$TEST_IMAGE_NAME bash -c "MT_TEST_FORCE_DATAAPI_VERSION=5 prove -lr -j4 -PMySQLPool=MT::Test::Env -It/lib ${{ matrix.test }}"
-      - name: test php
-        if: ${{ matrix.test == 'php' }}
-        run: docker run -t -v $PWD:/mt -w /mt ghcr.io/movabletype/movabletype/test:$TEST_IMAGE_NAME bash -c "phpunit && make test-php-lint"
-
-  cloud7:
-    needs: [fedora39]
-    if: ${{ always() }}
-    env:
-      TEST_IMAGE_NAME: cloud7
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        test:
-          - "t/*.t"
-          - "t/mt7/[^t]*"
-          - "t/mt7/t*"
-          - "t/admin_theme_id/ t/app/ t/class/ t/cms/ t/model/ t/mt_object/ t/object_driver/ t/task/ t/template/ t/tools t/util t/upgrade"
-          - "t/cms_permission/"
-          - "t/data_api/"
-          - "t/tag/"
-          - "plugins/*/t"
-          - php
-    steps:
-      - name: checkout
-        uses: actions/checkout@v4.1.0
-      - name: docker pull
-        uses: ./.github/actions/docker-mt-test
-        with:
-          tag: ${{ env.TEST_IMAGE_NAME }}
-      - name: test
-        if: ${{ matrix.test != 'php' }}
-        run: docker run -t -v $PWD:/mt -w /mt ghcr.io/movabletype/movabletype/test:$TEST_IMAGE_NAME bash -c "prove -lr -j4 -PMySQLPool=MT::Test::Env -It/lib ${{ matrix.test }}"
-      - name: test php
-        if: ${{ matrix.test == 'php' }}
-        run: docker run -t -v $PWD:/mt -w /mt ghcr.io/movabletype/movabletype/test:$TEST_IMAGE_NAME bash -c "phpunit && make test-php-lint"
-
-  extra:
-    needs: [fedora39]
-    if: >-
-      ${{
-        github.event_name == 'schedule'
-        || startsWith(github.ref_name, 'support-')
-        || startsWith(github.ref_name, 'release-')
-        || (github.ref_name == 'develop')
-        || contains(github.ref_name, 'cron')
-      }}
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        test:
-          - selenium
-          - xt
-    steps:
-      - name: checkout
-        uses: actions/checkout@v4.1.0
-      - name: docker pull
-        uses: ./.github/actions/docker-mt-test
-        with:
-          tag: 'chromiumdriver'
+        run: docker run -t -v $PWD:/mt -w /mt ghcr.io/movabletype/movabletype/test:${{ matrix.config.image }} bash -c "phpunit && make test-php-lint"
       - name: test selenium
         if: ${{ matrix.test == 'selenium' }}
-        run: docker run -t -v $PWD:/mt -w /mt ghcr.io/movabletype/movabletype/test:chromiumdriver bash -c "BUILD_RELEASE_NUMBER=1 make && MT_TEST_SELENIUM_MAX_RETRY=5 MT_TEST_CRAWL=1 prove -j1 -PMySQLPool=MT::Test::Env -It/lib t/selenium/crawl.t"
-      - name: docker pull
-        uses: ./.github/actions/docker-mt-test
-        with:
-          tag: 'buster'
+        run: docker run -t -v $PWD:/mt -w /mt ghcr.io/movabletype/movabletype/test:${{ matrix.config.image }} bash -c "BUILD_RELEASE_NUMBER=1 make && MT_TEST_SELENIUM_MAX_RETRY=5 MT_TEST_CRAWL=1 prove -j1 -PMySQLPool=MT::Test::Env -It/lib t/selenium/crawl.t"
       - name: test xt
         if: ${{ matrix.test == 'xt' }}
-        run: docker run -t -v $PWD:/mt -w /mt ghcr.io/movabletype/movabletype/test:buster bash -c "prove -j4 -PMySQLPool=MT::Test::Env -It/lib xt"
+        run: docker run -t -v $PWD:/mt -w /mt ghcr.io/movabletype/movabletype/test:${{ matrix.config.image }} bash -c "prove -j4 -PMySQLPool=MT::Test::Env -It/lib xt"
+
+  test_job3:
+    needs: [test_job1]
+    if: >-
+      ${{
+        (github.repository == 'movabletype/movabletype')
+        && (
+          github.event_name == 'schedule'
+          || startsWith(github.ref_name, 'support-')
+          || startsWith(github.ref_name, 'release-')
+          || (github.ref_name == 'develop')
+          || contains(github.ref_name, 'cron')
+        )
+      }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        config:
+          - {image: bullseye, mt_test_env: 'MT_TEST_DISABLE_OBJECT_CACHE=1'}    # Perl 5.32 / PHP 7.4 / MariaDB 10.5
+          - {image: fedora37, mt_test_env: 'MT_TEST_BUILDER=MT::Builder::Fast'} # Perl 5.36 / PHP 8.1 / MySQL 8.0
+          - {image: fedora35, mt_test_env: 'MT_TEST_FORCE_DATAAPI_VERSION=5'}   # Perl 5.34 / PHP 8.0 / MySQL 8.0
+        test:
+          - "t/*.t"
+          - "t/mt7/[^t]*"
+          - "t/mt7/t*"
+          - "t/admin_theme_id/ t/app/ t/class/ t/cms/ t/model/ t/mt_object/ t/object_driver/ t/task/ t/template/ t/tools t/util t/upgrade"
+          - "t/cms_permission/"
+          - "t/data_api/"
+          - "t/tag/"
+          - "plugins/*/t"
+          - php
+        exclude:
+          - config: {image: centos7, mt_test_env: 'MT_TEST_DISABLE_OBJECT_CACHE=1'}
+            test: php
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4.1.0
+      - name: docker login
+        uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: test
+        if: ${{ matrix.test != 'php' && matrix.test != 'selenium' && matrix.test != 'xt' }}
+        run: docker run -t -v $PWD:/mt -w /mt ghcr.io/movabletype/movabletype/test:${{ matrix.config.image }} bash -c "${{ matrix.config.mt_test_env }} prove -lr -j4 -PMySQLPool=MT::Test::Env -It/lib ${{ matrix.test }}"
+      - name: test php
+        if: ${{ matrix.test == 'php' }}
+        run: docker run -t -v $PWD:/mt -w /mt ghcr.io/movabletype/movabletype/test:${{ matrix.config.image }} bash -c "phpunit && make test-php-lint"
 
   node_lts:
-    needs: [fedora39]
+    needs: [test_job1]
     if: >-
       ${{
         github.event_name == 'schedule'
@@ -385,15 +189,9 @@ jobs:
   notify_slack:
     runs-on: ubuntu-latest
     needs:
-    - fedora39
-    - fedora40
-    - fedora35
-    - fedora37
-    - centos7
-    - bullseye
-    - buster
-    - cloud7
-    - extra
+    - test_job1
+    - test_job2
+    - test_job3
     - node_lts
     if: ${{ always() }}
     steps:

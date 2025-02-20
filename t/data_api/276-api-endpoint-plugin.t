@@ -10,8 +10,15 @@ our $test_env;
 BEGIN {
     $test_env = MT::Test::Env->new(
         DefaultLanguage => 'en_US',  ## for now
+        PluginPath      => ['TEST_ROOT/plugins'],
     );
     $ENV{MT_CONFIG} = $test_env->config_file;
+
+    $test_env->save_file('plugins/Awesome/config.yaml', <<'YAML');
+name: Awesome
+key: awesome
+id: awesome
+YAML
 }
 
 use MT::Test::DataAPI;

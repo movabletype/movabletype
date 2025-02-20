@@ -63,6 +63,7 @@ for my $cache_driver ('session', 'memcached') {
             is(ref($driver), 'MT::Memcached', 'cache driver is memcached');
             $cache_driver->set('writable', 'working');
             is($cache_driver->get('writable'), 'working', 'mecached is working');
+            ok(MT::Memcached->is_available, 'memcached is available');
         } else {
             is(ref($driver), 'MT::Cache::Session', 'cache driver is session');
         }
@@ -91,7 +92,7 @@ sub setup {
     }
 
     if (my $str = $block->template_module_cache_setting) {
-        my $hash = eval($block->template_module_cache_setting);
+        my $hash = eval($str);
         while (my ($key, $val) = each(%$hash)) {
             $template->$key($val);
         }

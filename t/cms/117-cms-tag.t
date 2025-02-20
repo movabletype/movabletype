@@ -27,6 +27,12 @@ $test_env->prepare_fixture(sub {
         name => 'my website',
     );
 
+    # Blog
+    my $blog = MT::Test::Permission->make_blog(
+        parent_id => $website->id,
+        name      => 'my blog',
+    );
+
     # Author
     my $admin = MT->model('author')->load(1);
 
@@ -37,6 +43,22 @@ $test_env->prepare_fixture(sub {
     );
     $website_entry->tags('@entry');
     $website_entry->save;
+
+    # Entry
+    my $website_entry2 = MT::Test::Permission->make_entry(
+        blog_id   => $website->id,
+        author_id => $admin->id,
+    );
+    $website_entry2->tags('@entry2');
+    $website_entry2->save;
+
+    # Entry(for rename_tag only entry)
+    my $blog_entry = MT::Test::Permission->make_entry(
+        blog_id   => $blog->id,
+        author_id => $admin->id,
+    );
+    $blog_entry->tags('@entry3');
+    $blog_entry->save;
 
     # Page
     my $website_page = MT::Test::Permission->make_page(
@@ -65,6 +87,7 @@ $test_env->prepare_fixture(sub {
 });
 
 my $website = MT::Website->load({ name => 'my website' });
+my $blog = MT::Blog->load({ name => 'my blog' });
 
 my $admin = MT->model('author')->load(1);
 
@@ -140,12 +163,21 @@ subtest 'Test in website scope' => sub {
         my $tag = MT::Tag->load({ name => 'Alpha one' });
         my $app = MT::Test::App->new('MT::App::CMS');
         $app->login($admin);
-        $app->post_ok({
-            __mode   => 'rename_tag',
-            blog_id  => $entry->id,
-            tag_name => 'Alpha two',
-            __id     => $tag->id,
+        $app->js_post_ok({
+            __mode     => 'rename_tag',
+            blog_id    => $website->id,
+            tag_name   => 'Alpha two',
+            __id       => $tag->id,
+            datasource => 'tag',
+            xhr        => 'false',
         });
+
+        my $tag2 = MT::Tag->load({ name => 'Alpha two' });
+        ok( MT::ObjectTag->exist({ tag_id => $tag2->id }), "Exists renamed tag" );
+        is( $tag->id, $tag2->id, "Rewrite only name field" );
+
+        $entry = MT::Entry->load( $entry->id );
+        is_deeply( [ $entry->tags ], [ 'Alpha two' ], "Rename succeeded");
     };
 
     note 'Rename tag check: exists tagname';
@@ -156,29 +188,47 @@ subtest 'Test in website scope' => sub {
         my $tag = MT::Tag->load({ name => 'Alpha one' });
         my $app = MT::Test::App->new('MT::App::CMS');
         $app->login($admin);
-        $app->post_ok({
-            __mode   => 'rename_tag',
-            blog_id  => $entry->id,
-            tag_name => '@entry',
-            __id     => $tag->id,
+        $app->js_post_ok({
+            __mode     => 'rename_tag',
+            blog_id    => $website->id,
+            tag_name   => '@entry2',
+            __id       => $tag->id,
+            datasource => 'tag',
+            xhr        => 'false',
         });
+
+        my $tag2 = MT::Tag->load({ name => '@entry2' });
+        ok( MT::ObjectTag->exist({ tag_id => $tag2->id }), "Exists renamed tag" );
+        is( MT::ObjectTag->exist({ tag_id => $tag->id }), undef, "Remove unused tag" );
+
+        $entry = MT::Entry->load( $entry->id );
+        is_deeply( [ $entry->tags ], [ '@entry2' ], "Rename succeeded");
     };
 
     note 'Rename tag check: only entry';
     subtest 'Rename tag check' => sub {
-        my $entry = MT::Entry->load({ blog_id => $website->id, author_id => $admin->id });
+        my $entry = MT::Entry->load({ blog_id => $blog->id, author_id => $admin->id });
         $entry->tags('Alpha one');
         $entry->save;
         my $tag = MT::Tag->load({ name => 'Alpha one' });
         my $app = MT::Test::App->new('MT::App::CMS');
         $app->login($admin);
-        $app->post_ok({
-            __mode   => 'rename_tag',
-            __type   => 'entry',
-            blog_id  => $entry->id,
-            tag_name => 'Alpha two',
-            __id     => $tag->id,
+        $app->js_post_ok({
+            __mode     => 'rename_tag',
+            __type     => 'entry',
+            blog_id    => $blog->id,
+            tag_name   => 'Alpha two',
+            __id       => $tag->id,
+            datasource => 'tag',
+            xhr        => 'false',
         });
+
+        my $tag2 = MT::Tag->load({ name => 'Alpha two' });
+        ok( MT::ObjectTag->exist({ tag_id => $tag2->id }), "Exists renamed tag" );
+        is( MT::ObjectTag->exist({ tag_id => $tag->id }), undef, "Remove unused tag" );
+
+        $entry = MT::Entry->load( $entry->id );
+        is_deeply( [ $entry->tags ], [ 'Alpha two' ], "Rename succeeded");
     };
 };
 

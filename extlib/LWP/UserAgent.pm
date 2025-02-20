@@ -18,7 +18,7 @@ use Module::Load qw( load );
 use Scalar::Util qw(blessed openhandle);
 use Try::Tiny qw(try catch);
 
-our $VERSION = '6.76';
+our $VERSION = '6.77';
 
 sub new
 {
@@ -1622,6 +1622,14 @@ The no checks behaviour was the default for libwww-perl-5.837 and earlier releas
 This option is initialized from the C<PERL_LWP_SSL_VERIFY_HOSTNAME> environment
 variable.  If this environment variable isn't set; then C<verify_hostname>
 defaults to 1.
+
+Please note that that recently the overall effect of this option with regards to
+SSL handling has changed. As of version 6.11 of L<LWP::Protocol::https>, which is an
+external module, SSL certificate verification was harmonized to behave in sync with
+L<IO::Socket::SSL>. With this change, setting this option no longer disables all SSL
+certificate verification, only the hostname checks. To disable all verification,
+use the C<SSL_verify_mode> option in the C<ssl_opts> attribute. For example:
+C<$ua->ssl_opts(SSL_verify_mode => IO::Socket::SSL::SSL_VERIFY_NONE);>
 
 =item C<SSL_ca_file> => $path
 
