@@ -2920,6 +2920,12 @@ sub bake_cookie {
     if ( !$param{-domain} && $cfg->CookieDomain ) {
         $param{-domain} = $cfg->CookieDomain;
     }
+    if ( !defined $param{-httponly} && $cfg->CookieHttpOnly ) {
+        $param{-httponly} = $cfg->CookieHttpOnly;
+    }
+    if ( !defined $param{-samesite} && $cfg->CookieSameSite ) {
+        $param{-samesite} = $cfg->CookieSameSite;
+    }
     if ( MT::Util::is_mod_perl1() ) {
         require Apache::Cookie;
         my $cookie = Apache::Cookie->new( $app->{apache}, %param );
