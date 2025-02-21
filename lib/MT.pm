@@ -1435,6 +1435,13 @@ sub init_plugins {
                 return 1;
             }
         }
+        else {
+            Carp::confess(
+                "You cannot register multiple plugin objects from a single script. $plugin_sig"
+                )
+                if exists( $Plugins{$plugin_sig} )
+                && ( exists $Plugins{$plugin_sig}{object} );
+        }
 
         $added_plugins{$plugin_sig} = $plugin;
         $Components{ lc $id } = $plugin if $id;
