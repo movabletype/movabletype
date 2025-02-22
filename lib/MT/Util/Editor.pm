@@ -7,24 +7,30 @@ package MT::Util::Editor;
 use strict;
 use warnings;
 
-our ($current_editor, $current_wysiwyg_editor, $current_source_editor);
+my $default_wysiwyg_editor = 'mt_rich_text_editor';
+my $default_source_editor  = 'mt_source_editor';
+
+our ($current_wysiwyg_editor, $current_source_editor);
 
 sub _get_editor {
-    my ($app, $editor) = @_;
-    my $editors = $app->registry('editors');
-    exists $editors->{$editor} ? $editor : (sort(keys(%$editors)))[0];
-}
-
-sub current_editor {
-    $current_editor ||= _get_editor(shift, MT->config('Editor'));
+    my ($app, $editor, $default) = @_;
+    if (my $editor_regs = MT::Component->registry('editors')) {
+        my %editors = map { $_ => 1 } map { keys %$_ } @$editor_regs;
+        return
+              exists $editors{$editor}  ? $editor
+            : exists $editors{$default} ? $default
+            :                             (sort(keys(%editors)))[0];
+    } else {
+        return undef;
+    }
 }
 
 sub current_wysiwyg_editor {
-    $current_wysiwyg_editor ||= _get_editor(shift, MT->config('WYSIWYGEditor') || MT->config('Editor'));
+    $current_wysiwyg_editor ||= _get_editor(shift, MT->config('Editor'), $default_wysiwyg_editor);
 }
 
 sub current_source_editor {
-    $current_source_editor ||= _get_editor(shift, MT->config('SourceEditor') || MT->config('Editor'));
+    $current_source_editor ||= _get_editor(shift, MT->config('Editor'), $default_source_editor);
 }
 
 1;
@@ -40,30 +46,21 @@ MT::Util::Editor - Editor utility functions
     use MT::Util::Editor;
 
     my $app = MT->instance;
-    my $editor = MT::Util::Editor::current_editor($app);
+    my $editor = MT::Util::Editor::current_wysiwyg_editor($app);
 
 =head1 FUNCTIONS
 
-=head2 current_editor
-
-Returns the editor selected in the current environment. If the user-specified editor is not available,
-fall back to an available editor.
-
-    my $app = MT->instance;
-    my $current_editor = MT::Util::Editor::current_editor($app);
 
 =head2 current_wysiwyg_editor
 
-Returns the WYSIWYG editor selected in the current environment. If the user-specified editor is not available,
-fall back to an available editor.
+Returns the WYSIWYG editor selected in the current environment.
 
     my $app = MT->instance;
     my $current_editor = MT::Util::Editor::current_editor($app);
 
 =head2 current_source_editor
 
-Returns the source editor selected in the current environment. If the user-specified editor is not available,
-fall back to an available editor.
+Returns the source editor selected in the current environment.
 
     my $app = MT->instance;
     my $current_source_editor = MT::Util::Editor::current_source_editor($app);
