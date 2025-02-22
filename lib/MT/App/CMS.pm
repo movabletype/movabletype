@@ -5005,10 +5005,16 @@ sub setup_editor_param {
     $param->{object_type} = $app->param('_type') || '';
 
     if ( my $editor_regs = MT::Component->registry('editors') ) {
+        require MT::Util::Editor;
+        my $wysiwyg_editor = lc(MT::Util::Editor::current_wysiwyg_editor($app));
+        my $source_editor  = lc(MT::Util::Editor::current_source_editor($app));
+
         $param->{editors} = {};
         foreach my $editors (@$editor_regs) {
-            foreach my $editor_key ( keys(%$editors) ) {
-                my $reg    = $editors->{$editor_key};
+            foreach my $editor_key ( $wysiwyg_editor, $source_editor ) {
+                next unless defined $editor_key;
+                my $reg = $editors->{$editor_key}
+                    or next;
                 my $plugin = $reg->{plugin};
                 my $tmpls  = $param->{editors}{$editor_key} ||= {
                     templates  => [],
@@ -5056,9 +5062,8 @@ sub setup_editor_param {
         }
 
         if ( %{ $param->{editors} } ) {
-            require MT::Util::Editor;
-            $param->{wysiwyg_editor}  = lc(MT::Util::Editor::current_wysiwyg_editor($app));
-            $param->{source_editor}   = lc(MT::Util::Editor::current_source_editor($app));
+            $param->{wysiwyg_editor}  = $wysiwyg_editor;
+            $param->{source_editor}   = $source_editor;
             $param->{editor_strategy} = lc($app->config('EditorStrategy'));
         }
         else {
