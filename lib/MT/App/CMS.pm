@@ -3689,6 +3689,7 @@ sub build_actions {
 
     my $actions = $app->registry($registry_key) || {};
 
+    my $view = $app->view;
     my @valid_actions;
     for my $id ( keys %$actions ) {
         my $action = $actions->{$id};
@@ -3697,6 +3698,13 @@ sub build_actions {
             next unless $cond;
             $cond = MT->handler_to_coderef($cond) unless ref $cond;
             next if ref $cond eq 'CODE' && !$cond->( $app, $param );
+        }
+        if ($action->{view}) {
+            if (ref $action->{view} eq 'ARRAY') {
+                next unless (scalar grep { $_ eq $view } @{ $action->{view} });
+            } else {
+                next if $action->{view} ne $view;
+            }
         }
 
         my $href = $action->{href};
