@@ -1,31 +1,28 @@
 <div class="mt-systemHeaderActions">
-    <div class="mt-systemHeaderAction mt-systemHeaderActions__search">
-        <div
-            data-is="search-button"
-            data-search-tabs-json='<mt:app:embedjsonresponse mode="search_tabs_json" escape="html">'
-            data-object-type='<mt:var name="object_type" escape="html">'
-        >
-            <a href="#" class="action mt-actionSearch">
-                <svg role="img" class="mt-icon">
-                    <title><__trans phrase="Search"></title>
-                    <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="<$mt:var name="static_uri"$>images/sprite.svg#ic_search"></use>
-                </svg>
-            </a>
-        </div>
+    <div
+        class="mt-systemHeaderAction mt-systemHeaderActions__search"
+        data-is="search-button"
+        data-search-tabs-json='<mt:app:embedjsonresponse mode="search_tabs_json" escape="html">'
+        data-object-type='<mt:var name="object_type" escape="html">'
+    >
+        <a href="#" class="action">
+            <svg role="img" class="mt-icon">
+                <title><__trans phrase="Search"></title>
+                <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="<$mt:var name="static_uri"$>images/sprite.svg#ic_search"></use>
+            </svg>
+        </a>
     </div>
-    <div class="mt-systemHeaderAction mt-systemHeaderActions__site">
-        <div data-is="site-list-button">
-            <a href="#" class="action mt-actionSite">
-                <svg role="img" class="mt-icon">
-                    <title><__trans phrase="Site"></title>
-                    <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="<$mt:var name="static_uri"$>images/admin2025/sprite.svg#ic_site"></use>
-                </svg>
-            </a>
-        </div>
+    <div class="mt-systemHeaderAction mt-systemHeaderActions__site" data-is="site-list-button">
+        <a href="#" class="action">
+            <svg role="img" class="mt-icon">
+                <title><__trans phrase="Site"></title>
+                <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="<$mt:var name="static_uri"$>images/admin2025/sprite.svg#ic_site"></use>
+            </svg>
+        </a>
     </div>
 
     <div class="mt-systemHeaderAction mt-systemHeaderActions__system">
-        <a href="<mt:var name="script_url">?__mode=dashboard&blog_id=0" class="action mt-actionSystem">
+        <a href="<mt:var name="script_url">?__mode=dashboard&blog_id=0" class="action">
             <svg role="img" class="mt-icon">
                 <title><__trans phrase="System"></title>
                 <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="<$mt:var name="static_uri"$>images/sprite.svg#ic_setting"></use>
@@ -33,7 +30,7 @@
         </a>
     </div>
     <div class="mt-systemHeaderAction mt-systemHeaderActions__user">
-        <div class="action mt-actionUser">
+        <div class="action">
             <button class="userActionButton" type="button" id="userDropdownMenu" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-bs-auto-close="outside">
             <mt:if name="author_userpic_url">
                 <img src="<mt:var name="author_userpic_url" escape="html">" alt="" width="36" height="34" class="">
