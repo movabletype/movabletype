@@ -1576,6 +1576,31 @@ sub core_list_actions {
     };
 }
 
+sub core_system_menu_actions {
+    my $app = shift;
+    return {
+        search => {
+            icon   => 'ic_search',
+            label  => 'Search',
+            mobile => 0,
+            order  => 100,
+        },
+        site => {
+            icon   => 'ic_site',
+            label  => 'Site',
+            mobile => 0,
+            order  => 200,
+        },
+        system => {
+            icon   => 'ic_setting',
+            label  => 'System',
+            mobile => 0,
+            order  => 300,
+            href   => sub { $app->uri(mode => 'dashboard', args => { blog_id => 0 }); },
+        },
+    };
+}
+
 sub core_site_menu_actions {
     my $app = shift;
     return {
@@ -3022,6 +3047,7 @@ sub build_page {
         $app->build_menus($param);
         $app->build_actions( 'menu_actions', $param );
         $app->build_actions( 'user_actions', $param );
+        $app->build_actions('system_menu_actions', $param);
         $app->build_actions('site_menu_actions', $param);
     }
     if ( !ref($page)

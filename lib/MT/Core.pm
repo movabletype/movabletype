@@ -2275,6 +2275,7 @@ BEGIN {
                 content_actions => sub { MT->app->core_content_actions(@_) },
                 list_actions    => sub { MT->app->core_list_actions(@_) },
                 menu_actions    => sub { MT->app->core_menu_actions(@_) },
+                system_menu_actions => sub { MT->app->core_system_menu_actions(@_) },
                 site_menu_actions   => sub { MT->app->core_site_menu_actions(@_) },
                 user_actions    => sub { MT->app->core_user_actions(@_) },
                 search_apis     => sub {
