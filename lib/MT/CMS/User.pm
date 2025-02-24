@@ -1847,14 +1847,42 @@ sub post_save {
         }
     }
 
-    if (    $app->user->id eq $obj->id
-        and $obj->password ne $original->password )
-    {
-        my $current_session = $app->session;
+    if ($original->password and $obj->password ne $original->password) {
+        my $app_user = $app->user;
+        if ($app_user->id eq $obj->id) {
+            my $current_session = $app->session;
 
-        MT::Auth->invalidate_credentials( { app => $app } );
-        $app->user($obj);
-        $app->start_session( $obj, $current_session->get('remember') || 0 );
+            MT::Auth->invalidate_credentials({ app => $app });
+            $app->user($obj);
+            $app->start_session($obj, $current_session->get('remember') || 0);
+            $app->log({
+                message => $app->translate("User '[_1]' (ID: [_2]) changed their login password.", $obj->name, $obj->id),
+                level   => MT::Log::INFO(),
+                class   => 'author',
+            });
+        } else {
+            $app->model('session')->remove({ kind => 'US', name => $obj->id });
+            $app->log({
+                message => $app->translate("User '[_1]' (ID: [_2]) changed the login password for user '[_3]' (ID: [_4]).", $app_user->name, $app_user->id, $obj->name, $obj->id),
+                level   => MT::Log::INFO(),
+                class   => 'author',
+            });
+
+            my %head = (
+                id      => 'change_password',
+                To      => [grep $_, map { $_->email } ($original, $app_user)],
+                Subject => $app->translate('Password is changed'),
+            );
+            my $body = $app->build_email(
+                'changed-password.tmpl', {
+                    account    => $obj->name,
+                    changed_by => $app_user->name,
+                },
+            );
+
+            require MT::Util::Mail;
+            MT::Util::Mail->send_and_log(\%head, $body);
+        }
     }
 
     1;
