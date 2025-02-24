@@ -386,8 +386,8 @@ sub core_methods {
             app_mode => 'JSON',
         },
 
-        'fetch_admin_header_content_types' => {
-            code     => "${pkg}AdminHeader::fetch_admin_header_content_types",
+        'content_types_for_search_action' => {
+            code     => "${pkg}ContentType::search_action_targets",
             app_mode => 'JSON',
         },
 
@@ -1612,8 +1612,8 @@ sub core_site_menu_actions {
                 my $user    = $app->user;
                 my $perms   = $app->permissions or return 0;
                 return 1 if $perms->can_do('create_new_entry');
-                require MT::CMS::AdminHeader;
-                my @content_types = grep { $_->{can_create} } MT::CMS::AdminHeader::content_types($app);
+                require MT::CMS::ContentType;
+                my @content_types = grep { $_->{can_create} } MT::CMS::ContentType::search_action_targets_seed($app);
                 return scalar(@content_types) > 0;
             },
             label => 'Create',

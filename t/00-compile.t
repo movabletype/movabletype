@@ -55,7 +55,6 @@ use_ok('MT::CMS::Theme');
 use_ok('MT::CMS::Filter');
 use_ok('MT::CMS::RebuildTrigger');
 use_ok('MT::CMS::Group');
-use_ok('MT::CMS::AdminHeader');
 
 # Supporting applications
 use_ok('MT::App::Upgrader');
