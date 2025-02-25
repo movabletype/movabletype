@@ -3705,6 +3705,9 @@ sub build_actions {
         $action->{id} = $id;
         $action->{order} ||= 0;
 
+        for my $key (qw(class condition href icon label mobile mode order target)) {
+            $action->{$key} = exists $action->{$key} ? $action->{$key} : undef;
+        }
         push @valid_actions, { %$action, href => $href };
     }
 
