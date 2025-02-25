@@ -178,7 +178,6 @@ sub start_element {
                             $objects->{ "$class#" . $column_data{id} } = $obj;
                             $objects->{ "$class#" . $column_data{id} }
                                 ->{no_overwrite} = 1;
-                            $self->{current} = $obj;
                             $self->{loaded}  = 1;
                             $self->{skip} += 1;
                         }
@@ -456,6 +455,10 @@ sub end_element {
 
     if ( $self->{skip} ) {
         $self->{skip} -= 1;
+        if (!$self->{skip}) {
+            delete $self->{current};
+            delete $self->{loaded};
+        }
         return;
     }
 
