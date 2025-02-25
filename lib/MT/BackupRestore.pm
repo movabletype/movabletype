@@ -1299,43 +1299,41 @@ sub to_xml {
 
     my ( @elements, @blobs, @meta );
     for my $name (@$colnames) {
-        if ($obj->column($name)
-            || ( defined( $obj->column($name) )
-                && ( '0' eq $obj->column($name) ) )
-            )
-        {
-            if ( ( $obj->properties->{meta_column} || '' ) eq $name ) {
+        my $value = $obj->column($name);
+        if ($value || (defined($value) && ('0' eq $value))) {
+            if (($obj->properties->{meta_column} || '') eq $name) {
                 push @meta, $name;
                 next;
-            }
-            elsif ( $obj->_is_element( $coldefs->{$name} ) ) {
+            } elsif ($obj->_is_element($coldefs->{$name})) {
                 push @elements, $name;
                 next;
-            }
-            elsif ( 'blob' eq $coldefs->{$name}->{type} ) {
+            } elsif ('blob' eq $coldefs->{$name}->{type}) {
                 push @blobs, $name;
                 next;
             }
-            $xml .= " $name='"
-                . MT::Util::encode_xml( $obj->column($name), 1, 1 ) . "'";
+            if (ref $value) {
+                # print STDERR "SKIP: $obj $name returns Perl's internal value\n";
+                next;
+            }
+            $xml .= " $name='" . MT::Util::encode_xml($value, 1, 1) . "'";
         }
     }
     my ( @meta_elements, @meta_blobs );
     if ( defined($metacolumns) && @$metacolumns ) {
         foreach my $metacolumn (@$metacolumns) {
-            my $name = $metacolumn->{name};
-            if ( $obj->$name
-                || ( defined( $obj->$name ) && ( '0' eq $obj->$name ) ) )
-            {
-                if ( 'vclob' eq $metacolumn->{type} ) {
+            my $name  = $metacolumn->{name};
+            my $value = $obj->meta($name);
+            if ($value || (defined($value) && ('0' eq $value))) {
+                if ('vclob' eq $metacolumn->{type}) {
                     push @meta_elements, $name;
-                }
-                elsif ( 'vblob' eq $metacolumn->{type} ) {
+                } elsif ('vblob' eq $metacolumn->{type}) {
                     push @meta_blobs, $name;
-                }
-                else {
-                    $xml .= " $name='"
-                        . MT::Util::encode_xml( $obj->$name, 1, 1 ) . "'";
+                } else {
+                    if (ref $value) {
+                        # print STDERR "SKIP: $obj meta($name) returns Perl's internal value\n";
+                        next;
+                    }
+                    $xml .= " $name='" . MT::Util::encode_xml($value, 1, 1) . "'";
                 }
             }
         }
