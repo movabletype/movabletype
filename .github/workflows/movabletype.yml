@@ -20,8 +20,8 @@ jobs:
     strategy:
       matrix:
         config:
-          - {image: fedora39} # Perl 5.38 / PHP 8.2 / MySQL 8.0
-          - {image: centos7}  # Perl 5.16 / PHP 7.1 / MariaDB 5.5
+          - {image: fedora39, mt_test_env: 'MT_TEST_IMAGE_DRIVER=ImageMagick' } # Perl 5.38 / PHP 8.2 / MySQL 8.0
+          - {image: centos7,  mt_test_env: 'MT_TEST_IMAGE_DRIVER=GD' }  # Perl 5.16 / PHP 7.1 / MariaDB 5.5
         test: 
           - "t/*.t"
           - "t/mt7/[^td]*"
@@ -33,6 +33,9 @@ jobs:
           - "t/tag/"
           - "plugins/*/t"
           - php
+        exclude:
+          - config: {image: centos7, mt_test_env: 'MT_TEST_IMAGE_DRIVER=GD'}
+            test: php
         include:
           - config: {image: chromiumdriver}
             test: selenium
@@ -69,7 +72,7 @@ jobs:
     strategy:
       matrix:
         config:
-          - {image: cloud7}
+          - {image: cloud7,   mt_test_env: 'MT_TEST_IMAGE_DRIVER=GraphicsMagick' }
           - {image: fedora41, mt_test_env: 'MT_TEST_ADMIN_THEME_ID=0'}   # Perl 5.40 / PHP 8.3 / MySQL 8.4
           - {image: buster,   mt_test_env: 'MT_TEST_RUN_APP_AS_CGI=1'}   # Perl 5.28.0 / PHP 7.3 / MariaDB 10.3
         test: 
@@ -129,7 +132,7 @@ jobs:
         config:
           - {image: bullseye, mt_test_env: 'MT_TEST_DISABLE_OBJECT_CACHE=1'}    # Perl 5.32 / PHP 7.4 / MariaDB 10.5
           - {image: fedora37, mt_test_env: 'MT_TEST_BUILDER=MT::Builder::Fast'} # Perl 5.36 / PHP 8.1 / MySQL 8.0
-          - {image: fedora35, mt_test_env: 'MT_TEST_FORCE_DATAAPI_VERSION=5'}   # Perl 5.34 / PHP 8.0 / MySQL 8.0
+          - {image: fedora35, mt_test_env: 'MT_TEST_IMAGE_DRIVER=Imager MT_TEST_FORCE_DATAAPI_VERSION=6'}   # Perl 5.34 / PHP 8.0 / MySQL 8.0
         test:
           - "t/*.t"
           - "t/mt7/[^td]*"
@@ -141,9 +144,6 @@ jobs:
           - "t/tag/"
           - "plugins/*/t"
           - php
-        exclude:
-          - config: {image: centos7, mt_test_env: 'MT_TEST_DISABLE_OBJECT_CACHE=1'}
-            test: php
     steps:
       - name: checkout
         uses: actions/checkout@v4.1.0

@@ -527,6 +527,7 @@ use vars qw( @ISA %Lexicon );
 	q{Failed login attempt by locked-out user '[_1]'} => q{ロックされたユーザー「[_1]」がサインインしようとしました。},
 	q{Failed login attempt by pending user '[_1]'} => q{保留中のユーザー「[_1]」がサインインしようとしました。},
 	q{Failed login attempt by unknown user '[_1]'} => q{未登録のユーザー [_1] がサインインしようとしました。},
+	q{Failed login attempt by user '[_1]' (probably session expired)} => q{ユーザー「[_1]」がサインインに失敗しました（おそらくセッションの有効期限が過ぎていました）。},
 	q{Failed login attempt by user '[_1]'} => q{ユーザー「[_1]」がサインインに失敗しました。},
 	q{Failed to open monitoring file that specified by IISFastCGIMonitoringFilePath directive '[_1]': [_2]} => q{IISFastCGIMonitoringFilePath で指定されたモニタリングファイル ([_1]) が開けません: [_2]},
 	q{Invalid login attempt from user '[_1]'} => q{'[_1]'がサインインに失敗しました。},
@@ -1551,7 +1552,7 @@ use vars qw( @ISA %Lexicon );
 	'Passwords do not match' => 'パスワードが一致していません。',
 	'Performance log path is [_1]' => 'パフォーマンスログのパスは[_1]です',
 	'Performance log threshold is [_1]' => 'パフォーマンスログの閾値は[_1]です',
-	'Performance logging is off' => 'バフォーマンスログはオフです',
+	'Performance logging is off' => 'パフォーマンスログはオフです',
 	'Performance logging is on' => 'パフォーマンスログはオンです',
 	'Please confirm your new password' => '新しいパスワードを確認してください。',
 	'Please enter a valid email address.' => '正しいメールアドレスを入力してください。',
@@ -2224,7 +2225,6 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/Filter.pm
 	'"editable_terms" and "editable_filters" cannot be specified at the same time.' => '"editable_terms"と"editable_filters"は、同時に指定できません。',
 	'Invalid filter type [_1]:[_2]' => '不正なフィルタタイプです。[_1]:[_2]',
-	'Invalid sort key [_1]:[_2]' => '不正ななソートキーです。[_1]:[_2]',
 
 ## lib/MT/Group.pm
 	'Active Groups' => '有効なグループ',
@@ -4917,7 +4917,7 @@ use vars qw( @ISA %Lexicon );
 	'Drag and drop here' => 'ファイルをドロップしてください',
 	'Operation for a file exists' => '既存ファイルの処理',
 	'Upload Options' => 'アップロードオプション',
-	'Upload Settings' => 'アップロードの設定',
+	'Change Upload Settings' => 'アップロードの設定を変更する',
 
 ## tmpl/admin2023/cms/include/author_table.tmpl
 	'Disable selected users (d)' => '選択したユーザーを無効化 (d)',

@@ -360,8 +360,7 @@ sub load_objects {
     if ($sort) {
         $sort_prop = MT::ListProperty->instance( $ds, $sort );
         if ( !$sort_prop || !$sort_prop->can_sort( $options{scope} ) ) {
-            return $self->error(
-                MT->translate( 'Invalid sort key [_1]:[_2]', $ds, $sort ) );
+            $sort = $sort_prop = undef;
         }
     }
     my $has_post_process = scalar @grep_items
