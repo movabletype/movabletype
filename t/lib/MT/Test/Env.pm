@@ -144,7 +144,7 @@ sub write_config {
     my %connect_info = $self->connect_info;
 
     my $image_driver = $ENV{MT_TEST_IMAGE_DRIVER}
-        || (eval { require Image::Magick } ? 'ImageMagick' : 'Imager');
+        || (eval { require Graphics::Magick } ? 'GraphicsMagick' : eval { require Image::Magick } ? 'ImageMagick' : 'Imager');
 
     my $default_language = $ENV{MT_TEST_LANG} || 'en_US';
 
