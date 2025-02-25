@@ -127,3 +127,19 @@ true
 <mt:IfArchiveType archive_type="ContentType" content_type="ct_with_other_catset">true<mt:Else>false</mt:IfArchiveType>
 --- expected
 false
+
+=== mt:IfArchiveType archive_type="contentType-daily" without content_type, lower-case
+--- stash
+{   cd             => 'cd_same_apple_orange',
+    category       => 'cat_apple',
+    cat_field      => 'cf_same_catset_fruit',
+    entry          => 'entry_author1_ruler_eraser',
+    entry_category => 'cat_eraser',
+    page           => 'page_author1_coffee'
+}
+--- template
+<mt:IfArchiveType archive_type="contentType-daily">true<mt:Else>false</mt:IfArchiveType>
+--- expected
+false
+--- expected_contenttype_daily
+true
