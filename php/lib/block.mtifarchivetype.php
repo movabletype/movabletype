@@ -11,7 +11,7 @@ function smarty_block_mtifarchivetype($args, $content, &$ctx, &$repeat) {
         $at = $args['type'] ?? $args['archive_type'] ?? null;
         $cat = $ctx->stash('current_archive_type');
         $cat or $at = $ctx->stash('archive_type');
-        $same = ($at && $cat) && ($at == $cat);
+        $same = ($at && $cat) && (strtolower($at) == strtolower($cat));
         if(!$same){
           return $ctx->_hdlr_if($args, $content, $ctx, $repeat, $same);
         }
@@ -31,14 +31,6 @@ function smarty_block_mtifarchivetype($args, $content, &$ctx, &$repeat) {
                 else {
                     $same = false;
                 }
-            } else {
-              $repeat = false;
-              return $ctx->error(
-                $ctx->mt->translate(
-                  "You used an [_1] tag without a valid [_2] attribute.",
-                  array("<MTIfArchiveType>", "content_type")
-                )
-              );
             }
         }
         return $ctx->_hdlr_if($args, $content, $ctx, $repeat, $same);
