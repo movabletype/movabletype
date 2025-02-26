@@ -194,7 +194,6 @@ class ArchiverFactory {
         'ContentType-Category-Monthly' => 'ContentTypeCategoryMonthlyArchiver',
         'ContentType-Category-Yearly' => 'ContentTypeCategoryYearlyArchiver',
     );
-    private static $_archivers = array();
 
     private function __construct() { }
 
@@ -211,13 +210,12 @@ class ArchiverFactory {
         $class = ArchiverFactory::$_archive_types[$at];
         if (!empty($class)) {
             $instance = new $class;
-            if (!empty($instance) and $instance instanceof ArchiveType)
-                ArchiverFactory::$_archivers[$at] = $instance;
-        } else {
-            ArchiverFactory::$_archivers[$at] = null;
+            if (!empty($instance) and $instance instanceof ArchiveType) {
+                return $instance;
+            }
         }
         
-        return ArchiverFactory::$_archivers[$at]; 
+        return null;
     }
 
     public static function add_archiver($at, $class) {
