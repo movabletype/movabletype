@@ -1708,7 +1708,7 @@ sub _hdlr_if {
         $value = $ctx->tag( $tag, $local_args, $cond );
         $ctx->{__stash}{vars}{__cond_tag__} = $tag;
     }
-    else {
+    elsif ( $ctx->stash('tag') =~ /^else(?:if)?$/i ) {
         $value = $ctx->var('__cond_value__');
     }
 

@@ -71,3 +71,17 @@ moga!
 </mt:If>
 --- expected
 hoge!
+
+=== MTC-30264
+--- template
+<mt:setvar name="val" value="1"><mt:If name="val" eq="1"><mt:Unless>1</mt:Unless></mt:If>
+<mt:setvar name="val" value="0"><mt:If name="val" eq="0"><mt:Unless>0</mt:Unless></mt:If>
+--- expected
+1
+0
+
+=== MTC-30264: Unless with global modifiers
+--- template
+<mt:setvar name="val" value="1"><mt:If name="val" eq="1"><mt:Unless regex_replace="/Melody/g","Milady"><mt:Authors need_entry="0"><mt:AuthorDisplayName><mt:AuthorName></mt:Authors></mt:Unless></mt:If>
+--- expected
+MiladyMilady
