@@ -1466,8 +1466,18 @@ sub init_plugins {
                 && !$PluginSwitch->{$plugin_sig} )
             )
         {
-            $Plugins{$plugin_sig}{full_path} = $plugin_full_path;
-            $Plugins{$plugin_sig}{enabled}   = 0;
+            if (exists $Plugins{$plugin_sig}
+                && $Plugins{$plugin_sig}{full_path} ne $plugin_full_path) {
+                eval {
+                    require MT::Util::Log;
+                    MT::Util::Log::init();
+                    MT::Util::Log->error("$plugin_sig is already disabled");
+                };
+            }
+            else {
+                $Plugins{$plugin_sig}{full_path} = $plugin_full_path;
+                $Plugins{$plugin_sig}{enabled}   = 0;
+            }
             return 0;
         }
 
@@ -1523,8 +1533,18 @@ sub init_plugins {
             )
             )
         {
-            $Plugins{$plugin_dir}{full_path} = $plugin_full_path;
-            $Plugins{$plugin_dir}{enabled}   = 0;
+            if (exists $Plugins{$plugin_dir}
+                && $Plugins{$plugin_dir}{full_path} ne $plugin_full_path) {
+                eval {
+                    require MT::Util::Log;
+                    MT::Util::Log::init();
+                    MT::Util::Log->error("$plugin_dir is already disabled");
+                };
+            }
+            else {
+                $Plugins{$plugin_dir}{full_path} = $plugin_full_path;
+                $Plugins{$plugin_dir}{enabled}   = 0;
+            }
             return;
         }
 
