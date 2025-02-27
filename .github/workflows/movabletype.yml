@@ -39,6 +39,8 @@ jobs:
         include:
           - config: {image: chromiumdriver}
             test: selenium
+          - config: {image: fedora39, mt_test_env: 'MT_TEST_IMAGE_DRIVER=ImageMagick' }
+            test: xt
     steps:
       - name: checkout
         uses: actions/checkout@v4.1.0
@@ -89,8 +91,6 @@ jobs:
         include:
           - config: {image: chromiumdriver}
             test: selenium
-          - config: {image: buster}
-            test: xt
     steps:
       - name: checkout
         uses: actions/checkout@v4.1.0
