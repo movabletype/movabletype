@@ -301,7 +301,7 @@ use vars qw( @ISA %Lexicon );
 ## default_templates/changed-password.mtml
 	'Mail Footer' => 'メールフッター',
 	'Please ask the administrator for the new password. If this change is unexpected, please report it to the administrtor.' => '新しいパスワードは管理者にお尋ねください。また、この変更に心当たりがない場合は管理者に報告してください。',
-	q{The login password for '[_1]' was changed by a system administrator ([_2]).} => q{システム管理者が[_1]のログインパスワードを変更しました。},
+	q{The login password for '[_1]' was changed by a system administrator ([_2]).} => q{システム管理者([_2])が[_1]のログインパスワードを変更しました。},
 
 ## default_templates/current_author_monthly_archive_list.mtml
 	'[_1]: Monthly Archives' => '[_1]: 月別アーカイブ',
