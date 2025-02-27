@@ -178,6 +178,7 @@ sub start_element {
                             $objects->{ "$class#" . $column_data{id} } = $obj;
                             $objects->{ "$class#" . $column_data{id} }
                                 ->{no_overwrite} = 1;
+                            $self->{current} = $obj;
                             $self->{loaded}  = 1;
                             $self->{skip} += 1;
                         }
