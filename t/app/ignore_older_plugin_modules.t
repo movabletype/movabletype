@@ -56,8 +56,8 @@ subtest 'Duplicate plugins contains pl file and module' => sub {
     my $newer_module_path = $test_env->path( 'plugins/MyPlugin1-1.0/lib' );
     is scalar(grep { $_ eq $newer_module_path } @INC), 1, "module included not repeatly";
 
-    like $log => qr/Conflicted plugin MyPlugin1 0.1 is disabled/, "logged correctly for MyPlugin1";
-    like $log => qr/Conflicted plugin MyPlugin2 0.1 is disabled/, "logged correctly for MyPlugin2";
+    like $log => qr/Conflicted plugin \S+?MyPlugin1-0.1\/MyPlugin1.pl 0.1 is disabled/, "logged correctly for MyPlugin1";
+    like $log => qr/Conflicted plugin \S+?MyPlugin1-0.1\/MyPlugin2.pl 0.1 is disabled/, "logged correctly for MyPlugin2";
 };
 
 subtest 'Duplicate plugins contains config.yaml and module' => sub {
@@ -75,7 +75,7 @@ subtest 'Duplicate plugins contains config.yaml and module' => sub {
         "not included older module"
     ) or note explain \@INC;
 
-    like $log => qr/Conflicted plugin MyPlugin3 1.0 is disabled/, "logged correctly for MyPlugin3";
+    like $log => qr/Conflicted plugin \S+?MyPlugin3-1.0 1.0 is disabled/, "logged correctly for MyPlugin3";
 };
 
 ok eval { MT::PSGI->new->to_app }, "psgi app without an error" or note $@;
@@ -86,9 +86,9 @@ subtest 'run rpt' => sub {
 
     note "second rpt";
     my $run_rpt_res = run_rpt();
-    unlike $run_rpt_res => qr/Conflicted plugin MyPlugin1 0.1 is disabled/, "no plugin error";
-    unlike $run_rpt_res => qr/Conflicted plugin MyPlugin2 0.1 is disabled/, "no plugin error";
-    unlike $run_rpt_res => qr/Conflicted plugin MyPlugin3 1.0 is disabled/, "no plugin error";
+    unlike $run_rpt_res => qr/Conflicted plugin \S+?MyPlugin1-0.1\/MyPlugin1.pl 0.1 is disabled/, "no plugin error";
+    unlike $run_rpt_res => qr/Conflicted plugin \S+?MyPlugin2-0.1\/MyPlugin2.pl 0.1 is disabled/, "no plugin error";
+    unlike $run_rpt_res => qr/Conflicted plugin \S+?MyPlugin3-1.0 1.0 is disabled/, "no plugin error";
 };
 
 done_testing;
