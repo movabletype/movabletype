@@ -239,7 +239,7 @@ sub convert {
             )
         ) if $err;
 
-        if ($magick->Get('colorspace') eq 'CMYK' && MagickClass eq 'Graphics::Magick') {
+        if ($magick->Get('colorspace') eq 'CMYK' && $image->MagickClass eq 'Graphics::Magick') {
             $magick->Set(colorspace => 'RGB');
         }
 
@@ -261,7 +261,7 @@ sub blob {
     my $blob;
 
     eval {
-        if ($magick->Get('colorspace') eq 'CMYK' && MagickClass eq 'Graphics::Magick') {
+        if ($magick->Get('colorspace') eq 'CMYK' && $image->MagickClass eq 'Graphics::Magick') {
             $magick->Set(colorspace => 'RGB');
         }
         $image->_set_quality($quality) or return;
