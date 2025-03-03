@@ -428,6 +428,7 @@ class MT {
                 $lc_name = preg_replace('/^mt_config_/', '', $lc_name);
                 $lc_name = preg_replace('/_/', '', $lc_name);
                 $value = $_ENV[$name];
+                unset($_ENV[$name]);
                 if (isset($value) && $value === "''") {
                     $value = '';
                 }
