@@ -36,7 +36,7 @@ sub init {
     for my $key (grep /^MT_CONFIG_/i, keys %ENV) {
         (my $name = $key) =~ s/^MT_CONFIG_//i;
         $name =~ s/_//g;
-        my $value = $ENV{$key};
+        my $value = delete $ENV{$key};
         $value = '' if $value eq q{''};
         $mgr->{__env}{lc $name} = $value;
     }
