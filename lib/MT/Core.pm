@@ -2243,6 +2243,7 @@ BEGIN {
             'WaitAfterReboot' => { default => '1.0' },
             'DisableMetaRefresh' => { default => 1 },
             'DynamicTemplateAllowPHP' => { default => 1 },
+            'HidePrivateRelatedContentData' => { default => 0 },
             'DynamicTemplateAllowSmartyTags' => { default => 1 },
             'AdminThemeId' => { default => 'admin2023' },
             'PHPErrorLogFilePath' => undef,
