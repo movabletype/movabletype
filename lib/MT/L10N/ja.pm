@@ -1613,6 +1613,7 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/CMS/User.pm
 	'(newly created user)' => '(新規ユーザー)',
+	'[_1] changed' => '[_1]が変更されました',
 	'Another role already exists by that name.' => '同名のロールが既に存在します。',
 	'Cannot load role #[_1].' => 'ロール: [_1]をロードできませんでした。',
 	'Create User' => 'ユーザーの作成',
@@ -1644,6 +1645,7 @@ use vars qw( @ISA %Lexicon );
 	'You cannot delete your own association.' => '自分の関連付けは削除できません。',
 	'You have no permission to delete the user [_1].' => '[_1]を削除する権限がありません。',
 	'represents a user who will be created afterwards' => '今後新しく作成されるユーザー',
+	q{Saved User '[_1]' (ID: [_2]) changes.} => q{ユーザー'[_1]'(ID: [_2])の変更が保存されました},
 	q{User '[_1]' (ID: [_2]) changed the login password for user '[_3]' (ID: [_4]).} => q{ユーザー'[_1]'(ID: [_2])がユーザー'[_3]'(ID: [_4])のログインパスワードを変更しました。},
 	q{User '[_1]' (ID: [_2]) changed their login password.} => q{ユーザー'[_1]'(ID: [_2])がログインパスワードを変更しました。},
 	q{User '[_1]' (ID:[_2]) could not be re-enabled by '[_3]'} => q{'[_3]'がユーザー '[_1]' (ID:[_2])を有効にできませんでした},
