@@ -4095,30 +4095,6 @@ sub _hdlr_app_embed_json_response {
     my $local_component;
     $local_component = $info->{component} if $info->{component};
     my $code = $info->{code} || $info->{handler};
-
-    my $set = $info->{permission} || $info->{permit_action};
-    if ($set) {
-        my $user  = $app->user;
-        my $perms = $app->permissions;
-        my $site  = $app->blog;
-        my $allowed;
-        if ($user) {
-            my $admin = $user->is_superuser() || ( $site && $perms && $perms->can_administer_site() );
-            if ($admin) {
-                $allowed = 1;
-            } elsif ($perms) {
-                my @actions = split /,/, $set;
-                for my $action (@actions) {
-                    if ($perms->can_do($action)) {
-                        $allowed = 1;
-                        last;
-                    }
-                }
-            }
-        }
-        return MT::Util::to_json( { error => MT->translate('Permission denied') } ) unless $allowed;
-    }
-
     if (ref $code ne 'CODE') {
         $code = $app->handler_to_coderef($code);
     }
