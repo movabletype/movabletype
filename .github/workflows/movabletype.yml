@@ -39,6 +39,8 @@ jobs:
         include:
           - config: {image: chromiumdriver}
             test: selenium
+          - config: {image: fedora39, mt_test_env: 'MT_TEST_IMAGE_DRIVER=ImageMagick' }
+            test: xt
     steps:
       - name: checkout
         uses: actions/checkout@v4.1.0
@@ -89,8 +91,6 @@ jobs:
         include:
           - config: {image: chromiumdriver}
             test: selenium
-          - config: {image: buster}
-            test: xt
     steps:
       - name: checkout
         uses: actions/checkout@v4.1.0
@@ -101,7 +101,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: test
-        if: ${{ matrix.test != 'php' && matrix.test != 'selenium' && matrix.test != 'xt' }}
+        if: ${{ matrix.test != 'php' && matrix.test != 'selenium' }}
         run: docker run -t -v $PWD:/mt -w /mt ghcr.io/movabletype/movabletype/test:${{ matrix.config.image }} bash -c "${{ matrix.config.mt_test_env }} prove -lr -j4 -PMySQLPool=MT::Test::Env -It/lib ${{ matrix.test }}"
       - name: test php
         if: ${{ matrix.test == 'php' }}
@@ -109,9 +109,6 @@ jobs:
       - name: test selenium
         if: ${{ matrix.test == 'selenium' }}
         run: docker run -t -v $PWD:/mt -w /mt ghcr.io/movabletype/movabletype/test:${{ matrix.config.image }} bash -c "BUILD_RELEASE_NUMBER=1 make && MT_TEST_SELENIUM_MAX_RETRY=5 MT_TEST_CRAWL=1 prove -j1 -PMySQLPool=MT::Test::Env -It/lib t/selenium/crawl.t"
-      - name: test xt
-        if: ${{ matrix.test == 'xt' }}
-        run: docker run -t -v $PWD:/mt -w /mt ghcr.io/movabletype/movabletype/test:${{ matrix.config.image }} bash -c "prove -j4 -PMySQLPool=MT::Test::Env -It/lib xt"
 
   test_job3:
     needs: [test_job1]
@@ -154,7 +151,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: test
-        if: ${{ matrix.test != 'php' && matrix.test != 'selenium' && matrix.test != 'xt' }}
+        if: ${{ matrix.test != 'php' && matrix.test != 'selenium' }}
         run: docker run -t -v $PWD:/mt -w /mt ghcr.io/movabletype/movabletype/test:${{ matrix.config.image }} bash -c "${{ matrix.config.mt_test_env }} prove -lr -j4 -PMySQLPool=MT::Test::Env -It/lib ${{ matrix.test }}"
       - name: test php
         if: ${{ matrix.test == 'php' }}
