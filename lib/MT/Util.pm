@@ -2474,14 +2474,11 @@ sub normalize_language {
 
 sub clear_site_stats_widget_cache {
     my ($site_id) = @_;
-
-    my @parts;
-    if ($site_id) {
-        my $sub_dir = sprintf( "%03d", $site_id % 1000 );
-        my $top_dir = $site_id > $sub_dir ? $site_id - $sub_dir : 0;
-        @parts = ($top_dir, $sub_dir);
+    require MT::CMS::Dashboard;
+    my $dir = MT::CMS::Dashboard::stats_directory(MT->app, $site_id || 0);
+    if (!defined $site_id) {
+        $dir =~ s![0\\/]+$!!;
     }
-    my $dir = File::Spec->catdir( MT->app->config->TempDir, 'dashboard', 'stats', @parts );
     if (-d $dir) {
         require File::Path;
         File::Path::rmtree($dir);
