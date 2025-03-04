@@ -1208,6 +1208,21 @@ __END_OF_EVAL__
         eval 'use IO::Socket::SSL qw( inet4 )';
     }
 
+    if ($mt->config->UseWWWFormUrlEncoded) {
+        require CGI;
+        require WWW::Form::UrlEncoded;
+        no warnings 'redefine';
+        *CGI::parse_params = sub {
+            my ($self, $tosplit) = @_;
+            my %hash = WWW::Form::UrlEncoded::parse_urlencoded($tosplit);
+            for my $param (keys %hash) {
+                my $value = $hash{$param};
+                $self->add_parameter($param);
+                push(@{ $self->{param}{$param} }, $value);
+            }
+        };
+    }
+
     return $mt;
 }
 
