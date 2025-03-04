@@ -145,9 +145,11 @@ sub create_stats_directory {
         : $param->{blog_id} ? $param->{blog_id}
         :                     0;
 
+    (my $mt_dir = MT->instance->{mt_dir}) =~ s/[^A-Za-z0-9]+/_/g;
+
     my $sub_dir = sprintf( "%03d", $blog_id % 1000 );
     my $top_dir = $blog_id > $sub_dir ? $blog_id - $sub_dir : 0;
-    my $tmpdir = File::Spec->catdir( $app->config->TempDir, 'dashboard', 'stats', $top_dir, $sub_dir );
+    my $tmpdir  = File::Spec->catdir( $app->config->TempDir, "mt-$mt_dir", 'dashboard', 'stats', $top_dir, $sub_dir );
 
     require MT::FileMgr;
     my $fmgr = MT::FileMgr->new('Local');
