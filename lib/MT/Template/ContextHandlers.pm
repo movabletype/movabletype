@@ -4073,7 +4073,7 @@ sub _hdlr_app_embed_json_response {
     my ($ctx, $args, $cond) = @_;
 
     require MT::Util;
-    my $mode = delete $args->{mode} or return MT::Util::to_json( { error => MT->translate('mode is required') } );
+    my $mode = $args->{mode} or return MT::Util::to_json( { error => MT->translate('mode is required') } );
 
     my $app = MT->app;
     my $handlers = $app->handlers_for_mode($mode);
@@ -4111,6 +4111,7 @@ sub _hdlr_app_embed_json_response {
         my $filters = MT->registry( 'tags', 'modifier' );
         exists( $filters->{$_} ) && delete $forward{$_} for keys %forward;
         delete $forward{'@'};
+        delete $forward{'mode'};
         my $res = $code->($app, \%forward);
         if (ref $res) {
             require MT::Util;
