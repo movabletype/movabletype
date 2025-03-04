@@ -1849,12 +1849,13 @@ sub post_save {
         # check to see what changed and add a flag to meta_messages
         my @meta_messages = ();
         my %user_fields   = (%{ $obj->column_defs }, %{ $obj->properties()->{fields} });
-        my @ignore_fields = qw{ created_on created_by modified_on modified_by id class password favorite_websites favorite_sites widgets entry_prefs list_prefs };
+        my @ignore_fields = qw{ created_on created_by modified_on modified_by id class password };
         foreach my $key (@ignore_fields) {
             delete $user_fields{$key};
         }
 
         foreach my $user_field (keys %user_fields) {
+            next if ref $original->$user_field();
             my $old =
                 defined $original->$user_field()
                 ? $original->$user_field()
