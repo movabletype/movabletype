@@ -1845,6 +1845,33 @@ sub post_save {
                 $app->start_session();
             }
         }
+
+        # check to see what changed and add a flag to meta_messages
+        my @meta_messages = ();
+        my %user_fields   = (%{ $obj->column_defs }, %{ $obj->properties()->{fields} });
+        my @ignore_fields = qw{ created_on created_by modified_on modified_by id class password favorite_websites favorite_sites widgets entry_prefs list_prefs };
+        foreach my $key (@ignore_fields) {
+            delete $user_fields{$key};
+        }
+
+        foreach my $user_field (keys %user_fields) {
+            my $old =
+                defined $original->$user_field()
+                ? $original->$user_field()
+                : "";
+            my $new = defined $obj->$user_field() ? $obj->$user_field() : "";
+            push @meta_messages, $app->translate("[_1] changed", $user_field) if $new ne $old;
+        }
+        if (scalar(@meta_messages) > 0) {
+            my $meta_message = join(", ", @meta_messages);
+            $app->log({
+                message  => $app->translate("Saved User '[_1]' (ID: [_2]) changes.", $obj->name, $obj->id),
+                    metadata => $meta_message,
+                    level    => MT::Log::NOTICE(),
+                    class    => 'author',
+                    category => 'edit',
+            });
+        }
     }
 
     if ($original->password and $obj->password ne $original->password) {
