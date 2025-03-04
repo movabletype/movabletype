@@ -139,7 +139,7 @@ sub get_newsbox_content {
 sub stats_directory {
     my ($app, $blog_id) = @_;
 
-    (my $mt_dir = $app->{mt_dir}) =~ s/[^A-Za-z0-9]+/_/g;
+    (my $mt_dir = $app->{mt_dir}) =~ s/[^A-Za-z0-9]+//g;
 
     my $sub_dir = sprintf( "%03d", $blog_id % 1000 );
     my $top_dir = $blog_id > $sub_dir ? $blog_id - $sub_dir : 0;
