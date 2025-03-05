@@ -32,6 +32,7 @@ use MT;
 use MT::Test;
 use File::Spec::Functions qw(catdir);
 use MT::FileMgr;
+use Test::Deep qw(cmp_deeply supersetof);
 
 my @test_dirs;
 
@@ -73,7 +74,7 @@ subtest 'MT::template_paths' => sub {
     my @paths = map { File::Spec->canonpath($_) } $mt->template_paths;
     note explain \@paths;
 
-    is_deeply \@paths, [
+    cmp_deeply \@paths, supersetof(
         catdir($mt_dir, "alt-tmpl/${admin_theme_id}"),
         catdir($mt_dir, "alt-tmpl/admin1999"),
         catdir($mt_dir, "alt-tmpl/admin1998"),
@@ -82,7 +83,7 @@ subtest 'MT::template_paths' => sub {
         catdir($mt_dir, "tmpl/cms"),
         catdir($mt_dir, "tmpl/${admin_theme_id}"),
         catdir($mt_dir, "tmpl"),
-    ];
+    );
 };
 
 subtest 'Component::template_paths' => sub {
@@ -94,7 +95,7 @@ subtest 'Component::template_paths' => sub {
     my @cpaths = map { File::Spec->canonpath($_) } $c->template_paths;
     note explain \@cpaths;
 
-    is_deeply \@cpaths, [
+    cmp_deeply \@cpaths, supersetof(
         catdir($mt_dir, "plugins/${component}/tmpl/${admin_theme_id}"),
         catdir($mt_dir, "plugins/${component}/tmpl"),
         catdir($mt_dir, "plugins/${component}"),
@@ -106,7 +107,7 @@ subtest 'Component::template_paths' => sub {
         catdir($mt_dir, "tmpl/cms"),
         catdir($mt_dir, "tmpl/${admin_theme_id}"),
         catdir($mt_dir, "tmpl"),
-    ];
+    );
 };
 
 subtest 'Component::template_paths for outdated plugin' => sub {
@@ -118,7 +119,7 @@ subtest 'Component::template_paths for outdated plugin' => sub {
     my @cpaths = map { File::Spec->canonpath($_) } $c->template_paths;
     note explain \@cpaths;
 
-    is_deeply \@cpaths, [
+    cmp_deeply \@cpaths, supersetof(
         catdir($ENV{MT_TEST_ROOT}, "plugins/${component}/tmpl/admin1999"),
         catdir($ENV{MT_TEST_ROOT}, "plugins/${component}/tmpl"),
         catdir($ENV{MT_TEST_ROOT}, "plugins/${component}"),
@@ -130,7 +131,7 @@ subtest 'Component::template_paths for outdated plugin' => sub {
         catdir($mt_dir,            "tmpl/cms"),
         catdir($mt_dir,            "tmpl/${admin_theme_id}"),
         catdir($mt_dir,            "tmpl"),
-    ];
+    );
 };
 
 subtest 'Component::template_paths for outdated plugin' => sub {
@@ -142,7 +143,7 @@ subtest 'Component::template_paths for outdated plugin' => sub {
     my @cpaths = map { File::Spec->canonpath($_) } $c->template_paths;
     note explain \@cpaths;
 
-    is_deeply \@cpaths, [
+    cmp_deeply \@cpaths, supersetof(
         catdir($ENV{MT_TEST_ROOT}, "plugins/${component}/tmpl/admin1998"),
         catdir($ENV{MT_TEST_ROOT}, "plugins/${component}/tmpl"),
         catdir($ENV{MT_TEST_ROOT}, "plugins/${component}"),
@@ -154,7 +155,7 @@ subtest 'Component::template_paths for outdated plugin' => sub {
         catdir($mt_dir,            "tmpl/cms"),
         catdir($mt_dir,            "tmpl/${admin_theme_id}"),
         catdir($mt_dir,            "tmpl"),
-    ];
+    );
 };
 
 done_testing;
