@@ -17,7 +17,6 @@ BEGIN {
 use MT::Test;
 use MT::Test::Permission;
 use MT::Test::App;
-use Class::Method::Modifiers;
 
 $test_env->prepare_fixture('db');
 my $parent      = MT::Test::Permission->make_website(name => 'parent');
