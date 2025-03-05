@@ -1855,7 +1855,7 @@ sub post_save {
         }
 
         foreach my $user_field (keys %user_fields) {
-            next if ref $original->$user_field();
+            next if ref $original->$user_field() || ref $obj->$user_field();
             my $old = defined $original->$user_field() ? $original->$user_field() : "";
             my $new = defined $obj->$user_field()      ? $obj->$user_field()      : "";
             push @meta_messages, $app->translate("[_1] changed", $user_field) if $new ne $old;
