@@ -745,8 +745,7 @@ sub cms_pre_load_filtered_list {
             $blog_ids = undef;
             last;
         }
-        my $count = MT->model('website')->count({id => $perm->blog_id});
-        push @$blog_ids, $perm->blog_id if $count;
+        push @$blog_ids, $perm->blog_id;
     }
 
     $terms->{id} = $blog_ids
