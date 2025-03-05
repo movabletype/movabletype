@@ -1214,9 +1214,8 @@ __END_OF_EVAL__
         no warnings 'redefine';
         *CGI::parse_params = sub {
             my ($self, $tosplit) = @_;
-            my %hash = WWW::Form::UrlEncoded::parse_urlencoded($tosplit);
-            for my $param (keys %hash) {
-                my $value = $hash{$param};
+            my @pairs = WWW::Form::UrlEncoded::parse_urlencoded($tosplit);
+            while(my ($param, $value) = splice @pairs, 0, 2) {
                 $self->add_parameter($param);
                 push(@{ $self->{param}{$param} }, $value);
             }
