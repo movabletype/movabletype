@@ -8,9 +8,7 @@ use MT::Test::Env;
 
 our $test_env;
 BEGIN {
-    $test_env = MT::Test::Env->new(
-        TrimFilePath => 0, # Override
-    );
+    $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
@@ -22,6 +20,10 @@ use MT::Test::Image;
 use MT::Test::App;
 
 $test_env->prepare_fixture('db_data');
+
+# Override explicitly
+MT->config->TrimFilePath(0, 1);
+MT->config->save_config;
 
 my $admin = MT::Author->load(1);
 my $blog  = MT::Blog->load(1);

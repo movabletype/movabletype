@@ -25,6 +25,7 @@ my $app = MT->instance;
 $test_env->prepare_fixture('db');
 
 my $blog = MT::Blog->load(1);
+$blog->site_path($test_env->root);
 $blog->include_cache(1);
 $blog->include_system('php');
 $blog->save;
