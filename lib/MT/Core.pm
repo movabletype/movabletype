@@ -1891,8 +1891,6 @@ BEGIN {
             'NoTempFiles'            => { default => 0, },
             'TempDir'                => { default => '/tmp', },
             'ExportTempDir'          => { default => undef },
-            'WYSIWYGEditor'          => undef,
-            'SourceEditor'           => undef,
             'Editor'                 => { default => 'mt_rich_text_editor', },
             'EditorStrategy'         => { default => 'Multi', },
             'EntriesPerRebuild'      => { default => 40, },
