@@ -94,7 +94,7 @@ sub last_sent_mail {
     my $self = shift;
     my $mail = $self->list_messages->[0] or return;
     my $id   = $mail->{ID};
-    $self->get_raw_message($id)->decoded_content; 
+    $self->get_raw_message($id);
 }
 
 sub last_sent_recipients {
