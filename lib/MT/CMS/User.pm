@@ -1544,6 +1544,13 @@ sub remove_userpic {
         }
         $user->userpic_asset_id(0);
         $user->save;
+        $app->log({
+            message  => $app->translate("Saved User '[_1]' (ID: [_2]) changes.", $user->name, $user->id),
+                metadata => $app->translate("[_1] changed", "userpic_asset_id"),
+                level    => MT::Log::NOTICE(),
+                class    => 'author',
+                category => 'edit',
+        });
     }
     return 'success';
 }
@@ -1849,7 +1856,7 @@ sub post_save {
         # check to see what changed and add a flag to meta_messages
         my @meta_messages = ();
         my %user_fields   = (%{ $obj->column_defs }, %{ $obj->properties()->{fields} });
-        my @ignore_fields = qw{ created_on created_by modified_on modified_by id class password };
+        my @ignore_fields = qw{ created_on created_by modified_on modified_by id class password userpic_asset_id };
         foreach my $key (@ignore_fields) {
             delete $user_fields{$key};
         }
