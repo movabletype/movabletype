@@ -420,6 +420,13 @@ sub asset_userpic {
                     unless $asset->has_thumbnail
                     && $asset->can_create_thumbnail;
                 $user->save;
+                $app->log({
+                    message  => $app->translate("Saved User '[_1]' (ID: [_2]) changes.", $user->name, $user->id),
+                        metadata => $app->translate("[_1] changed", "userpic_asset_id"),
+                        level    => MT::Log::NOTICE(),
+                        class    => 'author',
+                        category => 'edit',
+                });
             }
         }
     }
