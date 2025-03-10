@@ -185,16 +185,16 @@ jobs:
         run: git reset
       - name: test to copy files
         run: docker run -t -v $PWD:/mt -w /mt node:lts bash -c 'npm run copy && git config --global --add safe.directory /mt && git add -N . && git diff --exit-code --name-only'
+      - name: test to build mt.css
+        run: docker run -t -v $PWD:/mt -w /mt node:lts bash -c 'npm run build-mt-css-admin2023 && git config --global --add safe.directory /mt && git add -N . && git diff --exit-code --name-only'
+      - name: test to build mt.css
+        run: docker run -t -v $PWD:/mt -w /mt node:lts bash -c 'npm run build-mt-css-admin2025 && git config --global --add safe.directory /mt && git add -N . && git diff --exit-code --name-only'
       - name: test to build Riot.js tags
         # TODO: replace yarn with npm run
         run: docker run -t -v $PWD:/mt -w /mt node:lts bash -c 'yarn && yarn build-riot-admin2023 && yarn build-ss && git config --global --add safe.directory /mt && test "$(git diff)" = ""'
-      - name: test to build mt.css
-        run: docker run -t -v $PWD:/mt -w /mt node:lts bash -c 'npm run build-mt-css-admin2023 && git config --global --add safe.directory /mt && git add -N . && git diff --exit-code --name-only'
       - name: test to build Riot.js tags
         # TODO: replace yarn with npm run
         run: docker run -t -v $PWD:/mt -w /mt node:lts bash -c 'yarn && yarn build-riot-admin2025 && yarn build-ss && git config --global --add safe.directory /mt && test "$(git diff)" = ""'
-      - name: test to build mt.css
-        run: docker run -t -v $PWD:/mt -w /mt node:lts bash -c 'npm run build-mt-css-admin2025 && git config --global --add safe.directory /mt && git add -N . && git diff --exit-code --name-only'
 
   notify_slack:
     runs-on: ubuntu-latest
