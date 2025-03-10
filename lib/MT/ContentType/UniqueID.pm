@@ -6,26 +6,11 @@
 package MT::ContentType::UniqueID;
 use strict;
 use warnings;
-
-use MT::Util::Encode qw( encode_utf8 );
-
+use MT::Util::Encode qw(encode_utf8_if_flagged);
+use MT::Util::UniqueID qw(create_sha1_id MT_CONTENT_TYPE_NS MT_CONTENT_FIELD_NS MT_CONTENT_DATA_NS);
 use MT;
-use MT::Util qw( perl_sha1_digest_hex );
 
 my $Max_retry_count = 3;
-
-sub generate_unique_id {
-    my $name = shift;
-    unless ( defined $name && $name ne '' ) {
-        $name = rand(9999);
-    }
-    my $key = join(
-        $ENV{'REMOTE_ADDR'}     || '',
-        $ENV{'HTTP_USER_AGENT'} || '',
-        time, $$, rand(9999), encode_utf8($name)
-    );
-    return ( perl_sha1_digest_hex($key) );
-}
 
 sub set_unique_id {
     my ($obj) = @_;
@@ -39,7 +24,12 @@ sub set_unique_id {
             = $obj->can('name')  ? $obj->name
             : $obj->can('label') ? $obj->label
             :                      '';
-        my $unique_id = generate_unique_id($name);
+        my $ns =
+              $obj->isa('MT::ContentType')  ? MT_CONTENT_TYPE_NS
+            : $obj->isa('MT::ContentField') ? MT_CONTENT_FIELD_NS
+            : $obj->isa('MT::ContentData')  ? MT_CONTENT_DATA_NS
+            :                                 '';
+        my $unique_id = create_sha1_id($ns, encode_utf8_if_flagged($name));
         unless ( _exist_same_unique_id( $unique_id, $obj ) ) {
             $obj->column( 'unique_id', $unique_id );
             return 1;
