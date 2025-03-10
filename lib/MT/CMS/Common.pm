@@ -1024,9 +1024,8 @@ sub list {
             || $_->registry( system_filters  => $type . $subtype )
     } MT::Component->select;
 
-    my %seen;
     my $cfg       = MT->config;
-    my @theme_ids = grep { defined $_ && !$seen{$_}++ } ($cfg->AdminThemeId, $cfg->FallbackAdminThemeIds, '');
+    my @theme_ids = $cfg->AdminThemeId;
 
     my @list_headers;
     my @template_paths = grep { defined $_ and $_ ne '' } ($cfg->UserTemplatePath, $cfg->AltTemplatePath, $cfg->TemplatePath);
