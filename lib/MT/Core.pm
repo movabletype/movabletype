@@ -3234,6 +3234,7 @@ sub load_core_permissions {
                 'open_system_check_screen'   => 1,
                 'use_tools:system_info_menu' => 1,
                 'delete_any_filters'         => 1,
+                'access_to_role_list'        => 1,
             }
         },
         'system.create_blog' => {
