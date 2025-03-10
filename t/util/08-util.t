@@ -810,8 +810,8 @@ for my $clear_cache ( 0, 1 ) {
 
 my $fmgr = MT::FileMgr->new('Local');
 {
-    my $dir = File::Spec->catfile( MT->app->support_directory_path,
-        'dashboard', 'stats', 0, '001', '001' );
+    require MT::CMS::Dashboard;
+    my $dir = MT::CMS::Dashboard::stats_directory(MT->app, 1);
     if ( !$fmgr->exists($dir) ) {
         $fmgr->mkpath($dir);
     }
@@ -825,8 +825,9 @@ my $fmgr = MT::FileMgr->new('Local');
 }
 
 {
-    my $dir = File::Spec->catdir( MT->app->support_directory_path,
-        'dashboard', 'stats' );
+    require MT::CMS::Dashboard;
+    my $dir = MT::CMS::Dashboard::stats_directory(MT->app, 0);
+    $dir =~ s![0\\/]+$!!;
     if ( !$fmgr->exists($dir) ) {
         $fmgr->mkpath($dir);
     }
