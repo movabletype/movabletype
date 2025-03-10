@@ -201,6 +201,9 @@ class ContentTypeRegistry implements ContentFieldType {
             } else {
                 $where = 'cd_id = '. $ctx->mt->db()->ph('cd_id', $bind, $ids[0] ?? 0);
             }
+            if ($ctx->mt->config('HidePrivateRelatedContentData')) {
+                $where .= ' and cd_status = '. $ctx->mt->db()->ph('cd_status', $bind, 2);
+            }
             $cds = $content_data_class->Find($where, $bind);
 
             $map = array();
