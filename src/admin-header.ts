@@ -79,7 +79,7 @@ document.addEventListener("DOMContentLoaded", () => {
       // Create button
       if (createButtonTarget !== null) {
         const createButtonAnchor =
-        createButtonTarget.getElementsByTagName("a")[0];
+          createButtonTarget.getElementsByTagName("a")[0];
 
         svelteMountCreateButton({
           target: createButtonTarget,
@@ -90,7 +90,7 @@ document.addEventListener("DOMContentLoaded", () => {
             ),
             open: false,
             buttonRef: createButtonTarget,
-            anchorRef: createButtonAnchor
+            anchorRef: createButtonAnchor,
           },
         });
       }
