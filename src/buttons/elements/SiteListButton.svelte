@@ -9,7 +9,6 @@
   export let magicToken: string;
   export let limit: number = 50;
   export let open: boolean = false;
-  export let oldOverflow: string;
   export let buttonRef: HTMLElement;
   export let anchorRef: HTMLElement;
   $: {
@@ -24,7 +23,6 @@
 
   const handleClose = (): void => {
     open = false;
-    document.body.style.overflow = oldOverflow;
   };
 
   let sites: Site[] = [];

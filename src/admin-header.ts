@@ -59,7 +59,6 @@ document.addEventListener("DOMContentLoaded", () => {
       magicToken: magicToken,
       limit: Number.parseInt(limit),
       open: false,
-      oldOverflow: document.body.style.overflow,
       buttonRef: siteListButtonTarget,
       anchorRef: siteListButtonAnchor,
     });
