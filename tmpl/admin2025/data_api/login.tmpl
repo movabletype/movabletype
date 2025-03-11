@@ -9,12 +9,10 @@
 <mt:if name="use_jquery_json">
 <mt:script type="text/javascript" path="jquery/jquery.json.js">
 </mt:if>
-<mt:script type="text/javascript" path="data-api/v4/js/mt-data-api.js">
 <mt:else>
 <mt:if name="use_jquery_json">
 <mt:script type="text/javascript" path="jquery/jquery.json.min.js">
 </mt:if>
-<mt:script type="text/javascript" path="data-api/v4/js/mt-data-api.min.js">
 </mt:unless>
 <mt:script type="text/javascript" path="js-cookie/js.cookie.min.js">
 <script type="text/javascript">
@@ -22,7 +20,7 @@
 (function() {
 
 function redirectWithCookie(jsonText) {
-    Cookies.set(MT.DataAPI.accessTokenKey, jsonText);
+    Cookies.set('mt_data_api_access_token', jsonText);
     var url = '<mt:var name="redirect_url" encode_js="1" />#_login';
     location.href = url;
 }
