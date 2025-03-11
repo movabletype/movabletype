@@ -191,6 +191,7 @@ sub test_data_api {
             %callbacks = ();
             my $app = MT::Test::App->new('DataAPI');
             $app->login($author) if $author;
+            delete $app->{cookies} unless $data->{use_cookies} || $ENV{MT_TEST_USE_DATA_API_COOKIES};
             my $res = $app->request({
                 __path_info      => $path,
                 __request_method => $data->{method},
