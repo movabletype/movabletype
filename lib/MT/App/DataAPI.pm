@@ -27,18 +27,16 @@ use MT::AccessToken;
 
 our %endpoints = ();
 our %schemas   = ();
-my $MaxVersion;
 
 sub id                 {'data_api'}
-sub DEFAULT_VERSION () { $MaxVersion || 7 }
-sub API_VERSION ()     { $MaxVersion || 7.0 }
+sub DEFAULT_VERSION () { 7 }
+sub API_VERSION ()     { 7.0 }
 
 sub init {
     my $app = shift;
     $app->SUPER::init(@_) or return;
     $app->{template_dir} = 'data_api';
     $app->{default_mode} = 'api';
-    $app->{max_version}  = $MaxVersion ||= _get_max_version();
     $app;
 }
 
@@ -270,21 +268,6 @@ sub init_plugins {
     );
 
     $app->SUPER::init_plugins(@_);
-}
-
-sub _get_max_version {
-    my $app = shift;
-    my $max_version = 0;
-    my @components = MT::Component->select();
-    for my $c (@components) {
-        my $endpoints = $c->registry( 'applications', 'data_api', 'endpoints' );
-        next unless defined $endpoints;
-        for my $e (@$endpoints) {
-            my $version = $e->{version} or next;
-            $max_version = $version if $version > $max_version;
-        }
-    }
-    $max_version;
 }
 
 sub _compile_endpoints {
@@ -560,11 +543,12 @@ sub _version_path {
     my ($app) = @_;
     my $path = $app->path_info;
 
-    my $length = length($MaxVersion);
+    my $api_version = int($app->API_VERSION);
+    my $length      = length($api_version);
     $path =~ s{\A/?v([0-9]{1,$length})([^/]?)}{};
     my ($version, $garbage) = ($1, $2);
     $version = 0 if defined $garbage && $garbage ne '';
-    $version = 0 if defined $version && ($version =~ /^0/ or $version > $MaxVersion);
+    $version = 0 if defined $version && ($version =~ /^0/ or $version > $api_version);
     ( $version, $path );
 }
 
