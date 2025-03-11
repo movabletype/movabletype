@@ -8,6 +8,8 @@
   export let open: boolean = false;
   export let buttonRef: HTMLElement | null = null;
   export let anchorRef: HTMLElement | null = null;
+  let modalRef: HTMLElement | null = null;
+
   $: {
     if (anchorRef) {
       // Adjust the top position of the modal
@@ -28,7 +30,6 @@
     open = false;
   };
 
-  let modalRef: HTMLElement | null = null;
   const clickEvent = (e: MouseEvent): void => {
     const eventTarget = e.target as Node;
     if (open && isOuterClick([buttonRef, modalRef], eventTarget)) {
