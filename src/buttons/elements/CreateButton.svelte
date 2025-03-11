@@ -7,12 +7,29 @@
   export let blog_id: string;
   export let open: boolean = false;
   export let buttonRef: HTMLElement | null = null;
+  export let anchorRef: HTMLElement | null = null;
+  let modalRef: HTMLElement | null = null;
 
+  $: {
+    if (anchorRef) {
+      // Adjust the top position of the modal
+      if (modalRef) {
+        const rect = anchorRef.getBoundingClientRect();
+        const styleTop = `calc(${rect.bottom}px + 10px)`;
+        modalRef.style.top = styleTop;
+      }
+
+      if (open) {
+        anchorRef.classList.add("open");
+      } else {
+        anchorRef.classList.remove("open");
+      }
+    }
+  }
   const handleClose = (): void => {
     open = false;
   };
 
-  let modalRef: HTMLElement | null = null;
   const clickEvent = (e: MouseEvent): void => {
     const eventTarget = e.target as Node;
     if (open && isOuterClick([buttonRef, modalRef], eventTarget)) {

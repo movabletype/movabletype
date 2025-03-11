@@ -519,6 +519,14 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper,
   }
   [data-is="create-button"] {
     flex:1;
+
+    a.open {
+      background-color: #0176BF;
+      color: #FFFFFF;
+      svg {
+        fill: #FFFFFF;
+      }
+    }
   }
 
 }
@@ -2633,19 +2641,32 @@ body:has(.collapsed) .debug-panel {
 
 .create-button-modal {
   position: fixed;
-  top: 50px;
+  top: 0px;
   left: 0;
   width: 313px;
   height: 500px;
   background-color: #ffffff;
   z-index: var(--modal-z-index);
   display: block;
-  overflow: auto;
+  overflow: visible;
   border-width: 1px 1px 1px 0px;
   border-style: solid;
   border-color: $gray-lighter;
   box-shadow: 0px 3px 8px rgba(0, 0, 0, 0.25);
   border-radius: 0px 4px 4px 0px;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: -9px;
+    left: 34px;
+    width: 16px;
+    height: 16px;
+    border-top: 1px solid $gray-lighter;
+    transform: translateX(-50%) rotate(45deg);
+    background: #fff;
+    z-index: 0;
+  }
 
   .modal-header {
     justify-content: flex-end;
@@ -2655,7 +2676,7 @@ body:has(.collapsed) .debug-panel {
 
   .modal-header .close {
     color: #000000;
-    padding: 12px;
+    padding: 17px;
   }
   .modal-header .close span {
     font-size: 30px;
@@ -2950,11 +2971,11 @@ body:has(.collapsed) .debug-panel {
 }
 
 .site-list-button-modal {
-  position: absolute;
-  top: 50px;
+  position: fixed;
+  top: var(--header-height);
   left: 0;
   width: 100vw;
-  height: 100vh;
+  height: var(100vh - var(--header-height));
   overflow: hidden;
   background-color: #ffffff;
   z-index: var(--modal-z-index);

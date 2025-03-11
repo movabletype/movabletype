@@ -19,8 +19,13 @@ export function svelteMountSearchButton(
     props: props,
   });
 
-  props.anchorRef.addEventListener("click", () => {
-    props.open = true;
+  props.anchorRef.addEventListener("click", (event: MouseEvent) => {
+    event.preventDefault();
+    if (props.anchorRef.classList.contains("open")) {
+      props.open = false;
+    } else {
+      props.open = true;
+    }
     app.$set(props);
   });
 }

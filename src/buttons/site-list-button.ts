@@ -4,7 +4,6 @@ type SiteListButtonProps = {
   magicToken: string;
   limit: number;
   open: boolean;
-  oldOverflow: string;
   buttonRef: HTMLElement;
   anchorRef: HTMLElement;
 };
@@ -18,10 +17,13 @@ export function svelteMountSiteListButton(
     props: props,
   });
 
-  props.anchorRef.addEventListener("click", () => {
-    props.open = true;
-    props.oldOverflow = document.body.style.overflow;
+  props.anchorRef.addEventListener("click", (event: MouseEvent) => {
+    event.preventDefault();
+    if (props.anchorRef.classList.contains("open")) {
+      props.open = false;
+    } else {
+      props.open = true;
+    }
     app.$set(props);
-    document.body.style.overflow = "hidden";
   });
 }
