@@ -3022,6 +3022,7 @@ use vars qw( @ISA %Lexicon );
 	'This module is optional. It is used to see if swap memory is enough while processing background jobs.' => 'このモジュールがインストールされていればバックグラウンドジョブの処理中に十分なスワップメモリーがあるか確認するのに使われます。',
 	'This module is optional. It is used to see if the disk is full while backing up.' => 'このモジュールがインストールされていればバックアップ中にディスク容量が残っているかを確認するのに使われます。',
 	'This module is optional; It is one of the modules required to import an exported site and such.' => 'このモジュールはサイトなどのインポート処理に必要となるモジュールのひとつです。',
+	'This module is optional; It parses the query string faster.' => 'このモジュールがインストールされていればクエリ文字列のパースが高速化されます。',
 	'This module is required for Google Analytics site statistics and for verification of SSL certificates.' => 'このモジュールは、Google Analytics などで SSL 証明書の検証に必要です。',
 	'This module is required for profiling.' => 'このモジュールはプロファイリングの際に必要となります。',
 	'This module is required in all of the SSL/TLS connection, such as Google Analytics site statistics or SMTP Auth over SSL/TLS.' => 'このモジュールはGoogle AnalyticsやSSL/TLS経由のSMTP認証など、あらゆるSSL/TLS接続の際に必要となります。',

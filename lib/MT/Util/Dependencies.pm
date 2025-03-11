@@ -396,6 +396,11 @@ our %Requirements = (
         tags   => ["HTTP", "URI"],
         url    => "https://metacpan.org/pod/URI",
     },
+    "WWW::Form::UrlEncoded::XS" => {
+        label => "This module is optional; It parses the query string faster.",
+        tags  => ["Base", "Performance"],
+        url   => "https://metacpan.org/pod/WWW::Form::UrlEncoded::XS",
+    },
     "XML::LibXML::SAX" => {
         label   => "This module is optional; It is one of the modules required to import an exported site and such.",
         tags    => ["XML", "Backup"],
@@ -698,6 +703,13 @@ our %ExtLibOnly = (
         perl_core  => 0.99,
         url        => "https://metacpan.org/pod/version",
         used_in    => ["MT::version"],
+    },
+    "WWW::Form::UrlEncoded" => {
+        extlib  => 0.26,
+        label   => "This module is optional; It parses the query string faster.",
+        tags    => ["Base", "Performance"],
+        url     => "https://metacpan.org/pod/WWW::Form::UrlEncoded",
+        used_in => ["MT"],
     },
     "WWW::RobotRules" => {
         extlib  => 6.02,
