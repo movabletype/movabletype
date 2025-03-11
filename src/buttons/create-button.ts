@@ -6,6 +6,7 @@ type CreateButtonProps = {
   contentTypes: ContentType[];
   open: boolean;
   buttonRef: HTMLElement | null;
+  anchorRef: HTMLElement;
 };
 
 export const svelteMountCreateButton = ({
@@ -21,8 +22,13 @@ export const svelteMountCreateButton = ({
   });
 
   const anchors = target.getElementsByTagName("a");
-  anchors[0].addEventListener("click", () => {
-    props.open = true;
+  anchors[0].addEventListener("click", (event: MouseEvent) => {
+    event.preventDefault();
+    if (props.anchorRef.classList.contains("open")) {
+      props.open = false;
+    } else {
+      props.open = true;
+    }
     app.$set(props);
   });
 };

@@ -18,10 +18,16 @@ export function svelteMountSiteListButton(
     props: props,
   });
 
-  props.anchorRef.addEventListener("click", () => {
-    props.open = true;
-    props.oldOverflow = document.body.style.overflow;
+  props.anchorRef.addEventListener("click", (event: MouseEvent) => {
+    event.preventDefault();
+    if (props.anchorRef.classList.contains("open")) {
+      props.open = false;
+      document.body.style.overflow = props.oldOverflow;
+    } else {
+      props.open = true;
+      props.oldOverflow = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+    }
     app.$set(props);
-    document.body.style.overflow = "hidden";
   });
 }
