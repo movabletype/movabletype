@@ -10,13 +10,30 @@ type SearchButtonProps = {
   anchorRef: HTMLElement;
 };
 
+export interface SearchTab {
+  key: string;
+  label: string;
+}
+
 export function svelteMountSearchButton(
   target: HTMLElement,
   props: SearchButtonProps,
 ): void {
+  let searchTabs: SearchTab[] = [];
+  if (target.dataset.searchTabsJson) {
+    const data = JSON.parse(target.dataset.searchTabsJson);
+    if (data.success) {
+      searchTabs = data.data;
+    }
+  }
+
   const app = new SearchButton({
     target: target,
-    props: props,
+    props: {
+      searchTabs: searchTabs,
+      objectType: target.dataset.objectType ?? "",
+      ...props,
+    },
   });
 
   props.anchorRef.addEventListener("click", (event: MouseEvent) => {
