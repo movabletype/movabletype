@@ -2060,8 +2060,8 @@ sub post_save {
 
         # permission granted - need to update commenting cookie
         my %cookies = $app->cookies();
-        my ( $x, $y, $remember )
-            = split( /::/, $cookies{ $app->user_cookie() }->value );
+        my $user_cookie = $cookies{ $app->user_cookie() };
+        my ( $x, $y, $remember ) = split( /::/, $user_cookie ? $user_cookie->value : '' );
         my $cookie = $cookies{'commenter_id'};
         my $cookie_value = $cookie ? $cookie->value : ':';
         my ( $id, $blog_ids ) = split( ':', $cookie_value );
