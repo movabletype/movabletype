@@ -2054,8 +2054,7 @@ sub template_paths {
         return @{ $mt->{__template_paths} };
     }
 
-    my %seen;
-    my @theme_ids = grep { defined $_ && !$seen{$_}++ } ($mt->config('AdminThemeId'), $mt->config('FallbackAdminThemeIds'), '');
+    my @theme_ids = $mt->config->AdminThemeId;
 
     if ($mt->{plugin_template_path}) {
         if (File::Spec->file_name_is_absolute($mt->{plugin_template_path})) {
@@ -2102,6 +2101,7 @@ sub template_paths {
         push @paths, File::Spec->catdir($path, $_) for @theme_ids;
     }
 
+    my %seen;
     @paths = grep { !$seen{$_}++ && -d $_ } @paths;
     $mt->{__template_paths} = \@paths;
     return @paths;

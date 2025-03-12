@@ -2223,7 +2223,10 @@ BEGIN {
             'DisableMetaRefresh' => { default => 1 },
             'DynamicTemplateAllowPHP' => { default => 1 },
             'DynamicTemplateAllowSmartyTags' => { default => 1 },
-            'AdminThemeId' => { default => 'admin2025' },
+            'AdminThemeId' => {
+                default => 'admin2025',
+                handler => \&AdminThemeId,
+            },
             'FallbackAdminThemeIds' => { type => 'ARRAY', default => 'admin2023' },
             'PHPErrorLogFilePath' => undef,
             'LogEachFilePublishedInTheBackground' => undef,
@@ -3629,6 +3632,17 @@ sub SearchScript {
     }
 }
 
+sub AdminThemeId {
+    my $mgr = shift;
+
+    return $mgr->set_internal('AdminThemeId', @_) if @_;
+
+    return $mgr->get_internal('AdminThemeId') unless wantarray;
+
+    my %seen;
+    return grep { defined $_ && !$seen{$_}++ } ($mgr->get_internal('AdminThemeId'), $mgr->FallbackAdminThemeIds, '');
+}
+
 1;
 __END__
 
@@ -3763,6 +3777,11 @@ A L<MT::ConfigMgr> get/set method for the C<CGIMaxUpload>
 configuration setting. If the user sets invalid value for
 this directive, the system will be use a default value.
 
+=head2 AdminThemeId
+
+A L<MT::ConfigMgr> get/set method for the C<AdminThemeId> configuration setting.
+If the context is looking for a scalar, this method returns a value of C<AdminThemeId>.
+If the context is looking for a list value, this method returns unique values among C<AdminThemeId>, C<FallbackAdminThemeIds> and empty string.
 
 =head1 LICENSE
 

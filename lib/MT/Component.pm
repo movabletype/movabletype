@@ -340,8 +340,7 @@ sub template_paths {
     my $mt = MT->instance;
     my $path = $mt->config('TemplatePath');
 
-    my %seen;
-    my @theme_ids = grep { defined $_ && !$seen{$_}++ } ($mt->config('AdminThemeId'), $mt->config('FallbackAdminThemeIds'), '');
+    my @theme_ids = $mt->config->AdminThemeId;
 
     my @paths;
 
@@ -398,6 +397,7 @@ sub template_paths {
         push @paths, File::Spec->catdir($path, $_) for @theme_ids;
     }
 
+    my %seen;
     @paths = grep { !$seen{$_}++ && -d $_ } @paths;
     $c->{__template_paths} = \@paths;
     @paths;
