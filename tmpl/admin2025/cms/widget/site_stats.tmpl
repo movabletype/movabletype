@@ -3,7 +3,7 @@
   label="<__trans phrase="Site Stats">"
   can_close="1">
 <div class="row up-column">
-  <div id="statistics_settings_link" class="col-12 text-end">
+  <div id="statistics_settings_link" class="col-12 text-end"<mt:unless name="can_edit_config"> style="display:none"</mt:unless>>
     <a href="<mt:var name="mt_url">?__mode=cfg_web_services&amp;blog_id=<mt:var name="blog_id">"><__trans phrase="Statistics Settings"></a>
   </div>
 </div>
@@ -19,6 +19,7 @@
 <mt:stylesheet path="chart-api/mtchart.css">
 </mt:setvarblock>
 
+<div id="site_stat_data" data-json="<mt:var name="site_stat_data_json" escape="html">"></div>
 <mt:setvarblock name="js_include" append="1">
 <mt:script path="chart-api/mtchart.js">
 <script type="text/javascript">
@@ -44,30 +45,7 @@
       '#395595'
     ];
 
-    jQuery('#statistics_settings_link').hide();
-
-    get_graph_data('<mt:var name="stat_url">', true);
-
-    function get_graph_data(stat_url, retry) {
-      jQuery.ajax(stat_url, {
-        dataType: 'jsonp',
-        jsonpCallback: 'widget_site_stats_draw_graph',
-        error: function(xhr) {
-            if (retry && xhr.status === 404) {
-              jQuery('select#select_blog_id').triggerHandler('change');
-            }
-          },
-        success: function(data) {
-            widget_site_stats_draw(data);
-          }
-      });
-    }
-
-    function addComma (str) {
-      var num = new String(str).replace(/,/g, "");
-      while(num != (num = num.replace(/^(-?\d+)(\d{3})/, "$1,$2")));
-      return num;
-    }
+    widget_site_stats_draw(JSON.parse(jQuery('#site_stat_data').attr('data-json') || '{}'));
 
   function widget_site_stats_draw(data) {
       jQuery('.site-stats-widget .down-column').css('height', '');
@@ -114,9 +92,6 @@
         end: data.graph_data[9].x
       }
       new MT.ChartAPI.Graph(config, range).trigger('APPEND_TO', jQuery('#graph'));
-      if (data.can_edit_config) {
-        jQuery('#statistics_settings_link').show();
-      }
     }
 
   });
