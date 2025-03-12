@@ -390,6 +390,11 @@ sub core_methods {
             code     => "${pkg}AdminHeader::fetch_admin_header_content_types",
             app_mode => 'JSON',
         },
+
+        'search_tabs_json' => {
+            code => "${pkg}Search::search_tabs_json",
+            app_mode => 'JSON',
+        }
     };
 }
 

@@ -1730,5 +1730,30 @@ sub _load_template {
     return $tmpl;
 }
 
+
+sub search_tabs_json {
+    my ($app) = @_;
+
+    return $app->json_error( $app->translate('Permission denied') )
+      unless can_search_replace($app);
+
+    my $blog_id     = $app->param('blog_id');
+    my $search_apis = $app->search_apis( $blog_id ? 'blog' : 'system' );
+    my @search_tabs;
+    foreach my $api (@$search_apis) {
+        my $label = $api->{label};
+        if ( ref $label eq 'CODE' ) {
+            $label = $label->();
+        }
+        push @search_tabs,
+          +{
+            key   => $api->{key},
+            label => $label,
+          };
+    }
+    $app->json_result( { success => 1, data => \@search_tabs } );
+}
+
+
 1;
 __END__
