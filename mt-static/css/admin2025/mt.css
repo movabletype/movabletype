@@ -12033,20 +12033,34 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper.mouseove
 }
 .mt-primaryNavigation__user ul {
   margin: 0;
-  padding: 7px 21px;
+  padding: 7px 14px 14px 14px;
   list-style: none;
   min-width: 282px;
 }
 .mt-primaryNavigation__user ul li {
   margin: 0;
 }
-.mt-primaryNavigation__user ul a, .mt-primaryNavigation__user ul li > span {
-  padding: 16px 0;
+.mt-primaryNavigation__user ul li:first-child {
+  padding: 16px 14px;
+}
+.mt-primaryNavigation__user ul li:first-child > span {
   border-bottom: 1px solid #E0E0E0;
+  display: flex;
+  align-items: center;
+  padding-top: 0;
+}
+.mt-primaryNavigation__user ul li:first-child > span button.close {
+  margin-left: auto;
+  margin-top: -10px;
+  margin-right: -20px;
+}
+.mt-primaryNavigation__user ul a, .mt-primaryNavigation__user ul li > span {
+  padding: 16px 14px;
   display: block;
 }
 .mt-primaryNavigation__user ul a img, .mt-primaryNavigation__user ul li > span img {
   margin-right: 8px;
+  border-radius: 4px;
 }
 .mt-primaryNavigation__user ul a .mt-author-name, .mt-primaryNavigation__user ul li > span .mt-author-name {
   font-size: 12px;
@@ -12061,7 +12075,7 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper.mouseove
   content: "";
   position: absolute;
   top: -9px;
-  right: 9px;
+  right: 16px;
   width: 16px;
   height: 16px;
   border-top: 1px solid #e0e0e0;
@@ -12293,6 +12307,9 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper.mouseove
   padding: 0;
   background: none;
   border: none;
+}
+.mt-systemHeaderActions .mt-systemHeaderAction .userActionButton img {
+  border-radius: 4px;
 }
 .mt-systemHeaderActions .mt-systemHeaderAction:not(.mt-systemHeaderActions__user):has(.open), .mt-systemHeaderActions .mt-systemHeaderAction:not(.mt-systemHeaderActions__user):hover {
   background-color: #595959;

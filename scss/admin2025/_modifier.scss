@@ -574,20 +574,37 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper,
   left: 0px;
   ul{
     margin: 0;
-    padding: 7px 21px;
+    padding: 7px 14px 14px 14px;
     list-style: none;
     min-width: 282px;
 
     li{
       margin: 0;
     }
+
+    li:first-child {
+      padding: 16px 14px;
+
+      &>span {
+        border-bottom: 1px solid $gray-lighter;
+        display: flex;
+        align-items: center;
+        padding-top: 0;
+
+        button.close {
+          margin-left: auto;
+          margin-top: -10px;
+          margin-right: -20px;
+        }
+      }
+    }
     a, li>span{
-      padding: 16px 0;
-      border-bottom: 1px solid $gray-lighter;
+      padding: 16px 14px;
       display: block;
 
       img {
         margin-right: 8px;
+        border-radius: 4px;
       }
 
       .mt-author-name {
@@ -607,7 +624,7 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper,
       content: "";
       position: absolute;
       top: -9px;
-      right: 9px;
+      right: 16px;
       width: 16px;
       height: 16px;
       border-top: 1px solid #e0e0e0;
@@ -861,6 +878,9 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper,
       padding: 0;
       background: none;
       border: none;
+      img {
+        border-radius: 4px;
+      }
     }
 
 

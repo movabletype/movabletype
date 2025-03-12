@@ -33,14 +33,14 @@
     </div>
     <div class="mt-systemHeaderAction mt-systemHeaderActions__user">
         <div class="action mt-actionUser">
-            <button class="userActionButton" type="button" id="userDropdownMenu" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <button class="userActionButton" type="button" id="userDropdownMenu" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-bs-auto-close="outside">
             <mt:if name="author_userpic_url">
                 <img src="<mt:var name="author_userpic_url" escape="html">" alt="" width="36" height="34" class="">
             <mt:else>
-                <img src="<mt:var name="static_uri">images/user-default.svg" alt="" width="36" height="34" class="">
+                <img src="<mt:var name="static_uri">images/admin2025/user-default.svg" alt="" width="36" height="34" class="">
             </mt:if>
             </button>
-            <div class="dropdown-menu dropdown-menu-right mt-primaryNavigation__user" aria-labelledby="userDropdownMenu">
+            <div class="dropdown-menu dropdown-menu-end mt-primaryNavigation__user" aria-labelledby="userDropdownMenu">
             <mt:if name="user_actions">
                 <ul>
             </mt:if>
@@ -49,9 +49,10 @@
                         <mt:if name="author_userpic_url">
                             <img src="<mt:var name="author_userpic_url" escape="html">" alt="" width="21" height="21" class="">
                         <mt:else>
-                            <img src="<mt:var name="static_uri">images/user-default.svg" alt="" width="21" height="21" class="">
+                            <img src="<mt:var name="static_uri">images/admin2025/user-default.svg" alt="" width="21" height="21" class="">
                         </mt:if>
                         <span class="mt-author-name"><mt:var name="author_name" escape="html"></span>
+                        <button data-bs-dismiss="dropdown" class="close close-dropdown" type="button">&times;</button>
                     </span>
                 </li>
             <mt:loop name="user_actions">

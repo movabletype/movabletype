@@ -81,6 +81,15 @@
           jQuery(this).find("span.detail").toggle("fast");
       });
 
+      // mt-actionUser dropdown close
+      let dropdown = null;
+      jQuery(".mt-actionUser .close-dropdown").on('click', function() {
+          if(dropdown === null) {
+              dropdown = new bootstrap.Dropdown(jQuery(this).closest(".dropdown-menu").get(0));
+          }
+          dropdown.hide();
+      });
+
       jQuery.setViewTrigger();
 
     })(jQuery);
