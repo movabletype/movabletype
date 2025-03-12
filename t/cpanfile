@@ -82,6 +82,8 @@ requires 'YAML::XS';
 requires 'WWW::Form::UrlEncoded';
 requires 'WWW::Form::UrlEncoded::XS';
 
+requires 'Markodown::Perl';
+
 # Cloud.pack
 requires 'Net::CIDR';
 requires 'Net::IP';
