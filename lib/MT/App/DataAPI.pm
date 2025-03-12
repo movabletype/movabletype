@@ -28,8 +28,8 @@ our %endpoints = ();
 our %schemas   = ();
 
 sub id                 {'data_api'}
-sub DEFAULT_VERSION () {6}
-sub API_VERSION ()     {6.0}
+sub DEFAULT_VERSION () { 6 }
+sub API_VERSION ()     { 6.0 }
 
 sub init {
     my $app = shift;
@@ -537,19 +537,17 @@ sub _request_method {
     $method;
 }
 
-sub _path {
-    my ($app) = @_;
-    my $path = $app->path_info;
-    $path =~ s{.+(?=/v\d+/)}{};
-    $path;
-}
-
 sub _version_path {
     my ($app) = @_;
-    my $path = $app->_path;
+    my $path = $app->path_info;
 
-    $path =~ s{\A/?v(\d+)}{};
-    ( $1, $path );
+    my $api_version = int($app->API_VERSION);
+    my $length      = length($api_version);
+    $path =~ s{\A/?v([0-9]{1,$length})([^/]?)}{};
+    my ($version, $garbage) = ($1, $2);
+    $version = 0 if defined $garbage && $garbage ne '';
+    $version = 0 if defined $version && ($version =~ /^0/ or $version > $api_version);
+    ( $version, $path );
 }
 
 sub resource_object {
@@ -922,9 +920,9 @@ sub api {
     my ( $version, $path ) = $app->_version_path;
 
     # Special handler for get version information.
-    if ( $path eq '/version' ) {
+    if ( $path eq '/version' and (!defined $version or $version) ) {
         my $raw = {
-            endpointVersion => 'v' . $app->DEFAULT_VERSION(),
+            endpointVersion => 'v' . ($version || $app->DEFAULT_VERSION()),
             apiVersion      => $app->API_VERSION(),
         };
         my $format = $app->current_format;
@@ -938,6 +936,8 @@ sub api {
 
     return $app->print_error( 'API Version is required', 400 )
         unless defined $version;
+
+    return $app->print_error( 'API Version is invalid', 400 ) unless $version;
 
     my $request_method = $app->_request_method
         or return;
