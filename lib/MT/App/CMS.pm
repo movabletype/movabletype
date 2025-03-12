@@ -392,7 +392,7 @@ sub core_methods {
         },
 
         'search_tabs_json' => {
-            code => "${pkg}AdminHeader::search_tabs_json",
+            code => "${pkg}Search::search_tabs_json",
             app_mode => 'JSON',
         }
     };

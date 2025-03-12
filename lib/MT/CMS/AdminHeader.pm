@@ -37,28 +37,4 @@ sub fetch_admin_header_content_types {
     $app->json_result({ success => 1, content_types => \@content_types });
 }
 
-sub search_tabs_json {
-    my ($app) = @_;
-
-    require MT::CMS::Search;
-    return $app->json_error( $app->translate('Permission denied') )
-      unless MT::CMS::Search::can_search_replace($app);
-
-    my $blog_id     = $app->param('blog_id');
-    my $search_apis = $app->search_apis( $blog_id ? 'blog' : 'system' );
-    my @search_tabs;
-    foreach my $api (@$search_apis) {
-        my $label = $api->{label};
-        if ( ref $label eq 'CODE' ) {
-            $label = $label->();
-        }
-        push @search_tabs,
-          +{
-            key   => $api->{key},
-            label => $label,
-          };
-    }
-    $app->json_result( { success => 1, data => \@search_tabs } );
-}
-
 1;
