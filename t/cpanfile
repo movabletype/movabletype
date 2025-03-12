@@ -83,6 +83,7 @@ requires 'WWW::Form::UrlEncoded';
 requires 'WWW::Form::UrlEncoded::XS';
 
 requires 'Markodown::Perl';
+requires 'Unicode::CaseFold';
 
 # Cloud.pack
 requires 'Net::CIDR';
