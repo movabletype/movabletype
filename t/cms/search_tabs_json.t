@@ -63,11 +63,11 @@ subtest 'search_tabs_json' => sub {
         my $json = $app->json->{result};
         is( $json->{success}, 1, 'have a success with blog_id' );
 
-        is( scalar @{ $json->{data} }, 9, 'data count is 9 with blog_id' );
+        is( scalar @{ $json->{data} }, 8, 'data count is 8 with blog_id' );
         is_deeply(
             [ map { $_->{key} } @{ $json->{data} } ],
             [
-                qw/content_data entry comment page template asset log author blog/
+                qw/content_data entry page template asset log author blog/
             ],
             'should validate data keys with blog_id'
         );
@@ -82,12 +82,12 @@ subtest 'search_tabs_json' => sub {
         $json = $app->json->{result};
         is( $json->{success}, 1, 'have a success with blog_id 0' );
 
-        is( scalar @{ $json->{data} }, 11, 'data count is 11 with blog_id 0' );
+        is( scalar @{ $json->{data} }, 10, 'data count is 10 with blog_id 0' );
 
         is_deeply(
             [ map { $_->{key} } @{ $json->{data} } ],
             [
-                qw/content_data entry comment page template asset log author group blog website/
+                qw/content_data entry page template asset log author group blog website/
             ],
             'should validate data keys with blog_id 0'
         );
@@ -145,11 +145,11 @@ subtest 'search_tabs_json' => sub {
         my $json = $app->json->{result};
         is( $json->{success}, 1, 'have a success with blog_id' );
 
-        is( scalar @{ $json->{data} }, 7, 'data count is 7 with blog_id' );
+        is( scalar @{ $json->{data} }, 6, 'data count is 6 with blog_id' );
 
         is_deeply(
             [ map { $_->{key} } @{ $json->{data} } ],
-            [qw/entry comment page template asset log author/],
+            [qw/entry page template asset log author/],
             'should validate data keys with blog_id'
         );
 
