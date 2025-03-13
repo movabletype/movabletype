@@ -823,6 +823,9 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper,
 
 
 /* Main Content Wrapper */
+@mixin mt-mainContentWrapperAnimation() {
+  transition: witdh 0.3s ease, margin-left 0.3s ease;
+}
 .mt-mainContentWrapper {
   @include media-breakpoint-up(xs) {
     @extend .col-12;
@@ -830,7 +833,7 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper,
   @include media-breakpoint-up(md) {
     @extend .col-md;
 
-    transition: witdh 0.3s ease, margin-left 0.3s ease;
+    @include mt-mainContentWrapperAnimation();
     width: calc(100vw - var(--left-bar-width));
     margin-left: var(--left-bar-width);
   }
@@ -2642,6 +2645,7 @@ li.nav-item {
 .debug-panel {
   margin: 0 !important;
   margin-left: var(--minimal-left-bar-width) !important;
+  @include mt-mainContentWrapperAnimation();
 }
 
 body:has(.mt-primaryNavigation):not(:has(.collapsed)) {

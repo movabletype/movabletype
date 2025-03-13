@@ -13949,6 +13949,7 @@ li.nav-item, .mt-sharedPreviewNav .mt-sharedPreviewNav__rightNav li.mt-sharedPre
 .debug-panel {
   margin: 0 !important;
   margin-left: var(--minimal-left-bar-width) !important;
+  transition: witdh 0.3s ease, margin-left 0.3s ease;
 }
 
 @media (min-width: 768px) {
