@@ -3,7 +3,6 @@ import { svelteMountCreateButton } from "./buttons/create-button";
 import { svelteMountSidebar } from "./sidebar/sidebar";
 import { svelteMountSearchButton } from "./buttons/search-button";
 import { svelteMountSiteListButton } from "./buttons/site-list-button";
-import { svelteMountBreadcrumbsButton } from "./buttons/breadcrumbs-button";
 
 document.addEventListener("DOMContentLoaded", () => {
   // Sidebar toggle
@@ -18,16 +17,6 @@ document.addEventListener("DOMContentLoaded", () => {
       collapsed: sessionCollapsed === "true",
       buttonRef: sidebarTarget,
       sessionName: sessionName,
-    });
-  }
-
-  // Breadcrumbs
-  const breadcrumbsTarget = document.querySelector<HTMLElement>(
-    '[data-is="breadcrumbs"]',
-  );
-  if (breadcrumbsTarget !== null) {
-    svelteMountBreadcrumbsButton({
-      target: breadcrumbsTarget,
     });
   }
 
