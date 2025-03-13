@@ -2641,11 +2641,15 @@ li.nav-item {
 /** debug-panel */
 .debug-panel {
   margin: 0 !important;
-  margin-left: var(--left-bar-width) !important;
-}
-
-body:has(.collapsed) .debug-panel {
   margin-left: var(--minimal-left-bar-width) !important;
+
+  @include media-breakpoint-up(md) {
+    @at-root {
+      body:has(.mt-primaryNavigation):not(:has(.collapsed)) & {
+        margin-left: var(--left-bar-width) !important;
+      }
+    }
+  }
 }
 
 /** admin-header */
