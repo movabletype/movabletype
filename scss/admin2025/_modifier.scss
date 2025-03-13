@@ -219,14 +219,19 @@ li{
         display: flex;
         flex-wrap: wrap;
         justify-content: flex-start;
+        width: 190px;
       }
       .mt-productHeader__website_name {
         font-size: 0.85rem;
         margin-bottom: 4px;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+        width: 100%;
       }
       .mt-productHeader__name{
         display: block;
-        width: 190px;
+        width: 100%;
         overflow: hidden;
         color: $body-color;
         text-align: left;
@@ -255,12 +260,17 @@ li{
     }
   }
 
+  .col:nth-of-type(2) {
+    min-width: 0;
+  }
   #page-title {
     margin-left: 12px;
     overflow: hidden;
     text-overflow: ellipsis;
-    white-space: normal;
+    white-space: nowrap;
     max-height: var(--header-height);
+    max-width: 100%;
+    word-break: keep-all;
   }
 }
 

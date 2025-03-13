@@ -11711,14 +11711,19 @@ li {
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-start;
+  width: 190px;
 }
 .mt-header .mt-header__logo .mt-productHeader__logo .mt-productHeader__website_name {
   font-size: 0.85rem;
   margin-bottom: 4px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  width: 100%;
 }
 .mt-header .mt-header__logo .mt-productHeader__logo .mt-productHeader__name {
   display: block;
-  width: 190px;
+  width: 100%;
   overflow: hidden;
   color: #212529;
   text-align: left;
@@ -11743,12 +11748,17 @@ li {
   color: #212529;
   margin-bottom: 0;
 }
+.mt-header .col:nth-of-type(2), .mt-header .mt-widget__data:nth-of-type(2), .mt-header .mt-mobileGlobalMenu__name:nth-of-type(2), .mt-header .mt-mobileGlobalMenu__name--invert:nth-of-type(2), .mt-header .mt-breadcrumb:nth-of-type(2), .mt-header .mt-productHeader:nth-of-type(2) {
+  min-width: 0;
+}
 .mt-header #page-title {
   margin-left: 12px;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: normal;
+  white-space: nowrap;
   max-height: var(--header-height);
+  max-width: 100%;
+  word-break: keep-all;
 }
 
 .mt-contentWrapper {
