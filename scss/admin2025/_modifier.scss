@@ -2648,9 +2648,13 @@ li.nav-item {
   @include mt-mainContentWrapperAnimation();
 }
 
-body:has(.mt-primaryNavigation):not(:has(.collapsed)) {
-  .debug-panel {
-    @include media-breakpoint-up(md) {
+body:has(.mt-primaryNavigation) {
+  @include media-breakpoint-up(md) {
+    &:has(.collapsed) .debug-panel {
+      margin-left: calc(var(--minimal-left-bar-width) + var(--bs-card-cap-padding-x)) !important;
+    }
+
+    &:not(:has(.collapsed)) .debug-panel {
       margin-left: var(--left-bar-width) !important;
     }
   }
