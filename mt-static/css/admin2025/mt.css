@@ -13950,6 +13950,7 @@ li.nav-item, .mt-sharedPreviewNav .mt-sharedPreviewNav__rightNav li.mt-sharedPre
   margin: 0 !important;
   margin-left: var(--minimal-left-bar-width) !important;
 }
+
 @media (min-width: 768px) {
   body:has(.mt-primaryNavigation):not(:has(.collapsed)) .debug-panel {
     margin-left: var(--left-bar-width) !important;

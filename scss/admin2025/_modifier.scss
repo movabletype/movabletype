@@ -2642,12 +2642,12 @@ li.nav-item {
 .debug-panel {
   margin: 0 !important;
   margin-left: var(--minimal-left-bar-width) !important;
+}
 
-  @include media-breakpoint-up(md) {
-    @at-root {
-      body:has(.mt-primaryNavigation):not(:has(.collapsed)) & {
-        margin-left: var(--left-bar-width) !important;
-      }
+body:has(.mt-primaryNavigation):not(:has(.collapsed)) {
+  .debug-panel {
+    @include media-breakpoint-up(md) {
+      margin-left: var(--left-bar-width) !important;
     }
   }
 }
