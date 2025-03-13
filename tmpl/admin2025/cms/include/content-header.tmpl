@@ -22,14 +22,21 @@
               <img src="<mt:var name="static_uri">images/logo-mark.svg" alt="Movable Type" width="32" height="32">
             </mt:if>
             </a>
-            <span class="mt-productHeader__name">
-              <mt:var name="product_header_name">
-            </span>
+            <div class="mt-productHeader_wrapper">
+              <mt:if name="scope_type" eq="blog">
+                <span class="mt-productHeader__website_name" title="<mt:var name="curr_website_name" trim="1" escape="html">">
+                  <mt:var name="curr_website_name" escape="html">
+                </span>
+              </mt:if>
+              <span class="mt-productHeader__name" title="<mt:var name="product_header_name" trim="1" escape="html">">
+                <mt:var name="product_header_name">
+              </span>
+            </div>
           </h1>
         </div>
       </div>
       <div class="col">
-        <mt:Include name="include/breadcrumbs.tmpl">
+        <mt:include name="include/page_title.tmpl">
       </div>
       <div class="col-auto">
         <mt:Include name="include/system-header-actions.tmpl">
