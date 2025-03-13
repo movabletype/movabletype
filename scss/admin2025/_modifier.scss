@@ -3185,3 +3185,13 @@ body:has(.collapsed) .debug-panel {
     }
   }
 }
+
+/* Modal */
+.modal {
+  --bs-modal-zindex: calc(var(--modal-z-index) + 1);
+}
+
+/* Modal background */
+.modal-backdrop {
+  --bs-backdrop-zindex: var(--modal-z-index);
+}

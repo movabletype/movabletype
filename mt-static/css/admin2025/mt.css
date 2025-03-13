@@ -14465,6 +14465,16 @@ body:has(.collapsed) .debug-panel {
   margin-right: 7px;
 }
 
+/* Modal */
+.modal {
+  --bs-modal-zindex: calc(var(--modal-z-index) + 1);
+}
+
+/* Modal background */
+.modal-backdrop {
+  --bs-backdrop-zindex: var(--modal-z-index);
+}
+
 .selector.scope {
   background-color: #333;
 }
