@@ -11707,6 +11707,15 @@ li {
   margin-right: 0.5rem;
   vertical-align: middle;
 }
+.mt-header .mt-header__logo .mt-productHeader__logo .mt-productHeader_wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+}
+.mt-header .mt-header__logo .mt-productHeader__logo .mt-productHeader__website_name {
+  font-size: 0.85rem;
+  margin-bottom: 4px;
+}
 .mt-header .mt-header__logo .mt-productHeader__logo .mt-productHeader__name {
   display: block;
   width: 190px;
@@ -11733,6 +11742,13 @@ li {
   align-items: center;
   color: #212529;
   margin-bottom: 0;
+}
+.mt-header #page-title {
+  margin-left: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal;
+  max-height: var(--header-height);
 }
 
 .mt-contentWrapper {
@@ -12281,10 +12297,24 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper.mouseove
   display: flex;
   flex-direction: row;
   height: 100%;
+  position: relative;
+}
+.mt-systemHeaderActions:before {
+  display: block;
+  content: "";
+  height: 80%;
+  position: absolute;
+  top: 10%;
+  left: 0;
+  width: 1px;
+  background-color: #CACACA;
 }
 .mt-systemHeaderActions .mt-systemHeaderAction {
   margin: 0;
   padding: 0;
+}
+.mt-systemHeaderActions .mt-systemHeaderAction > div {
+  height: 100%;
 }
 .mt-systemHeaderActions .mt-systemHeaderAction .action {
   display: flex;
@@ -12296,11 +12326,8 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper.mouseove
   line-height: 100%;
   padding: 4px 0;
   width: 48px;
-}
-.mt-systemHeaderActions .mt-systemHeaderAction .action .mt-icon, .mt-systemHeaderActions .mt-systemHeaderAction .action .mt-icon--inverse, .mt-systemHeaderActions .mt-systemHeaderAction .action .mt-icon--danger, .mt-systemHeaderActions .mt-systemHeaderAction .action .mt-icon--warning, .mt-systemHeaderActions .mt-systemHeaderAction .action .mt-icon--info, .mt-systemHeaderActions .mt-systemHeaderAction .action .mt-icon--success, .mt-systemHeaderActions .mt-systemHeaderAction .action .mt-icon--secondary, .mt-systemHeaderActions .mt-systemHeaderAction .action .mt-icon--primary {
-  width: 19px;
-  height: 19px;
-  margin-bottom: 3px;
+  height: 100%;
+  justify-content: center;
 }
 .mt-systemHeaderActions .mt-systemHeaderAction .userActionButton {
   margin: 0;
@@ -12404,13 +12431,18 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper.mouseove
 
 /* Breadcrumb */
 .mt-breadcrumb {
-  margin: 0;
-  padding: 0 0 0 12px;
-  font-size: 1rem;
+  margin: 0 0 24px 0;
+  padding: 12px 0;
+  font-size: 0.85rem;
+  border-bottom: 1px solid #E0E0E0;
 }
 .mt-breadcrumb a, .mt-breadcrumb a:hover {
   color: #212529;
   text-decoration: none;
+}
+.mt-breadcrumb .dashboard svg {
+  width: 18px;
+  height: 18px;
 }
 
 .mt-gts {
