@@ -4,6 +4,7 @@ type SidebarProps = {
   collapsed: boolean;
   buttonRef: HTMLButtonElement;
   sessionName: string;
+  isStored: boolean;
 };
 
 export function svelteMountSidebar(target: Element, props: SidebarProps): void {
@@ -12,11 +13,16 @@ export function svelteMountSidebar(target: Element, props: SidebarProps): void {
     props: {
       collapsed: props.collapsed,
       buttonRef: props.buttonRef,
+      isStored: props.isStored,
     },
   });
 
   props.buttonRef.addEventListener("click", () => {
-    props.collapsed = !props.collapsed;
+    if (props.buttonRef.classList.contains("collapsed")) {
+      props.collapsed = false;
+    } else {
+      props.collapsed = true;
+    }
     app.$set(props);
     sessionStorage.setItem(props.sessionName, props.collapsed.toString());
   });

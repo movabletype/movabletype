@@ -4,6 +4,7 @@
 
   export let buttonRef: HTMLButtonElement;
   export let collapsed = false;
+  export let isStored = false;
   let mouseOver = false;
 
   const addContentWrapperClass = (
@@ -60,8 +61,10 @@
   };
 
   onMount(() => {
-    if (window.innerWidth < 1000) {
-      collapsed = true;
+    if (!isStored) {
+      if (window.innerWidth < 1000) {
+        collapsed = true;
+      }
     }
     handleCollapse();
   });
