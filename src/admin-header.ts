@@ -15,8 +15,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     svelteMountSidebar(sidebarTarget, {
       collapsed: sessionCollapsed === "true",
-      buttonRef: sidebarTarget,
+      buttonRef: sidebarTarget.getElementsByTagName("button")[0],
       sessionName: sessionName,
+      isStored: sessionCollapsed !== null,
     });
   }
 

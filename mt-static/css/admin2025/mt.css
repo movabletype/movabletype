@@ -11879,7 +11879,7 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper .mt-prim
   border-left: 1px solid #F4F4F4;
   outline: none;
 }
-.mt-primaryNavigation__toggle_bar:hover {
+.mt-primaryNavigation__toggle_bar:has(:hover) {
   border-left: 1px solid #E0E0E0;
 }
 .mt-primaryNavigation__toggle_bar .mt-primaryNavigation__toggle_icon_wrapper {
@@ -11888,6 +11888,9 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper .mt-prim
   left: 0;
   transform: translateX(-50%);
   padding: 18px 10px;
+  background-color: transparent;
+  outline: none;
+  border: none;
 }
 .mt-primaryNavigation__toggle_bar .mt-primaryNavigation__toggle_icon_wrapper .mt-primaryNavigation__toggle_icon_border {
   border: 1px solid #000;
@@ -11908,17 +11911,17 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper .mt-prim
   -webkit-mask-image: url(../../images/admin2025/icons/ic_close.svg);
           mask-image: url(../../images/admin2025/icons/ic_close.svg);
 }
-.mt-primaryNavigation__toggle_bar:hover .mt-primaryNavigation__toggle_icon_border {
+.mt-primaryNavigation__toggle_bar .mt-primaryNavigation__toggle_icon_wrapper:hover .mt-primaryNavigation__toggle_icon_border {
   background-color: #004B9A;
 }
-.mt-primaryNavigation__toggle_bar:hover .mt-primaryNavigation__toggle_icon {
+.mt-primaryNavigation__toggle_bar .mt-primaryNavigation__toggle_icon_wrapper:hover .mt-primaryNavigation__toggle_icon {
   background-color: #FFFFFF;
 }
-.mt-primaryNavigation__toggle_bar.expanded .mt-primaryNavigation__toggle_icon {
+.mt-primaryNavigation__toggle_bar .mt-primaryNavigation__toggle_icon_wrapper.expanded .mt-primaryNavigation__toggle_icon {
   -webkit-mask-image: url(../../images/admin2025/icons/ic_close.svg);
           mask-image: url(../../images/admin2025/icons/ic_close.svg);
 }
-.mt-primaryNavigation__toggle_bar.collapsed .mt-primaryNavigation__toggle_icon {
+.mt-primaryNavigation__toggle_bar .mt-primaryNavigation__toggle_icon_wrapper.collapsed .mt-primaryNavigation__toggle_icon {
   -webkit-mask-image: url(../../images/admin2025/icons/ic_open.svg);
           mask-image: url(../../images/admin2025/icons/ic_open.svg);
 }

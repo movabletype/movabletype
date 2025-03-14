@@ -392,7 +392,7 @@ li{
   border-left: 1px solid $gray-lightest;
   outline: none;
 
-  &:hover {
+  &:has(:hover){
     border-left: 1px solid $gray-lighter;
   }
 
@@ -402,6 +402,9 @@ li{
     left: 0;
     transform: translateX(-50%);
     padding: 18px 10px;
+    background-color: transparent;
+    outline: none;
+    border: none;
 
     .mt-primaryNavigation__toggle_icon_border {
       border: 1px solid #000;
@@ -418,25 +421,25 @@ li{
       background-color: $cobalt;
       mask-image: url(../../images/admin2025/icons/ic_close.svg);
     }
-  }
 
-  &:hover {
-    .mt-primaryNavigation__toggle_icon_border {
-      background-color: $cobalt;
-    }
-    .mt-primaryNavigation__toggle_icon {
-      background-color: $white;
-    }
-  }
+    &:hover {
+      .mt-primaryNavigation__toggle_icon_border {
+        background-color: $cobalt;
+      }
+      .mt-primaryNavigation__toggle_icon {
+        background-color: $white;
+      }
 
-  &.expanded {
-    .mt-primaryNavigation__toggle_icon {
-      mask-image: url(../../images/admin2025/icons/ic_close.svg);
     }
-  }
-  &.collapsed {
-    .mt-primaryNavigation__toggle_icon {
-      mask-image: url(../../images/admin2025/icons/ic_open.svg);
+    &.expanded {
+      .mt-primaryNavigation__toggle_icon{
+        mask-image: url(../../images/admin2025/icons/ic_close.svg);
+      }
+    }
+    &.collapsed {
+      .mt-primaryNavigation__toggle_icon{
+        mask-image: url(../../images/admin2025/icons/ic_open.svg);
+      }
     }
   }
 }
