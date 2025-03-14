@@ -19,16 +19,7 @@ sub upgrade_functions {
         v9_list_field_indexes => {
             version_limit => 8.9994,
             priority      => 5,
-            updater       => {
-                type      => 'content_data',
-                label     => 'Migrating list field index data...',
-                condition => sub {
-                    my ($cd) = @_;
-                    my $removed = _remove_list_field_indexes($cd);
-                    return $removed;
-                },
-                code => sub { },    # do save only when regenerating list field indexes
-            },
+            code          => \&_v9_list_field_indexes,
         },
     };
 }
@@ -70,28 +61,82 @@ sub _v9_boolean_meta {
     return 1;
 }
 
-sub _remove_list_field_indexes {
-    my ($cd) = @_;
+sub _v9_list_field_indexes {
+    my $self  = shift;
+    my %param = @_;
 
-    my @list_fields = MT->model('content_field')->load({
-        content_type_id => $cd->content_type_id,
-        type            => 'list',
-    });
-    return unless @list_fields;
-
-    my %list_field_ids = map { $_->id => 1 } @list_fields;
-    my $removed        = MT->model('content_field_index')->remove({
-        content_data_id  => $cd->id,
-        content_field_id => [keys %list_field_ids],
-    });
-    unless ($removed) {
-        return MT::Upgrade->error(MT::Upgrade->translate_escape(
-            "Error removing list field index record for content data # [_1]: [_2]...",
-            $cd->id,
-            MT->model('content_field_index')->errstr,
-        ));
+    my $cf_ids_for_ct_id = $param{cf_ids_for_ct_id};
+    unless ($cf_ids_for_ct_id) {
+        $cf_ids_for_ct_id = {};
+        my $iter = MT->model('content_field')->load_iter(
+            { type => 'list' },
+            {
+                join => MT->model('content_type')->join_on(
+                    undef,
+                    { id => \'= cf_content_type_id' },
+                ),
+            },
+        );
+        while (my $cf = $iter->()) {
+            $cf_ids_for_ct_id->{ $cf->content_type_id } ||= [];
+            push @{ $cf_ids_for_ct_id->{ $cf->content_type_id } }, $cf->id;
+        }
     }
 
+    my $cd_class = MT->model('content_data');
+    my $msg      = $self->translate_escape('Migrating list field index data...');
+
+    my $terms  = { content_type_id => [keys %{$cf_ids_for_ct_id}] };
+    my $offset = $param{offset} || 0;
+    my $count  = $param{count}  || $cd_class->count($terms) or return;
+    if ($offset) {
+        $self->progress(
+            sprintf("$msg (%d%%)", ($offset / $count * 100)),
+            $param{step});
+    } else {
+        $self->progress($msg, $param{step});
+    }
+
+    my $continue = 0;
+    my $iter     = $cd_class->load_iter(
+        $terms,
+        {
+            sort   => 'content_type_id',
+            offset => $offset,
+            limit  => $self->max_rows + 1,
+        });
+    my $start = time;
+    my @list;
+    while (my $obj = $iter->()) {
+        push @list, $obj;
+        $continue = 1, last if scalar @list == $self->max_rows;
+    }
+    $iter->end if $continue;
+    for my $obj (@list) {
+        $offset++;
+
+        next unless $obj->content_type_id;
+
+        my $cf_ids = $cf_ids_for_ct_id->{ $obj->content_type_id };
+        next unless ref $cf_ids eq 'ARRAY' && @{$cf_ids} > 0;
+
+        local $@;
+        eval { $obj->update_cf_idx_multi($cf_ids) };
+        if (my $error = $@) {
+            return $self->error($self->translate_escape('Error migrating list field indexes of content data # [_1]: [_2]...', $obj->id, $error));
+        }
+
+        $continue = 1, last if time > $start + $self->max_time;
+    }
+    if ($continue) {
+        return {
+            offset           => $offset,
+            count            => $count,
+            cf_ids_for_ct_id => $cf_ids_for_ct_id,
+        };
+    } else {
+        $self->progress("$msg (100%)", $param{step});
+    }
     return 1;
 }
 
