@@ -31,21 +31,34 @@ export const fetchSites = async (props: FetchSitesProps): Promise<Sites> => {
       params: fetchParams,
     }),
     fetcher: async () => {
-      const result = await jQuery.ajax(window.ScriptURI, {
-        type: "POST",
-        contentType: "application/x-www-form-urlencoded; charset=utf-8",
-        data: fetchParams,
-        dataType: "json",
-      });
+      let error;
+      let result;
+      try {
+        result = await jQuery.ajax(window.ScriptURI, {
+          type: "POST",
+          contentType: "application/x-www-form-urlencoded; charset=utf-8",
+          data: fetchParams,
+          dataType: "json",
+          error: (xmlHttpRequest) => {
+            if (
+              xmlHttpRequest.readyState === 0 ||
+              xmlHttpRequest.status === 0
+            ) {
+              error = "possibly unloaded";
+            }
+          },
+        });
+      } catch (e) {
+        error ??= e;
+      }
 
-      if (result.error) {
-        console.log("Failed to fetch sites:", result.error);
+      if (error || result.error) {
         return {
           count: 0,
           page: 0,
           pageMax: 0,
           sites: [],
-          error: result.error,
+          error: error ?? result.error,
         };
       }
 
