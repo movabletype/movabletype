@@ -261,7 +261,6 @@ sub ct_unique_id {
 sub save {
     my $self = shift;
 
-    my $content_field_types = MT->registry('content_field_types');
     $self->clear_cache('content_type') if $self->id;
     my $content_type = $self->content_type
         or return $self->error( MT->translate('Invalid content type') );
@@ -298,9 +297,34 @@ sub save {
 
     $self->SUPER::save(@_) or return;
 
-    my $data = $self->data;
+    $self->update_cf_idx_multi;
 
-    foreach my $f ( @{ $content_type->fields } ) {
+    1;
+}
+
+sub update_cf_idx_multi {
+    my $self = shift;
+    my ($cf_ids) = @_;
+
+    if ($cf_ids && (ref $cf_ids ne 'ARRAY' || @{$cf_ids} == 0)) {
+        die MT->translate('Invalid content_field_ids argument');
+    }
+
+    my $content_type = $self->content_type
+        or die MT->translate('Invalid content type');
+
+    my @ct_fields;
+    if ($cf_ids) {
+        my %selected = map { $_ => 1 } @{$cf_ids};
+        @ct_fields = grep { $selected{ $_->{id} } } @{ $content_type->fields };
+    } else {
+        @ct_fields = @{ $content_type->fields };
+    }
+
+    my $content_field_types = MT->registry('content_field_types');
+    my $data                = $self->data;
+
+    foreach my $f (@ct_fields) {
         my $idx_type = $f->{type};
         next unless defined $idx_type;
 
@@ -309,29 +333,30 @@ sub save {
 
         my $value = $data->{ $f->{id} };
         $value = [$value] unless ref $value eq 'ARRAY';
-        $value = [ grep { defined $_ && $_ ne '' } @$value ];
+        $value = [grep { defined $_ && $_ ne '' } @$value];
 
         if (   $idx_type eq 'asset'
             || $idx_type eq 'asset_audio'
             || $idx_type eq 'asset_video'
-            || $idx_type eq 'asset_image' )
+            || $idx_type eq 'asset_image')
         {
-            $self->_update_object_assets( $content_type, $f, $value );
-        }
-        elsif ( $idx_type eq 'tags' ) {
-            $self->_update_object_tags( $content_type, $f, $value );
-        }
-        elsif ( $idx_type eq 'categories' ) {
-            $self->_update_object_categories( $content_type, $f, $value );
+            $self->_update_object_assets($content_type, $f, $value);
+        } elsif ($idx_type eq 'tags') {
+            $self->_update_object_tags($content_type, $f, $value);
+        } elsif ($idx_type eq 'categories') {
+            $self->_update_object_categories($content_type, $f, $value);
         }
 
         my $cf_idx_data_col = 'value_' . $data_type;
         next unless MT::ContentFieldIndex->has_column($cf_idx_data_col);
-        $self->_update_cf_idx( $content_type, $f, $value, $cf_idx_data_col,
-            $idx_type );
+
+        $self->_update_cf_idx(
+            $content_type, $f, $value, $cf_idx_data_col,
+            $idx_type
+        );
     }
 
-    1;
+    return;
 }
 
 sub _update_cf_idx {
