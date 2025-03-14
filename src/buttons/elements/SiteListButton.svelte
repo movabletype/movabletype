@@ -170,7 +170,7 @@
                 <SVG
                   title={window.trans("Search")}
                   class="mt-icon"
-                  href={`${window.StaticURI}images/sprite.svg#ic_search`}
+                  href={`${window.StaticURI}images/admin2025/sprite.svg#ic_search`}
                 />
               </button>
             </div>
@@ -215,14 +215,15 @@
                       <SVG
                         title={window.trans("Site")}
                         class="mt-icon mt-icon--sm"
-                        href={`${window.StaticURI}images/sprite.svg#ic_sites`}
-                      />{site.name}</a
-                    >
+                        href={`${window.StaticURI}images/admin2025/sprite.svg#${site.parentSiteName !== "-" ? "ic_subsites" : "ic_sites"}`}
+                      />
+                      {site.name}
+                    </a>
                     <a href={site.siteUrl} class="site-link" target="_blank">
                       <SVG
                         title={window.trans("View your site.")}
                         class="mt-icon mt-icon--sm"
-                        href={`${window.StaticURI}images/sprite.svg#ic_permalink`}
+                        href={`${window.StaticURI}images/admin2025/sprite.svg#ic_permalink`}
                       />
                     </a>
                   </td>
