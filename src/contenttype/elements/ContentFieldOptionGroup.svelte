@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { type Snippet } from "svelte";
+  import { type Snippet, untrack } from "svelte";
 
   // copied from lib/MT/Template/ContextHandlers.pm
 
@@ -25,8 +25,11 @@
   }: Props = $props();
 
   $effect(() => {
-    if (!options.display) {
-      options.display = "default";
+    const display = options.display;
+    if (!display) {
+      untrack(() => {
+        options.display = "default";
+      });
     }
   });
 

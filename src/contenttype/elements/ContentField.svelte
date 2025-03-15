@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { untrack } from "svelte";
   import type * as ContentType from "../../@types/contenttype";
 
   import ContentFieldTypes from "../ContentFieldTypes";
@@ -6,7 +7,6 @@
 
   import Custom from "./Custom.svelte";
   import SVG from "../../svg/elements/SVG.svelte";
-  import ContentType from "./ContentType.svelte";
 
   type Props = {
     config: ContentType.ConfigSettings;
@@ -33,21 +33,13 @@
   let id = $derived(`field-options-${field.id}`);
 
   $effect(() => {
-    if (field.isNew === null) {
-      field.isNew = false;
-    }
-
-    if (field.isShow === null) {
-      field.isShow = "";
-    }
-
-    if (field.realId === null) {
-      field.realId = "";
-    }
-
-    if (field.options === null) {
-      field.options = {};
-    }
+    const { isNew, isShow, realId, options } = field;
+    untrack(() => {
+      if (isNew === null) field.isNew = false;
+      if (isShow === null) field.isShow = "";
+      if (realId === null) field.realId = "";
+      if (options === null) field.options = {};
+    });
   });
 
   let gatherCore = $state<(() => object) | undefined>(undefined);

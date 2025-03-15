@@ -111,7 +111,7 @@ describe("ContentFieldOptionGroup Component", () => {
     render(ContentFieldOptionGroup, { props });
     await tick();
 
-    expect(props.options.display).toBeTruthy();
+    expect(props.options.display).toBe("default");
   });
 
   it("should use id:field.id format for new fields", () => {

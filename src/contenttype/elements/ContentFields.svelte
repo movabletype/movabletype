@@ -309,7 +309,11 @@
         const newData: ContentType.SubmitFieldOption = {};
         newData.type = $fieldsStore[i].type;
         newData.options = options;
-        if (!$fieldsStore[i].isNew && options["id"].match(/^\d+$/)) {
+        if (
+          !$fieldsStore[i].isNew &&
+          options["id"] &&
+          options["id"].match(/^\d+$/)
+        ) {
           newData.id = options["id"];
         }
         const innerField = $fieldsStore.filter(function (v) {

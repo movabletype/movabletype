@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { untrack } from "svelte";
+  import { untrack, onDestroy } from "svelte";
   import type * as ContentType from "../../@types/contenttype";
 
   import ContentFieldTypes from "../ContentFieldTypes";
@@ -57,15 +57,15 @@
     }
 
     type = currentFieldType;
+  });
 
-    return () => {
-      if (untrack(() => customContentFieldObject)) {
-        gather = null;
-        customContentFieldObject?.destroy();
-        customContentFieldObject = null;
-      }
-      type = null;
-    };
+  onDestroy(() => {
+    if (customContentFieldObject) {
+      gather = null;
+      customContentFieldObject.destroy();
+      customContentFieldObject = null;
+    }
+    type = null;
   });
 </script>
 

@@ -10,7 +10,7 @@ import CustomElementField from "./elements/CustomElementField.svelte";
 
 import "./MtContentFieldOption";
 
-import { mount as svelteMount } from "svelte";
+import { mount as svelteMount, unmount } from "svelte";
 
 class CustomElementFieldBase extends HTMLElement {
   options: ContentType.Options = {};
@@ -59,7 +59,7 @@ export default class ContentTypeEditor {
             return options;
           },
           destroy: () => {
-            customElementField.$destroy();
+            unmount(customElementField);
           },
         };
       };
