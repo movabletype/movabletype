@@ -107,6 +107,7 @@
         </div>
         <div class="search-content-type">
           <select
+            class="custom-select form-control form-select"
             class:disabled={objectType !== "content_data"}
             name="content_type_id"
             disabled={objectType !== "content_data" ||

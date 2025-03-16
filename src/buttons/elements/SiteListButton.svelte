@@ -108,20 +108,27 @@
 <svelte:body on:click={clickEvent} />
 
 {#if open}
+  <!-- svelte-ignore a11y-click-events-have-key-events -->
+  <!-- svelte-ignore a11y-no-static-element-interactions -->
+  <div
+    class="site-list-button-modal-overlay"
+    on:click={handleClose}
+    use:portal={"body"}
+  ></div>
   <div
     class="modal site-list-button-modal"
     use:portal={"body"}
     bind:this={modalRef}
   >
     <div class="modal-body">
-      <div class="site-list-table">
-        <div class="site-list-table-header">
-          <div class="table-title">
+      <div class="site-list-container">
+        <div class="site-list-header">
+          <div class="site-list-title">
             <span>({window.trans("[_1]Site", totalCount.toString())})</span>
             <p>{window.trans("Site List")}</p>
           </div>
 
-          <div class="table-control">
+          <div class="site-list-actions">
             <div class="prev-next">
               <button
                 type="button"
@@ -152,7 +159,11 @@
               >
             </div>
             <div class="site-type-filter">
-              <select bind:value={siteType} on:change={filterApply}>
+              <select
+                bind:value={siteType}
+                on:change={filterApply}
+                class="custom-select form-control form-select"
+              >
                 <option value="">{window.trans("All Sites")}</option>
                 <option value="blog">
                   {window.trans("Only to child sites within this system")}
@@ -170,74 +181,70 @@
                 <SVG
                   title={window.trans("Search")}
                   class="mt-icon"
-                  href={`${window.StaticURI}images/sprite.svg#ic_search`}
+                  href={`${window.StaticURI}images/admin2025/sprite.svg#ic_search`}
                 />
               </button>
             </div>
-            <div class="close">
-              <button
-                type="button"
-                class="close"
-                data-dismiss="modal"
-                aria-label="Close"
-                on:click={handleClose}
-              >
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
+            <button
+              type="button"
+              class="close"
+              data-dismiss="modal"
+              aria-label="Close"
+              on:click={handleClose}
+            >
+              <span aria-hidden="true">&times;</span>
+            </button>
           </div>
         </div>
-        <table>
-          <thead>
-            <tr>
-              <th>
-                {window.trans("Site Name")}
-              </th>
-              <th>
-                {window.trans("Parent Site")}
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {#if loading}
-              <tr>
-                <td colspan="2" class="loading">{window.trans("Loading...")}</td
-                >
-              </tr>
-            {:else}
-              {#each sites as site}
+        <div class="site-list-table-header">
+          <span class="table-header-col site-list-header-name">
+            {window.trans("Site Name")}
+          </span>
+          <span class="table-header-col site-list-header-parent">
+            {window.trans("Parent Site")}
+          </span>
+        </div>
+        <div class="site-list-table-wrapper">
+          <table>
+            <tbody>
+              {#if loading}
                 <tr>
-                  <td>
-                    <a
-                      href={`${window.ScriptURI}?__mode=dashboard&blog_id=${site.id}`}
-                      class="dashboard-link"
-                    >
-                      <SVG
-                        title={window.trans("Site")}
-                        class="mt-icon mt-icon--sm"
-                        href={`${window.StaticURI}images/sprite.svg#ic_sites`}
-                      />{site.name}</a
-                    >
-                    <a href={site.siteUrl} class="site-link" target="_blank">
-                      <SVG
-                        title={window.trans("View your site.")}
-                        class="mt-icon mt-icon--sm"
-                        href={`${window.StaticURI}images/sprite.svg#ic_permalink`}
-                      />
-                    </a>
-                  </td>
-                  <td>
-                    {#if site.parentSiteName}
-                      {site.parentSiteName}
-                    {:else}
-                      <span class="text-center">-</span>
-                    {/if}
-                  </td>
+                  <td colspan="2" class="loading"
+                    >{window.trans("Loading...")}</td
+                  >
                 </tr>
-              {/each}
-            {/if}
-          </tbody>
-        </table>
+              {:else}
+                {#each sites as site}
+                  <tr>
+                    <td>
+                      <a
+                        href={`${window.ScriptURI}?__mode=dashboard&blog_id=${site.id}`}
+                        class="dashboard-link"
+                      >
+                        <SVG
+                          title={window.trans("Site")}
+                          class="mt-icon mt-icon--sm"
+                          href={`${window.StaticURI}images/admin2025/sprite.svg#${site.parentSiteName !== "-" ? "ic_subsites" : "ic_sites"}`}
+                        />
+                        {site.name}
+                      </a>
+                      <a href={site.siteUrl} class="site-link" target="_blank">
+                        <SVG
+                          title={window.trans("View your site.")}
+                          class="mt-icon mt-icon--sm"
+                          href={`${window.StaticURI}images/admin2025/sprite.svg#ic_permalink`}
+                        />
+                      </a>
+                    </td>
+                    <td>
+                      {site.parentSiteName}
+                    </td>
+                  </tr>
+                {/each}
+              {/if}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>
