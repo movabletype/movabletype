@@ -159,7 +159,11 @@
               >
             </div>
             <div class="site-type-filter">
-              <select bind:value={siteType} on:change={filterApply}>
+              <select
+                bind:value={siteType}
+                on:change={filterApply}
+                class="custom-select form-control form-select"
+              >
                 <option value="">{window.trans("All Sites")}</option>
                 <option value="blog">
                   {window.trans("Only to child sites within this system")}

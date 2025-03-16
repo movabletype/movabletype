@@ -14235,7 +14235,7 @@ body:has(.collapsed) .debug-panel {
   top: var(--header-height);
   left: var(--left-bar-width);
   width: calc(100vw - var(--left-bar-width));
-  height: 100vh;
+  height: calc(100vh - var(--header-height));
   overflow: hidden;
   background-color: #ffffff;
   z-index: calc(var(--modal-z-index) + 1);
@@ -14252,7 +14252,6 @@ body:has(.collapsed) .debug-panel {
   max-height: none;
   display: flex;
   flex-direction: column;
-  height: 100%;
   overflow: hidden;
 }
 .site-list-button-modal .close {
@@ -14326,7 +14325,6 @@ body:has(.collapsed) .debug-panel {
   border: 1px solid #cbcbcb;
   border-radius: 7px;
   background-color: #FFFFFF;
-  padding-left: 14px;
   background-position: right 10px center;
 }
 .site-list-button-modal .site-list-header .site-name-filter {
@@ -14387,15 +14385,15 @@ body:has(.collapsed) .debug-panel {
   height: 100%;
 }
 .site-list-button-modal .site-list-container {
-  padding-bottom: 30px;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 .site-list-button-modal .site-list-container table {
   width: 100%;
   table-layout: fixed;
   border-spacing: 0;
   border-collapse: separate;
-  margin-bottom: 20px;
 }
 .site-list-button-modal .site-list-container table tr {
   text-align: left;
