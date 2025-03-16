@@ -25,13 +25,27 @@ export const fetchContentTypes = async (
       params: fetchParams,
     }),
     fetcher: async () => {
-      const result = await jQuery.ajax(window.ScriptURI, {
-        type: "POST",
-        contentType: "application/x-www-form-urlencoded; charset=utf-8",
-        data: fetchParams,
-        dataType: "json",
-      });
-      if (result.result.success !== 1) {
+      let error;
+      let result;
+      try {
+        result = await jQuery.ajax(window.ScriptURI, {
+          type: "POST",
+          contentType: "application/x-www-form-urlencoded; charset=utf-8",
+          data: fetchParams,
+          dataType: "json",
+          error: (xmlHttpRequest) => {
+            if (
+              xmlHttpRequest.readyState === 0 ||
+              xmlHttpRequest.status === 0
+            ) {
+              error = "possibly unloaded";
+            }
+          },
+        });
+      } catch (e) {
+        error ??= e;
+      }
+      if (error || result.result.success !== 1) {
         return {
           contentTypes: [],
         };
