@@ -144,49 +144,29 @@ sub _update_cf_idx_multi {
     my $self = shift;
     my ($cf_ids) = @_;
 
-    if ($cf_ids && (ref $cf_ids ne 'ARRAY' || @{$cf_ids} == 0)) {
+    if (ref $cf_ids ne 'ARRAY' || @{$cf_ids} == 0) {
         die MT->translate('Invalid content_field_ids argument');
     }
 
     my $content_type = $self->content_type
         or die MT->translate('Invalid content type');
 
-    my @ct_fields;
-    if ($cf_ids) {
-        my %selected = map { $_ => 1 } @{$cf_ids};
-        @ct_fields = grep { $selected{ $_->{id} } } @{ $content_type->fields };
-    } else {
-        @ct_fields = @{ $content_type->fields };
-    }
+    my %selected  = map  { $_ => 1 } @{$cf_ids};
+    my @ct_fields = grep { $selected{ $_->{id} } } @{ $content_type->fields };
 
     my $content_field_types = MT->registry('content_field_types');
     my $data                = $self->data;
 
+    my $idx_type        = 'list';
+    my $data_type       = 'text';
+    my $cf_idx_data_col = 'value_' . $data_type;
     foreach my $f (@ct_fields) {
-        my $idx_type = $f->{type};
-        next unless defined $idx_type;
-
-        my $data_type = $content_field_types->{$idx_type}{data_type};
-        next unless defined $data_type;
+        next unless ($f->{type}                                   || '') eq $idx_type;
+        next unless ($content_field_types->{$idx_type}{data_type} || '') eq $data_type;
 
         my $value = $data->{ $f->{id} };
         $value = [$value] unless ref $value eq 'ARRAY';
         $value = [grep { defined $_ && $_ ne '' } @$value];
-
-        if (   $idx_type eq 'asset'
-            || $idx_type eq 'asset_audio'
-            || $idx_type eq 'asset_video'
-            || $idx_type eq 'asset_image')
-        {
-            $self->_update_object_assets($content_type, $f, $value);
-        } elsif ($idx_type eq 'tags') {
-            $self->_update_object_tags($content_type, $f, $value);
-        } elsif ($idx_type eq 'categories') {
-            $self->_update_object_categories($content_type, $f, $value);
-        }
-
-        my $cf_idx_data_col = 'value_' . $data_type;
-        next unless MT::ContentFieldIndex->has_column($cf_idx_data_col);
 
         $self->_update_cf_idx(
             $content_type, $f, $value, $cf_idx_data_col,
