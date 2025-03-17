@@ -121,7 +121,7 @@ sub _v9_list_field_indexes {
         next unless ref $cf_ids eq 'ARRAY' && @{$cf_ids} > 0;
 
         local $@;
-        eval { _update_cf_idx_multi($obj, $cf_ids) };
+        eval { _update_list_cf_idxs($obj, $cf_ids) };
         if (my $error = $@) {
             return $self->error($self->translate_escape('Error migrating list field indexes of content data # [_1]: [_2]...', $obj->id, $error));
         }
@@ -140,22 +140,23 @@ sub _v9_list_field_indexes {
     return 1;
 }
 
-sub _update_cf_idx_multi {
-    my $self = shift;
+# copied from MT::ContentData::update_cf_idx_multi(), and reduced unnecessary processes
+sub _update_list_cf_idxs {
+    my $cd = shift;
     my ($cf_ids) = @_;
 
     if (ref $cf_ids ne 'ARRAY' || @{$cf_ids} == 0) {
         die MT->translate('Invalid content_field_ids argument');
     }
 
-    my $content_type = $self->content_type
+    my $content_type = $cd->content_type
         or die MT->translate('Invalid content type');
 
     my %selected  = map  { $_ => 1 } @{$cf_ids};
     my @ct_fields = grep { $selected{ $_->{id} } } @{ $content_type->fields };
 
     my $content_field_types = MT->registry('content_field_types');
-    my $data                = $self->data;
+    my $data                = $cd->data;
 
     my $idx_type        = 'list';
     my $data_type       = 'text';
@@ -168,7 +169,7 @@ sub _update_cf_idx_multi {
         $value = [$value] unless ref $value eq 'ARRAY';
         $value = [grep { defined $_ && $_ ne '' } @$value];
 
-        $self->_update_cf_idx(
+        $cd->_update_cf_idx(
             $content_type, $f, $value, $cf_idx_data_col,
             $idx_type
         );
