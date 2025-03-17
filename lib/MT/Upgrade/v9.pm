@@ -65,6 +65,8 @@ sub _v9_list_field_indexes {
     my $self  = shift;
     my %param = @_;
 
+    my $start = time;
+
     my $cf_ids_for_ct_id = $param{cf_ids_for_ct_id};
     unless ($cf_ids_for_ct_id) {
         $cf_ids_for_ct_id = {};
@@ -105,7 +107,6 @@ sub _v9_list_field_indexes {
             offset => $offset,
             limit  => $self->max_rows + 1,
         });
-    my $start = time;
     my @list;
     while (my $obj = $iter->()) {
         push @list, $obj;
