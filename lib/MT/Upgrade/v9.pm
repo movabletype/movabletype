@@ -9,6 +9,8 @@ package MT::Upgrade::v9;
 use strict;
 use warnings;
 
+our $MIGRATE_LIST_FIELD_INDEX_BATCH_SIZE = 100;
+
 sub upgrade_functions {
     return {
         v9_boolean_meta => {
@@ -99,23 +101,14 @@ sub _v9_list_field_indexes {
         $self->progress($msg, $param{step});
     }
 
-    my $continue = 0;
-    my $iter     = $cd_class->load_iter(
+    my @list = $cd_class->load(
         $terms,
         {
             sort   => 'content_type_id',
             offset => $offset,
-            limit  => $self->max_rows + 1,
+            limit  => $MIGRATE_LIST_FIELD_INDEX_BATCH_SIZE,
         });
-    my @list;
-    while (my $obj = $iter->()) {
-        push @list, $obj;
-        if (scalar @list == $self->max_rows) {
-            $continue = 1;
-            last;
-        }
-    }
-    $iter->end if $continue;
+    my $continue = @list == $MIGRATE_LIST_FIELD_INDEX_BATCH_SIZE;
     for my $obj (@list) {
         $offset++;
 
