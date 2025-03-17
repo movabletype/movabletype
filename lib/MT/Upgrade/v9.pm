@@ -109,7 +109,10 @@ sub _v9_list_field_indexes {
     my @list;
     while (my $obj = $iter->()) {
         push @list, $obj;
-        $continue = 1, last if scalar @list == $self->max_rows;
+        if (scalar @list == $self->max_rows) {
+            $continue = 1;
+            last;
+        }
     }
     $iter->end if $continue;
     for my $obj (@list) {
@@ -126,7 +129,10 @@ sub _v9_list_field_indexes {
             return $self->error($self->translate_escape('Error migrating list field indexes of content data # [_1]: [_2]...', $obj->id, $error));
         }
 
-        $continue = 1, last if time > $start + $self->max_time;
+        if (time > $start + $self->max_time) {
+            $continue = 1;
+            last;
+        }
     }
     if ($continue) {
         return {
