@@ -61,7 +61,7 @@
 </mt:setvarblock>
 
 <mt:setvarblock name="js_include" append="1">
-<mt:script type="text/javascript" path="js/cms.js">
+<mtapp:script type="text/javascript" path="js/cms.js">
 
 <mt:ignore><!-- Do not indent the following lines to avoid Riot.js error. --></mt:ignore>
 <mt:if name="config.useriot">
@@ -73,14 +73,14 @@
 </mt:if>
 
   <mt:if name="debug_riot">
-    <mt:script type="riot/tag" path="js/ss/tag/ss.tag">
-    <mt:script type="riot/tag" path="js/admin2025/contenttype/tag/content-fields.tag">
-    <mt:script type="riot/tag" path="js/admin2025/contenttype/tag/content-field.tag">
-    <mt:script type="text/javascript" path="riot/riot-compiler.js">
+    <mtapp:script type="riot/tag" path="js/ss/tag/ss.tag">
+    <mtapp:script type="riot/tag" path="js/admin2025/contenttype/tag/content-fields.tag">
+    <mtapp:script type="riot/tag" path="js/admin2025/contenttype/tag/content-field.tag">
+    <mtapp:script type="text/javascript" path="riot/riot-compiler.js">
   <mt:else>
-    <mt:script type="text/javascript" path="riot/riot-compiler.min.js">
-    <mt:script type="text/javascript" path="js/ss/ss.js">
-    <mt:script type="text/javascript" path="js/admin2025/contenttype/contenttype.js">
+    <mtapp:script type="text/javascript" path="riot/riot-compiler.min.js">
+    <mtapp:script type="text/javascript" path="js/ss/ss.js">
+    <mtapp:script type="text/javascript" path="js/admin2025/contenttype/contenttype.js">
   </mt:if>
 </mt:if>
 
