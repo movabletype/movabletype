@@ -335,7 +335,7 @@ If the path contains the string '%l', replace '%l' with the corresponding langua
 
 =cut
 
-sub _hdlr_script {
+sub _hdlr_app_script {
     my ($ctx, $args) = @_;
 
     my $path    = $args->{path} or return $ctx->error(MT->translate("path is required."));
@@ -375,7 +375,7 @@ If the path contains the string '%l', replace '%l' with the corresponding langua
 
 =cut
 
-sub _hdlr_stylesheet {
+sub _hdlr_app_stylesheet {
     my ($ctx, $args) = @_;
 
     my $path    = $args->{path} or return $ctx->error(MT->translate("path is required."));

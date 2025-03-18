@@ -5,7 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mtscript($args, &$ctx) {
+function smarty_function_mtappscript($args, &$ctx) {
     $path = $args['path'];
     if (!isset($path)) {
       return $ctx->error($ctx->mt->translate('path is required.'));
