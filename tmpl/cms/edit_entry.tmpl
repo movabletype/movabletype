@@ -1048,7 +1048,7 @@ div.mce-notification-error {
 
 <mt:setvarblock name="js_include" append="1">
   <!--// this MUST loaded after mt.js // -->
-  <mt:script type="text/javascript" path="js/edit.js">
+  <mtapp:script type="text/javascript" path="js/edit.js">
 </mt:setvarblock>
 
 <mt:unless name="editors">
@@ -1085,9 +1085,9 @@ div.mce-notification-error {
 
 <mt:setvarblock name="html_head" prepend="1">
   <mt:stylesheet path="css/editor/common.css">
-  <mt:script type="text/javascript" path="js/tc/focus.js">
-  <mt:script type="text/javascript" path="js/tc/tagcomplete.js">
-  <mt:script type="text/javascript" path="js/tc/client.js">
+  <mtapp:script type="text/javascript" path="js/tc/focus.js">
+  <mtapp:script type="text/javascript" path="js/tc/tagcomplete.js">
+  <mtapp:script type="text/javascript" path="js/tc/client.js">
   <script type="text/javascript">
     /* <![CDATA[ */
       var orig_text_format;
