@@ -9,7 +9,6 @@ use strict;
 use warnings;
 
 use MT;
-use MT::Util qw( encode_html );
 use MT::Util::Encode;
 use MT::Request;
 use MT::Category;
