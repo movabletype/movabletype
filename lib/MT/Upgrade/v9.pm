@@ -111,8 +111,6 @@ sub _v9_list_field_indexes {
     for my $obj (@list) {
         $offset++;
 
-        next unless $obj->content_type_id;
-
         my $cf_ids = $cf_ids_for_ct_id->{ $obj->content_type_id };
         next unless ref $cf_ids eq 'ARRAY' && @{$cf_ids} > 0;
 
@@ -140,10 +138,6 @@ sub _v9_list_field_indexes {
 sub _update_list_cf_idxs {
     my $cd = shift;
     my ($cf_ids) = @_;
-
-    if (ref $cf_ids ne 'ARRAY' || @{$cf_ids} == 0) {
-        die MT->translate('Invalid content_field_ids argument');
-    }
 
     my $content_type = $cd->content_type
         or die MT->translate('Invalid content type');
