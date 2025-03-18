@@ -104,30 +104,30 @@ sub _v9_list_field_indexes {
     my %ct_cache;
     my %ct_fields_cache;
 
-    my @list = $cd_class->load(
+    my @cds = $cd_class->load(
         $terms,
         {
             sort   => [{ column => 'content_type_id' }, { column => 'id' }],
             offset => $offset,
             limit  => $MIGRATE_LIST_FIELD_INDEX_BATCH_SIZE,
         });
-    for my $obj (@list) {
+    for my $cd (@cds) {
         $offset++;
 
-        my $content_type = $ct_cache{ $obj->content_type_id } || $obj->content_type
+        my $ct = $ct_cache{ $cd->content_type_id } || $cd->content_type
             or return $self->error($self->translate_escape('Invalid content type'));
 
-        my $ct_fields = $ct_fields_cache{ $obj->content_type_id };
+        my $ct_fields = $ct_fields_cache{ $cd->content_type_id };
         unless ($ct_fields) {
-            my $cf_ids   = $cf_ids_for_ct_id->{ $obj->content_type_id } || [];
+            my $cf_ids   = $cf_ids_for_ct_id->{ $cd->content_type_id } || [];
             my %selected = map { $_ => 1 } @{$cf_ids};
-            $ct_fields = $ct_fields_cache{ $obj->content_type_id } = [grep { $selected{ $_->{id} } && $_->{type} eq 'list' } @{ $content_type->fields }];
+            $ct_fields = $ct_fields_cache{ $cd->content_type_id } = [grep { $selected{ $_->{id} } && $_->{type} eq 'list' } @{ $ct->fields }];
         }
 
         local $@;
-        eval { _update_list_cf_idxs($obj, $content_type, $ct_fields) };
+        eval { _update_list_cf_idxs($cd, $ct, $ct_fields) };
         if (my $error = $@) {
-            return $self->error($self->translate_escape('Error migrating list field indexes of content data # [_1]: [_2]...', $obj->id, $error));
+            return $self->error($self->translate_escape('Error migrating list field indexes of content data # [_1]: [_2]...', $cd->id, $error));
         }
 
         last if time > $start + $self->max_time;
@@ -147,7 +147,7 @@ sub _v9_list_field_indexes {
 # copied from MT::ContentData::update_cf_idx_multi(), and reduced unnecessary processes
 sub _update_list_cf_idxs {
     my $cd = shift;
-    my ($content_type, $ct_fields) = @_;
+    my ($ct, $ct_fields) = @_;
 
     my $data            = $cd->data;
     my $idx_type        = 'list';
@@ -158,10 +158,7 @@ sub _update_list_cf_idxs {
         $value = [$value] unless ref $value eq 'ARRAY';
         $value = [grep { defined $_ && $_ ne '' } @$value];
 
-        $cd->_update_cf_idx(
-            $content_type, $f, $value, $cf_idx_data_col,
-            $idx_type
-        );
+        $cd->_update_cf_idx($ct, $f, $value, $cf_idx_data_col, $idx_type);
     }
 
     return;
