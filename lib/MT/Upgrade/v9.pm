@@ -144,7 +144,6 @@ sub _v9_list_field_indexes {
     return 1;
 }
 
-# copied from MT::ContentData::update_cf_idx_multi(), and reduced unnecessary processes
 sub _update_list_cf_idxs {
     my $cd = shift;
     my ($ct, $ct_fields) = @_;
