@@ -4562,7 +4562,7 @@ use vars qw( @ISA %Lexicon );
 	'Preview this entry (v)' => '記事をプレビュー (v)',
 	'Preview this page (v)' => 'ウェブページをプレビュー (v)',
 	'Reset display options to blog defaults' => '表示オプションをブログの既定値にリセット',
-	'Restored revision (Date:[_1]).  The current status is: [_2]' => '更新履歴(日付: [_1])に戻しました。ステータス: [_2]',
+	'Restored revision (Date:[_1]).  The current status is: [_2]' => '[_1] に保存したときの状態に戻しました。ステータス: [_2]',
 	'Selected Categories' => '選択されたカテゴリ',
 	'Share' => '共有',
 	'Some [_1] in the revision could not be loaded because they have been removed.' => '履歴データ内に、削除されたために読み込めなかった[_1]があります。',
