@@ -32,17 +32,17 @@
     <title><__trans phrase="Preview"> | <$mt:var name="mt_product_name"$></title>
     <link rel="icon" href="<$mt:var name="static_uri"$>images/favicon.ico" type="image/ico" />
 <mt:unless name="optimize_ui">
-    <mt:stylesheet path="styles.css">
-    <mt:stylesheet path="css/mt.css">
+    <mtapp:stylesheet path="styles.css">
+    <mtapp:stylesheet path="css/mt.css">
 <mt:else>
-    <mt:stylesheet path="css/main.css">
-    <mt:stylesheet path="css/mt.min.css">
+    <mtapp:stylesheet path="css/main.css">
+    <mtapp:stylesheet path="css/mt.min.css">
 </mt:unless>
     <!--[if IE]>
-    <mt:stylesheet path="css/hacks/ie.css">
+    <mtapp:stylesheet path="css/hacks/ie.css">
     <![endif]-->
 <mt:if name="local_lang_id" ne="en-us">
-    <mt:stylesheet path="styles_%l.css">
+    <mtapp:stylesheet path="styles_%l.css">
 </mt:if>
     <script type="text/javascript">
       /* <![CDATA[ */

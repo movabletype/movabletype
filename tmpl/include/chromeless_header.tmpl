@@ -10,20 +10,20 @@
 <mt:unless name="cfg_exists">
   <link rel="icon" href="<$mt:var name="static_uri"$>images/favicon.ico" type="image/ico" />
   <mt:unless name="optimize_ui">
-  <mt:stylesheet path="css/reset.css">
-  <mt:stylesheet path="css/chromeless.css">
-  <mt:stylesheet path="css/form.css">
-  <mt:stylesheet path="css/messaging.css">
-  <mt:stylesheet path="css/utilities.css">
-  <mt:stylesheet path="css/listing.css">
+  <mtapp:stylesheet path="css/reset.css">
+  <mtapp:stylesheet path="css/chromeless.css">
+  <mtapp:stylesheet path="css/form.css">
+  <mtapp:stylesheet path="css/messaging.css">
+  <mtapp:stylesheet path="css/utilities.css">
+  <mtapp:stylesheet path="css/listing.css">
   <mt:else>
-  <mt:stylesheet path="css/simple.css">
+  <mtapp:stylesheet path="css/simple.css">
   </mt:unless>
   <!--[if IE]>
-  <mt:stylesheet path="css/hacks/ie.css">
+  <mtapp:stylesheet path="css/hacks/ie.css">
   <![endif]-->
   <mt:if name="local_lang_id" ne="en-us">
-  <mt:stylesheet path="styles_%l.css">
+  <mtapp:stylesheet path="styles_%l.css">
   </mt:if>
   <mtapp:script type="text/javascript" path="js/tc.js">
 </mt:unless>

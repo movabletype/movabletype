@@ -6,12 +6,12 @@
   <meta charset="<$mt:var name="language_encoding"$>" />
   <title><mt:loop name="page_titles"><mt:var name="bc_name" escape="html"> | </mt:loop><mt:var name="mt_product_name"></title>
 <mt:unless name="optimize_ui">
-  <mt:stylesheet path="styles.css">
+  <mtapp:stylesheet path="styles.css">
 <mt:else>
-  <mt:stylesheet path="css/main.css">
+  <mtapp:stylesheet path="css/main.css">
 </mt:unless>
   <!--[if IE]>
-  <mt:stylesheet path="css/hacks/ie.css">
+  <mtapp:stylesheet path="css/hacks/ie.css">
   <![endif]-->
 <mt:unless name="optimize_ui">
   <mtapp:script type="text/javascript" path="jquery/jquery.js">
@@ -58,7 +58,7 @@
   <mtapp:script type="text/javascript" path="mt.js">
   <mtapp:script type="text/javascript" path="mt_%l.js">
 <mt:if name="local_lang_id" ne="en-us">
-  <mt:stylesheet path="styles_%l.css">
+  <mtapp:stylesheet path="styles_%l.css">
 </mt:if>
 
 <mt:unless name="optimize_ui">
