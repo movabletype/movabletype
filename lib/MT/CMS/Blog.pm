@@ -2187,6 +2187,9 @@ sub save_filter {
             MT->translate("Please choose a preferred archive type.") )
             if ( !$app->param('no_archives_are_active')
             && !$app->param('preferred_archive_type') );
+        return $eh->error(
+            MT->translate("The file extension must be shorter than 10 characters.") )
+            if length($app->param('file_extension')) > 10;
     }
     return 1;
 }
