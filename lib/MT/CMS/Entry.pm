@@ -93,8 +93,10 @@ sub edit {
                 my $rev = $obj->load_revision( { rev_number => $rn } );
                 if ( $rev && @$rev ) {
                     $obj = $rev->[0];
+                    my $rev_obj = $rev->[3];
                     my $values = $obj->get_values;
                     $param->{$_} = $values->{$_} foreach keys %$values;
+                    $param->{'revision-note'} = $rev_obj->description;
                     $param->{loaded_revision} = 1;
                 }
                 $param->{rev_number}       = $rn;
@@ -151,6 +153,7 @@ sub edit {
         my $status = $app->param('status') || $obj->status;
         $status =~ s/\D//g;
         $param->{status} = $status;
+        $param->{status_text} = MT::Entry::status_text($status);
         $param->{ "status_" . MT::Entry::status_text($status) } = 1;
         if ((      $obj->status == MT::Entry::JUNK()
                 || $obj->status == MT::Entry::REVIEW()

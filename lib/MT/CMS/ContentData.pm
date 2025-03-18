@@ -177,7 +177,7 @@ sub edit {
 
             my $original_revision = $content_data->revision;
             my $rn                = $app->param('r');
-            if ( defined $rn && $rn != $content_data->current_revision ) {
+            if ( defined($rn) && $rn != $content_data->current_revision ) {
                 my $status_text
                     = MT::ContentStatus::status_text( $content_data->status );
                 $param->{current_status_text} = $status_text;
@@ -187,8 +187,10 @@ sub edit {
                     = $content_data->load_revision( { rev_number => $rn } );
                 if ( $rev && @$rev ) {
                     $content_data = $rev->[0];
+                    my $rev_obj = $rev->[3];
                     my $values = $content_data->get_values;
                     $param->{$_} = $values->{$_} for keys %$values;
+                    $param->{'revision-note'} = $rev_obj->description;
                     $param->{loaded_revision} = 1;
                 }
                 $param->{rev_number}  = $rn;
@@ -215,6 +217,7 @@ sub edit {
         my $status = $app->param('status') || $content_data->status;
         $status =~ s/\D//g;
         $param->{status} = $status;
+        $param->{status_text} = MT::Entry::status_text($status);
         $param->{ 'status_' . MT::ContentStatus::status_text($status) } = 1;
 
         $param->{content_data_permalink} =

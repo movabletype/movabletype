@@ -4507,6 +4507,8 @@ use vars qw( @ISA %Lexicon );
 	'Unpublished Time' => '公開取り消し時刻',
 	'Update this [_1]' => '[_1]の更新',
 	'Update' => '更新',
+	'Current: [_1]' => '最新: [_1]',
+ 	'Displaying: [_1]' => '表示中: [_1]',
 	'View revisions of this [_1]' => '[_1]の更新履歴を表示',
 	'View revisions' => '更新履歴を表示',
 	'Warning: If you set the basename manually, it may conflict with another content data.' => '警告: 出力ファイル名を手動で設定すると、他のコンテンツデータと衝突を起こす可能性があります。',
