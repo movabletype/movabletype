@@ -108,7 +108,6 @@ sub _v9_list_field_indexes {
             offset => $offset,
             limit  => $MIGRATE_LIST_FIELD_INDEX_BATCH_SIZE,
         });
-    my $continue = @list == $MIGRATE_LIST_FIELD_INDEX_BATCH_SIZE;
     for my $obj (@list) {
         $offset++;
 
@@ -123,12 +122,9 @@ sub _v9_list_field_indexes {
             return $self->error($self->translate_escape('Error migrating list field indexes of content data # [_1]: [_2]...', $obj->id, $error));
         }
 
-        if (time > $start + $self->max_time) {
-            $continue = 1;
-            last;
-        }
+        last if time > $start + $self->max_time;
     }
-    if ($continue) {
+    if ($offset < $count) {
         return {
             offset           => $offset,
             count            => $count,
