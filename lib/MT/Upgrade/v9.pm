@@ -104,7 +104,7 @@ sub _v9_list_field_indexes {
     my @list = $cd_class->load(
         $terms,
         {
-            sort   => 'content_type_id',
+            sort   => [{ column => 'content_type_id' }, { column => 'id' }],
             offset => $offset,
             limit  => $MIGRATE_LIST_FIELD_INDEX_BATCH_SIZE,
         });
