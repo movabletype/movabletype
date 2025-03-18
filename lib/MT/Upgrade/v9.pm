@@ -101,6 +101,9 @@ sub _v9_list_field_indexes {
         $self->progress($msg, $param{step});
     }
 
+    my %ct_cache;
+    my %ct_fields_cache;
+
     my @list = $cd_class->load(
         $terms,
         {
@@ -111,11 +114,18 @@ sub _v9_list_field_indexes {
     for my $obj (@list) {
         $offset++;
 
-        my $cf_ids = $cf_ids_for_ct_id->{ $obj->content_type_id };
-        next unless ref $cf_ids eq 'ARRAY' && @{$cf_ids} > 0;
+        my $content_type = $ct_cache{ $obj->content_type_id } || $obj->content_type
+            or return $self->error($self->translate_escape('Invalid content type'));
+
+        my $ct_fields = $ct_fields_cache{ $obj->content_type_id };
+        unless ($ct_fields) {
+            my $cf_ids   = $cf_ids_for_ct_id->{ $obj->content_type_id } || [];
+            my %selected = map { $_ => 1 } @{$cf_ids};
+            $ct_fields = $ct_fields_cache{ $obj->content_type_id } = [grep { $selected{ $_->{id} } && $_->{type} eq 'list' } @{ $content_type->fields }];
+        }
 
         local $@;
-        eval { _update_list_cf_idxs($obj, $cf_ids) };
+        eval { _update_list_cf_idxs($obj, $content_type, $ct_fields) };
         if (my $error = $@) {
             return $self->error($self->translate_escape('Error migrating list field indexes of content data # [_1]: [_2]...', $obj->id, $error));
         }
@@ -137,24 +147,13 @@ sub _v9_list_field_indexes {
 # copied from MT::ContentData::update_cf_idx_multi(), and reduced unnecessary processes
 sub _update_list_cf_idxs {
     my $cd = shift;
-    my ($cf_ids) = @_;
+    my ($content_type, $ct_fields) = @_;
 
-    my $content_type = $cd->content_type
-        or die MT->translate('Invalid content type');
-
-    my %selected  = map  { $_ => 1 } @{$cf_ids};
-    my @ct_fields = grep { $selected{ $_->{id} } } @{ $content_type->fields };
-
-    my $content_field_types = MT->registry('content_field_types');
-    my $data                = $cd->data;
-
+    my $data            = $cd->data;
     my $idx_type        = 'list';
-    my $data_type       = 'text';
-    my $cf_idx_data_col = 'value_' . $data_type;
-    foreach my $f (@ct_fields) {
-        next unless ($f->{type}                                   || '') eq $idx_type;
-        next unless ($content_field_types->{$idx_type}{data_type} || '') eq $data_type;
+    my $cf_idx_data_col = 'value_text';
 
+    foreach my $f (@{$ct_fields}) {
         my $value = $data->{ $f->{id} };
         $value = [$value] unless ref $value eq 'ARRAY';
         $value = [grep { defined $_ && $_ ne '' } @$value];
