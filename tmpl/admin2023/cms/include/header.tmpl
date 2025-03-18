@@ -10,12 +10,12 @@
 <mt:setvarblock name="html_head" prepend="1">
   <link rel="icon" href="<$mt:var name="static_uri"$>images/favicon.ico" type="image/ico" />
 <mt:unless name="optimize_ui">
-  <mt:stylesheet path="styles.css">
+  <mtapp:stylesheet path="styles.css">
 <mt:else>
-  <mt:stylesheet path="css/main.css">
+  <mtapp:stylesheet path="css/main.css">
 </mt:unless>
   <!--[if IE]>
-  <mt:stylesheet path="css/hacks/ie.css">
+  <mtapp:stylesheet path="css/hacks/ie.css">
   <![endif]-->
   <script type="text/javascript">
   /* <![CDATA[ */
