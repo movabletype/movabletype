@@ -11,8 +11,18 @@ BEGIN {
 
 our $test_env;
 BEGIN {
+    require Authen::SASL;
+    if ($ENV{MT_TEST_AUTHEN_SASL_XS}) {
+        unless (eval { require Authen::SASL::XS; 1 }) {
+            plan skip_all => 'requires Authen::SASL::XS';
+        }
+        Authen::SASL->import('XS');
+    } else {
+        Authen::SASL->import('Perl');
+    }
+
     my %smtp_env;
-    for my $key (qw(SMTPAuth SMTPS SMTPUser SMTPPassword)) {
+    for my $key (qw(SMTPAuth SMTPS SMTPUser SMTPPassword SMTPAuthSASLMechanism)) {
         my $env_key = 'MT_TEST_' . uc($key);
         next unless exists $ENV{$env_key};
         $smtp_env{$key} = $ENV{$env_key};
