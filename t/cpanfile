@@ -61,6 +61,7 @@ requires 'XML::SAX';
 requires 'Digest::SHA1';
 requires 'Net::SMTP';
 requires 'Authen::SASL';
+requires 'Authen::SASL::XS';
 requires 'Net::SMTP::SSL';
 requires 'Net::SMTP::TLS';
 requires 'IO::Socket::SSL';
