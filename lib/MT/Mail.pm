@@ -301,7 +301,16 @@ sub _send_mt_smtp {
             $m =~ /^\s+$/ ? undef : $m;
         };
 
-        if ( !eval { $smtp->auth( $user, $pass, $mech ) } ) {
+        require Authen::SASL;
+        my $sasl = Authen::SASL->new(
+            mechanism => "$mech",  # doublequotes are required to turn PVMG into PV
+            callback => {
+                user => $user,
+                pass => $pass,
+                authname => $user,
+            },
+        );
+        if ( !eval { $smtp->auth($sasl) } ) {
             return $class->error(
                 MT->translate(
                     "Authentication failure: [_1]",
