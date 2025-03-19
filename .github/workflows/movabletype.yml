@@ -175,6 +175,8 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v4.1.0
+      - name: check unresolved conflicts in code
+        run: bash -c "! grep -EIr '^[<>]{7} \S.*$' ."
       - name: test npm ci
         run: docker run -t -v $PWD:/mt -w /mt node:lts bash -c "npm ci"
       - name: npm run test
