@@ -114,7 +114,7 @@ sub _v9_list_field_indexes {
     for my $cd (@cds) {
         $offset++;
 
-        my $ct = $ct_cache{ $cd->content_type_id } || $cd->content_type
+        my $ct = $ct_cache{ $cd->content_type_id } ||= $cd->content_type
             or return $self->error($self->translate_escape('Invalid content type'));
 
         my $ct_fields = $ct_fields_cache{ $cd->content_type_id };
