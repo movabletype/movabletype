@@ -29,7 +29,8 @@ my $mock = Test::MockObject->new;
 $mock->mock(
     'auth',
     sub {
-        $MECH = $_[3];
+        my $sasl = $_[1];
+        $MECH = $sasl->mechanism || '';
         0;    # Authentication failure
     }
 );
