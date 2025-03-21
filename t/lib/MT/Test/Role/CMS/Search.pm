@@ -77,11 +77,11 @@ sub change_content_type {
 
     my @input = $form->find_input('search_cols');
     for my $elem (@input) {
-        my $val             = _checkbox_attr_value($elem);
-        my $checkbox        = $self->wq_find(qq{#search_form input[name="search_cols"][value="$val"]});
-        my $li              = $checkbox->parent->parent;
-        my $ct_cf_belogs_to = $li->attr('data-mt-content-type');
-        $elem->disabled($ct_cf_belogs_to && $ct_cf_belogs_to == $ct_id ? '' : 'disabled');
+        my $val              = _checkbox_attr_value($elem);
+        my $checkbox         = $self->wq_find(qq{#search_form input[name="search_cols"][value="$val"]});
+        my $li               = $checkbox->parent->parent;
+        my $ct_cf_belongs_to = $li->attr('data-mt-content-type');
+        $elem->disabled($ct_cf_belongs_to == $ct_id ? '' : 'disabled') if $ct_cf_belongs_to;
     }
 }
 
