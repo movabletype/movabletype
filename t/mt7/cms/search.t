@@ -322,6 +322,7 @@ subtest 'template' => sub {
                 'tmpl_contenttype_author_yearly_case 0',
                 'tmpl_contenttype_author_yearly_test content data',
                 'tmpl_contenttype_author_yearly_test multiple content data',
+                'tmpl_contenttype_author_yearly_test content data with field label',
                 'tmpl_author_yearly',
             ] }
         ],
@@ -450,7 +451,7 @@ subtest 'dialog_grant_role' => sub {
         for my $key (keys %{$pager}) {
             is($json->{pager}->{$key}, $pager->{$key}, qq{right value for pager key:$key});
         }
-        note explain $json;
+        # note explain $json;
     };
 
     my $app = MT::Test::App->new('MT::App::CMS');
