@@ -145,6 +145,7 @@ for my $tmpl_dir (@tmpl_dirs) {
         wanted => sub {
             my $file = $File::Find::name;
             return unless -f $file;
+            return if $file =~ /\/\.DS_Store$/;
             test($file);
         },
         no_chdir => 1,
