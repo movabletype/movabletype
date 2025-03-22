@@ -33,24 +33,27 @@
     }
   });
 
+  let idSuffixApplied = false;
   $effect(() => {
     const root = getRoot();
-    if (!root) {
+    if (!root || idSuffixApplied) {
       return;
     }
 
+    const suffix = "-" + id;
     const elms = root.querySelectorAll("*");
     Array.prototype.slice.call(elms).forEach(function (v) {
       if (
         v.hasAttribute("id") &&
         !v.classList.contains("mt-custom-contentfield")
       ) {
-        v.setAttribute("id", v.getAttribute("id") + "-" + id);
+        v.setAttribute("id", v.getAttribute("id") + suffix);
       }
       if (v.tagName.toLowerCase() === "label" && v.hasAttribute("for")) {
-        v.setAttribute("for", v.getAttribute("for") + "-" + id);
+        v.setAttribute("for", v.getAttribute("for") + suffix);
       }
     });
+    idSuffixApplied = true;
   });
 
   // inputLabel was removed because unused
