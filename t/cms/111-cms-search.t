@@ -35,6 +35,10 @@ $test_env->prepare_fixture(sub {
         name     => 'ukawa',
         nickname => 'Saburo Ukawa',
     );
+    my $egawa = MT::Test::Permission->make_author(
+        name     => 'egawa',
+        nickname => 'Shiro Egawa',
+    );
     my $admin = MT::Author->load(1);
 
     my $website = MT::Website->load(2);
@@ -64,14 +68,22 @@ $test_env->prepare_fixture(sub {
     MT::Association->link($ichikawa, $edit_all_posts, $website1);
     MT::Association->link($ichikawa, $edit_all_posts, $website2);
     MT::Association->link($ukawa,    $designer,       $website);
+    MT::Association->link($egawa,    $edit_all_posts, $website2);
 
     $ichikawa->can_edit_templates(1);
     $ichikawa->save;
+
+    my $blog_1 = MT::Blog->load(1);
+    MT::Association->link($egawa, $designer, $blog_1);
+    $egawa->can_edit_templates(1);
+    $egawa->can_manage_users_groups(1);
+    $egawa->save;
 });
 
 my $aikawa   = MT::Author->load({ name => 'aikawa' });
 my $ichikawa = MT::Author->load({ name => 'ichikawa' });
 my $ukawa    = MT::Author->load({ name => 'ukawa' });
+my $egawa    = MT::Author->load({ name => 'egawa' });
 my $website  = MT::Website->load(2);
 my $blog     = $website->blogs->[0];
 my $admin    = MT::Author->load(1);
@@ -189,6 +201,19 @@ subtest search => sub {
 
         $app->search('Verse');
         is_deeply($app->found_titles, ['Verse 5', 'Verse 4', 'Verse 3', 'Verse 2', 'Verse 1'], 'basic 2');
+    };
+
+    subtest 'regex search for author on system context by non-superuser (MTC-30084)' => sub {
+        my $app = MT::Test::App->new('MT::App::CMS');
+        $app->login($egawa);
+        $app->get_ok({__mode  => 'search_replace'});
+        $app->change_tab('author');
+
+        $app->search('ichikawa');
+        is_deeply($app->found_titles, ['ichikawa'], 'without regex');
+
+        $app->search('.+kawa', {is_regex => 1});
+        is_deeply($app->found_titles, ['ukawa', 'ichikawa', 'aikawa'], 'with regex');
     };
 
     subtest 'regex search for website on system context by non-superuser (MTC-30084)' => sub {

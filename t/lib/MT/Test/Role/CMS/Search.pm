@@ -223,6 +223,7 @@ my $TitleContainerSelectors = {
     asset        => 'td:nth-of-type(3) a',
     blog         => 'td:nth-of-type(2) a',
     website      => 'td:nth-of-type(2) a',
+    author       => 'td:nth-of-type(2) a',
 };
 
 sub found_titles {
