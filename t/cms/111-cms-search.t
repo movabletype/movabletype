@@ -203,6 +203,24 @@ subtest search => sub {
         is_deeply($app->found_titles, ['Verse 5', 'Verse 4', 'Verse 3', 'Verse 2', 'Verse 1'], 'basic 2');
     };
 
+    subtest 'regex search for asset on system context by non-superuser (MTC-30084)' => sub {
+
+        MT::Test::Permission->make_asset(class => 'image', blog_id => 1, file_name => 'MTC30084-1.jpg', label => 'MTC30084-1');
+        MT::Test::Permission->make_asset(class => 'image', blog_id => 1, file_name => 'MTC30084-2.jpg', label => 'MTC30084-2');
+        MT::Test::Permission->make_asset(class => 'image', blog_id => 1, file_name => 'MTC30084-3.jpg', label => 'MTC30084-3');
+
+        my $app = MT::Test::App->new('MT::App::CMS');
+        $app->login($egawa);
+        $app->get_ok({__mode  => 'search_replace'});
+        $app->change_tab('asset');
+
+        $app->search('MTC30084-3');
+        is_deeply($app->found_titles, ['MTC30084-3'], 'without regex');
+
+        $app->search('MTC30084-[12]', {is_regex => 1});
+        is_deeply($app->found_titles, ['MTC30084-1', 'MTC30084-2'], 'with regex');
+    };
+
     subtest 'regex search for author on system context by non-superuser (MTC-30084)' => sub {
         my $app = MT::Test::App->new('MT::App::CMS');
         $app->login($egawa);
