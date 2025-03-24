@@ -33,21 +33,22 @@ subtest 'Edit Profile screen' => sub {
         my $args = shift;
         my $app  = MT::Test::App->new('MT::App::CMS');
         $app->login($admin);
-        my $res = $app->post_ok({
-            __mode       => 'save',
+        $app->get_ok({
+            __mode       => 'view',
             _type        => 'author',
+            $args->{id} ? (id => $args->{id}) : (),
+        });
+        $app->post_form_ok({
             name         => $args->{name},
             nickname     => 'nickname',
             email        => 'test@example.com',
             url          => 'http://example.com/',
             api_password => 'secret',
             auth_type    => 'MT',
-            type         => MT::Author::AUTHOR(),
             is_superuser => 0,
             status       => $args->{status},
             pass         => 'password',
             pass_verify  => 'password',
-            $args->{id} ? (id => $args->{id}) : (),
         });
         my $saved = {};
         if (my $loc = $app->last_location) {
