@@ -407,9 +407,9 @@ li{
     border: none;
 
     .mt-primaryNavigation__toggle_icon_border {
-      border: 1px solid #000;
+      border: 1px solid $gray-lightest;
       border-radius: 50%;
-      box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+      box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.25);
       width: 24px;
       height: 24px;
       background-color: $white;
@@ -417,7 +417,7 @@ li{
     .mt-primaryNavigation__toggle_icon {
       mask-position: center;
       mask-repeat: no-repeat;
-      mask-size: contain;
+      mask-size: 18px;
       background-color: $cobalt;
       mask-image: url(../../images/admin2025/icons/ic_close.svg);
     }

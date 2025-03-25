@@ -11893,9 +11893,9 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper .mt-prim
   border: none;
 }
 .mt-primaryNavigation__toggle_bar .mt-primaryNavigation__toggle_icon_wrapper .mt-primaryNavigation__toggle_icon_border {
-  border: 1px solid #000;
+  border: 1px solid #F4F4F4;
   border-radius: 50%;
-  box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+  box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.25);
   width: 24px;
   height: 24px;
   background-color: #FFFFFF;
@@ -11905,8 +11905,8 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper .mt-prim
           mask-position: center;
   -webkit-mask-repeat: no-repeat;
           mask-repeat: no-repeat;
-  -webkit-mask-size: contain;
-          mask-size: contain;
+  -webkit-mask-size: 18px;
+          mask-size: 18px;
   background-color: #004B9A;
   -webkit-mask-image: url(../../images/admin2025/icons/ic_close.svg);
           mask-image: url(../../images/admin2025/icons/ic_close.svg);
