@@ -106,10 +106,10 @@ export interface ContentType {
 }
 
 export interface ContentFieldProps {
-  config: ConfigSettings;
+  config?: ConfigSettings;
   field: Field;
   gather: (() => object) | undefined;
   id: string;
   options: Options;
-  optionsHtmlParams: OptionsHtmlParams;
+  optionsHtmlParams?: OptionsHtmlParams;
 }

@@ -4,12 +4,10 @@
   import ContentFieldOptionGroup from "./ContentFieldOptionGroup.svelte";
 
   let {
-    config: _config,
     field = $bindable(),
     gather = $bindable(),
     id,
     options = $bindable(),
-    optionsHtmlParams: _optionsHtmlParams,
   }: ContentType.ContentFieldProps = $props();
 </script>
 

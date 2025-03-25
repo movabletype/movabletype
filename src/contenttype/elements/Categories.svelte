@@ -7,7 +7,6 @@
   import StatusMsg from "./StatusMsg.svelte";
 
   let {
-    config: _config,
     field = $bindable(),
     gather = $bindable(),
     id,

@@ -4,23 +4,16 @@
   import ContentFieldOptionGroup from "./ContentFieldOptionGroup.svelte";
 
   type Props = {
-    config: ContentType.ConfigSettings;
+    config?: ContentType.ConfigSettings;
     fieldIndex: number;
     fieldsStore: ContentType.FieldsStore;
-    optionsHtmlParams: ContentType.OptionsHtmlParams;
+    optionsHtmlParams?: ContentType.OptionsHtmlParams;
     type: string;
     customElement: string;
     updateOptions: (options: ContentType.Options) => void;
   };
-  let {
-    config: _config,
-    fieldIndex,
-    fieldsStore,
-    optionsHtmlParams: _optionsHtmlParams,
-    type,
-    customElement,
-    updateOptions,
-  }: Props = $props();
+  let { fieldIndex, fieldsStore, type, customElement, updateOptions }: Props =
+    $props();
 
   let field = $state<ContentType.Field>({} as ContentType.Field);
   let options = $state<ContentType.Options>({});
