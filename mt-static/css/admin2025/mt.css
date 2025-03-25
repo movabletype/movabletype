@@ -11893,7 +11893,6 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper .mt-prim
   border: none;
 }
 .mt-primaryNavigation__toggle_bar .mt-primaryNavigation__toggle_icon_wrapper .mt-primaryNavigation__toggle_icon_border {
-  border: 1px solid #F4F4F4;
   border-radius: 50%;
   box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.25);
   width: 24px;
@@ -11901,6 +11900,7 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper .mt-prim
   background-color: #FFFFFF;
 }
 .mt-primaryNavigation__toggle_bar .mt-primaryNavigation__toggle_icon_wrapper .mt-primaryNavigation__toggle_icon {
+  top: 0;
   -webkit-mask-position: center;
           mask-position: center;
   -webkit-mask-repeat: no-repeat;
