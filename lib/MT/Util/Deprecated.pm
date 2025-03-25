@@ -30,7 +30,7 @@ sub warning {
         my $plugin = $MT::Plugins{$sig}{object};
         if ( $plugin && $plugin->path ) {
             my $plugin_path = $plugin->path;
-            if ( $filename =~ m/^$plugin_path/ ) {
+            if ( $filename =~ m/^\Q$plugin_path\E/ ) {
                 MT->log(
                     {   class    => 'plugin',
                         category => $plugin->log_category_for_deprecated_fn,
