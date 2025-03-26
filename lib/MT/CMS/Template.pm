@@ -68,11 +68,17 @@ sub edit {
             my $rn = $app->param('r') || 0;
             if ( $obj->current_revision > 0 || $rn != $obj->current_revision )
             {
+                $param->{current_rev_number} = $obj->current_revision;
+                $param->{current_rev_date}   = format_ts( "%Y-%m-%d %H:%M:%S",
+                    $obj->modified_on, $blog,
+                    $app->user ? $app->user->preferred_language : undef );
                 my $rev = $obj->load_revision( { rev_number => $rn } );
                 if ( $rev && @$rev ) {
                     $obj = $rev->[0];
+                    my $rev_obj = $rev->[3];
                     my $values = $obj->get_values;
                     $param->{$_} = $values->{$_} foreach keys %$values;
+                    $param->{'revision-note'} = $rev_obj->description;
                     $param->{loaded_revision} = 1;
                 }
                 $param->{rev_number} = $rn;
