@@ -16,7 +16,7 @@
 
   // svelte-ignore state_referenced_locally
   const categorySets: Array<{ id: string; name: string }> =
-    optionsHtmlParams.categories.category_sets;
+    optionsHtmlParams!.categories.category_sets;
 
   let displayOptions = $derived({
     ...options,

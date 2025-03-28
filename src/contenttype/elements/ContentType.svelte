@@ -16,7 +16,7 @@
 
   // svelte-ignore state_referenced_locally
   const contentTypes: Array<{ id: string; name: string }> =
-    optionsHtmlParams.content_type.content_types;
+    optionsHtmlParams!.content_type.content_types;
 
   let displayOptions = $derived({
     ...options,

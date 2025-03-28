@@ -14,8 +14,8 @@
 
   let displayOptions = $derived({
     ...options,
-    min_value: options.min_value ?? config.NumberFieldMinValue,
-    max_value: options.max_value ?? config.NumberFieldMaxValue,
+    min_value: options.min_value ?? config!.NumberFieldMinValue,
+    max_value: options.max_value ?? config!.NumberFieldMaxValue,
     decimal_places: options.decimal_places ?? 0,
     initial_value: options.initial_value ?? "",
   });
@@ -48,8 +48,8 @@
       id="number-min_value"
       class="form-control html5-form w-25"
       value={displayOptions.min_value}
-      min={config.NumberFieldMinValue}
-      max={config.NumberFieldMaxValue}
+      min={config!.NumberFieldMinValue}
+      max={config!.NumberFieldMaxValue}
       onchange={(e) => (options.min_value = e.currentTarget.value)}
     />
   </ContentFieldOption>
@@ -62,8 +62,8 @@
       id="number-max_value"
       class="form-control html5-form w-25"
       value={displayOptions.max_value}
-      min={config.NumberFieldMinValue}
-      max={config.NumberFieldMaxValue}
+      min={config!.NumberFieldMinValue}
+      max={config!.NumberFieldMaxValue}
       onchange={(e) => (options.max_value = e.currentTarget.value)}
     />
   </ContentFieldOption>
@@ -79,7 +79,7 @@
       id="number-decimal_places"
       class="form-control html5-form w-25"
       min="0"
-      max={config.NumberFieldDecimalPlaces}
+      max={config!.NumberFieldDecimalPlaces}
       value={displayOptions.decimal_places}
       onchange={(e) => {
         options.decimal_places = e.currentTarget.value;

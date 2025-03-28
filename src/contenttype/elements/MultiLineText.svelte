@@ -14,7 +14,7 @@
 
   // svelte-ignore state_referenced_locally
   const textFilters: Array<{ filter_label: string; filter_key: string }> =
-    optionsHtmlParams.multi_line_text.text_filters;
+    optionsHtmlParams!.multi_line_text.text_filters;
 
   let displayOptions = $derived({
     ...options,
