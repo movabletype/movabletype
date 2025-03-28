@@ -156,8 +156,8 @@ for my $tmpl_dir (@tmpl_dirs) {
 sub test {
     my $file = shift;
     my $tmpl = path($file)->slurp_utf8;
-    $tmpl =~ s/mt:script/my_script/gs;
-    $tmpl =~ s/mt:stylesheet/my_stylesheet/gs;
+    $tmpl =~ s/mtapp:script/my_script/gs;
+    $tmpl =~ s/mtapp:stylesheet/my_stylesheet/gs;
     $tmpl = strip_mt_tags(make_harmless($tmpl));
     $tmpl =~ s/<!--[^>]+>//g;
     $filter->stash->{file} = $file;

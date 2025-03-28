@@ -7,14 +7,14 @@
 <mt:SetVarBlock name="js_include" append="1">
 <mt:unless name="optimize_ui">
 <mt:if name="use_jquery_json">
-<mt:script type="text/javascript" path="jquery/jquery.json.js">
+<mtapp:script type="text/javascript" path="jquery/jquery.json.js">
 </mt:if>
 <mt:else>
 <mt:if name="use_jquery_json">
-<mt:script type="text/javascript" path="jquery/jquery.json.min.js">
+<mtapp:script type="text/javascript" path="jquery/jquery.json.min.js">
 </mt:if>
 </mt:unless>
-<mt:script type="text/javascript" path="js-cookie/js.cookie.min.js">
+<mtapp:script type="text/javascript" path="js-cookie/js.cookie.min.js">
 <script type="text/javascript">
 /* <![CDATA[ */
 (function() {
