@@ -5105,79 +5105,92 @@ http://narnia.na/
 TEST_ROOT/
 
 === test 910 script (MTC-25985)
+--- skip_php
 --- template
-<MTScript path="foo/bar.js">
+<MTApp:Script path="foo/bar.js">
 --- expected
 <script src="/mt-static/foo/bar.js?v=VERSION_ID" charset="utf-8"></script>
 
 === test 911 script (MTC-25985)
+--- skip_php
 --- template
-<MTScript path="/foo/bar.js">
+<MTApp:Script path="/foo/bar.js">
 --- expected
 <script src="/mt-static/foo/bar.js?v=VERSION_ID" charset="utf-8"></script>
 
 === test 912 script (MTC-25985)
+--- skip_php
 --- template
-<MTScript path="/foo/bar_%l.js">
+<MTApp:Script path="/foo/bar_%l.js">
 --- expected
 <script src="/mt-static/foo/bar_en_us.js?v=VERSION_ID" charset="utf-8"></script>
 
 === test 913 script (MTC-25985)
+--- skip_php
 --- template
-<MTScript>
+<MTApp:Script>
 --- expected_error
 path is required.
 
 === test 914 script (MTC-25985)
+--- skip_php
 --- template
-<MTScript path="/foo/bar.js" async="1">
+<MTApp:Script path="/foo/bar.js" async="1">
 --- expected
 <script src="/mt-static/foo/bar.js?v=VERSION_ID" async charset="utf-8"></script>
 
 === test 915 script (MTC-25985)
+--- skip_php
 --- template
-<MTScript path="/foo/bar.js" defer="1">
+<MTApp:Script path="/foo/bar.js" defer="1">
 --- expected
 <script src="/mt-static/foo/bar.js?v=VERSION_ID" defer charset="utf-8"></script>
 
 === test 916 script (MTC-25985)
+--- skip_php
 --- template
-<MTScript path="/foo/bar.js" type="text/javascript">
+<MTApp:Script path="/foo/bar.js" type="text/javascript">
 --- expected
 <script src="/mt-static/foo/bar.js?v=VERSION_ID" type="text/javascript" charset="utf-8"></script>
 
 === test 917 script (MTC-25985)
+--- skip_php
 --- template
-<MTScript path="/foo/bar.js" charset="euc-jp">
+<MTApp:Script path="/foo/bar.js" charset="euc-jp">
 --- expected
 <script src="/mt-static/foo/bar.js?v=VERSION_ID" charset="euc-jp"></script>
 
 === test 918 script (MTC-25985)
+--- skip_php
 --- template
-<MTScript path="/foo/bar.js" type="text/javascript" async="1" defer="1">
+<MTApp:Script path="/foo/bar.js" type="text/javascript" async="1" defer="1">
 --- expected
 <script src="/mt-static/foo/bar.js?v=VERSION_ID" type="text/javascript" async defer charset="utf-8"></script>
 
 === test 919 stylesheet (MTC-25985)
+--- skip_php
 --- template
-<MTStylesheet path="/foo/bar.css">
+<MTApp:Stylesheet path="/foo/bar.css">
 --- expected
 <link rel="stylesheet" href="/mt-static/foo/bar.css?v=VERSION_ID">
 
 === test 920 stylesheet (MTC-25985)
+--- skip_php
 --- template
-<MTStylesheet path="foo/bar.css">
+<MTApp:Stylesheet path="foo/bar.css">
 --- expected
 <link rel="stylesheet" href="/mt-static/foo/bar.css?v=VERSION_ID">
 
 === test 921 stylesheet (MTC-25985)
+--- skip_php
 --- template
-<MTStylesheet path="foo/bar_%l.css">
+<MTApp:Stylesheet path="foo/bar_%l.css">
 --- expected
 <link rel="stylesheet" href="/mt-static/foo/bar_en_us.css?v=VERSION_ID">
 
 === test 922 stylesheet (MTC-25985)
+--- skip_php
 --- template
-<MTStylesheet>
+<MTApp:Stylesheet>
 --- expected_error
 path is required.
