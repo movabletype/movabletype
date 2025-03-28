@@ -2916,6 +2916,8 @@ use vars qw( @ISA %Lexicon );
 	'Migrating image width/height meta data...' => '画像の幅/高さを移行しています...',
 
 ## lib/MT/Upgrade/v9.pm
+	'Error migrating list field indexes of content data # [_1]: [_2]...' => 'コンテンツデータ(ID:[_1])のリストフィールドインデックスを移行できませんでした: [_2]',
+	'Migrating list field index data...' => 'リストフィールドのインデックスを移行しています',
 	'Migrating site boolean meta data...' => 'サイトのboolean型のメタデータを移行しています...',
 
 ## lib/MT/Util.pm

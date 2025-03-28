@@ -1,7 +1,7 @@
 <div class="list-field-container">
 <mt:loop name="list_value">
   <div class="form-inline d-inline">
-    <input type="text" name="content-field-<mt:var name="content_field_id" escape="html">" class="form-control w-75 text long" value="<mt:var name="__value__" escape="html">" mt:watch-change="1" mt:raw-name="1" style="width: 95%" maxlength="255" />
+    <input type="text" name="content-field-<mt:var name="content_field_id" escape="html">" class="form-control w-75 text long" value="<mt:var name="__value__" escape="html">" mt:watch-change="1" mt:raw-name="1" style="width: 95%" />
     <a href="javascript:void(0)" class="remove-list-button d-inline-block" data-mt-content-field-id="<mt:var name="content_field_id">" <mt:var name="required">><mtapp:svgicon id="ic_remove" title="<__trans phrase="Remove">" size="sm"></a>
   </div>
   </mt:loop>
@@ -74,7 +74,7 @@ function generateNewListHtml(fieldId, required) {
   required = required ? 'data-mt-required="1"' : '';
 
   var newDiv = '<div class="form-inline" style="display: inline;">' + "\n";
-  newDiv    += '  <input type="text" name="content-field-' + fieldId + '" class="form-control w-75 text long" value="" mt:raw-name="1" style="width: 95%" maxlength="255" />\n';
+  newDiv    += '  <input type="text" name="content-field-' + fieldId + '" class="form-control w-75 text long" value="" mt:raw-name="1" style="width: 95%" />\n';
   newDiv    += '  <a href="javascript:void(0)" class="remove-list-button d-inline-block" data-mt-content-field-id="' + fieldId + '" ' + required + '><mtapp:svgicon id="ic_remove" title="<__trans phrase="Remove">" size="sm" strip_linefeeds="1"></a>\n';
   newDiv    += '</div>' + "\n";
 
