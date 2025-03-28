@@ -6,6 +6,7 @@ describe("StatusMsgTmpl Component", () => {
   it("should render the component", () => {
     const { container } = render(StatusMsgTmpl, {
       props: {
+        blogId: "1",
         canRebuild: 0,
         class: "info",
         didReplace: 0,
@@ -25,6 +26,7 @@ describe("StatusMsgTmpl Component", () => {
   it("should render with alert-info class", () => {
     const { container } = render(StatusMsgTmpl, {
       props: {
+        blogId: "1",
         canRebuild: 0,
         class: "info",
         didReplace: 0,
@@ -43,6 +45,7 @@ describe("StatusMsgTmpl Component", () => {
   it("should render with alert-warning class", () => {
     const { container } = render(StatusMsgTmpl, {
       props: {
+        blogId: "1",
         canRebuild: 0,
         class: "warning",
         didReplace: 0,
@@ -61,6 +64,7 @@ describe("StatusMsgTmpl Component", () => {
   it("should render with alert-danger class", () => {
     const { container } = render(StatusMsgTmpl, {
       props: {
+        blogId: "1",
         canRebuild: 0,
         class: "danger",
         didReplace: 0,
@@ -79,6 +83,7 @@ describe("StatusMsgTmpl Component", () => {
   it("should render with id when provided", () => {
     const { container } = render(StatusMsgTmpl, {
       props: {
+        blogId: "1",
         canRebuild: 0,
         class: "info",
         didReplace: 0,
@@ -97,6 +102,7 @@ describe("StatusMsgTmpl Component", () => {
   it("should render close button when canClose is set", () => {
     const { container } = render(StatusMsgTmpl, {
       props: {
+        blogId: "1",
         canClose: 1,
         canRebuild: 0,
         class: "info",
@@ -117,6 +123,7 @@ describe("StatusMsgTmpl Component", () => {
   it("should not render close button when canClose is undefined", () => {
     const { container } = render(StatusMsgTmpl, {
       props: {
+        blogId: "1",
         canRebuild: 0,
         class: "info",
         didReplace: 0,
@@ -135,6 +142,7 @@ describe("StatusMsgTmpl Component", () => {
   it("should hide when hidden prop is set", () => {
     const { container } = render(StatusMsgTmpl, {
       props: {
+        blogId: "1",
         canRebuild: 0,
         class: "info",
         didReplace: 0,
@@ -153,6 +161,7 @@ describe("StatusMsgTmpl Component", () => {
   it("should set role=alert for warning class", () => {
     const { container } = render(StatusMsgTmpl, {
       props: {
+        blogId: "1",
         canRebuild: 0,
         class: "warning",
         didReplace: 0,
@@ -171,6 +180,7 @@ describe("StatusMsgTmpl Component", () => {
   it("should set role=alert for danger class", () => {
     const { container } = render(StatusMsgTmpl, {
       props: {
+        blogId: "1",
         canRebuild: 0,
         class: "danger",
         didReplace: 0,
