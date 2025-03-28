@@ -8,8 +8,11 @@
     collapsed?: boolean;
     isStored?: boolean;
   };
-  let { buttonRef, collapsed = false, isStored = false }: Props = $props();
-  export { buttonRef, collapsed, isStored };
+  let {
+    buttonRef = $bindable(),
+    collapsed = $bindable(false),
+    isStored = false,
+  }: Props = $props();
 
   let mouseOver = $state(false);
 

@@ -18,11 +18,11 @@
   let {
     magicToken,
     limit = 50,
-    open = false,
+    open = $bindable(false),
     anchorRef,
     initialStarredSites,
   }: Props = $props();
-  export { magicToken, limit, open, anchorRef, initialStarredSites };
+
   let sitesFetched = false;
 
   $effect(() => {

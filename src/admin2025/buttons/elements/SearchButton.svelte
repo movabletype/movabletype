@@ -19,12 +19,11 @@
   let {
     blogId,
     magicToken,
-    open = false,
+    open = $bindable(false),
     anchorRef,
     searchTabs,
-    objectType,
+    objectType = $bindable(""),
   }: Props = $props();
-  export { blogId, magicToken, open, anchorRef, searchTabs, objectType };
 
   let contentTypes: ContentType[] = $state([]);
   let contentTypesFetched = false;

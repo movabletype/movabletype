@@ -14,11 +14,10 @@
   let {
     blog_id,
     magicToken,
-    open = false,
+    open = $bindable(false),
     anchorRef,
     containerRef,
   }: Props = $props();
-  export { open };
 
   let modalRef: HTMLElement | null = $state(null);
   let contentTypesFetched = false;

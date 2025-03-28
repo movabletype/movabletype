@@ -14,7 +14,7 @@
     children?: Snippet;
   };
   let {
-    open = true,
+    open = $bindable(true),
     className = "",
     describedby = "",
     labelledby = "",
