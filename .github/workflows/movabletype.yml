@@ -202,8 +202,8 @@ jobs:
         run: docker run -t -v $PWD:/mt -w /mt node:lts bash -c "npm ci"
       - name: npm run test
         run: docker run -t -v $PWD:/mt -w /mt node:lts bash -c "npm run test"
-      - name: test svelte commands
-        run: docker run -t -v $PWD:/mt -w /mt node:lts bash -c "npm run svelte-check && npm run svelte-check-types && npm run svelte-lint && npm run svelte-format && npm run build-svelte && git config --global --add safe.directory /mt && git add -N . && git diff --exit-code --name-only"
+      - name: check and build files in src
+        run: docker run -t -v $PWD:/mt -w /mt node:lts bash -c "npm run src-check-all && npm run src-build && git config --global --add safe.directory /mt && git add -N . && git diff --exit-code --name-only"
       - name: reset git add
         run: git reset
       - name: test to copy files
@@ -218,8 +218,6 @@ jobs:
       - name: test to build Riot.js tags (admin2025)
         # TODO: replace yarn with npm run
         run: docker run -t -v $PWD:/mt -w /mt node:lts bash -c 'yarn && yarn build-riot-admin2025 && yarn build-ss && git config --global --add safe.directory /mt && test "$(git diff)" = ""'
-      - name: test svelte formatting
-        run: docker run -t -v $PWD:/mt -w /mt node:lts bash -c 'yarn && yarn svelte-format && git config --global --add safe.directory /mt && test "$(git diff)" = ""'
 
   notify_slack:
     permissions: {}
