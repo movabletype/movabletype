@@ -3089,6 +3089,8 @@ sub pre_run {
             $app->set_language( $auth->preferred_language )
                 if $auth->has_column('preferred_language');
         }
+    } else {
+        $app->set_language(MT->config->DefaultLanguage);
     }
 
     # allow language override
