@@ -1,7 +1,7 @@
 <script lang="ts">
   import SVG from "../../../svg/elements/SVG.svelte";
   import type { ContentType } from "src/@types/contenttype";
-  import type { SearchTab } from "src/admin2025/buttons/search-button";
+  import type { SearchTab } from "src/admin2025/buttons/search-button.svelte";
 
   type Props = {
     blogId: string;

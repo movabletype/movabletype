@@ -31,17 +31,17 @@ export function svelteMountSearchForm(
     }
   }
 
-  const searchFormProps = {
+  const state = $state({
     searchTabs: searchTabs,
     objectType: target.dataset.objectType ?? "",
     contentTypes: props.contentTypes || [],
     isLoading: false,
     ...props,
-  };
+  });
 
-  const app = mount(SearchForm, {
+  mount(SearchForm, {
     target: target,
-    props: searchFormProps,
+    props: state,
   });
 
   const searchFormButton = target.closest(
@@ -51,7 +51,7 @@ export function svelteMountSearchForm(
     "click",
     (event: MouseEvent) => {
       event.preventDefault();
-      searchFormProps.isLoading = true;
+      state.isLoading = true;
       fetchContentTypes({
         blogId: props.blogId,
         magicToken: props.magicToken,
@@ -60,15 +60,15 @@ export function svelteMountSearchForm(
           const contentTypes: ContentType[] = data.contentTypes.filter(
             (contentType) => contentType.can_search === 1,
           );
-          app.contentTypes = contentTypes;
-          if (app.contentTypes.length > 0 && app.objectType === "") {
-            app.objectType = "content_data";
+          state.contentTypes = contentTypes;
+          if (state.contentTypes.length > 0 && state.objectType === "") {
+            state.objectType = "content_data";
           }
-          app.isLoading = false;
+          state.isLoading = false;
         })
         .catch((error) => {
           console.error("Failed to fetch content types:", error);
-          app.isLoading = false;
+          state.isLoading = false;
         });
     },
     { once: true },

@@ -1,9 +1,9 @@
-import { svelteMountCreateButton } from "./buttons/create-button";
-import { svelteMountSidebar } from "./sidebar/sidebar";
+import { svelteMountCreateButton } from "./buttons/create-button.svelte";
+import { svelteMountSidebar } from "./sidebar/sidebar.svelte";
 import { getCollapsedState } from "./sidebar/utils";
-import { svelteMountSearchButton } from "./buttons/search-button";
-import { svelteMountSiteListButton } from "./buttons/site-list-button";
-import { svelteMountSearchForm } from "./forms/search/search-form";
+import { svelteMountSearchButton } from "./buttons/search-button.svelte";
+import { svelteMountSiteListButton } from "./buttons/site-list-button.svelte";
+import { svelteMountSearchForm } from "./forms/search/search-form.svelte";
 
 // Sidebar toggle
 const sidebarTarget = document.querySelector<HTMLButtonElement>(
@@ -69,7 +69,7 @@ if (createButtonTargets.length > 0 && magicToken !== "") {
         magicToken: magicToken,
         open: false,
         anchorRef: createButtonTarget,
-        containerRef: modalContainerTarget,
+        containerRef: modalContainerTarget!,
       },
     });
   });

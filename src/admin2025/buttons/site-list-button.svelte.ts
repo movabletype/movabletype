@@ -13,23 +13,25 @@ export function svelteMountSiteListButton(
   target: HTMLElement,
   props: SiteListButtonProps,
 ): void {
-  const app = mount(SiteListButton, {
+  const state = $state({
+    magicToken: props.magicToken,
+    limit: props.limit,
+    open: props.open,
+    anchorRef: props.anchorRef,
+    initialStarredSites: props.initialStarredSites,
+  });
+
+  mount(SiteListButton, {
     target: target,
-    props: {
-      magicToken: props.magicToken,
-      limit: props.limit,
-      open: props.open,
-      anchorRef: props.anchorRef,
-      initialStarredSites: props.initialStarredSites,
-    },
+    props: state,
   });
 
   props.anchorRef.addEventListener("click", (event: MouseEvent) => {
     event.preventDefault();
     if (props.anchorRef.classList.contains("open")) {
-      app.open = false;
+      state.open = false;
     } else {
-      app.open = true;
+      state.open = true;
     }
   });
 }

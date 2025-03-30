@@ -8,21 +8,23 @@ type SidebarProps = {
 };
 
 export function svelteMountSidebar(target: Element, props: SidebarProps): void {
-  const app = mount(Sidebar, {
+  const state = $state({
+    collapsed: props.collapsed,
+    buttonRef: props.buttonRef,
+    isStored: getCollapsedState() !== null,
+  });
+
+  mount(Sidebar, {
     target: target,
-    props: {
-      collapsed: props.collapsed,
-      buttonRef: props.buttonRef,
-      isStored: getCollapsedState() !== null,
-    },
+    props: state,
   });
 
   props.buttonRef.addEventListener("click", () => {
     if (props.buttonRef.classList.contains("collapsed")) {
-      app.collapsed = false;
+      state.collapsed = false;
     } else {
-      app.collapsed = true;
+      state.collapsed = true;
     }
-    setCollapsedState(app.collapsed);
+    setCollapsedState(state.collapsed);
   });
 }

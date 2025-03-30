@@ -4,7 +4,7 @@
   import { isOuterClick } from "../outerClick";
   import { modalOverlay } from "../../svelte/action";
   import type { ContentType } from "src/@types/contenttype";
-  import type { SearchTab } from "../search-button";
+  import type { SearchTab } from "../search-button.svelte";
   import SearchForm from "../../forms/search/SearchForm.svelte";
   import { fetchContentTypes } from "src/utils/fetch-content-types";
 
@@ -69,13 +69,6 @@
       handleClose();
     }
   };
-
-  let searchTextRef: HTMLInputElement | null = null;
-  $effect(() => {
-    if (open && searchTextRef) {
-      // searchTextRef.focus();
-    }
-  });
 
   onMount(async () => {
     if (objectType) {

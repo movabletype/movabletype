@@ -6,7 +6,7 @@ type CreateButtonProps = {
   magicToken: string;
   open: boolean;
   anchorRef: HTMLElement;
-  containerRef: HTMLElement | null;
+  containerRef: HTMLElement;
 };
 
 export const svelteMountCreateButton = ({
@@ -16,23 +16,25 @@ export const svelteMountCreateButton = ({
   target: HTMLElement;
   props: CreateButtonProps;
 }): void => {
-  const app = mount(CreateButton, {
+  const state = $state({
+    blog_id: props.blog_id,
+    magicToken: props.magicToken,
+    open: props.open,
+    anchorRef: props.anchorRef,
+    containerRef: props.containerRef,
+  });
+
+  mount(CreateButton, {
     target: target,
-    props: {
-      blog_id: props.blog_id,
-      magicToken: props.magicToken,
-      open: props.open,
-      anchorRef: props.anchorRef,
-      containerRef: props.containerRef,
-    },
+    props: state,
   });
 
   target.addEventListener("click", (event: MouseEvent) => {
     event.preventDefault();
     if (props.anchorRef.classList.contains("open")) {
-      app.open = false;
+      state.open = false;
     } else {
-      app.open = true;
+      state.open = true;
     }
   });
 };

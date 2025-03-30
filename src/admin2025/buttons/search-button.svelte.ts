@@ -29,21 +29,23 @@ export function svelteMountSearchButton(
     }
   }
 
-  const app = mount(SearchButton, {
+  const state = $state({
+    searchTabs: searchTabs,
+    objectType: target.dataset.objectType ?? "",
+    ...props,
+  });
+
+  mount(SearchButton, {
     target: target,
-    props: {
-      searchTabs: searchTabs,
-      objectType: target.dataset.objectType ?? "",
-      ...props,
-    },
+    props: state,
   });
 
   props.anchorRef.addEventListener("click", (event: MouseEvent) => {
     event.preventDefault();
     if (props.anchorRef.classList.contains("open")) {
-      app.open = false;
+      state.open = false;
     } else {
-      app.open = true;
+      state.open = true;
     }
   });
 }

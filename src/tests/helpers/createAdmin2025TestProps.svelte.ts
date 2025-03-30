@@ -1,7 +1,7 @@
 import { vi } from "vitest";
 import type { Site, Sites } from "../../@types/site";
 import type { ContentType, ContentTypes } from "../../@types/contenttype";
-import type { SearchTab } from "../../admin2025/buttons/search-button";
+import type { SearchTab } from "../../admin2025/buttons/search-button.svelte";
 
 export function createMockSite(overrides: Partial<Site> = {}): Site {
   return {

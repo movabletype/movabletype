@@ -1,6 +1,6 @@
 <script lang="ts">
   import SearchButton from "./SearchButton.svelte";
-  import type { SearchTab } from "../search-button";
+  import type { SearchTab } from "../search-button.svelte";
 
   let {
     blogId = "1",
