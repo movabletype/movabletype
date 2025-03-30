@@ -203,7 +203,7 @@ jobs:
       - name: npm run test
         run: docker run -t -v $PWD:/mt -w /mt node:lts bash -c "npm run test"
       - name: check and build files in src
-        run: docker run -t -v $PWD:/mt -w /mt node:lts bash -c "npm run src-check-all && npm run src-build && git config --global --add safe.directory /mt && git add -N . && git diff --exit-code --name-only"
+        run: docker run -t -v $PWD:/mt -w /mt node:lts bash -c "npm run src-check && npm run src-build && git config --global --add safe.directory /mt && git add -N . && git diff --exit-code --name-only"
       - name: reset git add
         run: git reset
       - name: test to copy files
