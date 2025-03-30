@@ -38,6 +38,8 @@ $test_env->prepare_fixture(sub {
     my $admin = MT::Author->load(1);
 
     my $website = MT::Website->load(2);
+    my $website1 = MT::Test::Permission->make_website(name => 'Website Search Test1');
+    my $website2 = MT::Test::Permission->make_website(name => 'Website Search Test2');
     my $blog    = $website->blogs;
 
     my %entries = ();
@@ -59,7 +61,12 @@ $test_env->prepare_fixture(sub {
     require MT::Association;
     MT::Association->link($aikawa,   $edit_all_posts, $website);
     MT::Association->link($ichikawa, $edit_all_posts, $blog->[0]);
+    MT::Association->link($ichikawa, $edit_all_posts, $website1);
+    MT::Association->link($ichikawa, $edit_all_posts, $website2);
     MT::Association->link($ukawa,    $designer,       $website);
+
+    $ichikawa->can_edit_templates(1);
+    $ichikawa->save;
 });
 
 my $aikawa   = MT::Author->load({ name => 'aikawa' });
@@ -182,6 +189,22 @@ subtest search => sub {
 
         $app->search('Verse');
         is_deeply($app->found_titles, ['Verse 5', 'Verse 4', 'Verse 3', 'Verse 2', 'Verse 1'], 'basic 2');
+    };
+
+    subtest 'regex search for website on system context by non-superuser (MTC-30084)' => sub {
+        my $app = MT::Test::App->new('MT::App::CMS');
+        $app->login($ichikawa);
+        $app->get_ok({__mode  => 'search_replace'});
+        $app->change_tab('website');
+
+        $app->search('Website Search Test');
+        is_deeply($app->found_titles, ['Website Search Test2', 'Website Search Test1'], 'without regex');
+
+        $app->search('Website Search Test[12]', {is_regex => 1});
+        is_deeply($app->found_titles, ['Website Search Test2', 'Website Search Test1'], 'with regex');
+
+        $app->search('Website Search Test[1]', {is_regex => 1});
+        is_deeply($app->found_titles, ['Website Search Test1'], 'less result');
     };
 
     subtest 'limit' => sub {
