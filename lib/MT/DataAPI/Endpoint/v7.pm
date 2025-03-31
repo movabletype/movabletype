@@ -21,6 +21,62 @@ sub endpoints {
                 403 => 'Do not have permission to export the requested theme.',
             },
         },
+        {
+            id              => 'list_stats_pageviews_for_path',
+            route           => '/sites/:site_id/stats/path/pageviews',
+            version         => 7,
+            handler         => '$Core::MT::DataAPI::Endpoint::v7::Stats::screenpageviews_for_path',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v7::Stats::screenpageviews_for_path_openapi_spec',
+        },
+        {
+            id              => 'list_stats_visits_for_path',
+            route           => '/sites/:site_id/stats/path/visits',
+            version         => 7,
+            handler         => '$Core::MT::DataAPI::Endpoint::v7::Stats::sessions_for_path',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v7::Stats::sessions_for_path_openapi_spec',
+        },
+        {
+            id              => 'list_stats_pageviews_for_date',
+            route           => '/sites/:site_id/stats/date/pageviews',
+            version         => 7,
+            handler         => '$Core::MT::DataAPI::Endpoint::v7::Stats::screenpageviews_for_date',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v7::Stats::screenpageviews_for_date_openapi_spec',
+        },
+        {
+            id              => 'list_stats_visits_for_date',
+            route           => '/sites/:site_id/stats/date/visits',
+            version         => 7,
+            handler         => '$Core::MT::DataAPI::Endpoint::v7::Stats::sessions_for_date',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v7::Stats::sessions_for_date_openapi_spec',
+        },
+        {
+            id              => 'list_stats_screenpageviews_for_path',
+            route           => '/sites/:site_id/stats/path/screenpageviews',
+            version         => 7,
+            handler         => '$Core::MT::DataAPI::Endpoint::v7::Stats::screenpageviews_for_path',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v7::Stats::screenpageviews_for_path_openapi_spec',
+        },
+        {
+            id              => 'list_stats_sessions_for_path',
+            route           => '/sites/:site_id/stats/path/sessions',
+            version         => 7,
+            handler         => '$Core::MT::DataAPI::Endpoint::v7::Stats::sessions_for_path',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v7::Stats::sessions_for_path_openapi_spec',
+        },
+        {
+            id              => 'list_stats_screenpageviews_for_date',
+            route           => '/sites/:site_id/stats/date/screenpageviews',
+            version         => 7,
+            handler         => '$Core::MT::DataAPI::Endpoint::v7::Stats::screenpageviews_for_date',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v7::Stats::screenpageviews_for_date_openapi_spec',
+        },
+        {
+            id              => 'list_stats_sessions_for_date',
+            route           => '/sites/:site_id/stats/date/sessions',
+            version         => 7,
+            handler         => '$Core::MT::DataAPI::Endpoint::v7::Stats::sessions_for_date',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v7::Stats::sessions_for_date_openapi_spec',
+        },
     ];
 }
 

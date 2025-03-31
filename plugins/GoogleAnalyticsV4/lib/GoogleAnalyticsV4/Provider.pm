@@ -65,13 +65,13 @@ sub _extract_default_params {
             : ()
         ),
         (
-            $params->{path}
+            $params->{pagePath}
             ? (
                 'dimensionFilter' => {
                     'filter' => {
                         'stringFilter' => {
                             'matchType' => "PARTIAL_REGEXP",
-                            'value'     => $params->{path}
+                            'value'     => $params->{pagePath}
                         },
                         'fieldName' => 'pagePath'
                     }
@@ -186,6 +186,8 @@ sub pageviews_for_path {
         });
 }
 
+sub screenpageviews_for_path { pageviews_for_path(@_) }
+
 sub visits_for_path {
     my $self = shift;
     my ($app, $params) = @_;
@@ -208,6 +210,8 @@ sub visits_for_path {
         });
 }
 
+sub sessions_for_path { visits_for_path(@_) }
+
 sub pageviews_for_date {
     my $self = shift;
     my ($app, $params) = @_;
@@ -222,6 +226,8 @@ sub pageviews_for_date {
         });
 }
 
+sub screenpageviews_for_date { pageviews_for_date(@_) }
+
 sub visits_for_date {
     my $self = shift;
     my ($app, $params) = @_;
@@ -235,6 +241,8 @@ sub visits_for_date {
             _extract_default_params($params),
         });
 }
+
+sub sessions_for_date { visits_for_date(@_) }
 
 sub path_key { 'pagePath' }
 
@@ -269,14 +277,14 @@ sub fields_for_statistics_date {
             name   => 'screenPageViews',
             schema => {
                 type        => 'integer',
-                description => 'The pageviews for the path. This property exists only if the metrics to retrieve is "pageviews"',
+                description => 'The pageviews for the path. This property exists only if the metrics to retrieve is "screenPageViews"',
             },
         },
         {
             name   => 'sessions',
             schema => {
                 type        => 'integer',
-                description => 'The number of sessions for the path. This property exists only if the metrics to retrieve is "visits"',
+                description => 'The number of sessions for the path. This property exists only if the metrics to retrieve is "screens"',
 
             },
         },
@@ -302,14 +310,14 @@ sub fields_for_statistics_path {
             name   => 'screenPageViews',
             schema => {
                 type        => 'integer',
-                description => 'The pageviews for the path. This property exists only if the metrics to retrieve is "pageviews"',
+                description => 'The pageviews for the path. This property exists only if the metrics to retrieve is "screenPageViews"',
             },
         },
         {
             name   => 'sessions',
             schema => {
                 type        => 'integer',
-                description => 'The number of sessions for the path. This property exists only if the metrics to retrieve is "visits"',
+                description => 'The number of sessions for the path. This property exists only if the metrics to retrieve is "sessions"',
 
             },
         },
