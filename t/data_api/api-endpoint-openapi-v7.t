@@ -47,4 +47,12 @@ test_data_api({
 ok( !defined $json{v6}{paths}{"/sites/{site_id}/export_theme"}{post}{requestBody} );
 ok( defined $json{v7}{paths}{"/sites/{site_id}/export_theme"}{post}{requestBody} );
 
+# stats
+for my $p1 (qw/path date/) {
+    for my $p2 (qw/sessions screenpageviews/) {
+        ok(!defined $json{v6}{paths}{"/sites/{site_id}/stats/$p1/$p2"});
+        is($json{v7}{paths}{"/sites/{site_id}/stats/$p1/$p2"}{get}{parameters}[5]{name}, "pagePath");
+    }
+}
+
 done_testing;
