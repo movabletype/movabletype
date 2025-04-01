@@ -1,0 +1,11 @@
+SchemaVersion 9.0000
+plugins/BlockEditor
+plugins/ContentInfoWidget
+plugins/FormattedText
+plugins/FormattedTextForTinyMCE6
+plugins/GoogleAnalyticsV4
+plugins/Markdown
+plugins/Textile
+plugins/TinyMCE6
+plugins/WXRImporter
+plugins/WidgetManager
