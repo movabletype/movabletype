@@ -14,12 +14,12 @@ our $MIGRATE_LIST_FIELD_INDEX_BATCH_SIZE = 100;
 sub upgrade_functions {
     return {
         v9_boolean_meta => {
-            version_limit => 8.9993,
+            version_limit => 9.0000,
             priority      => 5,
             code          => \&_v9_boolean_meta,
         },
         v9_list_field_indexes => {
-            version_limit => 8.9994,
+            version_limit => 9.0000,
             priority      => 5,
             code          => \&_v9_list_field_indexes,
         },
