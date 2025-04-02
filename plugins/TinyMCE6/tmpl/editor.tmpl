@@ -1,10 +1,10 @@
 <mt:setvarblock name="js_include" append="1">
 <mt:if name="optimize_ui">
-<mt:script type="text/javascript" path="plugins/TinyMCE6/tiny_mce/tinymce.min.js">
+<mtapp:script type="text/javascript" path="plugins/TinyMCE6/tiny_mce/tinymce.min.js">
 <mt:else>
-<mt:script type="text/javascript" path="plugins/TinyMCE6/tiny_mce/tinymce.js">
+<mtapp:script type="text/javascript" path="plugins/TinyMCE6/tiny_mce/tinymce.js">
 </mt:if>
-<mt:script type="text/javascript" path="plugins/TinyMCE6/lib/js/adapter.js">
+<mtapp:script type="text/javascript" path="plugins/TinyMCE6/lib/js/adapter.js">
 <script type="text/javascript">
 MT.Editor.TinyMCE.config.init_instance_callback = function (inst) {
   inst.dom.addStyle('@media (max-width: 767.98px) { body { font-size: 16px!important; } }');

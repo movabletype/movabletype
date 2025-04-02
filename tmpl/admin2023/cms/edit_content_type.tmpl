@@ -43,7 +43,7 @@
 </mt:setvarblock>
 
 <mt:setvarblock name="html_head" append="1">
-<mt:stylesheet path="css/content-type.css">
+<mtapp:stylesheet path="css/content-type.css">
 <mt:unless name="config.useriot">
   <mt:ignore><!-- Moved from content-fields.tag, because this style tag did not work in ContentFields.svelte --></mt:ignore>
   <style>
@@ -61,7 +61,7 @@
 </mt:setvarblock>
 
 <mt:setvarblock name="js_include" append="1">
-<mt:script type="text/javascript" path="js/cms.js">
+<mtapp:script type="text/javascript" path="js/cms.js">
 
 <mt:ignore><!-- Do not indent the following lines to avoid Riot.js error. --></mt:ignore>
 <mt:if name="config.useriot">
@@ -73,14 +73,14 @@
 </mt:if>
 
   <mt:if name="debug_riot">
-    <mt:script type="riot/tag" path="js/ss/tag/ss.tag">
-    <mt:script type="riot/tag" path="js/admin2023/contenttype/tag/content-fields.tag">
-    <mt:script type="riot/tag" path="js/admin2023/contenttype/tag/content-field.tag">
-    <mt:script type="text/javascript" path="riot/riot-compiler.js">
+    <mtapp:script type="riot/tag" path="js/ss/tag/ss.tag">
+    <mtapp:script type="riot/tag" path="js/admin2023/contenttype/tag/content-fields.tag">
+    <mtapp:script type="riot/tag" path="js/admin2023/contenttype/tag/content-field.tag">
+    <mtapp:script type="text/javascript" path="riot/riot-compiler.js">
   <mt:else>
-    <mt:script type="text/javascript" path="riot/riot-compiler.min.js">
-    <mt:script type="text/javascript" path="js/ss/ss.js">
-    <mt:script type="text/javascript" path="js/admin2023/contenttype/contenttype.js">
+    <mtapp:script type="text/javascript" path="riot/riot-compiler.min.js">
+    <mtapp:script type="text/javascript" path="js/ss/ss.js">
+    <mtapp:script type="text/javascript" path="js/admin2023/contenttype/contenttype.js">
   </mt:if>
 </mt:if>
 
