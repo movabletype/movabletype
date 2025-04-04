@@ -61,12 +61,15 @@ sub build_schema {
             },
         },
     };
+    # prepare all the references beforehand
     for my $id (sort keys %$endpoints) {
         if (my $nouns = $endpoints->{$id}{openapi_options}{filtered_list_ds_nouns}) {
             my $current_parameters = $response->{components}{parameters} || {};
             my $additional_parameters = _build_filtered_list_parameters($app, $nouns, $endpoints->{$id}{default_params});
             $response->{components}{parameters} = { %$current_parameters, %$additional_parameters };
         }
+    }
+    for my $id (sort keys %$endpoints) {
         my $route = $endpoints->{$id}{route};
         my @path_parameters;
         while ($route =~ s!/:([^/]+)!/{$1}!) {
