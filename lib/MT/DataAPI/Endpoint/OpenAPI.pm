@@ -158,16 +158,12 @@ sub build_schema {
             for my $name (sort keys %{ $endpoints->{$id}{default_params} }) {
                 my $found = 0;
                 for my $param (@{ $response->{paths}{$route}{$verb}{parameters} }) {
-                    if (($param->{name} // '') eq $name or ($param->{alias} // '') eq $name) {
+                    if (($param->{name} // '') eq $name) {
                         $found = 1;
                         last;
                     } elsif (my $ref = $param->{'$ref'}) {
                         $ref =~ s!^#/components/parameters/!!;
                         if (($response->{components}{parameters}{$ref}{name} // '') eq $name) {
-                            $found = 1;
-                            last;
-                        }
-                        if (($response->{components}{parameters}{$ref}{alias} // '') eq $name) {
                             $found = 1;
                             last;
                         }
@@ -518,9 +514,8 @@ DESCRIPTION
         $parameter_template->{"${singular}_saveRevision"} = {
             in     => 'query',
             name   => 'saveRevision',
-            alias  => 'save_revision',
-            schema => { type => 'integer' },
-            description => 'The revision number',
+            schema => { type => 'integer', enum => [0, 1] },
+            description => 'Save a revision or not',
         };
     }
     my $param;

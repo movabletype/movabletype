@@ -56,7 +56,7 @@ sub endpoints {
             version         => 3,
             handler         => '$Core::MT::DataAPI::Endpoint::v3::Entry::create',
             openapi_handler => '$Core::MT::DataAPI::Endpoint::v3::Entry::create_openapi_spec',
-            default_params  => { save_revision => 1, },
+            default_params  => { saveRevision => 1, },
             error_codes     => {
                 403 => 'Do not have permission to create an entry.',
             },
@@ -69,7 +69,7 @@ sub endpoints {
             version         => 3,
             handler         => '$Core::MT::DataAPI::Endpoint::v3::Entry::update',
             openapi_handler => '$Core::MT::DataAPI::Endpoint::v3::Entry::update_openapi_spec',
-            default_params  => { save_revision => 1, },
+            default_params  => { saveRevision => 1, },
             error_codes     => {
                 403 => 'Do not have permission to update an entry.',
             },
@@ -82,7 +82,7 @@ sub endpoints {
             version         => 3,
             handler         => '$Core::MT::DataAPI::Endpoint::v3::Page::create',
             openapi_handler => '$Core::MT::DataAPI::Endpoint::v3::Page::create_openapi_spec',
-            default_params  => { save_revision => 1, },
+            default_params  => { saveRevision => 1, },
             error_codes     => {
                 403 => 'Do not have permission to create a page.',
             },
@@ -95,7 +95,7 @@ sub endpoints {
             version         => 3,
             handler         => '$Core::MT::DataAPI::Endpoint::v3::Page::update',
             openapi_handler => '$Core::MT::DataAPI::Endpoint::v3::Page::update_openapi_spec',
-            default_params  => { save_revision => 1, },
+            default_params  => { saveRevision => 1, },
             error_codes     => {
                 403 => 'Do not have permission to update a page.',
             },

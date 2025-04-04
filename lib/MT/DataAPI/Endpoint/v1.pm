@@ -148,7 +148,7 @@ sub endpoints {
             version         => 1,
             handler         => '$Core::MT::DataAPI::Endpoint::v1::Entry::create',
             openapi_handler => '$Core::MT::DataAPI::Endpoint::v1::Entry::create_openapi_spec',
-            default_params  => { save_revision => 1, },
+            default_params  => { saveRevision => 1, },
             error_codes     => {
                 403 => 'Do not have permission to create an entry.',
             },
@@ -175,7 +175,7 @@ sub endpoints {
             version         => 1,
             handler         => '$Core::MT::DataAPI::Endpoint::v1::Entry::update',
             openapi_handler => '$Core::MT::DataAPI::Endpoint::v1::Entry::update_openapi_spec',
-            default_params  => { save_revision => 1, },
+            default_params  => { saveRevision => 1, },
             error_codes     => {
                 403 => 'Do not have permission to update an entry.',
             },

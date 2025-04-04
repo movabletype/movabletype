@@ -394,7 +394,7 @@ sub endpoints {
             version         => 4,
             handler         => '$Core::MT::DataAPI::Endpoint::v4::ContentData::create',
             openapi_handler => '$Core::MT::DataAPI::Endpoint::v4::ContentData::create_openapi_spec',
-            default_params => { save_revision => 1 },
+            default_params => { saveRevision => 1 },
             error_codes     => {
                 403 => 'Do not have permission to create a content data.',
             },
@@ -423,7 +423,7 @@ sub endpoints {
             version         => 4,
             handler         => '$Core::MT::DataAPI::Endpoint::v4::ContentData::update',
             openapi_handler => '$Core::MT::DataAPI::Endpoint::v4::ContentData::update_openapi_spec',
-            default_params => { save_revision => 1 },
+            default_params => { saveRevision => 1 },
             error_codes     => {
                 403 => 'Do not have permission to update a content data.',
             },
@@ -529,7 +529,7 @@ sub endpoints {
             version         => 4,
             handler         => '$Core::MT::DataAPI::Endpoint::v4::Template::update',
             openapi_handler => '$Core::MT::DataAPI::Endpoint::v4::Template::update_openapi_spec',
-            default_params  => { save_revision => 1 },
+            default_params  => { saveRevision => 1 },
             error_codes     => {
                 403 => 'Do not have permission to update a template.',
             },

@@ -42,7 +42,7 @@ my $ct_id = $ct->id;
 
 my $max_version = MT::App::DataAPI->DEFAULT_VERSION;
 
-for my $extra ({}, {save_revision => 1}, {saveRevision => 1}) {
+for my $extra ({}, {save_revision => 1}, {saveRevision => 1}, {save_revision => 0}, {saveRevision => 0}) {
     subtest 'entry' => sub {
     VERSION:
         for my $version (1 .. $max_version) {
@@ -61,7 +61,11 @@ for my $extra ({}, {save_revision => 1}, {saveRevision => 1}) {
                 next VERSION if $res->code == 404;
                 $entry_id = decode_json($res->decoded_content)->{id};
                 my @revisions = MT->model('entry:revision')->load;
-                ok @revisions == 1, "has a revision ($moniker)";
+                if ($moniker =~ /0$/) {
+                    ok !@revisions, "has no revision ($moniker)";
+                } else {
+                    ok @revisions == 1, "has a revision ($moniker)";
+                }
             }
 
             {
@@ -70,7 +74,11 @@ for my $extra ({}, {save_revision => 1}, {saveRevision => 1}) {
                 my $res = $app->put({ __path_info => "/v$version/sites/$site_id/entries/$entry_id", entry => encode_json($entry), %$extra });
                 next VERSION if $res->code == 404;
                 my @revisions = MT->model('entry:revision')->load;
-                ok @revisions == 2, "has a new ($moniker)";
+                if ($moniker =~ /0$/) {
+                    ok !@revisions, "has no revision ($moniker)";
+                } else {
+                    ok @revisions == 2, "has a new revision ($moniker)";
+                }
             }
         }
     };
@@ -93,7 +101,11 @@ for my $extra ({}, {save_revision => 1}, {saveRevision => 1}) {
                 next VERSION if $res->code == 404;
                 $page_id = decode_json($res->decoded_content)->{id};
                 my @revisions = MT->model('page:revision')->load;
-                ok @revisions == 1, "has a revision ($moniker)";
+                if ($moniker =~ /0$/) {
+                    ok !@revisions, "has no revision ($moniker)";
+                } else {
+                    ok @revisions == 1, "has a revision ($moniker)";
+                }
             }
 
             {
@@ -102,7 +114,11 @@ for my $extra ({}, {save_revision => 1}, {saveRevision => 1}) {
                 my $res = $app->put({ __path_info => "/v$version/sites/$site_id/pages/$page_id", page => encode_json($page), %$extra });
                 next VERSION if $res->code == 404;
                 my @revisions = MT->model('page:revision')->load;
-                ok @revisions == 2, "has a new revision ($moniker)";
+                if ($moniker =~ /0$/) {
+                    ok !@revisions, "has no revision ($moniker)";
+                } else {
+                    ok @revisions == 2, "has a new revision ($moniker)";
+                }
             }
         }
     };
@@ -126,7 +142,11 @@ for my $extra ({}, {save_revision => 1}, {saveRevision => 1}) {
                 next VERSION if $res->code == 404;
                 $template_id = decode_json($res->decoded_content)->{id};
                 my @revisions = MT->model('template:revision')->load;
-                ok @revisions == 1, "has a revision ($moniker)";
+                if ($moniker =~ /0$/) {
+                    ok !@revisions, "has no revision ($moniker)";
+                } else {
+                    ok @revisions == 1, "has a revision ($moniker)";
+                }
             }
 
             {
@@ -135,7 +155,11 @@ for my $extra ({}, {save_revision => 1}, {saveRevision => 1}) {
                 my $res = $app->put({ __path_info => "/v$version/sites/$site_id/templates/$template_id", template => encode_json($template), %$extra });
                 next VERSION if $res->code == 404;
                 my @revisions = MT->model('template:revision')->load;
-                ok @revisions == 2, "has a new revision ($moniker)";
+                if ($moniker =~ /0$/) {
+                    ok !@revisions, "has no revision ($moniker)";
+                } else {
+                    ok @revisions == 2, "has a new revision ($moniker)";
+                }
             }
         }
     };
@@ -158,7 +182,11 @@ for my $extra ({}, {save_revision => 1}, {saveRevision => 1}) {
                 next VERSION if $res->code == 404;
                 $cd_id = decode_json($res->decoded_content)->{id};
                 my @revisions = MT->model('cd:revision')->load;
-                ok @revisions == 1, "has a revision ($moniker)";
+                if ($moniker =~ /0$/) {
+                    ok !@revisions, "has no revision ($moniker)";
+                } else {
+                    ok @revisions == 1, "has a revision ($moniker)";
+                }
             }
 
             {
@@ -167,7 +195,11 @@ for my $extra ({}, {save_revision => 1}, {saveRevision => 1}) {
                 my $res = $app->put({ __path_info => "/v$version/sites/$site_id/contentTypes/$ct_id/data/$cd_id", content_data => encode_json($cd), %$extra });
                 next VERSION if $res->code == 404;
                 my @revisions = MT->model('cd:revision')->load;
-                ok @revisions == 2, "has a new revision ($moniker)";
+                if ($moniker =~ /0$/) {
+                    ok !@revisions, "has no revision ($moniker)";
+                } else {
+                    ok @revisions == 2, "has a new revision ($moniker)";
+                }
             }
         }
     };
