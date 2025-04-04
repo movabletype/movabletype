@@ -109,6 +109,38 @@ sub post_list_action_ok {
     $res;
 }
 
+sub put {
+    my ( $self, $params ) = @_;
+    $params = _convert_params($params);
+    $params->{__request_method} = 'PUT';
+    $self->request($params);
+}
+
+sub put_ok {
+    my ( $self, $params, $message ) = @_;
+    my $res = $self->put($params);
+    ok !$res->is_error, $message // "put succeeded";
+    my $header_title = $self->header_title();
+    note $header_title if $header_title;
+    $res;
+}
+
+sub delete {
+    my ( $self, $params ) = @_;
+    $params = _convert_params($params);
+    $params->{__request_method} = 'DELETE';
+    $self->request($params);
+}
+
+sub delete_ok {
+    my ( $self, $params, $message ) = @_;
+    my $res = $self->delete($params);
+    ok !$res->is_error, $message // "delete succeeded";
+    my $header_title = $self->header_title();
+    note $header_title if $header_title;
+    $res;
+}
+
 sub js_get_ok {
     my ( $self, $params, $message ) = @_;
     local $ENV{HTTP_X_REQUESTED_WITH} = 'XMLHttpRequest';
