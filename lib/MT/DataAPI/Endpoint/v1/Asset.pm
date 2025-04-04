@@ -21,6 +21,18 @@ Upload a file.
 
 Authorization is required.
 DESCRIPTION
+        parameters => [{
+                in          => 'query',
+                name        => 'autoRenameIfExists',
+                schema      => { type => 'integer', enum => [0, 1], },
+                description => 'This is an optional parameter. Rename if the same asset exists',
+            }, {
+                in          => 'query',
+                name        => 'normalizeOrientation',
+                schema      => { type => 'integer', enum => [0, 1], },
+                description => 'This is an optional parameter. Normalize orientation of the uploaded image',
+            },
+        ],
         requestBody => {
             required => JSON::true,
             content  => {
