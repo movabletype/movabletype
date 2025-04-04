@@ -198,6 +198,9 @@ sub endpoints {
             version         => 1,
             handler         => '$Core::MT::DataAPI::Endpoint::v1::Category::list',
             openapi_handler => '$Core::MT::DataAPI::Endpoint::v1::Category::list_openapi_spec',
+            openapi_options => {
+                filtered_list_ds_nouns => 'category,categories',
+            },
             default_params  => {
                 limit        => 10,
                 offset       => 0,
@@ -231,6 +234,9 @@ sub endpoints {
             version         => 1,
             handler         => '$Core::MT::DataAPI::Endpoint::v1::Permission::list',
             openapi_handler => '$Core::MT::DataAPI::Endpoint::v1::Permission::list_openapi_spec',
+            openapi_options => {
+                filtered_list_ds_nouns => 'permission,permissions',
+            },
             default_params  => {
                 limit      => 25,
                 offset     => 0,
