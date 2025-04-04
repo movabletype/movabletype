@@ -6,7 +6,7 @@
   <p class="zero-state-widget"><__trans phrase="New [_1]" params="<mt:var name="object_label" escape="html">"></p>
   <mt:else>
     <mt:if name="use_revision">
-  <div class="revision-info">
+  <div class="revision-info<mt:if name="loaded_revision"> loaded_revision</mt:if>">
       <mt:if name="loaded_revision">
     <div class="status"><__trans phrase="Current: [_1]" params="<mt:include name="include/status_label.tmpl" $status_text_key="current_status_text">"></div>
     <div class="status"><__trans phrase="Displaying: [_1]" params="<mt:include name="include/status_label.tmpl" $status_text_key="status_text">"></div>

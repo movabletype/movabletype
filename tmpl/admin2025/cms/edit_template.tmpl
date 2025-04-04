@@ -141,7 +141,7 @@
     <p class="zero-state-widget"><__trans phrase="New Template"></p>
   <mt:else>
     <mt:if name="use_revision">
-    <div class="revision-info">
+    <div class="revision-info<mt:if name="loaded_revision"> loaded_revision</mt:if>">
       <mt:if name="rev_date">
         <mt:if name="loaded_revision">
       <div><__trans phrase="Current: [_1]" params="<mt:var name="current_rev_date" escape="html">"></div>

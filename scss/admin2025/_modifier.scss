@@ -1735,6 +1735,9 @@ fieldset.form-group{
   *:last-child{
     margin-bottom: 0;
   }
+  &:has(div.loaded_revision){
+    background-color: #FFFDE5;
+  }
 }
 .mt-widget__list{
   padding: 0;
