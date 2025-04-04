@@ -140,16 +140,28 @@
   <mt:if name="new_object">
     <p class="zero-state-widget"><__trans phrase="New Template"></p>
   <mt:else>
-    <div class="revision-info">
-    <mt:if name="rev_date">
+    <mt:if name="use_revision">
+    <div class="revision-info<mt:if name="loaded_revision"> loaded_revision</mt:if>">
+      <mt:if name="rev_date">
+        <mt:if name="loaded_revision">
+      <div><__trans phrase="Current: [_1]" params="<mt:var name="current_rev_date" escape="html">"></div>
+      <p>
+        <__trans phrase="Displaying: [_1]" params="<strong><mt:var name="rev_date" escape="html"></strong>">
+          <mt:if name="revision-note">
+        <br><__trans phrase="Note: [_1]" params="<mt:var name="revision-note" escape="html">">
+          </mt:if>
+      </p>
+        <mt:else>
       <p><__trans phrase="Revision: <strong>[_1]</strong>" params="<mt:var name="rev_date" escape="html">"></p>
+        </mt:if>
       <a href="<mt:var name="script_url">?__mode=list_revision&_type=<mt:var name="object_type" default="entry">&id=<$mt:var name="id" escape="html"$>&blog_id=<$mt:var name="blog_id"$>&r=<mt:var name="rev_number" escape="html">" class="mt-open-dialog mt-modal-open" data-mt-modal-large title="<__trans phrase="View revisions of this template">">
         <__trans phrase="View revisions">
       </a>
-    <mt:else>
+      <mt:else>
       <p class="zero-state-rev"><__trans phrase="No revision(s) associated with this template"></p>
-    </mt:if>
+      </mt:if>
     </div>
+    </mt:if>
   </mt:if>
 </mtapp:widget>
 </mt:if>
