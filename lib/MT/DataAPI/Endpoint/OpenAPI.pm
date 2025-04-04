@@ -151,6 +151,43 @@ sub build_schema {
                 }
             }
         }
+        if ($endpoints->{$id}{default_params}) {
+            for my $name (sort keys %{ $endpoints->{$id}{default_params} }) {
+                my $found = 0;
+                for my $param (@{ $response->{paths}{$route}{$verb}{parameters} }) {
+                    if (($param->{name} // '') eq $name or ($param->{alias} // '') eq $name) {
+                        $found = 1;
+                        last;
+                    } elsif (my $ref = $param->{'$ref'}) {
+                        $ref =~ s!^#/components/parameters/!!;
+                        if (($response->{components}{parameters}{$ref}{name} // '') eq $name) {
+                            $found = 1;
+                            last;
+                        }
+                        if (($response->{components}{parameters}{$ref}{alias} // '') eq $name) {
+                            $found = 1;
+                            last;
+                        }
+                    }
+                }
+                if (!$found) {
+                    if ($ENV{MT_DATA_API_DEBUG}) {
+                        require MT::Util::Log;
+                        MT::Util::Log->init;
+                        MT::Util::Log->warn("DataAPI Schema: $id requires $name parameter definition");
+                    }
+                    my $default = $endpoints->{$id}{default_params}{$name};
+                    push @{ $response->{paths}{$route}{$verb}{parameters} }, {
+                        in     => 'query',
+                        name   => $name,
+                        schema => {
+                            type    => $default =~ /^[0-9]+$/ ? 'integer' : 'string',
+                            default => $default,
+                        },
+                    };
+                }
+            }
+        }
         if ($app->current_api_version >= 3) {
             if (my $nouns = $endpoints->{$id}{openapi_options}{filtered_list_ds_nouns}) {
                 my ($singular, $plural) = split(',', $nouns);
