@@ -254,6 +254,12 @@ sub _build_filtered_list_parameters {
             schema      => { type => 'string' },
             description => 'The comma separated field name list to search.',
         },
+        "${singular}_filterKeys" => {
+            in          => 'query',
+            name        => 'filterKeys',
+            schema      => { type => 'string' },
+            description => 'The comma separated field name list to filter.',
+        },
         "${singular}_limit" => {
             in          => 'query',
             name        => 'limit',
@@ -505,6 +511,16 @@ DESCRIPTION
             name        => 'blogIds',
             schema      => { type => 'string' },
             description => 'The comma-separated blog id list that to be included in the result.',
+        };
+    }
+    # revisable
+    if ($singular =~ /^(?:entry|page|template|content_data)$/) {
+        $parameter_template->{"${singular}_saveRevision"} = {
+            in     => 'query',
+            name   => 'saveRevision',
+            alias  => 'save_revision',
+            schema => { type => 'integer' },
+            description => 'The revision number',
         };
     }
     my $param;
