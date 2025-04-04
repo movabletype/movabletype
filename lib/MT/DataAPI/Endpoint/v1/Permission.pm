@@ -26,6 +26,11 @@ DESCRIPTION
                 schema      => { type => 'string' },
                 description => 'This is an optional parameter. The comma separated ID list of blogs to retrieve.',
             },
+            { '$ref' => '#/components/parameters/permission_filterKeys' },
+            { '$ref' => '#/components/parameters/permission_limit' },
+            { '$ref' => '#/components/parameters/permission_offset' },
+            { '$ref' => '#/components/parameters/permission_sortBy' },
+            { '$ref' => '#/components/parameters/permission_sortOrder' },
         ],
         responses => {
             200 => {
