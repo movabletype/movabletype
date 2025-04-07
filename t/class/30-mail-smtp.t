@@ -198,7 +198,7 @@ for my $mod_name (@mail_modules) {
                     'mail body'
                 );
             };
-            like(MT::Util::Mail->errstr, qr{Authentication failure: .*?Authentication credentials invalid}, 'right error');
+            like(MT::Util::Mail->errstr, qr{All the supported SMTP authentication mechanisms failed}, 'right error');
             $mt->config->set('SMTPUser', $orig_user);
             $mt->config->set('SMTPPassword', $orig_pass);
             $MT::ErrorHandler::ERROR = undef;
