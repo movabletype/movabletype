@@ -2361,10 +2361,11 @@ use vars qw( @ISA %Lexicon );
 	'theme' => 'テーマ',
 
 ## lib/MT/Mail.pm
-	'Authentication failure: [_1]' => '認証に失敗しました: [_1]',
+	'All the supported SMTP authentication mechanisms failed: [_1]' => '対応しているすべての方式でSMTP認証に失敗しました: [_1]',
 	'Error connecting to SMTP server [_1]:[_2]' => 'SMTPサーバに接続できません。[_1]:[_2]',
 	'Exec of sendmail failed: [_1]' => 'sendmailを実行できませんでした: [_1]',
 	'Following required module(s) were not found: ([_1])' => '以下のモジュールが不足しています。([_1])',
+	'SMTP [_1] Authentication failed: [_2]' => 'SMTP認証([_1])に失敗しました: [_2]',
 	'Username and password is required for SMTP authentication.' => 'SMTP認証を利用する場合は、ユーザー名とパスワードは必須入力です。',
 	'You do not have a valid path to sendmail on your machine. Perhaps you should try using SMTP?' => 'sendmailへのパスが正しくありません。SMTPの設定を試してください。',
 	q{Unknown MailTransfer method '[_1]'} => q{MailTransferの設定([_1])が不正です。},
