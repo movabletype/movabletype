@@ -2250,6 +2250,7 @@ BEGIN {
             'LogEachFilePublishedInTheBackground' => undef,
             'TrimFilePath' => { default => 0 },
             'UseRiot' => { default => 1 },
+            'TrustedHosts' => { type => 'ARRAY' },
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {
