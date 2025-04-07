@@ -195,25 +195,37 @@ sub _send_mt_smtp {
         or return $class->error(MT->translate('Error connecting to SMTP server [_1]:[_2]', $host, $port));
 
     if ($smtpauth) {
-        my $mech = $conf->SMTPAuthSASLMechanism || do {
-
-            # Disable DIGEST-MD5.
-            my $m = $smtp->supports('AUTH', 500, ["Command unknown: 'AUTH'"]) || '';
-            $m =~ s/DIGEST-MD5//;
-            $m =~ /^\s+$/ ? undef : $m;
-        };
-
         require Authen::SASL;
-        my $sasl = Authen::SASL->new(
-            mechanism => "$mech",  # doublequotes are required to turn PVMG into PV
-            callback => {
-                user => $user,
-                pass => $pass,
-                authname => $user,
-            },
-        );
-        if (!eval { $smtp->auth($sasl) }) {
-            return $class->error(MT->translate("Authentication failure: [_1]", $@ ? $@ : scalar $smtp->message));
+        my @mechs = MT->config->SMTPAuthSASLMechanism || do {
+            my $m = $smtp->supports('AUTH', 500, ["Command unknown: 'AUTH'"]) || '';
+            # XXX: Do we still need to omit DIGEST-MD5?
+            $m =~ s/DIGEST-MD5//;
+            split /\s+/, $m;
+        };
+        my $authenticated;
+        for my $mech (@mechs) {
+            my $sasl = Authen::SASL->new(
+                mechanism => "$mech",
+                callback => {
+                    user     => $user,
+                    pass     => $pass,
+                    authname => $user,
+                },
+                debug => $MT::DebugMode,
+            );
+
+            my $last_error = '';
+            if (eval { $smtp->auth($sasl) }) {
+                $authenticated = 1;
+                last;
+            }
+            $last_error = $@ ? $@ : $smtp->message;
+            require MT::Util::Log;
+            MT::Util::Log::init();
+            MT::Util::Log->warn(MT->translate("SMTP [_1] Authentication failed: [_2]", "$mech", $last_error));
+        }
+        if (!$authenticated) {
+            return $class->error(MT->translate("All the supported SMTP authentication mechanisms failed: [_1]", join ", ", @mechs));
         }
     }
 
