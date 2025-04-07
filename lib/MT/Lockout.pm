@@ -242,7 +242,7 @@ sub _insert_failedlogin {
             my $body = $app->build_email(
                 'lockout-user',
                 {   author               => $user,
-                    recover_lockout_link => $app->base
+                    recover_lockout_link => $app->is_allowed_origin($app->base)
                         . $class->recover_lockout_uri( $app, $user ),
                 }
             );

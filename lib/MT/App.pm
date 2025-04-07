@@ -2661,7 +2661,7 @@ sub _send_comment_notification {
     my $base;
     {
         local $app->{is_admin} = 1;
-        $base = $app->base . $app->mt_uri;
+        $base = $app->is_allowed_origin($app->base) . $app->mt_uri;
     }
     if ( $base =~ m!^/! ) {
         my ($blog_domain) = $blog->site_url =~ m|(.+://[^/]+)|;

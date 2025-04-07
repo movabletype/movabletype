@@ -1518,6 +1518,7 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/CMS/Tools.pm
 	'Any site' => '任意のサイト',
+	'Cannot get host name. Please report it to the administartor.' => 'ホスト名を取得できませんでした。管理者に報告してください。',
 	'Cannot recover password in this configuration' => 'この構成ではパスワードの再設定はできません。',
 	'Changing URL for FileInfo record (ID:[_1])...' => 'ファイル情報レコード(ID:[_1])のURLを変更しています...',
 	'Changing file path for FileInfo record (ID:[_1])...' => 'ファイル情報レコード(ID:[_1])のパスを変更しています...',
