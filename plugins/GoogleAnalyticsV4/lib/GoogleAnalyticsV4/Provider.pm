@@ -53,6 +53,7 @@ sub _normalize_date {
 
 sub _extract_default_params {
     my ($params) = @_;
+    my $pagePath = $params->{pagePath} || $params->{path};
 
     (
         'dateRanges' => [{
@@ -65,13 +66,13 @@ sub _extract_default_params {
             : ()
         ),
         (
-            $params->{pagePath}
+            $pagePath
             ? (
                 'dimensionFilter' => {
                     'filter' => {
                         'stringFilter' => {
                             'matchType' => "PARTIAL_REGEXP",
-                            'value'     => $params->{pagePath}
+                            'value'     => $pagePath,
                         },
                         'fieldName' => 'pagePath'
                     }
