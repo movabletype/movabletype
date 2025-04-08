@@ -1498,7 +1498,7 @@ sub is_valid_url {
 
     return '' if ( $url =~ /[ \"]/ );
 
-    # help with common typo in the colon section.
+    # fix common typos
     $url =~ s,(https?);//,$1://,;
     $url =~ s,(https?)//,$1://,;
 
