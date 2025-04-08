@@ -42,7 +42,7 @@ sub _invoke {
         $params->{offset});
 
     $params->{pagePath} = do {
-        if (defined(my $path = $app->param('pagePath'))) {
+        if (defined(my $path = $app->param('pagePath') || $app->param('path'))) {
             $path;
         } else {
             URI->new($app->blog->site_url)->path;
