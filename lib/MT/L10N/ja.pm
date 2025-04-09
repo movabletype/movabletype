@@ -4711,7 +4711,7 @@ use vars qw( @ISA %Lexicon );
 	'On a schedule' => 'スケジュール',
 	'Process as <strong>[_1]</strong> include' => '<strong>[_1]</strong>のインクルードとして処理する',
 	'Processing request...' => '処理中...',
-	'Restored revision (Date:[_1]).' => '更新履歴(日付: [_1])に戻しました。',
+	'Restored revision (Date:[_1]).' => '[_1] に保存したときの状態に戻しました。',
 	'Save &amp; Publish' => '保存と再構築',
 	'Save Changes (s)' => '変更を保存 (s)',
 	'Save and Publish this template (r)' => 'このテンプレートを保存して再構築 (r)',
