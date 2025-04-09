@@ -65,6 +65,15 @@
   </mtapp:statusmsg>
 </mt:if>
 
+<mt:if name="loaded_revision">
+  <mtapp:statusmsg
+     id="loaded_revision"
+     class="info">
+    <__trans phrase="Restored revision (Date:[_1]).  The current status is: [_2]" params="<$mt:var name="rev_date" escape="html"$>%%
+      <mt:include name="include/status_label.tmpl" $status_text_key="status_text">">
+  </mtapp:statusmsg>
+</mt:if>
+
 <mt:if name="err_msg">
   <mtapp:statusmsg
      id="err_msg"
