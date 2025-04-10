@@ -1479,7 +1479,6 @@ sub init_plugins {
                 envelope => $plugin_envelope
             }
         );
-        $p->load_required_meta() if $pclass eq 'MT::Plugin';
 
         # rebless? based on config?
         local $plugin_sig = $plugin_dir;
