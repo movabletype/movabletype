@@ -41,17 +41,20 @@ sub _find_module {
 }
 
 sub Dump {
+    _find_module() unless $Module;
     no strict 'refs';
     *{ $Module . "::Dump" }->(@_);
 }
 
 sub Load {
+    _find_module() unless $Module;
     no strict 'refs';
     *{ $Module . "::Load" }->(@_);
 
 }
 
 sub LoadFile {
+    _find_module() unless $Module;
     no strict 'refs';
     *{ $Module . "::LoadFile" }->(@_);
 }
