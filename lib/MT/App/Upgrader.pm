@@ -629,16 +629,17 @@ sub finish {
 
 sub redirect_to_mt {
     my $app   = shift;
-    my $token = $app->param('token') or return $app->errtrans('Invalid request.');
     return $app->errtrans('Invalid request.') unless uc $app->request_method eq 'POST';
+    my $token = $app->param('token');
+    if ($token) {
+        require MT::Author;
+        require MT::Session;
+        my $session   = MT::Session::get_unexpired_value(5 * 60, { id => $token, kind => 'OT' }) or return $app->errtrans('Invalid request.');
+        my $author_id = $session->get('author_id');
 
-    require MT::Author;
-    require MT::Session;
-    my $session   = MT::Session::get_unexpired_value(5 * 60, { id => $token, kind => 'OT' }) or return $app->errtrans('Invalid request.');
-    my $author_id = $session->get('author_id');
-
-    my $author = MT::Author->load($author_id) or return $app->errtrans('Invalid request.');
-    $app->start_session($author);
+        my $author = MT::Author->load($author_id) or return $app->errtrans('Invalid request.');
+        $app->start_session($author);
+    }
     return $app->redirect(($app->config->AdminCGIPath || $app->config->CGIPath) . $app->config->AdminScript);
 }
 
