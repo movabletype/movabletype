@@ -40,8 +40,6 @@ sub _find_module {
     1;
 }
 
-BEGIN { _find_module() }
-
 sub Dump {
     no strict 'refs';
     *{ $Module . "::Dump" }->(@_);
@@ -57,5 +55,9 @@ sub LoadFile {
     no strict 'refs';
     *{ $Module . "::LoadFile" }->(@_);
 }
+
+# Make sure all the MT::Util::YAML methods are defined beforehand
+# because MT::Component::init_registry may use LoadFile while instantiating MT (via _find_module)
+BEGIN { _find_module() }
 
 1;
