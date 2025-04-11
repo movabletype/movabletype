@@ -195,8 +195,7 @@
   <mtapp:statusmsg
      id="loaded_revision"
      class="info">
-    <__trans phrase="Restored revision (Date:[_1]).  The current status is: [_2]" params="<$mt:var name="rev_date" escape="html"$>%%
-      <mt:include name="include/status_label.tmpl" $status_text_key="status_text">">
+    <__trans phrase="Restored revision (Date:[_1])." params="<$mt:var name="rev_date" escape="html"$>">
   </mtapp:statusmsg>
   <mt:if name="missing_tags_rev">
   <mtapp:statusmsg
