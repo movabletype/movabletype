@@ -180,11 +180,12 @@ sub edit {
             if ( defined($rn) && $rn != $content_data->current_revision ) {
                 my $status_text
                     = MT::ContentStatus::status_text( $content_data->status );
-                $param->{current_status_text} = $status_text;
-                $param->{current_status_label}
-                    = $app->translate($status_text);
-                my $rev
-                    = $content_data->load_revision( { rev_number => $rn } );
+                $param->{current_status_text}  = $status_text;
+                $param->{current_status_label} = $app->translate($status_text);
+                $param->{current_rev_date}     = MT::Util::format_ts( "%Y-%m-%d %H:%M:%S",
+                    $content_data->modified_on,
+                    $blog, $user ? $user->preferred_language : undef );
+                my $rev = $content_data->load_revision( { rev_number => $rn } );
                 if ( $rev && @$rev ) {
                     $content_data = $rev->[0];
                     my $rev_obj = $rev->[3];
@@ -199,8 +200,7 @@ sub edit {
             $param->{rev_date} = MT::Util::format_ts(
                 '%Y-%m-%d %H:%M:%S',
                 $content_data->modified_on,
-                $blog, $app->user ? $app->user->preferred_language : undef
-            );
+                $blog, $user ? $user->preferred_language : undef );
         }
 
         if (my $other_user = $app->user_who_is_also_editing_the_same_stuff($content_data)) {

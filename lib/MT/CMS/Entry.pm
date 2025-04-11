@@ -87,9 +87,10 @@ sub edit {
             my $rn = $app->param('r');
             if ( defined($rn) && $rn != $obj->current_revision ) {
                 my $status_text = MT::Entry::status_text( $obj->status );
-                $param->{current_status_text} = $status_text;
-                $param->{current_status_label}
-                    = $app->translate($status_text);
+                $param->{current_status_text}  = $status_text;
+                $param->{current_status_label} = $app->translate($status_text);
+                $param->{current_rev_date}     = format_ts( "%Y-%m-%d %H:%M:%S",
+                    $obj->modified_on, $blog, $preferred_language );
                 my $rev = $obj->load_revision( { rev_number => $rn } );
                 if ( $rev && @$rev ) {
                     $obj = $rev->[0];

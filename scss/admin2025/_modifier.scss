@@ -1738,6 +1738,9 @@ fieldset.form-group{
   &:has(div.loaded_revision){
     background-color: #FFFDE5;
   }
+  div.status {
+    margin-bottom: 1rem;
+  }
 }
 .mt-widget__list{
   padding: 0;
