@@ -2661,7 +2661,7 @@ sub _send_comment_notification {
     my $base;
     {
         local $app->{is_admin} = 1;
-        $base = $app->is_allowed_origin($app->base) . $app->mt_uri;
+        $base = $app->base . $app->mt_uri;
     }
     if ( $base =~ m!^/! ) {
         my ($blog_domain) = $blog->site_url =~ m|(.+://[^/]+)|;
@@ -4173,8 +4173,8 @@ sub base {
 
     # determine hostname from environment (supports relative CGI paths)
     if ( my $host = $ENV{HTTP_HOST} ) {
-        return $app->{__host}
-            = 'http' . ( $app->is_secure ? 's' : '' ) . '://' . $host;
+        my $origin = 'http' . ( $app->is_secure ? 's' : '' ) . '://' . $host;
+        return $app->{__host} = $app->is_allowed_origin($origin);
     }
     '';
 }

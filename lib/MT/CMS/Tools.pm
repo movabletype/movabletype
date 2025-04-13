@@ -85,7 +85,7 @@ sub recover_password {
     $email = trim($email);
     $username = trim($username) if $username;
 
-    my $base = $app->is_allowed_origin($app->base);
+    my $base = $app->base;
     if ($base eq '') {
         return $app->errtrans('Cannot get host name. Please report it to the administartor.');
     }
