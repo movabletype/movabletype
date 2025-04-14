@@ -3668,7 +3668,7 @@ sub TrustedHosts {
     return @{$default_trusted_hosts} if $default_trusted_hosts;
 
     my @urls;
-    my @sites = MT->model('blog')->load({ class => '*' });
+    my @sites = eval { MT->model('blog')->load({ class => '*' }) };    # fails before install
     for my $site (@sites) {
         push @urls, $site->site_url;
     }
