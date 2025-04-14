@@ -49,7 +49,7 @@ ok( defined $json{v7}{paths}{"/sites/{site_id}/export_theme"}{post}{requestBody}
 
 # stats
 for my $p1 (qw/path date/) {
-    for my $p2 (qw/sessions screenpageviews/) {
+    for my $p2 (qw/sessions screenPageViews/) {
         ok(!defined $json{v6}{paths}{"/sites/{site_id}/stats/$p1/$p2"});
         is($json{v7}{paths}{"/sites/{site_id}/stats/$p1/$p2"}{get}{parameters}[5]{name}, "pagePath");
     }

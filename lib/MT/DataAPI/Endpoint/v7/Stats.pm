@@ -55,9 +55,9 @@ sub _invoke {
 sub screenpageviews_for_path_openapi_spec {
     return +{
         tags        => ['Statistics'],
-        summary     => 'Retrieve pageviews count for each path from provider (e.g. Google Analytics V4)',
+        summary     => 'Retrieve screenPageViews count for each path from provider (e.g. Google Analytics V4)',
         description => <<'DESCRIPTION',
-Retrieve pageviews count for each path from provider (e.g. Google Analytics V4).
+Retrieve screenPageViews count for each path from provider (e.g. Google Analytics V4).
 
 Authorization is required.
 DESCRIPTION
@@ -100,7 +100,7 @@ DESCRIPTION
                     type => 'integer',
                     enum => [0, 1],
                 },
-                description => 'This is an optional parameter. If true is given, the MT can return total pageviews for each uniqueness paths. However, that data does not contain page title because its spec. (Sometimes, Google Analytics will return another pageviews by same path.)',
+                description => 'This is an optional parameter. If true is given, the MT can return total scrrenPageViews for each unique path. However, that data does not contain page title because of its spec. (Sometimes, Google Analytics will return another screenPageViews by same path.)',
             },
         ],
         responses => {
@@ -127,7 +127,7 @@ DESCRIPTION
                                     properties => {
                                         screenPageViews => {
                                             type        => 'integer',
-                                            description => 'The sum total of the pageviews in the specified period.',
+                                            description => 'The sum total of the screenPageViews in the specified period.',
                                         },
                                     },
                                 },
@@ -252,9 +252,9 @@ sub sessions_for_path {
 sub screenpageviews_for_date_openapi_spec {
     return +{
         tags        => ['Statistics'],
-        summary     => 'Retrieve pageviews count for each date from provider (e.g. Google Analytics V4)',
+        summary     => 'Retrieve screenPageViews count for each date from provider (e.g. Google Analytics V4)',
         description => <<'DESCRIPTION',
-Retrieve pageviews count for each date from provider (e.g. Google Analytics V4).
+Retrieve screenPageViews count for each date from provider (e.g. Google Analytics V4).
 
 Authorization is required.
 DESCRIPTION
@@ -297,7 +297,7 @@ DESCRIPTION
                     type => 'integer',
                     enum => [0, 1],
                 },
-                description => 'This is an optional parameter. If true is given, the MT can return total screenPageViews for each uniqueness paths. However, that data does not contain page title because its spec. (Sometimes, Google Analytics will return another pageviews by same path.)',
+                description => 'This is an optional parameter. If true is given, the MT can return total screenPageViews for each unique path. However, that data does not contain page title because of its spec. (Sometimes, Google Analytics will return another screenPageViews by same path.)',
             },
         ],
         responses => {
@@ -324,7 +324,7 @@ DESCRIPTION
                                     properties => {
                                         screenPageViews => {
                                             type        => 'integer',
-                                            description => 'The sum total of the pageviews in the specified period.',
+                                            description => 'The sum total of the screenPageViews in the specified period.',
                                         },
                                     },
                                 },

@@ -207,7 +207,7 @@ sub suite {
             },
         },
         {
-            path   => '/v7/sites/1/stats/path/screenpageviews',
+            path   => '/v7/sites/1/stats/path/screenPageViews',
             params => { startDate => '2022-03-01', endDate => '2022-04-01', pagePath => '/' },
             method => 'GET',
             code   => 200,
@@ -219,7 +219,7 @@ sub suite {
             },
         },
         {
-            path   => '/v7/sites/1/stats/path/screenpageviews',
+            path   => '/v7/sites/1/stats/path/screenPageViews',
             params => { startDate => '2022-03-01', endDate => '2022-04-01', path => '/' },
             method => 'GET',
             code   => 200,
@@ -231,7 +231,7 @@ sub suite {
             },
         },
         {
-            path   => '/v7/sites/1/stats/date/screenpageviews',
+            path   => '/v7/sites/1/stats/date/screenPageViews',
             params => { startDate => '2022-03-01', endDate => '2022-04-01' },
             method => 'GET',
             code   => 200,

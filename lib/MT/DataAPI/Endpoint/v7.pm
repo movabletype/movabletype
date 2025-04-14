@@ -51,7 +51,7 @@ sub endpoints {
         },
         {
             id              => 'list_stats_screenpageviews_for_path',
-            route           => '/sites/:site_id/stats/path/screenpageviews',
+            route           => '/sites/:site_id/stats/path/screenPageViews',
             version         => 7,
             handler         => '$Core::MT::DataAPI::Endpoint::v7::Stats::screenpageviews_for_path',
             openapi_handler => '$Core::MT::DataAPI::Endpoint::v7::Stats::screenpageviews_for_path_openapi_spec',
@@ -65,7 +65,7 @@ sub endpoints {
         },
         {
             id              => 'list_stats_screenpageviews_for_date',
-            route           => '/sites/:site_id/stats/date/screenpageviews',
+            route           => '/sites/:site_id/stats/date/screenPageViews',
             version         => 7,
             handler         => '$Core::MT::DataAPI::Endpoint::v7::Stats::screenpageviews_for_date',
             openapi_handler => '$Core::MT::DataAPI::Endpoint::v7::Stats::screenpageviews_for_date_openapi_spec',
