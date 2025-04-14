@@ -285,7 +285,7 @@ sub fields_for_statistics_date {
             name   => 'sessions',
             schema => {
                 type        => 'integer',
-                description => 'The number of sessions for the path. This property exists only if the metrics to retrieve is "screens"',
+                description => 'The number of sessions for the path. This property exists only if the metrics to retrieve is "sessions"',
 
             },
         },
