@@ -466,6 +466,9 @@ sub init_website {
         $param{website_path} = File::Spec->catdir($path);
 
         my $url = $app->base . '/';
+        if ($url eq '/' && $ENV{HTTP_HOST}) {
+            $url = 'http' . ($app->is_secure ? 's' : '') . '://' . $ENV{HTTP_HOST} . '/';
+        }
         $url =~ s!/cgi(?:-bin)?(/.*)?$!/!;
         $url =~ s!/mt/?$!/!i;
         $param{website_url} = $url;
