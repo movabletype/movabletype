@@ -11,7 +11,6 @@ BEGIN {
         UserLockoutLimit    => 6,
         IPLockoutInterval   => 1800,
         UserLockoutInterval => 1800,
-        TrustedHosts        => ['*'],
     );
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
