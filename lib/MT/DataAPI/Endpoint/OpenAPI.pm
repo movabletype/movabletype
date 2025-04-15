@@ -169,6 +169,15 @@ sub build_schema {
                         }
                     }
                 }
+                if ($response->{paths}{$route}{$verb}{requestBody}) {
+                    for my $type (keys %{ $response->{paths}{$route}{$verb}{requestBody}{content} || {} }) {
+                        for my $prop (keys %{ $response->{paths}{$route}{$verb}{requestBody}{content}{$type}{schema}{properties} || {} }) {
+                            if ($prop eq $name) {
+                                $found++;
+                            }
+                        }
+                    }
+                }
                 if (!$found) {
                     if ($ENV{MT_DATA_API_DEBUG}) {
                         require MT::Util::Log;
