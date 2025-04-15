@@ -16,7 +16,7 @@ sub _find_module {
     my ($config) = @_;
     if ( !$config ) {
         ## if MT was not yet instantiated, ignore the config directive.
-        eval { $config = MT->app->config('YAMLModule') || '' };
+        eval { $config = MT->app->config('YAMLModule') || '' } if $MT::ConfigMgr::cfg;
     }
     if ($config) {
         $config =~ s/^YAML:://;

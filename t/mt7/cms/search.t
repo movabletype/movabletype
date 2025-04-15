@@ -25,6 +25,7 @@ my $objs    = MT::Test::Fixture::SearchReplace->load_objs;
 my $author  = MT->model('author')->load(1);
 my $blog_id = $objs->{blog_id};
 my $ct_id   = $objs->{content_type}{ct_multi}{content_type}->id;
+my $ct2_id  = $objs->{content_type}{ct_field_label}{content_type}->id;
 
 subtest 'content_data' => sub {
     my $app = MT::Test::App->new('MT::App::CMS');
@@ -122,6 +123,27 @@ subtest 'content_data' => sub {
         };
 
         $cd->remove();
+    };
+
+    subtest 'data label' => sub {
+        # to reset form
+        $app->get_ok({ __mode => 'search_replace', blog_id => $blog_id });
+        $app->change_tab('content_data');
+        $app->change_content_type($ct2_id);
+        $app->search('multi line text', {
+            is_limited => 1,
+            search_cols => ['label'],
+        });
+        is_deeply($app->found_titles, []);
+
+        # search by data_label field
+        $app->search('single line text for label', {
+            is_limited => 1,
+            search_cols => ['label'],
+        });
+        is_deeply($app->found_titles, ['test single line text for label2', 'test single line text for label']);
+
+        $app->change_content_type($ct_id);
     };
 };
 
