@@ -305,6 +305,9 @@ sub edit {
     if ( !$param->{id} ) {
         if ( !$param->{site_url} ) {
             $param->{suggested_site_url} = $app->base . '/';
+            if ($param->{suggested_site_url} eq '/' && $ENV{HTTP_HOST}) {
+                $param->{suggested_site_url} = 'http' . ($app->is_secure ? 's' : '') . '://' . $ENV{HTTP_HOST} . '/';
+            }
             $param->{suggested_site_url} =~ s!/cgi(?:-bin)?(/.*)?$!/!;
             $param->{suggested_site_url} =~ s!/mt/?$!/!i;
             $param->{site_url} = $param->{suggested_site_url};
