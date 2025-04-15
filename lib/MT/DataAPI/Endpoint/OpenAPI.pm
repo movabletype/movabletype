@@ -159,13 +159,11 @@ sub build_schema {
                 my $found = 0;
                 for my $param (@{ $response->{paths}{$route}{$verb}{parameters} }) {
                     if (($param->{name} // '') eq $name) {
-                        $found = 1;
-                        last;
+                        $found++;
                     } elsif (my $ref = $param->{'$ref'}) {
                         $ref =~ s!^#/components/parameters/!!;
                         if (($response->{components}{parameters}{$ref}{name} // '') eq $name) {
-                            $found = 1;
-                            last;
+                            $found++;
                         }
                     }
                 }
@@ -193,6 +191,12 @@ sub build_schema {
                             default => $default,
                         },
                     };
+                } elsif ($found > 1) {
+                    if ($ENV{MT_DATA_API_DEBUG}) {
+                        require MT::Util::Log;
+                        MT::Util::Log->init;
+                        MT::Util::Log->warn("DataAPI Schema: $id has multiple $name definition");
+                    }
                 }
             }
         }
