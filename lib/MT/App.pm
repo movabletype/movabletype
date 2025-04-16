@@ -3060,6 +3060,9 @@ sub show_login {
         }
     }
 
+    # Use the default language as user language preference is not known yet
+    $app->set_language($app->config->DefaultLanguage);
+
     my ($param) = @_;
     $param ||= {};
     require MT::Auth;
