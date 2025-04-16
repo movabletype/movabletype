@@ -4175,33 +4175,29 @@ sub base {
     # determine hostname from environment (supports relative CGI paths)
     if (my $host = $ENV{HTTP_HOST}) {
         my $origin = 'http' . ($app->is_secure ? 's' : '') . '://' . $host;
-        return $origin if $param{NoHostCheck};
-        return $app->{__host} = $app->is_allowed_origin($origin);
+        if ($param{NoHostCheck}) {
+            return $origin;
+        }
+        if ($app->is_allowed_host($host)) {
+            return $app->{__host} = $origin;
+        }
     }
     '';
 }
 
-sub is_allowed_origin {
-    my ($app, $origin) = @_;
-
-    # empty string cannot be checked
-    return '' if $origin eq '';
-
-    # url scheme is always added in $app->base
-    my $lc_origin = lc $origin;
-    my ($lc_host) = $lc_origin =~ m!\Ahttps?://([^/]+)\z!;
-    die $app->translate('Invalid [_1] parameter.', '$origin') unless $lc_host;
-
+sub is_allowed_host {
+    my ($app, $host) = @_;
+    my $lc_host = lc $host;
     my %seen;
     for my $trusted ($app->config->TrustedHosts) {
         my $lc_trusted = lc $trusted;
         next if $seen{$lc_trusted}++;
 
-        return $origin if $lc_trusted eq $lc_host;
-        return $origin if $lc_trusted eq '*';
-        return $origin if $lc_trusted =~ /\A\*(\..+)\z/ && $lc_host =~ /\A[^.]+\Q${1}\E\z/;
+        return 1 if $lc_trusted eq $lc_host;
+        return 1 if $lc_trusted eq '*';
+        return 1 if $lc_trusted =~ /\A\*(\..+)\z/ && $lc_host =~ /\A[^.]+\Q${1}\E\z/;
     }
-    return '';
+    return 0;
 }
 
 *path = \&mt_path;
@@ -5393,11 +5389,11 @@ cookies as part of a 302 Redirect response.
 The protocol and domain of the application. For example, with the full URI
 F<http://www.foo.com/mt/mt.cgi>, this method will return F<http://www.foo.com>.
 
-=head2 $app->is_allowed_origin($origin)
+=head2 $app->is_allowed_host($host)
 
-Checks C<$origin> has whether allowed host or not.
-If C<$origin> has allowed host, this method will return C<$origin>.
-If C<$origin> does not have allowed host, this method will return empty string.
+Checks C<$host> has whether allowed host or not.
+If C<$host> has allowed host, this method will return 1.
+If C<$host> does not have allowed host, this method will return 0.
 
 =head2 $app->path
 
