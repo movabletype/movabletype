@@ -3285,6 +3285,7 @@ sub run {
                         $app->param->delete_all();
                     }
 
+                    $app->set_language($app->config->DefaultLanguage) unless $author;
                     $body
                         = ref($author) eq $app->user_class
                         ? $app->show_error( { error => $app->errstr } )
@@ -3303,6 +3304,7 @@ sub run {
             }
 
             if ( !@handlers ) {
+                $app->set_language($app->config->DefaultLanguage) unless $app->user;
                 $app->error(
                     $app->translate( 'Unknown action [_1]', $mode ) );
                 last REQUEST;
