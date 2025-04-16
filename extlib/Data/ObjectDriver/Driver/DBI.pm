@@ -565,7 +565,7 @@ sub remove {
 
     $obj->call_trigger('post_remove', $orig_obj);
 
-    $orig_obj->{__is_stored} = 1;
+    delete $orig_obj->{__is_stored};
     return $result;
 }
 
