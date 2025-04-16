@@ -57,8 +57,6 @@ Sort by the basename of each folders.
 #### label
 
 Sort by the label of each folders.
-
-**Default**: user_custom
 DESCRIPTION
             },
             { '$ref' => '#/components/parameters/folder_sortOrder' },
@@ -75,8 +73,6 @@ DESCRIPTION
                 },
                 description => <<'DESCRIPTION',
 If set to 1, retrieves only top level folders.
-
-**Default**: 0
 DESCRIPTION
             },
         ],
@@ -123,8 +119,6 @@ sub list_parents_openapi_spec {
                 schema      => { type => 'integer' },
                 description => <<'DESCRIPTION',
 The depth of retrieving parent folders.
-
-**Default**: 0
 DESCRIPTION
             },
             {
@@ -143,8 +137,6 @@ The results includes current folder.
 #### 0
 
 The results do not include current folder.
-
-**Default**: 0
 DESCRIPTION
             },
         ],
@@ -224,8 +216,6 @@ Sort by the basename of each folders.
 #### label
 
 Sort by the label of each folders.
-
-**Default**: user_custom
 DESCRIPTION
             },
             { '$ref' => '#/components/parameters/folder_sortOrder' },
@@ -241,8 +231,6 @@ DESCRIPTION
                     default => 0,
                 },
                 description => <<'DESCRIPTION',
-Default: 0
-
 If set to 1, retrieves only top level folders.
 DESCRIPTION
             },
@@ -290,8 +278,6 @@ sub list_children_openapi_spec {
                 schema      => { type => 'integer' },
                 description => <<'DESCRIPTION',
 The depth of retrieving child folders.
-
-**Default**: 0
 DESCRIPTION
             },
             {
@@ -310,8 +296,6 @@ The results includes current folder.
 #### 0
 
 The results do not include current folder.
-
-**Default**: 0
 DESCRIPTION
             },
         ],

@@ -53,9 +53,7 @@ Sort by the ID of user who created each asset.
 
 #### created_on
 
-(default) Sort by the created time of each asset.
-
-**Default**: created_on
+Sort by the created time of each asset.
 DESCRIPTION
             },
             { '$ref' => '#/components/parameters/asset_sortOrder' },
@@ -435,9 +433,7 @@ Sort by the ID of user who created each asset.
 
 #### created_on
 
-(default) Sort by the created time of each asset.
-
-**Default**: created_on
+Sort by the created time of each asset.
 DESCRIPTION
             },
             { '$ref' => '#/components/parameters/asset_sortOrder' },
@@ -524,9 +520,7 @@ Sort by the ID of user who created each asset.
 
 #### created_on
 
-(default) Sort by the created time of each asset.
-
-**Default**: created_on
+Sort by the created time of each asset.
 DESCRIPTION
             },
             { '$ref' => '#/components/parameters/asset_sortOrder' },
@@ -640,9 +634,7 @@ Sort by the ID of user who created each asset.
 
 #### created_on
 
-(default) Sort by the created time of each asset.
-
-**Default**: created_on
+Sort by the created time of each asset.
 DESCRIPTION
             },
             { '$ref' => '#/components/parameters/asset_sortOrder' },
@@ -757,13 +749,13 @@ DESCRIPTION
                             },
                             autoRenameIfExists => {
                                 type        => 'integer',
-                                description => 'If this value is "1" and a file with the same filename exists, the uploaded file is automatically renamed to a random generated name. Default is "0".',
+                                description => 'If this value is "1" and a file with the same filename exists, the uploaded file is automatically renamed to a random generated name.',
                                 enum        => [0, 1],
                                 default     => 0,
                             },
                             normalizeOrientation => {
                                 type        => 'integer',
-                                description => 'If this value is "1" and the uploaded file has orientation information in Exif data, this file\'s orientation is automatically normalized. Default is "1".',
+                                description => 'If this value is "1" and the uploaded file has orientation information in Exif data, this file\'s orientation is automatically normalized.',
                                 enum        => [0, 1],
                                 default     => 1,
                             },

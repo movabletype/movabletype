@@ -716,8 +716,6 @@ Preserve original user
 #### 1
 
 Import as me
-
-**Default**: 1
 DESCRIPTION
                             },
                             password => {

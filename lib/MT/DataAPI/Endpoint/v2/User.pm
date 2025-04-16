@@ -48,8 +48,6 @@ DESCRIPTION
 The field name for sort. You can specify one of following values
 - id
 - name
-
-**Default**: name
 DESCRIPTION
             },
             { '$ref' => '#/components/parameters/user_sortOrder' },

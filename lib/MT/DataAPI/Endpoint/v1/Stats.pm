@@ -114,13 +114,13 @@ DESCRIPTION
                 'in'        => 'query',
                 name        => 'limit',
                 schema      => { type => 'integer' },
-                description => 'This is an optional parameter. Maximum number of paths to retrieve. Default is 10.',
+                description => 'This is an optional parameter. Maximum number of paths to retrieve.',
             },
             {
                 'in'        => 'query',
                 name        => 'offset',
                 schema      => { type => 'string' },
-                description => 'This is an optional parameter. 0-indexed offset. Default is 0.',
+                description => 'This is an optional parameter. 0-indexed offset.',
             },
             {
                 'in'        => 'query',
@@ -217,13 +217,13 @@ DESCRIPTION
                 'in'        => 'query',
                 name        => 'limit',
                 schema      => { type => 'integer' },
-                description => 'This is an optional parameter. Maximum number of paths to retrieve. Default is 10.',
+                description => 'This is an optional parameter. Maximum number of paths to retrieve.',
             },
             {
                 'in'        => 'query',
                 name        => 'offset',
                 schema      => { type => 'string' },
-                description => 'This is an optional parameter. 0-indexed offset. Default is 0.',
+                description => 'This is an optional parameter. 0-indexed offset.',
             },
             {
                 'in'        => 'query',
@@ -311,13 +311,13 @@ DESCRIPTION
                 'in'        => 'query',
                 name        => 'limit',
                 schema      => { type => 'integer' },
-                description => 'This is an optional parameter. Maximum number of paths to retrieve. Default is 10.',
+                description => 'This is an optional parameter. Maximum number of paths to retrieve.',
             },
             {
                 'in'        => 'query',
                 name        => 'offset',
                 schema      => { type => 'string' },
-                description => 'This is an optional parameter. 0-indexed offset. Default is 0.',
+                description => 'This is an optional parameter. 0-indexed offset.',
             },
             {
                 'in'        => 'query',
@@ -413,13 +413,13 @@ DESCRIPTION
                 'in'        => 'query',
                 name        => 'limit',
                 schema      => { type => 'integer' },
-                description => 'This is an optional parameter. Maximum number of paths to retrieve. Default is 10.',
+                description => 'This is an optional parameter. Maximum number of paths to retrieve.',
             },
             {
                 'in'        => 'query',
                 name        => 'offset',
                 schema      => { type => 'string' },
-                description => 'This is an optional parameter. 0-indexed offset. Default is 0.',
+                description => 'This is an optional parameter. 0-indexed offset.',
             },
             {
                 'in'        => 'query',

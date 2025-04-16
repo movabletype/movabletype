@@ -174,13 +174,13 @@ DESCRIPTION
                 'in'        => 'query',
                 name        => 'limit',
                 schema      => { type => 'integer' },
-                description => 'This is an optional parameter. Maximum number of entries to retrieve. Default is 10. ',
+                description => 'This is an optional parameter. Maximum number of entries to retrieve.',
             },
             {
                 'in'        => 'query',
                 name        => 'offset',
                 schema      => { type => 'integer' },
-                description => 'This is an optional parameter. 0-indexed offset. Default is 0.',
+                description => 'This is an optional parameter. 0-indexed offset.',
             },
             {
                 'in'        => 'query',
@@ -211,7 +211,7 @@ This is an optional parameter.
 
 #### authored_on
 
-(default) Sort by the Published time of each entries.
+Sort by the Published time of each entries.
 
 #### title
 
@@ -241,7 +241,7 @@ This is an optional parameter.
 
 #### descend
 
-(default) Return entries in descending order. For the date, it means from newest to oldest.
+Return entries in descending order. For the date, it means from newest to oldest.
 
 #### ascend
 
