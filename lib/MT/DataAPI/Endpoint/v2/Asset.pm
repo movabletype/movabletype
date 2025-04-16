@@ -733,16 +733,6 @@ DESCRIPTION
                     enum => [0, 1],
                 },
                 description => 'If specify "1", the API always overwrites an existing file with the uploaded file. This parameter has been available since Movable Type 6.1.2',
-            }, {
-                in          => 'query',
-                name        => 'autoRenameIfExists',
-                schema      => { type => 'integer', enum => [0, 1], },
-                description => 'This is an optional parameter. Rename if the same asset exists',
-            }, {
-                in          => 'query',
-                name        => 'normalizeOrientation',
-                schema      => { type => 'integer', enum => [0, 1], },
-                description => 'This is an optional parameter. Normalize orientation of the uploaded image',
             },
         ],
         requestBody => {
