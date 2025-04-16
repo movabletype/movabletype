@@ -1107,9 +1107,6 @@ sub _preview_common {
 
     my $redirect_to = delete $app->{redirect};
     if ( $redirect_to && !$app->param('raw') ) {
-        if ($redirect_to !~ m!^https?://!i && $ENV{HTTP_HOST}) {
-            $redirect_to = 'http' . ($app->is_secure ? 's' : '') . '://' . $ENV{HTTP_HOST} . $redirect_to;
-        }
         return +{
             status  => 'success',
             preview => $redirect_to,

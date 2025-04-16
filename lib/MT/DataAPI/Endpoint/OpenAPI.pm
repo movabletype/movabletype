@@ -19,10 +19,7 @@ sub build_schema {
     my ($app, $endpoint) = @_;
     my $endpoints        = $app->endpoints($app->current_api_version)->{hash};
     my $resource_schemas = $app->schemas($app->current_api_version);
-    my $base             = $app->base;
-    if ($base eq '/' && $ENV{HTTP_HOST}) {
-        $base = 'http' . ($app->is_secure ? 's' : '') . '://' . $ENV{HTTP_HOST} . '/';
-    }
+    my $base             = $app->base(NoHostCheck => 1);
     my $response         = {
         openapi => '3.0.0',
         info    => {

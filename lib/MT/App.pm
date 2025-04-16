@@ -4159,7 +4159,8 @@ sub add_return_arg {
 }
 
 sub base {
-    my $app = shift;
+    my $app   = shift;
+    my %param = @_;
     return $app->{__host} if exists $app->{__host};
     my $cfg = $app->config;
     my $path
@@ -4172,8 +4173,9 @@ sub base {
     }
 
     # determine hostname from environment (supports relative CGI paths)
-    if ( my $host = $ENV{HTTP_HOST} ) {
-        my $origin = 'http' . ( $app->is_secure ? 's' : '' ) . '://' . $host;
+    if (my $host = $ENV{HTTP_HOST}) {
+        my $origin = 'http' . ($app->is_secure ? 's' : '') . '://' . $host;
+        return $origin if $param{NoHostCheck};
         return $app->{__host} = $app->is_allowed_origin($origin);
     }
     '';
@@ -4355,7 +4357,7 @@ sub redirect {
     $url =~ s/[\r\n].*$//s;
     $app->{redirect_use_meta} = $options{UseMeta};
     unless ( $url =~ m!^https?://!i ) {
-        $url = $app->base . $url;
+        $url = $app->base(NoHostCheck => $options{NoHostCheck}) . $url;
     }
     $app->{redirect} = $url;
     return;
