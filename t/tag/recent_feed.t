@@ -87,6 +87,7 @@ for my $theme (@themes) {
 
         eval {
             my $xml = XML::LibXML->new;
+            $xml->load_ext_dtd(0);
             $xml->validation(1);
             $xml->parse_string($feed);
         };
