@@ -46,7 +46,7 @@ BEGIN {
         )
         = (
         '__PRODUCT_NAME__',   '__PRODUCT_CODE__',
-        '8.5.1',              '__PRODUCT_VERSION_ID__',
+        '9.0.0',              '__PRODUCT_VERSION_ID__',
         '__RELEASE_NUMBER__', '__PORTAL_URL__',
         '__RELEASE_VERSION_ID__',
         );
