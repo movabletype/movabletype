@@ -55,6 +55,8 @@ subtest 'wildcard subdomain' => sub {
     is $app->is_allowed_host('sub2.example.com'),       1;
     is $app->is_allowed_host('subsub.sub.example.com'), 0;
     is $app->is_allowed_host('sub4 sub3.example.com'),  0;
+    is $app->is_allowed_host('sub-5.example.com'),      1;
+    is $app->is_allowed_host('sub_6.example.com'),      1;
 };
 
 done_testing;

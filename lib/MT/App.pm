@@ -4195,7 +4195,7 @@ sub is_allowed_host {
 
         return 1 if $lc_trusted eq $lc_host;
         return 1 if $lc_trusted eq '*';
-        return 1 if $lc_trusted =~ /\A\*(\..+)\z/ && $lc_host =~ /\A[a-z0-9_]+\Q${1}\E\z/;
+        return 1 if $lc_trusted =~ /\A\*(\..+)\z/ && $lc_host =~ /\A[a-z0-9_\-]+\Q${1}\E\z/;
     }
     return 0;
 }
