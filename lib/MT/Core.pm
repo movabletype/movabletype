@@ -2003,6 +2003,10 @@ BEGIN {
                 default => sub { $_[0]->SearchThrottleIPWhitelist }
             },
             'SearchContentTypes' => undef,
+            'SearchMaxCharCount' => { default => 0 },
+            'ContentDataSearchMaxCharCount' => {
+                default => sub { $_[0]->SearchMaxCharCount },
+            },
             'CMSSearchLimit'     => { default => 125 },
             'OneHourMaxPings'    => { default => 10, },
             'OneDayMaxPings'     => { default => 50, },

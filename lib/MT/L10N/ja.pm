@@ -1425,6 +1425,7 @@ use vars qw( @ISA %Lexicon );
 	'Templates' => 'テンプレート',
 	'Text' => '本文',
 	'Title' => 'タイトル',
+	'Too long query. Please simplify your query to [_1] characters or less and try again.' => 'クエリーが長すぎます。お手数ですが、[_1]文字以内で検索をやり直してください。',
 	'replace_handler of [_1] field is invalid' => '[_1]フィールドのreplace_handlerは不正です',
 	'ss_validator of [_1] field is invalid' => '[_1]フィールドのss_validatorは不正です',
 	q{Searched for: '[_1]' Replaced with: '[_2]'} => q{検索ワード「[_1]」を「[_2]」で置換しました},

@@ -56,6 +56,11 @@ sub SearchThrottleSeconds {
     _get_config_value( $_[0], 'SearchThrottleSeconds' );
 }
 
+sub SearchMaxCharCount {
+    my $app = shift;
+    return $app->config->SearchMaxCharCount;
+}
+
 sub _get_config_value {
     my ( $app, $key ) = @_;
     $app->isa('MT::App::Search::ContentData')
@@ -448,6 +453,9 @@ sub process {
     my @messages;
     return $app->throttle_response( \@messages )
         unless $app->throttle_control( \@messages );
+
+    my $search_string = $app->param('searchTerms') || $app->param('search');
+    return unless $app->check_search_max_char_count($search_string);
 
     my ( $count, $out ) = $app->check_cache();
     if ( defined $out ) {
@@ -1442,6 +1450,22 @@ sub throttle_response {
         'The search you conducted has timed out.  Please simplify your query and try again.'
         );
     return $app->error($msg);
+}
+
+sub check_search_max_char_count {
+    my $app = shift;
+    my ($search_string) = @_;
+
+    return 1 if ($app->SearchMaxCharCount || 0) <= 0;
+
+    if (length $search_string > $app->SearchMaxCharCount) {
+        return $app->errtrans(
+            'Too long query. Please simplify your query to [_1] characters or less and try again.',
+            $app->SearchMaxCharCount,
+        );
+    }
+
+    return 1;
 }
 
 sub _default_throttle {
