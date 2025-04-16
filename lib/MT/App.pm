@@ -5384,10 +5384,15 @@ by issuing a text/html entity body that contains a "meta redirect"
 tag. This option can be used to work around clients that won't accept
 cookies as part of a 302 Redirect response.
 
-=head2 $app->base
+If the option C<NoHostCheck =E<gt> 1> is given, this option is passed to C<$app-E<gt>base>.
+
+=head2 $app->base([option1 => option1_val, ...])
 
 The protocol and domain of the application. For example, with the full URI
 F<http://www.foo.com/mt/mt.cgi>, this method will return F<http://www.foo.com>.
+
+When C<$ENV{HTTP_HOST}> is used, this value is checked for allowed host name.
+If the option C<NoHostCheck =E<gt> 1> is given, this method does not check $ENV{HTTP_HOST}> and does not cache return value.
 
 =head2 $app->is_allowed_host($host)
 
