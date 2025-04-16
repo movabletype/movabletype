@@ -126,17 +126,6 @@ sub lookup_multi {
     my %id2key = map { $_ => $driver->cache_key($class, $_) } grep { defined } @$ids;
     my $got = $driver->get_multi_from_cache(values %id2key);
 
-    ## If we got back all of the objects from the cache, return immediately.
-    if (scalar keys %$got == @$ids) {
-        my @objs;
-        for my $id (@$ids) {
-            my $obj = $driver->inflate($class, $got->{ $id2key{$id} });
-            $obj->{__cached}{ref $driver} = 1;
-            push @objs, $obj;
-        }
-        return \@objs;
-    }
-
     ## Otherwise, look through the list of IDs to see what we're missing,
     ## and fall back to the backend to look up those objects.
     my($i, @got, @need, %need2got) = (0);
