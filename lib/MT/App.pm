@@ -4161,7 +4161,7 @@ sub add_return_arg {
 sub base {
     my $app   = shift;
     my %param = @_;
-    return $app->{__host} if exists $app->{__host};
+    return $app->{__host} if exists $app->{__host} && !$param{NoHostCheck};
     my $cfg = $app->config;
     my $path
         = $app->{is_admin}
