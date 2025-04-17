@@ -4188,11 +4188,8 @@ sub base {
 sub is_allowed_host {
     my ($app, $host) = @_;
     my $lc_host = lc $host;
-    my %seen;
     for my $trusted ($app->config->TrustedHosts) {
         my $lc_trusted = lc $trusted;
-        next if $seen{$lc_trusted}++;
-
         return 1 if $lc_trusted eq $lc_host;
         return 1 if $lc_trusted eq '*';
         return 1 if $lc_trusted =~ /\A\*(\..+)\z/ && $lc_host =~ /\A[a-z0-9_\-]+\Q${1}\E\z/;

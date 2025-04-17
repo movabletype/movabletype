@@ -3687,6 +3687,7 @@ sub TrustedHosts {
 
     require URI;
 
+    my %seen;
     $default_trusted_hosts = [];
     for my $url (@urls) {
         my $uri = URI->new($url, 'http')->canonical;
@@ -3695,6 +3696,7 @@ sub TrustedHosts {
         if ($uri->port ne $uri->default_port) {
             $host .= ':' . $uri->port;
         }
+        next if $seen{$host}++;
         push @{$default_trusted_hosts}, $host;
     }
 
