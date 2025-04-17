@@ -4194,7 +4194,7 @@ sub is_allowed_host {
         return 1 if $lc_trusted eq '*';
         return 1 if $lc_trusted =~ /\A\*(\..+)\z/ && $lc_host =~ /\A[a-z0-9_\-]+\Q${1}\E\z/;
     }
-    return 0;
+    return;
 }
 
 *path = \&mt_path;
@@ -5395,7 +5395,7 @@ If the option C<NoHostCheck =E<gt> 1> is given, this method does not check $ENV{
 
 Checks C<$host> has whether allowed host or not.
 If C<$host> has allowed host, this method will return 1.
-If C<$host> does not have allowed host, this method will return 0.
+If C<$host> does not have allowed host, this method will return falsy.
 
 =head2 $app->path
 
