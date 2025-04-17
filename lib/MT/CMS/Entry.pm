@@ -1638,7 +1638,16 @@ sub save {
             $obj_asset->asset_id($asset_id);
             $obj_asset->object_ds('entry');
             $obj_asset->object_id( $obj->id );
-            $obj_asset->save;
+            unless ($obj_asset->save) {
+                $app->log(
+                    {   message  => $app->translate(
+                            q{Saving placement failed: [_1] '[_2]' (ID:[_3]) with Asset (ID:[_4])},
+                            $obj->class_label, $obj->title, $obj->id, $asset_id
+                        ),
+                        level    => MT::Log::ERROR()
+                    }
+                );
+            }
         }
         $seen->{$asset_id} = 1;
     }
@@ -1650,7 +1659,16 @@ sub save {
                     object_id => $obj->id
                 }
             );
-            $obj_asset->remove;
+            unless ($obj_asset->remove) {
+                $app->log(
+                    {   message  => $app->translate(
+                            q{Removing placement failed: [_1] '[_2]' (ID:[_3]) with Asset (ID:[_4])},
+                            $obj->class_label, $obj->title, $obj->id, $asset_id
+                        ),
+                        level    => MT::Log::ERROR()
+                    }
+                );
+            }
         }
     }
 
