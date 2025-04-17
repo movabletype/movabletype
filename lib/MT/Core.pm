@@ -3683,6 +3683,9 @@ sub TrustedHosts {
         my $uri = URI->new($url, 'http')->canonical;
         next unless $uri->isa('URI::http');
         my $host = $uri->host or next;
+        if ($uri->port ne $uri->default_port) {
+            $host .= ':' . $uri->port;
+        }
         push @{$default_trusted_hosts}, $host;
     }
 

@@ -31,4 +31,9 @@ $parent_site->save or die $parent_site->errstr;
 MT->request('default_trusted_hosts', undef);
 is_deeply [sort $app->config->TrustedHosts], ['example.com', 'sub.example.com'];
 
+$parent_site->site_url('https://sub2.example.com:8443');
+$parent_site->save or die $parent_site->errstr;
+MT->request('default_trusted_hosts', undef);
+is_deeply [sort $app->config->TrustedHosts], ['example.com', 'sub2.example.com:8443'];
+
 done_testing;
