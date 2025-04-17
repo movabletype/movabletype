@@ -281,7 +281,7 @@ sub new_password {
                     ## just in case
                     $app->is_valid_redirect_target($redirect)
                         or return $app->errtrans("Invalid request.");
-                    return $app->redirect( MT::Util::encode_html($redirect) );
+                    return $app->redirect($redirect);
                 }
                 else {
                     return $app->redirect_to_edit_profile();
