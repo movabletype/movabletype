@@ -84,7 +84,7 @@
     "rollup-plugin-esbuild": "^6.1.1",
     "rollup-plugin-livereload": "^2.0.5",
     "rollup-plugin-svelte": "^7.2.2",
-    "sass": "^1.83.1",
+    "sass": "1.77.6",
     "svelte": "^4.2.19",
     "svelte-check": "^4.0.5",
     "svelte-preprocess": "^5.0.4",
@@ -94,7 +94,7 @@
   "dependencies": {
     "@riotjs/observable": "^4.1.1",
     "a-table": "github:movabletype/a-table.js#v1.5.10-3",
-    "bootstrap5": "npm:bootstrap@5.3.3",
+    "bootstrap5": "npm:bootstrap@5.3.5",
     "codemirror": "5.61.1",
     "jquery": "3.7.0",
     "jquery-migrate": "3.5.2",
