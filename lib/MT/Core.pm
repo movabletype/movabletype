@@ -3663,7 +3663,7 @@ sub TrustedHosts {
         return @trusted_hosts;
     }
 
-    # if default_trusted_hosts is cahced, return it
+    # if default_trusted_hosts is cached, return it
     my $default_trusted_hosts = MT->request('default_trusted_hosts');
     return @{$default_trusted_hosts} if $default_trusted_hosts;
 
