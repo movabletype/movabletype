@@ -3668,7 +3668,16 @@ sub TrustedHosts {
     return @{$default_trusted_hosts} if $default_trusted_hosts;
 
     my @urls;
-    my @sites = eval { MT->model('blog')->load({ class => '*' }) };    # fails before install
+    my @sites = eval {
+        MT->model('blog')->load({
+                class    => '*',
+                site_url => { not_like => '/%' },
+            },
+            {
+                fetchonly => ['parent_id', 'site_url'],
+            },
+        );
+    };    # fails before install
     for my $site (@sites) {
         push @urls, $site->site_url;
     }
