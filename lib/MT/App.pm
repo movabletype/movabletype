@@ -4182,7 +4182,7 @@ sub base {
             return $app->{__host} = $origin;
         }
     }
-    '';
+    return $app->{__host} = '';
 }
 
 sub is_allowed_host {
