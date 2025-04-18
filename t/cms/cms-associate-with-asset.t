@@ -77,19 +77,20 @@ my $admin = MT->model('author')->load(1);
 my @assets = MT::Asset->load({ class => '*' });
 my @asset_ids = map { $_->id; } @assets;
 
-subtest 'Saving/Removing record that associates entry with asset' => sub {
+subtest 'Saving/Removing record of relationship between entry with asset' => sub {
     my $entry = MT::Entry->load({ blog_id => $blog->id, author_id => $admin->id });
 
     my $app = MT::Test::App->new('MT::App::CMS');
     $app->login($admin);
-    $app->post_ok({
-        __mode  => 'save_entry',
+    $app->get_ok({
+        __mode  => 'view',
+        _type   => 'entry',
         blog_id => $blog->id,
         id      => $entry->id,
-        title   => 'changed-1',
-        _type   => 'entry',
-        status  => $entry->status,
-        include_asset_ids => join(",", @asset_ids)
+    });
+    $app->post_form_ok({
+        title => 'changed-1',
+        include_asset_ids => join(",", @asset_ids),
     });
 
     my @obj_assets = MT::ObjectAsset->load(
@@ -100,17 +101,12 @@ subtest 'Saving/Removing record that associates entry with asset' => sub {
     cmp_deeply(
         [ map { $_->asset_id; } @obj_assets ],
         set(@asset_ids),
-        "Save record to ObjectAsset"
+        "Save records in successfully"
     );
 
-    $app->post_ok({
-        __mode  => 'save_entry',
-        blog_id => $blog->id,
-        id      => $entry->id,
-        title   => 'changed-2',
-        _type   => 'entry',
-        status  => $entry->status,
-        include_asset_ids => $asset_ids[0]
+    $app->post_form_ok({
+        title => 'changed-2',
+        include_asset_ids => $asset_ids[0],
     });
 
     @obj_assets = MT::ObjectAsset->load(
@@ -118,24 +114,24 @@ subtest 'Saving/Removing record that associates entry with asset' => sub {
             object_id => $entry->id,
         }
     );
-    is scalar(@obj_assets), 1, "Remove record to ObjectAsset";
-    is $obj_assets[0]->asset_id, $asset_ids[0], "Associated with entry";
+    is scalar(@obj_assets), 1, "Remove record in successfully";
+    is $obj_assets[0]->asset_id, $asset_ids[0], "Updating succeed";
 };
 
-subtest 'Saving/Removing record that associates page with asset' => sub {
+subtest 'Saving/Removing record of relationship between page with asset' => sub {
     my $page = MT::Page->load({ blog_id => $website->id, author_id => $admin->id });
 
     my $app = MT::Test::App->new('MT::App::CMS');
     $app->login($admin);
-    $app->post_ok({
-        __mode       => 'save_entry',
-        blog_id      => $website->id,
-        id           => $page->id,
-        title        => 'changed-1',
-        _type        => 'page',
-        status       => $page->status,
-        category_ids => 1,
-        include_asset_ids => join(",", @asset_ids)
+    $app->get_ok({
+        __mode  => 'view',
+        _type   => 'page',
+        blog_id => $website->id,
+        id      => $page->id,
+    });
+    $app->post_form_ok({
+        title => 'changed-1',
+        include_asset_ids => join(",", @asset_ids),
     });
 
     my @obj_assets = MT::ObjectAsset->load(
@@ -146,18 +142,12 @@ subtest 'Saving/Removing record that associates page with asset' => sub {
     cmp_deeply(
         [ map { $_->asset_id; } @obj_assets ],
         set(@asset_ids),
-        "Save record to ObjectAsset"
+        "Save records in successfully"
     );
 
-    $app->post_ok({
-        __mode       => 'save_entry',
-        blog_id      => $website->id,
-        id           => $page->id,
-        title        => 'changed-2',
-        _type        => 'page',
-        status       => $page->status,
-        category_ids => 1,
-        include_asset_ids => $asset_ids[0]
+    $app->post_form_ok({
+        title => 'changed-2',
+        include_asset_ids => $asset_ids[0],
     });
 
     @obj_assets = MT::ObjectAsset->load(
@@ -165,12 +155,11 @@ subtest 'Saving/Removing record that associates page with asset' => sub {
             object_id => $page->id,
         }
     );
-    is scalar(@obj_assets), 1, "Remove record to ObjectAsset";
-    is $obj_assets[0]->asset_id, $asset_ids[0], "Associated with entry";
+    is scalar(@obj_assets), 1, "Remove record in successfully";
+    is $obj_assets[0]->asset_id, $asset_ids[0], "Updating succeed";
 };
 
-
-subtest 'Logging at failed saving/removing record that associates entry with asset' => sub {
+subtest 'Logging at failed saving/removing record of relationship between entry with asset' => sub {
     my $entry = MT::Entry->load({ blog_id => $blog->id, author_id => $admin->id });
 
     # Fail association only.
@@ -180,14 +169,15 @@ subtest 'Logging at failed saving/removing record that associates entry with ass
 
     my $app = MT::Test::App->new('MT::App::CMS');
     $app->login($admin);
-    $app->post_ok({
-        __mode  => 'save_entry',
+    $app->get_ok({
+        __mode  => 'view',
+        _type   => 'entry',
         blog_id => $blog->id,
         id      => $entry->id,
-        title   => 'saving',
-        _type   => 'entry',
-        status  => $entry->status,
-        include_asset_ids => join(",", @asset_ids)
+    });
+    $app->post_form_ok({
+        title => 'saving',
+        include_asset_ids => join(",", @asset_ids),
     });
 
     $entry = MT::Entry->load({ blog_id => $blog->id, author_id => $admin->id });
@@ -200,14 +190,9 @@ subtest 'Logging at failed saving/removing record that associates entry with ass
     );
     is scalar(@obj_assets), 1, "Expect: Saving failed";
 
-    $app->post_ok({
-        __mode  => 'save_entry',
-        blog_id => $blog->id,
-        id      => $entry->id,
-        title   => 'removing',
-        _type   => 'entry',
-        status  => $entry->status,
-        include_asset_ids => ''
+    $app->post_form_ok({
+        title => 'removing',
+        include_asset_ids => '',
     });
 
     $entry = MT::Entry->load({ blog_id => $blog->id, author_id => $admin->id });
@@ -229,7 +214,7 @@ subtest 'Logging at failed saving/removing record that associates entry with ass
     } @logs), "Logged failure to remove");
 };
 
-subtest 'Logging at failed saving/removing record that associates page with asset' => sub {
+subtest 'Logging at failed saving/removing record of relationship between page with asset' => sub {
     my $page = MT::Page->load({ blog_id => $website->id, author_id => $admin->id });
 
     # Fail association only.
@@ -239,15 +224,15 @@ subtest 'Logging at failed saving/removing record that associates page with asse
 
     my $app = MT::Test::App->new('MT::App::CMS');
     $app->login($admin);
-    $app->post_ok({
-        __mode       => 'save_entry',
-        blog_id      => $website->id,
-        id           => $page->id,
-        title        => 'saving',
-        _type        => 'page',
-        status       => $page->status,
-        category_ids => 1,
-        include_asset_ids => join(",", @asset_ids)
+    $app->get_ok({
+        __mode  => 'view',
+        _type   => 'page',
+        blog_id => $website->id,
+        id      => $page->id,
+    });
+    $app->post_form_ok({
+        title => 'saving',
+        include_asset_ids => join(",", @asset_ids),
     });
 
     $page = MT::Page->load({ blog_id => $website->id, author_id => $admin->id });
@@ -260,15 +245,9 @@ subtest 'Logging at failed saving/removing record that associates page with asse
     );
     is scalar(@obj_assets), 1, "Expect: Saving failed";
 
-    $app->post_ok({
-        __mode       => 'save_entry',
-        blog_id      => $website->id,
-        id           => $page->id,
-        title        => 'removing',
-        _type        => 'page',
-        status       => $page->status,
-        category_ids => 1,
-        include_asset_ids => ''
+    $app->post_form_ok({
+        title => 'removing',
+        include_asset_ids => '',
     });
 
     $page = MT::Page->load({ blog_id => $website->id, author_id => $admin->id });
