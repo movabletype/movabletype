@@ -175,8 +175,8 @@ subtest 'Logging at failed saving/removing record that associates entry with ass
 
     # Fail association only.
     no strict 'refs';
-    local *{"MT::ObjectAsset::save"} = sub { return; };
-    local *{"MT::ObjectAsset::remove"} = sub { return; };
+    local *{"MT::ObjectAsset::save"} = sub { return $_[0]->error('Error message.'); };
+    local *{"MT::ObjectAsset::remove"} = sub { return $_[0]->error('Error message.'); };
 
     my $app = MT::Test::App->new('MT::App::CMS');
     $app->login($admin);
@@ -222,10 +222,10 @@ subtest 'Logging at failed saving/removing record that associates entry with ass
 
     my @logs = MT::Log->load({ level => MT::Log::ERROR() });
     ok((grep {
-        $_->message =~ /Saving placement failed: Entry/;
+        $_->message =~ /Failed to save relationship between Entry/;
     } @logs), "Logged failure to save");
     ok((grep {
-        $_->message =~ /Removing placement failed: Entry/;
+        $_->message =~ /Failed to remove relationship between Entry/;
     } @logs), "Logged failure to remove");
 };
 
@@ -234,8 +234,8 @@ subtest 'Logging at failed saving/removing record that associates page with asse
 
     # Fail association only.
     no strict 'refs';
-    local *{"MT::ObjectAsset::save"} = sub { return; };
-    local *{"MT::ObjectAsset::remove"} = sub { return; };
+    local *{"MT::ObjectAsset::save"} = sub { return $_[0]->error('Error message.'); };
+    local *{"MT::ObjectAsset::remove"} = sub { return $_[0]->error('Error message.'); };
 
     my $app = MT::Test::App->new('MT::App::CMS');
     $app->login($admin);
@@ -283,10 +283,10 @@ subtest 'Logging at failed saving/removing record that associates page with asse
 
     my @logs = MT::Log->load({ level => MT::Log::ERROR() });
     ok((grep {
-        $_->message =~ /Saving placement failed: Page/;
+        $_->message =~ /Failed to save relationship between Page/;
     } @logs), "Logged failure to save");
     ok((grep {
-        $_->message =~ /Removing placement failed: Page/;
+        $_->message =~ /Failed to remove relationship between Page/;
     } @logs), "Logged failure to remove");
 };
 

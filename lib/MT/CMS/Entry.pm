@@ -1641,8 +1641,8 @@ sub save {
             unless ($obj_asset->save) {
                 $app->log(
                     {   message  => $app->translate(
-                            q{Saving placement failed: [_1] '[_2]' (ID:[_3]) with Asset (ID:[_4])},
-                            $obj->class_label, $obj->title, $obj->id, $asset_id
+                            q{Failed to save relationship between [_1] (ID: [_2]) and Asset (ID: [_3]): [_4]},
+                            $obj->class_label, $obj->id, $asset_id, $obj_asset->errstr
                         ),
                         level    => MT::Log::ERROR()
                     }
@@ -1662,8 +1662,8 @@ sub save {
             unless ($obj_asset->remove) {
                 $app->log(
                     {   message  => $app->translate(
-                            q{Removing placement failed: [_1] '[_2]' (ID:[_3]) with Asset (ID:[_4])},
-                            $obj->class_label, $obj->title, $obj->id, $asset_id
+                            q{Failed to remove relationship between [_1] (ID: [_2]) and Asset (ID: [_3]): [_4]},
+                            $obj->class_label, $obj->id, $asset_id, $obj_asset->errstr
                         ),
                         level    => MT::Log::ERROR()
                     }

@@ -1313,8 +1313,8 @@ use vars qw( @ISA %Lexicon );
 	q{[_1] '[_2]' (ID:[_3]) edited and its status changed from [_4] to [_5] by user '[_6]'} => q{[_6]が[_1]「[_2]」(ID:[_3])を更新し、公開の状態を[_4]から[_5]に変更しました。},
 	q{[_1] '[_2]' (ID:[_3]) edited by user '[_4]'} => q{[_4]が[_1]「[_2]」(ID:[_3])を更新しました。},
 	q{[_1] '[_2]' (ID:[_3]) status changed from [_4] to [_5]} => q{[_1]「[_2] (ID:[_3])」の公開状態が[_4]から[_5]に変更されました。},
-	q{Removing placement failed: [_1] '[_2]' (ID:[_3]) with Asset (ID:[_4])} => q{[_1]「[_2]」(ID:[_3])とアセット(ID:[_4])の関連付けを削除できませんでした。},
-	q{Saving placement failed: [_1] '[_2]' (ID:[_3]) with Asset (ID:[_4])} => q{[_1]「[_2]」(ID:[_3])とアセット(ID:[_4])の関連付けを設定できませんでした。},
+	q{Failed to remove relationship between [_1] (ID: [_2]) and Asset (ID: [_3]): [_4]} => q{[_1] (ID:[_2])とアセット(ID:[_3])の関連付けを削除できませんでした。: [_4]},
+	q{Failed to save relationship between [_1] (ID: [_2]) and Asset (ID: [_3]): [_4]} => q{[_1] (ID:[_2])とアセット(ID:[_3])の関連付けを設定できませんでした。: [_4]},
 
 ## lib/MT/CMS/Export.pm
 	'Export Site Entries' => '記事のエクスポート',
