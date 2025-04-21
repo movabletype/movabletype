@@ -518,11 +518,11 @@ subtest 'multiple site search' => sub {
 
     my $newblog = MT::Test::Permission->make_blog(parent_id => $website->id);
 
-    my $egawa          = MT::Test::Permission->make_author(name => 'egawa', nickname => 'Shiro Egawa');
+    my $ogawa          = MT::Test::Permission->make_author(name => 'ogawa', nickname => 'Shiro Ogawa');
     my $edit_all_posts = MT::Test::Permission->make_role(name => 'Edit All Posts', permissions => "'edit_all_posts'");
-    MT::Association->link($egawa, $edit_all_posts, $website);
-    MT::Association->link($egawa, $edit_all_posts, $blog);
-    my $perm = $egawa->permissions(0);
+    MT::Association->link($ogawa, $edit_all_posts, $website);
+    MT::Association->link($ogawa, $edit_all_posts, $blog);
+    my $perm = $ogawa->permissions(0);
     $perm->add_permissions(MT::Test::Permission->make_role(name => 'Designer'));
     $perm->save;
 
@@ -540,7 +540,7 @@ subtest 'multiple site search' => sub {
     subtest 'Search in system scope by non super user' => sub {
 
         my $app = MT::Test::App->new('MT::App::CMS');
-        $app->login($egawa);
+        $app->login($ogawa);
         $app->get_ok({
             __mode  => 'search_replace',
             blog_id => 0,
