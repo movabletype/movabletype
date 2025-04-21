@@ -77,7 +77,7 @@ my $admin = MT->model('author')->load(1);
 my @assets = MT::Asset->load({ class => '*' });
 my @asset_ids = map { $_->id; } @assets;
 
-subtest 'Saving/Removing record of relationship between entry with asset' => sub {
+subtest 'Saving/Removing record of relationship between entry and asset' => sub {
     my $entry = MT::Entry->load({ blog_id => $blog->id, author_id => $admin->id });
 
     my $app = MT::Test::App->new('MT::App::CMS');
@@ -118,7 +118,7 @@ subtest 'Saving/Removing record of relationship between entry with asset' => sub
     is $obj_assets[0]->asset_id, $asset_ids[0], "Updating succeed";
 };
 
-subtest 'Saving/Removing record of relationship between page with asset' => sub {
+subtest 'Saving/Removing record of relationship between page and asset' => sub {
     my $page = MT::Page->load({ blog_id => $website->id, author_id => $admin->id });
 
     my $app = MT::Test::App->new('MT::App::CMS');
@@ -159,7 +159,7 @@ subtest 'Saving/Removing record of relationship between page with asset' => sub 
     is $obj_assets[0]->asset_id, $asset_ids[0], "Updating succeed";
 };
 
-subtest 'Logging at failed saving/removing record of relationship between entry with asset' => sub {
+subtest 'Logging at failed saving/removing record of relationship between entry and asset' => sub {
     my $entry = MT::Entry->load({ blog_id => $blog->id, author_id => $admin->id });
 
     # Fail association only.
@@ -214,7 +214,7 @@ subtest 'Logging at failed saving/removing record of relationship between entry 
     } @logs), "Logged failure to remove");
 };
 
-subtest 'Logging at failed saving/removing record of relationship between page with asset' => sub {
+subtest 'Logging at failed saving/removing record of relationship between page and asset' => sub {
     my $page = MT::Page->load({ blog_id => $website->id, author_id => $admin->id });
 
     # Fail association only.
