@@ -12712,6 +12712,12 @@ fieldset.form-group {
 .mt-widget__content *:last-child {
   margin-bottom: 0;
 }
+.mt-widget__content:has(div.loaded_revision) {
+  background-color: #FFFDE5;
+}
+.mt-widget__content div.status {
+  margin-bottom: 1rem;
+}
 
 .mt-widget__list {
   padding: 0;
