@@ -954,11 +954,6 @@ class MT {
                     }
                 }
 
-                $http_error = $this->http_error;
-                if (!$http_error) {
-                    $http_error = 500;
-                }
-                $ctx->stash('http_error', $http_error);
                 $ctx->stash('error_file', $errfile);
                 $ctx->stash('error_line', $errline);
                 $ctx->setTemplateDir($mtphpdir . DIRECTORY_SEPARATOR . 'tmpl');
