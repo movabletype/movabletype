@@ -1095,6 +1095,7 @@ sub do_search_replace {
             } elsif ($blog_id || ( $type eq 'blog' ) || ( $app->mode eq 'dialog_grant_role' ) || $author->is_superuser) {
                 $iter = incremental_iter($class, @terms ? \@terms : \%terms, \%args);
             } else {
+                push @terms, \%terms unless @terms;
                 if ( $class->has_column('blog_id') ) {
 
                     # Get an iter for each accessible blog
