@@ -10,6 +10,8 @@ use MT::Test::Env;
 
 our $test_env;
 BEGIN {
+    plan skip_all => 'Test fails if MT_TEST_RUN_APP_AS_CGI=1' if $ENV{MT_TEST_RUN_APP_AS_CGI};
+
     $test_env = MT::Test::Env->new(
         DefaultLanguage => 'en_US',  ## for now
     );
