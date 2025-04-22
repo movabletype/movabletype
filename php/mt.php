@@ -693,7 +693,7 @@ class MT {
                     $archiver = ArchiverFactory::get_archiver($at);
                 } catch (Exception $e) {
                     // 404
-                    $this->http_errr = 404;
+                    $this->http_error = 404;
                     header("HTTP/1.1 404 Not Found");
                     return $ctx->error($this->translate("Page not found - [_1]", $at), E_USER_ERROR);
                 }
