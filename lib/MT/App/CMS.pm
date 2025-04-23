@@ -9,7 +9,6 @@ package MT::App::CMS;
 use strict;
 use warnings;
 use base qw( MT::App );
-use List::Util qw( uniq );
 
 use MT::CMS::ContentData;
 use MT::Util qw( perl_sha1_digest_hex );
@@ -5015,9 +5014,12 @@ sub setup_editor_param {
         my $wysiwyg_editor = lc(MT::Util::Editor::current_wysiwyg_editor($app));
         my $source_editor  = lc(MT::Util::Editor::current_source_editor($app));
 
+        my @editor_keys = ($wysiwyg_editor);
+        push @editor_keys, $source_editor if $source_editor ne $wysiwyg_editor;
+
         $param->{editors} = {};
         foreach my $editors (@$editor_regs) {
-            foreach my $editor_key (uniq($wysiwyg_editor, $source_editor)) {
+            foreach my $editor_key (@editor_keys) {
                 next unless defined $editor_key;
                 my $reg = $editors->{$editor_key}
                     or next;
