@@ -1487,6 +1487,13 @@ sub init_plugins {
         return $p;
     }
 
+    sub __rollback_inc {
+        my @plibs = @_;
+        for my $plib (@plibs) {
+            shift @INC if $INC[0] eq $plib;
+        }
+    }
+
     sub _init_plugins_core {
         my $mt = shift;
         my ( $PluginSwitch, $use_plugins, $PluginPaths ) = @_;
@@ -1525,19 +1532,26 @@ sub init_plugins {
                     my $plugin_dir = $plugin;
                     $plugin_envelope = "$plugin_lastdir/" . $plugin;
 
+                    my @plibs = ();
                     foreach my $lib (qw(lib extlib)) {
                         my $plib
                             = File::Spec->catdir( $plugin_full_path, $lib );
-                        unshift @INC, $plib if -d $plib;
+                        if ( -d $plib ) {
+                            unshift @INC, $plib;
+                            unshift @plibs, $plib;
+                        }
                     }
 
                     # handle config.yaml
                     my $yaml = File::Spec->catdir( $plugin_full_path,
                         'config.yaml' );
 
+                    my @enabled_plugins = ();
                     if ( -f $yaml ) {
                         my $obj = __load_plugin_with_yaml( $use_plugins, $PluginSwitch, $plugin_dir );
                         push @loaded_plugins, $obj if $obj;
+                        push @enabled_plugins, $obj if $obj;
+                        __rollback_inc(@plibs) unless @enabled_plugins;
                         next;
                     }
 
@@ -1559,9 +1573,12 @@ sub init_plugins {
                             next if exists $Plugins{$sig} && $Plugins{$sig}{error};
                             my $obj = __load_plugin( $mt, $timer, $PluginSwitch, $use_plugins, $plugin_file, $sig );
                             push @loaded_plugins, $obj if $obj;
+                            push @enabled_plugins, $obj if $obj;
                             push @errors, [$plugin_full_path, $Plugins{$sig}{error}] if $Plugins{$sig}{error};
                         }
                     }
+
+                    __rollback_inc(@plibs) unless @enabled_plugins;
                 }
             }
         }
