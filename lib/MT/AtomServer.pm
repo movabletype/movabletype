@@ -490,7 +490,7 @@ sub get_weblogs {
         = $user->is_superuser
         ? MT::Blog->load_iter( { class => '*' } )
         : MT::Permission->load_iter( { author_id => $user->id } );
-    my $base = $app->base . $app->uri;
+    my $base = $app->base(NoHostCheck => 1) . $app->uri;
     my $enc  = $app->config->PublishCharset;
 
     # TODO: libxml support? XPath should always be available...
