@@ -730,7 +730,7 @@ sub new_post {
     $app->response_code(201);
     $app->response_content_type('application/atom+xml');
     my $edit_uri
-        = $app->base
+        = $app->base(NoHostCheck => 1)
         . $app->uri
         . '/blog_id='
         . $entry->blog_id
@@ -842,7 +842,8 @@ sub get_posts {
     $arg{offset} = $app->{param}{offset} || 0;
     my $iter     = MT::Entry->load_iter( \%terms, \%arg );
     my $feed     = $app->new_feed();
-    my $uri      = $app->base . $app->uri . '/blog_id=' . $blog->id;
+    my $base     = $app->base(NoHostCheck => 1);
+    my $uri      = $base . $app->uri . '/blog_id=' . $blog->id;
     my $blogname = $blog->name;
     $feed->add_link(
         {   rel  => 'alternate',
@@ -896,7 +897,7 @@ sub get_posts {
         $e->add_link(
             {   rel  => 'replies',
                 type => $app->atom_x_content_type,
-                href => $app->base
+                href => $base
                     . $app->path
                     . $app->config->AtomScript
                     . '/comments/blog_id='
@@ -935,7 +936,8 @@ sub get_post {
         unless $app->{perms}->can_edit_entry( $entry, $app->{user} );
     $app->response_content_type( $app->atom_content_type );
     my $atom = $app->new_with_entry($entry);
-    my $uri  = $app->base . $app->uri . '/blog_id=' . $blog->id;
+    my $base = $app->base(NoHostCheck => 1);
+    my $uri  = $base . $app->uri . '/blog_id=' . $blog->id;
     $uri .= '/entry_id=';
     $atom->add_link(
         {   rel   => $app->edit_link_rel,
@@ -947,7 +949,7 @@ sub get_post {
     $atom->add_link(
         {   rel  => 'replies',
             type => $app->atom_x_content_type,
-            href => $app->base
+            href => $base
                 . $app->path
                 . $app->config->AtomScript
                 . '/comments/blog_id='
@@ -1332,7 +1334,7 @@ sub get_weblogs {
         ? MT::Blog->load_iter( { class => '*' } )
         : MT::Permission->load_iter( { author_id => $user->id } );
     my $feed = $app->new_feed();
-    my $base = $app->base . $app->uri;
+    my $base = $app->base(NoHostCheck => 1) . $app->uri;
     require URI;
     my $uri = URI->new($base);
     if ($uri) {
@@ -1511,7 +1513,7 @@ sub get_comment {
     my $comment = MT::Comment->load($comment_id)
         or return $app->error( 400, "Invalid comment_id" );
     my $entry = $comment->entry;
-    my $uri   = $app->base . $app->uri . '/blog_id=' . $blog->id;
+    my $uri   = $app->base(NoHostCheck => 1) . $app->uri . '/blog_id=' . $blog->id;
     my $c     = $app->new_with_comment($comment);
     $c->add_link(
         {   rel  => 'self',
@@ -1548,7 +1550,7 @@ sub get_blog_comments {
     $arg{offset} = $app->{param}{offset} || 0;
 
     my $feed     = $app->new_feed();
-    my $uri      = $app->base . $app->uri . '/blog_id=' . $blog->id;
+    my $uri      = $app->base(NoHostCheck => 1) . $app->uri . '/blog_id=' . $blog->id;
     my $blogname = $blog->name;
     $feed->add_link(
         {   rel  => 'alternate',
@@ -1602,7 +1604,7 @@ sub get_comments {
     $arg{offset} = $app->{param}{offset} || 0;
 
     my $feed     = $app->new_feed();
-    my $uri      = $app->base . $app->uri . '/blog_id=' . $blog->id;
+    my $uri      = $app->base(NoHostCheck => 1) . $app->uri . '/blog_id=' . $blog->id;
     my $blogname = $blog->name;
     $feed->add_link(
         {   rel  => 'alternate',
