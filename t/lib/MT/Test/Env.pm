@@ -144,7 +144,7 @@ sub write_config {
     my %connect_info = $self->connect_info;
 
     my $image_driver = $ENV{MT_TEST_IMAGE_DRIVER}
-        || (eval { require Image::Magick } ? 'ImageMagick' : 'Imager');
+        || (eval { require Graphics::Magick } ? 'GraphicsMagick' : eval { require Image::Magick } ? 'ImageMagick' : 'Imager');
 
     my $default_language = $ENV{MT_TEST_LANG} || 'en_US';
 
@@ -243,6 +243,15 @@ sub _write_config {
                 };
                 print $fh "$key $value\n";
             }
+        } elsif (ref $config->{$key} eq 'HASH') {
+            for my $name (keys %{ $config->{$key} }) {
+                my $value = $config->{$key}{$name};
+                $value =~ s/\bMT_HOME\b/$MT_HOME/;
+                $value =~ s/\bTEST_ROOT\b/$root/ and do {
+                    mkpath($value) unless basename($value) =~ /\./;
+                };
+                print $fh "$key $name=$value\n";
+            }
         } else {
             my $value = $config->{$key};
             $value =~ s/\bMT_HOME\b/$MT_HOME/;
@@ -281,7 +290,7 @@ sub save_file {
 
 sub image_drivers {
     my $self = shift;
-    map { my $tmp = basename($_); $tmp =~ s/\.pm$//; $tmp } glob "$MT_HOME/lib/MT/Image/*.pm";
+    grep !/ExifData/, map { my $tmp = basename($_); $tmp =~ s/\.pm$//; $tmp } glob "$MT_HOME/lib/MT/Image/*.pm";
 }
 
 sub suppress_deprecated_warnings {
@@ -403,11 +412,23 @@ sub _connect_info_mysql {
         }
     } else {
         $self->{dsn} = "dbi:mysql:host=$info{DBHost};dbname=$info{Database};user=$info{DBUser}";
-        my $dbh = DBI->connect($self->{dsn});
+        my $dbh = do { local $SIG{__WARN__}; DBI->connect($self->{dsn}, undef, undef, { PrintError => 0 }) };
         if (!$dbh) {
-            die $DBI::errstr unless $DBI::errstr =~ /Unknown database/;
-            (my $dsn = $self->{dsn}) =~ s/dbname=$info{Database};//;
-            $dbh = DBI->connect($dsn) or die $DBI::errstr;
+            if ($DBI::errstr =~ /Connections using insecure transport are prohibited/) {
+                $dbh = DBI->connect($self->{dsn}, undef, undef, {
+                    mysql_ssl                    => 1,
+                    mysql_ssl_verify_server_cert => 0,
+                }) or die $DBI::errstr;
+                $info{DBIConnectOptions} = {
+                    mysql_ssl                    => 1,
+                    mysql_ssl_verify_server_cert => 0,
+                };
+            } elsif ($DBI::errstr =~ /Unknown database/) {
+                (my $dsn = $self->{dsn}) =~ s/dbname=$info{Database};//;
+                $dbh = DBI->connect($dsn) or die $DBI::errstr;
+            } else {
+                die $DBI::errstr;
+            }
         }
         $self->_prepare_mysql_database($dbh);
     }
@@ -434,7 +455,9 @@ sub _connect_info_pg {
         $self->_prepare_pg_database($dbh);
         $dsn =~ s/^DBI:Pg://i;
         my %opts = map { split '=', $_ } split ';', $dsn;
-        $opts{dbname} = $info{Database};
+        if ($opts{dbname}) {
+            $info{Database} = $opts{dbname};
+        }
         if ($opts{host}) {
             $info{DBHost} = $opts{host};
         }
@@ -473,37 +496,6 @@ sub _connect_info_sqlite {
     );
 }
 
-sub _connect_info_oracle {
-    my $self = shift;
-
-    my %connect_info = (
-        ObjectDriver => 'DBI::Oracle',
-        DBPort       => 1521,
-        DBUser       => 'system',
-    );
-    my @keys = qw(ObjectDriver Database DBPort DBHost DBSocket DBUser DBPassword);
-    for my $key (@keys) {
-        my $env_key = "MT_TEST_" . (uc $key);
-        if ($ENV{$env_key}) {
-            $connect_info{$key} = $ENV{$env_key};
-        }
-    }
-    note "DRIVER: Oracle";
-
-    # for better compatibility
-    $ENV{NLS_LANG}  = $ENV{MT_TEST_NLS_LANG}  || 'AMERICAN_AMERICA.AL32UTF8';
-    $ENV{NLS_NCHAR} = $ENV{MT_TEST_NLS_NCHAR} || 'AL32UTF8';
-    $ENV{NLS_COMP}  = $ENV{MT_TEST_NLS_COMP}  || 'LINGUISTIC';
-    $ENV{NLS_SORT}  = $ENV{MT_TEST_NLS_SORT}  || 'AMERICAN_AMERICA';
-
-    my $dsn = sprintf('dbi:Oracle:host=%s;sid=%s;port=%s',
-        $connect_info{DBHost}, $connect_info{Database}, $connect_info{DBPort});
-    my $dbh = DBI->connect($dsn, $connect_info{DBUser}, $connect_info{DBPassword});
-    $self->_oracle_increase_open_cursors($dbh);
-
-    %connect_info;
-}
-
 sub skip_unless_mysql_supports_utf8mb4 {
     my $self       = shift;
     my $db_charset = $self->mysql_db_charset // '';
@@ -525,12 +517,6 @@ sub show_mysql_db_variables {
         my $rows = $dbh->selectall_arrayref("SHOW VARIABLES LIKE '$name'");
         Test::More::note join ': ', @$_ for @$rows;
     }
-}
-
-sub _oracle_increase_open_cursors {
-    my ($self, $dbh) = @_;
-    return unless $self->driver eq 'oracle';
-    $dbh->do('ALTER SYSTEM SET OPEN_CURSORS = 1000 SCOPE=BOTH') or die $dbh->errstr;
 }
 
 sub mysql_session_variable {
@@ -586,10 +572,16 @@ CREATE DATABASE mt_test CHARACTER SET $character_set COLLATE $collation;
 END_OF_SQL
 
     my ($major_version, $minor_version, $is_maria, $maria_major, $maria_minor) = _mysql_version();
-    if ($ENV{MT_TEST_MYSQLPOOL_DSN} && $is_maria && $maria_major == 10 && $maria_minor > 3) {
-        $sql .= <<"END_OF_SQL";
+    if ($ENV{MT_TEST_MYSQLPOOL_DSN} && ((!$is_maria && $major_version >= 8) or ($is_maria && $maria_major == 10 && $maria_minor > 3))) {
+        if ($ENV{MT_TEST_FORCE_MYSQL_NATIVE_PASSWORD}) {
+            $sql .= <<"END_OF_SQL";
 ALTER USER root\@localhost IDENTIFIED VIA mysql_native_password USING PASSWORD('');
 END_OF_SQL
+        } else {
+            $sql .= <<"END_OF_SQL";
+ALTER USER root\@localhost IDENTIFIED BY '';
+END_OF_SQL
+        }
     }
 
     for my $statement (split ";\n", $sql) {
@@ -622,7 +614,8 @@ sub prepare {
 sub _mysql_version {
     my $mysqld = _mysqld() or return;
 
-    my $verbose_help = `$mysqld --verbose --help 2>/dev/null`;
+    my $devnull = File::Spec->devnull;
+    my $verbose_help = `$mysqld --verbose --help 2>$devnull`;
 
     my ($version, $major_version, $minor_version) = $verbose_help =~ /\A.*Ver (([0-9]+)\.([0-9]+)\.[0-9]+)/;
 
@@ -682,7 +675,14 @@ sub my_cnf {
 
     # MySQL 8.0+
     if ((!$is_maria && $major_version >= 8) or ($is_maria && $maria_major == 10 && $maria_minor > 3)) {
-        $cnf{default_authentication_plugin} = 'mysql_native_password';
+        if ($ENV{MT_TEST_FORCE_MYSQL_NATIVE_PASSWORD}) {
+            $cnf{default_authentication_plugin} = 'mysql_native_password';
+        } elsif (!$is_maria && $major_version >= 8) {
+            $cnf{caching_sha2_password_auto_generate_rsa_keys} = 1;
+        }
+        if ($ENV{MT_TEST_FORCE_MYSQL_SECURE_TRANSPORT}) {
+            $cnf{require_secure_transport} = 'true';
+        }
     }
 
     my $charset = $class->mysql_charset;
@@ -700,7 +700,8 @@ sub my_cnf {
 
 sub _which {
     my $exec = shift;
-    my $path = `which $exec 2>/dev/null` or return;
+    my $devnull = File::Spec->devnull;
+    my $path = `which $exec 2>$devnull` or return;
     chomp $path;
     $path;
 }
@@ -721,6 +722,7 @@ sub _mysqld {
 sub dbh {
     my $self = shift;
     $self->connect_info unless $self->{dsn};
+    my $options = $self->{_config}{DBIConnectOptions} || {};
     DBI->connect(
         $self->{dsn},
         undef, undef,
@@ -728,6 +730,7 @@ sub dbh {
             RaiseError         => 1,
             PrintError         => 0,
             ShowErrorStatement => 1,
+            %$options,
         },
     ) or die $DBI::errstr;
 }
@@ -1329,6 +1332,7 @@ sub _tweak_schema {
     $schema =~ s/^\-\- Created on .+$//m;
     $schema =~ s/NULL DEFAULT NULL/NULL/g;    ## mariadb 10.2.1+
     $schema =~ s/\s+COLLATE utf8_\w+_ci//g;   ## for now; better to specify collation explicitly
+    $schema =~ s/utf8mb3/utf8/g;
     $schema;
 }
 
@@ -1346,11 +1350,11 @@ sub test_schema {
     my $schema_file = "$self->{fixture_dirs}[0]/schema.$driver.sql";
     plan skip_all => 'schema is not found' unless -f $schema_file;
 
-    my $saved_schema = $self->slurp($schema_file);
+    my $saved_schema = _tweak_schema($self->slurp($schema_file));
 
-    my $generated_schema = $self->_generate_schema;
+    my $generated_schema = _tweak_schema($self->_generate_schema);
 
-    if (_tweak_schema($generated_schema) eq _tweak_schema($saved_schema)) {
+    if ($generated_schema eq $saved_schema) {
         pass "schema is up-to-date";
     } else {
         fail "schema is out-of-date";

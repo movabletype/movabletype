@@ -62,6 +62,9 @@ sub change_tab {
             }
         }
     }
+    my $limit = $form->find_input('limit');
+    $limit->readonly(0);
+    $limit->value('');
     $self->post_ok($form->click);
 }
 
@@ -74,12 +77,16 @@ sub change_content_type {
 
     my @input = $form->find_input('search_cols');
     for my $elem (@input) {
-        my $val             = _checkbox_attr_value($elem);
-        my $checkbox        = $self->wq_find(qq{#search_form input[name="search_cols"][value="$val"]});
-        my $li              = $checkbox->parent->parent;
-        my $ct_cf_belogs_to = $li->attr('data-mt-content-type');
-        $elem->disabled($ct_cf_belogs_to && $ct_cf_belogs_to == $ct_id ? '' : 'disabled');
+        my $val              = _checkbox_attr_value($elem);
+        my $checkbox         = $self->wq_find(qq{#search_form input[name="search_cols"][value="$val"]});
+        my $li               = $checkbox->parent->parent;
+        my $ct_cf_belongs_to = $li->attr('data-mt-content-type');
+        $elem->disabled($ct_cf_belongs_to == $ct_id ? '' : 'disabled') if $ct_cf_belongs_to;
     }
+}
+
+sub have_more_link_exists {
+    $_[0]->wq_find('#have-more-count')->size ? 1 : 0;
 }
 
 sub search {
@@ -89,6 +96,9 @@ sub search {
     my $do_search = $form->find_input('do_search');
     $do_search->readonly(0);
     $do_search->value(1);
+    if ($opts->{limit} && $opts->{limit} eq 'all' && $self->have_more_link_exists) {
+        $form->find_input('limit')->readonly(0);
+    }
     $self->apply_opts($form, $opts) if $opts;
     $self->post_ok($form->click);
 }
@@ -214,6 +224,7 @@ my $TitleContainerSelectors = {
         asset        => 'td:nth-of-type(3) a',
         blog         => 'td:nth-of-type(2) a',
         website      => 'td:nth-of-type(2) a',
+        author       => 'td:nth-of-type(2) a',
     },
     mt7 => {
         content_data => 'td.id strong',
@@ -222,6 +233,7 @@ my $TitleContainerSelectors = {
         asset        => 'td:nth-of-type(3) a',
         blog         => 'td:nth-of-type(2) a',
         website      => 'td:nth-of-type(2) a',
+        author       => 'td:nth-of-type(2) a',
     },
 };
 

@@ -11,7 +11,7 @@ function smarty_function_mtwebsiterelativeurl($args, &$ctx) {
     if (isset($args['id']) && is_numeric($args['id'])) {
         require_once('class.mt_website.php');
         $website = new Blog();
-        $ret = $website->Load('blog_id = '.$args['id']);
+        $ret = $website->LoadByIntId($args['id']);
         if (!$ret)
             $website = null;
     } else {

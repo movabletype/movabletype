@@ -1,8 +1,8 @@
 <mt:setvarblock name="page_title"><mt:var name="label"></mt:setvarblock>
 
 <mt:setvarblock name="html_head" append="1">
-  <mt:script type="text/javascript" path="js/tc/client.js">
-  <mt:script type="text/javascript" path="js/dialog.js">
+  <mtapp:script type="text/javascript" path="js/tc/client.js">
+  <mtapp:script type="text/javascript" path="js/dialog.js">
 </mt:setvarblock>
 
 <mt:setvarblock name="form_header">
@@ -15,6 +15,7 @@
 </mt:setvarblock>
 
 <mt:setvarblock name="modal_body">
+  <p><__trans phrase="The settings will be saved when you click the 'Next' button."></p>
   <mt:var name="template" mteval="1">
 </mt:setvarblock>
 

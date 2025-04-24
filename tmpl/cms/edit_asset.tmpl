@@ -150,8 +150,8 @@
 </mt:setvarblock>
 
 <mt:setvarblock name="js_include" append="1">
-<mt:script type="text/javascript" path="jquery/jquery.validate.js">
-<mt:script type="text/javascript" path="js/tc/tagcomplete.js">
+<mtapp:script type="text/javascript" path="jquery/jquery.validate.js">
+<mtapp:script type="text/javascript" path="js/tc/tagcomplete.js">
 <script type="text/javascript">
 /* <![CDATA[ */
 var tag_delim = '<mt:var name="auth_pref_tag_delim">';
@@ -385,15 +385,15 @@ jQuery(window).on('load', init );
     })
 
     jQuery(window).on('beforeunload', function() {
-        if (isDirty) {
+        if ( isDirty && jQuery('.modal-content').children('iframe').length == 0 ) {
             return '<__trans phrase="You have unsaved changes to this asset that will be lost." escape="js">';
         }
     });
     jQuery('.image-editor a').on('click', function(event) {
         if (isDirty) {
-            var msg = '<__trans phrase="You have unsaved changes to this asset that will be lost. Are you sure you want to edit image?" escape="js">';
-            if ( confirm(msg) ) {
-                isDirty = false;
+            var msg = '<__trans phrase="If you edit image, unsaved changes to this asset that will be lost. Do you want to continue?" escape="js">';
+            if ( !confirm(msg) ) {
+                event.stopImmediatePropagation();
             }
         }
         return false;

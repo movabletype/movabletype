@@ -11,8 +11,6 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-$ENV{EXTENDED_TESTING} or plan skip_all => 'set EXTENDED_TESTING=1 to enable this test';
-
 use MT::Test::PHP;
 use MT::Test::Tag;
 
@@ -61,6 +59,8 @@ done_testing;
 __DATA__
 
 === raw smarty tag allowed
+--- mt_config
+{DynamicTemplateAllowPHP => 1, DynamicTemplateAllowSmartyTags => 1}
 --- template
 left:{{textformat}}123{{/textformat}}:right
 --- expected
@@ -81,3 +81,71 @@ left:ab:right
 left:<?php echo 'a'. 'b'?>:right
 --- expected
 left:ab:right
+
+=== test modifier in MTIf with AllowTestModifier=1
+--- mt_config
+{DynamicTemplateAllowPHP => 1, AllowTestModifier => 1}
+--- template
+[<mt:SetVar name="foo" value="1"><mt:If name="foo" test="1">true<mt:else>false</mt:If>]
+[<mt:SetVar name="foo" value="0"><mt:If name="foo" test="1">true<mt:else>false</mt:If>]
+[<mt:SetVar name="foo" value="1"><mt:If name="foo" test="0">true<mt:else>false</mt:If>]
+[<mt:SetVar name="foo" value="0"><mt:If name="foo" test="0">true<mt:else>false</mt:If>]
+[<mt:SetVar name="foo" value="5"><mt:If name="foo" test='$foo > 4'>true<mt:else>false</mt:If>]
+[<mt:SetVar name="foo" value="5"><mt:If name="foo" test='$foo < 4'>true<mt:else>false</mt:If>]
+--- expected
+[true][true][false][false][true][false]
+
+=== test modifier with AllowTestModifier=0
+--- mt_config
+{DynamicTemplateAllowPHP => 1, AllowTestModifier => 0}
+--- template
+[<mt:SetVar name="foo" value="1"><mt:If name="foo" test="1">true<mt:else>false</mt:If>]
+[<mt:SetVar name="foo" value="0"><mt:If name="foo" test="1">true<mt:else>false</mt:If>]
+[<mt:SetVar name="foo" value="1"><mt:If name="foo" test="0">true<mt:else>false</mt:If>]
+[<mt:SetVar name="foo" value="0"><mt:If name="foo" test="0">true<mt:else>false</mt:If>]
+[<mt:SetVar name="foo" value="5"><mt:If name="foo" test='$foo > 4'>true<mt:else>false</mt:If>]
+[<mt:SetVar name="foo" value="5"><mt:If name="foo" test='$foo < 4'>true<mt:else>false</mt:If>]
+--- expected
+[true][false][true][false][true][true]
+
+=== test modifier in MTElse with AllowTestModifier=1
+--- mt_config
+{DynamicTemplateAllowPHP => 1, AllowTestModifier => 1}
+--- template
+[<mt:SetVar name="foo" value="1"><mt:Unless name="foo" test="1">true<mt:else>false</mt:Unless>]
+[<mt:SetVar name="foo" value="0"><mt:Unless name="foo" test="1">true<mt:else>false</mt:Unless>]
+[<mt:SetVar name="foo" value="1"><mt:Unless name="foo" test="0">true<mt:else>false</mt:Unless>]
+[<mt:SetVar name="foo" value="0"><mt:Unless name="foo" test="0">true<mt:else>false</mt:Unless>]
+[<mt:SetVar name="foo" value="5"><mt:Unless name="foo" test='$foo > 4'>true<mt:else>false</mt:Unless>]
+[<mt:SetVar name="foo" value="5"><mt:Unless name="foo" test='$foo < 4'>true<mt:else>false</mt:Unless>]
+--- expected
+[false][false][true][true][false][true]
+
+=== test modifier with AllowTestModifier=0
+--- mt_config
+{DynamicTemplateAllowPHP => 1, AllowTestModifier => 0}
+--- template
+[<mt:SetVar name="foo" value="1"><mt:Unless name="foo" test="1">true<mt:else>false</mt:Unless>]
+[<mt:SetVar name="foo" value="0"><mt:Unless name="foo" test="1">true<mt:else>false</mt:Unless>]
+[<mt:SetVar name="foo" value="1"><mt:Unless name="foo" test="0">true<mt:else>false</mt:Unless>]
+[<mt:SetVar name="foo" value="0"><mt:Unless name="foo" test="0">true<mt:else>false</mt:Unless>]
+[<mt:SetVar name="foo" value="5"><mt:Unless name="foo" test='$foo > 4'>true<mt:else>false</mt:Unless>]
+[<mt:SetVar name="foo" value="5"><mt:Unless name="foo" test='$foo < 4'>true<mt:else>false</mt:Unless>]
+--- expected
+[false][true][false][true][false][false]
+
+=== legal smarty delimiters
+--- mt_config
+{DynamicTemplateAllowPHP => 1, DynamicTemplateAllowSmartyTags => 1}
+--- template
+<mt:SetVar name="foo" value="{{foo}}"><mt:Var name="foo">
+--- expected
+{{foo}}
+
+=== legal smarty delimiters
+--- mt_config
+{DynamicTemplateAllowPHP => 1, DynamicTemplateAllowSmartyTags => 0}
+--- template
+{{}}<mt:SetVar name="foo" value="{{foo}}"><mt:Var name="foo">
+--- expected
+{{}}{{foo}}

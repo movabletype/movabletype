@@ -59,7 +59,7 @@ requires 'IO::Uncompress::Gunzip';
 requires 'Archive::Zip', '!=1.66, !=1.67, !=1.68';
 requires 'XML::SAX';
 requires 'Digest::SHA1';
-requires 'Net::SMTP';
+requires 'Net::SMTP', '2.32';
 requires 'Authen::SASL';
 requires 'Net::SMTP::SSL';
 requires 'Net::SMTP::TLS';

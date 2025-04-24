@@ -298,6 +298,11 @@ use vars qw( @ISA %Lexicon );
 	'Recently in <em>[_1]</em> Category' => '<em>[_1]</em>の最近の記事',
 	'[_1] Archives' => '[_1]アーカイブ',
 
+## default_templates/changed-password.mtml
+	'Mail Footer' => 'メールフッター',
+	'Please ask the administrator for the new password. If this change is unexpected, please report it to the administrtor.' => '新しいパスワードは管理者にお尋ねください。また、この変更に心当たりがない場合は管理者に報告してください。',
+	q{The login password for '[_1]' was changed by a system administrator ([_2]).} => q{システム管理者([_2])が[_1]のログインパスワードを変更しました。},
+
 ## default_templates/current_author_monthly_archive_list.mtml
 	'[_1]: Monthly Archives' => '[_1]: 月別アーカイブ',
 
@@ -352,7 +357,6 @@ use vars qw( @ISA %Lexicon );
 
 ## default_templates/lockout-ip.mtml
 	'IP Address: [_1]' => 'IPアドレス: [_1]',
-	'Mail Footer' => 'メールフッター',
 	'Recovery: [_1]' => '解除時刻: [_1]',
 	'This email is to notify you that an IP address has been locked out.' => 'これは以下のIPアドレスからのアクセスがロックされたことを通知するメールです。',
 
@@ -527,6 +531,7 @@ use vars qw( @ISA %Lexicon );
 	q{Failed login attempt by locked-out user '[_1]'} => q{ロックされたユーザー「[_1]」がサインインしようとしました。},
 	q{Failed login attempt by pending user '[_1]'} => q{保留中のユーザー「[_1]」がサインインしようとしました。},
 	q{Failed login attempt by unknown user '[_1]'} => q{未登録のユーザー [_1] がサインインしようとしました。},
+	q{Failed login attempt by user '[_1]' (probably session expired)} => q{ユーザー「[_1]」がサインインに失敗しました（おそらくセッションの有効期限が過ぎていました）。},
 	q{Failed login attempt by user '[_1]'} => q{ユーザー「[_1]」がサインインに失敗しました。},
 	q{Failed to open monitoring file that specified by IISFastCGIMonitoringFilePath directive '[_1]': [_2]} => q{IISFastCGIMonitoringFilePath で指定されたモニタリングファイル ([_1]) が開けません: [_2]},
 	q{Invalid login attempt from user '[_1]'} => q{'[_1]'がサインインに失敗しました。},
@@ -1084,7 +1089,6 @@ use vars qw( @ISA %Lexicon );
 	'Cannot load asset #[_1]' => 'アセット(ID:[_1])をロードできませんでした',
 	'Cannot load asset #[_1].' => 'アセット(ID:[_1])をロードできませんでした。',
 	'Cannot load file #[_1].' => 'ID:[_1]のファイルをロードできません。',
-	'Cannot overwrite an existing file with a file of a different type. Original: [_1] Uploaded: [_2]' => '違うアセットの種類での上書きはできません。 元のファイル:[_1] アップロードされたファイル[_2]',
 	'Custom...' => 'カスタム...',
 	'Extension changed from [_1] to [_2]' => '拡張子が[_1]から[_2]に変更されました',
 	'Failed to create thumbnail file because [_1] could not handle this image type.' => 'サムネイルの作成ができませんでした。[_1]がサポートしていない画像形式です。',
@@ -1150,6 +1154,7 @@ use vars qw( @ISA %Lexicon );
 	'Selected Child Site' => '選択された子サイト',
 	'Site URL must be an absolute URL.' => 'サイトURLは絶対URLでなければなりません。',
 	'The number of revisions to store must be a positive integer.' => '更新履歴番号は整数でなければなりません。',
+	'The file extension must be shorter than 10 characters.' => 'ファイルの拡張子は10文字までです。',
 	'These setting(s) are overridden by a value in the Movable Type configuration file: [_1]. Remove the value from the configuration file in order to control the value on this page.' => 'MTの設定ファイルによって設定されている値([_1])が優先されます。このページで設定した値を利用するためには、設定ファイルでの設定を削除してください。',
 	'This action can only be run on a single child site at a time.' => 'このアクションは同時に1つの子サイトでしか実行できません。',
 	'This action can only clone a child site.' => 'このアクションで複製できるのは子サイトのみです',
@@ -1308,6 +1313,8 @@ use vars qw( @ISA %Lexicon );
 	q{[_1] '[_2]' (ID:[_3]) edited and its status changed from [_4] to [_5] by user '[_6]'} => q{[_6]が[_1]「[_2]」(ID:[_3])を更新し、公開の状態を[_4]から[_5]に変更しました。},
 	q{[_1] '[_2]' (ID:[_3]) edited by user '[_4]'} => q{[_4]が[_1]「[_2]」(ID:[_3])を更新しました。},
 	q{[_1] '[_2]' (ID:[_3]) status changed from [_4] to [_5]} => q{[_1]「[_2] (ID:[_3])」の公開状態が[_4]から[_5]に変更されました。},
+	q{Failed to remove relationship between [_1] (ID: [_2]) and Asset (ID: [_3]): [_4]} => q{[_1] (ID:[_2])とアセット(ID:[_3])の関連付けを削除できませんでした。: [_4]},
+	q{Failed to save relationship between [_1] (ID: [_2]) and Asset (ID: [_3]): [_4]} => q{[_1] (ID:[_2])とアセット(ID:[_3])の関連付けを設定できませんでした。: [_4]},
 
 ## lib/MT/CMS/Export.pm
 	'Export Site Entries' => '記事のエクスポート',
@@ -1365,6 +1372,9 @@ use vars qw( @ISA %Lexicon );
 	'Publishing' => '公開',
 	q{Activity log for blog '[_1]' (ID:[_2]) reset by '[_3]'} => q{'[_3]'がブログ'[_1]'(ID:[_2])のログをリセットしました。},
 	q{Activity log reset by '[_1]'} => q{'[_1]'がログをリセットしました。},
+	'Specify the period' => '期間を指定する',
+	q{Download site '[_1]' logs} => q{サイト '[_1]' のログをダウンロードします},
+	'Download system-wide logs' => 'システム全体のログをダウンロードします',
 
 ## lib/MT/CMS/Plugin.pm
 	'Error saving plugin settings: [_1]' => 'プラグインの設定を保存できません: [_1]',
@@ -1417,6 +1427,7 @@ use vars qw( @ISA %Lexicon );
 	'Templates' => 'テンプレート',
 	'Text' => '本文',
 	'Title' => 'タイトル',
+	'Too long query. Please simplify your query to [_1] characters or less and try again.' => 'クエリーが長すぎます。お手数ですが、[_1]文字以内で検索をやり直してください。',
 	'replace_handler of [_1] field is invalid' => '[_1]フィールドのreplace_handlerは不正です',
 	'ss_validator of [_1] field is invalid' => '[_1]フィールドのss_validatorは不正です',
 	q{Searched for: '[_1]' Replaced with: '[_2]'} => q{検索ワード「[_1]」を「[_2]」で置換しました},
@@ -1549,7 +1560,7 @@ use vars qw( @ISA %Lexicon );
 	'Passwords do not match' => 'パスワードが一致していません。',
 	'Performance log path is [_1]' => 'パフォーマンスログのパスは[_1]です',
 	'Performance log threshold is [_1]' => 'パフォーマンスログの閾値は[_1]です',
-	'Performance logging is off' => 'バフォーマンスログはオフです',
+	'Performance logging is off' => 'パフォーマンスログはオフです',
 	'Performance logging is on' => 'パフォーマンスログはオンです',
 	'Please confirm your new password' => '新しいパスワードを確認してください。',
 	'Please enter a valid email address.' => '正しいメールアドレスを入力してください。',
@@ -1606,6 +1617,7 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/CMS/User.pm
 	'(newly created user)' => '(新規ユーザー)',
+	'[_1] changed' => '[_1]が変更されました',
 	'Another role already exists by that name.' => '同名のロールが既に存在します。',
 	'Cannot load role #[_1].' => 'ロール: [_1]をロードできませんでした。',
 	'Create User' => 'ユーザーの作成',
@@ -1616,6 +1628,7 @@ use vars qw( @ISA %Lexicon );
 	'Invalid ID given for personal blog theme.' => '個人用ブログテーマのIDが不正です。',
 	'Invalid type' => 'typeが不正です。',
 	'Minimum password length must be an integer and greater than zero.' => 'パスワードの最低文字数は0以上の整数でなければなりません。',
+	'Password is changed' => 'パスワードが変更されました',
 	'Role name cannot be blank.' => 'ロールの名前は必須です。',
 	'Roles Selected' => '選択されたロール',
 	'Select Groups And Users' => 'ユーザーとグループを選択',
@@ -1636,6 +1649,9 @@ use vars qw( @ISA %Lexicon );
 	'You cannot delete your own association.' => '自分の関連付けは削除できません。',
 	'You have no permission to delete the user [_1].' => '[_1]を削除する権限がありません。',
 	'represents a user who will be created afterwards' => '今後新しく作成されるユーザー',
+	q{Saved User '[_1]' (ID: [_2]) changes.} => q{ユーザー'[_1]'(ID: [_2])の変更が保存されました},
+	q{User '[_1]' (ID: [_2]) changed the login password for user '[_3]' (ID: [_4]).} => q{ユーザー'[_1]'(ID: [_2])がユーザー'[_3]'(ID: [_4])のログインパスワードを変更しました。},
+	q{User '[_1]' (ID: [_2]) changed their login password.} => q{ユーザー'[_1]'(ID: [_2])がログインパスワードを変更しました。},
 	q{User '[_1]' (ID:[_2]) could not be re-enabled by '[_3]'} => q{'[_3]'がユーザー '[_1]' (ID:[_2])を有効にできませんでした},
 	q{User '[_1]' (ID:[_2]) created by '[_3]'} => q{'[_3]'がユーザー'[_1]'(ID:[_2])を作成しました。},
 	q{User '[_1]' (ID:[_2]) deleted by '[_3]'} => q{'[_3]'がユーザー'[_1]'(ID:[_2])を削除しました。},
@@ -2166,6 +2182,7 @@ use vars qw( @ISA %Lexicon );
 	'Navigation' => 'ナビゲーション',
 	'OpenID Accepted' => 'OpenID対応',
 	'Page Listing' => 'ページ一覧',
+	'Password Is Changed' => 'パスワードが変更されました',
 	'Popup Image' => 'ポップアップ画像',
 	'Powered By' => 'Powered By',
 	'RSD' => 'RSD',
@@ -2222,7 +2239,6 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/Filter.pm
 	'"editable_terms" and "editable_filters" cannot be specified at the same time.' => '"editable_terms"と"editable_filters"は、同時に指定できません。',
 	'Invalid filter type [_1]:[_2]' => '不正なフィルタタイプです。[_1]:[_2]',
-	'Invalid sort key [_1]:[_2]' => '不正ななソートキーです。[_1]:[_2]',
 
 ## lib/MT/Group.pm
 	'Active Groups' => '有効なグループ',
@@ -2349,10 +2365,11 @@ use vars qw( @ISA %Lexicon );
 	'theme' => 'テーマ',
 
 ## lib/MT/Mail.pm
-	'Authentication failure: [_1]' => '認証に失敗しました: [_1]',
+	'All the supported SMTP authentication mechanisms failed: [_1]' => '対応しているすべての方式でSMTP認証に失敗しました: [_1]',
 	'Error connecting to SMTP server [_1]:[_2]' => 'SMTPサーバに接続できません。[_1]:[_2]',
 	'Exec of sendmail failed: [_1]' => 'sendmailを実行できませんでした: [_1]',
 	'Following required module(s) were not found: ([_1])' => '以下のモジュールが不足しています。([_1])',
+	'SMTP [_1] Authentication failed: [_2]' => 'SMTP認証([_1])に失敗しました: [_2]',
 	'Username and password is required for SMTP authentication.' => 'SMTP認証を利用する場合は、ユーザー名とパスワードは必須入力です。',
 	'You do not have a valid path to sendmail on your machine. Perhaps you should try using SMTP?' => 'sendmailへのパスが正しくありません。SMTPの設定を試してください。',
 	q{Unknown MailTransfer method '[_1]'} => q{MailTransferの設定([_1])が不正です。},
@@ -3788,6 +3805,8 @@ use vars qw( @ISA %Lexicon );
 	'Advanced Archive Publishing' => '高度な公開の設定',
 	'Allow properly configured template modules to be cached to enhance publishing performance.' => '再構築の速度向上のために、テンプレートモジュール毎のキャッシュ設定を有効にする',
 	'Allow to change at upload' => 'アップロード時に変更を許可する',
+	'Trim spaces before and after path' => 'パスの前後の空白を除去する',
+	'Enable file path trimming' => '前後の空白を除去する',
 	'Apache Server-Side Includes' => 'ApacheのSSI',
 	'Archive Settings' => 'アーカイブ設定',
 	'Archive URL' => 'アーカイブURL',
@@ -3895,6 +3914,7 @@ use vars qw( @ISA %Lexicon );
 	q{The path where your index files will be published. Do not end with '/' or '\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog} => q{インデックスファイルが公開されるパスです。末尾には'/'や'\'を含めません。},
 	q{Used to generate URLs (permalinks) for this child site's archived entries. Choose one of the archive types used in this child site's archive templates.} => q{記事にリンクするときのURLとして使われます。このサイトで使われているアーカイブテンプレートの中から選択してください。},
 	q{Used to generate URLs (permalinks) for this site's archived entries. Choose one of the archive types used in this site's archive templates.} => q{記事にリンクするときのURLとして使われます。このサイトで使われているアーカイブテンプレートの中から選択してください。},
+	q{This field is overriden by a value in the Movable Type configuration file.} => q{MTの設定ファイルによって設定されている値が優先されます。},
 
 ## tmpl/admin2023/cms/cfg_rebuild_trigger.tmpl
 	'Action' => 'アクション',
@@ -4310,6 +4330,9 @@ use vars qw( @ISA %Lexicon );
 	'Grant site permission to group' => 'グループにサイトの権限を割り当てる',
 	'Grant site permission to user' => 'ユーザーにサイトの権限を割り当てる',
 
+## tmpl/admin2023/cms/dialog/theme_element_detail.tmpl
+	q{The settings will be saved when you click the 'Next' button.} => '「次へ」ボタンをクリックすると設定が保存されます。',
+
 ## tmpl/admin2023/cms/edit_asset.tmpl
 	'Appears in...' => '利用状況',
 	'Embed Asset' => 'アセットの埋め込み',
@@ -4317,7 +4340,7 @@ use vars qw( @ISA %Lexicon );
 	'Related Assets' => '関連するアセット',
 	'Stats' => '情報',
 	'This asset has been used by other users.' => 'このアセットは、他のユーザーにより利用されています。',
-	'You have unsaved changes to this asset that will be lost. Are you sure you want to edit image?' => '保存されていないアセットへの変更は失われます。画像を編集しますか？',
+	'If you edit image, unsaved changes to this asset that will be lost. Do you want to continue?' => '画像を編集すると、保存されていないアセットへの変更は失われます。続行しますか？',
 	'You have unsaved changes to this asset that will be lost.' => '保存されていないアセットへの変更は失われます。',
 	'You must specify a name for the asset.' => 'アセットに名前を設定してください。',
 	'[_1] - Created by [_2]' => '作成: [_2] - [_1]',
@@ -4769,6 +4792,7 @@ use vars qw( @ISA %Lexicon );
 	'_THEME_AUTHOR' => '作者名',
 	q{Cannot install new theme with existing (and protected) theme's basename.} => q{新しいテーマは既存、または保護されたテーマベース名ではインストールできません。},
 	q{Use letters, numbers, dash or underscore only (a-z, A-Z, 0-9, '-' or '_').} => q{次の文字と数字のみ利用できます: アルファベット、数字、ダッシュ(-)、アンダースコア(_)},
+  'Always include all options' => '常に全てのオプションをエクスポート対象にする',
 
 ## tmpl/admin2023/cms/field_html/field_html_asset.tmpl
 	'Assets greater than or equal to [_1] must be selected' => '[_1]以上のアセットを選択してください',
@@ -4911,7 +4935,7 @@ use vars qw( @ISA %Lexicon );
 	'Drag and drop here' => 'ファイルをドロップしてください',
 	'Operation for a file exists' => '既存ファイルの処理',
 	'Upload Options' => 'アップロードオプション',
-	'Upload Settings' => 'アップロードの設定',
+	'Change Upload Settings' => 'アップロードの設定を変更する',
 
 ## tmpl/admin2023/cms/include/author_table.tmpl
 	'Disable selected users (d)' => '選択したユーザーを無効化 (d)',

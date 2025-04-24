@@ -175,6 +175,15 @@ sub suite {
                 $mock_app_api->unmock( 'login', 'make_magic_token' );
             },
         },
+        {   note            => 'Empty auth header',
+            path            => '/v1/token',
+            author_id       => 0,
+            method          => 'POST',
+            request_headers => {
+                'X_MT_AUTHORIZATION' => 'MTAuth',
+            },
+            code => 401,
+        },
         {   note            => 'Get token from oneTimeToken',
             path            => '/v1/token',
             up_to           => 2,

@@ -33,21 +33,22 @@ subtest 'Edit Profile screen' => sub {
         my $args = shift;
         my $app  = MT::Test::App->new('MT::App::CMS');
         $app->login($admin);
-        my $res = $app->post_ok({
-            __mode       => 'save',
+        $app->get_ok({
+            __mode       => 'view',
             _type        => 'author',
+            $args->{id} ? (id => $args->{id}) : (),
+        });
+        $app->post_form_ok({
             name         => $args->{name},
             nickname     => 'nickname',
             email        => 'test@example.com',
             url          => 'http://example.com/',
             api_password => 'secret',
             auth_type    => 'MT',
-            type         => MT::Author::AUTHOR(),
             is_superuser => 0,
             status       => $args->{status},
             pass         => 'password',
             pass_verify  => 'password',
-            $args->{id} ? (id => $args->{id}) : (),
         });
         my $saved = {};
         if (my $loc = $app->last_location) {
@@ -191,17 +192,18 @@ subtest 'Manage Users screen' => sub {
 
         my $app = MT::Test::App->new('MT::App::CMS');
         $app->login($admin);
-        $app->{no_redirect} = 1;
-        my $res = $app->post_ok({
+        $app->get_ok({
+            __mode  => 'list',
+            _type   => 'author',
+            blog_id => 0,
+        });
+        $app->post_list_action_ok({
             __mode      => 'enable_object',
-            _type       => 'author',
             action_name => 'enable',
-            return_args => '__mode=list&_type=author&blog_id=0&does_act=1',
             id          => [map { $_->id } MT::Author->load({ name => '', status => MT::Author::INACTIVE })],
         });
         ok(
-                   $res->code == 302
-                && !$app->last_location->query_param('saved_status')
+                !$app->last_location->query_param('saved_status')
                 && $app->last_location->query_param('not_enabled') eq $no_name_count,
             "$no_name_count users having no name have not been enabled."
         );
@@ -210,12 +212,14 @@ subtest 'Manage Users screen' => sub {
     subtest 'Enable user having name' => sub {
         my $app = MT::Test::App->new('MT::App::CMS');
         $app->login($admin);
-        $app->{no_redirect} = 1;
-        my $res = $app->post_ok({
+        $app->get_ok({
+            __mode  => 'list',
+            _type   => 'author',
+            blog_id => 0,
+        });
+        $app->post_list_action_ok({
             __mode      => 'enable_object',
-            _type       => 'author',
             action_name => 'enable',
-            return_args => '__mode=list&_type=author&blog_id=0&does_act=1',
             id          => [
                 map { $_->id } MT::Author->load({
                     name   => { not => '' },
@@ -223,8 +227,6 @@ subtest 'Manage Users screen' => sub {
                 })
             ],
         });
-        ok($res->code == 302, 'No error occurred.');
-
         ok($app->last_location->query_param('saved_status') eq 'enabled', 'Users have been enabled.');
 
         ok(!$app->last_location->query_param('not_enabled'), 'There is no user who has not been enabled.');

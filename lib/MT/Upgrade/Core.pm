@@ -296,6 +296,7 @@ sub seed_database {
     my @plugins_to_disable = qw(
         Trackback OpenID FacebookCommenters
         spamlookup/spamlookup.pl spamlookup/spamlookup_urls.pl spamlookup/spamlookup_words.pl
+        TinyMCE5 FormattedTextForTinyMCE5 BlockEditor
         Textile/textile2.pl
         WidgetManager/WidgetManager.pl
     );
@@ -312,6 +313,7 @@ sub seed_database {
     $cfg->set(DisableNotificationPings => 1, 1);
     $cfg->set(DefaultSupportedLanguages => 'en_us,ja', 1);
     $cfg->set(TrimFilePath => 1, 1);
+    $cfg->set(HidePrivateRelatedContentData => 1, 1);
 
     $cfg->save_config;
 
@@ -454,7 +456,7 @@ sub _remove_news_widget_cache {
     my $class = MT->model('session')
         or return $self->error(
         $self->translate_escape( "Error loading class: [_1].", 'session' ) );
-    $class->remove( { kind => [qw( NW LW )] } );
+    $class->remove( { kind => [qw( NW LW DW )] } );
 }
 
 sub _uri_unescape_utf8 {

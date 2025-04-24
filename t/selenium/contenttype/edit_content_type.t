@@ -7,8 +7,6 @@ use Test::More;
 use MT::Test::Env;
 
 BEGIN {
-    eval 'use Test::Spec; 1'
-        or plan skip_all => 'Test::Spec is not installed';
     eval 'use Imager; 1'
         or plan skip_all => 'Imager is not installed';
     plan skip_all => 'Not for Windows now' if $^O eq 'MSWin32';
@@ -29,6 +27,8 @@ BEGIN {
         # internal package (Image::Magick::Q16 etc), it's
         # more reliable to depend on something else.
         ImageDriver => 'Imager',
+
+        $ENV{MT_TEST_EDIT_CONTENT_TYPE_RIOT} ? (UseRiot => 1) : (),
     );
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
@@ -368,7 +368,7 @@ subtest 'On Edit Content type ' => sub {
         my $selenium = MT::Test::Selenium->new($test_env);
         $selenium->visit('/cgi-bin/mt.cgi?__mode=view&blog_id=1&_type=content_type&id=1&username=Melody&password=Nelson');
         $selenium->screenshot_full;
-        $selenium->driver->execute_script('jQuery(".mt-contentfield .duplicate-content-field").each(function(){ jQuery(this).get(0).click() });');
+        $selenium->driver->execute_script('jQuery(".mt-contentfield .duplicate-content-field").each(function(){setTimeout(() => jQuery(this).get(0).click())});');
         $selenium->screenshot_full;
         $selenium->driver->execute_script('jQuery("[data-is=\'content-fields\'] button.btn-primary").trigger("click")');
         $selenium->screenshot_full;

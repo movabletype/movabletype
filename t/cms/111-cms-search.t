@@ -35,9 +35,15 @@ $test_env->prepare_fixture(sub {
         name     => 'ukawa',
         nickname => 'Saburo Ukawa',
     );
+    my $egawa = MT::Test::Permission->make_author(
+        name     => 'egawa',
+        nickname => 'Shiro Egawa',
+    );
     my $admin = MT::Author->load(1);
 
     my $website = MT::Website->load(2);
+    my $website1 = MT::Test::Permission->make_website(name => 'Website Search Test1');
+    my $website2 = MT::Test::Permission->make_website(name => 'Website Search Test2');
     my $blog    = $website->blogs;
 
     my %entries = ();
@@ -59,12 +65,25 @@ $test_env->prepare_fixture(sub {
     require MT::Association;
     MT::Association->link($aikawa,   $edit_all_posts, $website);
     MT::Association->link($ichikawa, $edit_all_posts, $blog->[0]);
+    MT::Association->link($ichikawa, $edit_all_posts, $website1);
+    MT::Association->link($ichikawa, $edit_all_posts, $website2);
     MT::Association->link($ukawa,    $designer,       $website);
+    MT::Association->link($egawa,    $edit_all_posts, $website2);
+
+    $ichikawa->can_edit_templates(1);
+    $ichikawa->save;
+
+    my $blog_1 = MT::Blog->load(1);
+    MT::Association->link($egawa, $designer, $blog_1);
+    $egawa->can_edit_templates(1);
+    $egawa->can_manage_users_groups(1);
+    $egawa->save;
 });
 
 my $aikawa   = MT::Author->load({ name => 'aikawa' });
 my $ichikawa = MT::Author->load({ name => 'ichikawa' });
 my $ukawa    = MT::Author->load({ name => 'ukawa' });
+my $egawa    = MT::Author->load({ name => 'egawa' });
 my $website  = MT::Website->load(2);
 my $blog     = $website->blogs->[0];
 my $admin    = MT::Author->load(1);
@@ -95,6 +114,82 @@ subtest 'unit test for iter_for_replace' => sub {
     }
 };
 
+subtest 'unit test for incremental_iter' => sub {
+    my $cms_search_limit_org = MT->config('CMSSearchLimit');
+
+    require MT::CMS::Search;
+
+    for my $limit (1, 2, 125) {
+        MT->config('CMSSearchLimit', $limit);
+
+        subtest 'get all' => sub {
+            my @entries  = MT::Entry->load();
+            my @expected = map { $_->id } @entries;
+            my $iter     = MT::CMS::Search::incremental_iter('MT::Entry', {}, {});
+            my @got;
+            while (my $obj = $iter->()) {
+                push @got, $obj->id;
+            }
+            is_deeply(\@got, \@expected);
+        };
+
+        subtest 'get with term' => sub {
+            my $terms    = { title => ['Verse 2', 'Verse 3'] };
+            my @entries  = MT::Entry->load($terms);
+            my @expected = map { $_->id } @entries;
+            my $iter     = MT::CMS::Search::incremental_iter('MT::Entry', $terms, {});
+            my @got;
+            while (my $obj = $iter->()) {
+                push @got, $obj->id;
+            }
+            is_deeply(\@got, \@expected);
+        };
+    }
+
+    subtest 'with do_search_replace mock' => sub {
+
+        my $terms = { title => ['Verse 1', 'Verse 2', 'Verse 3', 'Verse 4', 'Verse 5'] };
+        my $handler;
+        my $limit = 2;
+        MT->config('CMSSearchLimit', $limit);
+
+        my $mock = sub {
+            my $iter = MT::CMS::Search::incremental_iter('MT::Entry', $terms, {});
+            my @got;
+            while (my $obj = $iter->()) {
+                push @got, $obj->title if $handler->($obj);
+                if (@got > $limit) {
+                    pop @got;
+                    last;
+                }
+            }
+            return \@got;
+        };
+
+        subtest 'normal' => sub {
+            $handler = sub { 1 };
+            is_deeply($mock->(), ['Verse 1', 'Verse 2']);
+        };
+
+        subtest 'reduce by search_handler' => sub {
+            $handler = sub { $_[0]->title !~ /Verse 2/ };
+            is_deeply($mock->(), ['Verse 1', 'Verse 3']);
+            $handler = sub { $_[0]->title !~ /Verse 1/ };
+            is_deeply($mock->(), ['Verse 2', 'Verse 3']);
+            $handler = sub { $_[0]->title !~ /Verse (1|2)/ };
+            is_deeply($mock->(), ['Verse 3', 'Verse 4']);
+            $handler = sub { $_[0]->title !~ /Verse (1|2|3)/ };
+            is_deeply($mock->(), ['Verse 4', 'Verse 5']);
+            $handler = sub { $_[0]->title !~ /Verse (1|2|3|4)/ };
+            is_deeply($mock->(), ['Verse 5']);
+            $handler = sub { $_[0]->title !~ /Verse (2|3|4|5)/ };
+            is_deeply($mock->(), ['Verse 1']);
+        };
+    };
+
+    MT->config('CMSSearchLimit', $cms_search_limit_org);
+};
+
 subtest search => sub {
     subtest basic => sub {
         my $app = MT::Test::App->new('MT::App::CMS');
@@ -106,6 +201,84 @@ subtest search => sub {
 
         $app->search('Verse');
         is_deeply($app->found_titles, ['Verse 5', 'Verse 4', 'Verse 3', 'Verse 2', 'Verse 1'], 'basic 2');
+    };
+
+    subtest 'regex search for asset on system context by non-superuser (MTC-30084)' => sub {
+
+        MT::Test::Permission->make_asset(class => 'image', blog_id => 1, file_name => 'MTC30084-1.jpg', label => 'MTC30084-1');
+        MT::Test::Permission->make_asset(class => 'image', blog_id => 1, file_name => 'MTC30084-2.jpg', label => 'MTC30084-2');
+        MT::Test::Permission->make_asset(class => 'image', blog_id => 1, file_name => 'MTC30084-3.jpg', label => 'MTC30084-3');
+
+        my $app = MT::Test::App->new('MT::App::CMS');
+        $app->login($egawa);
+        $app->get_ok({__mode  => 'search_replace'});
+        $app->change_tab('asset');
+
+        $app->search('MTC30084-3');
+        is_deeply($app->found_titles, ['MTC30084-3'], 'without regex');
+
+        $app->search('MTC30084-[12]', {is_regex => 1});
+        is_deeply($app->found_titles, ['MTC30084-1', 'MTC30084-2'], 'with regex');
+    };
+
+    subtest 'regex search for author on system context by non-superuser (MTC-30084)' => sub {
+        my $app = MT::Test::App->new('MT::App::CMS');
+        $app->login($egawa);
+        $app->get_ok({__mode  => 'search_replace'});
+        $app->change_tab('author');
+
+        $app->search('ichikawa');
+        is_deeply($app->found_titles, ['ichikawa'], 'without regex');
+
+        $app->search('.+kawa', {is_regex => 1});
+        is_deeply($app->found_titles, ['ukawa', 'ichikawa', 'aikawa'], 'with regex');
+    };
+
+    subtest 'regex search for website on system context by non-superuser (MTC-30084)' => sub {
+        my $app = MT::Test::App->new('MT::App::CMS');
+        $app->login($ichikawa);
+        $app->get_ok({__mode  => 'search_replace'});
+        $app->change_tab('website');
+
+        $app->search('Website Search Test');
+        is_deeply($app->found_titles, ['Website Search Test2', 'Website Search Test1'], 'without regex');
+
+        $app->search('Website Search Test[12]', {is_regex => 1});
+        is_deeply($app->found_titles, ['Website Search Test2', 'Website Search Test1'], 'with regex');
+
+        $app->search('Website Search Test[1]', {is_regex => 1});
+        is_deeply($app->found_titles, ['Website Search Test1'], 'less result');
+    };
+
+    subtest 'limit' => sub {
+        my $cms_search_limit_org = MT->config('CMSSearchLimit');
+        $test_env->update_config(CMSSearchLimit => 3);
+
+        my $app = MT::Test::App->new('MT::App::CMS');
+        $app->login($admin);
+        $app->get_ok({ __mode => 'search_replace', blog_id => $blog_id });
+
+        subtest 'first search' => sub {
+            $app->search('Verse');
+            is_deeply($app->found_titles, ['Verse 5', 'Verse 4', 'Verse 3']);
+            ok $app->have_more_link_exists;
+        };
+
+        subtest 'click "Show all matches"' => sub {
+            $app->search('Verse', { limit => 'all' });
+            is_deeply($app->found_titles, ['Verse 5', 'Verse 4', 'Verse 3', 'Verse 2', 'Verse 1']);
+            ok !$app->have_more_link_exists;
+        };
+
+        $app->get_ok({ __mode => 'search_replace', blog_id => $blog_id });
+
+        subtest 'regex search does not miss old entries' => sub {
+            $app->search('Verse 1', { is_regex => 1 });
+            is_deeply($app->found_titles, ['Verse 1']);
+            ok !$app->have_more_link_exists;
+        };
+
+        $test_env->update_config(CMSSearchLimit => $cms_search_limit_org);
     };
 
     subtest 'with daterange' => sub {
@@ -345,11 +518,11 @@ subtest 'multiple site search' => sub {
 
     my $newblog = MT::Test::Permission->make_blog(parent_id => $website->id);
 
-    my $egawa          = MT::Test::Permission->make_author(name => 'egawa', nickname => 'Shiro Egawa');
+    my $ogawa          = MT::Test::Permission->make_author(name => 'ogawa', nickname => 'Shiro Ogawa');
     my $edit_all_posts = MT::Test::Permission->make_role(name => 'Edit All Posts', permissions => "'edit_all_posts'");
-    MT::Association->link($egawa, $edit_all_posts, $website);
-    MT::Association->link($egawa, $edit_all_posts, $blog);
-    my $perm = $egawa->permissions(0);
+    MT::Association->link($ogawa, $edit_all_posts, $website);
+    MT::Association->link($ogawa, $edit_all_posts, $blog);
+    my $perm = $ogawa->permissions(0);
     $perm->add_permissions(MT::Test::Permission->make_role(name => 'Designer'));
     $perm->save;
 
@@ -367,7 +540,7 @@ subtest 'multiple site search' => sub {
     subtest 'Search in system scope by non super user' => sub {
 
         my $app = MT::Test::App->new('MT::App::CMS');
-        $app->login($egawa);
+        $app->login($ogawa);
         $app->get_ok({
             __mode  => 'search_replace',
             blog_id => 0,

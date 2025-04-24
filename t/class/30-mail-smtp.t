@@ -11,8 +11,18 @@ BEGIN {
 
 our $test_env;
 BEGIN {
+    require Authen::SASL;
+    if ($ENV{MT_TEST_AUTHEN_SASL_XS}) {
+        unless (eval { require Authen::SASL::XS; 1 }) {
+            plan skip_all => 'requires Authen::SASL::XS';
+        }
+        Authen::SASL->import('XS');
+    } else {
+        Authen::SASL->import('Perl');
+    }
+
     my %smtp_env;
-    for my $key (qw(SMTPAuth SMTPS SMTPUser SMTPPassword)) {
+    for my $key (qw(SMTPAuth SMTPS SMTPUser SMTPPassword SMTPAuthSASLMechanism)) {
         my $env_key = 'MT_TEST_' . uc($key);
         next unless exists $ENV{$env_key};
         $smtp_env{$key} = $ENV{$env_key};
@@ -48,6 +58,7 @@ if ($ENV{MT_TEST_SMTPUSER} and $ENV{MT_TEST_SMTPPASSWORD}) {
 }
 
 my $server = MT::Test::MailPitServer->run(%mailpit_opts);
+$server->test_connection or plan skip_all => 'Mailpit seems not working';
 
 MT->config(SMTPPort => $server->port);
 
@@ -187,7 +198,7 @@ for my $mod_name (@mail_modules) {
                     'mail body'
                 );
             };
-            like(MT::Util::Mail->errstr, qr{Authentication failure: .*?Authentication credentials invalid}, 'right error');
+            like(MT::Util::Mail->errstr, qr{All the supported SMTP authentication mechanisms failed}, 'right error');
             $mt->config->set('SMTPUser', $orig_user);
             $mt->config->set('SMTPPassword', $orig_pass);
             $MT::ErrorHandler::ERROR = undef;

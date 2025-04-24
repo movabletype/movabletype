@@ -10,17 +10,17 @@
 
 <mt:setvarblock name="js_include" append="1">
   <mt:if name="mt_debug">
-  <mt:script type="text/javascript" path="js/image_editor/fabric.js">
-  <mt:script type="text/javascript" path="js/image_editor/darkroom.js">
-  <mt:script type="text/javascript" path="js/image_editor/jquery.numeric.js">
-  <mt:script type="text/javascript" path="js/image_editor/jquery.selection.js">
+  <mtapp:script type="text/javascript" path="js/image_editor/fabric.js">
+  <mtapp:script type="text/javascript" path="js/image_editor/darkroom.js">
+  <mtapp:script type="text/javascript" path="js/image_editor/jquery.numeric.js">
+  <mtapp:script type="text/javascript" path="js/image_editor/jquery.selection.js">
   <mt:else>
-  <mt:script type="text/javascript" path="js/image_editor/fabric.min.js">
-  <mt:script type="text/javascript" path="js/image_editor/darkroom.min.js">
-  <mt:script type="text/javascript" path="js/image_editor/jquery.numeric.min.js">
-  <mt:script type="text/javascript" path="js/image_editor/jquery.selection.min.js">
+  <mtapp:script type="text/javascript" path="js/image_editor/fabric.min.js">
+  <mtapp:script type="text/javascript" path="js/image_editor/darkroom.min.js">
+  <mtapp:script type="text/javascript" path="js/image_editor/jquery.numeric.min.js">
+  <mtapp:script type="text/javascript" path="js/image_editor/jquery.selection.min.js">
   </mt:if>
-  <mt:script type="text/javascript" path="js/image_editor/image_editor.js">
+  <mtapp:script type="text/javascript" path="js/image_editor/image_editor.js">
 </mt:setvarblock>
 
 <mt:setvarblock name="modal_body">
@@ -147,7 +147,7 @@
            disabled="disabled">
           <__trans phrase="Save"></button>
         <button
-           type="submit"
+           type="button"
            accesskey="x"
            class="cancel action button image-editor-close-dialog btn btn-default"
            title="<__trans phrase="Cancel (x)">"
@@ -358,7 +358,7 @@
 
         // Confirm before closing dialog.
         window.onbeforeunload = function () {
-            if (isDirty || resizing || image.getPlugin('crop').hasFocus()) {
+            if (isDirty || resizing || (image.plugins && image.getPlugin('crop').hasFocus())) {
                 var message = '<__trans phrase="You have unsaved changes to this image that will be lost. Are you sure you want to close this dialog?">';
                 if (confirm(message)) {
                     return true;

@@ -62,7 +62,7 @@ function smarty_block_mtarchivelist($args, $res, &$ctx, &$repeat) {
             if (isset($cat_field)) {
                 require_once('class.mt_category_set.php');
                 $cs = new CategorySet();
-                $cs->Load('category_set_id = ' . $cat_field->cf_related_cat_set_id);
+                $cs->LoadByIntId($cat_field->cf_related_cat_set_id);
             }
             if (!isset($cs) || !$cs->category_set_id) {
                 $cs = $ctx->stash('category_set');

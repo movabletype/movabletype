@@ -246,6 +246,7 @@ use_ok('MT::Image::NetPBM');
 use_ok('MT::Image::Imager');
 use_ok('MT::Image::ImageMagick');
 use_ok('MT::Image::GraphicsMagick');
+use_ok('MT::Image::ExifData');
 use_ok('MT::ImportExport');
 use_ok('MT::Import');
 use_ok('MT::JunkFilter');
@@ -633,6 +634,9 @@ use_ok('MT::DataAPI::Endpoint::v5::TextFilter');
 
 use_ok('MT::DataAPI::Endpoint::v6');
 use_ok('MT::DataAPI::Endpoint::v6::Stats');
+
+use_ok('MT::DataAPI::Endpoint::v7');
+use_ok('MT::DataAPI::Endpoint::v7::Theme');
 
 use_ok('MT::App::Search::Common');
 

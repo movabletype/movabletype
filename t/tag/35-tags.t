@@ -16,6 +16,7 @@ use MT::Test::PHP;
 use MT::Test::Permission;
 use MT::Test::Util::CreativeCommons;
 use MT::Util qw(ts2epoch epoch2ts);
+use MT::Util::Captcha;
 
 $test_env->prepare_fixture('db_data');
 
@@ -29,7 +30,6 @@ $server_path =~ s|\\|/|g if $^O eq 'MSWin32';
 
 my $blog = MT::Blog->load(1);
 $blog->captcha_provider('mt_default');
-$blog->include_system('php');
 $blog->save;
 
 my $asset = MT::Asset->load(1);
@@ -67,6 +67,7 @@ my %vars = (
     STATIC_FILE_PATH => MT->instance->static_file_path . '/',
     THREE_DAYS_AGO => epoch2ts($blog, time() - int(3.5 * 86400)),
     TEST_ROOT => $test_env->root,
+    NO_CAPTCHA => MT::Util::Captcha->check_availability // '',
 );
 
 sub var {
@@ -80,31 +81,11 @@ sub var {
 }
 
 filters {
+    skip         => [qw( var chomp )],
     template     => [qw( var )],
     expected     => [qw( var )],
     expected_php => [qw( var )],
 };
-
-sub embed_path {
-    my $in = shift;
-    my $cont = filter_arguments;
-    require File::Temp;
-    my ( $fh, $file ) = File::Temp::tempfile();
-    print $fh $cont;
-    close $fh;
-    $in =~ s{PATH}{$file};
-    $in;
-}
-
-sub embed_path_to_php_test {
-    my $in = shift;
-    require File::Temp;
-    my ( $fh, $file ) = File::Temp::tempfile();
-    print $fh '<?php echo 3+4;';
-    close $fh;
-    $in =~ s{PATH}{$file};
-    $in;
-}
 
 sub fix_path { File::Spec->canonpath(shift) }
 
@@ -863,6 +844,68 @@ a rainy day
 [<MTArchiveList archive_type="Monthly"><MTArchiveTitle>-<MTArchiveLink>; </MTArchiveList>]
 --- expected
 [January 1978-http://narnia.na/nana/archives/1978/01/; January 1965-http://narnia.na/nana/archives/1965/01/; January 1964-http://narnia.na/nana/archives/1964/01/; January 1963-http://narnia.na/nana/archives/1963/01/; January 1962-http://narnia.na/nana/archives/1962/01/; January 1961-http://narnia.na/nana/archives/1961/01/; ]
+
+=== test 147-2 nested Monthly ArchiveList
+--- template
+<MTArchiveList archive_type="Yearly">[<MTArchiveTitle>] <MTArchiveList archive_type="Monthly"><MTArchiveTitle>;</MTArchiveList></MTArchiveList>
+--- expected
+[1978] January 1978;[1965] January 1965;[1964] January 1964;[1963] January 1963;[1962] January 1962;[1961] January 1961;
+
+=== test 147-3 nested Daily ArchiveList
+--- template
+<MTArchiveList archive_type="Yearly">[<MTArchiveTitle>] <MTArchiveList archive_type="Daily"><MTArchiveTitle>;</MTArchiveList></MTArchiveList>
+--- expected
+[1978] January 31, 1978;[1965] January 31, 1965;[1964] January 31, 1964;[1963] January 31, 1963;[1962] January 31, 1962;[1961] January 31, 1961;
+
+=== test 147-4 nested Weekly ArchiveList
+--- template
+<MTArchiveList archive_type="Yearly">[<MTArchiveTitle>] <MTArchiveList archive_type="Weekly"><MTArchiveTitle>;</MTArchiveList></MTArchiveList>
+--- expected
+[1978] January 29, 1978 - February  4, 1978;[1965] January 31, 1965 - February  6, 1965;[1964] January 26, 1964 - February  1, 1964;[1963] January 27, 1963 - February  2, 1963;[1962] January 28, 1962 - February  3, 1962;[1961] January 29, 1961 - February  4, 1961;
+
+=== test 147-5 nested Author-Monthly ArchiveList
+--- template
+<MTArchiveList archive_type="Yearly">[<MTArchiveTitle>] <MTArchiveList archive_type="Author-Monthly"><MTArchiveTitle>;</MTArchiveList></MTArchiveList>
+--- expected
+[1978] Chucky Dee: January 1978;[1965] Chucky Dee: January 1965;[1964] Chucky Dee: January 1964;[1963] Dylan: January 1963;[1962] Chucky Dee: January 1962;[1961] Chucky Dee: January 1961;
+
+=== test 147-6 nested Author-Daily ArchiveList
+--- template
+<MTArchiveList archive_type="Yearly">[<MTArchiveTitle>] <MTArchiveList archive_type="Author-Daily"><MTArchiveTitle>;</MTArchiveList></MTArchiveList>
+--- expected
+[1978] Chucky Dee: January 31, 1978;[1965] Chucky Dee: January 31, 1965;[1964] Chucky Dee: January 31, 1964;[1963] Dylan: January 31, 1963;[1962] Chucky Dee: January 31, 1962;[1961] Chucky Dee: January 31, 1961;
+
+=== test 147-7 nested Author-Weekly ArchiveList
+--- template
+<MTArchiveList archive_type="Yearly">[<MTArchiveTitle>] <MTArchiveList archive_type="Author-Weekly"><MTArchiveTitle>;</MTArchiveList></MTArchiveList>
+--- expected
+[1978] Chucky Dee: January 29, 1978 - February  4, 1978;[1965] Chucky Dee: January 31, 1965 - February  6, 1965;[1964] Chucky Dee: January 26, 1964 - February  1, 1964;[1963] Dylan: January 27, 1963 - February  2, 1963;[1962] Chucky Dee: January 28, 1962 - February  3, 1962;[1961] Chucky Dee: January 29, 1961 - February  4, 1961;
+
+=== test 147-8 nested Category-Yearly ArchiveList (TODO check the difference between Perl and php result)
+--- template
+<MTArchiveList archive_type="Yearly">[<MTArchiveTitle>] <MTArchiveList archive_type="Category-Yearly"><MTArchiveTitle>;</MTArchiveList></MTArchiveList>
+--- expected
+[1978] foo: 1963;subfoo: 1964;[1965] foo: 1963;subfoo: 1964;[1964] foo: 1963;subfoo: 1964;[1963] foo: 1963;subfoo: 1964;[1962] foo: 1963;subfoo: 1964;[1961] foo: 1963;subfoo: 1964;
+--- expected_php
+[1978] [1965] [1964] subfoo: 1964;[1963] foo: 1963;[1962] [1961]
+
+=== test 147-9 nested Category-Monthly ArchiveList
+--- template
+<MTArchiveList archive_type="Yearly">[<MTArchiveTitle>] <MTArchiveList archive_type="Category-Monthly"><MTArchiveTitle>;</MTArchiveList></MTArchiveList>
+--- expected
+[1978] [1965] [1964] subfoo: January 1964;[1963] foo: January 1963;[1962] [1961]
+
+=== test 147-10 nested Category-Daily ArchiveList
+--- template
+<MTArchiveList archive_type="Yearly">[<MTArchiveTitle>] <MTArchiveList archive_type="Category-Daily"><MTArchiveTitle>;</MTArchiveList></MTArchiveList>
+--- expected
+[1978] [1965] [1964] subfoo: January 31, 1964;[1963] foo: January 31, 1963;[1962] [1961]
+
+=== test 147-11 nested Category-Weekly ArchiveList
+--- template
+<MTArchiveList archive_type="Yearly">[<MTArchiveTitle>] <MTArchiveList archive_type="Category-Weekly"><MTArchiveTitle>;</MTArchiveList></MTArchiveList>
+--- expected
+[1978] [1965] [1964] subfoo: January 26, 1964 - February  1, 1964;[1963] foo: January 27, 1963 - February  2, 1963;[1962] [1961]
 
 === test 148
 --- template
@@ -4056,7 +4099,7 @@ mt-data-api.cgi
 --- template
 <mt:DataAPIVersion>
 --- expected
-6
+7
 
 === test 739
 --- template
@@ -4884,34 +4927,6 @@ Test <a href="/foo/foo.php">FOO:FOO</a>bBar String
 --- expected
 <strong>
 
-=== test 883-1
---- mt_config
-{AllowFileInclude => 1}
---- template embed_path=FILE-CONTENT
-left <mt:Include file="PATH"> right
---- expected
-left FILE-CONTENT right
-
-=== test 883-2
---- mt_config
-{AllowFileInclude => 0}
---- template
-left <mt:Include file="PATH"> right
---- expected_error
-File inclusion is disabled by "AllowFileInclude" config directive.
---- expected_php_error
-left File include is disabled by "AllowFileInclude" config directive. right
-
-=== test 883-3 include php file
---- mt_config
-{AllowFileInclude => 1}
---- template embed_path_to_php_test
-<mt:Include ssi="1" file="PATH">
---- expected
-<?php echo 3+4;
---- expected_php
-7
-
 === test 884
 --- template
 <MTPages no_folder="1"><MTPageID>;</MTPages>
@@ -4919,6 +4934,8 @@ left File include is disabled by "AllowFileInclude" config directive. right
 20;
 
 === test 885
+--- skip
+[% NO_CAPTACH %]
 --- template
 <mt:CaptchaFields>
 --- expected regexp
@@ -5088,79 +5105,92 @@ http://narnia.na/
 TEST_ROOT/
 
 === test 910 script (MTC-25985)
+--- skip_php
 --- template
-<MTScript path="foo/bar.js">
+<MTApp:Script path="foo/bar.js">
 --- expected
 <script src="/mt-static/foo/bar.js?v=VERSION_ID" charset="utf-8"></script>
 
 === test 911 script (MTC-25985)
+--- skip_php
 --- template
-<MTScript path="/foo/bar.js">
+<MTApp:Script path="/foo/bar.js">
 --- expected
 <script src="/mt-static/foo/bar.js?v=VERSION_ID" charset="utf-8"></script>
 
 === test 912 script (MTC-25985)
+--- skip_php
 --- template
-<MTScript path="/foo/bar_%l.js">
+<MTApp:Script path="/foo/bar_%l.js">
 --- expected
 <script src="/mt-static/foo/bar_en_us.js?v=VERSION_ID" charset="utf-8"></script>
 
 === test 913 script (MTC-25985)
+--- skip_php
 --- template
-<MTScript>
+<MTApp:Script>
 --- expected_error
 path is required.
 
 === test 914 script (MTC-25985)
+--- skip_php
 --- template
-<MTScript path="/foo/bar.js" async="1">
+<MTApp:Script path="/foo/bar.js" async="1">
 --- expected
 <script src="/mt-static/foo/bar.js?v=VERSION_ID" async charset="utf-8"></script>
 
 === test 915 script (MTC-25985)
+--- skip_php
 --- template
-<MTScript path="/foo/bar.js" defer="1">
+<MTApp:Script path="/foo/bar.js" defer="1">
 --- expected
 <script src="/mt-static/foo/bar.js?v=VERSION_ID" defer charset="utf-8"></script>
 
 === test 916 script (MTC-25985)
+--- skip_php
 --- template
-<MTScript path="/foo/bar.js" type="text/javascript">
+<MTApp:Script path="/foo/bar.js" type="text/javascript">
 --- expected
 <script src="/mt-static/foo/bar.js?v=VERSION_ID" type="text/javascript" charset="utf-8"></script>
 
 === test 917 script (MTC-25985)
+--- skip_php
 --- template
-<MTScript path="/foo/bar.js" charset="euc-jp">
+<MTApp:Script path="/foo/bar.js" charset="euc-jp">
 --- expected
 <script src="/mt-static/foo/bar.js?v=VERSION_ID" charset="euc-jp"></script>
 
 === test 918 script (MTC-25985)
+--- skip_php
 --- template
-<MTScript path="/foo/bar.js" type="text/javascript" async="1" defer="1">
+<MTApp:Script path="/foo/bar.js" type="text/javascript" async="1" defer="1">
 --- expected
 <script src="/mt-static/foo/bar.js?v=VERSION_ID" type="text/javascript" async defer charset="utf-8"></script>
 
 === test 919 stylesheet (MTC-25985)
+--- skip_php
 --- template
-<MTStylesheet path="/foo/bar.css">
+<MTApp:Stylesheet path="/foo/bar.css">
 --- expected
 <link rel="stylesheet" href="/mt-static/foo/bar.css?v=VERSION_ID">
 
 === test 920 stylesheet (MTC-25985)
+--- skip_php
 --- template
-<MTStylesheet path="foo/bar.css">
+<MTApp:Stylesheet path="foo/bar.css">
 --- expected
 <link rel="stylesheet" href="/mt-static/foo/bar.css?v=VERSION_ID">
 
 === test 921 stylesheet (MTC-25985)
+--- skip_php
 --- template
-<MTStylesheet path="foo/bar_%l.css">
+<MTApp:Stylesheet path="foo/bar_%l.css">
 --- expected
 <link rel="stylesheet" href="/mt-static/foo/bar_en_us.css?v=VERSION_ID">
 
 === test 922 stylesheet (MTC-25985)
+--- skip_php
 --- template
-<MTStylesheet>
+<MTApp:Stylesheet>
 --- expected_error
 path is required.

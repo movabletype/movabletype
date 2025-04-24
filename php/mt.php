@@ -10,9 +10,9 @@
  */
 require_once('lib/class.exception.php');
 
-define('VERSION', '8.003000');
-define('PRODUCT_VERSION', '8.3.0');
-define('DATA_API_DEFAULT_VERSION', '6');
+define('VERSION', '8.005001');
+define('PRODUCT_VERSION', '8.5.1');
+define('DATA_API_DEFAULT_VERSION', '7');
 
 $PRODUCT_NAME = '__PRODUCT_NAME__';
 if($PRODUCT_NAME == '__PRODUCT' . '_NAME__')
@@ -64,7 +64,7 @@ class MT {
     private static $_instance = null;
 
     static public $config_type_array = array('pluginpath', 'alttemplate', 'outboundtrackbackdomains', 'memcachedservers', 'userpasswordvalidation');
-    static public $config_type_hash  = array('pluginswitch', 'pluginalias', 'pluginschemaversion', 'commenterregistration');
+    static public $config_type_hash  = array('pluginswitch', 'pluginalias', 'pluginschemaversion', 'commenterregistration', 'dbiconnectoptions');
 
     /***
      * Constructor for MT class.
@@ -97,6 +97,9 @@ class MT {
         return MT::$_instance;
     }
 
+    /**
+     * @TODO Not in use
+     */
     public function caching($val = null) {
         if ( !is_null($val) ) {
             $this->caching = $val;
@@ -105,6 +108,9 @@ class MT {
         return $this->caching;
     }
 
+    /**
+     * @TODO Not in use
+     */
     public function conditional($val = null) {
         if ( !is_null($val) ) {
             $this->conditional = $val;
@@ -113,6 +119,9 @@ class MT {
         return $this->conditional;
     }
 
+    /**
+     * @TODO Not in use
+     */
     public function blog_id() {
         return $this->blog_id;
     }
@@ -275,7 +284,9 @@ class MT {
                 $this->config('DBPort'),
                 $this->config('DBSocket'),
                 $this->config('DBMaxRetries'),
-                $this->config('DBRetryInterval'));
+                $this->config('DBRetryInterval'),
+                $this->config('DBIConnectOptions')
+            );
         }
         return $this->db;
     }
@@ -417,6 +428,7 @@ class MT {
                 $lc_name = preg_replace('/^mt_config_/', '', $lc_name);
                 $lc_name = preg_replace('/_/', '', $lc_name);
                 $value = $_ENV[$name];
+                unset($_ENV[$name]);
                 if (isset($value) && $value === "''") {
                     $value = '';
                 }
@@ -513,6 +525,7 @@ class MT {
             $cfg['dataapiscript'] = 'mt-data-api.cgi';
         isset($cfg['dynamictemplateallowphp']) or
             $cfg['dynamictemplateallowphp'] = 1;
+        isset($cfg['dynamictemplateallowsmartytags']) or $cfg['dynamictemplateallowsmartytags'] = 1;
     }
 
     function configure_paths($blog_site_path) {
@@ -680,7 +693,7 @@ class MT {
                     $archiver = ArchiverFactory::get_archiver($at);
                 } catch (Exception $e) {
                     // 404
-                    $this->http_errr = 404;
+                    $this->http_error = 404;
                     header("HTTP/1.1 404 Not Found");
                     return $ctx->error($this->translate("Page not found - [_1]", $at), E_USER_ERROR);
                 }

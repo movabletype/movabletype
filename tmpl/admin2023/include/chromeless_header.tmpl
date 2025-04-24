@@ -10,45 +10,45 @@
 <mt:unless name="cfg_exists">
   <link rel="icon" href="<$mt:var name="static_uri"$>images/favicon.ico" type="image/ico" />
   <mt:unless name="optimize_ui">
-  <mt:stylesheet path="css/reset.css">
-  <mt:stylesheet path="css/chromeless.css">
-  <mt:stylesheet path="css/form.css">
-  <mt:stylesheet path="css/messaging.css">
-  <mt:stylesheet path="css/utilities.css">
-  <mt:stylesheet path="css/listing.css">
+  <mtapp:stylesheet path="css/reset.css">
+  <mtapp:stylesheet path="css/chromeless.css">
+  <mtapp:stylesheet path="css/form.css">
+  <mtapp:stylesheet path="css/messaging.css">
+  <mtapp:stylesheet path="css/utilities.css">
+  <mtapp:stylesheet path="css/listing.css">
   <mt:else>
-  <mt:stylesheet path="css/simple.css">
+  <mtapp:stylesheet path="css/simple.css">
   </mt:unless>
   <!--[if IE]>
-  <mt:stylesheet path="css/hacks/ie.css">
+  <mtapp:stylesheet path="css/hacks/ie.css">
   <![endif]-->
-  <mt:script type="text/javascript" path="js/tc.js">
+  <mtapp:script type="text/javascript" path="js/tc.js">
 </mt:unless>
 <mt:unless name="optimize_ui">
-  <mt:script type="text/javascript" path="jquery/jquery.js">
-  <mt:script type="text/javascript" path="jquery/jquery-migrate.js">
-  <mt:script type="text/javascript" path="jqueryui/jquery-ui.js">
-  <mt:script type="text/javascript" path="jquery/jquery.validate.js">
+  <mtapp:script type="text/javascript" path="jquery/jquery.js">
+  <mtapp:script type="text/javascript" path="jquery/jquery-migrate.js">
+  <mtapp:script type="text/javascript" path="jqueryui/jquery-ui.js">
+  <mtapp:script type="text/javascript" path="jquery/jquery.validate.js">
 <mt:else>
-  <mt:script type="text/javascript" path="jquery/jquery.min.js">
-  <mt:script type="text/javascript" path="jquery/jquery-migrate.min.js">
-  <mt:script type="text/javascript" path="jqueryui/jquery-ui.js">
-  <mt:script type="text/javascript" path="jquery/jquery.validate.min.js">
+  <mtapp:script type="text/javascript" path="jquery/jquery.min.js">
+  <mtapp:script type="text/javascript" path="jquery/jquery-migrate.min.js">
+  <mtapp:script type="text/javascript" path="jqueryui/jquery-ui.js">
+  <mtapp:script type="text/javascript" path="jquery/jquery.validate.min.js">
 </mt:unless>
 <mt:unless name="cfg_exists">
-  <mt:script type="text/javascript" path="js/common/Core.js">
+  <mtapp:script type="text/javascript" path="js/common/Core.js">
 </mt:unless>
 </mt:setvarblock>
 
 <$mt:var name="html_head"$>
 
 <mt:unless name="cfg_exists">
-  <mt:script type="text/javascript" path="mt.js">
-  <mt:script type="text/javascript" path="mt_%l.js">
+  <mtapp:script type="text/javascript" path="mt.js">
+  <mtapp:script type="text/javascript" path="mt_%l.js">
   <mt:unless name="optimize_ui">
-    <mt:script type="text/javascript" path="jquery/jquery.mt.js">
+    <mtapp:script type="text/javascript" path="jquery/jquery.mt.js">
   <mt:else>
-    <mt:script type="text/javascript" path="jquery/jquery.mt.min.js">
+    <mtapp:script type="text/javascript" path="jquery/jquery.mt.min.js">
   </mt:unless>
 </mt:unless>
 

@@ -75,6 +75,13 @@ $test_env->prepare_fixture(
             type               => 'categories',
             related_cat_set_id => $category_set->id,
         );
+        my $cat_cf2 = MT::Test::Permission->make_content_field(
+            blog_id            => $ct->blog_id,
+            content_type_id    => $ct->id,
+            name               => 'categories2',
+            type               => 'categories',
+            related_cat_set_id => $category_set->id,
+        );
         my $date_cf = MT::Test::Permission->make_content_field(
             blog_id         => $ct->blog_id,
             content_type_id => $ct->id,
@@ -90,6 +97,15 @@ $test_env->prepare_fixture(
                     category_set => $cat_cf->related_cat_set_id,
                 },
                 unique_id => $cat_cf->unique_id,
+            },
+            {   id      => $cat_cf2->id,
+                order   => 1,
+                type    => $cat_cf2->type,
+                options => {
+                    label        => 1,
+                    category_set => $cat_cf2->related_cat_set_id,
+                },
+                unique_id => $cat_cf2->unique_id,
             },
             {   id        => $date_cf->id,
                 order     => 2,
@@ -107,6 +123,7 @@ $test_env->prepare_fixture(
             author_id       => 1,
             data            => {
                 $cat_cf->id  => [ $category1->id ],
+                $cat_cf2->id  => [],
                 $date_cf->id => '20180308180500',
             },
         );
@@ -116,6 +133,7 @@ $test_env->prepare_fixture(
             author_id       => $author2->id,
             data            => {
                 $cat_cf->id  => [ $category2->id ],
+                $cat_cf2->id  => [],
                 $date_cf->id => '20180307180500',
             },
         );
@@ -125,6 +143,7 @@ $test_env->prepare_fixture(
             author_id       => 1,
             data            => {
                 $cat_cf->id  => [ $category1->id ],
+                $cat_cf2->id  => [],
                 $date_cf->id => '20180306180500',
             },
         );
@@ -153,6 +172,7 @@ my $category2 = MT::Category->load(
 my $ct = MT::ContentType->load( { name => 'test content type' } );
 
 my $cat_cf  = MT::ContentField->load( { name => 'categories' } );
+my $cat_cf2  = MT::ContentField->load( { name => 'categories2' } );
 my $date_cf = MT::ContentField->load( { name => 'date and time' } );
 
 my $cd1 = MT::ContentData->load(
@@ -185,6 +205,7 @@ $vars->{cat1_id} = $category1->id;
 $vars->{cat2_id} = $category2->id;
 
 $vars->{cat_cf_id}  = $cat_cf->id;
+$vars->{cat_cf_id2}  = $cat_cf2->id;
 $vars->{date_cf_id} = $date_cf->id;
 
 $vars->{cd1_id} = $cd1->id;
@@ -239,3 +260,8 @@ __END__
 --- expected
 [% cd2_id %][% cd1_id %]
 
+=== MT:ContentNext with category_field empty
+--- template
+<mt:Contents content_type="test content type"><mt:ContentNext category_field="[% cat_cf_id2 %]"><mt:ContentID></mt:ContentNext></mt:Contents>
+--- expected
+[% cd3_id %][% cd2_id %]

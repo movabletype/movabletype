@@ -967,7 +967,7 @@ sub do_search_replace {
 
     # don't allow passed limit to be higher than config limit
     my $param_limit = $app->param('limit');
-    if ( $param_limit && ( $param_limit < $limit ) ) {
+    if ( $param_limit && ( $param_limit eq 'all' || $param_limit < $limit ) ) {
         $limit = $param_limit;
     }
     $limit =~ s/\D//g if $limit ne 'all';
@@ -1083,7 +1083,6 @@ sub do_search_replace {
         if ( !$is_regex && $type ne 'content_data' ) {
             @terms = @{make_terms_for_plain_search(\%terms, \@cols, $plain_search)};
         }
-        $args{limit} = $limit + 1 if $limit ne 'all';
         my $iter;
         if ($do_replace) {
             $iter = iter_for_replace($class, \@ids);
@@ -1092,11 +1091,11 @@ sub do_search_replace {
             my $terms = $param->{terms};
             my $args  = $param->{args};
             if ( defined $terms && defined $args ) {
-                $iter = $class->load_iter( $terms, $args )
-                    or die $class->errstr;
+                $iter = incremental_iter($class, $terms, $args);
             } elsif ($blog_id || ( $type eq 'blog' ) || ( $app->mode eq 'dialog_grant_role' ) || $author->is_superuser) {
-                $iter = $class->load_iter(@terms ? \@terms : \%terms, \%args) or die $class->errstr;
+                $iter = incremental_iter($class, @terms ? \@terms : \%terms, \%args);
             } else {
+                push @terms, \%terms unless @terms;
                 if ( $class->has_column('blog_id') ) {
 
                     # Get an iter for each accessible blog
@@ -1107,7 +1106,7 @@ sub do_search_replace {
                     );
                     push @terms, {blog_id => [map {$_->blog_id} @perms]} if @perms;
                 }
-                $iter = $class->load_iter( \@terms, \%args );
+                $iter = incremental_iter($class, \@terms, \%args);
             }
         }
         my $i = 1;
@@ -1159,6 +1158,17 @@ sub do_search_replace {
                         $field_registry
                             = $content_field_types->{ $field_data->{type} };
                         $text = $obj->data->{$content_field_id};
+                    }
+                    elsif ($col eq 'label' && $content_type && $obj->isa('MT::ContentData')) {
+                        if (my $data_label = $content_type->data_label) {
+                            my $field = MT->model('content_field')->load({
+                                content_type_id => $content_type->id,
+                                unique_id       => $data_label,
+                            });
+                            $text = $obj->data->{ $field->id } if $field;
+                        } else {
+                            $text = $obj->column($col);
+                        }
                     }
                     else {
                         $text = $obj->column($col);
@@ -1278,18 +1288,18 @@ sub do_search_replace {
                     push @to_save,      $obj;
                     push @to_save_orig, $orig_obj;
                 }
+
+                # We got one extra to see if there were more
+                if ($limit ne 'all' && @data >= $limit) {
+                    $param{have_more} = 1;
+                    last;
+                }
+
                 push @data, $obj;
             }
-            last if ( $limit ne 'all' ) && @data > $limit;
         }
         if (@data) {
             $param{have_results} = 1;
-
-            # We got one extra to see if there were more
-            if ( ( $limit ne 'all' ) && @data > $limit ) {
-                $param{have_more} = 1;
-                pop @data;
-            }
             $matches = @data;
 
             if ( $do_replace && !$show_all && $app->param('error') ) {
@@ -1604,13 +1614,16 @@ sub make_terms_for_plain_search {
     }
 
     if (my @cols = @$cols_ref) {
-        my $query_string = "%$plain_search%";
+        my $query_string = $plain_search;
+        my $escape_char = '!';
+        $query_string =~ s/($escape_char|_|%)/$escape_char$1/g;
+        $query_string = "%$query_string%";
         my @sub;
         for my $col (@cols) {
             if ('id' eq $col) {
                 push(@sub, { $col => $plain_search }, '-or');
             } elsif ($col !~ /^__field:\d+$/) {
-                push(@sub, { $col => { like => $query_string } }, '-or');
+                push(@sub, { $col => { op => 'like', value => $query_string, escape => $escape_char } }, '-or');
             }
         }
         delete $sub[$#sub];
@@ -1652,6 +1665,29 @@ sub iter_for_replace {
             MT::Meta::Proxy->bulk_load_meta_objects(\@objs) if @objs && $objs[0]->has_meta;
         }
         return shift(@objs);
+    };
+}
+
+sub incremental_iter {
+    my ($class, $terms, $args) = @_;
+    my $limit    = MT->config->CMSSearchLimit;
+    my $offset   = 0;
+    my $get_iter = sub {
+        local $args->{limit}  = $limit;
+        local $args->{offset} = $offset;
+        my $iter = $class->load_iter($terms, $args) or die $class->errstr;
+        return $iter;
+    };
+    my $iter;
+    return sub {
+        $iter ||= $get_iter->();
+        my $obj = $iter->();
+        if (!$obj) {
+            $iter = $get_iter->();
+            $obj  = $iter->();
+        }
+        $offset++ if $obj;
+        return $obj;
     };
 }
 
