@@ -58,8 +58,11 @@ sub start_recover {
             or return $app->errtrans("Invalid request.");
     }
 
-    if ( $param->{recovered} ) {
-        $param->{return_to} = MT::Util::encode_js( $param->{return_to} );
+    # disable insecure "return_to" for backward compatibility. MTC-30384
+    if ($param->{recovered}
+        && MT::Util::encode_js($param->{return_to}) ne $param->{return_to})
+    {
+        $param->{return_to} = '';
     }
     $param->{'can_signin'} = ( ref $app eq 'MT::App::CMS' ) ? 1 : 0;
 
@@ -278,7 +281,7 @@ sub new_password {
                     ## just in case
                     $app->is_valid_redirect_target($redirect)
                         or return $app->errtrans("Invalid request.");
-                    return $app->redirect( MT::Util::encode_html($redirect) );
+                    return $app->redirect($redirect);
                 }
                 else {
                     return $app->redirect_to_edit_profile();
