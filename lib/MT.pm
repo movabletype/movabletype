@@ -2270,7 +2270,14 @@ sub set_default_tmpl_params {
         $param->{script_url}      = $mt->uri;
         $param->{mt_url}          = $mt->mt_uri;
         $param->{script_path}     = $mt->path;
-        $param->{script_full_url} = $mt->base . $mt->uri;
+        $param->{script_full_url} = sub {
+            my $script_full_url_cached = $mt->request('script_full_url_cached');
+            return $script_full_url_cached if $script_full_url_cached;
+
+            $script_full_url_cached = $mt->base . $mt->uri;
+            $mt->request('script_full_url_cached', $script_full_url_cached);
+            return $script_full_url_cached;
+        };
         $param->{agent_mozilla} = ( $ENV{HTTP_USER_AGENT} || '' ) =~ /gecko/i;
         $param->{agent_ie} = ( $ENV{HTTP_USER_AGENT} || '' ) =~ /\bMSIE\b/;
     }
