@@ -203,15 +203,16 @@ sub process_log_feed {
     my $max_items = $app->config('ActivityFeedItemLimit');
 
     my $static_path = $app->static_path;
+    my $base = $app->base(NoHostCheck => 1);
     if ( $static_path =~ m!^/! ) {
-        $static_path = $app->base . $static_path;
+        $static_path = $base . $static_path;
     }
     my $last_mod = $app->get_header('If-Modified-Since');
     if ($last_mod) {
         $last_mod = epoch2ts( undef, str2time($last_mod) );
     }
 
-    my $host = $app->base;
+    my $host = $base;
     $host =~ s!^https?://!!;
     my $path  = $app->mt_uri;
     my $token = $app->param('token');
@@ -227,7 +228,7 @@ sub process_log_feed {
     my $last_ts_blog;
     my %blogs;
     my $blog;
-    my $log_view_url = $app->base
+    my $log_view_url = $base
         . $app->mt_uri( mode => 'list', args => { '_type' => 'log' } );
 
     while ( my $log = $iter->() ) {
@@ -282,7 +283,7 @@ sub process_log_feed {
         }
 
         # make sure this is an absolute url
-        $item->{mt_url}     = $app->base . $app->mt_uri;
+        $item->{mt_url}     = $base . $app->mt_uri;
         $item->{static_uri} = $static_path;
         $item->{feed_token} = $token;
         my $out = $app->build_page( $templates{$class}, $item )
@@ -301,11 +302,11 @@ sub process_log_feed {
         $str .= "&amp;" . encode_url($key) . "=" . encode_url($value);
     }
     $str =~ s/^&amp;(.+)$/?$1/;
-    $param->{feed_self}    = $app->base . $app->path . $app->script . $str;
-    $param->{feed_atom_id} = $app->base . $app->uri;
+    $param->{feed_self}    = $base . $app->path . $app->script . $str;
+    $param->{feed_atom_id} = $base . $app->uri;
     $param->{feed_updated_iso} = time2isoz( ts2epoch( undef, $last_ts ) );
     $param->{feed_updated_iso} =~ s/ /T/;
-    $param->{mt_url}     = $app->base . $app->mt_uri;
+    $param->{mt_url}     = $base . $app->mt_uri;
     $param->{static_uri} = $static_path;
     $param->{feed_token} = $token;
 
@@ -399,7 +400,7 @@ sub _feed_entry {
         }
     }
 
-    my $link = $app->base
+    my $link = $app->base(NoHostCheck => 1)
         . $app->mt_uri(
         mode => 'list',
         args => {
@@ -460,15 +461,16 @@ sub _feed_blog {
     }
 
     my $link;
+    my $base = $app->base(NoHostCheck => 1);
     if ($blog) {
-        $link = $app->base
+        $link = $base
             . $app->mt_uri(
             mode => 'show_menu',
             args => { blog_id => $blog_id }
             );
     }
     else {
-        $link = $app->base . $app->mt_uri( mode => 'system_list_blogs' );
+        $link = $base . $app->mt_uri( mode => 'system_list_blogs' );
     }
     my $param = {
         feed_link  => $link,
@@ -559,7 +561,7 @@ sub _feed_system {
         }
     }
     $args->{_type} = 'log';
-    my $link = $app->base . $app->mt_uri( mode => 'list', args => $args );
+    my $link = $app->base(NoHostCheck => 1) . $app->mt_uri( mode => 'list', args => $args );
     my $param = {
         feed_link  => $link,
         feed_title => $app->translate('Movable Type System Activity')
@@ -581,7 +583,7 @@ sub _feed_debug {
         '_type' => 'log',
     };
     my $terms = $app->apply_log_filter($args);
-    my $link  = $app->base . $app->mt_uri( mode => 'list', args => $args );
+    my $link  = $app->base(NoHostCheck => 1) . $app->mt_uri( mode => 'list', args => $args );
     my $param = {
         feed_link  => $link,
         feed_title => $app->translate('Movable Type Debug Activity'),
@@ -635,7 +637,7 @@ sub _feed_page {
         }
     }
 
-    my $link = $app->base
+    my $link = $app->base(NoHostCheck => 1)
         . $app->mt_uri(
         mode => 'list',
         args => {
@@ -698,7 +700,7 @@ sub _feed_content_data {
     my ($content_type_id) = $view =~ /content_data_(\d+)/;
     my $content_type = MT->model('content_type')->load($content_type_id);
 
-    my $link = $app->base
+    my $link = $app->base(NoHostCheck => 1)
         . $app->mt_uri(
         mode => 'list',
         args => {
