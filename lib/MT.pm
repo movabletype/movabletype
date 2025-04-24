@@ -2220,9 +2220,10 @@ sub load_tmpl {
     $tmpl;
 }
 
-sub set_default_tmpl_params {
-    my $mt     = shift;
+sub _get_default_tmpl_params {
+    my $mt = shift;
     my ($tmpl) = @_;
+
     my $param  = {};
     $param->{mt_debug} = $MT::DebugMode;
     $param->{mt_alpha} = 1 if MT->version_id =~ m/^\d+\.\d+a/;
@@ -2280,6 +2281,20 @@ sub set_default_tmpl_params {
     $enabled_plugins{CommentsTrackback} = 1
         if $enabled_plugins{Comments} or $enabled_plugins{Trackback};
     $param->{enabled_plugins} = \%enabled_plugins;
+
+    return $param;
+}
+
+sub set_default_tmpl_params {
+    my $mt = shift;
+    my ($tmpl) = @_;
+
+    my $cache_key = '__mt_default_tmpl_params';
+    my $param     = $mt->request($cache_key);
+    if (!$param) {
+        $param = _get_default_tmpl_params($mt, @_);
+        $mt->request($cache_key, $param);
+    }
 
     $tmpl->param($param);
 }
