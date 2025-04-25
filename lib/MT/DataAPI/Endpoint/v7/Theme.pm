@@ -155,7 +155,7 @@ DESCRIPTION
                         properties => {
                             theme_name => {
                                 type        => 'string',
-                                description => "If not specified, the default value is dynamically generated as 'Theme from <SiteName>', where <SiteName> represents the name of the site."
+                                description => "If not specified, the default value is dynamically generated as 'Theme from (SiteName)', where (SiteName) represents the name of the site."
                             },
                             theme_id => {
                                 type        => 'string',

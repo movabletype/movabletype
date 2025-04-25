@@ -1313,6 +1313,8 @@ use vars qw( @ISA %Lexicon );
 	q{[_1] '[_2]' (ID:[_3]) edited and its status changed from [_4] to [_5] by user '[_6]'} => q{[_6]が[_1]「[_2]」(ID:[_3])を更新し、公開の状態を[_4]から[_5]に変更しました。},
 	q{[_1] '[_2]' (ID:[_3]) edited by user '[_4]'} => q{[_4]が[_1]「[_2]」(ID:[_3])を更新しました。},
 	q{[_1] '[_2]' (ID:[_3]) status changed from [_4] to [_5]} => q{[_1]「[_2] (ID:[_3])」の公開状態が[_4]から[_5]に変更されました。},
+	q{Failed to remove relationship between [_1] (ID: [_2]) and Asset (ID: [_3]): [_4]} => q{[_1] (ID:[_2])とアセット(ID:[_3])の関連付けを削除できませんでした。: [_4]},
+	q{Failed to save relationship between [_1] (ID: [_2]) and Asset (ID: [_3]): [_4]} => q{[_1] (ID:[_2])とアセット(ID:[_3])の関連付けを設定できませんでした。: [_4]},
 
 ## lib/MT/CMS/Export.pm
 	'Export Site Entries' => '記事のエクスポート',
@@ -1425,6 +1427,7 @@ use vars qw( @ISA %Lexicon );
 	'Templates' => 'テンプレート',
 	'Text' => '本文',
 	'Title' => 'タイトル',
+	'Too long query. Please simplify your query to [_1] characters or less and try again.' => 'クエリーが長すぎます。お手数ですが、[_1]文字以内で検索をやり直してください。',
 	'replace_handler of [_1] field is invalid' => '[_1]フィールドのreplace_handlerは不正です',
 	'ss_validator of [_1] field is invalid' => '[_1]フィールドのss_validatorは不正です',
 	q{Searched for: '[_1]' Replaced with: '[_2]'} => q{検索ワード「[_1]」を「[_2]」で置換しました},

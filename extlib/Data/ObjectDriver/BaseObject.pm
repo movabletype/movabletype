@@ -1046,7 +1046,7 @@ are identical.
 
 =head2 C<$obj-E<gt>object_is_stored()>
 
-Returns true if the object hasn't been stored in the database yet.
+Returns true if the object has already been stored in the database.
 This is particularly useful in triggers where you can then determine
 if the object is being INSERTED or just UPDATED.
 

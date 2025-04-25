@@ -20,6 +20,9 @@ sub process {
     return $app->errtrans('TagSearch works with MT::App::Search.')
         unless $app->isa('MT::App::Search') || $app->isa('MT::App::DataAPI');
 
+    my $search_string = $app->param('tag') || $app->param('search');
+    return unless $app->check_search_max_char_count($search_string);
+
     my ( $count, $out ) = $app->check_cache();
     if ( defined $out ) {
         $app->run_callbacks( 'search_cache_hit', $count, $out );
