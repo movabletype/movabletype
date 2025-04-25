@@ -47,9 +47,9 @@ __DATA__
 @@ yaml
 % my $data = shift;
 % my $yaml = delete $data->{yaml};
-%= YAML::Dump($data);
+%== YAML::Dump($data);
 % if ($yaml) {
-%= $yaml
+%== $yaml
 % }
 
 @@ pl
@@ -61,16 +61,16 @@ use warnings;
 use MT;
 use MT::Plugin;
 % if ($use) {
-%= $use
+%== $use
 % }
 
 my $plugin = MT::Plugin->new({
 % for my $key (keys %$data) {
-    '<%= $key %>' => <%= ref $data->{$key} eq 'SCALAR' ? ${$data->{$key}} : Data::Dump::dump($data->{$key}) %>,
+    '<%== $key %>' => <%== ref $data->{$key} eq 'SCALAR' ? ${$data->{$key}} : Data::Dump::dump($data->{$key}) %>,
 % }
 });
 % if ($code) {
-%= $code
+%== $code
 % }
 
 MT->add_plugin($plugin);
@@ -81,8 +81,8 @@ MT->add_plugin($plugin);
 package <%= $data->{module} %>;
 use strict;
 use warnings;
-our $VERSION = '<%= $data->{version} %>';
+our $VERSION = '<%== $data->{version} %>';
 
-<%= $data->{code} %>
+<%== $data->{code} %>
 
 1;
