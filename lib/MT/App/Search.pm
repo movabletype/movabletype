@@ -1457,6 +1457,7 @@ sub check_search_max_char_count {
     my ($search_string) = @_;
 
     return 1 if ($app->SearchMaxCharCount || 0) <= 0;
+    return 1 if !defined $search_string;
 
     if (length $search_string > $app->SearchMaxCharCount) {
         return $app->errtrans(
