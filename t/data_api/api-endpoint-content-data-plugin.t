@@ -5,7 +5,7 @@ use FindBin;
 use lib "$FindBin::Bin/../lib";
 use Test::More;
 use MT::Test::Env;
-
+use MT::Test::Util::Plugin;
 our $test_env;
 
 BEGIN {
@@ -19,11 +19,10 @@ BEGIN {
     );
     $ENV{MT_CONFIG} = $test_env->config_file;
 
-    my $config_yaml = 'plugins/ContentDataFilterTest/config.yaml';
-    $test_env->save_file( $config_yaml, <<'YAML' );
-id: ContentDataFilterTest
-name: ContentDataFilterTest
-
+    MT::Test::Util::Plugin->write(
+        ContentDataFilterTest => {
+            'config.yaml' => {
+                yaml => <<'YAML',
 callbacks:
   data_api_pre_load_filtered_list.content_data: |
     sub {
@@ -45,6 +44,9 @@ callbacks:
       }
     }
 YAML
+            },
+        },
+    );
 }
 
 use MT::Test;

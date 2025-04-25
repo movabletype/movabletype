@@ -4,6 +4,7 @@ use FindBin;
 use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
+use MT::Test::Util::Plugin;
 
 our $test_env;
 BEGIN {
@@ -12,24 +13,22 @@ BEGIN {
     );
     $ENV{MT_CONFIG} = $test_env->config_file;
 
-    $test_env->save_file("plugins/ContentTypeColumn/config.yaml", <<'YAML' );
-name: ContentTypeColumn
-schema_version: 0.01
-
-callbacks:
-  init_app: $ContentTypeColumn::ContentTypeColumn::cb_init_app
-  MT::ContentData::pre_save: $ContentTypeColumn::ContentTypeColumn::cb_pre_save
-
-object_types:
-  cd:
-    random: integer
-YAML
-
-    $test_env->save_file("plugins/ContentTypeColumn/lib/ContentTypeColumn.pm", <<'PM');
-package ContentTypeColumn;
-use strict;
-use warnings;
-
+    MT::Test::Util::Plugin->write(
+        ContentTypeColumn => {
+            'config.yaml' => {
+                schema_version => '0.01',
+                callbacks => {
+                    init_app => '$ContentTypeColumn::ContentTypeColumn::cb_init_app',
+                    'MT::ContentData::pre_save' => '$ContentTypeColumn::ContentTypeColumn::cb_pre_save',
+                },
+                object_types => {
+                    cd => {
+                        random => 'integer',
+                    },
+                },
+            },
+            'lib/ContentTypeColumn.pm' => {
+                code => <<'CODE',
 sub cb_init_app {
     my $reg = MT->component('core')->registry('list_properties');
     for my $key ( grep {/^content_data\./} keys %$reg ) {
@@ -55,9 +54,10 @@ sub _list_prop_for_random {
         },
     };
 }
-
-1;
-PM
+CODE
+            },
+        },
+    );
 }
 
 $test_env->prepare_fixture('content_data');

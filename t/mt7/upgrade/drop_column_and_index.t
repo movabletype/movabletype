@@ -4,9 +4,9 @@ use FindBin;
 use lib "$FindBin::Bin/../../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
+use MT::Test::Util::Plugin;
 our $test_env;
 
-my $PluginDir;
 BEGIN {
     $test_env = MT::Test::Env->new(
         PluginPath => [qw(
@@ -14,21 +14,18 @@ BEGIN {
             TEST_ROOT/plugins
         )],
     );
-    $PluginDir = "plugins/SchemaMigrationTest";
-    $test_env->save_file("$PluginDir/config.yaml", <<'YAML');
-name: SchemaMigrationTest
-id: SchemaMigrationTest
-version: 1.00
-schema_version: 1.00
-object_types:
-    test: SchemaMigrationTest
-YAML
+    $ENV{MT_CONFIG} = $test_env->config_file;
 
-    $test_env->save_file("$PluginDir/lib/SchemaMigrationTest.pm", <<'PM');
-package # hide from tools
-    SchemaMigrationTest;
-use strict;
-use warnings;
+    MT::Test::Util::Plugin->write(
+        SchemaMigrationTest => {
+            'config.yaml' => {
+                schema_version => '1.00',
+                object_types => {
+                    test => 'SchemaMigrationTest',
+                },
+            },
+            'lib/SchemaMigrationTest.pm' => {
+                code => <<'CODE',
 use MT;
 use MT::Object;
 use base 'MT::Object';
@@ -46,9 +43,10 @@ __PACKAGE__->install_properties({
     datasource => 'test',
     primary_key => 'id',
 });
-1;
-PM
-    $ENV{MT_CONFIG} = $test_env->config_file;
+CODE
+            },
+        },
+    );
 }
 
 use MT::Test;
@@ -79,11 +77,10 @@ subtest 'Initial state' => sub {
 };
 
 subtest 'Upgrade' => sub {
-    $test_env->save_file("$PluginDir/lib/SchemaMigrationTest.pm", <<'PM');
-package # hide from tools
-    SchemaMigrationTest;
-use strict;
-use warnings;
+    MT::Test::Util::Plugin->write(
+        SchemaMigrationTest => {
+            'lib/SchemaMigrationTest.pm' => {
+                code => <<'CODE',
 use MT;
 use base 'MT::Object';
 __PACKAGE__->install_properties({
@@ -97,8 +94,10 @@ __PACKAGE__->install_properties({
     datasource => 'test',
     primary_key => 'id',
 });
-1;
-PM
+CODE
+            },
+        },
+    );
 
     Class::Unload->unload('SchemaMigrationTest');
     require SchemaMigrationTest;
