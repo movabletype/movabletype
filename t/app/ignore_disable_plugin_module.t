@@ -16,7 +16,8 @@ BEGIN {
             'MyPlugin3/MyPluginA.pl=0',
             'MyPlugin5/MyPluginA.pl=0',
             'MyPlugin5/MyPluginB.pl=0',
-            'MyPlugin7=0'
+            'MyPlugin7=0',
+            'MyPlugin9-0.1/MyPlugin9.pl=0'
         ],
     );
     $ENV{MT_CONFIG} = $test_env->config_file;
@@ -60,6 +61,11 @@ $plugin_gen->gen_dir_with_yaml(
 $plugin_gen->gen_plugin_module(
     'MyPlugin8', '0.2', 'MyPlugin8');
 
+gen_plugin_using_module(
+    'MyPlugin9', '0.1', 'MyPlugin9-0.1', 'MyPlugin9.pl' );
+gen_plugin_using_module(
+    'MyPlugin9', '0.2', 'MyPlugin9-0.2', 'MyPlugin9.pl' );
+
 $test_env->prepare_fixture('db');
 
 use MT;
@@ -73,7 +79,8 @@ my @disabled_module_paths = map {
     'MyPlugin2',
     # 'MyPlugin3', # <- contains enabled plugin file
     'MyPlugin5',
-    'MyPlugin7'
+    'MyPlugin7',
+    'MyPlugin9-0.1'
 );
 cmp_deeply(
     \@disabled_module_paths,
@@ -81,4 +88,46 @@ cmp_deeply(
     "not included disabled modules"
 ) or note explain \@INC;
 
+# 'use MyPlugin9::Tags;' is already executed
+my $func_result = MyPlugin9::Tags::_hdlr_hello_world();
+like $func_result => qr/0.2/, "the plugin using module is executable.";
+
 done_testing;
+
+sub gen_plugin_using_module {
+    my ( $name, $version, $dir, $pl_file ) = @_;
+    my $id = lc $name;
+    $test_env->save_file("plugins/${dir}/${pl_file}", <<"PLUGIN");
+package $name;
+our \$VERSION = '$version';
+require MT;
+require MT::Plugin;
+use ${name}::Tags;
+my \$plugin = MT::Plugin->new({
+    id => '$id',
+    name => '$name',
+    version => \$VERSION,
+    registry => {
+        tags => {
+            function => {
+                HelloWorld => ${name}::Tags::_hdlr_hello_world
+            },
+        },
+    },
+});
+MT->add_plugin(\$plugin);
+1;
+PLUGIN
+
+    $test_env->save_file("plugins/${dir}/lib/${name}/Tags.pm", <<"PERL_MODULE");
+package ${name}::Tags;
+use strict;
+
+sub _hdlr_hello_world {
+    my (\$ctx, \$args) = \@_;
+    return 'hello world ($version)';
+}
+
+1;
+PERL_MODULE
+}
