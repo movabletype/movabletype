@@ -89,6 +89,7 @@ on 'test' => sub {
     requires 'Array::Diff';
     requires 'Carp::Always';
     requires 'Class::Unload';
+    requires 'Data::Section::Simple';
     requires 'Data::Visitor::Tiny';
     requires 'Date::Parse';
     requires 'DateTime';
