@@ -5,7 +5,6 @@ use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use Test::Deep qw(cmp_deeply noneof);
 use MT::Test::Env;
-use MT::Test::Util::Plugin;
 
 our $test_env;
 BEGIN {
@@ -23,43 +22,28 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-my $plugin_gen = MT::Test::Util::Plugin->new( $test_env, 'plugins' );
-
-$plugin_gen->gen_dir_with_pl(
+gen_plugin_using_module(
     'MyPlugin1', '0.1', 'MyPlugin1', 'MyPlugin.pl' );
-$plugin_gen->gen_plugin_module(
-    'MyPlugin1', '0.1', 'MyPlugin1');
-
-$plugin_gen->gen_dir_with_pl(
+gen_plugin_using_module(
     'MyPlugin2', '0.2', 'MyPlugin2', 'MyPlugin.pl' );
-$plugin_gen->gen_plugin_module(
-    'MyPlugin2', '0.2', 'MyPlugin2');
 
 # The folder contains two plugin files
-$plugin_gen->gen_dir_with_pl(
+gen_plugin_using_module(
     'MyPlugin3', '0.1', 'MyPlugin3', 'MyPluginA.pl' );
-$plugin_gen->gen_dir_with_pl(
+gen_dir_with_pl(
     'MyPlugin4', '0.2', 'MyPlugin3', 'MyPluginB.pl' );
-$plugin_gen->gen_plugin_module(
-    'MyPlugin4', '0.2', 'MyPlugin3');
 
 # The folder contains two plugin files
-$plugin_gen->gen_dir_with_pl(
+gen_plugin_using_module(
     'MyPlugin5', '0.1', 'MyPlugin5', 'MyPluginA.pl' );
-$plugin_gen->gen_dir_with_pl(
+gen_dir_with_pl(
     'MyPlugin6', '0.2', 'MyPlugin5', 'MyPluginB.pl' );
-$plugin_gen->gen_plugin_module(
-    'MyPlugin6', '0.2', 'MyPlugin5');
 
-$plugin_gen->gen_dir_with_yaml(
+gen_dir_with_yaml(
     'MyPlugin7', '0.1', 'MyPlugin7' );
-$plugin_gen->gen_plugin_module(
-    'MyPlugin7', '0.1', 'MyPlugin7');
-
-$plugin_gen->gen_dir_with_yaml(
+gen_dir_with_yaml(
     'MyPlugin8', '0.2', 'MyPlugin8' );
-$plugin_gen->gen_plugin_module(
-    'MyPlugin8', '0.2', 'MyPlugin8');
+
 
 gen_plugin_using_module(
     'MyPlugin9', '0.1', 'MyPlugin9-0.1', 'MyPlugin9.pl' );
@@ -93,6 +77,60 @@ my $func_result = MyPlugin9::Tags::_hdlr_hello_world();
 like $func_result => qr/0.2/, "the plugin using module is executable.";
 
 done_testing;
+
+sub gen_dir_with_pl {
+    my ( $name, $version, $dir, $pl_file ) = @_;
+    my $id = lc $name;
+    $test_env->save_file("plugins/${dir}/${pl_file}", <<"PLUGIN");
+package $name;
+our \$VERSION = '$version';
+require MT;
+require MT::Plugin;
+my \$plugin = MT::Plugin->new({
+    id => '$id',
+    name => '$name',
+    version => \$VERSION,
+});
+MT->add_plugin(\$plugin);
+1;
+PLUGIN
+}
+
+sub gen_dir_with_yaml {
+    my ( $name, $version, $dir ) = @_;
+    my $id = lc $name;
+    $test_env->save_file("plugins/${dir}/config.yaml", <<"YAML");
+id: $id
+name: $name
+version: $version
+YAML
+
+    $test_env->save_file("plugins/${dir}/lib/${name}/Tags.pm", <<"PERL_MODULE");
+package ${name}::Tags;
+use strict;
+our \$VERSION = '$version';
+
+1;
+PERL_MODULE
+}
+
+sub gen_pl {
+    my ( $name, $version, $pl_file ) = @_;
+    my $id = lc $name;
+    $test_env->save_file("plugins/${pl_file}", <<"PLUGIN");
+package $name;
+our \$VERSION = '$version';
+require MT;
+require MT::Plugin;
+my \$plugin = MT::Plugin->new({
+    id => '$id',
+    name => '$name',
+    version => \$VERSION,
+});
+MT->add_plugin(\$plugin);
+1;
+PLUGIN
+}
 
 sub gen_plugin_using_module {
     my ( $name, $version, $dir, $pl_file ) = @_;
