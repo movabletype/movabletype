@@ -87,14 +87,17 @@ sub edit {
             my $rn = $app->param('r');
             if ( defined($rn) && $rn != $obj->current_revision ) {
                 my $status_text = MT::Entry::status_text( $obj->status );
-                $param->{current_status_text} = $status_text;
-                $param->{current_status_label}
-                    = $app->translate($status_text);
+                $param->{current_status_text}  = $status_text;
+                $param->{current_status_label} = $app->translate($status_text);
+                $param->{current_rev_date}     = format_ts( "%Y-%m-%d %H:%M:%S",
+                    $obj->modified_on, $blog, $preferred_language );
                 my $rev = $obj->load_revision( { rev_number => $rn } );
                 if ( $rev && @$rev ) {
                     $obj = $rev->[0];
+                    my $rev_obj = $rev->[3];
                     my $values = $obj->get_values;
                     $param->{$_} = $values->{$_} foreach keys %$values;
+                    $param->{'revision-note'} = $rev_obj->description;
                     $param->{loaded_revision} = 1;
                 }
                 $param->{rev_number}       = $rn;
@@ -151,6 +154,7 @@ sub edit {
         my $status = $app->param('status') || $obj->status;
         $status =~ s/\D//g;
         $param->{status} = $status;
+        $param->{status_text} = MT::Entry::status_text($status);
         $param->{ "status_" . MT::Entry::status_text($status) } = 1;
         if ((      $obj->status == MT::Entry::JUNK()
                 || $obj->status == MT::Entry::REVIEW()
