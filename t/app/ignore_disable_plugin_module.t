@@ -11,12 +11,14 @@ BEGIN {
     $test_env = MT::Test::Env->new(
         PluginPath => ['TEST_ROOT/plugins'],
         PluginSwitch => [
+            # Pre-disabled plugins
             'MyPlugin2/MyPlugin.pl=0',
             'MyPlugin3/MyPluginA.pl=0',
             'MyPlugin5/MyPluginA.pl=0',
             'MyPlugin5/MyPluginB.pl=0',
             'MyPlugin7=0',
-            'MyPlugin9-0.1/MyPlugin9.pl=0'
+            'MyPlugin9-0.1/MyPlugin9.pl=0',
+            'MyPlugin9-0.3/MyPlugin9.pl=0'
         ],
     );
     $ENV{MT_CONFIG} = $test_env->config_file;
@@ -44,11 +46,12 @@ gen_dir_with_yaml(
 gen_dir_with_yaml(
     'MyPlugin8', '0.2', 'MyPlugin8' );
 
-
 gen_plugin_using_module(
     'MyPlugin9', '0.1', 'MyPlugin9-0.1', 'MyPlugin9.pl' );
 gen_plugin_using_module(
     'MyPlugin9', '0.2', 'MyPlugin9-0.2', 'MyPlugin9.pl' );
+gen_plugin_using_module(
+    'MyPlugin9', '0.3', 'MyPlugin9-0.3', 'MyPlugin9.pl' );
 
 $test_env->prepare_fixture('db');
 
@@ -57,24 +60,29 @@ use MT::PSGI;
 use MT::Test;
 ok eval { MT->instance }, "mt instance" or note $@;
 
-my @disabled_module_paths = map {
-    $test_env->path( 'plugins/' . $_ . '/lib' );
-} (
-    'MyPlugin2',
-    # 'MyPlugin3', # <- contains enabled plugin file
-    'MyPlugin5',
-    'MyPlugin7',
-    'MyPlugin9-0.1'
-);
-cmp_deeply(
-    \@disabled_module_paths,
-    noneof(@INC),
-    "not included disabled modules"
-) or note explain \@INC;
+subtest 'Does not contain module path of a disabled plugin' => sub {
+    my @disabled_module_paths = map {
+        $test_env->path( 'plugins/' . $_ . '/lib' );
+    } (
+        'MyPlugin2',
+        # 'MyPlugin3', # One of two plugins in the folder is enabled
+        'MyPlugin5',
+        'MyPlugin7',
+        'MyPlugin9-0.1',
+        'MyPlugin9-0.3'
+    );
+    cmp_deeply(
+        \@disabled_module_paths,
+        noneof(@INC),
+        "not included disabled modules"
+    ) or note explain \@INC;
+};
 
-# 'use MyPlugin9::Tags;' is already executed
-my $func_result = MyPlugin9::Tags::_hdlr_hello_world();
-like $func_result => qr/0.2/, "the plugin using module is executable.";
+subtest 'The result is obtained from enabled plugin module' => sub {
+    # 'use MyPlugin9::Tags;' is already executed
+    my $func_result = MyPlugin9::Tags::_hdlr_hello_world();
+    like $func_result => qr/0.2/, "the plugin using module is executable.";
+};
 
 done_testing;
 
