@@ -16,7 +16,7 @@ sub cms_pre_load_filtered_list {
 
     my $terms = $load_options->{terms};
 
-    if ( !( $user->is_superuser || $user->can_do('access_to_tag_list') ) ) {
+    if ( !( $user->is_superuser || $app->can_do('access_to_tag_list') ) ) {
         $terms->{is_private} = [ 0, \'= IS NULL' ],;
     }
 
