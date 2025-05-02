@@ -63,6 +63,8 @@ subtest "SearchMaxCharCount = 10" => sub {
 
             $app->get_ok({ search => 'b' x ($search_max_char_count + 1) });
             $app->content_like($error, 'limit exceeded');
+
+            $app->get_ok;    # test when no search string is set
         };
 
         subtest 'new_search (tag)' => sub {
