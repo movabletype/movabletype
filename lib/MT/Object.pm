@@ -1115,12 +1115,33 @@ sub remove {
     }
 }
 
+sub _use_lookup_multi {
+    my ($self, $terms, $args) = @_;
+    if (!defined $terms || $args) {
+        return;
+    }
+    my $ref_terms         = ref $terms;
+    my @primary_key_tuple = @{ $self->primary_key_tuple };
+    if (   ($ref_terms || '') eq 'HASH'
+        && @primary_key_tuple == 1
+        && (ref $terms->{ $primary_key_tuple[0] } || '') eq 'ARRAY'
+        && grep { !ref $_ } @{ $terms->{ $primary_key_tuple[0] } })
+    {
+        return $terms->{ $primary_key_tuple[0] };
+    }
+    return;
+}
+
 sub load {
     my $self = shift;
     if ( defined $_[0]
         && ( !ref $_[0] || ( ref $_[0] ne 'HASH' && ref $_[0] ne 'ARRAY' ) ) )
     {
         return $self->lookup( $_[0] );
+    }
+    elsif (my $primary_key_values = _use_lookup_multi($self, @_)) {
+        my $results = $self->lookup_multi($primary_key_values);
+        return wantarray ? @{$results} : $results->[0];
     }
     else {
         if (wantarray) {
