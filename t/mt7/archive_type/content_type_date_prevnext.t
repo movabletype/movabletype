@@ -455,8 +455,8 @@ subtest 'with dt_field' => sub {
 };
 
 subtest 'without dt_field' => sub {
-    for my $name (sort keys %{ $objs->{templatemap} }) {
-        for my $map (@{ $objs->{templatemap}{$name} }) {
+    for my $name (sort keys %{ $objs->{templatemap}{$site->id} }) {
+        for my $map (@{ $objs->{templatemap}{$site->id}{$name} }) {
             $map->dt_field_id(undef);
             $map->save;
         }
