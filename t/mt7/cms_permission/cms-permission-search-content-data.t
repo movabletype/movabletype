@@ -202,7 +202,7 @@ subtest 'system search: content data: privilege users' => sub {
         my @search_tabs = _find_search_tabs($app);
         ok grep(/Content Data/, @search_tabs), "$name has 'Content Data' tab" or next;
         my @search_fields = _find_search_field_options($app);
-        cmp_bag \@search_fields => [qw(ct ct2)], "$name has both 'ct' and 'ct2' fields";
+        cmp_bag \@search_fields => [], "content type selector is not available";
     }
 };
 
