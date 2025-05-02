@@ -272,6 +272,8 @@ sub edit_role {
         my $assoc_class = $app->model('association');
         my $user_count  = $assoc_class->count({ role_id => $role->id });
         $param{members} = $user_count;
+
+        $param{has_content_field_permission} = $role->permissions =~ /'content_type:[a-z0-9]{40}-content_field:[a-z0-9]{40}'/;
     }
     else {
         for my $p ( values %$perms ) {

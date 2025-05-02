@@ -343,8 +343,8 @@ sub edit {
     my $content_field_types = $app->registry('content_field_types');
     for my $field (@$fields) {
         my $e_unique_id = $field->{unique_id};
-        my $can_edit_field
-            = $app->permissions->can_do( 'content_type:'
+        my $can_edit_field = $app->config->DisableContentFieldPermission
+            || $app->permissions->can_do( 'content_type:'
                 . $ct_unique_id
                 . '-content_field:'
                 . $e_unique_id );
@@ -629,11 +629,11 @@ sub save {
     my $data_is_updated;
     foreach my $f (@$field_data) {
         my $e_unique_id = $f->{unique_id};
-        my $can_edit_field =
-          $app->permissions->can_do( 'content_type:'
-              . $content_type->unique_id
-              . '-content_field:'
-              . $e_unique_id );
+        my $can_edit_field = $app->config->DisableContentFieldPermission
+            || $app->permissions->can_do( 'content_type:'
+                . $content_type->unique_id
+                . '-content_field:'
+                . $e_unique_id );
         if (   $content_data_id
             && !$can_edit_field
             && !$app->permissions->can_do('edit_all_content_data') )

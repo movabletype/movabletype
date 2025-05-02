@@ -75,10 +75,19 @@ sub fields {
                     $hash_data = [] unless ref $hash_data eq 'ARRAY';
                     my $obj_data              = $obj->data;
                     my $content_type          = $obj->content_type;
-                    my $can_edit_content_data = $user->permissions(0)
-                        ->can_edit_content_data( $obj, $user );
-                    my $site_perms = $site_perms_cache{ $obj->blog_id }
-                        ||= $user->permissions( $obj->blog_id );
+
+                    my $can_edit_content_data;
+                    my $site_perms;
+                    if ($app->config->DisableContentFieldPermission) {
+                        $can_edit_content_data = 1;
+                    } else {
+                        $can_edit_content_data = $user->permissions(0)
+                            ->can_edit_content_data( $obj, $user );
+                        unless ($can_edit_content_data) {
+                            $site_perms = $site_perms_cache{ $obj->blog_id } ||= $user->permissions($obj->blog_id);
+                        }
+                    }
+
                     my $field_convert_breaks;
                     if (my $blob_convert_breaks = MT::Serialize->unserialize($obj->convert_breaks)) {
                         $field_convert_breaks = $$blob_convert_breaks;
