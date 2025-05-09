@@ -1717,10 +1717,11 @@ sub bake_commenter_cookie {
     $app->bake_cookie(%user_session_kookee);
 
     my %user_session_http_only_kookee = (
-        -name  => $app->commenter_session_cookie_name . '_http_only',
-        -value => $sess_obj->get('http_only_token'),
-        -path  => $cookie_path,
-        -expires => '+3650d');
+        -name    => $app->commenter_session_cookie_name . '_http_only',
+        -value   => $sess_obj->get('http_only_token'),
+        -path    => $cookie_path,
+        -expires => '+3650d'
+    );
     $app->bake_cookie(%user_session_http_only_kookee);
 }
 
