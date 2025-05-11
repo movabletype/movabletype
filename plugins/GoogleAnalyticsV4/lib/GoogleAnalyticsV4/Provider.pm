@@ -286,6 +286,84 @@ sub fields_for_statistics_date {
     ];
 }
 
+sub fields_for_statistics_yearweek {
+    return [{
+            name   => 'yearWeek',
+            schema => {
+                type        => 'string',
+                description => 'The year and week of the target. The format is "YYYY-Www".',
+            },
+        },
+        {
+            name   => 'screenPageViews',
+            schema => {
+                type        => 'integer',
+                description => 'The pageviews for the path. This property exists only if the metrics to retrieve is "screenPageViews"',
+            },
+        },
+        {
+            name   => 'sessions',
+            schema => {
+                type        => 'integer',
+                description => 'The number of sessions for the path. This property exists only if the metrics to retrieve is "sessions"',
+
+            },
+        },
+    ];
+}
+
+sub fields_for_statistics_yearmonth {
+    return [{
+            name   => 'yearMonth',
+            schema => {
+                type        => 'string',
+                description => 'The year and month of the target. The format is "YYYY-MM".',
+            },
+        },
+        {
+            name   => 'screenPageViews',
+            schema => {
+                type        => 'integer',
+                description => 'The pageviews for the path. This property exists only if the metrics to retrieve is "screenPageViews"',
+            },
+        },
+        {
+            name   => 'sessions',
+            schema => {
+                type        => 'integer',
+                description => 'The number of sessions for the path. This property exists only if the metrics to retrieve is "sessions"',
+
+            },
+        },
+    ];
+}
+
+sub fields_for_statistics_year {
+    return [{
+            name   => 'year',
+            schema => {
+                type        => 'string',
+                description => 'The year of the target. The format is "YYYY".',
+            },
+        },
+        {
+            name   => 'screenPageViews',
+            schema => {
+                type        => 'integer',
+                description => 'The pageviews for the path. This property exists only if the metrics to retrieve is "screenPageViews"',
+            },
+        },
+        {
+            name   => 'sessions',
+            schema => {
+                type        => 'integer',
+                description => 'The number of sessions for the path. This property exists only if the metrics to retrieve is "sessions"',
+
+            },
+        },
+    ];
+}
+
 sub fields_for_statistics_path {
     return [{
             name   => 'pagePath',
