@@ -78,6 +78,13 @@ sub endpoints {
             openapi_handler => '$Core::MT::DataAPI::Endpoint::v7::Stats::screenpageviews_for_yearweek_openapi_spec',
         },
         {
+            id              => 'list_stats_screenpageviews_for_yearmonth',
+            route           => '/sites/:site_id/stats/yearMonth/screenPageViews',
+            version         => 7,
+            handler         => '$Core::MT::DataAPI::Endpoint::v7::Stats::screenpageviews_for_yearmonth',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v7::Stats::screenpageviews_for_yearmonth_openapi_spec',
+        },
+        {
             id              => 'list_stats_sessions_for_date',
             route           => '/sites/:site_id/stats/date/sessions',
             version         => 7,
@@ -90,6 +97,13 @@ sub endpoints {
             version         => 7,
             handler         => '$Core::MT::DataAPI::Endpoint::v7::Stats::sessions_for_yearweek',
             openapi_handler => '$Core::MT::DataAPI::Endpoint::v7::Stats::sessions_for_yearweek_openapi_spec',
+        },
+        {
+            id              => 'list_stats_sessions_for_yearmonth',
+            route           => '/sites/:site_id/stats/yearMonth/sessions',
+            version         => 7,
+            handler         => '$Core::MT::DataAPI::Endpoint::v7::Stats::sessions_for_yearmonth',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v7::Stats::sessions_for_yearmonth_openapi_spec',
         },
     ];
 }
