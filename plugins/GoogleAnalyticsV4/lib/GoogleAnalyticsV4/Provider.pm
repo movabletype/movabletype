@@ -213,37 +213,31 @@ sub visits_for_path {
 
 sub sessions_for_path { visits_for_path(@_) }
 
-sub pageviews_for_date {
+sub _get_statistics_by_dimension {
     my $self = shift;
-    my ($app, $params) = @_;
+    my ($app, $params, $dimension, $metric) = @_;
 
     $self->_request(
         $app,
         {
-            dimensions => [{ name      => 'date' }],
-            metrics    => [{ name      => 'screenPageViews' }],
-            orderBys   => [{ dimension => { dimensionName => 'date' } }],
+            dimensions => [{ name      => $dimension }],
+            metrics    => [{ name      => $metric }],
+            orderBys   => [{ dimension => { dimensionName => $dimension } }],
             _extract_default_params($params),
         });
 }
 
-sub screenpageviews_for_date { pageviews_for_date(@_) }
+sub _screenpageviews_for_dimension { _get_statistics_by_dimension(@_, 'screenPageViews') }
 
-sub visits_for_date {
-    my $self = shift;
-    my ($app, $params) = @_;
+sub pageviews_for_date { screenpageviews_for_date(@_) }
 
-    $self->_request(
-        $app,
-        {
-            dimensions => ({ name      => 'date' }),
-            metrics    => ({ name      => 'sessions' }),
-            orderBys   => [{ dimension => { dimensionName => 'date' } }],
-            _extract_default_params($params),
-        });
-}
+sub screenpageviews_for_date { _screenpageviews_for_dimension(@_, 'date') }
 
-sub sessions_for_date { visits_for_date(@_) }
+sub _sessions_for_dimension { _get_statistics_by_dimension(@_, 'sessions') }
+
+sub visits_for_date { sessions_for_date(@_) }
+
+sub sessions_for_date { _sessions_for_dimension(@_, 'date') }
 
 sub path_key { 'pagePath' }
 
