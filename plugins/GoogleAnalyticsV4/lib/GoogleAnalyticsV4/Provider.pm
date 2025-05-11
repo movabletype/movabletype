@@ -125,11 +125,15 @@ sub _request {
     for my $i (0 .. $#d_headers) {
         if ($d_headers[$i] eq 'date') {
             $_->{dimensionValues}->[$i]->{value} =~ s/(\d{4})(\d{2})/$1-$2-/ for @{ $data->{rows} };
+        } elsif ($d_headers[$i] eq 'yearWeek') {
+            $_->{dimensionValues}->[$i]->{value} =~ s/(\d{4})(\d{2})/$1-W$2/ for @{ $data->{rows} };
         }
     }
     for my $i (0 .. $#m_headers) {
         if ($m_headers[$i] eq 'date') {
             $_->{metricValues}->[$i]->{value} =~ s/(\d{4})(\d{2})/$1-$2-/ for @{ $data->{rows} };
+        } elsif ($m_headers[$i] eq 'yearWeek') {
+            $_->{metricValues}->[$i]->{value} =~ s/(\d{4})(\d{2})/$1-W$2/ for @{ $data->{rows} };
         }
     }
 
@@ -233,11 +237,15 @@ sub pageviews_for_date { screenpageviews_for_date(@_) }
 
 sub screenpageviews_for_date { _screenpageviews_for_dimension(@_, 'date') }
 
+sub screenpageviews_for_yearweek { _screenpageviews_for_dimension(@_, 'yearWeek') }
+
 sub _sessions_for_dimension { _get_statistics_by_dimension(@_, 'sessions') }
 
 sub visits_for_date { sessions_for_date(@_) }
 
 sub sessions_for_date { _sessions_for_dimension(@_, 'date') }
+
+sub sessions_for_yearweek { _sessions_for_dimension(@_, 'yearWeek') }
 
 sub path_key { 'pagePath' }
 

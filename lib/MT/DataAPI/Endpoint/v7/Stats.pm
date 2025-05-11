@@ -351,6 +351,108 @@ sub screenpageviews_for_date {
     _maybe_raw(_invoke(@_));
 }
 
+sub screenpageviews_for_yearweek_openapi_spec {
+    return +{
+        tags        => ['Statistics'],
+        summary     => 'Retrieve pageviews count for each yearWeek from provider (e.g. Google Analytics V4)',
+        description => <<'DESCRIPTION',
+Retrieve pageviews count for each yearWeek from provider (e.g. Google Analytics V4).
+
+Authorization is required.
+DESCRIPTION
+        parameters => [{
+                'in'        => 'query',
+                name        => 'startDate',
+                schema      => { type => 'string', format => 'date' },
+                description => 'This is an required parameter. Start date of data. The format is "YYYY-MM-DD".',
+                required    => JSON::true,
+            },
+            {
+                'in'        => 'query',
+                name        => 'endDate',
+                schema      => { type => 'string', format => 'date' },
+                description => 'This is an required parameter. End date of data. The format is "YYYY-MM-DD".',
+                required    => JSON::true,
+            },
+            {
+                'in'        => 'query',
+                name        => 'limit',
+                schema      => { type => 'integer', default => 50 },
+                description => 'This is an optional parameter. Maximum number of paths to retrieve. Default is 50.',
+            },
+            {
+                'in'        => 'query',
+                name        => 'offset',
+                schema      => { type => 'string' },
+                description => 'This is an optional parameter. 0-indexed offset. Default is 0.',
+            },
+            {
+                'in'        => 'query',
+                name        => 'pagePath',
+                schema      => { type => 'string' },
+                description => 'This is an optional parameter. The target path of data to retrieve. Default is the path of the current site.',
+            },
+            {
+                'in'   => 'query',
+                name   => 'uniquePath',
+                schema => {
+                    type => 'integer',
+                    enum => [0, 1],
+                },
+                description => 'This is an optional parameter. If true is given, the MT can return total screenPageViews for each uniqueness paths. However, that data does not contain page title because its spec. (Sometimes, Google Analytics will return another pageviews by same path.)',
+            },
+        ],
+        responses => {
+            200 => {
+                description => 'OK',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            type       => 'object',
+                            properties => {
+                                totalResults => {
+                                    type        => 'integer',
+                                    description => 'The total number of paths.',
+                                },
+                                items => {
+                                    type        => 'array',
+                                    description => 'An array of Items for date resource.',
+                                    items       => {
+                                        '$ref' => '#/components/schemas/statisticsyearweek',
+                                    },
+                                },
+                                totals => {
+                                    type       => 'object',
+                                    properties => {
+                                        screenPageViews => {
+                                            type        => 'integer',
+                                            description => 'The sum total of the pageviews in the specified period.',
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Not Found',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
+}
+
+sub screenpageviews_for_yearweek {
+    _maybe_raw(_invoke(@_));
+}
+
 sub sessions_for_date_openapi_spec {
     +{
         tags        => ['Statistics'],
@@ -441,6 +543,99 @@ DESCRIPTION
 }
 
 sub sessions_for_date {
+    _maybe_raw(_invoke(@_));
+}
+
+sub sessions_for_yearweek_openapi_spec {
+    +{
+        tags        => ['Statistics'],
+        summary     => 'Retrieve sessions count for each yearWeek from provider (e.g. Google Analytics V4)',
+        description => <<'DESCRIPTION',
+Retrieve sessions count for each yearWeek from provider (e.g. Google Analytics V4).
+
+Authorization is required.
+DESCRIPTION
+        parameters => [{
+                'in'        => 'query',
+                name        => 'startDate',
+                schema      => { type => 'string', format => 'date' },
+                description => 'This is an required parameter. Start date of data. The format is "YYYY-MM-DD".',
+                required    => JSON::true,
+            },
+            {
+                'in'        => 'query',
+                name        => 'endDate',
+                schema      => { type => 'string', format => 'date' },
+                description => 'This is an required parameter. End date of data. The format is "YYYY-MM-DD".',
+                required    => JSON::true,
+            },
+            {
+                'in'        => 'query',
+                name        => 'limit',
+                schema      => { type => 'integer', default => 50 },
+                description => 'This is an optional parameter. Maximum number of paths to retrieve. Default is 50.',
+            },
+            {
+                'in'        => 'query',
+                name        => 'offset',
+                schema      => { type => 'string' },
+                description => 'This is an optional parameter. 0-indexed offset. Default is 0.',
+            },
+            {
+                'in'        => 'query',
+                name        => 'pagePath',
+                schema      => { type => 'string' },
+                description => 'This is an optional parameter. The target path of data to retrieve. Default is the path of the current site.',
+            },
+        ],
+        responses => {
+            200 => {
+                description => 'OK',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            type       => 'object',
+                            properties => {
+                                totalResults => {
+                                    type        => 'integer',
+                                    description => 'The total number of paths.',
+                                },
+                                items => {
+                                    type        => 'array',
+                                    description => 'An array of Items for date resource.',
+                                    items       => {
+                                        '$ref' => '#/components/schemas/statisticsyearweek',
+                                    },
+                                },
+                                totals => {
+                                    type       => 'object',
+                                    properties => {
+                                        sessions => {
+                                            type        => 'integer',
+                                            description => 'The sum total of the sessions in the specified period.',
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Not Found',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
+}
+
+sub sessions_for_yearweek {
     _maybe_raw(_invoke(@_));
 }
 
