@@ -245,6 +245,8 @@ sub screenpageviews_for_yearweek { _screenpageviews_for_dimension(@_, 'yearWeek'
 
 sub screenpageviews_for_yearmonth { _screenpageviews_for_dimension(@_, 'yearMonth') }
 
+sub screenpageviews_for_year { _screenpageviews_for_dimension(@_, 'year') }
+
 sub _sessions_for_dimension { _get_statistics_by_dimension(@_, 'sessions') }
 
 sub visits_for_date { sessions_for_date(@_) }
@@ -254,6 +256,8 @@ sub sessions_for_date { _sessions_for_dimension(@_, 'date') }
 sub sessions_for_yearweek { _sessions_for_dimension(@_, 'yearWeek') }
 
 sub sessions_for_yearmonth { _sessions_for_dimension(@_, 'yearMonth') }
+
+sub sessions_for_year { _sessions_for_dimension(@_, 'year') }
 
 sub path_key { 'pagePath' }
 
