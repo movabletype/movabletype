@@ -322,10 +322,11 @@ sub build_plugin_table {
 
             if ( $last_fld ne $fld ) {
                 $row = {
-                    plugin_sig    => $plugin_sig,
-                    plugin_folder => $folder,
-                    plugin_set    => $fld ? $folder_counts{$fld} > 1 : 0,
-                    plugin_error  => $profile->{error},
+                    plugin_sig       => $plugin_sig,
+                    plugin_folder    => $folder,
+                    plugin_set       => $fld ? $folder_counts{$fld} > 1 : 0,
+                    plugin_error     => $profile->{error},
+                    plugin_full_path => $plugin->{full_path},
                 };
                 push @$data, $row;
                 $last_fld      = $fld;
@@ -434,10 +435,11 @@ sub build_plugin_table {
 
             if ( $last_fld ne $fld ) {
                 $row = {
-                    plugin_sig    => $plugin_sig,
-                    plugin_folder => $folder,
-                    plugin_set    => $fld ? $folder_counts{$fld} > 1 : 0,
-                    plugin_error  => $profile->{error},
+                    plugin_sig       => $plugin_sig,
+                    plugin_folder    => $folder,
+                    plugin_set       => $fld ? $folder_counts{$fld} > 1 : 0,
+                    plugin_error     => $profile->{error},
+                    plugin_full_path => $profile->{full_path},
                 };
                 push @$data, $row;
                 $last_fld      = $fld;
@@ -455,6 +457,7 @@ sub build_plugin_table {
                 plugin_system_error => $profile->{system_error},
                 plugin_disabled     => $profile->{enabled} ? 0 : 1,
                 plugin_id           => $id,
+                plugin_full_path    => $profile->{full_path},
             };
             push @$data, $row;
         }
