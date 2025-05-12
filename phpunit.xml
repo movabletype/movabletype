@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit 
-  colors="true" 
-  bootstrap="./php/tests/InitTestDB.php" 
+<phpunit
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  colors="true"
+  bootstrap="./php/tests/InitTestDB.php"
   cacheResult="false"
-  convertWarningsToExceptions="false"
-  convertDeprecationsToExceptions="false">
+  xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd">
   <testsuites>
     <testsuite name="MT">
       <directory>php/tests</directory>
