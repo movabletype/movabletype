@@ -24,6 +24,12 @@ class BaseObjectTest extends TestCase {
         $this->assertTrue(isset($entry->id));
         $this->assertEquals('entry_', $entry->_prefix);
 
+        $error_reporting_org = error_reporting();
+
+        if (version_compare(phpversion(), '8.1', '>=') && version_compare(phpversion(), '8.4', '<')) {
+            error_reporting(error_reporting()  & ~E_CORE_WARNING & ~E_COMPILE_WARNING);
+        }
+
         // protected variable call (bugid:113105, MTC-9543)
         $this->assertNull($entry->_has_meta);
         $this->assertFalse(isset($entry->_has_meta));
@@ -41,6 +47,8 @@ class BaseObjectTest extends TestCase {
         $this->assertEquals('my_field1_val', $entry->$meta_field1);
         $this->assertFalse(isset($entry->$meta_field2));
         $this->assertNull($entry->$meta_field2);
+
+        error_reporting($error_reporting_org);
 
         // fixed Dynamic publishing error occurred with memcached environment. bugid: 113546
         MT::get_instance()->config('MemcachedServers', '127.0.0.1:11211');
