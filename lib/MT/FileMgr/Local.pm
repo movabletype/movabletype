@@ -139,13 +139,13 @@ sub _write_file {
 
 sub exists {
     my $path = _local($_[1]);
-    return 0 unless defined $path && $path ne '';
+    return undef unless defined $path && $path ne '';
     return -e $path;
 }
 
 sub can_write {
     my $path = _local($_[1]);
-    return 0 unless defined $path && $path ne '';
+    return undef unless defined $path && $path ne '';
     return -w $path;
 }
 

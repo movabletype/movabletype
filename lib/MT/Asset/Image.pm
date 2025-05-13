@@ -124,7 +124,7 @@ sub has_thumbnail {
     if ( !defined $file_path || $file_path eq '' ) {
         return undef;
     }
-    return unless -f $file_path;
+    return 0 unless -f $file_path;
 
     my $file_ext = $asset->file_ext || '';
     return 0 if $file_ext =~ /tiff?$/;

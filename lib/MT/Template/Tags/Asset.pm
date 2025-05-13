@@ -987,7 +987,7 @@ sub _hdlr_asset_property {
     if ( $prop =~ m/file_size/i ) {
         require MT::FileMgr;
         my $fmgr   = MT::FileMgr->new('Local');
-        my $size   = $fmgr->file_size( $a->file_path );
+        my $size   = $fmgr->file_size( $a->file_path ) || 0;
         my $format = $args->{format};
         $format = 1 if !defined $format;
 
