@@ -8,6 +8,7 @@
   export let open: boolean = false;
   export let buttonRef: HTMLElement | null = null;
   export let anchorRef: HTMLElement | null = null;
+  export let containerRef: HTMLElement | null = null;
   let modalRef: HTMLElement | null = null;
 
   $: {
@@ -33,6 +34,10 @@
   };
 
   const clickEvent = (e: MouseEvent): void => {
+    if (containerRef && containerRef.classList.contains("show")) {
+      return;
+    }
+
     const eventTarget = e.target as Node;
     if (open && isOuterClick([buttonRef, modalRef], eventTarget)) {
       handleClose();
