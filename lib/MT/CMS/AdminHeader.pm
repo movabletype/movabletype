@@ -13,6 +13,13 @@ sub fetch_admin_header_content_types {
     $app->validate_magic()
         or return $app->error($app->json_error($app->translate("Invalid Request.")));
 
+    my @content_types = content_types($app);
+
+    $app->json_result({ success => 1, content_types => \@content_types });
+}
+
+sub content_types {
+    my ($app) = @_;
     my $blog_id = $app->param('blog_id');
     my $user    = $app->user;
     my @content_types;
@@ -34,7 +41,7 @@ sub fetch_admin_header_content_types {
             can_search => ($user_can_manage_content_data     || $perms->can_do('search_content_data_' . $ct->unique_id))     ? 1 : 0,
             };
     }
-    $app->json_result({ success => 1, content_types => \@content_types });
+    return @content_types;
 }
 
 1;

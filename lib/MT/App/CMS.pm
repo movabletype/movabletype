@@ -1576,6 +1576,47 @@ sub core_list_actions {
     };
 }
 
+sub core_site_menu_actions {
+    my $app = shift;
+    return {
+        create_new => {
+            view      => ['blog', 'website'],
+            class     => 'create',
+            condition => sub {
+                my $blog_id = $app->param('blog_id');
+                my $user    = $app->user;
+                my $perms   = $app->permissions or return 0;
+                return 1 if $perms->can_do('create_new_entry');
+                require MT::CMS::AdminHeader;
+                my @content_types = grep { $_->{can_create} } MT::CMS::AdminHeader::content_types($app);
+                return scalar(@content_types) > 0;
+            },
+            label => 'Create',
+            icon  => 'ic_create',
+            order => 100,
+        },
+        rebuild => {
+            view      => ['blog', 'website'],
+            class     => 'mt-rebuild',
+            condition => sub { return ($app->blog && $app->can_do('rebuild')); },
+            label     => 'Rebuild',
+            icon      => 'ic_rebuild',
+            mode      => 'rebuild_confirm',
+            order     => 200,
+        },
+        view_site => {
+            view      => ['blog', 'website'],
+            class     => 'view_site',
+            condition => sub { $app->blog ? 1 : 0; },
+            label     => 'View Your Site',
+            icon      => 'ic_view',
+            href      => sub { $app->blog->site_url; },
+            order     => 300,
+            target    => '_blank',
+        },
+    };
+}
+
 sub core_menu_actions {
     my $app = shift;
     return {
@@ -2981,6 +3022,7 @@ sub build_page {
         $app->build_menus($param);
         $app->build_actions( 'menu_actions', $param );
         $app->build_actions( 'user_actions', $param );
+        $app->build_actions('site_menu_actions', $param);
     }
     if ( !ref($page)
         || ( $page->isa('MT::Template') && !$page->param('page_actions') ) )
@@ -3719,6 +3761,7 @@ sub build_actions {
         }
         $action->{id} = $id;
         $action->{order} ||= 0;
+        $action->{plugin} = $actions->{$id}->{plugin}->{id};
 
         push @valid_actions, { %$action, href => $href };
     }

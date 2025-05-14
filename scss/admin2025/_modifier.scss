@@ -542,28 +542,36 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper,
   width: var(--left-bar-width);
 
   display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
+  justify-content: flex-start;
+  flex-wrap:wrap;
 
   @extend %mt-primaryNavigationAnimation;
 
-  .menu_actions__button {
+  .site_menu_actions__button {
     display: flex;
     flex-direction: column;
     align-content: center;
     justify-content: center;
     align-items: center;
 
+    flex-basis: calc((var(--left-bar-width) - 20px) / 3);
+    flex-grow: 0;
+    padding: 7px 0;
+    overflow:hidden;
     color: #212529;
     font-size: 12px;
-    line-height: 100%;
     text-decoration: none;
-    flex:1;
-    padding: 7px 0;
 
     svg {
       margin-bottom: 6px;
+    }
+    .label {
+      width:calc(100% - 1px);
+      overflow:hidden;
+      white-space:nowrap;
+      text-overflow:ellipsis;
+      text-align:center;
+      line-height:1;
     }
 
     &:hover {
@@ -574,18 +582,13 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper,
       }
     }
   }
-  [data-is="create-button"] {
-    flex:1;
-
-    a.open {
-      background-color: #0176BF;
-      color: #FFFFFF;
-      svg {
-        fill: #FFFFFF;
-      }
+  a.open {
+    background-color: #0176BF;
+    color: #FFFFFF;
+    svg {
+      fill: #FFFFFF;
     }
   }
-
 }
 .mt-primaryNavigation__control--invert{
   @extend .mt-primaryNavigation__control;
@@ -601,6 +604,12 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper,
   .mt-icon{
     fill: $gray-light;
   }
+}
+.mt-primaryNavigationExpansion__control > a {
+  display: block;
+  white-space:normal;
+  text-align:left;
+  margin:4px;
 }
 .mt-primaryNavigation__info{
   border-top: 1px solid opacify($gray, .2);
