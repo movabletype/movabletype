@@ -340,6 +340,8 @@ li{
   height: 100vh;
   z-index: var(--left-bar-z-index);
   background-color: $white;
+  display: flex;
+  flex-direction: column;
 
   &.minimal {
     flex: none;
@@ -740,13 +742,11 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper,
   }
 }
 .mt-primaryNavigation__content{
+  flex:1;
   overflow-y: auto;
   -ms-overflow-style: -ms-autohiding-scrollbar;
-  // height: calc(100% - var(--control-height));
-  height: 100%;
-  position: relative;
   background-color: $gray-lightest;
-  padding-bottom: 160px;
+  padding-bottom: var(--header-height);
 }
 
 .mt-primaryNavigation__sites{
