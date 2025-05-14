@@ -93,7 +93,6 @@ subtest 'Default Superuser' => sub {
         is $user_href => 'User action href for ' . $admin->id, 'user href is correct';
     };
     subtest 'menu_action' => sub {
-        plan skip_all => 'theme does not support it. See MTC-30132' if MT->config('AdminThemeId') eq 'admin2025';
         my $menu_action = $app->wq_find('a#menu-menu_test');
         ok $menu_action && $menu_action->text =~ /Menu action for System Administrator only/, 'menu action exists';
         my $menu_href = $menu_action->attr('href');
@@ -113,7 +112,6 @@ subtest 'Extra Superuser' => sub {
         is $user_href => 'User action href for ' . $superuser->id, 'user href is correct';
     };
     subtest 'menu_action' => sub {
-        plan skip_all => 'theme does not support it. See MTC-30132' if MT->config('AdminThemeId') eq 'admin2025';
         my $menu_action = $app->wq_find('a#menu-menu_test');
         ok $menu_action && $menu_action->text =~ /Menu action for System Administrator only/, 'menu action exists';
         my $menu_href = $menu_action->attr('href');
