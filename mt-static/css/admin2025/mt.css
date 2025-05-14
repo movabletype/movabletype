@@ -11827,6 +11827,8 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper .mt-prim
   height: 100vh;
   z-index: var(--left-bar-z-index);
   background-color: #FFFFFF;
+  display: flex;
+  flex-direction: column;
 }
 .mt-primaryNavigation.minimal {
   flex: none;
@@ -12014,41 +12016,46 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper.mouseove
   z-index: 2;
   width: var(--left-bar-width);
   display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
+  justify-content: flex-start;
+  flex-wrap: wrap;
 }
-.mt-primaryNavigation__control .menu_actions__button, .mt-primaryNavigation__control--invert .menu_actions__button {
+.mt-primaryNavigation__control .site_menu_actions__button, .mt-primaryNavigation__control--invert .site_menu_actions__button {
   display: flex;
   flex-direction: column;
   align-content: center;
   justify-content: center;
   align-items: center;
+  flex-basis: calc((var(--left-bar-width) - 20px) / 3);
+  flex-grow: 0;
+  padding: 7px 0;
+  overflow: hidden;
   color: #212529;
   font-size: 12px;
-  line-height: 100%;
   text-decoration: none;
-  flex: 1;
-  padding: 7px 0;
 }
-.mt-primaryNavigation__control .menu_actions__button svg, .mt-primaryNavigation__control--invert .menu_actions__button svg {
+.mt-primaryNavigation__control .site_menu_actions__button svg, .mt-primaryNavigation__control--invert .site_menu_actions__button svg {
   margin-bottom: 6px;
 }
-.mt-primaryNavigation__control .menu_actions__button:hover, .mt-primaryNavigation__control--invert .menu_actions__button:hover {
+.mt-primaryNavigation__control .site_menu_actions__button .label, .mt-primaryNavigation__control--invert .site_menu_actions__button .label {
+  width: calc(100% - 1px);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  text-align: center;
+  line-height: 1;
+}
+.mt-primaryNavigation__control .site_menu_actions__button:hover, .mt-primaryNavigation__control--invert .site_menu_actions__button:hover {
   background-color: #0176BF;
   color: #FFFFFF;
 }
-.mt-primaryNavigation__control .menu_actions__button:hover svg, .mt-primaryNavigation__control--invert .menu_actions__button:hover svg {
+.mt-primaryNavigation__control .site_menu_actions__button:hover svg, .mt-primaryNavigation__control--invert .site_menu_actions__button:hover svg {
   fill: #FFFFFF;
 }
-.mt-primaryNavigation__control [data-is=create-button], .mt-primaryNavigation__control--invert [data-is=create-button] {
-  flex: 1;
-}
-.mt-primaryNavigation__control [data-is=create-button] a.open, .mt-primaryNavigation__control--invert [data-is=create-button] a.open {
+.mt-primaryNavigation__control a.open, .mt-primaryNavigation__control--invert a.open {
   background-color: #0176BF;
   color: #FFFFFF;
 }
-.mt-primaryNavigation__control [data-is=create-button] a.open svg, .mt-primaryNavigation__control--invert [data-is=create-button] a.open svg {
+.mt-primaryNavigation__control a.open svg, .mt-primaryNavigation__control--invert a.open svg {
   fill: #FFFFFF;
 }
 
@@ -12063,6 +12070,13 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper.mouseove
 }
 .mt-primaryNavigation__control--invert .mt-icon, .mt-primaryNavigation__control--invert .mt-icon--inverse, .mt-primaryNavigation__control--invert .mt-icon--danger, .mt-primaryNavigation__control--invert .mt-icon--warning, .mt-primaryNavigation__control--invert .mt-icon--info, .mt-primaryNavigation__control--invert .mt-icon--success, .mt-primaryNavigation__control--invert .mt-icon--secondary, .mt-primaryNavigation__control--invert .mt-icon--primary {
   fill: #CACACA;
+}
+
+.mt-primaryNavigationExpansion__control > a {
+  display: block;
+  white-space: normal;
+  text-align: left;
+  margin: 4px;
 }
 
 .mt-primaryNavigation__info {
@@ -12181,12 +12195,11 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper.mouseove
 }
 
 .mt-primaryNavigation__content {
+  flex: 1;
   overflow-y: auto;
   -ms-overflow-style: -ms-autohiding-scrollbar;
-  height: 100%;
-  position: relative;
   background-color: #F4F4F4;
-  padding-bottom: 160px;
+  padding-bottom: var(--header-height);
 }
 
 .mt-primaryNavigation__sites {
