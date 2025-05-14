@@ -21,6 +21,23 @@
     </mt:loop>
   </div>
 
+  <div class="mt-primaryNavigationExpansion__control">
+    <mt:loop name="menu_actions">
+      <mt:unless name="plugin" eq="core">
+        <mt:setvarblock name="escaped_menu_action_label"><mt:var name="label" escape="html"></mt:setvarblock>
+        <a 
+          id="menu-<mt:var name="id" escape="html">"
+          href="<mt:var name="href" escape="html">"
+          class="btn btn-default <mt:var name="class" escape="html">"
+          <mt:if name="target"> target="<mt:var name="target" escape="html">"</mt:if>
+        >
+          <mtapp:svgicon id="$icon" title="$escaped_menu_action_label">
+          <mt:var name="escaped_menu_action_label">
+        </a>
+      </mt:unless>
+    </mt:loop>
+  </div>
+
   <div class="mt-primaryNavigation__content">
     <ul id="primaryNavigation" class="mt-primaryNavigation__list" data-children=".item">
       <mt:loop name="top_nav_loop">
