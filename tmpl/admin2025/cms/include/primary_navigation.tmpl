@@ -4,17 +4,14 @@
 <div class="mt-primaryNavigation" data-is="primary-navigation">
   <mt:if name="scope_type" ne="system">
     <div class="mt-primaryNavigation__control">
-        <div data-is="create-button">
-            <a href="#" class="menu_actions__button create">
+            <a href="#" class="menu_actions__button create" data-is="create-button">
                 <svg role="img" class="mt-icon">
                     <title><__trans phrase="Create New"></title>
                     <use xlink:href="<mt:var name="static_uri">images/admin2025/sprite.svg#ic_create"></use>
                 </svg>
                 <__trans phrase="Create New">
             </a>
-        </div>
         <a href="<mt:var name="mt_url">?__mode=rebuild_confirm<mt:if name="blog_id" ne="">&blog_id=<mt:var name="blog_id"></mt:if>" class="menu_actions__button rebuild mt-rebuild">
-
           <svg role="img" class="mt-icon">
             <title><__trans phrase="Rebuild"></title>
             <use xlink:href="<mt:var name="static_uri">images/admin2025/sprite.svg#ic_rebuild"></use>

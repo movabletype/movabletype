@@ -43,14 +43,12 @@ document.addEventListener("DOMContentLoaded", () => {
     '[data-is="site-list-button"]',
   );
   if (siteListButtonTarget !== null) {
-    const siteListButtonAnchor =
-      siteListButtonTarget.getElementsByTagName("a")[0];
     svelteMountSiteListButton(siteListButtonTarget, {
       magicToken: magicToken,
       limit: Number.parseInt(limit),
       open: false,
       buttonRef: siteListButtonTarget,
-      anchorRef: siteListButtonAnchor,
+      anchorRef: siteListButtonTarget,
     });
   }
 
@@ -68,9 +66,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }).then((data) => {
       // Create button
       if (createButtonTarget !== null) {
-        const createButtonAnchor =
-          createButtonTarget.getElementsByTagName("a")[0];
-
         svelteMountCreateButton({
           target: createButtonTarget,
           props: {
@@ -80,7 +75,7 @@ document.addEventListener("DOMContentLoaded", () => {
             ),
             open: false,
             buttonRef: createButtonTarget,
-            anchorRef: createButtonAnchor,
+            anchorRef: createButtonTarget,
           },
         });
       }
