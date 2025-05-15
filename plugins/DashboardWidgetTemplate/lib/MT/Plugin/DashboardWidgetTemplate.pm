@@ -1,0 +1,253 @@
+package MT::Plugin::DashboardWidgetTemplate;
+
+use strict;
+use warnings;
+use utf8;
+
+sub component {
+    __PACKAGE__ =~ m/::([^:]+)\z/;
+}
+
+sub plugin {
+    MT->component(component());
+}
+
+sub insert_before {
+    my ($tmpl, $id, $tokens) = @_;
+
+    my $before = $id ? $tmpl->getElementById($id) : undef;
+
+    if (!ref $tokens) {
+        $tokens = plugin()->load_tmpl($tokens)->tokens;
+    }
+
+    foreach my $t (@$tokens) {
+        $tmpl->insertBefore($t, $before);
+        $before = $t;
+    }
+}
+
+sub template_param_list_template {
+    my ($cb, $app, $param, $tmpl) = @_;
+
+    insert_before(
+        $tmpl, undef,
+        'dashboard_widget_template_list_template.tmpl'
+    );
+
+    # from MT::CMS::Template
+    my $hasher = sub {
+        my ($obj, $row) = @_;
+        my $template_type;
+        my $type = $row->{type} || '';
+        my $tblog;
+        $tblog = MT::Blog->load($obj->blog_id) if $obj->blog_id;
+        if ($type =~ m/^(individual|page|category|archive)$/) {
+            $template_type = 'archive';
+
+            # populate context with templatemap loop
+            if ($tblog) {
+                $row->{archive_types} = _populate_archive_loop($app, $tblog, $obj);
+            }
+        } elsif ($type eq 'widget') {
+            $template_type = 'widget';
+        } elsif ($type eq 'index') {
+            $template_type = 'index';
+        } elsif ($type eq 'custom') {
+            $template_type = 'module';
+        } elsif ($type eq 'email') {
+            $template_type = 'email';
+        } elsif ($type eq 'backup') {
+            $template_type = 'backup';
+        } elsif ($type eq 'ct' || $type eq 'ct_archive') {
+            $template_type = 'ct';
+
+            # populate context with templatemap loop
+            if ($tblog) {
+                $row->{archive_types} = _populate_archive_loop($app, $tblog, $obj);
+            }
+        } else {
+            $template_type = 'system';
+        }
+        $row->{use_cache} =
+            ($tblog && $tblog->include_cache && ($obj->cache_expire_type || 0) != 0) ? 1 : 0;
+        $row->{use_ssi} =
+            ($tblog && $tblog->include_system && $obj->include_with_ssi)
+            ? 1
+            : 0;
+        $row->{template_type} = $template_type;
+        $row->{type}          = 'entry' if $type eq 'individual';
+        my $published_url = $obj->published_url;
+        $row->{published_url} = $published_url if $published_url;
+        $row->{name}          = ''             if !defined $row->{name};
+        $row->{name} =~ s/^\s+|\s+$//g;
+        $row->{name} = "(" . $app->translate("No Name") . ")"
+            if $row->{name} eq '';
+    };
+
+    my $tmpl_param = $app->listing({
+        type  => 'template',
+        terms => {
+            blog_id => $app->param('blog_id') || 0,
+            type    => 'dashboard_widget',
+        },
+        args     => { sort => 'name' },
+        no_limit => 1,
+        no_html  => 1,
+        code     => $hasher,
+    });
+    $tmpl_param->{template_type} = 'dashboard_widget';
+    $tmpl_param->{template_type_label} =
+        plugin()->translate('Dashboard Widget');
+
+    push @{ $param->{template_type_loop} }, $tmpl_param;
+}
+
+sub template_param_edit_template {
+    my ($cb, $app, $param, $tmpl) = @_;
+    insert_before(
+        $tmpl, undef,
+        'dashboard_widget_template_edit_template.tmpl'
+    );
+}
+
+sub template_param_dashboard {
+    my ($cb, $app, $param, $tmpl) = @_;
+    return 1 if $param->{js_include};    # skip include for layout/dashboard
+    insert_before($tmpl, undef, 'dashboard_widget_template_dashboard.tmpl');
+}
+
+sub template_param_theme_element_detail {
+    my ($cb, $app, $param, $tmpl) = @_;
+    my $tmpl_groups = $param->{tmpl_groups}
+        or return 1;
+    for (my $i = 0; $i < @$tmpl_groups; $i++) {
+        my $tmpl_group = $tmpl_groups->[$i];
+        next unless $tmpl_group->{template_type} eq 'system';
+
+        my @dashboard_widget_templates;
+        for (my $j = @{ $tmpl_group->{templates} } - 1; $j >= 0; $j--) {
+            my $tmpl_hash = $tmpl_group->{templates}->[$j];
+            my $tmpl      = MT->model('template')->load($tmpl_hash->{tmpl_id});
+            next unless $tmpl->type eq 'dashboard_widget';
+            unshift @dashboard_widget_templates, $tmpl_hash;
+            splice @{ $tmpl_group->{templates} }, $j, 1;
+        }
+
+        if (@dashboard_widget_templates) {
+            splice @$tmpl_groups, $i + 1, 0,
+                {
+                order               => $tmpl_group->{order} + 1,
+                template_type       => 'dashboard_widget',
+                template_type_label => plugin()->translate('Dashboard Widget'),
+                object_loop         => [],
+                templates           => \@dashboard_widget_templates,
+                };
+        }
+
+        last;
+    }
+}
+
+sub template_post_save {
+    my ($cb, $obj) = @_;
+    MT->instance->reboot if $obj->type eq 'dashboard_widget';
+}
+
+sub init_app {
+    require MT::DefaultTemplates;
+    require MT::Theme::TemplateSet;
+    require Class::Method::Modifiers;
+    Class::Method::Modifiers::around(
+        'MT::DefaultTemplates::templates',
+        sub {
+            my $app = MT->instance;
+            if (   ($app->mode eq 'view')
+                && (($app->param('_type') || '') eq 'template')
+                && (($app->param('type')  || '') eq 'dashboard_widget'))
+            {
+                return [];
+            }
+            my $orig = shift;
+            return $orig->(@_);
+        });
+    Class::Method::Modifiers::around(
+        'MT::Theme::TemplateSet::_type',
+        sub {
+            my $orig = shift;
+            my ($tmpl) = @_;
+            return 'dashboard_widget' if $tmpl->type eq 'dashboard_widget';
+            return $orig->(@_);
+        });
+}
+
+sub cms_widgets {
+    my $widgets = {};
+
+    my $iter = MT->model('template')->load_iter({
+            type => 'dashboard_widget',
+        },
+        {
+            sort => 'name',
+        });
+    my $order = 1;
+    while (my $tmpl = $iter->()) {
+        my $tmpl_id      = $tmpl->id;
+        my $tmpl_blog_id = $tmpl->blog_id;
+        my $id           = 'dashboard_widget_template_' . $tmpl->id;
+        $widgets->{$id} = {
+            label    => $tmpl->name,
+            plugin   => plugin(),
+            template => 'dashboard_widget_template.tmpl',
+            handler  => sub {
+                my ($app, $t) = @_;
+
+                my $local_tmpl = MT->model('template')->load($tmpl_id);
+                my $ctx        = $local_tmpl->context;
+                $ctx->stash('dashboard_widget_template', 1);
+                if (my $blog = $app->blog) {
+                    $ctx->stash('blog_id', $blog->id);
+                    $ctx->stash('blog',    $blog);
+                }
+                $t->param('label', $local_tmpl->name);
+                require MT::Sanitize;
+                $t->param(
+                    'content',
+                    MT::Sanitize->sanitize(
+                        $local_tmpl->output,
+                        MT::Sanitize->parse_spec('* class style aria-label aria-labelledby aria-describedby aria-hidden,a href target,br/,img/ src alt,form,input/ type name value,select/ name,option value,button/ type,b,label,legend,strong,em,i,ul,li,ol,p,div,h1,h2,h3,h4,h5,h6,div,span')));
+            },
+            singular  => 1,
+            set       => 'main',
+            view      => $tmpl_blog_id ? ['website', 'blog'] : 'user',
+            order     => sprintf("30.%03d", $order++),
+            condition => sub {
+                my $blog_id = MT->instance->param('blog_id') || 0;
+                $blog_id ? $tmpl_blog_id == $blog_id : !$tmpl_blog_id;
+            },
+        };
+    }
+    return $widgets;
+}
+
+sub _hdlr_permission {
+    my ($ctx, $args) = @_;
+
+    my $tag_name = $ctx->stash('tag');
+    $tag_name = 'mt' . $tag_name unless $tag_name =~ m/^MT/i;
+
+    $ctx->stash('dashboard_widget_template')
+        or return $ctx->error(MT->translate("You used an '[_1]' tag outside of the context of the correct content; ", $tag_name));
+
+    my $has = $args->{has}
+        or return 0;
+
+    my $app  = MT->instance;
+    my $user = $app->user;
+    return 1 if $user->is_superuser;
+    my $perm =
+        $user->permissions($ctx->stash('blog') && $ctx->stash('blog')->id || 0);
+    return $perm && $perm->has($has);
+}
+
+1;

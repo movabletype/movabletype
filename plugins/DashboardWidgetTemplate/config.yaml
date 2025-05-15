@@ -1,0 +1,26 @@
+id: DashboardWidgetTemplate
+version: 1.0.0
+
+name: DashboardWidgetTemplate
+description: <__trans phrase="This plugin provides the ability to create dashboard widgets from templates.">
+author_link: http://www.movabletype.org/
+author_name: Six Apart Ltd.
+
+l10n_class: MT::Plugin::DashboardWidgetTemplate::L10N
+
+callbacks:
+  MT::App::CMS::template_param.list_template: $DashboardWidgetTemplate::MT::Plugin::DashboardWidgetTemplate::template_param_list_template
+  MT::App::CMS::template_param.edit_template: $DashboardWidgetTemplate::MT::Plugin::DashboardWidgetTemplate::template_param_edit_template
+  MT::App::CMS::template_param.dashboard: $DashboardWidgetTemplate::MT::Plugin::DashboardWidgetTemplate::template_param_dashboard
+  MT::App::CMS::template_param.theme_element_detail: $DashboardWidgetTemplate::MT::Plugin::DashboardWidgetTemplate::template_param_theme_element_detail
+  MT::App::CMS::init_app: $DashboardWidgetTemplate::MT::Plugin::DashboardWidgetTemplate::init_app
+  MT::Template::post_remove: $DashboardWidgetTemplate::MT::Plugin::DashboardWidgetTemplate::template_post_save
+  MT::Template::post_save: $DashboardWidgetTemplate::MT::Plugin::DashboardWidgetTemplate::template_post_save
+
+applications:
+  cms:
+    widgets: $DashboardWidgetTemplate::MT::Plugin::DashboardWidgetTemplate::cms_widgets
+
+tags:
+  block:
+    app:permission?: $DashboardWidgetTemplate::MT::Plugin::DashboardWidgetTemplate::_hdlr_permission
