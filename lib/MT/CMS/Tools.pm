@@ -88,6 +88,11 @@ sub recover_password {
     $email = trim($email);
     $username = trim($username) if $username;
 
+    my $base = $app->base;
+    if ($base eq '') {
+        return $app->errtrans('Cannot get host name. Please report it to the administartor.');
+    }
+
     if ( !$email ) {
         return $app->start_recover(
             {   error => $app->translate(
@@ -160,7 +165,7 @@ sub recover_password {
             my $blog_id = $app->param('blog_id');
             my $body    = $app->build_email(
                 'recover-password',
-                {         link_to_login => $app->base
+                {         link_to_login => $base
                         . $app->mt_uri
                         . "?__mode=new_pw&token=$token&email="
                         . encode_url($email)
