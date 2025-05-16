@@ -1593,7 +1593,9 @@ sub core_system_menu_actions {
         },
         system => {
             condition => sub {
-                return $app->user->can_do('access_to_system_dashboard');
+                if (my $user = $app->user) {
+                    return $user->can_do('access_to_system_dashboard');
+                }
             },
             icon   => 'ic_setting',
             label  => 'System',
