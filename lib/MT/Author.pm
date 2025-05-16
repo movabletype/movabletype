@@ -863,16 +863,6 @@ sub save {
     my $auth = shift;
 
     if ( $auth->type == AUTHOR ) {
-        if ( !$auth->id ) {
-
-            # New author, undefined API password. Generate one.
-            if ( !defined $auth->api_password ) {
-                my @pool = ( 'a' .. 'z', 0 .. 9 );
-                my $pass = '';
-                for ( 1 .. 8 ) { $pass .= $pool[ rand @pool ] }
-                $auth->api_password($pass);
-            }
-        }
 
         # Generate basename
         unless ( $auth->basename() ) {
