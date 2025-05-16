@@ -4159,8 +4159,9 @@ sub add_return_arg {
 }
 
 sub base {
-    my $app = shift;
-    return $app->{__host} if exists $app->{__host};
+    my $app   = shift;
+    my %param = @_;
+    return $app->{__host} if exists $app->{__host} && !$param{NoHostCheck};
     my $cfg = $app->config;
     my $path
         = $app->{is_admin}
@@ -4172,11 +4173,28 @@ sub base {
     }
 
     # determine hostname from environment (supports relative CGI paths)
-    if ( my $host = $ENV{HTTP_HOST} ) {
-        return $app->{__host}
-            = 'http' . ( $app->is_secure ? 's' : '' ) . '://' . $host;
+    if (my $host = $ENV{HTTP_HOST}) {
+        my $origin = 'http' . ($app->is_secure ? 's' : '') . '://' . $host;
+        if ($param{NoHostCheck}) {
+            return $origin;
+        }
+        if ($app->is_allowed_host($host)) {
+            return $app->{__host} = $origin;
+        }
     }
-    '';
+    return $app->{__host} = '';
+}
+
+sub is_allowed_host {
+    my ($app, $host) = @_;
+    my $lc_host = lc $host;
+    for my $trusted ($app->config->TrustedHosts) {
+        my $lc_trusted = lc $trusted;
+        return 1 if $lc_trusted eq $lc_host;
+        return 1 if $lc_trusted eq '*';
+        return 1 if $lc_trusted =~ /\A\*(\..+)\z/ && $lc_host =~ /\A[a-z0-9_\-]+\Q${1}\E\z/;
+    }
+    return;
 }
 
 *path = \&mt_path;
@@ -4332,7 +4350,7 @@ sub redirect {
     $url =~ s/[\r\n].*$//s;
     $app->{redirect_use_meta} = $options{UseMeta};
     unless ( $url =~ m!^https?://!i ) {
-        $url = $app->base . $url;
+        $url = $app->base(NoHostCheck => $options{NoHostCheck}) . $url;
     }
     $app->{redirect} = $url;
     return;
@@ -5363,10 +5381,21 @@ by issuing a text/html entity body that contains a "meta redirect"
 tag. This option can be used to work around clients that won't accept
 cookies as part of a 302 Redirect response.
 
-=head2 $app->base
+If the option C<NoHostCheck =E<gt> 1> is given, this option is passed to C<$app-E<gt>base>.
+
+=head2 $app->base([option1 => option1_val, ...])
 
 The protocol and domain of the application. For example, with the full URI
 F<http://www.foo.com/mt/mt.cgi>, this method will return F<http://www.foo.com>.
+
+When C<$ENV{HTTP_HOST}> is used, this value is checked for allowed host name.
+If the option C<NoHostCheck =E<gt> 1> is given, this method does not check $ENV{HTTP_HOST}> and does not cache return value.
+
+=head2 $app->is_allowed_host($host)
+
+Checks C<$host> has whether allowed host or not.
+If C<$host> has allowed host, this method will return 1.
+If C<$host> does not have allowed host, this method will return falsy.
 
 =head2 $app->path
 

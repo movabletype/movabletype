@@ -38,10 +38,11 @@ sub make_access_token {
 }
 
 sub check_redirect_url {
-    my ( $app, $redirect_url ) = @_;
-    my $redirect_host = URI->new( $redirect_url, 'http' )->host || '';
+    my ($app, $redirect_url) = @_;
+    my $base          = $app->base(NoHostCheck => 1);
+    my $redirect_host = URI->new($redirect_url, 'http')->host || '';
     return APP_HOST
-        if ( URI->new( $app->base, 'http' )->host || '' ) eq $redirect_host;
+        if ( URI->new( $base, 'http' )->host || '' ) eq $redirect_host;
 
     my $iter = $app->model('blog')->load_iter( { class => '*' } );
     while ( my $b = $iter->() ) {
