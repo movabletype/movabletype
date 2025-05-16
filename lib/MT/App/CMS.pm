@@ -1592,6 +1592,9 @@ sub core_system_menu_actions {
             order  => 200,
         },
         system => {
+            condition => sub {
+                return $app->user->can_do('access_to_system_dashboard');
+            },
             icon   => 'ic_setting',
             label  => 'System',
             mobile => 0,
