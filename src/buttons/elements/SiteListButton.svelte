@@ -29,7 +29,7 @@
   let totalCount = 0;
   let page = 1;
   let pageMax = 1;
-  let siteType = "";
+  let siteType = "parent_sites";
   let filterSiteName = "";
   let items: Array<{
     type: string;
@@ -60,8 +60,10 @@
   };
   const filterApply = (): void => {
     items = [];
-    if (siteType === "blog") {
+    if (siteType === "child_sites_only") {
       items = [{ type: "parent_website", args: { value: "" } }];
+    } else if (siteType === "parent_sites") {
+      items = [{ type: "parent_website", args: { value: "1" } }];
     }
     filterSiteName = filterSiteName.trim();
     if (filterSiteName !== "") {
@@ -101,7 +103,7 @@
     }
   };
   onMount(async () => {
-    _fetchSites();
+    filterApply();
   });
 </script>
 
@@ -164,10 +166,9 @@
                 on:change={filterApply}
                 class="custom-select form-control form-select"
               >
-                <option value="">{window.trans("All Sites")}</option>
-                <option value="blog">
-                  {window.trans("Only to child sites within this system")}
-                </option>
+                <option value="parent_sites">{window.trans("Parent Sites")}</option>
+                <option value="parent_and_child_sites">{window.trans("Parent and child sites")}</option>
+                <option value="child_sites_only">{window.trans("Only to child sites within this system")}</option>
               </select>
             </div>
             <div class="site-name-filter">
