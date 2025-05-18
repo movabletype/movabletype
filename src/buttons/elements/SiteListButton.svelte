@@ -238,7 +238,7 @@
                       </a>
                     </td>
                     <td>
-                      {site.parentSiteName}
+                      {@html site.parentSiteName}
                     </td>
                   </tr>
                 {/each}
