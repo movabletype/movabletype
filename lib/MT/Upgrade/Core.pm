@@ -15,6 +15,8 @@ MT->add_callback( 'MT::Upgrade::upgrade_end', 5, undef,
     sub { $_[1]->add_step('core_upgrade_templates') } );
 MT->add_callback( 'MT::Upgrade::upgrade_end', 6, undef,
     sub { $_[1]->add_step('core_remove_news_widget_cache') } );
+MT->add_callback( 'MT::Upgrade::upgrade_begin', 6, undef,
+    sub { $_[1]->add_step('core_check_perl_core_modules') } );
 
 sub upgrade_functions {
     my $self = shift;
@@ -135,6 +137,20 @@ sub upgrade_functions {
         'core_remove_news_widget_cache' => {
             priority => 6,
             code     => \&_remove_news_widget_cache,
+        },
+        'core_check_perl_core_modules' => {
+            priority => 6,
+            code     => sub {
+                my $self = shift;
+                $self->progress(
+                    $self->translate_escape("Checking perl modules...")
+                );
+                require MT::Util::Dependencies;
+                if (MT::Util::Dependencies->lacks_core_modules) {
+                    return $self->error($self->translate_escape("Movable Type does not work because your Perl does not have some of the core modules. Please ask your system administrator to install perl (or perl-core) properly."));
+                }
+                0;
+            },
         },
     };
 }
