@@ -173,9 +173,7 @@
                   >{window.trans("Parent and child sites")}</option
                 >
                 <option value="child_sites_only"
-                  >{window.trans(
-                    "Only to child sites within this system",
-                  )}</option
+                  >{window.trans("Only child sites")}</option
                 >
               </select>
             </div>

@@ -5758,6 +5758,7 @@ use vars qw( @ISA %Lexicon );
 	'[_1]Site' => '[_1]サイト',
 	'Parent Sites' => '親サイト',
 	'Parent and child sites' => '親サイトと子サイト',
+	'Only child sites' => '子サイトのみ',
 	'Filter by site name' => 'サイト名で絞り込む',
 );
 
