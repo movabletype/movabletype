@@ -299,9 +299,11 @@ sub list_props {
                   : MT->translate('*Site/Child Site deleted*');
                 return $name if !defined $parent;
 
-                my $dashboard_link = $app->uri(
-                    mode => 'dashboard',
-                    args => { blog_id => $parent->id, },
+                my $dashboard_link = MT::Util::encode_html(
+                    $app->uri(
+                        mode => 'dashboard',
+                        args => { blog_id => $parent->id, },
+                    )
                 );
                 my $can_double_encode = 1;
                 $name = MT::Util::encode_html( $name, $can_double_encode );
