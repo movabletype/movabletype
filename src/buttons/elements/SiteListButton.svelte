@@ -166,9 +166,17 @@
                 on:change={filterApply}
                 class="custom-select form-control form-select"
               >
-                <option value="parent_sites">{window.trans("Parent Sites")}</option>
-                <option value="parent_and_child_sites">{window.trans("Parent and child sites")}</option>
-                <option value="child_sites_only">{window.trans("Only to child sites within this system")}</option>
+                <option value="parent_sites"
+                  >{window.trans("Parent Sites")}</option
+                >
+                <option value="parent_and_child_sites"
+                  >{window.trans("Parent and child sites")}</option
+                >
+                <option value="child_sites_only"
+                  >{window.trans(
+                    "Only to child sites within this system",
+                  )}</option
+                >
               </select>
             </div>
             <div class="site-name-filter">
