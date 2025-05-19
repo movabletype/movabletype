@@ -386,8 +386,8 @@ sub core_methods {
             app_mode => 'JSON',
         },
 
-        'fetch_admin_header_content_types' => {
-            code     => "${pkg}AdminHeader::fetch_admin_header_content_types",
+        'content_types_for_search_action' => {
+            code     => "${pkg}ContentType::search_action_targets",
             app_mode => 'JSON',
         },
 
@@ -1573,6 +1573,77 @@ sub core_list_actions {
                 mobile     => 1,
             },
         }
+    };
+}
+
+sub core_system_menu_actions {
+    my $app = shift;
+    return {
+        search => {
+            icon   => 'ic_search',
+            label  => 'Search',
+            mobile => 0,
+            order  => 100,
+        },
+        site => {
+            icon   => 'ic_site',
+            label  => 'Site',
+            mobile => 0,
+            order  => 200,
+        },
+        system => {
+            condition => sub {
+                if (my $user = $app->user) {
+                    return $user->can_do('access_to_system_dashboard');
+                }
+            },
+            icon   => 'ic_setting',
+            label  => 'System',
+            mobile => 0,
+            order  => 300,
+            href   => sub { $app->uri(mode => 'dashboard', args => { blog_id => 0 }); },
+        },
+    };
+}
+
+sub core_site_menu_actions {
+    my $app = shift;
+    return {
+        create_new => {
+            view      => ['blog', 'website'],
+            class     => 'create',
+            condition => sub {
+                my $blog_id = $app->param('blog_id');
+                my $user    = $app->user;
+                my $perms   = $app->permissions or return 0;
+                return 1 if $perms->can_do('create_new_entry');
+                require MT::CMS::ContentType;
+                my @content_types = grep { $_->{can_create} } MT::CMS::ContentType::search_action_targets_seed($app);
+                return scalar(@content_types) > 0;
+            },
+            label => 'Create',
+            icon  => 'ic_create',
+            order => 100,
+        },
+        rebuild => {
+            view      => ['blog', 'website'],
+            class     => 'mt-rebuild',
+            condition => sub { return ($app->blog && $app->can_do('rebuild')); },
+            label     => 'Rebuild',
+            icon      => 'ic_rebuild',
+            mode      => 'rebuild_confirm',
+            order     => 200,
+        },
+        view_site => {
+            view      => ['blog', 'website'],
+            class     => 'view_site',
+            condition => sub { $app->blog ? 1 : 0; },
+            label     => 'View Your Site',
+            icon      => 'ic_view',
+            href      => sub { $app->blog->site_url; },
+            order     => 300,
+            target    => '_blank',
+        },
     };
 }
 
@@ -2981,6 +3052,8 @@ sub build_page {
         $app->build_menus($param);
         $app->build_actions( 'menu_actions', $param );
         $app->build_actions( 'user_actions', $param );
+        $app->build_actions('system_menu_actions', $param);
+        $app->build_actions('site_menu_actions', $param);
     }
     if ( !ref($page)
         || ( $page->isa('MT::Template') && !$page->param('page_actions') ) )
@@ -3689,6 +3762,8 @@ sub build_actions {
 
     my $actions = $app->registry($registry_key) || {};
 
+    my $view = $app->view;
+    my $blog_id = $app->blog ? $app->blog->id : 0;
     my @valid_actions;
     for my $id ( keys %$actions ) {
         my $action = $actions->{$id};
@@ -3698,14 +3773,26 @@ sub build_actions {
             $cond = MT->handler_to_coderef($cond) unless ref $cond;
             next if ref $cond eq 'CODE' && !$cond->( $app, $param );
         }
+        if ($action->{view}) {
+            if (ref $action->{view} eq 'ARRAY') {
+                next unless (scalar grep { $_ eq $view } @{ $action->{view} });
+            } else {
+                next if $action->{view} ne $view;
+            }
+        }
 
         my $href = $action->{href};
         if (defined $href) {
             $href = MT->handler_to_coderef($href) unless ref $href;
             $href = $href->( $app, $param ) if ref $href eq 'CODE';
+        } elsif ($action->{mode}) {
+            $href = $app->uri(mode => $action->{mode}, args => { blog_id => $blog_id });
+        } else {
+            $href = 'javascript:void(0)';
         }
         $action->{id} = $id;
         $action->{order} ||= 0;
+        $action->{plugin} = $actions->{$id}->{plugin}->{id};
 
         push @valid_actions, { %$action, href => $href };
     }

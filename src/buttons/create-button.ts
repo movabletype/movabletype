@@ -21,8 +21,7 @@ export const svelteMountCreateButton = ({
     props: props,
   });
 
-  const anchors = target.getElementsByTagName("a");
-  anchors[0].addEventListener("click", (event: MouseEvent) => {
+  target.addEventListener("click", (event: MouseEvent) => {
     event.preventDefault();
     if (props.anchorRef.classList.contains("open")) {
       props.open = false;

@@ -2,34 +2,41 @@
 
 <mt:if name="scope_type" ne="user">
 <div class="mt-primaryNavigation" data-is="primary-navigation">
-  <mt:if name="scope_type" ne="system">
-    <div class="mt-primaryNavigation__control">
-        <div data-is="create-button">
-            <a href="#" class="menu_actions__button create">
-                <svg role="img" class="mt-icon">
-                    <title><__trans phrase="Create New"></title>
-                    <use xlink:href="<mt:var name="static_uri">images/admin2025/sprite.svg#ic_create"></use>
-                </svg>
-                <__trans phrase="Create New">
-            </a>
-        </div>
-        <a href="<mt:var name="mt_url">?__mode=rebuild_confirm<mt:if name="blog_id" ne="">&blog_id=<mt:var name="blog_id"></mt:if>" class="menu_actions__button rebuild mt-rebuild">
+  <div class="mt-primaryNavigation__control">
+    <mt:loop name="site_menu_actions">
+        <mt:setvarblock name="escaped_menu_action_label"><mt:var name="label" escape="html"></mt:setvarblock>
+        <a 
+          class="site_menu_actions__button <mt:var name="class" escape="html" _default="">"
+          href="<mt:var name="href" escape="html">"
+          <mt:if name="target">target="<mt:var name="target" escape="html">"</mt:if>
+          <mt:if name="id" eq="create_new">data-is="create-button"</mt:if>
+          title="<mt:var name="label" escape="html">"
+        >
+          <svg role="img" class="mt-icon">
+              <title><__trans phrase="<mt:var name="label" escape="html">"></title>
+              <use xlink:href="<mt:var name="static_uri" escape="html">images/admin2025/sprite.svg#<mt:var name="icon" escape="html">"></use>
+          </svg>
+          <span class="label"><__trans phrase="<mt:var name="label" escape="html">"></span>
+        </a>
+    </mt:loop>
+  </div>
 
-          <svg role="img" class="mt-icon">
-            <title><__trans phrase="Rebuild"></title>
-            <use xlink:href="<mt:var name="static_uri">images/admin2025/sprite.svg#ic_rebuild"></use>
-          </svg>
-          <__trans phrase="Rebuild">
+  <div class="mt-primaryNavigationExpansion__control">
+    <mt:loop name="menu_actions">
+      <mt:unless name="plugin" eq="core">
+        <mt:setvarblock name="escaped_menu_action_label"><mt:var name="label" escape="html"></mt:setvarblock>
+        <a 
+          id="menu-<mt:var name="id" escape="html">"
+          href="<mt:var name="href" escape="html">"
+          class="btn btn-default <mt:var name="class" escape="html">"
+          <mt:if name="target"> target="<mt:var name="target" escape="html">"</mt:if>
+        >
+          <mtapp:svgicon id="$icon" title="$escaped_menu_action_label">
+          <mt:var name="escaped_menu_action_label">
         </a>
-        <a href="<mt:var name="blog_url">" class="menu_actions__button view_site" target="_blank">
-          <svg role="img" class="mt-icon">
-            <title><__trans phrase="View Your Site"></title>
-            <use xlink:href="<mt:var name="static_uri">images/admin2025/sprite.svg#ic_view"></use>
-          </svg>
-          <__trans phrase="View Your Site">
-        </a>
-    </div>
-  </mt:if>
+      </mt:unless>
+    </mt:loop>
+  </div>
 
   <div class="mt-primaryNavigation__content">
     <ul id="primaryNavigation" class="mt-primaryNavigation__list" data-children=".item">

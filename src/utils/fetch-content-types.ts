@@ -14,7 +14,7 @@ export const fetchContentTypes = async (
   props: FetchContentTypesProps,
 ): Promise<ContentTypes> => {
   const fetchParams = {
-    __mode: "fetch_admin_header_content_types",
+    __mode: "content_types_for_search_action",
     blog_id: props.blogId,
     magic_token: props.magicToken,
   };
