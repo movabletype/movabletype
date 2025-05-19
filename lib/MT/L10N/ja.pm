@@ -2744,6 +2744,7 @@ use vars qw( @ISA %Lexicon );
 	'Assigning user types...' => 'ユーザーの種類を設定しています...',
 	'Assigning visible status for TrackBacks...' => 'トラックバックに表示状態を設定しています...',
 	'Assigning visible status for comments...' => 'コメントに表示状態を設定しています...',
+	'Checking perl modules...' => 'Perlのモジュールを確認しています...',
 	'Creating initial site and user records...' => '初期ユーザーとウェブサイトを作成しています...',
 	'Creating initial user records...' => '初期ユーザーのレコードを作成しています...',
 	'Error creating role record: [_1].' => 'ロールレコード作成エラー: [_1]',
