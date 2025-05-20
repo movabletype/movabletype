@@ -211,11 +211,13 @@ sub upgrade {
         $param{version_warning} = 1;
         $param{perl_version}    = sprintf('%vd', $^V);
         $param{perl_minimum}    = '5.16.3';
+        $param{has_warning}     = 1;
     }
 
     require MT::Util::Dependencies;
     if (MT::Util::Dependencies->lacks_core_modules) {
         $param{lacks_core_modules} = 1;
+        $param{has_warning}        = 1;
     }
 
     return $app->main(\%param) unless $app->needs_upgrade;
