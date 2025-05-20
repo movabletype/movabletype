@@ -2770,10 +2770,11 @@ body:has(.mt-primaryNavigation) {
   top: 0px;
   left: 0;
   width: 313px;
-  height: 500px;
+  height: auto;
   background-color: #ffffff;
   z-index: var(--modal-z-index);
-  display: block;
+  display: flex;
+  flex-direction: column;
   overflow: visible;
   border-width: 1px 1px 1px 0px;
   border-style: solid;
