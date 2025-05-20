@@ -7,10 +7,10 @@
 </mt:setvarblock>
 
 <mt:setvarblock name="page_title">
-<mt:if name="version_warning">
-  <span id="version-warning-header"><__trans phrase="Welcome to Movable Type"></span>
+<mt:if name="has_warning">
+  <span id="has-warning-header"><__trans phrase="Welcome to Movable Type"></span>
 </mt:if>
-<span id="welcome-header"<mt:if name="version_warning"> style="display: none;"</mt:if>><__trans phrase="Create Your Account"></span>
+<span id="welcome-header"<mt:if name="has_warning"> style="display: none;"</mt:if>><__trans phrase="Create Your Account"></span>
 </mt:setvarblock>
 
 <mt:setvar name="complete" value="1">
@@ -19,15 +19,15 @@
 
 <mt:setvarblock name="page_content">
 <div class="upgrade">
-<mt:if name="version_warning">
-  <div class="warning" id="version-warning">
+<mt:if name="has_warning">
+  <div class="warning" id="has-warning">
     <p><__trans phrase="The version of Perl installed on your server ([_1]) is lower than the minimum supported version ([_2])." params="<mt:var name="perl_version">%%<mt:var name="perl_minimum">"></p>
     <p><__trans phrase="While Movable Type may run, it is an <strong>untested and unsupported environment</strong>.  We strongly recommend upgrading to at least Perl [_1]." params="<mt:var name="perl_minimum">"></p>
     <p><__trans phrase="Do you want to proceed with the installation anyway?"></p>
     <div class="actions-bar text-end">
       <input type="hidden" name="continue" value="1" />
       <button
-         onclick="dismiss('version-warning'); show('welcome'); return false;"
+         onclick="dismiss('has-warning'); show('welcome'); return false;"
          type="submit"
          accesskey="s"
          title="<__trans phrase="Yes (s)">"
@@ -46,7 +46,7 @@
   </div>
   </mt:if>
 
-  <div id="welcome"<mt:if name="version_warning"> style="display: none;"</mt:if>>
+  <div id="welcome"<mt:if name="has_warning"> style="display: none;"</mt:if>>
     <p class="intro"><__trans phrase="Please create an administrator account for your system. When you are done, Movable Type will initialize your database."></p>
   <mt:if name="error">
     <mtapp:statusmsg
