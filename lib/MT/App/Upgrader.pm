@@ -217,7 +217,7 @@ sub upgrade {
         $param{lacks_core_modules} = 1;
     }
 
-    return $app->main(@_) unless $app->needs_upgrade;
+    return $app->main(\%param) unless $app->needs_upgrade;
 
     my $install_mode;
 
@@ -233,7 +233,7 @@ sub upgrade {
     }
 
     if ( $method ne 'POST' ) {
-        return $app->main();
+        return $app->main(\%param);
     }
 
     $app->validate_magic or return;
