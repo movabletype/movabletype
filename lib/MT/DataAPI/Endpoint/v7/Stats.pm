@@ -354,9 +354,9 @@ sub screenpageviews_for_date {
 sub screenpageviews_for_yearweek_openapi_spec {
     return +{
         tags        => ['Statistics'],
-        summary     => 'Retrieve pageviews count for each yearWeek from provider (e.g. Google Analytics V4)',
+        summary     => 'Retrieve screenPageViews count for each yearWeek from provider (e.g. Google Analytics V4)',
         description => <<'DESCRIPTION',
-Retrieve pageviews count for each yearWeek from provider (e.g. Google Analytics V4).
+Retrieve screenPageViews count for each yearWeek from provider (e.g. Google Analytics V4).
 
 Authorization is required.
 DESCRIPTION
@@ -456,9 +456,9 @@ sub screenpageviews_for_yearweek {
 sub screenpageviews_for_yearmonth_openapi_spec {
     return +{
         tags        => ['Statistics'],
-        summary     => 'Retrieve pageviews count for each yearMonth from provider (e.g. Google Analytics V4)',
+        summary     => 'Retrieve screenPageViews count for each yearMonth from provider (e.g. Google Analytics V4)',
         description => <<'DESCRIPTION',
-Retrieve pageviews count for each yearMonth from provider (e.g. Google Analytics V4).
+Retrieve screenPageViews count for each yearMonth from provider (e.g. Google Analytics V4).
 
 Authorization is required.
 DESCRIPTION
@@ -558,9 +558,9 @@ sub screenpageviews_for_yearmonth {
 sub screenpageviews_for_year_openapi_spec {
     return +{
         tags        => ['Statistics'],
-        summary     => 'Retrieve pageviews count for each year from provider (e.g. Google Analytics V4)',
+        summary     => 'Retrieve screenPageViews count for each year from provider (e.g. Google Analytics V4)',
         description => <<'DESCRIPTION',
-Retrieve pageviews count for each year from provider (e.g. Google Analytics V4).
+Retrieve screenPageViews count for each year from provider (e.g. Google Analytics V4).
 
 Authorization is required.
 DESCRIPTION
