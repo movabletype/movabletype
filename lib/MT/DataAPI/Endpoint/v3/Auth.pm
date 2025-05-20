@@ -48,7 +48,7 @@ sub _login {
     );
     if (  !$author
         || $author->locked_out
-        || $author->api_password ne $password )
+        || !$author->is_valid_api_password($password))
     {
         return;
     }
