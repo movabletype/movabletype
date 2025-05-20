@@ -217,6 +217,11 @@ sub upgrade {
         $param{perl_minimum}    = '5.16.3';
     }
 
+    require MT::Util::Dependencies;
+    if (MT::Util::Dependencies->lacks_core_modules) {
+        $param{lacks_core_modules} = 1;
+    }
+
     my $method = $app->request_method;
 
     my $driver       = MT::Object->driver;
