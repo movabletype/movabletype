@@ -235,29 +235,57 @@ sub _get_statistics_by_dimension {
         });
 }
 
-sub _screenpageviews_for_dimension { _get_statistics_by_dimension(@_, 'screenPageViews') }
-
 sub pageviews_for_date { screenpageviews_for_date(@_) }
 
-sub screenpageviews_for_date { _screenpageviews_for_dimension(@_, 'date') }
+sub screenpageviews_for_date {
+    my $self = shift;
+    my ($app, $params) = @_;
+    $self->_get_statistics_by_dimension($app, $params, 'date', 'screenPageViews');
+}
 
-sub screenpageviews_for_yearweek { _screenpageviews_for_dimension(@_, 'yearWeek') }
+sub screenpageviews_for_yearweek {
+    my $self = shift;
+    my ($app, $params) = @_;
+    $self->_get_statistics_by_dimension($app, $params, 'yearWeek', 'screenPageViews');
+}
 
-sub screenpageviews_for_yearmonth { _screenpageviews_for_dimension(@_, 'yearMonth') }
+sub screenpageviews_for_yearmonth {
+    my $self = shift;
+    my ($app, $params) = @_;
+    $self->_get_statistics_by_dimension($app, $params, 'yearMonth', 'screenPageViews');
+}
 
-sub screenpageviews_for_year { _screenpageviews_for_dimension(@_, 'year') }
-
-sub _sessions_for_dimension { _get_statistics_by_dimension(@_, 'sessions') }
+sub screenpageviews_for_year {
+    my $self = shift;
+    my ($app, $params) = @_;
+    $self->_get_statistics_by_dimension($app, $params, 'year', 'screenPageViews');
+}
 
 sub visits_for_date { sessions_for_date(@_) }
 
-sub sessions_for_date { _sessions_for_dimension(@_, 'date') }
+sub sessions_for_date {
+    my $self = shift;
+    my ($app, $params) = @_;
+    $self->_get_statistics_by_dimension($app, $params, 'date', 'sessions');
+}
 
-sub sessions_for_yearweek { _sessions_for_dimension(@_, 'yearWeek') }
+sub sessions_for_yearweek {
+    my $self = shift;
+    my ($app, $params) = @_;
+    $self->_get_statistics_by_dimension($app, $params, 'yearWeek', 'sessions');
+}
 
-sub sessions_for_yearmonth { _sessions_for_dimension(@_, 'yearMonth') }
+sub sessions_for_yearmonth {
+    my $self = shift;
+    my ($app, $params) = @_;
+    $self->_get_statistics_by_dimension($app, $params, 'yearMonth', 'sessions');
+}
 
-sub sessions_for_year { _sessions_for_dimension(@_, 'year') }
+sub sessions_for_year {
+    my $self = shift;
+    my ($app, $params) = @_;
+    $self->_get_statistics_by_dimension($app, $params, 'year', 'sessions');
+}
 
 sub path_key { 'pagePath' }
 
