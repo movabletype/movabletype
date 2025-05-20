@@ -14471,7 +14471,6 @@ li.nav-item, .mt-sharedPreviewNav .mt-sharedPreviewNav__rightNav li.mt-sharedPre
 .site-list-button-modal .site-list-container table td:after {
   content: "";
   display: block;
-  width: calc(100% - var(--td-horizontal-spacing));
   border-bottom: 1px solid #cbcbcb;
   position: absolute;
   bottom: 0;

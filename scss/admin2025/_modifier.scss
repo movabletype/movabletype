@@ -3195,7 +3195,6 @@ body:has(.mt-primaryNavigation) {
         &:after {
           content: "";
           display: block;
-          width: calc(100% - var(--td-horizontal-spacing));
           border-bottom: 1px solid #cbcbcb;
           position: absolute;
           bottom: 0;
