@@ -205,11 +205,7 @@ sub current_magic {
 sub upgrade {
     my $app = shift;
 
-    return $app->main(@_) unless $app->needs_upgrade;
-
-    my $install_mode;
     my %param;
-
     my $perl_ver_check = '';
     if ( $] < 5.016003 ) {    # our minimal requirement for support
         $param{version_warning} = 1;
@@ -221,6 +217,10 @@ sub upgrade {
     if (MT::Util::Dependencies->lacks_core_modules) {
         $param{lacks_core_modules} = 1;
     }
+
+    return $app->main(@_) unless $app->needs_upgrade;
+
+    my $install_mode;
 
     my $method = $app->request_method;
 
