@@ -451,7 +451,7 @@ PHP
                 }
             }
 
-            if ($expected_method =~ /^expected_(?:php_)?error/) {
+            if ($expected_method =~ /^expected_(?:php_)?error/ and !$result) {
                 $result = $php_error;
                 $result =~ s!^.+?error:<p><b>Error:</b> !!;
                 $result =~ s!<br></p><pre>.+$!!s;

@@ -223,7 +223,7 @@ SKIP: {
                 $expected_src =~ s/\\r/\\n/g;
                 $expected_src =~ s/\r/\n/g;
 
-                if ($expected_method =~ /^expected_(?:php_)?error/) {
+                if ($expected_method =~ /^expected_(?:php_)?error/ and !$got) {
                     $got = $php_error;
                     $got =~ s/^#\d+ .+$//mg;   # remove trace
                     $got =~ s/^.+?str:Error: //;
