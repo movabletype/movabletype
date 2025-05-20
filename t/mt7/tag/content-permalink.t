@@ -734,3 +734,5 @@ https://localhost/category/2017/#000004
 <MTContentPermalink>
 --- expected
 You used an 'mtContentPermalink' tag outside of the context of a content; Perhaps you mistakenly placed it outside of an 'MTContents' container tag?
+--- expected_php_error
+You used an 'mtContentPermalink' tag outside of the context of a content; Perhaps you mistakenly placed it outside of an 'MTContents' container tag?
