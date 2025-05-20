@@ -570,7 +570,7 @@ class MT {
                 $msg = "<b>Error:</b> ". $e->getMessage() ."<br>\n" .
                        "<pre>".$e->getTraceAsString()."</pre>";
 
-                return trigger_error( $msg, E_USER_ERROR);
+                throw new Exception($msg);
             }
             header( "503 Service Unavailable" );
             return false;

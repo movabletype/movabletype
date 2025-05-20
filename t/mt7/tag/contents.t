@@ -575,3 +575,5 @@ test single line text 2
 <mt:Contents blog_id="99"><mt:ContentID></mt:Contents>
 --- expected
 Content Type was not found. Blog ID: 99
+--- expected_php_error
+Content Type was not found. Blog ID: 99
