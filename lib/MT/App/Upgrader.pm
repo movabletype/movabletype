@@ -816,13 +816,6 @@ sub main {
     my $app = shift;
     my ($param) = @_;
 
-    my $perl_ver_check = '';
-    if ( $] < 5.016003 ) {    # our minimal requirement for support
-        $param->{version_warning} = 1;
-        $param->{perl_version}    = sprintf('%vd', $^V);
-        $param->{perl_minimum}    = '5.16.3';
-    }
-
     my $driver       = MT::Object->driver;
     my $author_class = MT->model('author');
     if ( !$driver || !$driver->table_exists($author_class) ) {
