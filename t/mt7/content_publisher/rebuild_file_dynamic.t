@@ -96,7 +96,7 @@ PHP
     my $expected
         = $map->archive_type eq 'ContentType'
         ? 'content stash exists'
-        : 'content stash does not exist';
+        : 'content stash';
     is( $result, $expected, $test_name );
 
     my $php_error = MT::Test::Tag->_retrieve_php_logs($log);
