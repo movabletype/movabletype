@@ -451,6 +451,13 @@ PHP
                 }
             }
 
+            if ($expected_method =~ /^expected_(?:php_)?error/) {
+                $result = $php_error;
+                $result =~ s!^.+?error:<p><b>Error:</b> !!;
+                $result =~ s!<br></p><pre>.+$!!s;
+                $php_error = '';
+            }
+
             my $expected = $block->$expected_method;
             $expected = '' unless defined $expected;
             $expected =~ s/\\r/\\n/g;

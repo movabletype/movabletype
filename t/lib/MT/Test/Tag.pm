@@ -223,6 +223,14 @@ SKIP: {
                 $expected_src =~ s/\\r/\\n/g;
                 $expected_src =~ s/\r/\n/g;
 
+                if ($expected_method =~ /^expected_(?:php_)?error/) {
+                    $got = $php_error;
+                    $got =~ s/^#\d+ .+$//mg;   # remove trace
+                    $got =~ s/^.+?str:Error: //;
+                    $got =~ s/\s+$//;
+                    $php_error = '';
+                }
+
                 # for Smarty 3.1.32+
                 $got          =~ s/\n//gs;
                 $expected_src =~ s/\n//gs;
