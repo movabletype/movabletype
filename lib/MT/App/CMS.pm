@@ -2767,16 +2767,7 @@ sub user_can_admin_commenters {
 
 sub validate_magic {
     my $app = shift;
-    if ( my $feed_token = $app->param('feed_token') ) {
-        return unless $app->user;
-        my $pw = $app->user->api_password;
-        return undef if ( $pw || '' ) eq '';
-        my $auth_token = perl_sha1_digest_hex( 'feed:' . $pw );
-        return $feed_token eq $auth_token;
-    }
-    else {
-        return $app->SUPER::validate_magic(@_);
-    }
+    return $app->SUPER::validate_magic(@_);
 }
 
 sub can_sign_in {
