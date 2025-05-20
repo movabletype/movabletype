@@ -11551,9 +11551,9 @@ Adjustments
   --header-height: 48px;
   --left-bar-toggle-width: 13px;
   --left-bar-mouseover-width: 13px;
-  --modal-z-index: 1102;
-  --left-bar-z-index: 1101;
-  --header-z-index: 1101;
+  --modal-z-index: 1300;
+  --left-bar-z-index: 1200;
+  --header-z-index: 1200;
 }
 
 html {
