@@ -204,7 +204,6 @@ sub cms_widgets {
 
                 my $local_tmpl = MT->model('template')->load($tmpl_id);
                 my $ctx        = $local_tmpl->context;
-                $ctx->stash('dashboard_widget_template', 1);
                 if (my $blog = $app->blog) {
                     $ctx->stash('blog_id', $blog->id);
                     $ctx->stash('blog',    $blog);
@@ -228,26 +227,6 @@ sub cms_widgets {
         };
     }
     return $widgets;
-}
-
-sub _hdlr_permission {
-    my ($ctx, $args) = @_;
-
-    my $tag_name = $ctx->stash('tag');
-    $tag_name = 'mt' . $tag_name unless $tag_name =~ m/^MT/i;
-
-    $ctx->stash('dashboard_widget_template')
-        or return $ctx->error(MT->translate("You used an '[_1]' tag outside of the context of the correct content; ", $tag_name));
-
-    my $has = $args->{has}
-        or return 0;
-
-    my $app  = MT->instance;
-    my $user = $app->user;
-    return 1 if $user->is_superuser;
-    my $perm =
-        $user->permissions($ctx->stash('blog') && $ctx->stash('blog')->id || 0);
-    return $perm && $perm->has($has);
 }
 
 1;

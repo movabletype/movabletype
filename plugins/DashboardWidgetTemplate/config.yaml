@@ -20,7 +20,3 @@ callbacks:
 applications:
   cms:
     widgets: $DashboardWidgetTemplate::MT::Plugin::DashboardWidgetTemplate::cms_widgets
-
-tags:
-  block:
-    app:permission?: $DashboardWidgetTemplate::MT::Plugin::DashboardWidgetTemplate::_hdlr_permission
