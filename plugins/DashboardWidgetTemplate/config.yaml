@@ -6,6 +6,10 @@ description: <__trans phrase="This plugin provides the ability to create dashboa
 author_link: http://www.movabletype.org/
 author_name: Six Apart Ltd.
 
+object_types:
+  template:
+    dashboard_widget_pinned: 'boolean meta'
+
 l10n_class: MT::Plugin::DashboardWidgetTemplate::L10N
 
 callbacks:
@@ -13,6 +17,7 @@ callbacks:
   MT::App::CMS::template_param.edit_template: $DashboardWidgetTemplate::MT::Plugin::DashboardWidgetTemplate::template_param_edit_template
   MT::App::CMS::template_param.dashboard: $DashboardWidgetTemplate::MT::Plugin::DashboardWidgetTemplate::template_param_dashboard
   MT::App::CMS::template_param.theme_element_detail: $DashboardWidgetTemplate::MT::Plugin::DashboardWidgetTemplate::template_param_theme_element_detail
+  MT::App::CMS::cms_pre_save.template: $DashboardWidgetTemplate::MT::Plugin::DashboardWidgetTemplate::pre_save_template
   MT::App::CMS::init_app: $DashboardWidgetTemplate::MT::Plugin::DashboardWidgetTemplate::init_app
   MT::Template::post_remove: $DashboardWidgetTemplate::MT::Plugin::DashboardWidgetTemplate::template_post_save
   MT::Template::post_save: $DashboardWidgetTemplate::MT::Plugin::DashboardWidgetTemplate::template_post_save

@@ -13,9 +13,9 @@ sub plugin {
 }
 
 sub insert_before {
-    my ($tmpl, $id, $tokens) = @_;
+    my ($tmpl, $name, $tokens) = @_;
 
-    my $before = $id ? $tmpl->getElementById($id) : undef;
+    my $before = $name ? $tmpl->getElementsByName($name)->[0] : undef;
 
     if (!ref $tokens) {
         $tokens = plugin()->load_tmpl($tokens)->tokens;
@@ -23,7 +23,6 @@ sub insert_before {
 
     foreach my $t (@$tokens) {
         $tmpl->insertBefore($t, $before);
-        $before = $t;
     }
 }
 
@@ -105,6 +104,20 @@ sub template_param_list_template {
 
 sub template_param_edit_template {
     my ($cb, $app, $param, $tmpl) = @_;
+    if (my $id = $app->param('id')) {
+        my $tmpl = MT->model('template')->load($id);
+        return unless $tmpl->type eq 'dashboard_widget';
+
+        $param->{dashboard_widget_pinned} = $tmpl->meta('dashboard_widget_pinned');
+    } else {
+        return unless $app->param('type') eq 'dashboard_widget';
+
+        $param->{dashboard_widget_pinned} = 1;
+    }
+    insert_before(
+        $tmpl, 'has_outfile',
+        'dashboard_widget_template_edit_template_options.tmpl'
+    );
     insert_before(
         $tmpl, undef,
         'dashboard_widget_template_edit_template.tmpl'
@@ -147,6 +160,14 @@ sub template_param_theme_element_detail {
 
         last;
     }
+}
+
+sub pre_save_template {
+    my ($cb, $app, $obj) = @_;
+    if ($obj->type eq 'dashboard_widget') {
+        $obj->meta('dashboard_widget_pinned', $app->param('dashboard_widget_pinned') ? 1 : 0);
+    }
+    1;
 }
 
 sub template_post_save {
@@ -208,7 +229,8 @@ sub cms_widgets {
                     $ctx->stash('blog_id', $blog->id);
                     $ctx->stash('blog',    $blog);
                 }
-                $t->param('label', $local_tmpl->name);
+                $t->param('label',     $local_tmpl->name);
+                $t->param('can_close', $local_tmpl->meta('dashboard_widget_pinned') ? 0 : 1);
                 require MT::Sanitize;
                 $t->param(
                     'content',
