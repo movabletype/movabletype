@@ -5756,8 +5756,9 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/admin2025/cms/include/system-header-actions.tmpl
 	'Select target and search text...' => '対象を選んでテキスト検索...',
 	'[_1]Site' => '[_1]サイト',
-	'All Sites' => 'すべてのサイト',
-	'Child Sites Only' => '子サイトのみ',
+	'Parent Sites' => '親サイト',
+	'Parent and child sites' => '親サイトと子サイト',
+	'Only child sites' => '子サイトのみ',
 	'Filter by site name' => 'サイト名で絞り込む',
 );
 

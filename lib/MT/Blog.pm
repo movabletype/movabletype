@@ -287,17 +287,27 @@ sub list_props {
             order           => 800,
             display         => 'default',
             filter_editable => 0,
-            raw             => sub {
-                my ( $prop, $obj ) = @_;
-                if ( $obj->is_blog ) {
-                    my $parent = $obj->website;
+            html => sub {
+                my $prop = shift;
+                my ( $obj, $app, $opts ) = @_;
+                return '-' unless $obj->is_blog;
+
+                my $parent = $obj->website;
+                my $name =
                     $parent
-                        ? $parent->name
-                        : ( MT->translate('*Site/Child Site deleted*') );
-                }
-                else {
-                    '-';
-                }
+                  ? $parent->name
+                  : MT->translate('*Site/Child Site deleted*');
+                return $name if !defined $parent;
+
+                my $dashboard_link = MT::Util::encode_html(
+                    $app->uri(
+                        mode => 'dashboard',
+                        args => { blog_id => $parent->id, },
+                    )
+                );
+                my $can_double_encode = 1;
+                $name = MT::Util::encode_html( $name, $can_double_encode );
+                return qq{<a href="$dashboard_link"> $name</a>};
             },
             bulk_sort => sub {
                 my $prop       = shift;
