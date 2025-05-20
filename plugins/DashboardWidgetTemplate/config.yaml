@@ -21,6 +21,7 @@ callbacks:
   MT::App::CMS::init_app: $DashboardWidgetTemplate::MT::Plugin::DashboardWidgetTemplate::init_app
   MT::Template::post_remove: $DashboardWidgetTemplate::MT::Plugin::DashboardWidgetTemplate::template_post_save
   MT::Template::post_save: $DashboardWidgetTemplate::MT::Plugin::DashboardWidgetTemplate::template_post_save
+  pre_apply_theme: $DashboardWidgetTemplate::MT::Plugin::DashboardWidgetTemplate::pre_apply_theme
 
 applications:
   cms:

@@ -175,6 +175,18 @@ sub template_post_save {
     MT->instance->reboot if $obj->type eq 'dashboard_widget';
 }
 
+sub pre_apply_theme {
+    my ($cb, $theme, $blog) = @_;
+    if (my ($element) = grep { $_->{id} eq 'template_set' } $theme->elements) {
+        if (my $dashboard_widget_templates = $element->{data}{templates}{dashboard_widget}) {
+            for my $id (keys %$dashboard_widget_templates) {
+                if ($dashboard_widget_templates->{$id}{pinned}) {
+                    $dashboard_widget_templates->{$id}{dashboard_widget_pinned} = 1;
+                }
+            }
+        }
+    }
+}
 sub init_app {
     require MT::DefaultTemplates;
     require MT::Theme::TemplateSet;
@@ -199,6 +211,20 @@ sub init_app {
             my ($tmpl) = @_;
             return 'dashboard_widget' if $tmpl->type eq 'dashboard_widget';
             return $orig->(@_);
+        });
+    Class::Method::Modifiers::around(
+        'MT::Theme::TemplateSet::export',
+        sub {
+            my $orig   = shift;
+            my $result = $orig->(@_);
+            if (my $templates = $result->{templates}) {
+                for my $obj (@{ $result->{objs} }) {
+                    next unless $obj->type eq 'dashboard_widget' && $obj->meta('dashboard_widget_pinned');
+                    my $id = $obj->identifier || 'template_' . $obj->id;
+                    $templates->{dashboard_widget}{$id}{pinned} = 1;
+                }
+            }
+            return $result;
         });
 }
 
