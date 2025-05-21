@@ -268,6 +268,7 @@ sub cms_widgets {
             set       => 'main',
             view      => $tmpl_blog_id ? ['website', 'blog'] : 'user',
             order     => sprintf("30.%03d", $order++),
+            pinned    => $tmpl->meta('dashboard_widget_pinned'),
             condition => sub {
                 my $blog_id = MT->instance->param('blog_id') || 0;
                 $blog_id ? $tmpl_blog_id == $blog_id : !$tmpl_blog_id;
