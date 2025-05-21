@@ -311,6 +311,22 @@ SKIP: {
         skip( 'YAML::Syck is not installed', 1 );
     }
 }
+SKIP: {
+    if ( eval { require YAML::PP } ) {
+        use_ok('MT::Util::YAML::PP');
+    }
+    else {
+        skip( 'YAML::PP is not installed', 1 );
+    }
+}
+SKIP: {
+    if ( eval { require YAML::XS } ) {
+        use_ok('MT::Util::YAML::XS');
+    }
+    else {
+        skip( 'YAML::XS is not installed', 1 );
+    }
+}
 use_ok('MT::Util::YAML::Tiny');
 use_ok('MT::Util::Log');
 use_ok('MT::Util::Log::Stderr');

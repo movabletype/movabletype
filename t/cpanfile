@@ -76,7 +76,9 @@ requires 'XML::SAX::Expat';
 requires 'XML::LibXML::SAX';
 
 requires 'CGI::Compile';
+requires 'YAML::PP';
 requires 'YAML::Syck';
+requires 'YAML::XS';
 
 # Cloud.pack
 requires 'Net::CIDR';

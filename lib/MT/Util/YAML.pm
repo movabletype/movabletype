@@ -29,13 +29,14 @@ sub _find_module {
         $Module = $config;
     }
     else {
-        eval { require YAML::Syck };
-        $Module
-            = $@
-            ? 'MT::Util::YAML::Tiny'
-            : 'MT::Util::YAML::Syck';
-        eval "require $Module";
-        die $@ if $@;
+        for my $candidate (qw(YAML::XS YAML::Syck YAML::PP YAML::Tiny)) {
+            if (eval "require $candidate; 1") {
+                $Module = "MT::Util::$candidate";
+                last if eval "require $Module; 1";
+                $Module = '';
+            }
+        }
+        die MT->translate( "Cannot load YAML module: [_1]", $@ ) if $@;
     }
     1;
 }
