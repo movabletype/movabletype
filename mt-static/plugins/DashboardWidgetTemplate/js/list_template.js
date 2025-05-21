@@ -31,4 +31,4 @@ document
   .querySelector(
     `#actions-bar-top-dashboard_widget-listing-form option[value="refresh_tmpl_templates"]`
   )
-  .remove();
+  ?.remove();
