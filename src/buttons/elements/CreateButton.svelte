@@ -17,6 +17,8 @@
         const rect = anchorRef.getBoundingClientRect();
         const styleTop = `calc(${rect.bottom}px + 10px)`;
         modalRef.style.top = styleTop;
+        const styleMaxHeight = `calc(100vh - ${rect.bottom}px - 10px - 20px)`;
+        modalRef.style.maxHeight = styleMaxHeight;
       }
 
       if (open) {
