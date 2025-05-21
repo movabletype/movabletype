@@ -4,7 +4,7 @@ import { svelteMountSidebar } from "./sidebar/sidebar";
 import { svelteMountSearchButton } from "./buttons/search-button";
 import { svelteMountSiteListButton } from "./buttons/site-list-button";
 
-document.addEventListener("DOMContentLoaded", () => {
+(() => {
   // Sidebar toggle
   const sidebarTarget = document.querySelector<HTMLButtonElement>(
     '[data-is="primary-navigation-toggle"]',
@@ -96,4 +96,4 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
-});
+})();
