@@ -60,6 +60,7 @@ sub build_schema {
                 %$resource_schemas,
             },
         },
+        security => [{ mtauth => [] }],
     };
     for my $id (sort keys %$endpoints) {
         if (my $nouns = $endpoints->{$id}{openapi_options}{filtered_list_ds_nouns}) {
@@ -119,9 +120,6 @@ sub build_schema {
                 },
             },
         };
-        if ($endpoints->{$id}{requires_login}) {
-            $response->{paths}{$route}{$verb}{security} = [{ mtauth => [] }];
-        }
         if (@path_parameters) {
             $response->{paths}{$route}{$verb}{parameters} = \@path_parameters;
         }
