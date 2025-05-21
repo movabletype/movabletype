@@ -293,7 +293,7 @@ sub metric_spec_for_pageviews {
     return {
         screenPageViews => {
             type        => 'integer',
-            description => 'The sum total of the pageviews in the specified period.',
+            description => 'The sum total of the screenPageViews in the specified period.',
         },
     };
 }
@@ -320,7 +320,7 @@ sub fields_for_statistics_date {
             name   => 'screenPageViews',
             schema => {
                 type        => 'integer',
-                description => 'The pageviews for the path. This property exists only if the metrics to retrieve is "screenPageViews"',
+                description => 'The number of screenPageViews for the path. This property exists only if the metrics to retrieve is "screenPageViews"',
             },
         },
         {
@@ -346,7 +346,7 @@ sub fields_for_statistics_yearweek {
             name   => 'screenPageViews',
             schema => {
                 type        => 'integer',
-                description => 'The pageviews for the path. This property exists only if the metrics to retrieve is "screenPageViews"',
+                description => 'The number of screenPageViews for the path. This property exists only if the metrics to retrieve is "screenPageViews"',
             },
         },
         {
@@ -372,7 +372,7 @@ sub fields_for_statistics_yearmonth {
             name   => 'screenPageViews',
             schema => {
                 type        => 'integer',
-                description => 'The pageviews for the path. This property exists only if the metrics to retrieve is "screenPageViews"',
+                description => 'The number of screenPageViews for the path. This property exists only if the metrics to retrieve is "screenPageViews"',
             },
         },
         {
@@ -398,7 +398,7 @@ sub fields_for_statistics_year {
             name   => 'screenPageViews',
             schema => {
                 type        => 'integer',
-                description => 'The pageviews for the path. This property exists only if the metrics to retrieve is "screenPageViews"',
+                description => 'The number of screenPageViews for the path. This property exists only if the metrics to retrieve is "screenPageViews"',
             },
         },
         {
@@ -431,7 +431,7 @@ sub fields_for_statistics_path {
             name   => 'screenPageViews',
             schema => {
                 type        => 'integer',
-                description => 'The pageviews for the path. This property exists only if the metrics to retrieve is "screenPageViews"',
+                description => 'The number of screenPageViews for the path. This property exists only if the metrics to retrieve is "screenPageViews"',
             },
         },
         {

@@ -15,7 +15,7 @@ sub fields {
             alias  => 'pageviews',
             schema => {
                 type        => 'integer',
-                description => 'The pageviews for the path. This property exists only if the metrics to retrieve is "screenPageViews"',
+                description => 'The number of screenPageViews for the path. This property exists only if the metrics to retrieve is "screenPageViews"',
             },
         },
         {

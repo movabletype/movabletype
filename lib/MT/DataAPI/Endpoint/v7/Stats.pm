@@ -399,7 +399,7 @@ DESCRIPTION
                     type => 'integer',
                     enum => [0, 1],
                 },
-                description => 'This is an optional parameter. If true is given, the MT can return total screenPageViews for each uniqueness paths. However, that data does not contain page title because its spec. (Sometimes, Google Analytics will return another pageviews by same path.)',
+                description => 'This is an optional parameter. If true is given, the MT can return total screenPageViews for each uniqueness paths. However, that data does not contain page title because its spec. (Sometimes, Google Analytics will return another screenPageViews by same path.)',
             },
         ],
         responses => {
@@ -426,7 +426,7 @@ DESCRIPTION
                                     properties => {
                                         screenPageViews => {
                                             type        => 'integer',
-                                            description => 'The sum total of the pageviews in the specified period.',
+                                            description => 'The sum total of the screenPageViews in the specified period.',
                                         },
                                     },
                                 },
@@ -501,7 +501,7 @@ DESCRIPTION
                     type => 'integer',
                     enum => [0, 1],
                 },
-                description => 'This is an optional parameter. If true is given, the MT can return total screenPageViews for each uniqueness paths. However, that data does not contain page title because its spec. (Sometimes, Google Analytics will return another pageviews by same path.)',
+                description => 'This is an optional parameter. If true is given, the MT can return total screenPageViews for each uniqueness paths. However, that data does not contain page title because its spec. (Sometimes, Google Analytics will return another screenPageViews by same path.)',
             },
         ],
         responses => {
@@ -528,7 +528,7 @@ DESCRIPTION
                                     properties => {
                                         screenPageViews => {
                                             type        => 'integer',
-                                            description => 'The sum total of the pageviews in the specified period.',
+                                            description => 'The sum total of the screenPageViews in the specified period.',
                                         },
                                     },
                                 },
@@ -603,7 +603,7 @@ DESCRIPTION
                     type => 'integer',
                     enum => [0, 1],
                 },
-                description => 'This is an optional parameter. If true is given, the MT can return total screenPageViews for each uniqueness paths. However, that data does not contain page title because its spec. (Sometimes, Google Analytics will return another pageviews by same path.)',
+                description => 'This is an optional parameter. If true is given, the MT can return total screenPageViews for each uniqueness paths. However, that data does not contain page title because its spec. (Sometimes, Google Analytics will return another screenPageViews by same path.)',
             },
         ],
         responses => {
@@ -630,7 +630,7 @@ DESCRIPTION
                                     properties => {
                                         screenPageViews => {
                                             type        => 'integer',
-                                            description => 'The sum total of the pageviews in the specified period.',
+                                            description => 'The sum total of the screenPageViews in the specified period.',
                                         },
                                     },
                                 },
