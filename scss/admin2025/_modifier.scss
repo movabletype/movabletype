@@ -3172,21 +3172,11 @@ body:has(.mt-primaryNavigation) {
       border-spacing: 0;
       border-collapse: separate;
 
+      --td-horizontal-spacing: 16px;
+
       tr {
         text-align: left;
         background: #ffffff;
-        position: relative;
-
-        &:after {
-          content: "";
-          display: block;
-          width: calc(100% - 16px * 2);
-          border-bottom: 1px solid #cbcbcb;
-          position: absolute;
-          bottom: 0;
-          left: 16px;
-          right: 0;
-        }
       }
       tbody {
         overflow-y: scroll;
@@ -3196,14 +3186,37 @@ body:has(.mt-primaryNavigation) {
         line-height: 125%;
         color: #212529;
         vertical-align: middle;
-        padding: 14px 16px;
+        padding: 14px var(--td-horizontal-spacing);
         width: 100%;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
+        position: relative;
+
+        &:after {
+          content: "";
+          display: block;
+          border-bottom: 1px solid #cbcbcb;
+          position: absolute;
+          bottom: 0;
+          left: var(--td-horizontal-spacing);
+          right: 0;
+        }
 
         &:last-child {
           width: 200px;
+
+          a {
+            max-width: calc(200px - var(--td-horizontal-spacing) * 2);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
+
+          &:after {
+            left: 0;
+            right: var(--td-horizontal-spacing);
+          }
         }
 
         &.loading {

@@ -14448,21 +14448,11 @@ li.nav-item, .mt-sharedPreviewNav .mt-sharedPreviewNav__rightNav li.mt-sharedPre
   table-layout: fixed;
   border-spacing: 0;
   border-collapse: separate;
+  --td-horizontal-spacing: 16px;
 }
 .site-list-button-modal .site-list-container table tr {
   text-align: left;
   background: #ffffff;
-  position: relative;
-}
-.site-list-button-modal .site-list-container table tr:after {
-  content: "";
-  display: block;
-  width: calc(100% - 32px);
-  border-bottom: 1px solid #cbcbcb;
-  position: absolute;
-  bottom: 0;
-  left: 16px;
-  right: 0;
 }
 .site-list-button-modal .site-list-container table tbody {
   overflow-y: scroll;
@@ -14472,14 +14462,34 @@ li.nav-item, .mt-sharedPreviewNav .mt-sharedPreviewNav__rightNav li.mt-sharedPre
   line-height: 125%;
   color: #212529;
   vertical-align: middle;
-  padding: 14px 16px;
+  padding: 14px var(--td-horizontal-spacing);
   width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  position: relative;
+}
+.site-list-button-modal .site-list-container table td:after {
+  content: "";
+  display: block;
+  border-bottom: 1px solid #cbcbcb;
+  position: absolute;
+  bottom: 0;
+  left: var(--td-horizontal-spacing);
+  right: 0;
 }
 .site-list-button-modal .site-list-container table td:last-child {
   width: 200px;
+}
+.site-list-button-modal .site-list-container table td:last-child a {
+  max-width: calc(200px - var(--td-horizontal-spacing) * 2);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.site-list-button-modal .site-list-container table td:last-child:after {
+  left: 0;
+  right: var(--td-horizontal-spacing);
 }
 .site-list-button-modal .site-list-container table td.loading {
   text-align: center;
