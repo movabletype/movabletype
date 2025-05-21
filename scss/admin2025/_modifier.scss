@@ -1088,15 +1088,18 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper,
   padding: 12px 0;
   font-size: 0.85rem;
   border-bottom: 1px solid $gray-lighter;
-  a, a:hover{
-    color: $body-color;
-    text-decoration: none;
-  }
 
   .dashboard {
-    svg {
-      width: 18px;
-      height: 18px;
+    a {
+      &:hover {
+        text-decoration: none;
+        border-bottom: 1px solid rgba(var(--bs-link-color-rgb), var(--bs-link-opacity, 1))
+      }
+      svg {
+        width: 18px;
+        height: 18px;
+        fill: rgba(var(--bs-link-color-rgb), var(--bs-link-opacity, 1));
+      }
     }
   }
 }

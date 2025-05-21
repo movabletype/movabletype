@@ -12490,13 +12490,14 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper.mouseove
   font-size: 0.85rem;
   border-bottom: 1px solid #E0E0E0;
 }
-.mt-breadcrumb a, .mt-breadcrumb a:hover {
-  color: #212529;
+.mt-breadcrumb .dashboard a:hover {
   text-decoration: none;
+  border-bottom: 1px solid rgba(var(--bs-link-color-rgb), var(--bs-link-opacity, 1));
 }
-.mt-breadcrumb .dashboard svg {
+.mt-breadcrumb .dashboard a svg {
   width: 18px;
   height: 18px;
+  fill: rgba(var(--bs-link-color-rgb), var(--bs-link-opacity, 1));
 }
 
 .mt-gts {
