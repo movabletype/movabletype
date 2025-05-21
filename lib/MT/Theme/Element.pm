@@ -117,7 +117,7 @@ sub validate {
 
 sub information_string {
     my $element  = shift;
-    my ($blog)   = @_;
+    my $blog     = shift;
     my $importer = $_[0] || $element->importer
         or return;
     my $info = $importer->{info} or return;
