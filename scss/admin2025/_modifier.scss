@@ -989,7 +989,9 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper,
   margin-right: 0;
 }
 
-
+[data-scope-type="user"] .mt-mainContent {
+  margin-top: 1.5rem;
+}
 
 /* Main Content */
 .mt-mainContent{

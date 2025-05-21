@@ -12407,6 +12407,10 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper.mouseove
   margin-right: 0;
 }
 
+[data-scope-type=user] .mt-mainContent, [data-scope-type=user] .mt-mainContent--scrollable {
+  margin-top: 1.5rem;
+}
+
 /* Main Content */
 .mt-mainContent, .mt-mainContent--scrollable {
   padding-bottom: 4rem;
