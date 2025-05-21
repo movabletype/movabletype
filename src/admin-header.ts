@@ -55,6 +55,8 @@ const createButtonTarget = document.querySelector<HTMLElement>(
 const searchButtonTarget = document.querySelector<HTMLElement>(
   '[data-is="search-button"]',
 );
+const modalContainerTarget =
+  document.querySelector<HTMLElement>("div.mt-modal");
 
 if (
   (createButtonTarget !== null || searchButtonTarget !== null) &&
@@ -76,6 +78,7 @@ if (
           open: false,
           buttonRef: createButtonTarget,
           anchorRef: createButtonTarget,
+          containerRef: modalContainerTarget,
         },
       });
     }
