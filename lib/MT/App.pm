@@ -1603,6 +1603,13 @@ sub get_commenter_session {
     my $cfg = $app->config;
     require MT::Session;
     my $sess_obj = MT::Session->load( { id => $session_key, kind => 'SI' } );
+
+    my $http_only_cookie_name = $app->commenter_session_cookie_name . '_http_only';
+    if (  !$cookies{$http_only_cookie_name}
+        || $cookies{$http_only_cookie_name}->value() ne $sess_obj->get('http_only_token'))
+    {
+        return (undef, undef);
+    }
     my $timeout = $cfg->CommentSessionTimeout;
     my ( $user_id, $user );
     $user_id = $sess_obj->get('author_id') if $sess_obj;
@@ -1702,6 +1709,7 @@ sub make_commenter_session {
     $sess_obj->start(time);
     $sess_obj->kind("SI");
     $sess_obj->set( 'author_id', $id ) if $id;
+    $sess_obj->set('http_only_token', $app->make_magic_token);
     $sess_obj->save()
         or return $app->error(
         $app->translate(
@@ -1780,11 +1788,20 @@ sub bake_commenter_cookie {
         if $cookie_path =~ m/<\$?mt/i;    # hey, a MT tag! lets evaluate
 
     my %user_session_kookee = (
-        -name  => $app->commenter_session_cookie_name,
-        -value => $app->bake_user_state_cookie($state),
-        -path  => $cookie_path,
-    );
+        -name     => $app->commenter_session_cookie_name,
+        -value    => $app->bake_user_state_cookie($state),
+        -path     => $cookie_path,
+        -httponly => 0,
+        ($timeout ? (-expires => $timeout) : ()));
     $app->bake_cookie(%user_session_kookee);
+
+    my %user_session_http_only_kookee = (
+        -name    => $app->commenter_session_cookie_name . '_http_only',
+        -value   => $sess_obj->get('http_only_token'),
+        -path    => $cookie_path,
+        -expires => '+3650d'
+    );
+    $app->bake_cookie(%user_session_http_only_kookee);
 }
 
 sub commenter_session_cookie_name {
@@ -1883,12 +1900,21 @@ sub _invalidate_commenter_session {
         if $cookie_path =~ m/<\$?mt/i;    # hey, a MT tag! lets evaluate
 
     my %user_session_kookee = (
-        -name    => $app->commenter_session_cookie_name,
+        -name     => $app->commenter_session_cookie_name,
+        -value    => '',
+        -expires  => "+${timeout}s",
+        -httponly => 0,
+        -path     => $cookie_path,
+    );
+    $app->bake_cookie(%user_session_kookee);
+
+    my %user_session_http_only_kookee = (
+        -name    => $app->commenter_session_cookie_name . '_http_only',
         -value   => '',
         -expires => "+${timeout}s",
         -path    => $cookie_path,
     );
-    $app->bake_cookie(%user_session_kookee);
+    $app->bake_cookie(%user_session_http_only_kookee);
 }
 
 sub start_session {

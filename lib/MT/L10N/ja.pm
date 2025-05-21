@@ -3048,8 +3048,10 @@ use vars qw( @ISA %Lexicon );
 	'This module is used to make checksums.' => 'このモジュールはチェックサムの作成に使われます。',
 	'XML::SAX and its dependencies are required to import an exported site and such.' => 'XML::SAXはサイトなどのインポート処理に必要となります。',
 	'XML::Simple is optional. It is used to parse configuration file of the IIS.' => 'XML::SimpleがインストールされていればIISの設定ファイルを解析するのに使われます。',
-	'YAML::Syck is optional; It is a better, fast and lightweight alternative to YAML::Tiny for YAML file handling.' => 'YAML::SyckのインストールがインストールされていればYAML::Tinyよりも軽量で高速に動作します。',
+	'YAML::PP is optional; It is a better alternative to YAML::Tiny for YAML file handling.' => 'YAML::PPはYAML::Tinyよりも優れたYAMLパーサーです。',
+	'YAML::Syck is optional; It is a better, fast and lightweight alternative to YAML::Tiny for YAML file handling.' => 'YAML::SyckがインストールされていればYAML::Tinyよりも軽量で高速に動作します。',
 	'YAML::Tiny is the default YAML parser.' => 'YAML::TinyはデフォルトのYAMLパーサーです。',
+	'YAML::XS is optional; It is a better, fast and lightweight alternative to YAML::Tiny for YAML file handling.' => 'YAML::XSがインストールされていればYAML::Tinyよりも軽量で高速に動作します。',
 	'local::lib is optional. It is used to load modules from different locations.' => 'local::libがインストールされていれば標準とは異なる場所からモジュールを読み込むのに使われます。',
 
 ## lib/MT/Util/Deprecated.pm

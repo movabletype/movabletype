@@ -437,6 +437,11 @@ our %Requirements = (
         tags   => ["Win32", "XML"],
         url    => "https://metacpan.org/pod/XML::Simple",
     },
+    "YAML::PP" => {
+        label => "YAML::PP is optional; It is a better alternative to YAML::Tiny for YAML file handling.",
+        tags  => ["YAML"],
+        url   => "https://metacpan.org/pod/YAML::PP",
+    },
     "YAML::Syck" => {
         label => "YAML::Syck is optional; It is a better, fast and lightweight alternative to YAML::Tiny for YAML file handling.",
         tags  => ["YAML", "Performance"],
@@ -447,6 +452,11 @@ our %Requirements = (
         label  => "YAML::Tiny is the default YAML parser.",
         tags   => ["YAML"],
         url    => "https://metacpan.org/pod/YAML::Tiny",
+    },
+    "YAML::XS" => {
+        label => "YAML::XS is optional; It is a better, fast and lightweight alternative to YAML::Tiny for YAML file handling.",
+        tags  => ["YAML", "Performance"],
+        url   => "https://metacpan.org/pod/YAML::XS",
     },
 );
 
@@ -519,7 +529,7 @@ our %ExtLibOnly = (
         used_in => ["MT::Util::UniqueID"],
     },
     "Data::ObjectDriver" => {
-        extlib  => 0.23,
+        extlib  => 0.25,
         url     => "https://metacpan.org/pod/Data::ObjectDriver",
         used_in => ["MT::Object"],
     },
