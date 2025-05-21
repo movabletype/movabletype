@@ -135,7 +135,7 @@ DESCRIPTION
                     type => 'integer',
                     enum => [0, 1],
                 },
-                description => 'This is an optional parameter. If true is given, the MT can return total pageviews for each uniqueness paths. However, that data does not contain page title because its spec. (Sometimes, Google Analytics will return another pageviews by same path.)',
+                description => 'This is an optional parameter. If true is given, the MT can return total pageviews for each unique path. However, that data does not contain page title because of its spec. (Sometimes, Google Analytics will return another pageviews by same path.)',
             },
         ],
         responses => {
@@ -332,7 +332,7 @@ DESCRIPTION
                     type => 'integer',
                     enum => [0, 1],
                 },
-                description => 'This is an optional parameter. If true is given, the MT can return total pageviews for each uniqueness paths. However, that data does not contain page title because its spec. (Sometimes, Google Analytics will return another pageviews by same path.)',
+                description => 'This is an optional parameter. If true is given, the MT can return total pageviews for each unique path. However, that data does not contain page title because of its spec. (Sometimes, Google Analytics will return another pageviews by same path.)',
             },
         ],
         responses => {
