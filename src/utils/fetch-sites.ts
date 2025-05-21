@@ -1,6 +1,4 @@
 import { Sites } from "../@types/site";
-import { CacheManager } from "./cache-manager";
-import { LRUCacheWrapper } from "./cache/lru-cache-wrapper";
 
 export type FetchSitesProps = {
   magicToken: string;
@@ -9,8 +7,6 @@ export type FetchSitesProps = {
   page: number;
   limit: number;
 };
-const lruCacheWrapper = new LRUCacheWrapper();
-const cacheManager = new CacheManager({ cache: lruCacheWrapper });
 
 export const fetchSites = async (props: FetchSitesProps): Promise<Sites> => {
   const fetchParams = {
@@ -25,61 +21,49 @@ export const fetchSites = async (props: FetchSitesProps): Promise<Sites> => {
     sort_by: "id",
     sort_order: "descend",
   };
-  return await cacheManager.fetchWithCache({
-    key: cacheManager.generateCacheKey({
-      prefix: "sites",
-      params: fetchParams,
-    }),
-    fetcher: async () => {
-      let error;
-      let result;
-      try {
-        result = await jQuery.ajax(window.ScriptURI, {
-          type: "POST",
-          contentType: "application/x-www-form-urlencoded; charset=utf-8",
-          data: fetchParams,
-          dataType: "json",
-          error: (xmlHttpRequest) => {
-            if (
-              xmlHttpRequest.readyState === 0 ||
-              xmlHttpRequest.status === 0
-            ) {
-              error = "possibly unloaded";
-            }
-          },
-        });
-      } catch (e) {
-        error ??= e;
-      }
+  let error;
+  let result;
+  try {
+    result = await jQuery.ajax(window.ScriptURI, {
+      type: "POST",
+      contentType: "application/x-www-form-urlencoded; charset=utf-8",
+      data: fetchParams,
+      dataType: "json",
+      error: (xmlHttpRequest) => {
+        if (xmlHttpRequest.readyState === 0 || xmlHttpRequest.status === 0) {
+          error = "possibly unloaded";
+        }
+      },
+    });
+  } catch (e) {
+    error ??= e;
+  }
 
-      if (error || result.error) {
-        return {
-          count: 0,
-          page: 0,
-          pageMax: 0,
-          sites: [],
-          error: error ?? result.error,
-        };
-      }
+  if (error || result.error) {
+    return {
+      count: 0,
+      page: 0,
+      pageMax: 0,
+      sites: [],
+    };
+  }
 
-      const sites = result.result.objects.map((object) => {
-        const name = object[1]
-          .replace(/<span[^>]*>.*?<\/span>\s*<a[^>]*>([^<]+)<\/a>/, "$1")
-          .trim();
-        return {
-          id: object[0],
-          name: name,
-          siteUrl: object[2],
-          parentSiteName: object[3],
-        };
-      });
-
-      return {
-        count: Number.parseInt(result.result.count),
-        page: Number.parseInt(result.result.page),
-        pageMax: Number.parseInt(result.result.page_max),
-        sites: sites,
-      };
-    },
+  const sites = result.result.objects.map((object) => {
+    const name = object[1]
+      .replace(/<span[^>]*>.*?<\/span>\s*<a[^>]*>([^<]+)<\/a>/, "$1")
+      .trim();
+    return {
+      id: object[0],
+      name: name,
+      siteUrl: object[2],
+      parentSiteName: object[3],
+    };
   });
+
+  return {
+    count: Number.parseInt(result.result.count),
+    page: Number.parseInt(result.result.page),
+    pageMax: Number.parseInt(result.result.page_max),
+    sites: sites,
+  };
 };

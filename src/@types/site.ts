@@ -3,6 +3,7 @@ export interface Sites {
   page: number;
   pageMax: number;
   sites: Site[];
+  error?: Error;
 }
 export interface Site {
   id: string;
