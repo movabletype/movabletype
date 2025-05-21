@@ -58,6 +58,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const searchButtonTarget = document.querySelector<HTMLElement>(
     '[data-is="search-button"]',
   );
+  const modalContainerTarget =
+    document.querySelector<HTMLElement>("div.mt-modal");
 
   if (createButtonTarget !== null || searchButtonTarget !== null) {
     fetchContentTypes({
@@ -76,6 +78,7 @@ document.addEventListener("DOMContentLoaded", () => {
             open: false,
             buttonRef: createButtonTarget,
             anchorRef: createButtonTarget,
+            containerRef: modalContainerTarget,
           },
         });
       }

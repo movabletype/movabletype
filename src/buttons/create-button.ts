@@ -7,6 +7,7 @@ type CreateButtonProps = {
   open: boolean;
   buttonRef: HTMLElement | null;
   anchorRef: HTMLElement;
+  containerRef: HTMLElement | null;
 };
 
 export const svelteMountCreateButton = ({
