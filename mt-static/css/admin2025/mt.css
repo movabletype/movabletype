@@ -12482,6 +12482,9 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper.mouseove
   height: 100vh;
   flex-direction: column;
 }
+.container-single-column .mt-footerWrapper {
+  padding: 0;
+}
 
 .flex-items-1 {
   flex: 1 0 auto;

@@ -1073,6 +1073,10 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper,
   display: flex;
   height:100vh;
   flex-direction: column;
+
+  .mt-footerWrapper {
+    padding: 0;
+  }
 }
 .flex-items-1{
   flex: 1 0 auto;
