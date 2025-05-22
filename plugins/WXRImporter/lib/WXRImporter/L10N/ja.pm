@@ -61,7 +61,7 @@ use vars qw( %Lexicon );
 	'Replace with' => '置き換えるパス',
 	'Requires the use of a cron job to download attachments from WordPress powered blog in the background.' => 'WordPressのブログからAttachmentをダウンロードするには、cronなどの決められたタイミングでプログラムを実行する環境が必要です。',
 	'Upload path for this WordPress blog' => 'メディアのアップロードパス',
-	q{Before you import WordPress posts to Movable Type, we recommend that you <a href='[_1]'>configure your site's publishing paths</a> first.} => q{WordPressからMovable Typeへインポートする前に、まず<a href='[_1]'>サイトパスを設定</a>してください。},
+	q{Before you import WordPress posts to Movable Type, we recommend that you <a href='[_1]' class='alert-link'>configure your site's publishing paths</a> first.} => q{WordPressからMovable Typeへインポートする前に、まず<a href='[_1]' class='alert-link'>サイトパスを設定</a>してください。},
 );
 
 1;
