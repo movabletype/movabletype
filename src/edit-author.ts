@@ -6,7 +6,6 @@ document.addEventListener("DOMContentLoaded", () => {
   if (apiPasswordOpener !== null) {
     apiPasswordOpener.addEventListener("click", (event: MouseEvent) => {
       event.preventDefault();
-      /* @ts-expect-error : mtModal is not defined */
       jQuery.fn.mtModal.open(apiPasswordOpener.href, { large: true });
     });
   }
