@@ -3,7 +3,7 @@
 <mt:setvar name="config-rebuild-trigger" value="1">
 
 <mt:setvarblock name="css_include" append="1">
-<style type="text/css">
+<style>
 #cfg_rebuild_trigger .template,
 #cfg_rebuild_trigger .hidden {
     display:none;
@@ -114,7 +114,7 @@
 </mtapp:setting>
 
 <mt:setvarblock name="js_include" append="1">
-    <script type="text/javascript" data-rebuildTrigger="<mt:var name="rebuilds_json" escape="html">">
+    <script data-rebuildTrigger="<mt:var name="rebuilds_json" escape="html">">
     (function(){
         'use strict';
 

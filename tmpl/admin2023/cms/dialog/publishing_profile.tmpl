@@ -2,8 +2,8 @@
 <mt:setvarblock name="target"><mt:if name="is_blog"><__trans phrase="child site"><mt:else><__trans phrase="site"></mt:if></mt:setvarblock>
 
 <mt:setvarblock name="js_include" append="1">
-<mtapp:script type="text/javascript" path="js/dialog.js">
-<script type="text/javascript">
+<mtapp:script path="js/dialog.js">
+<script>
 /* <![CDATA[ */
 var dialog;
 var panels;
@@ -195,7 +195,7 @@ function init() {
 </mt:setvarblock>
 
 <mt:setvarblock name="js_include" append="1">
-<script type="text/javascript">
+<script>
 /* <![CDATA[ */
 jQuery(function() {
     init();
