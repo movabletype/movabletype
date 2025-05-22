@@ -3452,7 +3452,7 @@ sub _progress {
         require MT::Util;
         my $str_js = MT::Util::encode_js($str);
         $app->print_encode(<<"SCRIPT");
-<script type="text/javascript">
+<script>
 function progress(str, id) {
     var el = getByID(id);
     if (el) el.innerHTML = str;

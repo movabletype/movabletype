@@ -3143,7 +3143,7 @@ sub _progress {
     if ( $id && $ids->{$id} ) {
         my $str_js = encode_js($str);
         $app->print_encode(
-            qq{<script type="text/javascript">progress('$str_js', '$id');</script>}
+            qq{<script>progress('$str_js', '$id');</script>}
         );
     }
     elsif ($id) {

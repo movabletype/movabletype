@@ -1327,7 +1327,7 @@ sub build_date {
             $mo--;
             my $fds = format_ts( $args->{'format'}, $ts, $blog, $lang );
             my $js = <<EOT;
-<script type="text/javascript">
+<script>
 /* <![CDATA[ */
 document.write(mtRelativeDate(new Date($y,$mo,$d,$h,$m,$s), '$fds'));
 /* ]]> */
