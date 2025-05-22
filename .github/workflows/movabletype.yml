@@ -20,7 +20,7 @@ jobs:
     strategy:
       matrix:
         config:
-          - {image: fedora39, mt_test_env: 'MT_TEST_IMAGE_DRIVER=ImageMagick' } # Perl 5.38 / PHP 8.2 / MySQL 8.0
+          - {image: fedora40, mt_test_env: 'MT_TEST_IMAGE_DRIVER=ImageMagick' } # Perl 5.38 / PHP 8.2 / MariaDB 10.11
           - {image: centos7,  mt_test_env: 'MT_TEST_IMAGE_DRIVER=GD' }  # Perl 5.16 / PHP 7.1 / MariaDB 5.5
         test: 
           - "t/*.t"
