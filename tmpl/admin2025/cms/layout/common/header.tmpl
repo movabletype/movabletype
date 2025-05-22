@@ -24,7 +24,7 @@
 
   <mt:include name="include/libjs.tmpl">
 
-  <script type="text/javascript">
+  <script>
   /* <![CDATA[ */
   __blankURI__ = '<$mt:var name="static_uri">html/blank.html';
   CMSScriptURI = '<$mt:var name="mt_url"$>';
@@ -42,14 +42,14 @@
 
   <mt:var name="html_head">
 
-  <mtapp:script type="text/javascript" path="js/admin2025/mt.js">
-  <mtapp:script type="text/javascript" path="mt_%l.js">
+  <mtapp:script path="js/admin2025/mt.js">
+  <mtapp:script path="mt_%l.js">
   <mt:unless name="optimize_ui">
-  <mtapp:script type="text/javascript" path="js/admin2025/jquery/jquery.mt.js">
+  <mtapp:script path="js/admin2025/jquery/jquery.mt.js">
   <mt:else>
-  <mtapp:script type="text/javascript" path="js/admin2025/jquery/jquery.mt.min.js">
+  <mtapp:script path="js/admin2025/jquery/jquery.mt.min.js">
   </mt:unless>
-  <mtapp:script type="text/javascript" path="js/mt/util.js">
+  <mtapp:script path="js/mt/util.js">
 
   <mt:var name="js_include">
 </head>

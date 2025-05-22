@@ -360,17 +360,17 @@
 </mt:setvartemplate>
 
 <mt:setvarblock name="html_head" append="1">
-<mtapp:script type="text/javascript" path="codemirror/lib/codemirror.js">
+<mtapp:script path="codemirror/lib/codemirror.js">
 <mtapp:stylesheet path="codemirror/lib/codemirror.css">
 
-<mtapp:script type="text/javascript" path="codemirror/mt/xml.js">
-<mtapp:script type="text/javascript" path="codemirror/mt/javascript.js">
-<mtapp:script type="text/javascript" path="codemirror/mt/css.js">
-<mtapp:script type="text/javascript" path="codemirror/mt/htmlmixed.js">
+<mtapp:script path="codemirror/mt/xml.js">
+<mtapp:script path="codemirror/mt/javascript.js">
+<mtapp:script path="codemirror/mt/css.js">
+<mtapp:script path="codemirror/mt/htmlmixed.js">
 <mtapp:stylesheet path="codemirror/mt/mt.css">
 
-<mtapp:script type="text/javascript" path="js/tc/client.js">
-<script type="text/javascript">
+<mtapp:script path="js/tc/client.js">
+<script>
 /* <![CDATA[ */
 var tag_inserts = {};
 
@@ -496,7 +496,7 @@ function setSyntaxHighlight(on_or_off) {
 
 <mt:setvarblock name="page_content">
 <mt:if name="dirty">
-  <script type="text/javascript">
+  <script>
   /* <![CDATA[ */
     MT.App.dirty = true;
   /* ]]> */
@@ -907,7 +907,7 @@ function setSyntaxHighlight(on_or_off) {
   <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
 </form>
 
-<script type="text/javascript">
+<script>
 /* <![CDATA[ */
 App.singletonConstructor =
 MT.App = new Class( MT.App, {

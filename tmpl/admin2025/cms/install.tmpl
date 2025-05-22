@@ -126,7 +126,7 @@
          label_class="top-label">
         <input type="password" id="admin_password_confirm" class="form-control text password" name="admin_password_confirm" />
       </mtapp:setting>
-      <script type="text/javascript">
+      <script>
       /* <![CDATA[ */
         <$mt:PasswordValidation form="install_form" password="admin_password" username="admin_username"$>
       /* ]]> */
@@ -174,7 +174,7 @@
 </mt:setvarblock>
 
 <mt:setvarblock name="js_include" append="1">
-<script type="text/javascript">
+<script>
 /* <![CDATA[ */
 function dismiss(id) {
     jQuery('#'+id).hide();
