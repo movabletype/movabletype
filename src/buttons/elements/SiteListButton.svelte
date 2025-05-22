@@ -224,15 +224,19 @@
                 {#each sites as site}
                   <tr>
                     <td>
+                      {#if site.parentSiteName === "-"}
+                        <span class="badge badge-site"
+                          >{window.trans("Site")}</span
+                        >
+                      {:else}
+                        <span class="badge badge-child-site"
+                          >{window.trans("Child Site")}</span
+                        >
+                      {/if}
                       <a
                         href={`${window.ScriptURI}?__mode=dashboard&blog_id=${site.id}`}
                         class="dashboard-link"
                       >
-                        <SVG
-                          title={window.trans("Site")}
-                          class="mt-icon mt-icon--sm"
-                          href={`${window.StaticURI}images/admin2025/sprite.svg#${site.parentSiteName !== "-" ? "ic_subsites" : "ic_sites"}`}
-                        />
                         {site.name}
                       </a>
                       <a href={site.siteUrl} class="site-link" target="_blank">
