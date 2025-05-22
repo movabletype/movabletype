@@ -81,5 +81,6 @@ export default [
   srcConfig("src/contenttype.ts"),
   srcConfig("src/listing.ts"),
   srcConfig("src/admin-header.ts"),
+  srcConfig("src/edit-author.ts"),
   ...mtStaticInputFiles.map(mtStaticConfig),
 ];
