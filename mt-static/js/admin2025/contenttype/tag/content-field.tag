@@ -1,11 +1,11 @@
 <content-field id="content-field-block-{ id }">
   <div class="mt-collapse__container">
-    <div class="col-auto p-0"><ss title="{ trans('Move') }" class="mt-icon" href="{ StaticURI }/images/sprite.svg#ic_move"></ss></div>
-    <div class="col text-wrap p-0"><ss title="{ trans('ContentField') }" class="mt-icon--secondary" href="{ StaticURI }images/sprite.svg#ic_contentstype"></ss>{ label } ({ typeLabel }) <span if="{ realId }">(ID: { realId })</span></div>
+    <div class="col-auto p-0"><ss title="{ trans('Move') }" class="mt-icon" href="{ StaticURI }/images/admin2025/sprite.svg#ic_move"></ss></div>
+    <div class="col text-wrap p-0"><ss title="{ trans('ContentField') }" class="mt-icon--secondary" href="{ StaticURI }images/admin2025/sprite.svg#ic_contentstype"></ss>{ label } ({ typeLabel }) <span if="{ realId }">(ID: { realId })</span></div>
     <div class="col-auto p-0">
-      <a href="javascript:void(0)" onclick={ duplicateField } class="d-inline-block duplicate-content-field"><ss title="{ trans('Duplicate') }" class="mt-icon--secondary" href="{ StaticURI }images/sprite.svg#ic_duplicate"></ss></a>
-      <a href="javascript:void(0)" onclick={ deleteField } class="d-inline-block delete-content-field"><ss title="{ trans('Delete') }" class="mt-icon--secondary" href="{ StaticURI }images/sprite.svg#ic_trash"></ss></a>
-      <a data-bs-toggle="collapse" href="#field-options-{ id }" aria-expanded="{ isShow == 'show' ? 'true' : 'false' }" aria-controls="field-options-{ id }" class="d-inline-block"><ss title="{ trans('Edit') }" class="mt-icon--secondary" href="{ StaticURI }images/sprite.svg#ic_collapse"></ss></a>
+      <a href="javascript:void(0)" onclick={ duplicateField } class="d-inline-block duplicate-content-field"><ss title="{ trans('Duplicate') }" class="mt-icon--secondary" href="{ StaticURI }images/admin2025/sprite.svg#ic_duplicate"></ss></a>
+      <a href="javascript:void(0)" onclick={ deleteField } class="d-inline-block delete-content-field"><ss title="{ trans('Delete') }" class="mt-icon--secondary" href="{ StaticURI }images/admin2025/sprite.svg#ic_trash"></ss></a>
+      <a data-bs-toggle="collapse" href="#field-options-{ id }" aria-expanded="{ isShow == 'show' ? 'true' : 'false' }" aria-controls="field-options-{ id }" class="d-inline-block"><ss title="{ trans('Edit') }" class="mt-icon--secondary" href="{ StaticURI }images/admin2025/sprite.svg#ic_collapse"></ss></a>
     </div>
   </div>
   <div data-is={ type } class="collapse mt-collapse__content  { isShow }" id={ 'field-options-' + id } fieldid={ id } options={ this.options } isnew={ isNew }></div>
