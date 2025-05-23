@@ -5786,7 +5786,6 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/admin2025/cms/dialog/dialog_api_password.tmpl
 	'Web services password is not currently available.' => '現在、Webサービスパスワードは設定されていません。',
 	'You have a Web serveres password securely stored in the database. If you forgot the password, please delete it and issue the new one.'  => 'Webサービスパスワードはすでにデータベースに安全に保存されています。パスワードを忘れたときは一度削除してから再発行してください。',
-	'Delete your existing password.' => '発行済みのパスワードを削除します。',
 	'Delete password' => 'パスワードを削除',
 	'Issue a new password' => '新しいパスワードを発行',
 	'Web Services password is successfully issued as follows.' => '下記のWEBサービスパスワードが正常に発行されました。',
