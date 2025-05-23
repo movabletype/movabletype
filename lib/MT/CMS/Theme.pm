@@ -105,7 +105,7 @@ sub _build_theme_table {
             = ( $theme->thumbnail( size => 'medium' ) );
         @theme{qw(l_thumbnail_url l_thumb_w l_thumb_h)}
             = ( $theme->thumbnail( size => 'large' ) );
-        $theme{info}        = [ $theme->information_strings ];
+        $theme{info}        = [ $theme->information_strings(MT->app->blog) ];
         $theme{description} = $theme->description;
         $theme{blog_count}
             = MT::Blog->count( { class => '*', theme_id => $theme->id } );
