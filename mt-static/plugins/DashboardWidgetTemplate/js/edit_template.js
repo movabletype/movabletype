@@ -1,10 +1,1 @@
-if (document.querySelector(`[name="type"][value="dashboard_widget"]`)) {
-  document.querySelector(`[name="name"]`).remove();
-  const nameInput = document.querySelector(`[name="name_display"]`);
-  nameInput.name = "name";
-  nameInput.disabled = false;
-
-  document
-    .querySelectorAll(`#useful-links a[href$="#system"], .plugin-actions`)
-    .forEach((el) => el.classList.add("d-none"));
-}
+(function(){"use strict";var e;if(document.querySelector('[name="type"][value="dashboard_widget"]')){(e=document.querySelector('[name="name"]'))===null||e===void 0||e.remove();const n=document.querySelector('[name="name_display"]');n.name="name",n.disabled=!1,document.querySelectorAll('#useful-links a[href$="#system"], .plugin-actions').forEach(a=>a.classList.add("d-none"))}})();
