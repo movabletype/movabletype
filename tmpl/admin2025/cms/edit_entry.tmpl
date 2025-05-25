@@ -1305,22 +1305,6 @@ div.mce-notification-error {
           return tags;
       }
 
-      document.onkeyup = function(e) {
-          if (!e) e = window.event;
-          if (e.ctrlKey) {
-              if (e.keyCode == 80) {
-                  if (e.shiftKey) {
-                      getByID('status').value = 1; // ctrl-shift-p: unpublish
-                  } else {
-                      getByID('status').value = 2; // ctrl-p: publish
-                  }
-              }
-              if (e.keyCode == 85) {
-                  getByID('status').value = 1; // ctrl-u: unpublish
-              }
-          }
-      };
-
       var docs = new Array();
       <mt:loop name="text_filters">
       docs['<$mt:var name="filter_key" escape="js"$>'] = '<$mt:var name="filter_docs" escape="js"$>';
