@@ -45,9 +45,9 @@ BEGIN {
         $RELEASE_VERSION_ID
         )
         = (
-        '__PRODUCT_NAME__',   '__PRODUCT_CODE__',
-        '9.0.1',              '__PRODUCT_VERSION_ID__',
-        '__RELEASE_NUMBER__', '__PORTAL_URL__',
+        'Movable Type',   'MT',
+        '9.0.1',              '9.0.25923-en-feat-plugin-dashboardwidgettemplate-r25923-8f6f7c74-20250526',
+        '25923', 'http://www.movabletype.org/',
         '__RELEASE_VERSION_ID__',
         );
 
@@ -127,7 +127,7 @@ sub id {
 }
 
 sub build_id {
-    my $build_id = '__BUILD_ID__';
+    my $build_id = '9.0.25923-en-feat-plugin-dashboardwidgettemplate-r25923-8f6f7c74-20250526';
     $build_id = '' if $build_id eq '__BUILD_' . 'ID__';
     return $build_id;
 }

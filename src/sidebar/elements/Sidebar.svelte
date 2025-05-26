@@ -6,6 +6,7 @@
   export let collapsed = false;
   export let isStored = false;
   let mouseOver = false;
+  let isMobile = false;
 
   const addContentWrapperClass = (
     className: string,
@@ -66,6 +67,11 @@
         collapsed = true;
       }
     }
+    if(window.innerWidth < 800){
+      // For smaller screens, always collapse the sidebar
+      collapsed = true;
+      isMobile = true;
+    }
     handleCollapse();
   });
 </script>
@@ -77,4 +83,16 @@
   use:portal={"body"}
   on:mouseenter={handleMouseEnter}
   style={`display: ${collapsed ? "block" : "none"}`}
+></div>
+
+<!-- svelte-ignore a11y-no-static-element-interactions -->
+<!-- svelte-ignore a11y-click-events-have-key-events -->
+<div
+  class="mt-primaryNavigation-overlay-sp"
+  use:portal={"body"}
+  on:click={() => {
+    collapsed = true;
+    handleCollapse();
+  }}
+  style={`display: ${collapsed ? "none" : "block"}`}
 ></div>

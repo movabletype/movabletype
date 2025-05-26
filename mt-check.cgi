@@ -112,7 +112,7 @@ else {
 my $view    = $cgi->param("view");
 my $version = $cgi->param("version");
 my $sess_id = $cgi->param('session_id');
-$version ||= '__PRODUCT_VERSION_ID__';
+$version ||= '9.0.25923-en-feat-plugin-dashboardwidgettemplate-r25923-8f6f7c74-20250526';
 if ( $version eq '__PRODUCT_VERSION' . '_ID__' ) {
     $version = '9.0.1';
 }

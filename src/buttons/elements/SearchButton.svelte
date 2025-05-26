@@ -3,8 +3,8 @@
   import { portal } from "svelte-portal";
   import { isOuterClick } from "../outerClick";
   import { ContentType } from "src/@types/contenttype";
-  import SVG from "../../svg/elements/SVG.svelte";
   import { SearchTab } from "../search-button";
+  import SearchForm from "../../forms/search/SearchForm.svelte";
 
   export let blogId: string;
   export let magicToken: string;
@@ -84,65 +84,13 @@
       </button>
     </div>
     <div class="modal-body">
-      <form class="search-form" method="post" action={window.ScriptURI}>
-        <input type="hidden" name="__mode" value="search_replace" />
-        <input type="hidden" name="blog_id" value={blogId} />
-        <input type="hidden" name="_type" bind:value={objectType} />
-        <input type="hidden" name="do_search" value="1" />
-        <input type="hidden" name="magic_token" value={magicToken} />
-
-        <div class="search-type">
-          {#each searchTabs as type}
-            <label>
-              <input
-                type="radio"
-                name="type"
-                value={type.key}
-                id={type.key}
-                bind:group={objectType}
-              />
-              {type.label}
-            </label>
-          {/each}
-        </div>
-        <div class="search-content-type">
-          <select
-            class="custom-select form-control form-select"
-            class:disabled={objectType !== "content_data"}
-            name="content_type_id"
-            disabled={objectType !== "content_data" ||
-              contentTypes.length === 0}
-          >
-            {#if contentTypes.length > 0}
-              {#each contentTypes as contentType}
-                <option value={contentType.id}>{contentType.name}</option>
-              {/each}
-            {:else}
-              <option value=""
-                >{window.trans("No Content Type could be found.")}</option
-              >
-            {/if}
-          </select>
-        </div>
-        <div class="search-text-box">
-          <input
-            type="text"
-            placeholder={window.trans("Select target and search text...")}
-            name="search"
-            bind:this={searchTextRef}
-          />
-        </div>
-        <div class="submit-button">
-          <button type="submit" class="btn btn-primary">
-            <SVG
-              title={window.trans("Search")}
-              class="mt-icon mt-icon--sm"
-              href={`${window.StaticURI}images/admin2025/sprite.svg#ic_search`}
-            />
-            <span>{window.trans("Search")}</span>
-          </button>
-        </div>
-      </form>
+      <SearchForm
+        blogId={blogId}
+        magicToken={magicToken}
+        contentTypes={contentTypes}
+        objectType={objectType}
+        searchTabs={searchTabs}
+      />
     </div>
   </div>
 {/if}

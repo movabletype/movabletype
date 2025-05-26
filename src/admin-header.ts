@@ -3,6 +3,7 @@ import { svelteMountCreateButton } from "./buttons/create-button";
 import { svelteMountSidebar } from "./sidebar/sidebar";
 import { svelteMountSearchButton } from "./buttons/search-button";
 import { svelteMountSiteListButton } from "./buttons/site-list-button";
+import { svelteMountSearchForm } from "./forms/search/search-form";
 
 // Sidebar toggle
 const sidebarTarget = document.querySelector<HTMLButtonElement>(
@@ -36,16 +37,18 @@ if (magicToken === "") {
 const limit = "50";
 
 // Site list button
-const siteListButtonTarget = document.querySelector<HTMLElement>(
+const siteListButtonTargets = document.querySelectorAll<HTMLElement>(
   '[data-is="site-list-button"]',
 );
-if (siteListButtonTarget !== null && magicToken !== "") {
-  svelteMountSiteListButton(siteListButtonTarget, {
-    magicToken: magicToken,
-    limit: Number.parseInt(limit),
-    open: false,
-    buttonRef: siteListButtonTarget,
-    anchorRef: siteListButtonTarget,
+if (siteListButtonTargets.length > 0 && magicToken !== "") {
+  siteListButtonTargets.forEach((siteListButtonTarget) => {
+    svelteMountSiteListButton(siteListButtonTarget, {
+      magicToken: magicToken,
+      limit: Number.parseInt(limit),
+      open: false,
+      buttonRef: siteListButtonTarget,
+      anchorRef: siteListButtonTarget,
+    });
   });
 }
 
@@ -95,6 +98,19 @@ if (
         open: false,
         buttonRef: searchButtonTarget,
         anchorRef: searchButtonAnchor,
+      });
+    }
+    // Search Form
+    const searchFormTarget = document.querySelector<HTMLElement>(
+      '[data-is="search-form"]',
+    );
+    if (searchFormTarget !== null) {
+      svelteMountSearchForm(searchFormTarget, {
+        blogId: blogId,
+        magicToken: magicToken,
+        contentTypes: data.contentTypes.filter(
+          (contentType) => contentType.can_search === 1,
+        )
       });
     }
   });
