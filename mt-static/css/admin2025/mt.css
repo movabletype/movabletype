@@ -12303,7 +12303,8 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper.mouseove
 }
 @media (min-width: 768px) {
   .mt-secondaryPanel, .mt-secondaryPanel--scrollable {
-    max-width: 400px;
+    min-width: 252px;
+    max-width: 308px;
     padding-bottom: 4rem;
     padding-left: 14px;
     padding-right: 14px;
