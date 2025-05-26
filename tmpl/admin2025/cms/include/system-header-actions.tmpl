@@ -13,15 +13,12 @@
             </mt:if>
         >
             <mt:setvarblock name="escaped_menu_action_label"><mt:var name="label" escape="html"></mt:setvarblock>
-            <a 
+            <a
                 class="action <mt:var name="class" escape="html" _default="">"
                 href="<mt:var name="href" escape="html" strip="">"
                 <mt:if name="target">target="<mt:var name="target" escape="html">"</mt:if>
             >
-                <svg role="img" class="mt-icon">
-                    <title><__trans phrase="<mt:var name="label" escape="html">"></title>
-                    <use xlink:href="<mt:var name="static_uri" escape="html">images/admin2025/sprite.svg#<mt:var name="icon" escape="html">"></use>
-                </svg>
+                <mtapp:svgicon id="$icon" title="<mt:var name="escaped_menu_action_label">">
             </a>
         </div>
     </mt:loop>

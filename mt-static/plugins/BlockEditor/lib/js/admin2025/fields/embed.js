@@ -3,7 +3,7 @@
     BEF.Embed = function () { BEF.apply(this, arguments) };
     $.extend(BEF.Embed, {
         label: trans('Embed Code'),
-        icon_url: StaticURI + 'images/sprite.svg#ic_code',
+        icon_url: StaticURI + 'images/admin2025/sprite.svg#ic_code',
         type: 'embed',
         create_button: function () {
           return $('<button type="button" class="btn btn-contentblock">' + this.get_icon() + this.label + '</button>');

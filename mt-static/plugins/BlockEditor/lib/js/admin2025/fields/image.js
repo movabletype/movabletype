@@ -3,7 +3,7 @@
     BEF.Image = function () { BEF.apply(this, arguments) };
     $.extend(BEF.Image, {
         label: trans('image'),
-        icon_url: StaticURI + 'images/sprite.svg#ic_image',
+        icon_url: StaticURI + 'images/admin2025/sprite.svg#ic_image',
         icon: '<svg role="img" class="mt-icon"><title>' + this.label + '</title><use xlink:href="' + this.icon_url + '"></use></svg>',
         type: 'image',
         create_button: function () {

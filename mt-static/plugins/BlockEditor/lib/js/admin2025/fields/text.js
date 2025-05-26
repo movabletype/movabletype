@@ -3,7 +3,7 @@
     BEF.Text = function () { BEF.apply(this, arguments) };
     $.extend(BEF.Text, {
         label: trans('__TEXT_BLOCK__'),
-        icon_url: StaticURI + 'images/sprite.svg#ic_textcolor',
+        icon_url: StaticURI + 'images/admin2025/sprite.svg#ic_textcolor',
         type: 'text',
         create_button: function () {
             return $('<button type="button" class="btn btn-contentblock">' + this.get_icon() + this.label + '</button>');
