@@ -714,18 +714,9 @@ sub crypt_password {
     my $pass  = shift;
     my @alpha = ('a' .. 'z', 'A' .. 'Z', 0 .. 9);
     my $salt  = join '', map $alpha[rand @alpha], 1 .. 16;
-    my $crypt_sha;
 
-    if (eval { require MT::Util::Digest::SHA }) {
-
-        # Can use SHA512
-        $crypt_sha = '$6$' . $salt . '$' . MT::Util::Digest::SHA::sha512_base64($salt . MT::Util::Encode::encode_utf8($pass));
-    } else {
-
-        # Use SHA-1 algorism
-        $crypt_sha = '{SHA}' . $salt . '$' . MT::Util::perl_sha1_digest_hex($salt . $pass);
-    }
-    return $crypt_sha;
+    require MT::Util::Digest::SHA;
+    return '$6$' . $salt . '$' . MT::Util::Digest::SHA::sha512_base64($salt . MT::Util::Encode::encode_utf8($pass));
 }
 
 sub is_valid_password {
@@ -746,14 +737,8 @@ sub is_valid_api_password {
 
     if ($real_pass =~ m/^\$6\$(.*)\$(.*)/) {
         my ($salt, $value) = ($1, $2);
-        if (eval { require MT::Util::Digest::SHA }) {
-            return $value eq MT::Util::Digest::SHA::sha512_base64($salt . MT::Util::Encode::encode_utf8($pass));
-        } else {
-            die MT->translate('Missing required module') . ' Digest::SHA';
-        }
-    } elsif ($real_pass =~ m/^{SHA}(.*)\$(.*)/) {
-        my ($salt, $value) = ($1, $2);
-        return $value eq MT::Util::perl_sha1_digest_hex($salt . $pass);
+        require MT::Util::Digest::SHA;
+        return $value eq MT::Util::Digest::SHA::sha512_base64($salt . MT::Util::Encode::encode_utf8($pass));
     }
     return;
 }
