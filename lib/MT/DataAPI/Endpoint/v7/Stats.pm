@@ -65,14 +65,14 @@ DESCRIPTION
                 'in'        => 'query',
                 name        => 'startDate',
                 schema      => { type => 'string', format => 'date' },
-                description => 'This is an required parameter. Start date of data. The format is "YYYY-MM-DD".',
+                description => 'This is a required parameter. Start date of data. The format is "YYYY-MM-DD".',
                 required    => JSON::true,
             },
             {
                 'in'        => 'query',
                 name        => 'endDate',
                 schema      => { type => 'string', format => 'date' },
-                description => 'This is an required parameter. End date of data. The format is "YYYY-MM-DD".',
+                description => 'This is a required parameter. End date of data. The format is "YYYY-MM-DD".',
                 required    => JSON::true,
             },
             {
@@ -168,14 +168,14 @@ DESCRIPTION
                 'in'        => 'query',
                 name        => 'startDate',
                 schema      => { type => 'string', format => 'date' },
-                description => 'This is an required parameter. Start date of data. The format is "YYYY-MM-DD".',
+                description => 'This is a required parameter. Start date of data. The format is "YYYY-MM-DD".',
                 required    => JSON::true,
             },
             {
                 'in'        => 'query',
                 name        => 'endDate',
                 schema      => { type => 'string', format => 'date' },
-                description => 'This is an required parameter. End date of data. The format is "YYYY-MM-DD".',
+                description => 'This is a required parameter. End date of data. The format is "YYYY-MM-DD".',
                 required    => JSON::true,
             },
             {
@@ -262,14 +262,14 @@ DESCRIPTION
                 'in'        => 'query',
                 name        => 'startDate',
                 schema      => { type => 'string', format => 'date' },
-                description => 'This is an required parameter. Start date of data. The format is "YYYY-MM-DD".',
+                description => 'This is a required parameter. Start date of data. The format is "YYYY-MM-DD".',
                 required    => JSON::true,
             },
             {
                 'in'        => 'query',
                 name        => 'endDate',
                 schema      => { type => 'string', format => 'date' },
-                description => 'This is an required parameter. End date of data. The format is "YYYY-MM-DD".',
+                description => 'This is a required parameter. End date of data. The format is "YYYY-MM-DD".',
                 required    => JSON::true,
             },
             {
@@ -364,14 +364,14 @@ DESCRIPTION
                 'in'        => 'query',
                 name        => 'startDate',
                 schema      => { type => 'string', format => 'date' },
-                description => 'This is an required parameter. Start date of data. The format is "YYYY-MM-DD".',
+                description => 'This is a required parameter. Start date of data. The format is "YYYY-MM-DD".',
                 required    => JSON::true,
             },
             {
                 'in'        => 'query',
                 name        => 'endDate',
                 schema      => { type => 'string', format => 'date' },
-                description => 'This is an required parameter. End date of data. The format is "YYYY-MM-DD".',
+                description => 'This is a required parameter. End date of data. The format is "YYYY-MM-DD".',
                 required    => JSON::true,
             },
             {
@@ -399,7 +399,7 @@ DESCRIPTION
                     type => 'integer',
                     enum => [0, 1],
                 },
-                description => 'This is an optional parameter. If true is given, the MT can return total screenPageViews for each uniqueness paths. However, that data does not contain page title because its spec. (Sometimes, Google Analytics will return another pageviews by same path.)',
+                description => 'This is an optional parameter. If true is given, the MT can return total screenPageViews for each unique path. However, that data does not contain page title because of its spec. (Sometimes, Google Analytics will return another screenPageViews by same path.)',
             },
         ],
         responses => {
@@ -426,7 +426,7 @@ DESCRIPTION
                                     properties => {
                                         screenPageViews => {
                                             type        => 'integer',
-                                            description => 'The sum total of the pageviews in the specified period.',
+                                            description => 'The sum total of the screenPageViews in the specified period.',
                                         },
                                     },
                                 },
@@ -466,14 +466,14 @@ DESCRIPTION
                 'in'        => 'query',
                 name        => 'startDate',
                 schema      => { type => 'string', format => 'date' },
-                description => 'This is an required parameter. Start date of data. The format is "YYYY-MM-DD".',
+                description => 'This is a required parameter. Start date of data. The format is "YYYY-MM-DD".',
                 required    => JSON::true,
             },
             {
                 'in'        => 'query',
                 name        => 'endDate',
                 schema      => { type => 'string', format => 'date' },
-                description => 'This is an required parameter. End date of data. The format is "YYYY-MM-DD".',
+                description => 'This is a required parameter. End date of data. The format is "YYYY-MM-DD".',
                 required    => JSON::true,
             },
             {
@@ -501,7 +501,7 @@ DESCRIPTION
                     type => 'integer',
                     enum => [0, 1],
                 },
-                description => 'This is an optional parameter. If true is given, the MT can return total screenPageViews for each uniqueness paths. However, that data does not contain page title because its spec. (Sometimes, Google Analytics will return another pageviews by same path.)',
+                description => 'This is an optional parameter. If true is given, the MT can return total screenPageViews for each unique path. However, that data does not contain page title because of its spec. (Sometimes, Google Analytics will return another screenPageViews by same path.)',
             },
         ],
         responses => {
@@ -528,7 +528,7 @@ DESCRIPTION
                                     properties => {
                                         screenPageViews => {
                                             type        => 'integer',
-                                            description => 'The sum total of the pageviews in the specified period.',
+                                            description => 'The sum total of the screenPageViews in the specified period.',
                                         },
                                     },
                                 },
@@ -568,14 +568,14 @@ DESCRIPTION
                 'in'        => 'query',
                 name        => 'startDate',
                 schema      => { type => 'string', format => 'date' },
-                description => 'This is an required parameter. Start date of data. The format is "YYYY-MM-DD".',
+                description => 'This is a required parameter. Start date of data. The format is "YYYY-MM-DD".',
                 required    => JSON::true,
             },
             {
                 'in'        => 'query',
                 name        => 'endDate',
                 schema      => { type => 'string', format => 'date' },
-                description => 'This is an required parameter. End date of data. The format is "YYYY-MM-DD".',
+                description => 'This is a required parameter. End date of data. The format is "YYYY-MM-DD".',
                 required    => JSON::true,
             },
             {
@@ -603,7 +603,7 @@ DESCRIPTION
                     type => 'integer',
                     enum => [0, 1],
                 },
-                description => 'This is an optional parameter. If true is given, the MT can return total screenPageViews for each uniqueness paths. However, that data does not contain page title because its spec. (Sometimes, Google Analytics will return another pageviews by same path.)',
+                description => 'This is an optional parameter. If true is given, the MT can return total screenPageViews for each unique path. However, that data does not contain page title because of its spec. (Sometimes, Google Analytics will return another screenPageViews by same path.)',
             },
         ],
         responses => {
@@ -630,7 +630,7 @@ DESCRIPTION
                                     properties => {
                                         screenPageViews => {
                                             type        => 'integer',
-                                            description => 'The sum total of the pageviews in the specified period.',
+                                            description => 'The sum total of the screenPageViews in the specified period.',
                                         },
                                     },
                                 },
@@ -670,14 +670,14 @@ DESCRIPTION
                 'in'        => 'query',
                 name        => 'startDate',
                 schema      => { type => 'string', format => 'date' },
-                description => 'This is an required parameter. Start date of data. The format is "YYYY-MM-DD".',
+                description => 'This is a required parameter. Start date of data. The format is "YYYY-MM-DD".',
                 required    => JSON::true,
             },
             {
                 'in'        => 'query',
                 name        => 'endDate',
                 schema      => { type => 'string', format => 'date' },
-                description => 'This is an required parameter. End date of data. The format is "YYYY-MM-DD".',
+                description => 'This is a required parameter. End date of data. The format is "YYYY-MM-DD".',
                 required    => JSON::true,
             },
             {
@@ -763,14 +763,14 @@ DESCRIPTION
                 'in'        => 'query',
                 name        => 'startDate',
                 schema      => { type => 'string', format => 'date' },
-                description => 'This is an required parameter. Start date of data. The format is "YYYY-MM-DD".',
+                description => 'This is a required parameter. Start date of data. The format is "YYYY-MM-DD".',
                 required    => JSON::true,
             },
             {
                 'in'        => 'query',
                 name        => 'endDate',
                 schema      => { type => 'string', format => 'date' },
-                description => 'This is an required parameter. End date of data. The format is "YYYY-MM-DD".',
+                description => 'This is a required parameter. End date of data. The format is "YYYY-MM-DD".',
                 required    => JSON::true,
             },
             {
@@ -856,14 +856,14 @@ DESCRIPTION
                 'in'        => 'query',
                 name        => 'startDate',
                 schema      => { type => 'string', format => 'date' },
-                description => 'This is an required parameter. Start date of data. The format is "YYYY-MM-DD".',
+                description => 'This is a required parameter. Start date of data. The format is "YYYY-MM-DD".',
                 required    => JSON::true,
             },
             {
                 'in'        => 'query',
                 name        => 'endDate',
                 schema      => { type => 'string', format => 'date' },
-                description => 'This is an required parameter. End date of data. The format is "YYYY-MM-DD".',
+                description => 'This is a required parameter. End date of data. The format is "YYYY-MM-DD".',
                 required    => JSON::true,
             },
             {
@@ -949,14 +949,14 @@ DESCRIPTION
                 'in'        => 'query',
                 name        => 'startDate',
                 schema      => { type => 'string', format => 'date' },
-                description => 'This is an required parameter. Start date of data. The format is "YYYY-MM-DD".',
+                description => 'This is a required parameter. Start date of data. The format is "YYYY-MM-DD".',
                 required    => JSON::true,
             },
             {
                 'in'        => 'query',
                 name        => 'endDate',
                 schema      => { type => 'string', format => 'date' },
-                description => 'This is an required parameter. End date of data. The format is "YYYY-MM-DD".',
+                description => 'This is a required parameter. End date of data. The format is "YYYY-MM-DD".',
                 required    => JSON::true,
             },
             {
