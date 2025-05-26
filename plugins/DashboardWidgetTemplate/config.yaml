@@ -8,7 +8,7 @@ author_name: Six Apart Ltd.
 
 object_types:
   template:
-    dashboard_widget_pinned: 'boolean meta'
+    dashboard_widget_pinned: 'integer meta'
 
 l10n_class: MT::Plugin::DashboardWidgetTemplate::L10N
 
