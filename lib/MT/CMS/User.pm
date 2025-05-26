@@ -2095,10 +2095,11 @@ sub dialog_api_password {
     my ($new_password, $deleted);
 
     if ($issue) {
-        $new_password = $dest_user->issue_api_password();
+        $new_password = MT::Util::UniqueID::create_api_password();
+        $dest_user->api_password($new_password);
         $dest_user->save;
     } elsif ($delete) {
-        $dest_user->column('api_password', '');
+        $dest_user->api_password('');
         $dest_user->save;
         $deleted = 1;
     }

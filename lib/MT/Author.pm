@@ -699,15 +699,14 @@ sub set_password {
     $auth->column('password', crypt_password($pass));
 }
 
-sub issue_api_password {
-    my $auth = shift;
-
-    require MT::Util::UniqueID;
-    my $api_password = MT::Util::UniqueID::create_session_id();
-
-    $auth->column('api_password', crypt_password($api_password));
-
-    return $api_password;
+sub api_password {
+    my $self = shift;
+    if (@_) {
+        my ($new_password) = @_;
+        $self->column('api_password', crypt_password($new_password));
+    } else {
+        return $self->column('api_password');
+    }
 }
 
 sub crypt_password {

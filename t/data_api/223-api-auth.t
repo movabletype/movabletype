@@ -16,6 +16,7 @@ BEGIN {
 
 use MT::Test::DataAPI;
 use Test::Deep qw/re/;
+use MT::Util::UniqueID;
 
 $test_env->prepare_fixture('db_data');
 
@@ -23,7 +24,8 @@ use MT::App::DataAPI;
 my $app    = MT::App::DataAPI->new;
 my $author = MT->model('author')->load(2);
 $author->set_password('bass');
-my $api_password = $author->issue_api_password();
+my $api_password = MT::Util::UniqueID::create_api_password();
+$author->api_password($api_password);
 $author->save or die $author->errstr;
 
 subtest 'test is_valid_api_password' => sub {
@@ -42,7 +44,8 @@ $disabled_user->set_values(
         created_on       => '19780131074500',
     }
 );
-my $api_password2 = $disabled_user->issue_api_password();
+my $api_password2 = MT::Util::UniqueID::create_api_password();
+$disabled_user->api_password($api_password2);
 $disabled_user->set_password('disabled');
 $disabled_user->type( MT::Author::AUTHOR() );
 $disabled_user->id(99);

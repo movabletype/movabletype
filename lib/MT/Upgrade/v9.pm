@@ -44,7 +44,7 @@ sub v9_api_password {
         # apply it to only passwords that is shorter than old schema max length
         return 1 if length($old_password) > 60;
 
-        $user->api_password(MT::Author::crypt_password($old_password));
+        $user->api_password($old_password);
         $user->save();
     }
     return 1;

@@ -14,6 +14,7 @@ BEGIN {
 }
 
 use MT::Test::DataAPI;
+use MT::Util::UniqueID;
 
 $test_env->prepare_fixture('db_data');
 
@@ -21,7 +22,8 @@ use MT::App::DataAPI;
 my $app    = MT::App::DataAPI->new;
 my $author = MT->model('author')->load(2);
 $author->set_password('bass');
-my $api_password = $author->issue_api_password;
+my $api_password = MT::Util::UniqueID::create_api_password();
+$author->api_password($api_password);
 $author->can_sign_in_data_api(0);
 $author->save or die $author->errstr;
 
