@@ -711,8 +711,12 @@ sub api_password {
 
 sub crypt_password {
     my $pass  = shift;
-    my @alpha = ('a' .. 'z', 'A' .. 'Z', 0 .. 9);
-    my $salt  = join '', map $alpha[rand @alpha], 1 .. 16;
+
+    require MIME::Base64;
+    require Crypt::URandom;
+    my $salt = MIME::Base64::encode_base64(Crypt::URandom::urandom(12));
+    chomp($salt);
+    $salt =~ s/\\+/./g;
 
     require MT::Util::Digest::SHA;
     return '$6$' . $salt . '$' . MT::Util::Digest::SHA::sha512_base64($salt . MT::Util::Encode::encode_utf8($pass));
