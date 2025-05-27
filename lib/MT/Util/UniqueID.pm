@@ -91,8 +91,8 @@ sub create_session_id {
     create_sha1_id( MT_SESSION_NS(), @_ );
 }
 
-sub create_api_password {
-    create_sha1_id( MT_API_PASSWORD_NS(), @_ );
+sub create_api_password {    ## 27
+    MT::Util::Digest::SHA::sha1_base64(_random_bytes_with_namespaces(MT_API_PASSWORD_NS(), @_));
 }
 
 1;
