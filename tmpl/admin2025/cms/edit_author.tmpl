@@ -257,9 +257,11 @@ function showPasswordField() {
        required="1"
        label="<__trans phrase="Username">"
        label_for="name">
-      <input type="text" name="name" id="name" class="form-control text" value="<mt:var name="name" escape="html">" <mt:unless name="auth_mode_mt">disabled="disabled"</mt:unless> />
+      <input type="text" name="name" id="name" class="form-control text" value="<mt:var name="name" escape="html">" <mt:unless name="auth_mode_mt"><mt:unless name="new_user_external_auth">disabled="disabled"</mt:unless></mt:unless> />
       <mt:unless name="auth_mode_mt">
-        <input name="name" type="hidden" value="<mt:var name="name" escape="html">" />
+        <mt:unless name="new_user_external_auth">
+          <input name="name" type="hidden" value="<mt:var name="name" escape="html">" />
+        </mt:unless>
       </mt:unless>
     </mtapp:setting>
 
@@ -273,6 +275,7 @@ function showPasswordField() {
     </mt:if>
   </mt:if>
 
+  <mt:unless name="new_user_external_auth">
     <mtapp:setting
        id="nickname"
        required="1"
@@ -445,6 +448,7 @@ function showPasswordField() {
         <option value="space"<mt:if name="auth_pref_tag_delim_space"> selected="selected"</mt:if>><__trans phrase="Space"></option>
       </select>
     </mtapp:setting>
+  </mt:unless>
   </fieldset>
 
   <fieldset id="author-permission-settings" class="mb-3">
