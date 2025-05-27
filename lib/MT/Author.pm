@@ -703,7 +703,7 @@ sub api_password {
     my $self = shift;
     if (@_) {
         my ($new_password) = @_;
-        my $crypted = $new_password ? crypt_password($new_password) : '';
+        my $crypted = length($new_password) ? crypt_password($new_password) : '';
         $self->column('api_password', $crypted);
     } else {
         return $self->column('api_password');
