@@ -1586,7 +1586,7 @@ sub core_system_menu_actions {
             order  => 100,
         },
         site => {
-            icon   => 'ic_site',
+            icon   => 'ic_sites',
             label  => 'Site',
             mobile => 0,
             order  => 200,
@@ -1597,7 +1597,7 @@ sub core_system_menu_actions {
                     return $user->can_do('access_to_system_dashboard');
                 }
             },
-            icon   => 'ic_setting',
+            icon   => 'ic_system_setting',
             label  => 'System',
             mobile => 0,
             order  => 300,

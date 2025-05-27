@@ -13844,6 +13844,18 @@ fieldset.form-group {
   color: #D33638;
 }
 
+.badge-site {
+  border-color: transparent;
+  background-color: #0176BF;
+  color: #FFFFFF;
+}
+
+.badge-child-site {
+  border-color: transparent;
+  background-color: var(--bs-info);
+  color: #2F2F2F;
+}
+
 h1 .badge, h2 .badge,
 .h1 .badge, .h2 .badge {
   font-size: 50%;
@@ -14762,6 +14774,11 @@ li.nav-item, .mt-sharedPreviewNav .mt-sharedPreviewNav__rightNav li.mt-sharedPre
 }
 .site-list-button-modal .site-list-container table td a {
   display: inline-block;
+  vertical-align: middle;
+}
+.site-list-button-modal .site-list-container table td .badge {
+  margin-right: 14px;
+  width: 74px;
 }
 .site-list-button-modal .site-list-container table td .dashboard-link {
   margin-right: 10px;

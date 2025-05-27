@@ -5,18 +5,15 @@
   <div class="mt-primaryNavigation__control">
     <mt:loop name="site_menu_actions">
         <mt:setvarblock name="escaped_menu_action_label"><mt:var name="label" escape="html"></mt:setvarblock>
-        <a 
+        <a
           class="site_menu_actions__button <mt:var name="class" escape="html" _default="">"
           href="<mt:var name="href" escape="html">"
           <mt:if name="target">target="<mt:var name="target" escape="html">"</mt:if>
           <mt:if name="id" eq="create_new">data-is="create-button"</mt:if>
-          title="<mt:var name="label" escape="html">"
+          title="<mt:var name="escaped_menu_action_label">"
         >
-          <svg role="img" class="mt-icon">
-              <title><__trans phrase="<mt:var name="label" escape="html">"></title>
-              <use xlink:href="<mt:var name="static_uri" escape="html">images/admin2025/sprite.svg#<mt:var name="icon" escape="html">"></use>
-          </svg>
-          <span class="label"><__trans phrase="<mt:var name="label" escape="html">"></span>
+          <mtapp:svgicon id="$icon" title="<mt:var name="escaped_menu_action_label">">
+          <span class="label"><mt:var name="escaped_menu_action_label"></span>
         </a>
     </mt:loop>
   </div>
@@ -25,7 +22,7 @@
     <mt:loop name="menu_actions">
       <mt:unless name="plugin" eq="core">
         <mt:setvarblock name="escaped_menu_action_label"><mt:var name="label" escape="html"></mt:setvarblock>
-        <a 
+        <a
           id="menu-<mt:var name="id" escape="html">"
           href="<mt:var name="href" escape="html">"
           class="btn btn-default <mt:var name="class" escape="html">"
