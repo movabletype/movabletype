@@ -207,6 +207,42 @@ sub suite {
             },
         },
         {
+            path   => '/v7/sites/1/stats/yearWeek/sessions',
+            params => { startDate => '2022-03-01', endDate => '2022-04-01' },
+            method => 'GET',
+            code   => 200,
+            setup  => sub {
+                $dummy_res->{dimensionHeaders}->[0]->{name} = 'yearWeek';
+                $dummy_res->{metricHeaders}->[0]->{name}    = 'sessions';
+                my $dummy_json = MT::Util::to_json($dummy_res);
+                $dummy_response->content($dummy_json);
+            },
+        },
+        {
+            path   => '/v7/sites/1/stats/yearMonth/sessions',
+            params => { startDate => '2022-03-01', endDate => '2022-04-01' },
+            method => 'GET',
+            code   => 200,
+            setup  => sub {
+                $dummy_res->{dimensionHeaders}->[0]->{name} = 'yearMonth';
+                $dummy_res->{metricHeaders}->[0]->{name}    = 'sessions';
+                my $dummy_json = MT::Util::to_json($dummy_res);
+                $dummy_response->content($dummy_json);
+            },
+        },
+        {
+            path   => '/v7/sites/1/stats/year/sessions',
+            params => { startDate => '2022-03-01', endDate => '2022-04-01' },
+            method => 'GET',
+            code   => 200,
+            setup  => sub {
+                $dummy_res->{dimensionHeaders}->[0]->{name} = 'year';
+                $dummy_res->{metricHeaders}->[0]->{name}    = 'sessions';
+                my $dummy_json = MT::Util::to_json($dummy_res);
+                $dummy_response->content($dummy_json);
+            },
+        },
+        {
             path   => '/v7/sites/1/stats/path/screenPageViews',
             params => { startDate => '2022-03-01', endDate => '2022-04-01', pagePath => '/' },
             method => 'GET',
@@ -241,7 +277,42 @@ sub suite {
                 my $dummy_json = MT::Util::to_json($dummy_res);
                 $dummy_response->content($dummy_json);
             },
+        },
+        {
+            path   => '/v7/sites/1/stats/yearWeek/screenPageViews',
+            params => { startDate => '2022-03-01', endDate => '2022-04-01' },
+            method => 'GET',
+            code   => 200,
+            setup  => sub {
+                $dummy_res->{dimensionHeaders}->[0]->{name} = 'yearWeek';
+                $dummy_res->{metricHeaders}->[0]->{name}    = 'screenPageViews';
+                my $dummy_json = MT::Util::to_json($dummy_res);
+                $dummy_response->content($dummy_json);
+            },
+        },
+        {
+            path   => '/v7/sites/1/stats/yearMonth/screenPageViews',
+            params => { startDate => '2022-03-01', endDate => '2022-04-01' },
+            method => 'GET',
+            code   => 200,
+            setup  => sub {
+                $dummy_res->{dimensionHeaders}->[0]->{name} = 'yearMonth';
+                $dummy_res->{metricHeaders}->[0]->{name}    = 'screenPageViews';
+                my $dummy_json = MT::Util::to_json($dummy_res);
+                $dummy_response->content($dummy_json);
+            },
+        },
+        {
+            path   => '/v7/sites/1/stats/year/screenPageViews',
+            params => { startDate => '2022-03-01', endDate => '2022-04-01' },
+            method => 'GET',
+            code   => 200,
+            setup  => sub {
+                $dummy_res->{dimensionHeaders}->[0]->{name} = 'year';
+                $dummy_res->{metricHeaders}->[0]->{name}    = 'screenPageViews';
+                my $dummy_json = MT::Util::to_json($dummy_res);
+                $dummy_response->content($dummy_json);
+            },
         }
-
     ];
 }

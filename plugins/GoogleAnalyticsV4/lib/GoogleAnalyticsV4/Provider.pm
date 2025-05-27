@@ -125,11 +125,19 @@ sub _request {
     for my $i (0 .. $#d_headers) {
         if ($d_headers[$i] eq 'date') {
             $_->{dimensionValues}->[$i]->{value} =~ s/(\d{4})(\d{2})/$1-$2-/ for @{ $data->{rows} };
+        } elsif ($d_headers[$i] eq 'yearWeek') {
+            $_->{dimensionValues}->[$i]->{value} =~ s/(\d{4})(\d{2})/$1-W$2/ for @{ $data->{rows} };
+        } elsif ($d_headers[$i] eq 'yearMonth') {
+            $_->{dimensionValues}->[$i]->{value} =~ s/(\d{4})(\d{2})/$1-$2/ for @{ $data->{rows} };
         }
     }
     for my $i (0 .. $#m_headers) {
         if ($m_headers[$i] eq 'date') {
             $_->{metricValues}->[$i]->{value} =~ s/(\d{4})(\d{2})/$1-$2-/ for @{ $data->{rows} };
+        } elsif ($m_headers[$i] eq 'yearWeek') {
+            $_->{metricValues}->[$i]->{value} =~ s/(\d{4})(\d{2})/$1-W$2/ for @{ $data->{rows} };
+        } elsif ($m_headers[$i] eq 'yearMonth') {
+            $_->{metricValues}->[$i]->{value} =~ s/(\d{4})(\d{2})/$1-$2/ for @{ $data->{rows} };
         }
     }
 
@@ -213,37 +221,71 @@ sub visits_for_path {
 
 sub sessions_for_path { visits_for_path(@_) }
 
-sub pageviews_for_date {
+sub _get_statistics_by_dimension_and_metric {
     my $self = shift;
-    my ($app, $params) = @_;
+    my ($app, $params, $dimension, $metric) = @_;
 
     $self->_request(
         $app,
         {
-            dimensions => [{ name      => 'date' }],
-            metrics    => [{ name      => 'screenPageViews' }],
-            orderBys   => [{ dimension => { dimensionName => 'date' } }],
+            dimensions => [{ name      => $dimension }],
+            metrics    => [{ name      => $metric }],
+            orderBys   => [{ dimension => { dimensionName => $dimension } }],
             _extract_default_params($params),
         });
 }
 
-sub screenpageviews_for_date { pageviews_for_date(@_) }
+sub pageviews_for_date { screenpageviews_for_date(@_) }
 
-sub visits_for_date {
+sub screenpageviews_for_date {
     my $self = shift;
     my ($app, $params) = @_;
-
-    $self->_request(
-        $app,
-        {
-            dimensions => ({ name      => 'date' }),
-            metrics    => ({ name      => 'sessions' }),
-            orderBys   => [{ dimension => { dimensionName => 'date' } }],
-            _extract_default_params($params),
-        });
+    $self->_get_statistics_by_dimension_and_metric($app, $params, 'date', 'screenPageViews');
 }
 
-sub sessions_for_date { visits_for_date(@_) }
+sub screenpageviews_for_yearweek {
+    my $self = shift;
+    my ($app, $params) = @_;
+    $self->_get_statistics_by_dimension_and_metric($app, $params, 'yearWeek', 'screenPageViews');
+}
+
+sub screenpageviews_for_yearmonth {
+    my $self = shift;
+    my ($app, $params) = @_;
+    $self->_get_statistics_by_dimension_and_metric($app, $params, 'yearMonth', 'screenPageViews');
+}
+
+sub screenpageviews_for_year {
+    my $self = shift;
+    my ($app, $params) = @_;
+    $self->_get_statistics_by_dimension_and_metric($app, $params, 'year', 'screenPageViews');
+}
+
+sub visits_for_date { sessions_for_date(@_) }
+
+sub sessions_for_date {
+    my $self = shift;
+    my ($app, $params) = @_;
+    $self->_get_statistics_by_dimension_and_metric($app, $params, 'date', 'sessions');
+}
+
+sub sessions_for_yearweek {
+    my $self = shift;
+    my ($app, $params) = @_;
+    $self->_get_statistics_by_dimension_and_metric($app, $params, 'yearWeek', 'sessions');
+}
+
+sub sessions_for_yearmonth {
+    my $self = shift;
+    my ($app, $params) = @_;
+    $self->_get_statistics_by_dimension_and_metric($app, $params, 'yearMonth', 'sessions');
+}
+
+sub sessions_for_year {
+    my $self = shift;
+    my ($app, $params) = @_;
+    $self->_get_statistics_by_dimension_and_metric($app, $params, 'year', 'sessions');
+}
 
 sub path_key { 'pagePath' }
 
@@ -251,7 +293,7 @@ sub metric_spec_for_pageviews {
     return {
         screenPageViews => {
             type        => 'integer',
-            description => 'The sum total of the pageviews in the specified period.',
+            description => 'The sum total of the screenPageViews in the specified period.',
         },
     };
 }
@@ -278,7 +320,85 @@ sub fields_for_statistics_date {
             name   => 'screenPageViews',
             schema => {
                 type        => 'integer',
-                description => 'The pageviews for the path. This property exists only if the metrics to retrieve is "screenPageViews"',
+                description => 'The number of screenPageViews for the path. This property exists only if the metrics to retrieve is "screenPageViews"',
+            },
+        },
+        {
+            name   => 'sessions',
+            schema => {
+                type        => 'integer',
+                description => 'The number of sessions for the path. This property exists only if the metrics to retrieve is "sessions"',
+
+            },
+        },
+    ];
+}
+
+sub fields_for_statistics_yearweek {
+    return [{
+            name   => 'yearWeek',
+            schema => {
+                type        => 'string',
+                description => 'The year and week of the target. The format is "YYYY-Www".',
+            },
+        },
+        {
+            name   => 'screenPageViews',
+            schema => {
+                type        => 'integer',
+                description => 'The number of screenPageViews for the path. This property exists only if the metrics to retrieve is "screenPageViews"',
+            },
+        },
+        {
+            name   => 'sessions',
+            schema => {
+                type        => 'integer',
+                description => 'The number of sessions for the path. This property exists only if the metrics to retrieve is "sessions"',
+
+            },
+        },
+    ];
+}
+
+sub fields_for_statistics_yearmonth {
+    return [{
+            name   => 'yearMonth',
+            schema => {
+                type        => 'string',
+                description => 'The year and month of the target. The format is "YYYY-MM".',
+            },
+        },
+        {
+            name   => 'screenPageViews',
+            schema => {
+                type        => 'integer',
+                description => 'The number of screenPageViews for the path. This property exists only if the metrics to retrieve is "screenPageViews"',
+            },
+        },
+        {
+            name   => 'sessions',
+            schema => {
+                type        => 'integer',
+                description => 'The number of sessions for the path. This property exists only if the metrics to retrieve is "sessions"',
+
+            },
+        },
+    ];
+}
+
+sub fields_for_statistics_year {
+    return [{
+            name   => 'year',
+            schema => {
+                type        => 'string',
+                description => 'The year of the target. The format is "YYYY".',
+            },
+        },
+        {
+            name   => 'screenPageViews',
+            schema => {
+                type        => 'integer',
+                description => 'The number of screenPageViews for the path. This property exists only if the metrics to retrieve is "screenPageViews"',
             },
         },
         {
@@ -311,7 +431,7 @@ sub fields_for_statistics_path {
             name   => 'screenPageViews',
             schema => {
                 type        => 'integer',
-                description => 'The pageviews for the path. This property exists only if the metrics to retrieve is "screenPageViews"',
+                description => 'The number of screenPageViews for the path. This property exists only if the metrics to retrieve is "screenPageViews"',
             },
         },
         {

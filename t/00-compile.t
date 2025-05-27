@@ -640,6 +640,9 @@ use_ok('MT::DataAPI::Endpoint::v7::Theme');
 use_ok('MT::DataAPI::Endpoint::v7::Stats');
 use_ok('MT::DataAPI::Resource::v7::StatisticsDate');
 use_ok('MT::DataAPI::Resource::v7::StatisticsPath');
+use_ok('MT::DataAPI::Resource::v7::StatisticsYear');
+use_ok('MT::DataAPI::Resource::v7::StatisticsYearWeek');
+use_ok('MT::DataAPI::Resource::v7::StatisticsYearMonth');
 
 use_ok('MT::App::Search::Common');
 
