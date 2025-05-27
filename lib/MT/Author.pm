@@ -717,7 +717,7 @@ sub crypt_password {
     require Crypt::URandom;
     my $salt = MIME::Base64::encode_base64(Crypt::URandom::urandom(12));
     chomp($salt);
-    $salt =~ s/\\+/./g;
+    $salt =~ s/\+/./g;
 
     require MT::Util::Digest::SHA;
     return '$6$' . $salt . '$' . MT::Util::Digest::SHA::sha512_base64($salt . MT::Util::Encode::encode_utf8($pass));
