@@ -45,7 +45,6 @@ sub v9_api_password {
         return 1 if length($old_password) > 60;
 
         $user->api_password($old_password);
-        $user->save();
     }
     return 1;
 }
