@@ -11821,9 +11821,9 @@ li {
 
 .mt-primaryNavigation__control, .mt-primaryNavigation__control--invert, html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper .mt-primaryNavigation__body,
 html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper .mt-primaryNavigation__content,
-.mt-contentWrapper.collapsed .mt-primaryNavigation__body,
-.mt-contentWrapper.collapsed .mt-primaryNavigation__content, html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper .mt-primaryNavigation__toggle_bar,
-.mt-contentWrapper.collapsed .mt-primaryNavigation__toggle_bar, .mt-primaryNavigation {
+html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper.collapsed .mt-primaryNavigation__body,
+html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper.collapsed .mt-primaryNavigation__content, html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper .mt-primaryNavigation__toggle_bar,
+html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper.collapsed .mt-primaryNavigation__toggle_bar, .mt-primaryNavigation {
   transition: transform 0.3s ease;
 }
 
@@ -11967,38 +11967,48 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper .mt-prim
 }
 
 html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper .mt-primaryNavigation,
-.mt-contentWrapper.collapsed .mt-primaryNavigation {
+html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper.collapsed .mt-primaryNavigation {
   transform: translateX(-100%);
 }
 html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper .mt-primaryNavigation__toggle_bar,
-.mt-contentWrapper.collapsed .mt-primaryNavigation__toggle_bar {
+html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper.collapsed .mt-primaryNavigation__toggle_bar {
   width: var(--left-bar-toggle-width);
   padding: 0;
   background-color: #F4F4F4;
 }
 html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper .mt-primaryNavigation__toggle_bar .mt-primaryNavigation__toggle_icon_wrapper,
-.mt-contentWrapper.collapsed .mt-primaryNavigation__toggle_bar .mt-primaryNavigation__toggle_icon_wrapper {
+html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper.collapsed .mt-primaryNavigation__toggle_bar .mt-primaryNavigation__toggle_icon_wrapper {
   transform: translateX(0);
   padding-left: 0;
 }
 html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper .mt-mainContentWrapper,
-.mt-contentWrapper.collapsed .mt-mainContentWrapper {
+html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper.collapsed .mt-mainContentWrapper {
   margin-left: var(--minimal-left-bar-width);
   width: calc(100vw - var(--minimal-left-bar-width));
 }
 html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper.mouseover .mt-primaryNavigation,
-.mt-contentWrapper.collapsed.mouseover .mt-primaryNavigation {
+html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper.collapsed.mouseover .mt-primaryNavigation {
   transform: translateX(0);
 }
 html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper.mouseover .mt-primaryNavigation__toggle_bar,
-.mt-contentWrapper.collapsed.mouseover .mt-primaryNavigation__toggle_bar {
+html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper.collapsed.mouseover .mt-primaryNavigation__toggle_bar {
   width: 1px;
   background-color: transparent;
 }
 html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper.mouseover .mt-primaryNavigation__toggle_bar .mt-primaryNavigation__toggle_icon_wrapper,
-.mt-contentWrapper.collapsed.mouseover .mt-primaryNavigation__toggle_bar .mt-primaryNavigation__toggle_icon_wrapper {
+html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper.collapsed.mouseover .mt-primaryNavigation__toggle_bar .mt-primaryNavigation__toggle_icon_wrapper {
   transform: translateX(-50%);
   left: 5px;
+}
+@media (max-width: 767.98px) {
+  html[data-screen-id=dashboard][data-scope-type=user] .mt-main_content_header,
+  html[data-screen-id=dashboard][data-scope-type=user] .mt-breadcrumb {
+    margin-left: 0;
+    padding-left: 0;
+  }
+  html[data-screen-id=dashboard][data-scope-type=user] .mt-mobilePrimaryMenu {
+    display: none;
+  }
 }
 
 .mt-primaryNavigation__sites {

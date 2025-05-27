@@ -484,45 +484,57 @@ li{
 }
 
 
-html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper,
-.mt-contentWrapper.collapsed {
+html[data-screen-id=dashboard][data-scope-type=user] {
+  .mt-contentWrapper,
+  .mt-contentWrapper.collapsed {
 
-  .mt-primaryNavigation {
-    transform: translateX(-100%);
+    .mt-primaryNavigation {
+      transform: translateX(-100%);
+    }
+
+    .mt-primaryNavigation__toggle_bar {
+      width: var(--left-bar-toggle-width);
+      padding: 0;
+      background-color: $gray-lightest;
+      @extend %mt-primaryNavigationAnimation;
+
+      .mt-primaryNavigation__toggle_icon_wrapper {
+        transform: translateX(0);
+        padding-left: 0;
+      }
+    }
+    .mt-primaryNavigation__body,
+    .mt-primaryNavigation__content {
+      @extend %mt-primaryNavigationAnimation;
+    }
+
+    .mt-mainContentWrapper {
+      margin-left: var(--minimal-left-bar-width);
+      width: calc(100vw - var(--minimal-left-bar-width));
+    }
+
+    &.mouseover {
+      .mt-primaryNavigation {
+        transform: translateX(0);
+      }
+      .mt-primaryNavigation__toggle_bar {
+        width: 1px;
+        background-color: transparent;
+        .mt-primaryNavigation__toggle_icon_wrapper {
+          transform: translateX(-50%);
+          left: 5px;
+        }
+      }
+    }
   }
-
-  .mt-primaryNavigation__toggle_bar {
-    width: var(--left-bar-toggle-width);
-    padding: 0;
-    background-color: $gray-lightest;
-    @extend %mt-primaryNavigationAnimation;
-
-    .mt-primaryNavigation__toggle_icon_wrapper {
-      transform: translateX(0);
+  @include media-breakpoint-down(md) {
+    .mt-main_content_header,
+    .mt-breadcrumb {
+      margin-left: 0;
       padding-left: 0;
     }
-  }
-  .mt-primaryNavigation__body,
-  .mt-primaryNavigation__content {
-    @extend %mt-primaryNavigationAnimation;
-  }
-
-  .mt-mainContentWrapper {
-    margin-left: var(--minimal-left-bar-width);
-    width: calc(100vw - var(--minimal-left-bar-width));
-  }
-
-  &.mouseover {
-    .mt-primaryNavigation {
-      transform: translateX(0);
-    }
-    .mt-primaryNavigation__toggle_bar {
-      width: 1px;
-      background-color: transparent;
-      .mt-primaryNavigation__toggle_icon_wrapper {
-        transform: translateX(-50%);
-        left: 5px;
-      }
+    .mt-mobilePrimaryMenu {
+      display: none;
     }
   }
 }
