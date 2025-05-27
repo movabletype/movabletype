@@ -139,7 +139,6 @@
                 <span aria-hidden="true">&times;</span>
               </button>
             </div>
-
           </div>
 
           <div class="site-list-actions">

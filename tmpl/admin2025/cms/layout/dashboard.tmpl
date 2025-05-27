@@ -13,7 +13,10 @@
 
       <div class="mt-mainContentBody">
         <div class="mt-mainContent" style="min-width: 0;">
-          <mt:Include name="include/breadcrumbs.tmpl">
+          <div class="mt-main_content_header">
+            <mt:include name="include/mobile_primary_menu.tmpl">
+            <mt:Include name="include/breadcrumbs.tmpl">
+          </div>
 
           <mt:if name="scope_type" ne="user">
             <mt:include name="include/mobile_primary_menu.tmpl">

@@ -1,16 +1,34 @@
 <div id="mobilePrimaryMenu" class="mt-mobilePrimaryMenu">
 <mt:unless name="is_full_screen">
   <mt:if name="top_nav_loop">
-  <button id="mobilePrimaryMenu__dropdownMenuButton" class="mt-mobilePrimaryMenu__dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-    <mtapp:svgicon id="ic_menuhamburger" title="Open primary menu">
+  <button id="mobilePrimaryMenu__dropdownMenuButton" class="mt-mobilePrimaryMenu__dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" data-bs-auto-close="outside" aria-expanded="false">
+    <div class="mt-icon">
+      <span class="open"><mtapp:svgicon id="ic_open" title="Open primary menu"></span>
+      <span class="close"><mtapp:svgicon id="ic_close" title="Close primary menu"></span>
+    </div>
   </button>
   </mt:if>
 </mt:unless>
-  <span class="mt-mobilePrimaryMenu__name">
-    <mt:var name="page_title">
-  </span>
   <div id="mobilePrimaryMenu__dropdownMenu" class="mt-mobilePrimaryMenu__dropdownMenu dropdown-menu" aria-labelledby="mobilePrimaryMenu__dropdownMenuButton" data-children=".mt-mobilePrimaryMenu__menuItem">
+    <div class="mt-primaryNavigation__control">
+      <mt:loop name="site_menu_actions">
+          <mt:setvarblock name="escaped_menu_action_label"><mt:var name="label" escape="html"></mt:setvarblock>
+          <mt:setvarblock name="escaped_menu_action_icon"><mt:var name="icon" escape="html"></mt:setvarblock>
+          <a
+            class="site_menu_actions__button <mt:var name="class" escape="html" _default="">"
+            href="<mt:var name="href" escape="html">"
+            <mt:if name="target">target="<mt:var name="target" escape="html">"</mt:if>
+            <mt:if name="id" eq="create_new">data-is="create-button"</mt:if>
+            title="<mt:var name="label" escape="html">"
+          >
+            <mtapp:svgicon id="$escaped_menu_action_icon" title="$escaped_menu_action_label">
+            <span class="label"><__trans phrase="<mt:var name="label" escape="html">"></span>
+          </a>
+      </mt:loop>
+    </div>
+
     <ul>
+
 <mt:loop name="top_nav_loop">
   <mt:if name="mobile">
       <li class="mt-mobilePrimaryMenu__menuItem">
@@ -45,11 +63,14 @@
 </div>
 
 <mt:setvarblock name="jq_js_include" append="1">
+/*
 jQuery(window).on('load resize', function () {
   var screenWidth = jQuery(window).width();
   var $dropdownMenu = jQuery('.mt-mobilePrimaryMenu__dropdownMenu');
   $dropdownMenu.width(screenWidth * 0.8);
 });
+*/
+
 jQuery('.mt-mobilePrimaryMenu__dropdownMenu a').on('click', function (e) {
   if (this.dataset.toggle) {
     var collapseId = this.getAttribute('href');
@@ -57,4 +78,25 @@ jQuery('.mt-mobilePrimaryMenu__dropdownMenu a').on('click', function (e) {
   }
   e.stopPropagation();
 });
+
+document.addEventListener('DOMContentLoaded', function() {
+  const mobilePrimaryMenu = document.querySelector('.mt-mobilePrimaryMenu');
+  console.log(mobilePrimaryMenu);
+  mobilePrimaryMenu.addEventListener('show.bs.dropdown', event => {
+  console.log('show.bs.dropdown');
+    console.log(event.target);
+    if(!event.target.classList.contains('mt-mobilePrimaryMenu__dropdownMenuButton')) {
+      return;
+    }
+    document.querySelector('body').classList.add('dropdown-open-primary-menu');
+  })
+  mobilePrimaryMenu.addEventListener('hide.bs.dropdown', event => {
+  console.log('hide.bs.dropdown');
+    if(!event.target.classList.contains('mt-mobilePrimaryMenu__dropdownMenuButton')) {
+      return;
+    }
+    document.querySelector('body').classList.remove('dropdown-open-primary-menu');
+  })
+});
+
 </mt:setvarblock>

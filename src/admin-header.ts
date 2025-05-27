@@ -52,7 +52,7 @@ if (siteListButtonTargets.length > 0 && magicToken !== "") {
   });
 }
 
-const createButtonTarget = document.querySelector<HTMLElement>(
+const createButtonTargets = document.querySelectorAll<HTMLElement>(
   '[data-is="create-button"]',
 );
 const searchButtonTarget = document.querySelector<HTMLElement>(
@@ -62,7 +62,7 @@ const modalContainerTarget =
   document.querySelector<HTMLElement>("div.mt-modal");
 
 if (
-  (createButtonTarget !== null || searchButtonTarget !== null) &&
+  (createButtonTargets.length > 0 || searchButtonTarget !== null) &&
   magicToken !== ""
 ) {
   fetchContentTypes({
@@ -70,19 +70,21 @@ if (
     magicToken: magicToken,
   }).then((data) => {
     // Create button
-    if (createButtonTarget !== null) {
-      svelteMountCreateButton({
-        target: createButtonTarget,
-        props: {
-          blog_id: blogId,
-          contentTypes: data.contentTypes.filter(
-            (contentType) => contentType.can_create === 1,
-          ),
-          open: false,
-          buttonRef: createButtonTarget,
-          anchorRef: createButtonTarget,
-          containerRef: modalContainerTarget,
-        },
+    if (createButtonTargets.length > 0) {
+      createButtonTargets.forEach((createButtonTarget) => {
+        svelteMountCreateButton({
+          target: createButtonTarget,
+          props: {
+            blog_id: blogId,
+            contentTypes: data.contentTypes.filter(
+              (contentType) => contentType.can_create === 1,
+            ),
+            open: false,
+            buttonRef: createButtonTarget,
+            anchorRef: createButtonTarget,
+            containerRef: modalContainerTarget,
+          },
+        });
       });
     }
     // Search button
@@ -110,7 +112,7 @@ if (
         magicToken: magicToken,
         contentTypes: data.contentTypes.filter(
           (contentType) => contentType.can_search === 1,
-        )
+        ),
       });
     }
   });

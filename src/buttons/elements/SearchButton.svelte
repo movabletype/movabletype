@@ -85,11 +85,11 @@
     </div>
     <div class="modal-body">
       <SearchForm
-        blogId={blogId}
-        magicToken={magicToken}
-        contentTypes={contentTypes}
-        objectType={objectType}
-        searchTabs={searchTabs}
+        {blogId}
+        {magicToken}
+        {contentTypes}
+        {objectType}
+        {searchTabs}
       />
     </div>
   </div>

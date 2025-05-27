@@ -67,7 +67,7 @@
         collapsed = true;
       }
     }
-    if(window.innerWidth < 800){
+    if (window.innerWidth < 800) {
       // For smaller screens, always collapse the sidebar
       collapsed = true;
       isMobile = true;
@@ -83,16 +83,4 @@
   use:portal={"body"}
   on:mouseenter={handleMouseEnter}
   style={`display: ${collapsed ? "block" : "none"}`}
-></div>
-
-<!-- svelte-ignore a11y-no-static-element-interactions -->
-<!-- svelte-ignore a11y-click-events-have-key-events -->
-<div
-  class="mt-primaryNavigation-overlay-sp"
-  use:portal={"body"}
-  on:click={() => {
-    collapsed = true;
-    handleCollapse();
-  }}
-  style={`display: ${collapsed ? "none" : "block"}`}
 ></div>

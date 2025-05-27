@@ -126,28 +126,10 @@
   </mt:if>
     </span>
   </div>
-<mt:elseif name="scope_type" eq="website">
-  <div class="mt-mobileGlobalMenu__name">
-    <span>
-      <a href="<mt:var name="script_url">?__mode=dashboard&blog_id=<mt:var name="curr_website_id" escape="html">">
-        <mt:var name="curr_website_name" escape="html">
-      </a>
-    </span>
-  </div>
 <mt:else>
   <div class="mt-mobileGlobalMenu__name">
     <span>
-      <a href="<mt:var name="script_url">?__mode=dashboard&blog_id=<mt:var name="curr_website_id" escape="html">">
-        <mt:var name="curr_website_name" escape="html">
-      </a>
-    </span>
-    <span class="separator">
-      &gt;
-    </span>
-    <span class="currentSite">
-      <a href="<mt:var name="script_url">?__mode=dashboard&blog_id=<mt:var name="curr_blog_id" escape="html">">
-        <mt:var name="curr_blog_name" escape="html">
-      </a>
+      <mt:var name="page_title">
     </span>
   </div>
 </mt:if>
