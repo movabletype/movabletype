@@ -1147,6 +1147,7 @@ use vars qw( @ISA %Lexicon );
 	'Please choose a preferred archive type.' => '優先アーカイブタイプを指定してください',
 	'Plugin Settings' => 'プラグイン設定',
 	'Publish Site' => 'サイトを再構築',
+	'You can only register a maximum of [_1] starred sites.' => 'スター付きサイトは最大で[_1]件しか登録できません。',
 	'Registration Settings' => '登録/認証の設定',
 	'Saved [_1] Changes' => '[_1]の変更が保存されました',
 	'Saving blog failed: [_1]' => 'ブログを保存できませんでした: [_1]',
