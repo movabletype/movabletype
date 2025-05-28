@@ -32,11 +32,6 @@ our %Requirements = (
         tags  => ["Mail"],
         url   => "https://metacpan.org/pod/Authen::SASL",
     },
-    "Authen::SASL::XS" => {
-        label => "This module is optional. It enhances performance of Authen::SASL.",
-        tags  => ["Mail", "Performance"],
-        url   => "https://metacpan.org/pod/Authen::SASL::XS",
-    },
     "Cache::Memcached" => {
         label => "Cache::Memcached and a memcached server are optional. They are used to cache in-memory objects.",
         tags  => ["Cache"],
