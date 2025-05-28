@@ -24,3 +24,11 @@ if (apiPasswordDeleter !== null) {
     }
   });
 }
+
+const apiPasswordDisplay = document.querySelector<HTMLInputElement>(
+  "#api-password-display",
+);
+
+if (apiPasswordDisplay !== null) {
+  apiPasswordDisplay.style.width = apiPasswordDisplay.value.length + "ch";
+}
