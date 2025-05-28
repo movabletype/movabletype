@@ -481,6 +481,8 @@ sub build_plugin_table {
         }
     }
 
+    $app->run_callbacks('build_plugin_table', $app, \%opt, $data);
+
     $param->{plugin_loop} = $data;
 }
 
