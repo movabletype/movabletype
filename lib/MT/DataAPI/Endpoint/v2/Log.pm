@@ -34,6 +34,7 @@ DESCRIPTION
             { '$ref' => '#/components/parameters/log_searchFields' },
             { '$ref' => '#/components/parameters/log_limit' },
             { '$ref' => '#/components/parameters/log_offset' },
+            { '$ref' => '#/components/parameters/log_filterKeys' },
             {
                 in     => 'query',
                 name   => 'sortBy',

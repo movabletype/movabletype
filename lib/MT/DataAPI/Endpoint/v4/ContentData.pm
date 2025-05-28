@@ -97,6 +97,8 @@ DESCRIPTION
             { '$ref' => '#/components/parameters/content_data_fields' },
             { '$ref' => '#/components/parameters/content_data_includeIds' },
             { '$ref' => '#/components/parameters/content_data_excludeIds' },
+            { '$ref' => '#/components/parameters/content_data_filterKeys' },
+            { '$ref' => '#/components/parameters/content_data_searchFields' },
         ],
         responses => {
             200 => {
@@ -170,7 +172,9 @@ Known issues (these will be solved in future release)
 - If content type contains non required Date and Time field, request will failed when post data does not contain its data.
 - Date and Time field must be specified by YYYYMMDDHHmmSS format.
 DESCRIPTION
-
+        parameters => [
+            { '$ref' => '#/components/parameters/content_data_saveRevision' },
+        ],
         requestBody => {
             content => {
                 'application/x-www-form-urlencoded' => {
@@ -322,6 +326,9 @@ Post form data is following:
 
 - content_data (ContentData, required) -Single ContentData resource.
 DESCRIPTION
+        parameters => [
+            { '$ref' => '#/components/parameters/content_data_saveRevision' },
+        ],
         requestBody => {
             content => {
                 'application/x-www-form-urlencoded' => {

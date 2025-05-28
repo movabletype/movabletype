@@ -30,6 +30,7 @@ DESCRIPTION
             { '$ref' => '#/components/parameters/permission_sortOrder' },
             { '$ref' => '#/components/parameters/permission_fields' },
             { '$ref' => '#/components/parameters/permission_blogIds' },
+            { '$ref' => '#/components/parameters/permission_filterKeys' },
         ],
         responses => {
             200 => {
@@ -109,6 +110,7 @@ DESCRIPTION
             { '$ref' => '#/components/parameters/permission_sortOrder' },
             { '$ref' => '#/components/parameters/permission_fields' },
             { '$ref' => '#/components/parameters/permission_blogIds' },
+            { '$ref' => '#/components/parameters/permission_filterKeys' },
         ],
         responses => {
             200 => {
@@ -274,6 +276,7 @@ DESCRIPTION
             { '$ref' => '#/components/parameters/permission_sortOrder' },
             { '$ref' => '#/components/parameters/permission_fields' },
             { '$ref' => '#/components/parameters/permission_blogIds' },
+            { '$ref' => '#/components/parameters/permission_filterKeys' },
         ],
         responses => {
             200 => {
@@ -806,6 +809,7 @@ DESCRIPTION
             { '$ref' => '#/components/parameters/permission_sortOrder' },
             { '$ref' => '#/components/parameters/permission_fields' },
             { '$ref' => '#/components/parameters/permission_blogIds' },
+            { '$ref' => '#/components/parameters/permission_filterKeys' },
         ],
         responses => {
             200 => {

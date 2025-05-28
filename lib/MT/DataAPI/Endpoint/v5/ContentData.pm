@@ -28,6 +28,8 @@ DESCRIPTION
         parameters => [
             { '$ref' => '#/components/parameters/content_data_limit' },
             { '$ref' => '#/components/parameters/content_data_offset' },
+            { '$ref' => '#/components/parameters/content_data_filterKeys' },
+            { '$ref' => '#/components/parameters/content_data_searchFields' },
             {
                 in     => 'query',
                 name   => 'sortBy',

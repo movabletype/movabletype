@@ -27,6 +27,7 @@ DESCRIPTION
         parameters => [
             { '$ref' => '#/components/parameters/content_field_limit' },
             { '$ref' => '#/components/parameters/content_field_offset' },
+            { '$ref' => '#/components/parameters/content_field_searchFields' },
             {
                 in     => 'query',
                 name   => 'sortBy',

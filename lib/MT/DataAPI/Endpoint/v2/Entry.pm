@@ -309,6 +309,7 @@ DESCRIPTION
             { '$ref' => '#/components/parameters/entry_maxComments' },
             { '$ref' => '#/components/parameters/entry_maxTrackbacks' },
             { '$ref' => '#/components/parameters/entry_no_text_filter' },
+            { '$ref' => '#/components/parameters/entry_filterKeys' },
         ],
         responses => {
             200 => {
@@ -406,6 +407,7 @@ DESCRIPTION
             { '$ref' => '#/components/parameters/entry_maxComments' },
             { '$ref' => '#/components/parameters/entry_maxTrackbacks' },
             { '$ref' => '#/components/parameters/entry_no_text_filter' },
+            { '$ref' => '#/components/parameters/entry_filterKeys' },
         ],
         responses => {
             200 => {
@@ -505,6 +507,7 @@ DESCRIPTION
             { '$ref' => '#/components/parameters/entry_maxComments' },
             { '$ref' => '#/components/parameters/entry_maxTrackbacks' },
             { '$ref' => '#/components/parameters/entry_no_text_filter' },
+            { '$ref' => '#/components/parameters/entry_filterKeys' },
         ],
         responses => {
             200 => {

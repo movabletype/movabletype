@@ -28,6 +28,7 @@ sub list_openapi_spec {
             { '$ref' => '#/components/parameters/group_sortBy' },
             { '$ref' => '#/components/parameters/group_sortOrder' },
             { '$ref' => '#/components/parameters/group_fields' },
+            { '$ref' => '#/components/parameters/group_filterKeys' },
         ],
         responses => {
             200 => {
@@ -355,6 +356,7 @@ sub list_members_for_group_openapi_spec {
             { '$ref' => '#/components/parameters/group_sortBy' },
             { '$ref' => '#/components/parameters/group_sortOrder' },
             { '$ref' => '#/components/parameters/group_fields' },
+            { '$ref' => '#/components/parameters/group_filterKeys' },
         ],
         responses => {
             200 => {

@@ -62,12 +62,15 @@ sub build_schema {
         },
         security => [{ mtauth => [] }],
     };
+    # prepare all the references beforehand
     for my $id (sort keys %$endpoints) {
         if (my $nouns = $endpoints->{$id}{openapi_options}{filtered_list_ds_nouns}) {
             my $current_parameters = $response->{components}{parameters} || {};
             my $additional_parameters = _build_filtered_list_parameters($app, $nouns, $endpoints->{$id}{default_params});
             $response->{components}{parameters} = { %$current_parameters, %$additional_parameters };
         }
+    }
+    for my $id (sort keys %$endpoints) {
         my $route = $endpoints->{$id}{route};
         my @path_parameters;
         while ($route =~ s!/:([^/]+)!/{$1}!) {
@@ -149,6 +152,52 @@ sub build_schema {
                 }
             }
         }
+        if ($endpoints->{$id}{default_params}) {
+            for my $name (sort keys %{ $endpoints->{$id}{default_params} }) {
+                my $found = 0;
+                for my $param (@{ $response->{paths}{$route}{$verb}{parameters} }) {
+                    if (($param->{name} // '') eq $name) {
+                        $found++;
+                    } elsif (my $ref = $param->{'$ref'}) {
+                        $ref =~ s!^#/components/parameters/!!;
+                        if (($response->{components}{parameters}{$ref}{name} // '') eq $name) {
+                            $found++;
+                        }
+                    }
+                }
+                if ($response->{paths}{$route}{$verb}{requestBody}) {
+                    for my $type (keys %{ $response->{paths}{$route}{$verb}{requestBody}{content} || {} }) {
+                        for my $prop (keys %{ $response->{paths}{$route}{$verb}{requestBody}{content}{$type}{schema}{properties} || {} }) {
+                            if ($prop eq $name) {
+                                $found++;
+                            }
+                        }
+                    }
+                }
+                if (!$found) {
+                    if ($ENV{MT_DATA_API_DEBUG}) {
+                        require MT::Util::Log;
+                        MT::Util::Log->init;
+                        MT::Util::Log->warn("DataAPI Schema: $id requires $name parameter definition");
+                    }
+                    my $default = $endpoints->{$id}{default_params}{$name};
+                    push @{ $response->{paths}{$route}{$verb}{parameters} }, {
+                        in     => 'query',
+                        name   => $name,
+                        schema => {
+                            type    => $default =~ /^[0-9]+$/ ? 'integer' : 'string',
+                            default => $default,
+                        },
+                    };
+                } elsif ($found > 1) {
+                    if ($ENV{MT_DATA_API_DEBUG}) {
+                        require MT::Util::Log;
+                        MT::Util::Log->init;
+                        MT::Util::Log->warn("DataAPI Schema: $id has multiple $name definition");
+                    }
+                }
+            }
+        }
         if ($app->current_api_version >= 3) {
             if (my $nouns = $endpoints->{$id}{openapi_options}{filtered_list_ds_nouns}) {
                 my ($singular, $plural) = split(',', $nouns);
@@ -211,6 +260,12 @@ sub _build_filtered_list_parameters {
             name        => 'searchFields',
             schema      => { type => 'string' },
             description => 'The comma separated field name list to search.',
+        },
+        "${singular}_filterKeys" => {
+            in          => 'query',
+            name        => 'filterKeys',
+            schema      => { type => 'string' },
+            description => 'The comma separated field name list to filter.',
         },
         "${singular}_limit" => {
             in          => 'query',
@@ -463,6 +518,15 @@ DESCRIPTION
             name        => 'blogIds',
             schema      => { type => 'string' },
             description => 'The comma-separated blog id list that to be included in the result.',
+        };
+    }
+    # revisable
+    if ($singular =~ /^(?:entry|page|template|content_data)$/) {
+        $parameter_template->{"${singular}_saveRevision"} = {
+            in     => 'query',
+            name   => 'saveRevision',
+            schema => { type => 'integer', enum => [0, 1] },
+            description => 'Save a revision or not',
         };
     }
     my $param;
