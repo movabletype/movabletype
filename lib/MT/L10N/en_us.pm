@@ -287,6 +287,8 @@ sub ascii_only { ( ( ref $_[0] ) || $_[0] ) eq __PACKAGE__ }
     '__UNPUBLISHED' => 'Unpublish',
 
     'YEARLY_ARCHIVE_TITLE' => '[_1]',
+
+    '__PLUGIN_LABEL_DEFAULT' => 'default',
 );
 
 1;

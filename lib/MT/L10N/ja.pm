@@ -1370,6 +1370,7 @@ use vars qw( @ISA %Lexicon );
 	'Download system-wide logs' => 'システム全体のログをダウンロードします',
 
 ## lib/MT/CMS/Plugin.pm
+	'__PLUGIN_LABEL_DEFAULT' => '標準',
 	'Error saving plugin settings: [_1]' => 'プラグインの設定を保存できません: [_1]',
 	'Individual Plugins' => 'プラグイン',
 	'Plugin Set: [_1]' => 'プラグインのセット: [_1]',

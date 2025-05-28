@@ -476,7 +476,7 @@ sub build_plugin_table {
             if (MT::Util::Checksums::test_checksums($pd->{plugin_full_path})) {
                 $pd->{plugin_label} = '<span class="badge badge-primary">' . $app->translate('user') . '</span>';
             } else {
-                $pd->{plugin_label} = '<span class="badge badge-default">' . $app->translate('system') . '</span>';
+                $pd->{plugin_label} = '<span class="badge badge-default">' . $app->translate('__PLUGIN_LABEL_DEFAULT') . '</span>';
             }
         }
     }
