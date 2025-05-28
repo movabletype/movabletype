@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount } from "svelte";
+  import { onMount, tick } from "svelte";
   import SVG from "../../../svg/elements/SVG.svelte";
   import { portal } from "svelte-portal";
   import { isOuterClick } from "../outerClick";
@@ -11,6 +11,7 @@
   export let open: boolean = false;
   export let buttonRef: HTMLElement;
   export let anchorRef: HTMLElement;
+  export let initialFavoriteSites: number[];
   $: {
     if (anchorRef) {
       if (open) {
@@ -26,10 +27,11 @@
   };
 
   let sites: Site[] = [];
+  let favoriteSites: number[] = initialFavoriteSites; // copy to local variable
   let totalCount = 0;
   let page = 1;
   let pageMax = 1;
-  let siteType = "parent_sites";
+  let siteType = "parent_and_child_sites";
   let filterSiteName = "";
   let items: Array<{
     type: string;
@@ -91,9 +93,29 @@
     totalCount = result.count;
     pageMax = result.pageMax;
     page = pageMax !== 0 ? result.page : 0;
-    sites = result.sites;
+    sites = [];
+    favoriteSites.forEach((id) => {
+      const index = result.sites.findIndex((site) => Number(site.id) === id);
+      if (index !== -1) {
+        sites.push(result.sites[index]);
+        result.sites.splice(index, 1);
+      }
+    });
+    sites = [...sites, ...result.sites];
 
     loading = false;
+  };
+
+  const addFavoriteSite = (e: MouseEvent, site: Site): void => {
+    e.stopPropagation();
+    const siteId = Number(site.id);
+    favoriteSites = [...new Set([...favoriteSites, siteId])];
+  };
+
+  const removeFavoriteSite = (e: MouseEvent, site: Site): void => {
+    e.stopPropagation();
+    const siteId = Number(site.id);
+    favoriteSites = favoriteSites.filter((id) => id !== siteId);
   };
 
   const clickEvent = (e: MouseEvent): void => {
@@ -105,6 +127,52 @@
   onMount(async () => {
     filterApply();
   });
+
+  let tableBodyRef: HTMLElement | null = null;
+  const initSortable = async (): Promise<void> => {
+    await tick();
+    if (!tableBodyRef) {
+      return;
+    }
+    jQuery(tableBodyRef).sortable({
+      delay: 100,
+      distance: 3,
+      handle: ".site-list-table-sortable-handle",
+      opacity: 0.8,
+      start: function (_, ui) {
+        ui.placeholder.html(
+          "<td></td><td class='site-list-table-parent-site'></td><td class='site-list-table-action'></td>",
+        );
+      },
+      update: () => {
+        if (!tableBodyRef) {
+          return;
+        }
+        favoriteSites = [];
+        tableBodyRef.querySelectorAll("tr").forEach((elm) => {
+          const favoriteSiteId = elm.dataset.favoriteSiteId;
+          if (favoriteSiteId) {
+            favoriteSites.push(Number(favoriteSiteId));
+          }
+        });
+        for (let i = favoriteSites.length - 1; i >= 0; i--) {
+          const siteIndex = sites.findIndex(
+            (site) => Number(site.id) === favoriteSites[i]
+          );
+          if (siteIndex !== -1) {
+            const [site] = sites.splice(siteIndex, 1);
+            sites.unshift(site);
+          }
+        }
+      },
+    });
+  };
+
+  $: {
+    if (sites && sites.length > 0 && open) {
+      initSortable();
+    }
+  }
 </script>
 
 <svelte:body on:click={clickEvent} />
@@ -228,7 +296,7 @@
         </div>
         <div class="site-list-table-wrapper">
           <table>
-            <tbody>
+            <tbody bind:this={tableBodyRef}>
               {#if loading}
                 <tr>
                   <td colspan="2" class="loading"
@@ -236,8 +304,14 @@
                   >
                 </tr>
               {:else}
-                {#each sites as site}
-                  <tr>
+                {#each sites as site (site.id)}
+                  <tr
+                    data-favorite-site-id={favoriteSites.includes(
+                      Number(site.id)
+                    )
+                      ? site.id
+                      : undefined}
+                  >
                     <td>
                       {#if site.parentSiteName === "-"}
                         <span class="badge badge-site"
@@ -270,8 +344,44 @@
                         />
                       </a>
                     </td>
-                    <td>
+                    <td class="site-list-table-parent-site">
                       {@html site.parentSiteName}
+                    </td>
+                    <td class="site-list-table-action">
+                      <span class="site-list-table-action-buttons">
+                        {#if favoriteSites.includes(Number(site.id))}
+                          <button
+                            on:click={(ev) => removeFavoriteSite(ev, site)}
+                            aria-label={window.trans(
+                              "Remove from favorite sites"
+                            )}
+                            aria-pressed="true"
+                            title={window.trans("Remove from favorite sites")}
+                            ><span>★</span></button
+                          >
+                        {:else}
+                          <button
+                            on:click={(ev) => addFavoriteSite(ev, site)}
+                            aria-label={window.trans("Add to favorite sites")}
+                            aria-pressed="false"
+                            title={window.trans("Add to favorite sites")}
+                            ><span>☆</span></button
+                          >
+                        {/if}
+                        <span
+                          class="site-list-table-sortable-handle"
+                          style={favoriteSites.includes(Number(site.id))
+                            ? "cursor: move"
+                            : "visibility: hidden;"}
+                        >
+                          <SVG
+                            title={window.trans("Move")}
+                            class="mt-icon"
+                            href={`${window.StaticURI}images/admin2025/sprite.svg#ic_move`}
+                            style="height: 15px;"
+                          />
+                        </span>
+                      </span>
                     </td>
                   </tr>
                 {/each}

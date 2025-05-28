@@ -7,7 +7,7 @@ import { svelteMountSearchForm } from "./forms/search/search-form";
 
 // Sidebar toggle
 const sidebarTarget = document.querySelector<HTMLButtonElement>(
-  '[data-is="primary-navigation-toggle"]',
+  '[data-is="primary-navigation-toggle"]'
 );
 if (sidebarTarget !== null) {
   const sessionName = "collapsed";
@@ -22,7 +22,7 @@ if (sidebarTarget !== null) {
 }
 
 const currentScript = document.querySelector<HTMLScriptElement>(
-  '[data-script="admin-ui"]',
+  '[data-script="admin-ui"]'
 );
 if (currentScript === null) {
   console.error("data-script='admin-ui' is not set");
@@ -38,7 +38,7 @@ const limit = "50";
 
 // Site list button
 const siteListButtonTargets = document.querySelectorAll<HTMLElement>(
-  '[data-is="site-list-button"]',
+  '[data-is="site-list-button"]'
 );
 if (siteListButtonTargets.length > 0 && magicToken !== "") {
   siteListButtonTargets.forEach((siteListButtonTarget) => {
@@ -48,15 +48,20 @@ if (siteListButtonTargets.length > 0 && magicToken !== "") {
       open: false,
       buttonRef: siteListButtonTarget,
       anchorRef: siteListButtonTarget,
+      initialFavoriteSites:
+        siteListButtonTarget.dataset.favoriteSites
+          ?.split(",")
+          .map(Number)
+          .filter(Number.isInteger) || [],
     });
   });
 }
 
 const createButtonTargets = document.querySelectorAll<HTMLElement>(
-  '[data-is="create-button"]',
+  '[data-is="create-button"]'
 );
 const searchButtonTarget = document.querySelector<HTMLElement>(
-  '[data-is="search-button"]',
+  '[data-is="search-button"]'
 );
 const modalContainerTarget =
   document.querySelector<HTMLElement>("div.mt-modal");
@@ -77,7 +82,7 @@ if (
           props: {
             blog_id: blogId,
             contentTypes: data.contentTypes.filter(
-              (contentType) => contentType.can_create === 1,
+              (contentType) => contentType.can_create === 1
             ),
             open: false,
             buttonRef: createButtonTarget,
@@ -95,7 +100,7 @@ if (
         blogId: blogId,
         magicToken: magicToken,
         contentTypes: data.contentTypes.filter(
-          (contentType) => contentType.can_search === 1,
+          (contentType) => contentType.can_search === 1
         ),
         open: false,
         buttonRef: searchButtonTarget,
@@ -104,14 +109,14 @@ if (
     }
     // Search Form
     const searchFormTarget = document.querySelector<HTMLElement>(
-      '[data-is="search-form"]',
+      '[data-is="search-form"]'
     );
     if (searchFormTarget !== null) {
       svelteMountSearchForm(searchFormTarget, {
         blogId: blogId,
         magicToken: magicToken,
         contentTypes: data.contentTypes.filter(
-          (contentType) => contentType.can_search === 1,
+          (contentType) => contentType.can_search === 1
         ),
       });
     }

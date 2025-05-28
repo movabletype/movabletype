@@ -5784,6 +5784,8 @@ use vars qw( @ISA %Lexicon );
 	'Parent and child sites' => '親サイトと子サイト',
 	'Only child sites' => '子サイトのみ',
 	'Filter by site name' => 'サイト名で絞り込む',
+	'Add to favorite sites' => 'お気に入りに追加',
+	'Remove from favorite sites' => 'お気に入りから削除',
 );
 
 
