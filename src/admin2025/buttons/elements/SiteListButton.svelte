@@ -106,16 +106,46 @@
     loading = false;
   };
 
+  const _saveFavoriteSites = async (favoriteSites: number[]): Promise<void> => {
+    const body = new FormData();
+    body.append("__mode", "save_starred_sites");
+    body.append("magic_token", magicToken);
+    favoriteSites.forEach((id) => {
+      body.append("id", String(id));
+    });
+    return fetch(window.ScriptURI, {
+      method: "POST",
+      body,
+      headers: {
+        "X-Requested-With": "XMLHttpRequest",
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.error) {
+          throw new Error(data.error);
+        }
+      });
+  };
+
+  const updateFavoriteSites = (newFavoriteSites: number[]): void => {
+    const oldFavoriteSites = [...favoriteSites];
+    favoriteSites = newFavoriteSites;
+    _saveFavoriteSites(favoriteSites).catch((err) => {
+      alert(err.message);
+      favoriteSites = oldFavoriteSites;
+    });
+  };
+
   const addFavoriteSite = (e: MouseEvent, site: Site): void => {
     e.stopPropagation();
-    const siteId = Number(site.id);
-    favoriteSites = [...new Set([...favoriteSites, siteId])];
+    updateFavoriteSites([...new Set([...favoriteSites, Number(site.id)])]);
   };
 
   const removeFavoriteSite = (e: MouseEvent, site: Site): void => {
     e.stopPropagation();
     const siteId = Number(site.id);
-    favoriteSites = favoriteSites.filter((id) => id !== siteId);
+    updateFavoriteSites(favoriteSites.filter((id) => id !== siteId));
   };
 
   const clickEvent = (e: MouseEvent): void => {
@@ -164,6 +194,8 @@
             sites.unshift(site);
           }
         }
+
+        updateFavoriteSites(favoriteSites);
       },
     });
   };
