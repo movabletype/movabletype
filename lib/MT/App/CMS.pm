@@ -1592,6 +1592,11 @@ sub core_system_menu_actions {
             label  => 'Site',
             mobile => 0,
             order  => 200,
+            data   => {
+                'starred-sites' => sub {
+                    join ',', @{ MT->instance->user->starred_sites || [] };
+                },
+            },
         },
         system => {
             condition => sub {
