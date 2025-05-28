@@ -374,6 +374,7 @@ build-language-stamp
 \.babelrc
 \.eslintrc.json
 \.eslintignore
+^eslint.config.mjs
 
 ^mt-static/plugins/Motion
 ^mt-static/jquery/themes/Motion
