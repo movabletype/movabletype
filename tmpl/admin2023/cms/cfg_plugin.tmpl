@@ -255,11 +255,7 @@ jQuery('.collapse.mt-collapse__content').on('show.bs.collapse', function (e) {
 <div class="plugin-group">
   <h3 class="plugin-group-name">
     <mt:var name="plugin_folder">
-    <mt:if name="plugin_type" eq="system">
-      <span class="badge badge-default"><__trans phrase="system"></span>
-    <mt:elseif name="plugin_type" eq="user">
-      <span class="badge badge-primary"><__trans phrase="user"></span>
-    </mt:if>
+    <mt:var name="plugin_label">
   </h3>
   <div class="plugin-list">
     </mt:if>
@@ -280,11 +276,7 @@ jQuery('.collapse.mt-collapse__content').on('show.bs.collapse', function (e) {
               </span>
             </mt:if>
           </span>
-          <mt:if name="plugin_type" eq="system">
-            <span class="badge badge-default"><__trans phrase="system"></span>
-          <mt:elseif name="plugin_type" eq="user">
-            <span class="badge badge-primary"><__trans phrase="user"></span>
-          </mt:if>
+          <mt:var name="plugin_label">
     <mt:else>
           <svg role="img" class="mt-icon--secondary mt-pluginpanel__icon">
             <title>Enabled</title>
@@ -298,11 +290,7 @@ jQuery('.collapse.mt-collapse__content').on('show.bs.collapse', function (e) {
               </span>
             </mt:if>
           </a>
-          <mt:if name="plugin_type" eq="system">
-            <span class="badge badge-default"><__trans phrase="system"></span>
-          <mt:elseif name="plugin_type" eq="user">
-            <span class="badge badge-primary"><__trans phrase="user"></span>
-          </mt:if>
+          <mt:var name="plugin_label">
     </mt:if>
         </div>
     <mt:if name="can_config">

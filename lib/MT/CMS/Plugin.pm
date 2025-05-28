@@ -465,7 +465,7 @@ sub build_plugin_table {
         $next_is_first = 0;
     }
 
-    # set plugin_core parameter, which checks whether core plugin or not
+    # set plugin_label parameter
     if (-e MT::Util::Checksums::checksum_file()) {
         my $individual_plugin = 1;
         for my $pd (@{$data}[1 .. scalar(@{$data}) - 1]) {    # skip first individual folder data
@@ -473,7 +473,11 @@ sub build_plugin_table {
                 $individual_plugin = 0;
             }
             next unless $individual_plugin || $pd->{plugin_folder};    # skip other than individual plugins and plugin set folders
-            $pd->{plugin_type} = MT::Util::Checksums::test_checksums($pd->{plugin_full_path}) ? 'user' : 'system';
+            if (MT::Util::Checksums::test_checksums($pd->{plugin_full_path})) {
+                $pd->{plugin_label} = '<span class="badge badge-primary">' . $app->translate('user') . '</span>';
+            } else {
+                $pd->{plugin_label} = '<span class="badge badge-default">' . $app->translate('system') . '</span>';
+            }
         }
     }
 
