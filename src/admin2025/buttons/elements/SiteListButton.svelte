@@ -26,12 +26,17 @@
     open = false;
   };
 
+  let favoriteSiteStore: Record<number, Site> = {};
+  let siteStore: Site[] = [];
+  let activeFavoriteSites: number[] = [];
+
   let sites: Site[] = [];
   let favoriteSites: number[] = initialFavoriteSites; // copy to local variable
   let totalCount = 0;
   let page = 1;
   let pageMax = 1;
-  let siteType = "parent_and_child_sites";
+  let siteType: "parent_sites" | "parent_and_child_sites" | "child_sites_only" =
+    "parent_and_child_sites";
   let filterSiteName = "";
   let items: Array<{
     type: string;
@@ -61,6 +66,9 @@
     _fetchSites();
   };
   const filterApply = (): void => {
+    siteStore = [];
+    activeFavoriteSites = favoriteSites; // save current favorite sites for this filter session
+
     items = [];
     if (siteType === "child_sites_only") {
       items = [{ type: "parent_website", args: { value: "" } }];
@@ -81,27 +89,117 @@
   const _fetchSites = async (): Promise<void> => {
     loading = true;
 
-    // data loading
-    const result = await fetchSites({
-      magicToken: magicToken,
-      items: items,
-      page: page,
-      limit: limit,
-    });
-
-    // data setting
-    totalCount = result.count;
-    pageMax = result.pageMax;
-    page = pageMax !== 0 ? result.page : 0;
     sites = [];
-    favoriteSites.forEach((id) => {
-      const index = result.sites.findIndex((site) => Number(site.id) === id);
-      if (index !== -1) {
-        sites.push(result.sites[index]);
-        result.sites.splice(index, 1);
+
+    if (siteStore.length > 0) {
+      const favSiteCount = activeFavoriteSites.length;
+      const offset = (page - 1) * limit;
+      for (let i = offset; i < favSiteCount && sites.length < limit; i++) {
+        sites.push(favoriteSiteStore[activeFavoriteSites[i]]);
       }
-    });
-    sites = [...sites, ...result.sites];
+      for (
+        let i = offset - favSiteCount;
+        i < totalCount - favSiteCount && sites.length < limit;
+        i++
+      ) {
+        if (!siteStore[i]) {
+          const page = Math.floor(i / limit);
+          const result = await fetchSites({
+            magicToken,
+            items: [
+              ...items,
+              ...activeFavoriteSites.map((id) => ({
+                type: "id",
+                args: { value: id, option: "not_equal" },
+              })),
+            ],
+            page,
+            limit,
+          });
+          const storeOffset = page * limit;
+          for (let j = 0; j < result.sites.length; j++) {
+            siteStore[storeOffset + j] = result.sites[j];
+          }
+        }
+        sites.push(siteStore[i]);
+      }
+    } else {
+      // initial data loading
+      const result = await fetchSites({
+        magicToken: magicToken,
+        items: items,
+        page: page,
+        limit: limit,
+      });
+
+      // data setting
+      totalCount = result.count;
+      pageMax = result.pageMax;
+      page = pageMax !== 0 ? result.page : 0;
+
+      const notFoundFavoriteSites: number[] = [];
+      activeFavoriteSites.forEach((id) => {
+        const index = result.sites.findIndex((site) => Number(site.id) === id);
+        if (index !== -1) {
+          favoriteSiteStore[id] = result.sites[index];
+          result.sites.splice(index, 1);
+        } else {
+          const site = favoriteSiteStore[id];
+          if (!site) {
+            notFoundFavoriteSites.push(id);
+          } else {
+            const isChildSite = site.parentSiteName.match(/^<a/);
+            if (
+              (siteType === "child_sites_only" && !isChildSite) ||
+              (siteType === "parent_sites" && isChildSite)
+            ) {
+              activeFavoriteSites = activeFavoriteSites.filter(
+                (_id) => _id !== id
+              );
+            }
+          }
+        }
+      });
+      siteStore = [...result.sites];
+
+      if (notFoundFavoriteSites.length > 0) {
+        const result = await fetchSites({
+          magicToken: magicToken,
+          items: [
+            ...items,
+            {
+              type: "pack",
+              args: {
+                op: "or",
+                items: notFoundFavoriteSites.map((id) => ({
+                  type: "id",
+                  args: { value: id, option: "equal" },
+                })),
+              },
+            },
+          ],
+          page: 0,
+          limit: 200, // FIXME: 200 is a magic number
+        });
+        notFoundFavoriteSites.forEach((id) => {
+          const index = result.sites.findIndex(
+            (site) => Number(site.id) === id
+          );
+          if (index !== -1) {
+            favoriteSiteStore[id] = result.sites[index];
+          } else {
+            activeFavoriteSites = activeFavoriteSites.filter((id) => id !== id);
+          }
+        });
+      }
+
+      for (let i = 0; i < limit && i < activeFavoriteSites.length; i++) {
+        sites.push(favoriteSiteStore[activeFavoriteSites[i]]);
+      }
+      for (let i = 0; i < siteStore.length && sites.length < limit; i++) {
+        sites.push(siteStore[i]);
+      }
+    }
 
     loading = false;
   };
