@@ -2110,7 +2110,6 @@ sub dialog_api_password {
             dest_author_id   => $dest_user_id,
             $new_password ? (api_password => $new_password) : (),
             $deleted      ? (deleted => 1)                  : (),
-            back_link => ($new_password || $deleted) ? 1 : 0,
         });
 }
 
