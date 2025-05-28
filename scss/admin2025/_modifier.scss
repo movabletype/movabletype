@@ -3519,7 +3519,7 @@ body:has(.mt-primaryNavigation) {
       width: 80%;
 
       &.site-list-header-parent {
-        width: 200px;
+        width: 255px;
         padding-left: 32px;
         flex-shrink: 0;
       }
@@ -3572,7 +3572,8 @@ body:has(.mt-primaryNavigation) {
           right: 0;
         }
 
-        &:last-child {
+        &.site-list-table-parent-site {
+          min-width: 200px;
           width: 200px;
 
           a {
@@ -3584,8 +3585,69 @@ body:has(.mt-primaryNavigation) {
 
           &:after {
             left: 0;
+            right: 0;
+          }
+        }
+
+        &.site-list-table-action {
+          min-width: 55px;
+          width: 55px;
+          padding-left: 0;
+          text-overflow: clip;
+          overflow: visible;
+
+          &:after {
+            left: 0;
             right: var(--td-horizontal-spacing);
           }
+        }
+
+        .site-list-table-action-buttons,
+        .site-list-table-action-buttons-mobile {
+          display: inline-flex;
+          align-items: center;
+          font-weight: normal;
+
+          button {
+            position: relative;
+            padding: 0px;
+            border: none;
+            background: none;
+            color: $body-color;
+
+            span {
+              position: relative;
+              z-index: 1;
+            }
+
+            &:before {
+              content: "";
+              display: block;
+              position: absolute;
+              z-index: 0;
+              top: -0.05em;
+              left: -0.2em;
+              width: 1.4em;
+              height: 1.4em;
+              transition: opacity 0.3s ease;
+              opacity: 0;
+              background-color: rgb(var(--bs-secondary-bg-rgb));
+              border-radius: 10px;
+            }
+            &:hover {
+              &:before {
+                opacity: 1;
+              }
+            }
+          }
+
+          .site-list-table-sortable-handle {
+            padding-left: 0.25rem;
+          }
+        }
+
+        .site-list-table-action-buttons-mobile {
+          display: none;
         }
 
         &.loading {
@@ -3764,8 +3826,26 @@ body:has(.mt-primaryNavigation) {
             right: var(--td-horizontal-spacing);
             border-color: #cbcbcb;
           }
-          &:last-child {
+          &.site-list-table-parent-site,
+          &.site-list-table-action {
             display: none;
+          }
+
+          .site-list-table-bagde-container {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            align-items: center;
+
+            .badge {
+              margin-right: 0.5rem;
+            }
+          }
+
+          .site-list-table-action-buttons-mobile {
+            display: flex;
+            flex-grow: 1;
+            justify-content: space-between;
           }
         }
       }
