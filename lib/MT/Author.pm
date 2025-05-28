@@ -24,7 +24,7 @@ __PACKAGE__->install_properties(
             'url'                  => 'string(255)',
             'public_key'           => 'text',
             'preferred_language'   => 'string(50)',
-            'api_password'         => 'string(124)',
+            'api_password'         => 'string(106)',
             'remote_auth_username' => 'string(50)',
             'remote_auth_token'    => 'string(50)',
             'entry_prefs'          => 'string(255)',
