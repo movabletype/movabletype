@@ -57,6 +57,8 @@ DESCRIPTION
                 schema      => { type => 'integer' },
                 description => <<'DESCRIPTION',
 Maximum number of entries to retrieve.
+
+**Default**: 20
 DESCRIPTION
             },
             {
@@ -65,6 +67,8 @@ DESCRIPTION
                 schema      => { type => 'integer' },
                 description => <<'DESCRIPTION',
 0-indexed offset.
+
+**Default**: 0
 DESCRIPTION
             },
             {
@@ -110,6 +114,8 @@ will list the entries in chronological order (oldest entry at the top)
 #### descend
 
 will list the entries in reverse chronological order (newest entry at the top).
+
+**Default**: ascend
 DESCRIPTION
             },
             {
@@ -120,6 +126,8 @@ DESCRIPTION
 Maximum number of entries to retrieve.
 
 NOTE: By default, "SearchMaxResults" override is disabled.
+
+**Default**: 20
 DESCRIPTION
             },
         ],

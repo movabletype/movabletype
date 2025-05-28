@@ -57,6 +57,8 @@ DESCRIPTION
 - author_id
 - level
 - class
+
+**Default**: created_on
 DESCRIPTION
             },
             { '$ref' => '#/components/parameters/log_sortOrder' },

@@ -19,13 +19,13 @@ sub list_openapi_spec {
                 'in'        => 'query',
                 name        => 'limit',
                 schema      => { type => 'integer' },
-                description => 'This is an optional parameter. Maximum number of blogs to retrieve.',
+                description => 'This is an optional parameter. Maximum number of blogs to retrieve. Default is 25. ',
             },
             {
                 'in'        => 'query',
                 name        => 'offset',
                 schema      => { type => 'integer' },
-                description => 'This is an optional parameter. 0-indexed offset.',
+                description => 'This is an optional parameter. 0-indexed offset. Default is 0.',
             },
             {
                 'in'   => 'query',
@@ -42,7 +42,7 @@ This is an optional parameter.
 
 #### name
 
-Sort by the name of each blogs.
+(default) Sort by the name of each blogs.
 
 #### created_on
 
@@ -64,7 +64,7 @@ This is an optional parameter.
 
 #### ascend
 
-Return blogs in ascending order. For the date, it means from oldest to newset.
+(default) Return blogs in ascending order. For the date, it means from oldest to newset.
 
 #### descend
 

@@ -55,7 +55,7 @@ sub _invoke {
 sub pageviews_for_path_openapi_spec {
     my $spec = MT::DataAPI::Endpoint::v1::Stats::pageviews_for_path_openapi_spec();
     $spec->{parameters}[2]{schema} = { type => 'integer', default => 50 };
-    $spec->{parameters}[2]{description} = 'This is an optional parameter. Maximum number of paths to retrieve.';
+    $spec->{parameters}[2]{description} = 'This is an optional parameter. Maximum number of paths to retrieve. Default is 50.';
     if (my $metric_spec = default_provider_has('metric_spec_for_pageviews')) {
         $spec->{responses}{200}{content}{'application/json'}{schema}{properties}{totals}{properties} = $metric_spec;
     }
@@ -70,7 +70,7 @@ sub pageviews_for_path {
 sub visits_for_path_openapi_spec {
     my $spec = MT::DataAPI::Endpoint::v1::Stats::visits_for_path_openapi_spec();
     $spec->{parameters}[2]{schema} = { type => 'integer', default => 50 };
-    $spec->{parameters}[2]{description} = 'This is an optional parameter. Maximum number of paths to retrieve.';
+    $spec->{parameters}[2]{description} = 'This is an optional parameter. Maximum number of paths to retrieve. Default is 50.';
     if (my $metric_spec = default_provider_has('metric_spec_for_visits')) {
         $spec->{responses}{200}{content}{'application/json'}{schema}{properties}{totals}{properties} = $metric_spec;
     }
@@ -85,7 +85,7 @@ sub visits_for_path {
 sub pageviews_for_date_openapi_spec {
     my $spec = MT::DataAPI::Endpoint::v1::Stats::pageviews_for_date_openapi_spec();
     $spec->{parameters}[2]{schema} = { type => 'integer', default => 50 };
-    $spec->{parameters}[2]{description} = 'This is an optional parameter. Maximum number of paths to retrieve.';
+    $spec->{parameters}[2]{description} = 'This is an optional parameter. Maximum number of paths to retrieve. Default is 50.';
     if (my $metric_spec = default_provider_has('metric_spec_for_pageviews')) {
         $spec->{responses}{200}{content}{'application/json'}{schema}{properties}{totals}{properties} = $metric_spec;
     }
@@ -99,7 +99,7 @@ sub pageviews_for_date {
 sub visits_for_date_openapi_spec {
     my $spec = MT::DataAPI::Endpoint::v1::Stats::visits_for_date_openapi_spec();
     $spec->{parameters}[2]{schema} = { type => 'integer', default => 50 };
-    $spec->{parameters}[2]{description} = 'This is an optional parameter. Maximum number of paths to retrieve.';
+    $spec->{parameters}[2]{description} = 'This is an optional parameter. Maximum number of paths to retrieve. Default is 50.';
     if (my $metric_spec = default_provider_has('metric_spec_for_visits')) {
         $spec->{responses}{200}{content}{'application/json'}{schema}{properties}{totals}{properties} = $metric_spec;
     }

@@ -39,12 +39,12 @@ DESCRIPTION
                             },
                             autoRenameIfExists => {
                                 type        => 'integer',
-                                description => 'If this value is "1" and the file with the same filename exists, the uploaded file is automatically renamed to the random generated name.',
+                                description => 'If this value is "1" and the file with the same filename exists, the uploaded file is automatically renamed to the random generated name. Default is "0".',
                                 enum => [0, 1],
                             },
                             normalizeOrientation => {
                                 type        => 'integer',
-                                description => 'If this value is "1" and the uploaded file has a orientation information in Exif, this file\'s orientation is automatically normalized.',
+                                description => 'If this value is "1" and the uploaded file has a orientation information in Exif, this file\'s orientation is automatically normalized. Default is "1".',
                                 enum => [0, 1],
                             },
                         },

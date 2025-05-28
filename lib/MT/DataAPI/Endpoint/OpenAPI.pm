@@ -539,6 +539,7 @@ DESCRIPTION
         my $default_value = $default_params->{$source_key};
         if (defined $default_value && $default_value ne '') {
             $param->{$key}{schema}{default} = $default_value;
+            $param->{$key}{description} .= "\n\n**Default**: " . $default_value;
         }
     }
     return $param;

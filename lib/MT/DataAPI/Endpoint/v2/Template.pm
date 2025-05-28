@@ -77,6 +77,8 @@ Sort by the ID of user who modified each template.
 #### type
 
 Sort by the type of each template.
+
+**Default**: name
 DESCRIPTION
             },
             { '$ref' => '#/components/parameters/template_sortOrder' },
@@ -622,6 +624,8 @@ Refresh all templates. However, A template that created by user will never refre
 #### clean
 
 Refresh all templates. In this mode, A template that created by user will removed from a site.
+
+**Default**: refresh
 DESCRIPTION
             },
         ],

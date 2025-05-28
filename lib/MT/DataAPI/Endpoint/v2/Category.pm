@@ -55,6 +55,8 @@ Sort by the basename of each category.
 #### label
 
 Sort by the label of each category.
+
+**Default**: user_custom
 DESCRIPTION
             },
             { '$ref' => '#/components/parameters/category_sortOrder' },
@@ -69,6 +71,8 @@ DESCRIPTION
                 },
                 description => <<'DESCRIPTION',
 If set to 1, retrieves only top level categories. New in v2
+
+**Default**: 0
 DESCRIPTION
             },
             { '$ref' => '#/components/parameters/category_includeIds' },
@@ -180,6 +184,8 @@ sub list_parents_openapi_spec {
                 schema      => { type => 'integer' },
                 description => <<'DESCRIPTION',
 The depth of retrieving parent categories.
+
+**Default**: 0
 DESCRIPTION
             },
             {
@@ -198,6 +204,8 @@ The list does not include current category.
 #### 0
 
 The list includes current category.
+
+**Default**: 0
 DESCRIPTION
             },
         ],
@@ -309,6 +317,8 @@ Sort by the basename of each category.
 #### label
 
 Sort by the label of each category.
+
+**Default**: user_custom
 DESCRIPTION
             },
             { '$ref' => '#/components/parameters/category_sortOrder' },
@@ -323,6 +333,8 @@ DESCRIPTION
                 },
                 description => <<'DESCRIPTION',
 If set to 1, retrieves only top level categories. New in v2
+
+**Default**: 0
 DESCRIPTION
             },
             { '$ref' => '#/components/parameters/category_includeIds' },
@@ -398,6 +410,8 @@ sub list_children_openapi_spec {
                 schema      => { type => 'integer' },
                 description => <<'DESCRIPTION',
 The depth of retrieving parent categories.
+
+**Default**: 0
 DESCRIPTION
             },
             {
@@ -416,6 +430,8 @@ The list does not include current category.
 #### 0
 
 The list includes current category.
+
+**Default**: 0
 DESCRIPTION
             },
         ],
@@ -834,6 +850,8 @@ Sort by the basename of each category.
 #### label
 
 Sort by the label of each category.
+
+**Default**: user_custom
 DESCRIPTION
             },
             { '$ref' => '#/components/parameters/category_sortOrder' },
@@ -848,6 +866,8 @@ DESCRIPTION
                 },
                 description => <<'DESCRIPTION',
 If set to 1, retrieves only top level categories. New in v2
+
+**Default**: 0
 DESCRIPTION
             },
             { '$ref' => '#/components/parameters/category_includeIds' },
