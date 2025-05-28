@@ -1,12 +1,4 @@
-<mt:if name="missing_paths">
-  <mt:if name="have_permissions">
-<mt:setvarblock name="page_title"><__trans phrase="You need to configure your blog."></mt:setvarblock>
-  <mt:else>
-<mt:setvarblock name="page_title"><__trans phrase="Your blog has not been published."></mt:setvarblock>
-  </mt:if>
-<mt:else>
-  <mt:setvarblock name="page_title"><__trans phrase="Upload File"></mt:setvarblock>
-</mt:if>
+<mt:setvarblock name="page_title"><__trans phrase="Upload File"></mt:setvarblock>
 
 <mt:setvarblock name="html_head" append="1">
   <mtapp:script type="text/javascript" path="js/upload_settings.js">
