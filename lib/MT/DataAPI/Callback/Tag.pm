@@ -17,7 +17,7 @@ sub cms_pre_load_filtered_list {
     my $terms = $load_options->{terms};
 
     if ( !( $user->is_superuser || $user->can_do('access_to_tag_list') ) ) {
-        $terms->{is_private} = [ 0, \'= IS NULL' ],;
+        $terms->{is_private} = 0;
     }
 
     my $blog_id = exists $terms->{blog_id} ? delete $terms->{blog_id} : undef;

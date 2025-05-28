@@ -59,6 +59,11 @@ sub SearchThrottleSeconds {
     $_[0]->config->ContentDataSearchThrottleSeconds;
 }
 
+sub SearchMaxCharCount {
+    my $app = shift;
+    return $app->config->ContentDataSearchMaxCharCount;
+}
+
 sub core_methods {
     my $app = shift;
     +{ default => \&MT::App::Search::process };

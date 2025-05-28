@@ -1159,6 +1159,17 @@ sub do_search_replace {
                             = $content_field_types->{ $field_data->{type} };
                         $text = $obj->data->{$content_field_id};
                     }
+                    elsif ($col eq 'label' && $content_type && $obj->isa('MT::ContentData')) {
+                        if (my $data_label = $content_type->data_label) {
+                            my $field = MT->model('content_field')->load({
+                                content_type_id => $content_type->id,
+                                unique_id       => $data_label,
+                            });
+                            $text = $obj->data->{ $field->id } if $field;
+                        } else {
+                            $text = $obj->column($col);
+                        }
+                    }
                     else {
                         $text = $obj->column($col);
                     }
