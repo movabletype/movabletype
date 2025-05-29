@@ -212,6 +212,7 @@ sub make_entry {
         allow_comments => 1,
         allow_pings    => 1,
         status         => MT::Entry::RELEASE(),
+        convert_breaks => '__default__',
     };
 
     if (%params) {
