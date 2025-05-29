@@ -91,39 +91,7 @@
 
     sites = [];
 
-    if (siteStore.length > 0) {
-      const favSiteCount = activeFavoriteSites.length;
-      const offset = (page - 1) * limit;
-      for (let i = offset; i < favSiteCount && sites.length < limit; i++) {
-        sites.push(favoriteSiteStore[activeFavoriteSites[i]]);
-      }
-      for (
-        let i = offset - favSiteCount;
-        i < totalCount - favSiteCount && sites.length < limit;
-        i++
-      ) {
-        if (!siteStore[i]) {
-          const page = Math.floor(i / limit);
-          const result = await fetchSites({
-            magicToken,
-            items: [
-              ...items,
-              ...activeFavoriteSites.map((id) => ({
-                type: "id",
-                args: { value: id, option: "not_equal" },
-              })),
-            ],
-            page,
-            limit,
-          });
-          const storeOffset = page * limit;
-          for (let j = 0; j < result.sites.length; j++) {
-            siteStore[storeOffset + j] = result.sites[j];
-          }
-        }
-        sites.push(siteStore[i]);
-      }
-    } else {
+    if (siteStore.length === 0) {
       // initial data loading
       const result = await fetchSites({
         magicToken: magicToken,
@@ -197,6 +165,38 @@
         sites.push(favoriteSiteStore[activeFavoriteSites[i]]);
       }
       for (let i = 0; i < siteStore.length && sites.length < limit; i++) {
+        sites.push(siteStore[i]);
+      }
+    } else {
+      const favSiteCount = activeFavoriteSites.length;
+      const offset = (page - 1) * limit;
+      for (let i = offset; i < favSiteCount && sites.length < limit; i++) {
+        sites.push(favoriteSiteStore[activeFavoriteSites[i]]);
+      }
+      for (
+        let i = offset - favSiteCount;
+        i < totalCount - favSiteCount && sites.length < limit;
+        i++
+      ) {
+        if (!siteStore[i]) {
+          const page = Math.floor(i / limit);
+          const result = await fetchSites({
+            magicToken,
+            items: [
+              ...items,
+              ...activeFavoriteSites.map((id) => ({
+                type: "id",
+                args: { value: id, option: "not_equal" },
+              })),
+            ],
+            page,
+            limit,
+          });
+          const storeOffset = page * limit;
+          for (let j = 0; j < result.sites.length; j++) {
+            siteStore[storeOffset + j] = result.sites[j];
+          }
+        }
         sites.push(siteStore[i]);
       }
     }
