@@ -107,7 +107,7 @@ DROP TABLE IF EXISTS `mt_author`;
 -- Table: `mt_author`
 --
 CREATE TABLE `mt_author` (
-  `author_api_password` varchar(124) NULL DEFAULT NULL,
+  `author_api_password` varchar(106) NULL DEFAULT NULL,
   `author_auth_type` varchar(50) NULL DEFAULT NULL,
   `author_basename` varchar(255) NULL DEFAULT NULL,
   `author_can_create_blog` tinyint(4) NULL DEFAULT NULL,
