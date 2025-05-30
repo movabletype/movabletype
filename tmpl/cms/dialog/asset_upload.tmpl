@@ -13,11 +13,5 @@
 </mt:setvarblock>
 
 <mt:include name="dialog/header.tmpl">
-
-<mt:if name="compat_upload_template">
-<mt:include name="include/asset_upload.tmpl" dialog="1">
-<mtelse>
 <mt:include name="include/async_asset_upload.tmpl" dialog="1">
-</mt:if>
-
 <mt:include name="dialog/footer.tmpl">

@@ -62,11 +62,7 @@
   <mt:if name="can_upload">
       <div id="upload-asset-panel" class="tab-pane active">
         <mt:setvar name="included_upload_asset" value="1">
-  <mt:if name="compat_upload_template">
-        <mt:include name="include/asset_upload.tmpl" dialog="1">
-  <mtelse>
         <mt:include name="include/async_asset_upload.tmpl" dialog="1">
-  </mt:if>
       </div>
   </mtif>
       <div id="list-asset-panel" class="tab-pane <mt:unless name="can_upload">active </mt:unless>">
