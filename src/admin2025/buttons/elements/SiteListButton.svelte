@@ -156,7 +156,11 @@
           if (index !== -1) {
             favoriteSiteStore[id] = result.sites[index];
           } else {
-            activeFavoriteSites = activeFavoriteSites.filter((id) => id !== id);
+            activeFavoriteSites = activeFavoriteSites.filter(
+              (_id) => _id !== id
+            );
+            // this siteId is not longer available
+            favoriteSites = favoriteSites.filter((_id) => _id !== id);
           }
         });
       }
