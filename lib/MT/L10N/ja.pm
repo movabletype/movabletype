@@ -4361,7 +4361,6 @@ use vars qw( @ISA %Lexicon );
 	'Preferred method of separating tags.' => 'タグを区切るときに使う文字を選択します。',
 	'Relative' => '経過',
 	'Remove Userpic' => 'プロフィール画像を削除',
-	'Reveal' => '内容を表示',
 	'Save changes to this author (s)' => 'ユーザーへの変更を保存 (s)',
 	'Select Userpic' => 'プロフィール画像の選択',
 	'System Permissions' => 'システム権限',
@@ -4376,7 +4375,6 @@ use vars qw( @ISA %Lexicon );
 	'User properties' => 'ユーザー属性',
 	'Web Services Password' => 'Webサービスパスワード',
 	'You must use half-width character for password.' => 'パスワードには全角文字を利用できません。',
-	'Your web services password is currently' => 'Webサービスのパスワード',
 	'_USAGE_PASSWORD_RESET' => 'ユーザーのパスワードを再設定できます。パスワードがランダムに生成され、[_1]にメールで送信されます。',
 	'_USER_DISABLED' => '無効',
 	'_USER_ENABLED' => '有効',
@@ -5772,6 +5770,16 @@ use vars qw( @ISA %Lexicon );
 	'Parent and child sites' => '親サイトと子サイト',
 	'Only child sites' => '子サイトのみ',
 	'Filter by site name' => 'サイト名で絞り込む',
+
+## tmpl/admin2025/cms/dialog/dialog_api_password.tmpl
+	'Web services password is not currently available.' => '現在、Webサービスパスワードは設定されていません。',
+	'You have a Web services password securely stored in the database. If you forgot the password, please delete it and issue the new one.'  => 'Webサービスパスワードはすでにデータベースに安全に保存されています。パスワードを忘れたときは一度削除してから再発行してください。',
+	'Delete password' => 'パスワードを削除',
+	'Issue a new password' => '新しいパスワードを発行',
+	'Web Services password is successfully issued as follows.' => '下記のWEBサービスパスワードが正常に発行されました。',
+	'Please save it in a secure place since the password won\'t be shown again.' => 'パスワードの内容は今後確認できませんので、安全な場所に保管してください。',
+	'Web Services password is successfully deleted.' => 'Webサービスパスワードは正常に削除されました。',
+	'Are you sure you want to delete the existing password?' => '既存のパスワードを削除します。よろしいですか？',
 );
 
 

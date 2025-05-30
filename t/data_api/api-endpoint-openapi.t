@@ -21,7 +21,6 @@ use MT::App::DataAPI;
 my $app    = MT::App::DataAPI->new;
 my $author = MT->model('author')->load(2);
 $author->set_password('bass');
-$author->api_password('seecret');
 $author->can_sign_in_data_api(0);
 $author->save or die $author->errstr;
 
