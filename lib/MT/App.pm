@@ -3491,12 +3491,17 @@ sub load_widgets {
         $widgets        = $app->default_widgets_for_dashboard($scope_type);
     }
 
+    my @ordered_list;
+    my %orders;
+
     my $reg_widgets = $app->registry("widgets");
     $reg_widgets
         = $app->filter_conditional_list( $reg_widgets, $page, $scope );
     my $all_widgets;
     foreach my $widget ( keys %$reg_widgets ) {
-        if ( my $widget_view = $reg_widgets->{$widget}->{view} ) {
+        my $widget_data = $reg_widgets->{$widget};
+
+        if ( my $widget_view = $widget_data->{view} ) {
             if ( 'ARRAY' eq ref $widget_view ) {
                 next
                     unless ( scalar grep { $_ eq $scope_type }
@@ -3505,15 +3510,25 @@ sub load_widgets {
             else {
                 next if $scope_type ne $widget_view;
             }
-            $all_widgets->{$widget} = $reg_widgets->{$widget};
+            $all_widgets->{$widget} = $widget_data;
         }
         else {
-            $all_widgets->{$widget} = $reg_widgets->{$widget};
+            $all_widgets->{$widget} = $widget_data;
+        }
+
+        if ((ref($widget_data->{pinned}) && $widget_data->{pinned}{$scope}) || $widget_data->{pinned}) {
+            push @ordered_list, $widget;
+            my $order = $widget_data->{order};
+            $order = (
+                  $order && ref $order eq 'HASH'
+                ? $order->{$scope_type}
+                : $order
+                )
+                || 0;
+            $orders{$widget} = $order;
         }
     }
 
-    my @ordered_list;
-    my %orders;
     my $order_num = 0;
     foreach my $widget_id ( keys %$widgets ) {
         next unless defined $all_widgets->{$widget_id};
@@ -3785,6 +3800,9 @@ sub load_widget_list {
     # in the user's widget bag
     foreach my $id ( keys %$all_widgets ) {
         my $w = $all_widgets->{$id};
+
+        next if ( ref($w->{pinned}) && $w->{pinned}{$scope} ) || $w->{pinned};
+
         if ( $w->{singular} ) {
 
             # don't allow multiple widgets

@@ -9,8 +9,34 @@ use MT::Test::Env;
 our $test_env;
 
 BEGIN {
-    $test_env = MT::Test::Env->new;
+    $test_env = MT::Test::Env->new(
+        PluginPath => [qw(
+            TEST_ROOT/plugins
+        )]
+    );
     $ENV{MT_CONFIG} = $test_env->config_file;
+
+    my $config_yaml = 'plugins/TestWidget/config.yaml';
+    $test_env->save_file( $config_yaml, <<'YAML' );
+id: test_widget
+key: test_widget
+name: TestWidget
+applications:
+  cms:
+    widgets:
+      test_user_widget:
+        label: Test Widget
+        order: 300
+        view: user
+        default: 1
+        set: main
+      test_user_pinned_widget:
+        label: Test Widget
+        order: 300
+        view: user
+        pinned: 1
+        set: main
+YAML
 }
 
 use MT;
@@ -318,6 +344,10 @@ sub _expected_default_widgets {
             },
             site_list_for_mobile => {
                 order => 50,
+                set   => 'main',
+            },
+            test_user_widget => {
+                order => 300,
                 set   => 'main',
             },
         },
