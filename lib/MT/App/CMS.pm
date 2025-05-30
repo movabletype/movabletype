@@ -5227,12 +5227,13 @@ sub default_widgets_for_dashboard {
 
     my %default_widgets;
     foreach my $key ( keys %$widgets ) {
-        my ( $view, $order, $set, $param, $default )
-            = map { $widgets->{$key}{$_} } qw( view order set param default );
+        my ( $view, $order, $set, $param, $default, $pinned )
+            = map { $widgets->{$key}{$_} } qw( view order set param default pinned );
 
         my @views = ref($view) ? @$view : ($view);
         next unless grep { $scope eq $_ } @views;
         next unless ( ref($default) && $default->{$scope} ) || $default;
+        next if ( ref($pinned) && $pinned->{$scope} ) || $pinned;
 
         $default_widgets{$key} = {
             order => ref($order) ? $order->{$scope} : $order,
