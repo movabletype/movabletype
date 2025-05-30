@@ -2081,4 +2081,36 @@ sub _delete_pseudo_association {
     $app->config->save_config;
 }
 
+sub dialog_api_password {
+    my $app          = shift;
+    my $user         = $app->user;
+    my $dest_user_id = $app->param('id') or $app->error(MT->translate('Invalid request'));
+
+    return $app->permission_denied() unless $user->id == $dest_user_id || $app->can_do('edit_other_profile');
+
+    my $dest_user = $app->model('author')->load($dest_user_id);
+    my $issue     = $app->param('issue');
+    my $delete    = $app->param('delete');
+
+    my ($new_password, $deleted);
+
+    if ($issue) {
+        $new_password = MT::Util::UniqueID::create_api_password();
+        $dest_user->api_password($new_password);
+        $dest_user->save;
+    } elsif ($delete) {
+        $dest_user->api_password('');
+        $dest_user->save;
+        $deleted = 1;
+    }
+
+    $app->load_tmpl(
+        'dialog/dialog_api_password.tmpl', {
+            has_api_password => length($dest_user->api_password),
+            dest_author_id   => $dest_user_id,
+            $new_password ? (api_password => $new_password) : (),
+            $deleted      ? (deleted => 1)                  : (),
+        });
+}
+
 1;

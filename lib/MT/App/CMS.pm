@@ -300,6 +300,7 @@ sub core_methods {
         'dialog_grant_role'          => "${pkg}User::dialog_grant_role",
         'dialog_select_assoc_type'   => "${pkg}User::dialog_select_assoc_type",
         'dialog_select_author'       => "${pkg}User::dialog_select_author",
+        'dialog_api_password'        => "${pkg}User::dialog_api_password",
         'dialog_list_asset'          => "${pkg}Asset::dialog_list_asset",
         'dialog_edit_image'          => "${pkg}Asset::dialog_edit_image",
         'dialog_list_deprecated_log' => "${pkg}Log::dialog_list_deprecated_log",
@@ -2677,6 +2678,21 @@ sub core_user_menus {
                     : $app->can_do('manage_groups');
             }
         },
+        'web_api_password' => {
+            label      => 'Web Services Password',
+            order      => 1100,
+            mode       => 'view',
+            args       => { _type => 'author' },
+            view       => "system",
+            condition  => sub {
+                my ( $app, $param ) = @_;
+                $param->{is_me} || $app->can_do('edit_other_profile') ? 1 : 0;
+            },
+            link  => sub {
+                my ($app, $param) = @_;
+                return $app->uri(mode => 'dialog_api_password', args => { id => $param->{id} });
+            },
+        },
     };
 }
 
@@ -2767,16 +2783,7 @@ sub user_can_admin_commenters {
 
 sub validate_magic {
     my $app = shift;
-    if ( my $feed_token = $app->param('feed_token') ) {
-        return unless $app->user;
-        my $pw = $app->user->api_password;
-        return undef if ( $pw || '' ) eq '';
-        my $auth_token = perl_sha1_digest_hex( 'feed:' . $pw );
-        return $feed_token eq $auth_token;
-    }
-    else {
-        return $app->SUPER::validate_magic(@_);
-    }
+    return $app->SUPER::validate_magic(@_);
 }
 
 sub can_sign_in {
