@@ -337,11 +337,13 @@ sub core_methods {
         'view_content_type' => "${pkg}ContentType::edit",
         'save_content_type' => "${pkg}ContentType::save",
 
+        ## DEPRECATED since 8.6.0
      # 'cfg_content_type_data' => " ${pkg}ContentType::cfg_content_type_data",
         'select_list_content_type' =>
             "${pkg}ContentType::select_list_content_type",
         'select_edit_content_type' =>
             "${pkg}ContentType::select_edit_content_type",
+
         'validate_content_fields' => {
             code     => " ${pkg}ContentType::validate_content_fields",
             app_mode => 'JSON',
@@ -1586,7 +1588,7 @@ sub core_system_menu_actions {
             order  => 100,
         },
         site => {
-            icon   => 'ic_site',
+            icon   => 'ic_sites',
             label  => 'Site',
             mobile => 0,
             order  => 200,
@@ -1597,7 +1599,7 @@ sub core_system_menu_actions {
                     return $user->can_do('access_to_system_dashboard');
                 }
             },
-            icon   => 'ic_setting',
+            icon   => 'ic_system_setting',
             label  => 'System',
             mobile => 0,
             order  => 300,

@@ -47,7 +47,7 @@ sub make_author {
     $author = MT::Author->load($values->{id}) if $values->{id};
     $author ||= MT::Author->new();
     $author->set_values($values);
-    $author->set_password("pass");
+    $author->set_password($values->{password} || "pass");
     $author->can_sign_in_cms(1);
     $author->can_sign_in_data_api(1);
     $author->save()
@@ -212,6 +212,7 @@ sub make_entry {
         allow_comments => 1,
         allow_pings    => 1,
         status         => MT::Entry::RELEASE(),
+        convert_breaks => '__default__',
     };
 
     if (%params) {

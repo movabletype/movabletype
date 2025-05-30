@@ -266,6 +266,10 @@ sub field_value_handler {
 
 sub feed_value_handler {
     my ( $app, $field_data, $values ) = @_;
+
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::warning(since => '8.6.0');
+
     my @cd_ids;
     if ($values) {
         if ( ref $values eq 'ARRAY' ) {
@@ -431,8 +435,12 @@ sub tag_handler {
 
     my $raw_ids = $content_data->data->{ $field_data->{id} } || 0;
     my @ids = ref $raw_ids eq 'ARRAY' ? @$raw_ids : ($raw_ids);
-    my $iter
-        = MT->model('content_data')->load_iter( { id => @ids ? \@ids : 0 } );
+    my %terms = (id => @ids ? \@ids : 0);
+    if (MT->config->HidePrivateRelatedContentData) {
+        require MT::ContentStatus;
+        $terms{status} = MT::ContentStatus::RELEASE();
+    }
+    my $iter = MT->model('content_data')->load_iter(\%terms);
     my %contents;
     while ( my $cd = $iter->() ) {
         $contents{ $cd->id } = $cd;

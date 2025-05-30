@@ -110,7 +110,7 @@
                             trans('Move') +
                             '</title><use xlink:href="' +
                             StaticURI +
-                            'images/sprite.svg#ic_move"></use></svg></div>'
+                            'images/admin2025/sprite.svg#ic_move"></use></svg></div>'
                     )
                     sorter.append('<div class="col">' + icon + label + '</div></div>')
                     sorter.append('<div class="block-field"></div>')

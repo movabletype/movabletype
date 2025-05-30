@@ -8,6 +8,7 @@ package MT::DataAPI::Endpoint::v3::Asset;
 
 use strict;
 use warnings;
+use MT::Util qw( trim_path );
 
 use MT::DataAPI::Endpoint::v1::Asset;
 use MT::DataAPI::Endpoint::v2::Asset;
@@ -64,7 +65,9 @@ sub upload {
             my $path;
             if ( $site->upload_destination ) {
                 my $dest = $site->upload_destination;
+                $dest = trim_path($dest) if MT->config->TrimFilePath;
                 my $extra_path = $site->extra_path || '';
+                $extra_path = trim_path($extra_path) if MT->config->TrimFilePath;
                 $dest = MT::Util::build_upload_destination($dest);
                 $path = File::Spec->catdir( $dest, $extra_path );
                 $app->param( 'site_path',

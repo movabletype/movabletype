@@ -239,10 +239,14 @@ sub convert {
             )
         ) if $err;
 
+        if ($magick->Get('colorspace') eq 'CMYK' && $image->MagickClass eq 'Graphics::Magick') {
+            $magick->Set(colorspace => 'RGB');
+        }
+
         # Set quality parameter for new type.
         $image->_set_quality or return;
 
-        $blob = $magick->ImageToBlob;
+        $blob = $magick->ImageToBlob(magick => uc $type);
     };
     return $image->error(
         MT->translate( "Converting image to [_1] failed: [_2]", $type, $@ ) )
@@ -257,6 +261,9 @@ sub blob {
     my $blob;
 
     eval {
+        if ($magick->Get('colorspace') eq 'CMYK' && $image->MagickClass eq 'Graphics::Magick') {
+            $magick->Set(colorspace => 'RGB');
+        }
         $image->_set_quality($quality) or return;
 
         $blob = $magick->ImageToBlob;

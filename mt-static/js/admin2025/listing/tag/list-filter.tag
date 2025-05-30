@@ -328,7 +328,7 @@
           >
             <ss title={ trans('Add') }
               class="mt-icon mt-icon--sm"
-              href={ StaticURI + 'images/sprite.svg#ic_add' }
+              href={ StaticURI + 'images/admin2025/sprite.svg#ic_add' }
             >
             </ss>
           </a>
@@ -339,7 +339,7 @@
           >
             <ss title={ trans('Remove') }
               class="mt-icon mt-icon--sm"
-              href={ StaticURI + 'images/sprite.svg#ic_remove' }
+              href={ StaticURI + 'images/admin2025/sprite.svg#ic_remove' }
             >
             </ss>
           </a>
@@ -363,7 +363,7 @@
           >
             <ss title={ trans('Add') }
               class="mt-icon mt-icon--sm"
-              href={ StaticURI + 'images/sprite.svg#ic_add' }
+              href={ StaticURI + 'images/admin2025/sprite.svg#ic_add' }
             >
             </ss>
           </a>
@@ -557,7 +557,7 @@
                     <a href="#" class="d-inline-block" onclick={ removeFilter }>
                       <ss title={ trans('Remove') }
                         class="mt-icon mt-icon--sm"
-                        href={ StaticURI + 'images/sprite.svg#ic_trash' }
+                        href={ StaticURI + 'images/admin2025/sprite.svg#ic_trash' }
                       >
                       </ss>
                     </a>
@@ -583,7 +583,7 @@
                 >
                   <ss title={ trans('Add') }
                     class="mt-icon mt-icon--sm"
-                    href={ StaticURI + 'images/sprite.svg#ic_add' }
+                    href={ StaticURI + 'images/admin2025/sprite.svg#ic_add' }
                   >
                   </ss>
                   { trans( 'Create New' ) }

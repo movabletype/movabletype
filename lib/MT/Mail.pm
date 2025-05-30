@@ -291,23 +291,38 @@ sub _send_mt_smtp {
         );
 
     if ($auth) {
-        my $mech = MT->config->SMTPAuthSASLMechanism || do {
-
-            # Disable DIGEST-MD5.
-            my $m
-                = $smtp->supports( 'AUTH', 500, ["Command unknown: 'AUTH'"] )
-                || '';
+        require Authen::SASL;
+        my @mechs = MT->config->SMTPAuthSASLMechanism || do {
+            my $m = $smtp->supports('AUTH', 500, ["Command unknown: 'AUTH'"]) || '';
+            # XXX: Do we still need to omit DIGEST-MD5?
             $m =~ s/DIGEST-MD5//;
-            $m =~ /^\s+$/ ? undef : $m;
+            split /\s+/, $m;
         };
 
-        if ( !eval { $smtp->auth( $user, $pass, $mech ) } ) {
-            return $class->error(
-                MT->translate(
-                    "Authentication failure: [_1]",
-                    $@ ? $@ : scalar $smtp->message
-                )
+        my $authenticated;
+        for my $mech (@mechs) {
+            my $sasl = Authen::SASL->new(
+                mechanism => "$mech",
+                callback => {
+                    user     => $user,
+                    pass     => $pass,
+                    authname => $user,
+                },
+                debug => $MT::DebugMode,
             );
+
+            my $last_error = '';
+            if (eval { $smtp->auth($sasl) }) {
+                $authenticated = 1;
+                last;
+            }
+            $last_error = $@ ? $@ : $smtp->message;
+            require MT::Util::Log;
+            MT::Util::Log::init();
+            MT::Util::Log->warn(MT->translate("SMTP [_1] Authentication failed: [_2]", "$mech", $last_error));
+        }
+        if (!$authenticated) {
+            return $class->error(MT->translate("All the supported SMTP authentication mechanisms failed: [_1]", join ", ", @mechs));
         }
     }
 

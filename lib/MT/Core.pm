@@ -1999,6 +1999,10 @@ BEGIN {
                 default => sub { $_[0]->SearchThrottleIPWhitelist }
             },
             'SearchContentTypes' => undef,
+            'SearchMaxCharCount' => { default => 0 },
+            'ContentDataSearchMaxCharCount' => {
+                default => sub { $_[0]->SearchMaxCharCount },
+            },
             'CMSSearchLimit'     => { default => 125 },
             'SupportURL'         => undef,
             'NewsURL'            => undef,
@@ -2222,6 +2226,7 @@ BEGIN {
             'WaitAfterReboot' => { default => '1.0' },
             'DisableMetaRefresh' => { default => 1 },
             'DynamicTemplateAllowPHP' => { default => 1 },
+            'HidePrivateRelatedContentData' => { default => 0 },
             'DynamicTemplateAllowSmartyTags' => { default => 1 },
             'AdminThemeId' => {
                 default => 'admin2025',
@@ -2233,6 +2238,10 @@ BEGIN {
             'TrimFilePath' => { default => 0 },
             'UseWWWFormUrlEncoded' => { default => 1 },
             'UseRiot' => undef,
+            'TrustedHosts' => {
+                type    => 'ARRAY',
+                handler => \&TrustedHosts,
+            },
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {
@@ -3645,6 +3654,57 @@ sub AdminThemeId {
     return grep { defined $_ && !$seen{$_}++ } ($mgr->get_internal('AdminThemeId'), $mgr->FallbackAdminThemeIds, '');
 }
 
+sub TrustedHosts {
+    my $mgr = shift;
+
+    return $mgr->set_internal('TrustedHosts', @_) if @_;
+
+    # if TrustedHosts is set, return it
+    if (my @trusted_hosts = grep { defined $_ && $_ ne '' } $mgr->get_internal('TrustedHosts')) {
+        return @trusted_hosts;
+    }
+
+    # if default_trusted_hosts is cached, return it
+    my $default_trusted_hosts = MT->request('default_trusted_hosts');
+    return @{$default_trusted_hosts} if $default_trusted_hosts;
+
+    my @urls;
+    my @sites = eval {
+        MT->model('blog')->load({
+                class    => '*',
+                site_url => { not_like => '/%' },
+            },
+            {
+                fetchonly => ['parent_id', 'site_url'],
+            },
+        );
+    };    # fails before install
+    for my $site (@sites) {
+        push @urls, $site->site_url;
+    }
+    if ($mgr->ReturnToURL) {
+        push @urls, $mgr->ReturnToURL;
+    }
+
+    require URI;
+
+    my %seen;
+    $default_trusted_hosts = [];
+    for my $url (@urls) {
+        my $uri = URI->new($url, 'http')->canonical;
+        next unless $uri->isa('URI::http');
+        my $host = $uri->host or next;
+        if ($uri->port ne $uri->default_port) {
+            $host .= ':' . $uri->port;
+        }
+        next if $seen{$host}++;
+        push @{$default_trusted_hosts}, $host;
+    }
+
+    MT->request('default_trusted_hosts', $default_trusted_hosts);
+    return @{$default_trusted_hosts};
+}
+
 1;
 __END__
 
@@ -3784,6 +3844,13 @@ this directive, the system will be use a default value.
 A L<MT::ConfigMgr> get/set method for the C<AdminThemeId> configuration setting.
 If the context is looking for a scalar, this method returns a value of C<AdminThemeId>.
 If the context is looking for a list value, this method returns unique values among C<AdminThemeId>, C<FallbackAdminThemeIds> and empty string.
+
+=head2 TrustedHosts
+
+A L<MT::ConfigMgr> get/set method for the C<TrustedHosts> configuration setting.
+If the user has not specifically assigned this setting, some default values are returned.
+All site hosts are returned as the default values.
+If C<ReturnToURL> is set, host part of the C<ReturnToURL> is also returned as the default values.
 
 =head1 LICENSE
 

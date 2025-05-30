@@ -2290,6 +2290,17 @@ fieldset.form-group{
   border-color: map-get($theme-colors, "danger");
   color: map-get($theme-colors, "danger");
 }
+.badge-site{
+  border-color: transparent;
+  background-color: $lochmara;
+  color: $white;
+}
+.badge-child-site{
+  border-color: transparent;
+  background-color: var(--bs-info);
+  color: #2F2F2F;
+}
+
 h1, h2,
 .h1, .h2{
     .badge{
@@ -3226,6 +3237,12 @@ body:has(.mt-primaryNavigation) {
 
         a {
           display: inline-block;
+          vertical-align: middle;
+        }
+
+        .badge {
+          margin-right: 14px;
+          width: 74px;
         }
 
         .dashboard-link {

@@ -385,16 +385,14 @@ jQuery(window).on('load', init );
     })
 
     jQuery(window).on('beforeunload', function() {
-        if (isDirty) {
+        if ( isDirty && jQuery('.modal-content').children('iframe').length == 0 ) {
             return '<__trans phrase="You have unsaved changes to this asset that will be lost." escape="js">';
         }
     });
     jQuery('.image-editor a').on('click', function(event) {
         if (isDirty) {
-            var msg = '<__trans phrase="You have unsaved changes to this asset that will be lost. Are you sure you want to edit image?" escape="js">';
-            if ( confirm(msg) ) {
-                isDirty = false;
-            } else {
+            var msg = '<__trans phrase="If you edit image, unsaved changes to this asset that will be lost. Do you want to continue?" escape="js">';
+            if ( !confirm(msg) ) {
                 event.stopImmediatePropagation();
             }
         }
