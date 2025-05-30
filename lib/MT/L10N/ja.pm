@@ -531,6 +531,7 @@ use vars qw( @ISA %Lexicon );
 	q{Failed login attempt by locked-out user '[_1]'} => q{ロックされたユーザー「[_1]」がサインインしようとしました。},
 	q{Failed login attempt by pending user '[_1]'} => q{保留中のユーザー「[_1]」がサインインしようとしました。},
 	q{Failed login attempt by unknown user '[_1]'} => q{未登録のユーザー [_1] がサインインしようとしました。},
+	q{Failed login attempt by user '[_1]' (probably session expired)} => q{ユーザー「[_1]」がサインインに失敗しました（おそらくセッションの有効期限が過ぎていました）。},
 	q{Failed login attempt by user '[_1]'} => q{ユーザー「[_1]」がサインインに失敗しました。},
 	q{Failed to open monitoring file that specified by IISFastCGIMonitoringFilePath directive '[_1]': [_2]} => q{IISFastCGIMonitoringFilePath で指定されたモニタリングファイル ([_1]) が開けません: [_2]},
 	q{Invalid login attempt from user '[_1]'} => q{'[_1]'がサインインに失敗しました。},
@@ -1088,7 +1089,6 @@ use vars qw( @ISA %Lexicon );
 	'Cannot load asset #[_1]' => 'アセット(ID:[_1])をロードできませんでした',
 	'Cannot load asset #[_1].' => 'アセット(ID:[_1])をロードできませんでした。',
 	'Cannot load file #[_1].' => 'ID:[_1]のファイルをロードできません。',
-	'Cannot overwrite an existing file with a file of a different type. Original: [_1] Uploaded: [_2]' => '違うアセットの種類での上書きはできません。 元のファイル:[_1] アップロードされたファイル[_2]',
 	'Custom...' => 'カスタム...',
 	'Extension changed from [_1] to [_2]' => '拡張子が[_1]から[_2]に変更されました',
 	'Failed to create thumbnail file because [_1] could not handle this image type.' => 'サムネイルの作成ができませんでした。[_1]がサポートしていない画像形式です。',
@@ -4333,6 +4333,9 @@ use vars qw( @ISA %Lexicon );
 	'Grant site permission to group' => 'グループにサイトの権限を割り当てる',
 	'Grant site permission to user' => 'ユーザーにサイトの権限を割り当てる',
 
+## tmpl/admin2023/cms/dialog/theme_element_detail.tmpl
+	q{The settings will be saved when you click the 'Next' button.} => '「次へ」ボタンをクリックすると設定が保存されます。',
+
 ## tmpl/admin2023/cms/edit_asset.tmpl
 	'Appears in...' => '利用状況',
 	'Embed Asset' => 'アセットの埋め込み',
@@ -4340,7 +4343,7 @@ use vars qw( @ISA %Lexicon );
 	'Related Assets' => '関連するアセット',
 	'Stats' => '情報',
 	'This asset has been used by other users.' => 'このアセットは、他のユーザーにより利用されています。',
-	'You have unsaved changes to this asset that will be lost. Are you sure you want to edit image?' => '保存されていないアセットへの変更は失われます。画像を編集しますか？',
+	'If you edit image, unsaved changes to this asset that will be lost. Do you want to continue?' => '画像を編集すると、保存されていないアセットへの変更は失われます。続行しますか？',
 	'You have unsaved changes to this asset that will be lost.' => '保存されていないアセットへの変更は失われます。',
 	'You must specify a name for the asset.' => 'アセットに名前を設定してください。',
 	'[_1] - Created by [_2]' => '作成: [_2] - [_1]',
@@ -4794,6 +4797,7 @@ use vars qw( @ISA %Lexicon );
 	'_THEME_AUTHOR' => '作者名',
 	q{Cannot install new theme with existing (and protected) theme's basename.} => q{新しいテーマは既存、または保護されたテーマベース名ではインストールできません。},
 	q{Use letters, numbers, dash or underscore only (a-z, A-Z, 0-9, '-' or '_').} => q{次の文字と数字のみ利用できます: アルファベット、数字、ダッシュ(-)、アンダースコア(_)},
+  'Always include all options' => '常に全てのオプションをエクスポート対象にする',
 
 ## tmpl/admin2023/cms/field_html/field_html_asset.tmpl
 	'Assets greater than or equal to [_1] must be selected' => '[_1]以上のアセットを選択してください',
@@ -4936,7 +4940,7 @@ use vars qw( @ISA %Lexicon );
 	'Drag and drop here' => 'ファイルをドロップしてください',
 	'Operation for a file exists' => '既存ファイルの処理',
 	'Upload Options' => 'アップロードオプション',
-	'Upload Settings' => 'アップロードの設定',
+	'Change Upload Settings' => 'アップロードの設定を変更する',
 
 ## tmpl/admin2023/cms/include/author_table.tmpl
 	'Disable selected users (d)' => '選択したユーザーを無効化 (d)',
