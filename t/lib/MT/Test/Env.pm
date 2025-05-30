@@ -455,7 +455,9 @@ sub _connect_info_pg {
         $self->_prepare_pg_database($dbh);
         $dsn =~ s/^DBI:Pg://i;
         my %opts = map { split '=', $_ } split ';', $dsn;
-        $opts{dbname} = $info{Database};
+        if ($opts{dbname}) {
+            $info{Database} = $opts{dbname};
+        }
         if ($opts{host}) {
             $info{DBHost} = $opts{host};
         }
@@ -612,7 +614,8 @@ sub prepare {
 sub _mysql_version {
     my $mysqld = _mysqld() or return;
 
-    my $verbose_help = `$mysqld --verbose --help 2>/dev/null`;
+    my $devnull = File::Spec->devnull;
+    my $verbose_help = `$mysqld --verbose --help 2>$devnull`;
 
     my ($version, $major_version, $minor_version) = $verbose_help =~ /\A.*Ver (([0-9]+)\.([0-9]+)\.[0-9]+)/;
 
@@ -697,7 +700,8 @@ sub my_cnf {
 
 sub _which {
     my $exec = shift;
-    my $path = `which $exec 2>/dev/null` or return;
+    my $devnull = File::Spec->devnull;
+    my $path = `which $exec 2>$devnull` or return;
     chomp $path;
     $path;
 }

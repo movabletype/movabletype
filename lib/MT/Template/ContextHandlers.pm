@@ -450,9 +450,6 @@ sub core_tags {
             'App:Script'     => \&MT::Template::Tags::App::_hdlr_app_script,
             'App:Stylesheet' => \&MT::Template::Tags::App::_hdlr_app_stylesheet,
 
-            'App:Script'     => \&MT::Template::Tags::App::_hdlr_app_script,
-            'App:Stylesheet' => \&MT::Template::Tags::App::_hdlr_app_stylesheet,
-
             ## Site
             SiteID   => '$Core::MT::Template::Tags::Blog::_hdlr_blog_id',
             SiteName => '$Core::MT::Template::Tags::Blog::_hdlr_blog_name',
@@ -4093,6 +4090,20 @@ sub _hdlr_app_svg_icon {
 
 ###########################################################################
 
+=head2 App:EmbedJsonResponse
+
+Returns a json for embedding a response in a template
+
+B<Attributes:>
+
+=over 4
+
+=item * mode (required)
+
+=back
+
+=cut
+
 sub _hdlr_app_embed_json_response {
     my ($ctx, $args, $cond) = @_;
 
@@ -4237,87 +4248,6 @@ sub _hdlr_app_stylesheet {
     return sprintf('<link rel="stylesheet" href="%s?v=%s">', $stylesheet_path, $version);
 }
 
-###########################################################################
-
-=head2 App:Script
-
-Returns a script tag for loading a JavaScript file under the mt-static directory.
-
-B<Attributes:>
-
-=over 4
-
-=item * path (required)
-
-The path to the JavaScript file.
-If the path contains the string '%l', replace '%l' with the corresponding language code.
-
-=item * type (optional)
-
-=item * async (optional)
-
-=item * defer (optional)
-
-=back
-
-=cut
-
-sub _hdlr_app_script {
-    my ($ctx, $args) = @_;
-
-    my $path    = $args->{path} or return $ctx->error(MT->translate("path is required."));
-    my $type    = $args->{type} ? ' type="' . encode_html($args->{type}) . '"' : '';
-    my $charset = ' charset="' . ($args->{charset} ? encode_html($args->{charset}) : 'utf-8') . '"';
-    my $async   = $args->{async} ? ' async' : '';
-    my $defer   = $args->{defer} ? ' defer' : '';
-    my $version = $MT::DebugMode ? time     : ($ctx->{__stash}{vars}{mt_version_id} || MT->version_id);
-
-    if ($path =~ /%l/) {
-        my $lang_id = lc MT->current_language || 'en_us';
-        $lang_id =~ s/-/_/g;
-        $path    =~ s/%l/$lang_id/g;
-    }
-    $path =~ s!^/+!!;
-    my $script_path = ($ctx->{__stash}{vars}{static_uri} || MT->static_path) . encode_html($path);
-
-    return sprintf('<script src="%s?v=%s"%s%s%s%s></script>', $script_path, $version, $type, $async, $defer, $charset);
-}
-
-###########################################################################
-
-=head2 App:Stylesheet
-
-Returns a link tag for loading a CSS file under the mt-static directory.
-
-B<Attributes:>
-
-=over 4
-
-=item * path (required)
-
-The path to the CSS file.
-If the path contains the string '%l', replace '%l' with the corresponding language code.
-
-=back
-
-=cut
-
-sub _hdlr_app_stylesheet {
-    my ($ctx, $args) = @_;
-
-    my $path    = $args->{path} or return $ctx->error(MT->translate("path is required."));
-    my $version = $MT::DebugMode ? time : ($ctx->{__stash}{vars}{mt_version_id} || MT->version_id);
-
-    if ($path =~ /%l/) {
-        my $lang_id = lc MT->current_language || 'en_us';
-        $lang_id =~ s/-/_/g;
-        $path    =~ s/%l/$lang_id/g;
-    }
-    $path =~ s!^/+!!;
-    my $stylesheet_path = ($ctx->{__stash}{vars}{static_uri} || MT->static_path) . encode_html($path);
-
-    return sprintf('<link rel="stylesheet" href="%s?v=%s">', $stylesheet_path, $version);
-}
 
 ###########################################################################
 

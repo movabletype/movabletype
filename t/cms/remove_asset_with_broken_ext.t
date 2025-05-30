@@ -25,6 +25,8 @@ my $objs = MT::Test::Fixture->prepare({
     asset   => [qw/test.jpg test.(jpg/],
 });
 
+my $image_driver = MT->config->ImageDriver;
+
 my $admin = MT::Author->load(1);
 my $normal_asset = $objs->{image}{'test.jpg'};
 my $weird_asset  = $objs->{image}{'test.(jpg'};
@@ -77,7 +79,10 @@ subtest 'Remove asset with a weird extension' => sub {
         height  => 30,
     });
     my ($cache) = grep /assets_c/, $test_env->files;
-    ok $cache && -f $cache, "cache exists";
+    SKIP: {
+        local $TODO = 'Only for *Magick' unless $image_driver =~ /Magick/;
+        ok $cache && -f $cache, "cache exists";
+    }
 
     $app->post_ok({
         __mode      => 'delete',
@@ -90,7 +95,10 @@ subtest 'Remove asset with a weird extension' => sub {
     ok !$app->generic_error, "no error";
     ok !MT->model('asset')->load($weird_asset->id), "asset does not exist anymore";
     ok !-f $weird_asset->file_path, "file does not exist anymore";
-    ok $cache && !-f $cache, "cache does not exist anynmore" or $test_env->ls;
+    SKIP: {
+        local $TODO = 'Only for *Magick' unless $image_driver =~ /Magick/;
+        ok $cache && !-f $cache, "cache does not exist anynmore" or $test_env->ls;
+    }
 };
 
 done_testing;
