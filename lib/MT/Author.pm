@@ -52,6 +52,7 @@ __PACKAGE__->install_properties(
             'favorite_blogs'           => 'array meta',
             'favorite_websites'        => 'array meta',
             'favorite_sites'           => 'array meta',
+            'starred_sites'            => 'array meta',
             'password_reset'           => 'string meta',
             'password_reset_expires'   => 'string meta',
             'password_reset_return_to' => 'string meta',
