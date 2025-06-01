@@ -63,14 +63,6 @@
 </div>
 
 <mt:setvarblock name="jq_js_include" append="1">
-/*
-jQuery(window).on('load resize', function () {
-  var screenWidth = jQuery(window).width();
-  var $dropdownMenu = jQuery('.mt-mobilePrimaryMenu__dropdownMenu');
-  $dropdownMenu.width(screenWidth * 0.8);
-});
-*/
-
 jQuery('.mt-mobilePrimaryMenu__dropdownMenu a').on('click', function (e) {
   if (this.dataset.toggle) {
     var collapseId = this.getAttribute('href');
@@ -81,17 +73,13 @@ jQuery('.mt-mobilePrimaryMenu__dropdownMenu a').on('click', function (e) {
 
 document.addEventListener('DOMContentLoaded', function() {
   const mobilePrimaryMenu = document.querySelector('.mt-mobilePrimaryMenu');
-  console.log(mobilePrimaryMenu);
   mobilePrimaryMenu.addEventListener('show.bs.dropdown', event => {
-  console.log('show.bs.dropdown');
-    console.log(event.target);
     if(!event.target.classList.contains('mt-mobilePrimaryMenu__dropdownMenuButton')) {
       return;
     }
     document.querySelector('body').classList.add('dropdown-open-primary-menu');
   })
   mobilePrimaryMenu.addEventListener('hide.bs.dropdown', event => {
-  console.log('hide.bs.dropdown');
     if(!event.target.classList.contains('mt-mobilePrimaryMenu__dropdownMenuButton')) {
       return;
     }
