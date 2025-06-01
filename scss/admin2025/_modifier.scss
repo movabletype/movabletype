@@ -1108,7 +1108,7 @@ html[data-screen-id=dashboard][data-scope-type=user] {
 .mt-breadcrumb{
   margin: 0 0 24px 0;
   @include media-breakpoint-up(xs) {
-    margin-left: 60px;
+    margin-left: 40px;
   }
   @include media-breakpoint-up(md) {
     margin-left: 0;

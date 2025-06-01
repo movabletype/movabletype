@@ -12503,7 +12503,7 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-mainContentWrapper {
 /* Breadcrumb */
 .mt-breadcrumb {
   margin: 0 0 24px 0;
-  margin-left: 60px;
+  margin-left: 40px;
   padding: 12px 0;
   font-size: 0.85rem;
   border-bottom: 1px solid #E0E0E0;
