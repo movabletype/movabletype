@@ -86,7 +86,7 @@
     "postcss-cli": "^11.0.1",
     "postcss-flexbugs-fixes": "^5.0.1",
     "prettier": "^3.5.2",
-    "prettier-plugin-svelte": "^3.3.2",
+    "prettier-plugin-svelte": "^3.4.0",
     "rollup": "^4.29.2",
     "rollup-plugin-css-only": "^4.3.0",
     "rollup-plugin-esbuild": "^6.2.1",
