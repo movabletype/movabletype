@@ -3729,6 +3729,7 @@ sub update_widget_prefs {
             # Renumbering widget order
             my $widget_count = keys %$these_widgets;
             foreach my $widget_id ( keys %$these_widgets ) {
+                next if $these_widgets->{$widget_id}{order};
                 if ( my $widget = $all_widgets->{$widget_id} ) {
                     my @widget_scopes = split ':', $widget_scope;
                     my $order = $widget->{order};
@@ -3736,13 +3737,7 @@ sub update_widget_prefs {
                         = $order && ref $order eq 'HASH'
                         ? $widget->{order}{ $widget_scopes[1] }
                         : $order * 100;
-                    if ($order) {
-                        $these_widgets->{$widget_id} = { order => $order };
-                    }
-                    else {
-                        $these_widgets->{$widget_id}
-                            = { order => $widget_count++ * 100 };
-                    }
+                    $these_widgets->{$widget_id}{order} = $order || $widget_count++ * 100;
                 }
             }
         }
