@@ -3695,8 +3695,13 @@ sub update_widget_prefs {
     my $blog = $app->blog;
     my $blog_id;
     $blog_id = $blog->id if $blog;
+    my $action = $app->param('widget_action');
+
+    if ($action eq 'save_layout') {
+        return $app->_update_widget_prefs_save_layout(@_);
+    }
+
     my $widget_id     = $app->param('widget_id');
-    my $action        = $app->param('widget_action');
     my $widget_scope  = $app->param('widget_scope');
     my $widgets       = $user->widgets || {};
     my $these_widgets = $widgets->{$widget_scope} ||= {};
@@ -3770,6 +3775,50 @@ sub update_widget_prefs {
         $app->add_return_arg( 'saved' => 1 );
         $app->call_return;
     }
+}
+
+
+sub _update_widget_prefs_save_layout {
+    my $app = shift;
+
+    $app->validate_param({
+        widget_scope  => [qw/STRING/],
+        widget_layout => [qw/STRING/],
+    }) or return $app->json_error($app->translate('Invalid request.'), 400);
+
+    my $scope        = $app->param('widget_scope');
+    my $widgets_json = $app->param('widget_layout');
+
+    return $app->json_error($app->translate('Invalid request.'), 400)
+        unless $scope && $widgets_json;
+
+    my $new_widgets;
+    eval { $new_widgets = MT::Util::from_json($widgets_json) };
+    if ($@ || ref $new_widgets ne 'HASH') {
+        return $app->json_error($app->translate('Invalid request.'), 400);
+    }
+
+    my $user = $app->user;
+    my $widget_store = $user->widgets;
+    if (my $current_widgets = $widget_store->{$scope}) {
+        foreach my $widget_id (keys %$new_widgets) {
+            if (
+                $new_widgets->{$widget_id}{order} !~ /^\d+(?:\.\d+)?$/
+                || $new_widgets->{$widget_id}{size} !~ /^(?:half|full)$/
+            ) {
+                return $app->json_error($app->translate('Invalid request.'), 400);
+            }
+            if ($current_widgets->{$widget_id}) {
+                $current_widgets->{$widget_id}{order} = $new_widgets->{$widget_id}{order};
+                $current_widgets->{$widget_id}{size} = $new_widgets->{$widget_id}{size};
+            }
+        }
+    }
+
+    $user->widgets($widget_store);
+    $user->save or return $app->json_error($user->errstr, 500);
+
+    return $app->json_result({})
 }
 
 sub load_widget_list {
