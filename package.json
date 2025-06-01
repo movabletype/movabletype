@@ -83,7 +83,7 @@
     "globals": "^15.14.0",
     "jsdom": "^26.0.0",
     "node-sass": "^9.0.0",
-    "postcss-cli": "^11.0.0",
+    "postcss-cli": "^11.0.1",
     "postcss-flexbugs-fixes": "^5.0.1",
     "prettier": "^3.5.2",
     "prettier-plugin-svelte": "^3.3.2",
