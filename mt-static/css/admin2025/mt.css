@@ -12832,7 +12832,7 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper.collapse
   position: absolute;
   top: 0;
   left: 0;
-  margin-top: 72px;
+  margin-top: 64px;
 }
 .mt-mobilePrimaryMenu__dropdownMenuButton svg {
   margin: 0;
