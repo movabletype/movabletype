@@ -3495,6 +3495,7 @@ sub load_widgets {
     my $widget_store = $user->widgets;
     my $widgets;
     $widgets = $widget_store->{$widget_set} if $widget_store;
+    $param->{current_widget_scope} = $widget_set;
 
     unless ($widgets) {
         $resave_widgets = 1;
@@ -3641,6 +3642,8 @@ sub build_widgets {
         local $widget_param->{widget_mobile}   = $widget->{mobile} ? 1 : 0;
         local $widget_param->{widget_scope}    = $widget_set;
         local $widget_param->{widget_singular} = $widget->{singular} || 0;
+        local $widget_param->{widget_size}     = $widget_cfg->{size} || '';
+        local $widget_param->{widget_set}      = $set;
         local $widget_param->{magic_token}     = $app->current_magic;
         local $widget_param->{build_menus}     = 0;
         local $widget_param->{build_blog_selector} = 0;
