@@ -21,11 +21,13 @@
     var captcha_timer;
 </mt:Ignore>
 
+<mt:HasPlugin name="Comments">
 // The cookie name to use for storing the blog-side comment session cookie.
 var mtCookieName = "<$mt:UserSessionCookieName$>";
 var mtCookieDomain = "<$mt:UserSessionCookieDomain$>";
 var mtCookiePath = "<$mt:UserSessionCookiePath$>";
 var mtCookieTimeout = <$mt:UserSessionCookieTimeout$>;
+</mt:HasPlugin>
 
 <mt:Ignore>
 /***
@@ -308,6 +310,7 @@ MT.util = function () {
  * In either case, the pagination event is set
  */
 </mt:Ignore>
+<mt:HasPlugin name="Comments">
 (function () {
   var M = MT.core,
       c = MT.cons,
@@ -681,6 +684,7 @@ MT.util = function () {
     _toggleNavLinks();
   }
 })();
+</mt:HasPlugin>
 
 <mt:Ignore>
 /***
@@ -753,17 +757,20 @@ function mtEditLink(entry_id, author_id) {
  * Called when an input field on the comment form receives focus.
  */
 </mt:Ignore>
+<mt:HasPlugin name="Comments">
 function mtCommentFormOnFocus() {
     // if CAPTCHA is enabled, this causes the captcha image to be
     // displayed if it hasn't been already.
     mtShowCaptcha();
 }
+</mt:HasPlugin>
 
 <mt:Ignore>
 /***
  * Displays a captcha field for anonymous commenters.
  */
 </mt:Ignore>
+<mt:HasPlugin name="Comments">
 var mtCaptchaVisible = false;
 function mtShowCaptcha() {
     var u = mtGetUser();
@@ -775,6 +782,7 @@ function mtShowCaptcha() {
         mtCaptchaVisible = true;
     }
 }
+</mt:HasPlugin>
 
 <mt:Ignore>
 /* user object
@@ -796,14 +804,17 @@ function mtShowCaptcha() {
 */
 </mt:Ignore>
 
+<mt:HasPlugin name="Comments">
 var is_preview;
 var user;
+</mt:HasPlugin>
 <mt:Ignore>
 /***
  * Assigns a user object as the actively logged in user; also saves the
  * user information in a browser cookie.
  */
 </mt:Ignore>
+<mt:HasPlugin name="Comments">
 function mtSetUser(u) {
     if (u) {
         // persist this
@@ -813,6 +824,7 @@ function mtSetUser(u) {
         mtFireEvent('usersignin');
     }
 }
+</mt:HasPlugin>
 
 <mt:Ignore>
 /***
@@ -841,6 +853,7 @@ function mtUnescapeJS(s) {
  * Serializes a user object into a string, suitable for storing as a cookie.
  */
 </mt:Ignore>
+<mt:HasPlugin name="Comments">
 function mtBakeUserCookie(u) {
     var str = "";
     if (u.name) str += "name:'" + mtEscapeJS(u.name) + "';";
@@ -858,6 +871,7 @@ function mtBakeUserCookie(u) {
     str = str.replace(/;$/, '');
     return str;
 }
+</mt:HasPlugin>
 
 <mt:Ignore>
 /***
@@ -865,6 +879,7 @@ function mtBakeUserCookie(u) {
  * state.
  */
 </mt:Ignore>
+<mt:HasPlugin name="Comments">
 function mtUnbakeUserCookie(s) {
     if (!s) return;
 
@@ -888,6 +903,7 @@ function mtUnbakeUserCookie(s) {
     }
     return u;
 }
+</mt:HasPlugin>
 
 <mt:Ignore>
 /***
@@ -895,6 +911,7 @@ function mtUnbakeUserCookie(s) {
  * If no user is logged in or cookied, this will return null.
  */
 </mt:Ignore>
+<mt:HasPlugin name="Comments">
 function mtGetUser() {
     if (!user) {
         var cookie = mtGetCookie(mtCookieName);
@@ -911,6 +928,7 @@ function mtGetUser() {
     }
     return user;
 }
+</mt:HasPlugin>
 
 <mt:Ignore>
 /***
@@ -918,6 +936,7 @@ function mtGetUser() {
  * logged-in user (if any).
  */
 </mt:Ignore>
+<mt:HasPlugin name="Comments">
 var mtFetchedUser = false;
 function mtFetchUser(cb) {
     if (!cb) cb = 'mtSetUser';
@@ -946,6 +965,7 @@ function mtVerifySession(cb) {
     script.src = '<$mt:CGIPath$><$mt:CommentScript$>?__mode=verify_session&blog_id=<$mt:BlogID$>&jsonp=' + cb + '&ts=' + ts + '&sid=' + u.sid;
     (document.getElementsByTagName('head'))[0].appendChild(script);
 }
+</mt:HasPlugin>
 
 <mt:Ignore>
 /***
@@ -953,11 +973,13 @@ function mtVerifySession(cb) {
  * is cleared, the cached user cookie is immediately cleared.
  */
 </mt:Ignore>
+<mt:HasPlugin name="Comments">
 function mtRememberMeOnClick(b) {
     if (!b.checked)
         mtClearUser(b.form);
     return true;
 }
+</mt:HasPlugin>
 
 <mt:Ignore>
 /***
@@ -969,6 +991,7 @@ function mtRememberMeOnClick(b) {
  * a token that is checked by the comment script.
  */
 </mt:Ignore>
+<mt:HasPlugin name="Comments">
 var mtRequestSubmitted = false;
 function mtCommentOnSubmit(f) {
     if (!mtRequestSubmitted) {
@@ -1057,6 +1080,7 @@ function mtUserOnLoad() {
         }
     }
 }
+</mt:HasPlugin>
 
 <mt:Ignore>
 /***
@@ -1066,11 +1090,15 @@ function mtUserOnLoad() {
  */
 </mt:Ignore>
 function mtEntryOnLoad() {
+    <mt:HasPlugin name="Comments">
     var cf = document['comments_form'];
     if (cf && cf.preview) cf.preview.value = '';
-    <mt:Unless tag="IfPingsAccepted">mtHide('trackbacks-info');</mt:Unless>
     <mt:Unless tag="IfCommentsAccepted">mtHide('comments-open');</mt:Unless>
     mtFireEvent('usersignin');
+    </mt:HasPlugin>
+    <mt:HasPlugin name="Trackback">
+    <mt:Unless tag="IfPingsAccepted">mtHide('trackbacks-info');</mt:Unless>
+    </mt:HasPlugin>
 }
 
 function mtEntryOnPagehide(event) {
@@ -1078,6 +1106,7 @@ function mtEntryOnPagehide(event) {
         return;
     }
 
+    <mt:HasPlugin name="Comments">
     if (mtRequestSubmitted) {
         var cf = document['comments_form'];
         if (cf) {
@@ -1088,10 +1117,12 @@ function mtEntryOnPagehide(event) {
         }
         mtRequestSubmitted = false;
     }
+    </mt:HasPlugin>
 }
 
 // deprecated since MT 8.4.2 and MT 8.5.0
 function mtEntryOnUnload() {
+    <mt:HasPlugin name="Comments">
     if (mtRequestSubmitted) {
         var cf = document['comments_form'];
         if (cf) {
@@ -1102,10 +1133,13 @@ function mtEntryOnUnload() {
         }
         mtRequestSubmitted = false;
     }
+    </mt:HasPlugin>
     return true;
 }
 
+<mt:HasPlugin name="Comments">
 mtAttachEvent('usersignin', mtUserOnLoad);
+</mt:HasPlugin>
 
 <mt:Ignore>
 /***
@@ -1113,6 +1147,7 @@ mtAttachEvent('usersignin', mtUserOnLoad);
  * user cookie, then directs to the MT comment script to sign the user in.
  */
 </mt:Ignore>
+<mt:HasPlugin name="Comments">
 function mtSignIn() {
     var doc_url = document.URL;
     doc_url = doc_url.replace(/#.+/, '');
@@ -1155,6 +1190,7 @@ function mtSetUserOrLogin(u) {
         mtSignIn();
     }
 }
+</mt:HasPlugin>
 
 <mt:Ignore>
 /***
@@ -1163,6 +1199,7 @@ function mtSetUserOrLogin(u) {
  * script to sign the user out.
  */
 </mt:Ignore>
+<mt:HasPlugin name="Comments">
 function mtSignOut(entry_id) {
     mtClearUser();
     var doc_url = document.URL;
@@ -1180,16 +1217,19 @@ function mtSignOut(entry_id) {
     }
     location.href = url;
 }
+</mt:HasPlugin>
 
 <mt:Ignore>
 /***
  * Handles the action of the "Sign out" link.
  */
 </mt:Ignore>
+<mt:HasPlugin name="Comments">
 function mtSignOutOnClick() {
     mtSignOut();
     return false;
 }
+</mt:HasPlugin>
 
 <mt:Ignore>
 /***
@@ -1197,6 +1237,7 @@ function mtSignOutOnClick() {
  * user is logged in and blog comment policy.
  */
 </mt:Ignore>
+<mt:HasPlugin name="Comments">
 function mtShowGreeting() {
 <mt:IfRegistrationAllowed>
     var reg_reqd = <mt:IfRegistrationRequired>true<mt:Else>false</mt:IfRegistrationRequired>;
@@ -1247,12 +1288,14 @@ function mtShowGreeting() {
     mtShowCaptcha();
 </mt:IfRegistrationAllowed>
 }
+</mt:HasPlugin>
 
 <mt:Ignore>
 /***
  * Handles the action of the 'Reply' links.
  */
 </mt:Ignore>
+<mt:HasPlugin name="Comments">
 function mtReplyCommentOnClick(parent_id, author) {
     mtShow('comment-form-reply');
 
@@ -1276,12 +1319,14 @@ function mtReplyCommentOnClick(parent_id, author) {
 
     mtSetCommentParentID();
 }
+</mt:HasPlugin>
 
 <mt:Ignore>
 /***
  * Sets the parent comment ID when replying to a comment.
  */
 </mt:Ignore>
+<mt:HasPlugin name="Comments">
 function mtSetCommentParentID() {
     var checkbox = document.getElementById('comment-reply');
     var parent_id_field = document.getElementById('comment-parent-id');
@@ -1292,12 +1337,14 @@ function mtSetCommentParentID() {
         pid = checkbox.value;
     parent_id_field.value = pid;
 }
+</mt:HasPlugin>
 
 <mt:Ignore>
 /***
  * Persists a copy of the current user cookie into the browser cookie stash.
  */
 </mt:Ignore>
+<mt:HasPlugin name="Comments">
 function mtSaveUser(f) {
     // We can't reliably store the user cookie during a preview.
     if (is_preview) return;
@@ -1336,17 +1383,20 @@ function mtSaveUser(f) {
     mtSetCookie(mtCookieName, cmtcookie, now, mtCookiePath, mtCookieDomain,
         location.protocol == 'https:');
 }
+</mt:HasPlugin>
 
 <mt:Ignore>
 /***
  * Clears the blog-side user cookie.
  */
 </mt:Ignore>
+<mt:HasPlugin name="Comments">
 function mtClearUser() {
     user = null;
     mtDeleteCookie(mtCookieName, mtCookiePath, mtCookieDomain,
         location.protocol == 'https:');
 }
+</mt:HasPlugin>
 
 <mt:Ignore>
 /***
@@ -1458,9 +1508,11 @@ function mtInit() {
         window.onload();
         window.onload = function() {};
     }
+<mt:HasPlugin name="Comments">
 <mt:IfRegistrationAllowed>
     mtInitCommenter();
 </mt:IfRegistrationAllowed>
+</mt:HasPlugin>
 }
 
 /* for Mozilla/Opera9 */
@@ -1496,6 +1548,7 @@ window.onload = mtInit;
 
 // END: fast browser onload init
 
+<mt:HasPlugin name="Comments">
 <mt:IfRegistrationAllowed>
 
 function mtLoggedIn(ott) {
@@ -1564,3 +1617,4 @@ function mtInitCommenter () {
     }
 }
 </mt:IfRegistrationAllowed>
+</mt:HasPlugin>

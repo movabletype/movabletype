@@ -144,7 +144,7 @@ sub write_config {
     my %connect_info = $self->connect_info;
 
     my $image_driver = $ENV{MT_TEST_IMAGE_DRIVER}
-        || (eval { require Image::Magick } ? 'ImageMagick' : 'Imager');
+        || (eval { require Graphics::Magick } ? 'GraphicsMagick' : eval { require Image::Magick } ? 'ImageMagick' : 'Imager');
 
     my $default_language = $ENV{MT_TEST_LANG} || 'en_US';
 
@@ -455,7 +455,9 @@ sub _connect_info_pg {
         $self->_prepare_pg_database($dbh);
         $dsn =~ s/^DBI:Pg://i;
         my %opts = map { split '=', $_ } split ';', $dsn;
-        $opts{dbname} = $info{Database};
+        if ($opts{dbname}) {
+            $info{Database} = $opts{dbname};
+        }
         if ($opts{host}) {
             $info{DBHost} = $opts{host};
         }
@@ -612,7 +614,8 @@ sub prepare {
 sub _mysql_version {
     my $mysqld = _mysqld() or return;
 
-    my $verbose_help = `$mysqld --verbose --help 2>/dev/null`;
+    my $devnull = File::Spec->devnull;
+    my $verbose_help = `$mysqld --verbose --help 2>$devnull`;
 
     my ($version, $major_version, $minor_version) = $verbose_help =~ /\A.*Ver (([0-9]+)\.([0-9]+)\.[0-9]+)/;
 
@@ -697,7 +700,8 @@ sub my_cnf {
 
 sub _which {
     my $exec = shift;
-    my $path = `which $exec 2>/dev/null` or return;
+    my $devnull = File::Spec->devnull;
+    my $path = `which $exec 2>$devnull` or return;
     chomp $path;
     $path;
 }
@@ -994,7 +998,6 @@ sub load_schema_and_fixture {
     my ($s, $m, $h, $d, $mo, $y) = gmtime;
     my $now      = sprintf("%04d%02d%02d%02d%02d%02d", $y + 1900, $mo + 1, $d, $h, $m, $s);
     my @pool     = ('a' .. 'z', 0 .. 9);
-    my $api_pass = join '', map { $pool[rand @pool] } 1 .. 8;
     my $salt     = join '', map { $pool[rand @pool] } 1 .. 16;
 
     # Tentative password; update it later when necessary
@@ -1004,7 +1007,6 @@ sub load_schema_and_fixture {
     $fixture =~ s/\b__MT_HOME__\b/$MT_HOME/g;
     $fixture =~ s/\b__TEST_ROOT__\b/$root/g;
     $fixture =~ s/\b__NOW__\b/$now/g;
-    $fixture =~ s/\b__API_PASS__\b/$api_pass/g;
     $fixture =~ s/\b__AUTHOR_PASS__\b/$author_pass/g;
     require JSON;
     $fixture = eval { JSON::decode_json($fixture) };
@@ -1285,8 +1287,6 @@ sub save_fixture {
                         if ($now - $t < Time::Seconds::ONE_DAY()) {
                             $value = '__NOW__';
                         }
-                    } elsif ($key eq 'author_api_password') {
-                        $value = '__API_PASS__';
                     } elsif ($key eq 'author_password') {
                         $value = '__AUTHOR_PASS__';
                     } elsif ($key =~ /^(?:role|permission)_permissions$/) {
@@ -1328,6 +1328,7 @@ sub _tweak_schema {
     $schema =~ s/^\-\- Created on .+$//m;
     $schema =~ s/NULL DEFAULT NULL/NULL/g;    ## mariadb 10.2.1+
     $schema =~ s/\s+COLLATE utf8_\w+_ci//g;   ## for now; better to specify collation explicitly
+    $schema =~ s/utf8mb3/utf8/g;
     $schema;
 }
 
@@ -1345,11 +1346,11 @@ sub test_schema {
     my $schema_file = "$self->{fixture_dirs}[0]/schema.$driver.sql";
     plan skip_all => 'schema is not found' unless -f $schema_file;
 
-    my $saved_schema = $self->slurp($schema_file);
+    my $saved_schema = _tweak_schema($self->slurp($schema_file));
 
-    my $generated_schema = $self->_generate_schema;
+    my $generated_schema = _tweak_schema($self->_generate_schema);
 
-    if (_tweak_schema($generated_schema) eq _tweak_schema($saved_schema)) {
+    if ($generated_schema eq $saved_schema) {
         pass "schema is up-to-date";
     } else {
         fail "schema is out-of-date";

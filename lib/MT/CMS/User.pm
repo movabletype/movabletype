@@ -1537,6 +1537,13 @@ sub remove_userpic {
         }
         $user->userpic_asset_id(0);
         $user->save;
+        $app->log({
+            message  => $app->translate("Saved User '[_1]' (ID: [_2]) changes.", $user->name, $user->id),
+                metadata => $app->translate("[_1] changed", "userpic_asset_id"),
+                level    => MT::Log::NOTICE(),
+                class    => 'author',
+                category => 'edit',
+        });
     }
     return 'success';
 }
@@ -1838,16 +1845,69 @@ sub post_save {
                 $app->start_session();
             }
         }
+
+        # check to see what changed and add a flag to meta_messages
+        my @meta_messages = ();
+        my %user_fields   = (%{ $obj->column_defs }, %{ $obj->properties()->{fields} });
+        my @ignore_fields = qw{ created_on created_by modified_on modified_by id class password userpic_asset_id };
+        foreach my $key (@ignore_fields) {
+            delete $user_fields{$key};
+        }
+
+        foreach my $user_field (keys %user_fields) {
+            next if ref $original->$user_field() || ref $obj->$user_field();
+            my $old = defined $original->$user_field() ? $original->$user_field() : "";
+            my $new = defined $obj->$user_field()      ? $obj->$user_field()      : "";
+            push @meta_messages, $app->translate("[_1] changed", $user_field) if $new ne $old;
+        }
+        if (scalar(@meta_messages) > 0) {
+            my $meta_message = join(", ", @meta_messages);
+            $app->log({
+                message  => $app->translate("Saved User '[_1]' (ID: [_2]) changes.", $obj->name, $obj->id),
+                    metadata => $meta_message,
+                    level    => MT::Log::NOTICE(),
+                    class    => 'author',
+                    category => 'edit',
+            });
+        }
     }
 
-    if (    $app->user->id eq $obj->id
-        and $obj->password ne $original->password )
-    {
-        my $current_session = $app->session;
+    if ($original->password and $obj->password ne $original->password) {
+        my $app_user = $app->user;
+        if ($app_user->id eq $obj->id) {
+            my $current_session = $app->session;
 
-        MT::Auth->invalidate_credentials( { app => $app } );
-        $app->user($obj);
-        $app->start_session( $obj, $current_session->get('remember') || 0 );
+            MT::Auth->invalidate_credentials({ app => $app });
+            $app->user($obj);
+            $app->start_session($obj, $current_session->get('remember') || 0);
+            $app->log({
+                message => $app->translate("User '[_1]' (ID: [_2]) changed their login password.", $obj->name, $obj->id),
+                level   => MT::Log::INFO(),
+                class   => 'author',
+            });
+        } else {
+            $app->model('session')->remove({ kind => 'US', name => $obj->id });
+            $app->log({
+                message => $app->translate("User '[_1]' (ID: [_2]) changed the login password for user '[_3]' (ID: [_4]).", $app_user->name, $app_user->id, $obj->name, $obj->id),
+                level   => MT::Log::INFO(),
+                class   => 'author',
+            });
+
+            my %head = (
+                id      => 'change_password',
+                To      => [grep $_, map { $_->email } ($original, $app_user)],
+                Subject => $app->translate('Password is changed'),
+            );
+            my $body = $app->build_email(
+                'changed-password.tmpl', {
+                    account    => $obj->name,
+                    changed_by => $app_user->name,
+                },
+            );
+
+            require MT::Util::Mail;
+            MT::Util::Mail->send_and_log(\%head, $body);
+        }
     }
 
     1;
@@ -2019,6 +2079,38 @@ sub _delete_pseudo_association {
         $app->config( 'DefaultAssignments', undef, 1 );
     }
     $app->config->save_config;
+}
+
+sub dialog_api_password {
+    my $app          = shift;
+    my $user         = $app->user;
+    my $dest_user_id = $app->param('id') or $app->error(MT->translate('Invalid request'));
+
+    return $app->permission_denied() unless $user->id == $dest_user_id || $app->can_do('edit_other_profile');
+
+    my $dest_user = $app->model('author')->load($dest_user_id);
+    my $issue     = $app->param('issue');
+    my $delete    = $app->param('delete');
+
+    my ($new_password, $deleted);
+
+    if ($issue) {
+        $new_password = MT::Util::UniqueID::create_api_password();
+        $dest_user->api_password($new_password);
+        $dest_user->save;
+    } elsif ($delete) {
+        $dest_user->api_password('');
+        $dest_user->save;
+        $deleted = 1;
+    }
+
+    $app->load_tmpl(
+        'dialog/dialog_api_password.tmpl', {
+            has_api_password => length($dest_user->api_password),
+            dest_author_id   => $dest_user_id,
+            $new_password ? (api_password => $new_password) : (),
+            $deleted      ? (deleted => 1)                  : (),
+        });
 }
 
 1;

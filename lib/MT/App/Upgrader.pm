@@ -52,6 +52,7 @@ sub core_methods {
 sub needs_upgrade {
     my $app = shift;
 
+    return 1 if $app->param('steps');
     return 1 if MT->schema_version > ( $app->{cfg}->SchemaVersion || 0 );
 
     foreach my $plugin (@MT::Components) {
@@ -471,7 +472,7 @@ sub init_website {
         my $path = $param{'sitepath_limited'} || $app->document_root();
         $param{website_path} = File::Spec->catdir($path);
 
-        my $url = $app->base . '/';
+        my $url = $app->base(NoHostCheck => 1) . '/';
         $url =~ s!/cgi(?:-bin)?(/.*)?$!/!;
         $url =~ s!/mt/?$!/!i;
         $param{website_url} = $url;

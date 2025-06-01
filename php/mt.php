@@ -14,7 +14,7 @@ require_once('lib/class.exception.php');
 
 define('VERSION', '9.000001');
 define('PRODUCT_VERSION', '9.0.1');
-define('DATA_API_DEFAULT_VERSION', '6');
+define('DATA_API_DEFAULT_VERSION', '7');
 
 $PRODUCT_NAME = 'Movable Type';
 if($PRODUCT_NAME == '__PRODUCT' . '_NAME__')
@@ -427,6 +427,7 @@ class MT {
                 $lc_name = preg_replace('/^mt_config_/', '', $lc_name);
                 $lc_name = preg_replace('/_/', '', $lc_name);
                 $value = $_ENV[$name];
+                unset($_ENV[$name]);
                 if (isset($value) && $value === "''") {
                     $value = '';
                 }
@@ -689,7 +690,7 @@ class MT {
                     $archiver = ArchiverFactory::get_archiver($at);
                 } catch (Exception $e) {
                     // 404
-                    $this->http_errr = 404;
+                    $this->http_error = 404;
                     header("HTTP/1.1 404 Not Found");
                     return $ctx->error($this->translate("Page not found - [_1]", $at), E_USER_ERROR);
                 }

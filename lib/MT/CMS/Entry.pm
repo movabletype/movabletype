@@ -1073,7 +1073,7 @@ sub _build_entry_preview {
         # If MT is configured to do 'PreviewInNewWindow', MT will open preview
         # screen on the new window/tab.
             if ( $app->config('PreviewInNewWindow') ) {
-                return $app->redirect($preview_url);
+                return $app->redirect($preview_url, NoHostCheck => 1);
             }
         }
         else {
@@ -1642,7 +1642,16 @@ sub save {
             $obj_asset->asset_id($asset_id);
             $obj_asset->object_ds('entry');
             $obj_asset->object_id( $obj->id );
-            $obj_asset->save;
+            unless ($obj_asset->save) {
+                $app->log(
+                    {   message  => $app->translate(
+                            q{Failed to save relationship between [_1] (ID: [_2]) and Asset (ID: [_3]): [_4]},
+                            $obj->class_label, $obj->id, $asset_id, $obj_asset->errstr
+                        ),
+                        level    => MT::Log::ERROR()
+                    }
+                );
+            }
         }
         $seen->{$asset_id} = 1;
     }
@@ -1654,7 +1663,16 @@ sub save {
                     object_id => $obj->id
                 }
             );
-            $obj_asset->remove;
+            unless ($obj_asset->remove) {
+                $app->log(
+                    {   message  => $app->translate(
+                            q{Failed to remove relationship between [_1] (ID: [_2]) and Asset (ID: [_3]): [_4]},
+                            $obj->class_label, $obj->id, $asset_id, $obj_asset->errstr
+                        ),
+                        level    => MT::Log::ERROR()
+                    }
+                );
+            }
         }
     }
 
