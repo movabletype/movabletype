@@ -1,7 +1,7 @@
 <div id="mobilePrimaryMenu" class="mt-mobilePrimaryMenu">
 <mt:unless name="is_full_screen">
   <mt:if name="top_nav_loop">
-  <button id="mobilePrimaryMenu__dropdownMenuButton" class="mt-mobilePrimaryMenu__dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" data-bs-auto-close="outside" aria-expanded="false">
+  <button id="mobilePrimaryMenu__dropdownMenuButton" class="mt-mobilePrimaryMenu__dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" data-bs-auto-close="false" aria-expanded="false">
     <div class="mt-icon">
       <span class="open"><mtapp:svgicon id="ic_open" title="Open primary menu"></span>
       <span class="close"><mtapp:svgicon id="ic_close" title="Close primary menu"></span>
@@ -73,17 +73,26 @@ jQuery('.mt-mobilePrimaryMenu__dropdownMenu a').on('click', function (e) {
 
 document.addEventListener('DOMContentLoaded', function() {
   const mobilePrimaryMenu = document.querySelector('.mt-mobilePrimaryMenu');
+  const body = document.body;
+
+  const handleClick = (e) => {
+    if(e.target === body || e.target.closest('#mobileGlobalMenu__dropdownMenuButton')) {
+      new bootstrap.Dropdown(document.getElementById('mobilePrimaryMenu__dropdownMenuButton')).hide();
+    }
+  };
+
   mobilePrimaryMenu.addEventListener('show.bs.dropdown', event => {
-    if(!event.target.classList.contains('mt-mobilePrimaryMenu__dropdownMenuButton')) {
-      return;
+    if(event.target.classList.contains('mt-mobilePrimaryMenu__dropdownMenuButton')) {
+      body.classList.add('dropdown-open-primary-menu');
+      document.addEventListener('click', handleClick);
     }
-    document.querySelector('body').classList.add('dropdown-open-primary-menu');
   })
+
   mobilePrimaryMenu.addEventListener('hide.bs.dropdown', event => {
-    if(!event.target.classList.contains('mt-mobilePrimaryMenu__dropdownMenuButton')) {
-      return;
+    if(event.target.classList.contains('mt-mobilePrimaryMenu__dropdownMenuButton')) {
+      body.classList.remove('dropdown-open-primary-menu');
+      document.removeEventListener('click', handleClick);
     }
-    document.querySelector('body').classList.remove('dropdown-open-primary-menu');
   })
 });
 

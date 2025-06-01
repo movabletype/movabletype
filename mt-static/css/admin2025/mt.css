@@ -12646,7 +12646,6 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper.collapse
     right: 0;
     bottom: 0;
     background: rgba(0, 0, 0, 0.5);
-    pointer-events: none;
     z-index: var(--left-bar-z-index);
     -webkit-backdrop-filter: blur(3px);
             backdrop-filter: blur(3px);
