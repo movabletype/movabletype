@@ -254,7 +254,15 @@
                       >
                         {site.name}
                       </a>
+                      {#if site.parentSiteName !== "-"}
+                        <span class="d-block d-md-none parent-site"
+                          >{@html site.parentSiteName}</span
+                        >
+                      {/if}
                       <a href={site.siteUrl} class="site-link" target="_blank">
+                        <span class="d-inline-block d-md-none"
+                          >{window.trans("View your site.")}</span
+                        >
                         <SVG
                           title={window.trans("View your site.")}
                           class="mt-icon mt-icon--sm"
