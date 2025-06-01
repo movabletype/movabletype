@@ -1,7 +1,7 @@
 <script lang="ts">
-  import SVG from "../../svg/elements/SVG.svelte";
+  import SVG from "../../../svg/elements/SVG.svelte";
   import type { ContentType } from "src/@types/contenttype";
-  import type { SearchTab } from "src/buttons/search-button";
+  import type { SearchTab } from "src/admin2025/buttons/search-button";
 
   export let blogId: string;
   export let magicToken: string;

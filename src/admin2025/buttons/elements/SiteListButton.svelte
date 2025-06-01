@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import SVG from "../../svg/elements/SVG.svelte";
+  import SVG from "../../../svg/elements/SVG.svelte";
   import { portal } from "svelte-portal";
   import { isOuterClick } from "../outerClick";
   import { fetchSites } from "src/utils/fetch-sites";

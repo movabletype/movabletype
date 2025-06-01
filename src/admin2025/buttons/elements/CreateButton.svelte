@@ -1,7 +1,7 @@
 <script lang="ts">
   import { portal } from "svelte-portal";
   import { isOuterClick } from "../outerClick";
-  import { type ContentType } from "../../@types/contenttype";
+  import { type ContentType } from "src/@types/contenttype";
 
   export let contentTypes: ContentType[] = [];
   export let blog_id: string;

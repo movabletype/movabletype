@@ -1,4 +1,4 @@
-import { ContentType } from "../@types/contenttype";
+import { ContentType } from "src/@types/contenttype";
 import SearchButton from "./elements/SearchButton.svelte";
 
 type SearchButtonProps = {

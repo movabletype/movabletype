@@ -21,6 +21,7 @@ const srcConfig = (inputFile) => {
     input: [inputFile],
     output: {
       dir: defaultOutputDir,
+      entryFileNames: inputFile.replace(/^src\//, "").replace(/ts$/, "js"),
       format: "esm",
       sourcemap: !production,
     },
@@ -80,6 +81,6 @@ const mtStaticConfig = (inputfile) => {
 export default [
   srcConfig("src/contenttype.ts"),
   srcConfig("src/listing.ts"),
-  srcConfig("src/admin-header.ts"),
+  srcConfig("src/admin2025/admin-ui.ts"),
   ...mtStaticInputFiles.map(mtStaticConfig),
 ];

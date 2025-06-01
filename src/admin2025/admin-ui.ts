@@ -1,4 +1,4 @@
-import { fetchContentTypes } from "./utils/fetch-content-types";
+import { fetchContentTypes } from "src/utils/fetch-content-types";
 import { svelteMountCreateButton } from "./buttons/create-button";
 import { svelteMountSidebar } from "./sidebar/sidebar";
 import { svelteMountSearchButton } from "./buttons/search-button";
@@ -22,10 +22,10 @@ if (sidebarTarget !== null) {
 }
 
 const currentScript = document.querySelector<HTMLScriptElement>(
-  '[data-script="admin-header"]',
+  '[data-script="admin-ui"]',
 );
 if (currentScript === null) {
-  console.error("data-script='admin-header' is not set");
+  console.error("data-script='admin-ui' is not set");
 }
 const blogId = currentScript?.getAttribute("data-blog-id") ?? "";
 const magicToken = currentScript?.getAttribute("data-magic-token") ?? "";
