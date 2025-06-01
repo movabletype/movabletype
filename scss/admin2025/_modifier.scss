@@ -1107,6 +1107,10 @@ html[data-screen-id=dashboard][data-scope-type=user] {
   @include media-breakpoint-up(md) {
     margin-left: 0;
   }
+  @include media-breakpoint-down(md) {
+    border-bottom: none;
+    margin-bottom: 0;
+  }
   @extend .col;
   padding: 12px 0;
   font-size: 0.85rem;
@@ -1484,7 +1488,7 @@ html[data-screen-id=dashboard][data-scope-type=user] {
   position: absolute;
   top: 0;
   left: 0;
-  margin-top: 64px;
+  margin-top: 68px;
 
   svg {
     margin: 0;
@@ -3680,12 +3684,18 @@ body:has(.mt-primaryNavigation) {
     display: none;
   }
 }
+
 .mt-main_content_header {
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
   align-items: center;
   justify-content: space-between;
+
+  @include media-breakpoint-down(md) {
+    border-bottom: 1px solid $gray-lighter;
+    margin-bottom: 1.5rem;
+  }
 }
 
 /* Modal */

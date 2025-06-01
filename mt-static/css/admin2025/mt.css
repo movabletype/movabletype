@@ -12517,6 +12517,12 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper.collapse
     margin-left: 0;
   }
 }
+@media (max-width: 767.98px) {
+  .mt-breadcrumb {
+    border-bottom: none;
+    margin-bottom: 0;
+  }
+}
 .mt-breadcrumb a, .mt-breadcrumb a:hover {
   color: #212529;
   text-decoration: none;
@@ -12832,7 +12838,7 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-contentWrapper.collapse
   position: absolute;
   top: 0;
   left: 0;
-  margin-top: 64px;
+  margin-top: 68px;
 }
 .mt-mobilePrimaryMenu__dropdownMenuButton svg {
   margin: 0;
@@ -14911,6 +14917,12 @@ li.nav-item, .mt-sharedPreviewNav .mt-sharedPreviewNav__rightNav li.mt-sharedPre
   flex-wrap: nowrap;
   align-items: center;
   justify-content: space-between;
+}
+@media (max-width: 767.98px) {
+  .mt-main_content_header {
+    border-bottom: 1px solid #E0E0E0;
+    margin-bottom: 1.5rem;
+  }
 }
 
 /* Modal */
