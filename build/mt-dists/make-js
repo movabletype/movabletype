@@ -29,6 +29,7 @@ my @files = (
     glob("mt-static/js/admin2025/listing/tag/*.tag"),
     glob("src/admin2025/buttons/elements/*.svelte"),
     glob("src/admin2025/sidebar/elements/*.svelte"),
+    glob("src/admin2025/forms/search/*.svelte"),
     glob("src/listing/elements/*.svelte"),
     "mt-static/js/mt/util.js",
     "mt-static/plugins/BlockEditor/lib/js/blockeditor_field.js",
