@@ -12574,7 +12574,7 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-mainContentWrapper {
   border-radius: 0 !important;
   margin-bottom: 0;
 }
-.mt-mobileGlobalMenu__dropdownMenu > ul > li a, .mt-mobileGlobalMenu__dropdownMenu > ul > li span {
+.mt-mobileGlobalMenu__dropdownMenu > ul > li a, .mt-mobileGlobalMenu__dropdownMenu > ul > li > span:not(:has(> a)) {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -12765,10 +12765,6 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-mainContentWrapper {
 .mt-mobileGlobalMenu__dropdownMenu .mt-mobileGlobalMenu__menu svg {
   margin-right: 8px;
 }
-.mt-mobileGlobalMenu__dropdownMenu .mt-mobileGlobalMenu__menu--site span,
-.mt-mobileGlobalMenu__dropdownMenu .mt-mobileGlobalMenu__menu--system span {
-  padding: 0;
-}
 .mt-mobileGlobalMenu__dropdownMenu .mt-mobileGlobalMenu__menu--username {
   margin-top: auto;
   border-top-width: 1px;
@@ -12870,7 +12866,6 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-mainContentWrapper {
 .mt-mobilePrimaryMenu__dropdownMenu .mt-primaryNavigation__control, .mt-mobilePrimaryMenu__dropdownMenu .mt-primaryNavigation__control--invert {
   width: 100%;
   justify-content: space-around;
-  padding: 0;
 }
 .mt-mobilePrimaryMenu__dropdownMenu ul {
   /* compatibility */

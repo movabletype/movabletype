@@ -1186,7 +1186,7 @@ html[data-screen-id=dashboard][data-scope-type=user] {
       @extend .p-0;
       border-radius: 0 !important;
       margin-bottom: 0;
-      a, span {
+      a,&>span:not(:has(> a)) {
         @include text-truncate;
         display: block;
         padding: 1rem;
@@ -1411,12 +1411,6 @@ html[data-screen-id=dashboard][data-scope-type=user] {
       margin-right: 8px;
     }
   }
-  .mt-mobileGlobalMenu__menu--site,
-  .mt-mobileGlobalMenu__menu--system {
-    span {
-      padding: 0;
-    }
-  }
   .mt-mobileGlobalMenu__menu--username {
     margin-top: auto;
     border-top-width: 1px;
@@ -1539,7 +1533,6 @@ html[data-screen-id=dashboard][data-scope-type=user] {
   .mt-primaryNavigation__control {
     width: 100%;
     justify-content: space-around;
-    padding: 0;
   }
 
   ul {
