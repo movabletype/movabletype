@@ -6,7 +6,6 @@
   export let collapsed = false;
   export let isStored = false;
   let mouseOver = false;
-  let isMobile = false;
 
   const addContentWrapperClass = (
     className: string,
@@ -70,7 +69,6 @@
     if (window.innerWidth < 800) {
       // For smaller screens, always collapse the sidebar
       collapsed = true;
-      isMobile = true;
     }
     handleCollapse();
   });
