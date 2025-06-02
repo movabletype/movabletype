@@ -1177,7 +1177,7 @@ sub remove_broken_png_metadata {
     return 1 if lc( $asset->file_ext || '' ) !~ /^png$/;
     return 1 if $asset->is_metadata_broken;
 
-    my $exif = $asset->exif or return;
+    my $exif = $asset->exif(FastScan => 0) or return;
 
     # libpng 1.6 marks some of the old HP profiles *broken*
     # cf. https://sourceforge.net/p/libpng/code/ci/master/tree/png.c#l2275

@@ -39,7 +39,7 @@ our $plugins_installed;
 BEGIN {
     $plugins_installed = 0;
 
-    ( $VERSION, $SCHEMA_VERSION ) = ( '9.000001', '9.0000' );
+    ( $VERSION, $SCHEMA_VERSION ) = ( '9.000001', '9.0001' );
     (   $PRODUCT_NAME, $PRODUCT_CODE,   $PRODUCT_VERSION,
         $VERSION_ID,   $RELEASE_NUMBER, $PORTAL_URL,
         $RELEASE_VERSION_ID
@@ -1479,6 +1479,7 @@ sub init_plugins {
                 envelope => $plugin_envelope
             }
         );
+        $p->load_required_meta() if $pclass eq 'MT::Plugin';
 
         # rebless? based on config?
         local $plugin_sig = $plugin_dir;
@@ -1524,12 +1525,6 @@ sub init_plugins {
 
                     my $plugin_dir = $plugin;
                     $plugin_envelope = "$plugin_lastdir/" . $plugin;
-
-                    foreach my $lib (qw(lib extlib)) {
-                        my $plib
-                            = File::Spec->catdir( $plugin_full_path, $lib );
-                        unshift @INC, $plib if -d $plib;
-                    }
 
                     # handle config.yaml
                     my $yaml = File::Spec->catdir( $plugin_full_path,
@@ -1599,7 +1594,16 @@ sub init_plugins {
             $deduped_plugins{$name} = $plugin;
         }
 
+        my %included_paths;
         for my $plugin (values %deduped_plugins) {
+            foreach my $lib (qw(lib extlib)) {
+                my $plib
+                    = File::Spec->catdir( $plugin->{full_path}, $lib );
+                next if exists $included_paths{$plib};
+                $included_paths{$plib} = 1;
+                unshift @INC, $plib if -d $plib;
+            }
+
             if ($plugin->isa('MT::Plugin')) {
                 $plugin->init;
             }

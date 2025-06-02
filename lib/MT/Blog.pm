@@ -533,8 +533,13 @@ sub create_default_templates {
         $val->{text} = $p->translate_templatized($text) if defined $text;
         $obj->build_dynamic(0);
 
-        foreach my $v ( keys %$val ) {
-            $obj->column( $v, $val->{$v} ) if $obj->has_column($v);
+        foreach my $v (keys %$val) {
+            next unless $obj->has_column($v);
+            if ($obj->is_meta_column($v)) {
+                $obj->meta($v, $val->{$v});
+            } else {
+                $obj->column($v, $val->{$v});
+            }
         }
         $obj->blog_id( $blog->id );
         if ( my $pub_opts = $val->{publishing} ) {

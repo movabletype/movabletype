@@ -254,6 +254,20 @@ h1.dialog-title {
         </div>
       </div>
     </mtapp:setting>
+    <mtapp:setting
+        id="trim_file_path"
+        label="<__trans phrase="Trim spaces before and after path">"
+        show_label="1">
+      <div class="form-group">
+        <div class="custom-control custom-checkbox">
+          <input type="checkbox" name="trim_file_path" id="trim_file_path" value="1"<mt:if name="trim_file_path"> checked="checked"</mt:if> class="cb custom-control-input"<mt:if name="force_trim_file_path"> disabled="disabled"</mt:if> />
+          <label class="custom-control-label" for="trim_file_path"><__trans phrase="Enable file path trimming"></label>
+          <mt:if name="force_trim_file_path">
+          <br><small class="form-text text-muted"><__trans phrase="This field is overriden by a value in the Movable Type configuration file."></small>
+          </mt:if>
+        </div>
+      </div>
+    </mtapp:setting>
   </fieldset>
 
 </div>
@@ -265,7 +279,7 @@ h1.dialog-title {
 </div>
 
 
-<script type="text/javascript">
+<script>
 /* <![CDATA[ */
 
 var isDialog = (top !== window);

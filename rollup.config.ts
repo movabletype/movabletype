@@ -1,4 +1,5 @@
 // rollup.config.js
+import { readdirSync } from "node:fs";
 import resolve from "@rollup/plugin-node-resolve";
 import commonjs from "@rollup/plugin-commonjs";
 import esbuild from "rollup-plugin-esbuild";
@@ -14,6 +15,9 @@ const defaultOutputDir = "mt-static/js/build";
 const mtStaticOutputDir = "mt-static";
 const mtStaticInputFiles = [
   "src/mt-static/plugins/TinyMCE6/lib/js/tinymce/plugins/mt_protect/plugin.ts",
+  ...readdirSync("src/mt-static/plugins/DashboardWidgetTemplate/js")
+    .filter((file) => file.endsWith(".ts"))
+    .map((file) => `src/mt-static/plugins/DashboardWidgetTemplate/js/${file}`),
 ];
 
 const srcConfig = (inputFile) => {
@@ -81,5 +85,6 @@ export default [
   srcConfig("src/contenttype.ts"),
   srcConfig("src/listing.ts"),
   srcConfig("src/admin-header.ts"),
+  srcConfig("src/edit-author.ts"),
   ...mtStaticInputFiles.map(mtStaticConfig),
 ];

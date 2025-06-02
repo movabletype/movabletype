@@ -2060,8 +2060,8 @@ sub post_save {
 
         # permission granted - need to update commenting cookie
         my %cookies = $app->cookies();
-        my ( $x, $y, $remember )
-            = split( /::/, $cookies{ $app->user_cookie() }->value );
+        my $user_cookie = $cookies{ $app->user_cookie() };
+        my ( $x, $y, $remember ) = split( /::/, $user_cookie ? $user_cookie->value : '' );
         my $cookie = $cookies{'commenter_id'};
         my $cookie_value = $cookie ? $cookie->value : ':';
         my ( $id, $blog_ids ) = split( ':', $cookie_value );
@@ -2187,6 +2187,9 @@ sub save_filter {
             MT->translate("Please choose a preferred archive type.") )
             if ( !$app->param('no_archives_are_active')
             && !$app->param('preferred_archive_type') );
+        return $eh->error(
+            MT->translate("The file extension must be shorter than 10 characters.") )
+            if length($app->param('file_extension')) > 10;
     }
     return 1;
 }
@@ -3452,7 +3455,7 @@ sub _progress {
         require MT::Util;
         my $str_js = MT::Util::encode_js($str);
         $app->print_encode(<<"SCRIPT");
-<script type="text/javascript">
+<script>
 function progress(str, id) {
     var el = getByID(id);
     if (el) el.innerHTML = str;

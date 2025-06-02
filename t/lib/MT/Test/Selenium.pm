@@ -23,6 +23,7 @@ use LWP::UserAgent;
 use URI;
 use URI::QueryParam;
 use MT::PSGI;
+use MT::Util qw(encode_js);
 use Selenium::Waiter;
 use constant DEBUG => $ENV{MT_TEST_SELENIUM_DEBUG} ? 1 : $ENV{TRAVIS} ? 1 : 0;
 use constant MY_HOST => $ENV{TRAVIS} ? $ENV{HOSTNAME} : '127.0.0.1';
@@ -279,9 +280,22 @@ sub find {
 sub get_current_value {
     my ($self, $selector, $prop_name) = @_;
     $prop_name ||= 'value';
-    $selector = quotemeta($selector);
-    $prop_name = quotemeta($prop_name);
+    $selector = encode_js($selector);
+    $prop_name = encode_js($prop_name);
     wait_until { $self->driver->execute_script("return jQuery('$selector').prop('$prop_name');") };
+}
+
+sub get_text_content {
+    my ($self, $selector) = @_;
+    $selector = encode_js($selector);
+    wait_until { $self->driver->execute_script("return jQuery('$selector').text();") };
+}
+
+sub set_value {
+    my ($self, $selector, $value) = @_;
+    $selector = encode_js($selector);
+    $value = encode_js($value);
+    wait_until { $self->driver->execute_script("return jQuery('$selector').val('$value');") };
 }
 
 sub mt_url {

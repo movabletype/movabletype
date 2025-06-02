@@ -19,6 +19,7 @@ sub build_schema {
     my ($app, $endpoint) = @_;
     my $endpoints        = $app->endpoints($app->current_api_version)->{hash};
     my $resource_schemas = $app->schemas($app->current_api_version);
+    my $base             = $app->base(NoHostCheck => 1);
     my $response         = {
         openapi => '3.0.0',
         info    => {
@@ -29,7 +30,7 @@ sub build_schema {
             description => 'Find out more about Movable Type Data API',
             url         => 'https://www.movabletype.jp/developers/data-api/',
         },
-        servers => [{ url => $app->base . $app->uri . '/v' . $app->current_api_version, }],
+        servers => [{ url => $base . $app->uri . '/v' . $app->current_api_version, }],
         tags    => [
             { name => 'Authentication' },
             { name => 'Common API' },
@@ -60,6 +61,7 @@ sub build_schema {
                 %$resource_schemas,
             },
         },
+        security => [{ mtauth => [] }],
     };
     for my $id (sort keys %$endpoints) {
         if (my $nouns = $endpoints->{$id}{openapi_options}{filtered_list_ds_nouns}) {
@@ -119,9 +121,6 @@ sub build_schema {
                 },
             },
         };
-        if ($endpoints->{$id}{requires_login}) {
-            $response->{paths}{$route}{$verb}{security} = [{ mtauth => [] }];
-        }
         if (@path_parameters) {
             $response->{paths}{$route}{$verb}{parameters} = \@path_parameters;
         }

@@ -621,14 +621,14 @@ MT->config( 'EmbedDomainWhitelist', 'example.com' );
 my $taint_embed = <<__HTML__;
 Content
 <a href="http://example.com/foo.html" onclick="alert('test');">Foo</a>
-<script type="text/javascript">
+<script>
 alert('test');
 </script>
 __HTML__
 my $sanitized_embed = <<__HTML__;
 Content
 <a href="http://example.com/foo.html">Foo</a>
-<script type="text/javascript"></script>
+<script></script>
 __HTML__
 is( sanitize_embed($taint_embed), $sanitized_embed, 'sanitize_embed()' );
 

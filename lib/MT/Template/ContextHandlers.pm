@@ -1327,7 +1327,7 @@ sub build_date {
             $mo--;
             my $fds = format_ts( $args->{'format'}, $ts, $blog, $lang );
             my $js = <<EOT;
-<script type="text/javascript">
+<script>
 /* <![CDATA[ */
 document.write(mtRelativeDate(new Date($y,$mo,$d,$h,$m,$s), '$fds'));
 /* ]]> */
@@ -3261,7 +3261,7 @@ sub _hdlr_app_widget {
     my $return_args = $app->make_return_args;
     $return_args = encode_html($return_args);
     my $cgi = $app->uri;
-    if ( $hosted_widget && ( !$insides !~ m/<form\s/i ) ) {
+    if ( $hosted_widget && ( $insides !~ m/<form(?:\s|>)/i ) ) {
         $insides = <<"EOT";
         <form id="$id-form" method="post" action="$cgi">
         <input type="hidden" name="__mode" value="update_widget_prefs" />
@@ -4076,12 +4076,33 @@ sub _hdlr_app_svg_icon {
         $size_class = " mt-icon--$size";
     }
 
-    my $static_uri = MT->static_path;
+    my $app = MT->app;
+    my %param = (
+        id    => $id,
+        title => $title_attr,
+        color => $color_class_suffix,
+        size  => $size_class,
+    );
 
-    qq{<svg role="img" class="mt-icon${color_class_suffix}${size_class}">$title_attr<use xlink:href="${static_uri}images/sprite.svg#$id"></use></svg>};
+    my $tmpl = $app->load_core_tmpl( 'cms/include/svg_icon.tmpl', \%param );
+    return $ctx->build( $tmpl->output() );
 }
 
 ###########################################################################
+
+=head2 App:EmbedJsonResponse
+
+Returns a json for embedding a response in a template
+
+B<Attributes:>
+
+=over 4
+
+=item * mode (required)
+
+=back
+
+=cut
 
 sub _hdlr_app_embed_json_response {
     my ($ctx, $args, $cond) = @_;
@@ -4226,6 +4247,7 @@ sub _hdlr_app_stylesheet {
 
     return sprintf('<link rel="stylesheet" href="%s?v=%s">', $stylesheet_path, $version);
 }
+
 
 ###########################################################################
 

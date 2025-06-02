@@ -3,7 +3,7 @@
     BEF.Header = function () { BEF.apply(this, arguments) };
     $.extend(BEF.Header, {
         label: trans('Heading'),
-        icon_url: StaticURI + 'images/sprite.svg#ic_header',
+        icon_url: StaticURI + 'images/admin2025/sprite.svg#ic_header',
         type: 'heading',
         create_button: function () {
           return $('<button type="button" class="btn btn-contentblock">' + this.get_icon() + this.label + '</button>');

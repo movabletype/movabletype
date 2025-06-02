@@ -622,7 +622,7 @@ class MTViewer extends Smarty {
                 list($xx, $y, $mo, $d, $h, $m, $s) = $match;
                 $mo--;
                 $js = <<<EOT
-<script type="text/javascript">
+<script>
 /* <![CDATA[ */
 document.write(mtRelativeDate(new Date($y,$mo,$d,$h,$m,$s), '$fds'));
 /* ]]> */

@@ -77,7 +77,7 @@
       <div class="mt-collapse__all">
         <a data-bs-toggle="collapse" onclick={ toggleAll } href="" aria-expanded="{ isExpanded ? 'true' : 'false' }" aria-controls="" class="d-inline-block">
           { isExpanded ? trans('Close all') : trans('Edit all') }
-          <ss title="{ trans('Edit') }" class="mt-icon--secondary expand-all-icon" href="{ StaticURI }images/sprite.svg#ic_collapse"></ss>
+          <ss title="{ trans('Edit') }" class="mt-icon--secondary expand-all-icon" href="{ StaticURI }images/admin2025/sprite.svg#ic_collapse"></ss>
         </a>
       </div>
       <div class="mt-draggable__area" style="height:400px;" ondrop={ onDrop } ondragover={ onDragOver } ondragleave={ onDragLeave }>
@@ -90,7 +90,7 @@
       <div class="mt-collapse__all">
         <a data-bs-toggle="collapse" onclick={ toggleAll } href=".mt-collapse__content" aria-expanded="{ isExpanded ? 'true' : 'false' }" aria-controls="" class="d-inline-block">
           { isExpanded ? trans('Close all') : trans('Edit all') }
-          <ss title="{ trans('Edit') }" class="mt-icon--secondary expand-all-icon" href="{ StaticURI }images/sprite.svg#ic_collapse"></ss>
+          <ss title="{ trans('Edit') }" class="mt-icon--secondary expand-all-icon" href="{ StaticURI }images/admin2025/sprite.svg#ic_collapse"></ss>
         </a>
       </div>
     </fieldset>

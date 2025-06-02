@@ -7,10 +7,10 @@
 </mt:setvarblock>
 
 <mt:setvarblock name="page_title">
-<mt:if name="version_warning">
-  <span id="version-warning-header"><__trans phrase="Welcome to Movable Type"></span>
+<mt:if name="has_warning">
+  <span id="has-warning-header"><__trans phrase="Welcome to Movable Type"></span>
 </mt:if>
-<span id="welcome-header"<mt:if name="version_warning"> style="display: none;"</mt:if>><__trans phrase="Create Your Account"></span>
+<span id="welcome-header"<mt:if name="has_warning"> style="display: none;"</mt:if>><__trans phrase="Create Your Account"></span>
 </mt:setvarblock>
 
 <mt:setvar name="complete" value="1">
@@ -19,19 +19,24 @@
 
 <mt:setvarblock name="page_content">
 <div class="upgrade">
-<mt:if name="version_warning">
-  <div class="warning" id="version-warning">
+<mt:if name="has_warning">
+  <div class="warning" id="has-warning">
+  <mt:if name="version_warning">
     <p><__trans phrase="The version of Perl installed on your server ([_1]) is lower than the minimum supported version ([_2])." params="<mt:var name="perl_version">%%<mt:var name="perl_minimum">"></p>
     <p><__trans phrase="While Movable Type may run, it is an <strong>untested and unsupported environment</strong>.  We strongly recommend upgrading to at least Perl [_1]." params="<mt:var name="perl_minimum">"></p>
+  </mt:if>
+  <mt:if name="lacks_core_modules">
+    <p><__trans phrase="Movable Type does not work because your Perl does not have some of the core modules. Please ask your system administrator to install perl (or perl-core) properly."></p>
+  </mt:if>
     <p><__trans phrase="Do you want to proceed with the installation anyway?"></p>
     <div class="actions-bar text-end">
       <input type="hidden" name="continue" value="1" />
       <button
-         onclick="dismiss('version-warning'); show('welcome'); return false;"
+         onclick="dismiss('has-warning'); show('welcome'); return false;"
          type="submit"
          accesskey="s"
          title="<__trans phrase="Yes (s)">"
-         class="action primary button">
+         class="action primary button btn btn-primary">
         <__trans phrase="Yes">
       </button>
       <button
@@ -39,14 +44,14 @@
          type="submit"
          accesskey="x"
          title="<__trans phrase="View MT-Check (x)">"
-         class="action button">
+         class="action button btn btn-default">
         <__trans phrase="No">
       </button>
     </div>
   </div>
   </mt:if>
 
-  <div id="welcome"<mt:if name="version_warning"> style="display: none;"</mt:if>>
+  <div id="welcome"<mt:if name="has_warning"> style="display: none;"</mt:if>>
     <p class="intro"><__trans phrase="Please create an administrator account for your system. When you are done, Movable Type will initialize your database."></p>
   <mt:if name="error">
     <mtapp:statusmsg
@@ -126,7 +131,7 @@
          label_class="top-label">
         <input type="password" id="admin_password_confirm" class="form-control text password" name="admin_password_confirm" />
       </mtapp:setting>
-      <script type="text/javascript">
+      <script>
       /* <![CDATA[ */
         <$mt:PasswordValidation form="install_form" password="admin_password" username="admin_username"$>
       /* ]]> */
@@ -174,7 +179,7 @@
 </mt:setvarblock>
 
 <mt:setvarblock name="js_include" append="1">
-<script type="text/javascript">
+<script>
 /* <![CDATA[ */
 function dismiss(id) {
     jQuery('#'+id).hide();

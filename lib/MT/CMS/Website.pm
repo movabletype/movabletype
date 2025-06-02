@@ -304,7 +304,7 @@ sub edit {
 
     if ( !$param->{id} ) {
         if ( !$param->{site_url} ) {
-            $param->{suggested_site_url} = $app->base . '/';
+            $param->{suggested_site_url} = $app->base(NoHostCheck => 1) . '/';
             $param->{suggested_site_url} =~ s!/cgi(?:-bin)?(/.*)?$!/!;
             $param->{suggested_site_url} =~ s!/mt/?$!/!i;
             $param->{site_url} = $param->{suggested_site_url};
@@ -745,13 +745,7 @@ sub cms_pre_load_filtered_list {
             $blog_ids = undef;
             last;
         }
-        my $website = MT->model('website')->load( $perm->blog_id );
-        if ( $website && $website->class eq 'website' ) {
-            push @$blog_ids, $perm->blog_id;
-        }
-        elsif ( $website && $website->class eq 'blog' ) {
-            push @$blog_ids, $website->parent_id if $website->parent_id;
-        }
+        push @$blog_ids, $perm->blog_id;
     }
 
     $terms->{id} = $blog_ids

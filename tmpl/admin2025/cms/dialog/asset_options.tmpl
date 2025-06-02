@@ -1,10 +1,10 @@
 <mt:unless name="direct_asset_insert"><mt:setvarblock name="screen_type">dialog-screen new-asset</mt:setvarblock></mt:unless>
 <mt:setvarblock name="page_title"><__trans phrase="File Options"></mt:setvarblock>
 <mt:setvarblock name="html_head" append="1">
-  <mtapp:script type="text/javascript" path="js/tc/focus.js">
-  <mtapp:script type="text/javascript" path="js/tc/tagcomplete.js">
-  <mtapp:script type="text/javascript" path="js/tc/client.js">
-  <script type="text/javascript">
+  <mtapp:script path="js/tc/focus.js">
+  <mtapp:script path="js/tc/tagcomplete.js">
+  <mtapp:script path="js/tc/client.js">
+  <script>
     /* <![CDATA[ */
     var tag_delim = '<mt:var name="auth_pref_tag_delim">';
 
@@ -185,7 +185,7 @@
 
 </form>
 
-<script type="text/javascript">
+<script>
   /* <![CDATA[ */
   function cancel_click(btn) {
       var frm = btn.form;

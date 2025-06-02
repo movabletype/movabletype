@@ -66,14 +66,14 @@
 </mt:setvarblock>
 
 <mt:setvarblock name="js_include" append="1">
-<mtapp:script type="text/javascript" path="js/tc.js">
-<mtapp:script type="text/javascript" path="js/tc/client.js">
+<mtapp:script path="js/tc.js">
+<mtapp:script path="js/tc/client.js">
 <mt:if name="use_jquery_json">
-<mtapp:script type="text/javascript" path="jquery/jquery.json.js">
+<mtapp:script path="jquery/jquery.json.js">
 </mt:if>
 
 <mt:unless name="up_to_date">
-    <script type="text/javascript">
+    <script>
     /* <![CDATA[ */
     function upgradeDone(success) {
         var progress = getByID("progressbar");

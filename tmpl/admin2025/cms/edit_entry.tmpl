@@ -305,7 +305,7 @@
    id="category"
    label="$container_label"
    label_class="$container_label_class">
-  <script type="text/javascript">
+  <script>
   /* <![CDATA[ */
       MT.App.selectedCategoryList = <$mt:if name="selected_category_loop"><$mt:var name="selected_category_loop" to_json="1"$><mt:else>[]</mt:if>;
       MT.App.objectType = '<mt:var name="object_type" escape="js">';
@@ -1048,7 +1048,7 @@ div.mce-notification-error {
 
 <mt:setvarblock name="js_include" append="1">
   <!--// this MUST loaded after mt.js // -->
-  <mtapp:script type="text/javascript" path="js/edit.js">
+  <mtapp:script path="js/edit.js">
 </mt:setvarblock>
 
 <mt:unless name="editors">
@@ -1062,7 +1062,7 @@ div.mce-notification-error {
 </mt:unless>
 
 <mt:setvarblock name="html_head" append="1">
-<script type="text/javascript">
+<script>
     /* <![CDATA[ */
     if (typeof(Editor) == 'undefined') {
         Editor = {};
@@ -1085,10 +1085,10 @@ div.mce-notification-error {
 
 <mt:setvarblock name="html_head" prepend="1">
   <mtapp:stylesheet path="css/editor/common.css">
-  <mtapp:script type="text/javascript" path="js/tc/focus.js">
-  <mtapp:script type="text/javascript" path="js/tc/tagcomplete.js">
-  <mtapp:script type="text/javascript" path="js/tc/client.js">
-  <script type="text/javascript">
+  <mtapp:script path="js/tc/focus.js">
+  <mtapp:script path="js/tc/tagcomplete.js">
+  <mtapp:script path="js/tc/client.js">
+  <script>
     /* <![CDATA[ */
       var orig_text_format;
       var cur_text_format = '<mt:var name="convert_breaks" escape="js">';
@@ -1305,22 +1305,6 @@ div.mce-notification-error {
           return tags;
       }
 
-      document.onkeyup = function(e) {
-          if (!e) e = window.event;
-          if (e.ctrlKey) {
-              if (e.keyCode == 80) {
-                  if (e.shiftKey) {
-                      getByID('status').value = 1; // ctrl-shift-p: unpublish
-                  } else {
-                      getByID('status').value = 2; // ctrl-p: publish
-                  }
-              }
-              if (e.keyCode == 85) {
-                  getByID('status').value = 1; // ctrl-u: unpublish
-              }
-          }
-      };
-
       var docs = new Array();
       <mt:loop name="text_filters">
       docs['<$mt:var name="filter_key" escape="js"$>'] = '<$mt:var name="filter_docs" escape="js"$>';
@@ -1442,7 +1426,7 @@ div.mce-notification-error {
 
 <mt:setvarblock name="page_content">
 <mt:if name="dirty">
-  <script type="text/javascript">
+  <script>
     /* <![CDATA[ */
       MT.App.dirty = true;
     /* ]]> */

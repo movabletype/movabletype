@@ -12,7 +12,7 @@
       >
         <ss title="{ trans('Previous') }"
           class="mt-icon--inverse mt-icon--sm"
-          href="{ StaticURI + 'images/sprite.svg#ic_tri-left' }"
+          href="{ StaticURI + 'images/admin2025/sprite.svg#ic_tri-left' }"
         >
         </ss>
       </a>
@@ -158,7 +158,7 @@
       >
         <ss title="{ trans('Next') }"
           class="mt-icon--inverse mt-icon--sm"
-          href="{ StaticURI + 'images/sprite.svg#ic_tri-right' }"
+          href="{ StaticURI + 'images/admin2025/sprite.svg#ic_tri-right' }"
         >
         </ss>
       </a>

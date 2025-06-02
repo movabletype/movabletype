@@ -278,14 +278,17 @@ sub _hdlr_tags {
     my ( %blog_terms, %blog_args );
     $ctx->set_blog_load_context( $args, \%blog_terms, \%blog_args )
         or return $ctx->error( $ctx->errstr );
+    my $ct;
     if ( $type eq 'content_type' ) {
-        $ctx->set_content_type_load_context( $args, $cond, \%blog_terms,
-            \%blog_args )
-            or return;
+        my $class   = MT->model('content_type');
+        my $blog_id = $blog_terms{blog_id};
+        if ($args->{content_type}) {
+            $ct = $class->load_by_id_or_name( $args->{content_type}, $blog_id );
+            return $ctx->_no_content_type_error unless $ct;
+        }
     }
-    local $ctx->{__stash}{content_type_id}
-        = delete $blog_terms{content_type_id}
-        if $blog_terms{content_type_id};
+    local $ctx->{__stash}{content_type_id} = $ct->id if $ct;
+    local $ctx->{__stash}{content_type}    = $ct     if $ct;
 
     my $include_private = defined $args->{include_private}
         && $args->{include_private} == 1 ? 1 : 0;

@@ -251,7 +251,7 @@ if ( !$view ) {
     <meta http-equiv="content-language" content="$lang" />
     <meta name='robots' content='noindex,nofollow' />
     <title><__trans phrase="Movable Type System Check"> [mt-check.cgi]</title>
-    <style type=\"text/css\">
+    <style>
         <!--
             body {
                 position: relative;
@@ -390,7 +390,7 @@ if ( !$view ) {
             }
         //-->
     </style>
-    <script type="text/javascript">
+    <script>
         function showException(i) {
             var exception = document.getElementById("exception-" + i);
             exception.setAttribute("style", "display: block;");
@@ -497,11 +497,13 @@ eval {
     require MT::Cloud::App::CMS;
 };
 if ( $@ ) {
+    require MT::Util::SystemCheck;
+    my $os = MT::Util::SystemCheck->check_os_version(\my %param);
 print_encode( trans_templ(<<INFO) );
 <ul id="path-info" class="list-unstyled">
 	<li><strong><__trans phrase="Current working directory:"></strong> <code>$cwd</code></li>
 	<li><strong><__trans phrase="MT home directory:"></strong> <code>$ENV{MT_HOME}</code></li>
-	<li><strong><__trans phrase="Operating system:"></strong> $^O</li>
+	<li><strong><__trans phrase="Operating system:"></strong> $os</li>
 	<li><strong><__trans phrase="Perl version:"></strong> <code>$ver</code></li>
 	<li><strong><__trans phrase="Perl include path:"></strong><br /> <code>$inc_path</code></li>
 INFO

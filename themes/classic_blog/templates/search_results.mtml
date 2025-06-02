@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <script type="text/javascript">
+    <script>
     /* <![CDATA[ */
     var user = <$mt:UserSessionState$>;
     /* ]]> */
@@ -9,7 +9,7 @@
     <$mt:Include module="<__trans phrase="HTML Head">"$>
     <title><$mt:BlogName encode_html="1"$>: <__trans phrase="Search Results"></title>
     <mt:Ignore>Below Javascript adds ajax search capability</mt:Ignore>
-    <script type="text/javascript">
+    <script>
     /* <![CDATA[ */
     <mt:IfMoreResults>
     function getResults(page) {
@@ -145,7 +145,7 @@
 
 <mt:Ignore><!-- Used with the ajax search capability of the new search class --></mt:Ignore>
 <mt:IfMoreResults>
-<script type="text/javascript">
+<script>
 <!--
 var div = document.getElementById('search-results');
 var results = {

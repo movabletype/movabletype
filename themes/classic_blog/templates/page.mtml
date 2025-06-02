@@ -5,7 +5,7 @@
     <$mt:EntryTrackbackData$>
     <$mt:Var name="comments_per_page" value="50"$>
     <mt:If tag="EntryCommentCount" gt="$comments_per_page">
-	    <script type="text/javascript">
+	    <script>
          MT.entryID = <$mt:PageID$>;
          MT.commentsPerPage = <$mt:Var name="comments_per_page"$>;
          MT.entryCommentCount = <$mt:EntryCommentCount$>;

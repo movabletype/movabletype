@@ -553,12 +553,12 @@ div.mce-notification-error {
 
 <mt:setvarblock name="js_include" append="1">
   <!--// this MUST loaded after mt.js // -->
-  <mtapp:script type="text/javascript" path="js/edit.js">
+  <mtapp:script path="js/edit.js">
 
 <mt:unless name="optimize_ui">
-  <mtapp:script type="text/javascript" path="jqueryui/jquery.ui.touch-punch.js">
+  <mtapp:script path="jqueryui/jquery.ui.touch-punch.js">
 <mt:else>
-  <mtapp:script type="text/javascript" path="jqueryui/jquery.ui.touch-punch.min.js">
+  <mtapp:script path="jqueryui/jquery.ui.touch-punch.min.js">
 </mt:unless>
 
   <script>
@@ -592,9 +592,9 @@ div.mce-notification-error {
 <mtapp:stylesheet path="css/editor/common.css">
 <mtapp:stylesheet path="css/content-type.css">
 
-<mtapp:script type="text/javascript" path="js/tc/client.js">
+<mtapp:script path="js/tc/client.js">
 
-<script type="text/javascript">
+<script>
 function highlightSwitch(selection) {
     var descriptionObject = getByID('created_on-label');
     var highlightObject = getByID('created_on-date');
@@ -621,7 +621,7 @@ Template.templates.autoSave = '<mt:section encode_js="1">
 </mt:setvarblock>
 
 <mt:setvarblock name="js_include" append="1">
-<mtapp:script type="text/javascript" path="js/cms.js">
+<mtapp:script path="js/cms.js">
 </mt:setvarblock>
 
 <mt:setvarblock name="page_content">

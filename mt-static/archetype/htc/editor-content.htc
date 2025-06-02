@@ -3,7 +3,7 @@
 <public:attach event="onfocus" onevent="selectImmutable()" /> <!-- use focusin? -->
 <public:attach event="onmousedown" onevent="selectImmutable()" />
 <public:attach event="onmousemove" onevent="dragImmutable()" />
-<script type="text/javascript">
+<script>
     function getImmutable( node ) {
         var immutable = null;
         while( node ) {

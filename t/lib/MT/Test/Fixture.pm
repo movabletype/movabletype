@@ -29,6 +29,7 @@ sub prepare {
 
     $objs ||= { __first_time => 1 };
     $class->prepare_author($spec, $objs);
+    $class->prepare_group($spec, $objs);
     $class->prepare_website($spec, $objs);
     $class->prepare_blog($spec, $objs);
     $class->prepare_asset($spec, $objs);
@@ -119,6 +120,24 @@ sub prepare_author {
     }
     if ($objs->{__first_time} and @author_names == 1) {
         $objs->{author_id} = $objs->{author}{ $author_names[0] }->id;
+    }
+}
+
+sub prepare_group {
+    my ($class, $spec, $objs) = @_;
+
+    if (ref $spec->{group} eq 'ARRAY') {
+        for my $item (@{ $spec->{group} }) {
+            my %arg = ref $item eq 'HASH' ? %$item : (name => $item);
+            if (exists $objs->{group}{ $arg{name} }) {
+                _note_or_croak("group: $arg{name} already exists");
+                next;
+            }
+            $arg{display_name} ||= $arg{name};
+            my $roles = delete $arg{roles};                        ## not for now
+            my $group = MT::Test::Permission->make_group(%arg);
+            $objs->{group}{ $group->name } = $group;
+        }
     }
 }
 
@@ -234,6 +253,7 @@ sub prepare_image {
                     image_width  => $info->{ImageWidth},
                     image_height => $info->{ImageHeight},
                     mime_type    => $info->{MIMEType},
+                    label        => $name,
                     %$item,
                 );
 
@@ -290,6 +310,7 @@ sub prepare_asset {
                     url       => "%s/assets/$name",
                     file_path => $file,
                     file_ext  => $ext,
+                    label     => $name,
                     %$item,
                 );
 
@@ -661,6 +682,7 @@ sub prepare_content_type {
                 %ct_arg     = %$item;
                 @field_spec = @{ delete $ct_arg{fields} || [] };
             }
+            my $data_label = delete $ct_arg{data_label};
 
             my $blog_id = _find_blog_id($objs, \%ct_arg)
                 or croak "blog_id is required: content_type: $ct_name";
@@ -746,6 +768,11 @@ sub prepare_content_type {
                     };
             }
             $ct->fields(_fix_fields(\@fields));
+            if ($data_label) {
+                my $cf_for_data_label = $objs->{content_type}{$ct_name}{content_field}{$data_label}
+                    or croak "unknown data_label field: $data_label";
+                $ct->data_label($cf_for_data_label->unique_id);
+            }
             $ct->save;
         }
     }
@@ -864,6 +891,10 @@ sub prepare_content_data {
                 if ($status =~ /\w+/) {
                     require MT::ContentStatus;
                     $arg{status} = MT::ContentStatus::status_int($status);
+                }
+
+                if (ref $spec->{content_type}{$ct_name} eq 'HASH' && $spec->{content_type}{$ct_name}{data_label}) {
+                    delete $arg{label};
                 }
 
                 my $cd = MT::Test::Permission->make_content_data(%arg);
@@ -992,6 +1023,7 @@ sub prepare_template {
     my ($class, $spec, $objs) = @_;
     return unless $spec->{template};
 
+    my $needs_update;
     if (ref $spec->{template} eq 'ARRAY') {
         my @widgetsets;
         for my $item (@{ $spec->{template} }) {
@@ -1070,6 +1102,7 @@ sub prepare_template {
                 }
 
                 my $tmpl_map = MT::Test::Permission->make_templatemap(%$map);
+                $needs_update = 1;
 
                 push @{ $objs->{templatemap}{ $tmpl->name } ||= [] }, $tmpl_map;
 
@@ -1087,6 +1120,13 @@ sub prepare_template {
             my $obj = $objs->{template}{$widgetset->{blog_id}}{$widgetset->{name}};
             $obj->modulesets(MT::Template->widgets_to_modulesets(\@modulesets, $widgetset->{blog_id}));
             $obj->save_widgetset;
+        }
+    }
+    if ($needs_update) {
+        for my $type (qw(website blog)) {
+            for my $site (values %{$objs->{$type} || {}}) {
+                $site->refresh;    # to update archive_types
+            }
         }
     }
 }

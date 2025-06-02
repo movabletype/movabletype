@@ -166,6 +166,10 @@ sub class_label_plural {
 
 sub to_hash {
     my $self = shift;
+
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::warning(since => '8.6.0');
+
     my $hash = $self->SUPER::to_hash();
 
     $hash->{'content_data.content_html'} = $self->_generate_content_html;
@@ -190,7 +194,11 @@ sub to_hash {
 }
 
 sub _generate_content_html {
-    my $self           = shift;
+    my $self = shift;
+
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::warning(since => '8.6.0');
+
     my $field_registry = MT->registry('content_field_types');
 
     my $html = '';
@@ -1698,6 +1706,7 @@ sub preview_data {
     for my $f ( @{ $content_type->fields } ) {
         next unless defined $f->{type} && $f->{type} ne '';
         next unless $registry->{ $f->{type} };
+        next unless $f->{id};
 
         my $handler;
         $handler = $registry->{ $f->{type} }{search_result_handler} if !!$self->{__search_term};

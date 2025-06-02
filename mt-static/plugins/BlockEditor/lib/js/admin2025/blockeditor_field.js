@@ -7,7 +7,7 @@
         this.icon_class = '';
         this.type = '';
         this.create_button = function () {
-          return $('<button type="button" class="btn btn-contentblock" data-is_options="1"><svg role="img" class="mt-icon"><title>' + this.label + '</title><use xlink:href="' + StaticURI + 'images/sprite.svg#ic_header"></use></svg>' + this.label + '</button>');
+          return $('<button type="button" class="btn btn-contentblock" data-is_options="1"><svg role="img" class="mt-icon"><title>' + this.label + '</title><use xlink:href="' + StaticURI + 'images/admin2025/sprite.svg#ic_header"></use></svg>' + this.label + '</button>');
       };
     };
     $.extend(MT.BlockEditorField.prototype, {

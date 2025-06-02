@@ -197,20 +197,13 @@
         })
 
         editor.on('drop paste', function (e) {
-            if (
-              !MT.Editor.TinyMCE.config['plugin_mt_can_upload'] ||
-              editor.options.get('inline')
-            ) {
-                return true;
-            }
-
             var files = []
             var dataTransfer = e.dataTransfer || e.clipboardData
             for (var i = 0; i < dataTransfer.items.length; i++) {
                 var item = dataTransfer.items[i]
                 if (item.kind === 'string' && item.type === 'text/plain') {
-                    var plainTextContent = item.getData('text/plain')
-                    if (!plainTextContent && !plainTextContent.startsWith('file://')) {
+                    var plainTextContent = dataTransfer.getData('text/plain')
+                    if (plainTextContent && !plainTextContent.startsWith('file://')) {
                         return true; // paste as text
                     }
                 }
@@ -226,10 +219,17 @@
                 return true;
             }
 
+            if (
+              !MT.Editor.TinyMCE.config['plugin_mt_can_upload'] ||
+              editor.options.get('inline')
+            ) {
+                return false;
+            }
+
             var blogId = $('[name=blog_id]').val() || 0
 
             editor.execCommand('mtSaveBookmark')
-            openDialog('dialog_asset_modal', '_type=asset&amp;edit_field=' + editor.id + '&amp;blog_id=' + blogId + '&amp;dialog_view=1&amp;filter=class&amp;filter_val=image&amp;can_multi=1')
+            openDialog('dialog_asset_modal', '_type=asset&amp;edit_field=' + editor.id + '&amp;blog_id=' + blogId + '&amp;dialog_view=1&amp;filter=class&amp;filter_val=image&amp;can_multi=1&amp;require_type=image')
 
             var dialogIframe = document.querySelector(
                 "#mt-dialog-iframe"
@@ -360,7 +360,7 @@
             tooltip: 'insert_image',
             onAction: function () {
                 editor.execCommand('mtSaveBookmark')
-                openDialog('dialog_asset_modal', '_type=asset&amp;edit_field=' + id + '&amp;blog_id=' + blogId + '&amp;dialog_view=1&amp;filter=class&amp;filter_val=image&amp;can_multi=1')
+                openDialog('dialog_asset_modal', '_type=asset&amp;edit_field=' + id + '&amp;blog_id=' + blogId + '&amp;dialog_view=1&amp;filter=class&amp;filter_val=image&amp;can_multi=1&amp;require_type=image')
             }
         })
 

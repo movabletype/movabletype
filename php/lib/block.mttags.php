@@ -57,6 +57,7 @@ function smarty_block_mttags($args, $content, &$ctx, &$repeat) {
             if ($ctypes) {
                 $mapper = function ($ct) { return $ct->id; };
                 $args['content_type_id'] = array_map($mapper, $ctypes);
+                $ctx->stash('content_type', $ctypes[0]);
             } else {
                 $repeat = 0;
                 return $ctx->error($ctx->mt->translate('No Content Type could be found.'));
