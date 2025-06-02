@@ -14433,6 +14433,11 @@ li.nav-item, .mt-sharedPreviewNav .mt-sharedPreviewNav__rightNav li.mt-sharedPre
   background-color: rgba(0, 0, 0, 0.5);
   z-index: var(--modal-z-index);
 }
+@media (max-width: 767.98px) {
+  .search-button-modal-overlay {
+    display: none;
+  }
+}
 
 .search-button-modal {
   position: fixed;
@@ -14449,6 +14454,11 @@ li.nav-item, .mt-sharedPreviewNav .mt-sharedPreviewNav__rightNav li.mt-sharedPre
   border-color: #E0E0E0;
   box-shadow: 0px 3px 8px rgba(0, 0, 0, 0.25);
   border-radius: 0px 4px 4px 0px;
+}
+@media (max-width: 767.98px) {
+  .search-button-modal {
+    display: none;
+  }
 }
 .search-button-modal .modal-header {
   justify-content: flex-end;
