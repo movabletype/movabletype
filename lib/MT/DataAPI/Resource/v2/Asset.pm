@@ -48,10 +48,10 @@ sub fields {
                     }
 
                     $hash->{meta} = +{
-                        width => $obj->can('image_width')
+                        width => ($obj->can('image_width') && defined $obj->image_width)
                         ? $obj->image_width + 0
                         : undef,
-                        height => $obj->can('image_height')
+                        height => ($obj->can('image_height') && defined $obj->image_height)
                         ? $obj->image_height + 0
                         : undef,
                         fileSize => $size,
