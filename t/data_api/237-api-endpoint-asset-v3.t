@@ -47,6 +47,7 @@ $test_env->prepare_fixture(sub {
             email            => 'uploader@example.com',
             url              => 'http://example.com/',
             userpic_asset_id => 3,
+            api_password     => 'seecret',
             auth_type        => 'MT',
             created_on       => '19780131074500',
         }

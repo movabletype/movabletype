@@ -19,7 +19,6 @@ use constant { ## no critic
     MT_MAGIC_TOKEN_NS   => 'fed9a282-57d5-456b-9eb5-defae08e03f2',
     MT_SESSION_NS       => 'fb57b748-6a3d-4702-bb16-1fc196474cbf',
     MT_SITE_SECRET_NS   => '253cf8e5-7f6e-49f3-adf6-856031564b88',
-    MT_API_PASSWORD_NS  => 'fe936065-0065-4c25-92db-b4a6bee00467',
 };
 
 our @EXPORT_OK = qw(
@@ -31,7 +30,6 @@ our @EXPORT_OK = qw(
     MT_MAGIC_TOKEN_NS
     MT_SESSION_NS
     MT_SITE_SECRET_NS
-    MT_API_PASSWORD_NS
 );
 
 sub create_uuid {
@@ -89,12 +87,6 @@ sub create_magic_token {
 
 sub create_session_id {
     create_sha1_id( MT_SESSION_NS(), @_ );
-}
-
-sub create_api_password {    ## 27
-    my $password = MT::Util::Digest::SHA::sha1_base64(_random_bytes_with_namespaces(MT_API_PASSWORD_NS(), @_));
-    $password =~ s/\+/./g;
-    $password;
 }
 
 1;
