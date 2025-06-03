@@ -4,7 +4,6 @@ type SiteListButtonProps = {
   magicToken: string;
   limit: number;
   open: boolean;
-  buttonRef: HTMLElement;
   anchorRef: HTMLElement;
 };
 

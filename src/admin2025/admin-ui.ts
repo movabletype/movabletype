@@ -42,14 +42,11 @@ const siteListButtonTargets = document.querySelectorAll<HTMLElement>(
 );
 if (siteListButtonTargets.length > 0 && magicToken !== "") {
   siteListButtonTargets.forEach((siteListButtonTarget) => {
-    const siteListButtonAnchor =
-      siteListButtonTarget.getElementsByTagName("a")[0];
     svelteMountSiteListButton(siteListButtonTarget, {
       magicToken: magicToken,
       limit: Number.parseInt(limit),
       open: false,
-      buttonRef: siteListButtonTarget,
-      anchorRef: siteListButtonAnchor,
+      anchorRef: siteListButtonTarget,
     });
   });
 }
@@ -82,7 +79,6 @@ if (
               (contentType) => contentType.can_create === 1,
             ),
             open: false,
-            buttonRef: createButtonTarget,
             anchorRef: createButtonTarget,
             containerRef: modalContainerTarget,
           },
@@ -91,8 +87,6 @@ if (
     }
     // Search button
     if (searchButtonTarget !== null) {
-      const searchButtonAnchor =
-        searchButtonTarget.getElementsByTagName("a")[0];
       svelteMountSearchButton(searchButtonTarget, {
         blogId: blogId,
         magicToken: magicToken,
@@ -100,8 +94,7 @@ if (
           (contentType) => contentType.can_search === 1,
         ),
         open: false,
-        buttonRef: searchButtonTarget,
-        anchorRef: searchButtonAnchor,
+        anchorRef: searchButtonTarget,
       });
     }
     // Search Form
