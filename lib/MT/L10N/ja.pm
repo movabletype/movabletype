@@ -1173,7 +1173,7 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/CMS/Category.pm
 	'Category Set' => 'カテゴリセット',
 	'Create Category Set' => 'カテゴリセットの作成',
-	'Create [_1]' => '新しい[_1]',
+	'Create [_1]' => '[_1]の作成',
 	'Edit [_1]' => '[_1]の編集',
 	'Failed to update [_1]: Some of [_2] were changed after you opened this page.' => 'いくつかの[_2]がすでに更新されていたため、[_1]の更新に失敗しました。',
 	'Invalid category_set_id: [_1]' => '無効なカテゴリセットIDです: [_1]',
