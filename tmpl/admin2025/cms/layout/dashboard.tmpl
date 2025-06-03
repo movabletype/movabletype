@@ -13,7 +13,9 @@
 
       <div class="mt-mainContentBody">
         <div class="mt-mainContent" style="min-width: 0;">
-          <mt:Include name="include/breadcrumbs.tmpl">
+          <mt:if name="scope_type" ne="user">
+            <mt:Include name="include/breadcrumbs.tmpl">
+          </mt:if>
 
           <mt:if name="scope_type" ne="user">
             <mt:include name="include/mobile_primary_menu.tmpl">
