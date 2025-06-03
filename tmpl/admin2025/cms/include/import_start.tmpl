@@ -16,7 +16,10 @@
   <div class="<mt:if name="has_menu">mt-mainContentWrapper</mt:if>">
     <div class="mt-mainContentBody">
       <div class="mt-mainContent" style="overflow: hidden">
-        <mt:Include name="include/breadcrumbs.tmpl">
+        <div class="mt-main_content_header">
+          <mt:include name="include/mobile_primary_menu.tmpl">
+          <mt:Include name="include/breadcrumbs.tmpl">
+        </div>
 
         <div class="import-process">
           <div id="progressbar" class="mt-progress mb-3"><div class="progress" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar progress-bar-striped progress-bar-animated" style="width: 100%;"></div></div></div>

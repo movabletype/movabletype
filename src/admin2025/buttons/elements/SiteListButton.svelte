@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import SVG from "../../svg/elements/SVG.svelte";
+  import SVG from "../../../svg/elements/SVG.svelte";
   import { portal } from "svelte-portal";
   import { isOuterClick } from "../outerClick";
   import { fetchSites } from "src/utils/fetch-sites";
@@ -128,6 +128,17 @@
           <div class="site-list-title">
             <span>({window.trans("[_1]Site", totalCount.toString())})</span>
             <p>{window.trans("Site List")}</p>
+            <div class="d-block d-md-none">
+              <button
+                type="button"
+                class="close"
+                data-dismiss="modal"
+                aria-label="Close"
+                on:click={handleClose}
+              >
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
           </div>
 
           <div class="site-list-actions">
@@ -160,47 +171,51 @@
                 disabled={page === pageMax}>&gt;&gt;</button
               >
             </div>
-            <div class="site-type-filter">
-              <select
-                bind:value={siteType}
-                on:change={filterApply}
-                class="custom-select form-control form-select"
-              >
-                <option value="parent_sites"
-                  >{window.trans("Parent Sites")}</option
+            <div class="site-filter-actions">
+              <div class="site-type-filter">
+                <select
+                  bind:value={siteType}
+                  on:change={filterApply}
+                  class="custom-select form-control form-select"
                 >
-                <option value="parent_and_child_sites"
-                  >{window.trans("Parent and child sites")}</option
-                >
-                <option value="child_sites_only"
-                  >{window.trans("Only child sites")}</option
-                >
-              </select>
-            </div>
-            <div class="site-name-filter">
-              <input
-                type="text"
-                placeholder={window.trans("Filter by site name")}
-                bind:value={filterSiteName}
-                on:keydown={(e) => e.key === "Enter" && filterApply()}
-              />
-              <button on:click={filterApply}>
-                <SVG
-                  title={window.trans("Search")}
-                  class="mt-icon"
-                  href={`${window.StaticURI}images/admin2025/sprite.svg#ic_search`}
+                  <option value="parent_sites"
+                    >{window.trans("Parent Sites")}</option
+                  >
+                  <option value="parent_and_child_sites"
+                    >{window.trans("Parent and child sites")}</option
+                  >
+                  <option value="child_sites_only"
+                    >{window.trans("Only child sites")}</option
+                  >
+                </select>
+              </div>
+              <div class="site-name-filter">
+                <input
+                  type="text"
+                  placeholder={window.trans("Filter by site name")}
+                  bind:value={filterSiteName}
+                  on:keydown={(e) => e.key === "Enter" && filterApply()}
                 />
+                <button on:click={filterApply}>
+                  <SVG
+                    title={window.trans("Search")}
+                    class="mt-icon"
+                    href={`${window.StaticURI}images/admin2025/sprite.svg#ic_search`}
+                  />
+                </button>
+              </div>
+            </div>
+            <div class="d-none d-md-block">
+              <button
+                type="button"
+                class="close"
+                data-dismiss="modal"
+                aria-label="Close"
+                on:click={handleClose}
+              >
+                <span aria-hidden="true">&times;</span>
               </button>
             </div>
-            <button
-              type="button"
-              class="close"
-              data-dismiss="modal"
-              aria-label="Close"
-              on:click={handleClose}
-            >
-              <span aria-hidden="true">&times;</span>
-            </button>
           </div>
         </div>
         <div class="site-list-table-header">
@@ -239,7 +254,15 @@
                       >
                         {site.name}
                       </a>
+                      {#if site.parentSiteName !== "-"}
+                        <span class="d-block d-md-none parent-site"
+                          >{@html site.parentSiteName}</span
+                        >
+                      {/if}
                       <a href={site.siteUrl} class="site-link" target="_blank">
+                        <span class="d-inline-block d-md-none"
+                          >{window.trans("View your site.")}</span
+                        >
                         <SVG
                           title={window.trans("View your site.")}
                           class="mt-icon mt-icon--sm"

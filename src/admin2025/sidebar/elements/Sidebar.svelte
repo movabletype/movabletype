@@ -66,6 +66,10 @@
         collapsed = true;
       }
     }
+    if (window.innerWidth < 800) {
+      // For smaller screens, always collapse the sidebar
+      collapsed = true;
+    }
     handleCollapse();
   });
 </script>
