@@ -122,7 +122,7 @@
               (siteType === "parent_sites" && isChildSite)
             ) {
               activeFavoriteSites = activeFavoriteSites.filter(
-                (_id) => _id !== id
+                (_id) => _id !== id,
               );
             }
           }
@@ -151,13 +151,13 @@
         });
         notFoundFavoriteSites.forEach((id) => {
           const index = result.sites.findIndex(
-            (site) => Number(site.id) === id
+            (site) => Number(site.id) === id,
           );
           if (index !== -1) {
             favoriteSiteStore[id] = result.sites[index];
           } else {
             activeFavoriteSites = activeFavoriteSites.filter(
-              (_id) => _id !== id
+              (_id) => _id !== id,
             );
             // this siteId is not longer available
             favoriteSites = favoriteSites.filter((_id) => _id !== id);
@@ -289,7 +289,7 @@
         });
         for (let i = favoriteSites.length - 1; i >= 0; i--) {
           const siteIndex = sites.findIndex(
-            (site) => Number(site.id) === favoriteSites[i]
+            (site) => Number(site.id) === favoriteSites[i],
           );
           if (siteIndex !== -1) {
             const [site] = sites.splice(siteIndex, 1);
@@ -441,7 +441,7 @@
                 {#each sites as site (site.id)}
                   <tr
                     data-favorite-site-id={favoriteSites.includes(
-                      Number(site.id)
+                      Number(site.id),
                     )
                       ? site.id
                       : undefined}
@@ -487,7 +487,7 @@
                           <button
                             on:click={(ev) => removeFavoriteSite(ev, site)}
                             aria-label={window.trans(
-                              "Remove from favorite sites"
+                              "Remove from favorite sites",
                             )}
                             aria-pressed="true"
                             title={window.trans("Remove from favorite sites")}
