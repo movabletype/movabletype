@@ -42,12 +42,14 @@ const siteListButtonTargets = document.querySelectorAll<HTMLElement>(
 );
 if (siteListButtonTargets.length > 0 && magicToken !== "") {
   siteListButtonTargets.forEach((siteListButtonTarget) => {
+    const siteListButtonAnchor =
+      siteListButtonTarget.getElementsByTagName("a")[0];
     svelteMountSiteListButton(siteListButtonTarget, {
       magicToken: magicToken,
       limit: Number.parseInt(limit),
       open: false,
       buttonRef: siteListButtonTarget,
-      anchorRef: siteListButtonTarget,
+      anchorRef: siteListButtonAnchor,
     });
   });
 }
