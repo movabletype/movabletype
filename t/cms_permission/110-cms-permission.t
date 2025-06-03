@@ -899,6 +899,7 @@ sub make_data {
         nickname     => 'Ichiro Aikawa',
         email        => 'aikawa@example.com',
         url          => 'http://aikawa.com/',
+        api_password => 'seecret',
         auth_type    => 'MT',
         created_on   => '19780131074500',
     });
@@ -917,6 +918,7 @@ sub make_data {
         nickname     => 'Jiro Ichikawa',
         email        => 'ichikawa@example.com',
         url          => 'http://ichikawa.com/',
+        api_password => 'seecret',
         auth_type    => 'MT',
         created_on   => '19780131074500',
     });
@@ -935,6 +937,7 @@ sub make_data {
         nickname     => 'Saburo Ukawa',
         email        => 'ukawa@example.com',
         url          => 'http://ukawa.com/',
+        api_password => 'seecret',
         auth_type    => 'MT',
         created_on   => '19780131074500',
     });
@@ -953,6 +956,7 @@ sub make_data {
         nickname     => 'Shiro Egawa',
         email        => 'egawa@example.com',
         url          => 'http://egawa.com/',
+        api_password => 'seecret',
         auth_type    => 'MT',
         created_on   => '19780131074500',
     });
@@ -971,6 +975,7 @@ sub make_data {
         nickname     => 'Goro Ogawa',
         email        => 'ogawa@example.com',
         url          => 'http://ogawa.com/',
+        api_password => 'seecret',
         auth_type    => 'MT',
         created_on   => '19780131074500',
     });
@@ -989,6 +994,7 @@ sub make_data {
         nickname     => 'Ichiro Kagawa',
         email        => 'kagawa@example.com',
         url          => 'http://kagawa.com/',
+        api_password => 'seecret',
         auth_type    => 'MT',
         created_on   => '19780131074500',
     });
