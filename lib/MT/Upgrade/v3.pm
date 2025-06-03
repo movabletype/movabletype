@@ -160,6 +160,19 @@ sub upgrade_functions {
                 label => 'Assigning entry basenames for old entries...',
             }
         },
+        'core_set_api_password' => {
+            version_limit => 3.2,
+            priority      => 9.3,
+            updater       => {
+                type      => 'author',
+                condition => sub {
+                    ( $_[0]->type == 1 )
+                        && ( ( $_[0]->api_password || '' ) eq '' );
+                },
+                code => sub { $_[0]->api_password( $_[0]->password ) },
+                label => 'Updating user web services passwords...',
+            }
+        },
         'core_create_config_table' => {
             version_limit => 3.2,
             code          => \&core_create_config_table,

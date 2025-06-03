@@ -22,6 +22,7 @@ sub make_author {
     my $values = {
         email        => 'test@example.com',
         url          => 'http://example.com/',
+        api_password => 'seecret',
         auth_type    => 'MT',
         created_on   => '19780131074500',
         type         => MT::Author::AUTHOR(),

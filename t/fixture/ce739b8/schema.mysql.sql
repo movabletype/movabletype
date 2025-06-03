@@ -1,6 +1,6 @@
 --
 -- Created by SQL::Translator::Producer::MySQL
--- Created on Sun May 18 22:33:12 2025
+-- Created on Tue Apr  1 11:12:48 2025
 --
 SET foreign_key_checks=0;
 
@@ -16,7 +16,7 @@ CREATE TABLE `mt_accesstoken` (
   INDEX `mt_accesstoken_session_id` (`accesstoken_session_id`),
   INDEX `mt_accesstoken_start` (`accesstoken_start`),
   PRIMARY KEY (`accesstoken_id`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 DROP TABLE IF EXISTS `mt_asset`;
 
@@ -28,7 +28,7 @@ CREATE TABLE `mt_asset` (
   `asset_class` varchar(255) NULL DEFAULT 'file',
   `asset_created_by` integer(11) NULL DEFAULT NULL,
   `asset_created_on` datetime NULL DEFAULT NULL,
-  `asset_description` mediumtext NULL,
+  `asset_description` mediumtext NULL DEFAULT NULL,
   `asset_file_ext` varchar(20) NULL DEFAULT NULL,
   `asset_file_name` varchar(255) NULL DEFAULT NULL,
   `asset_file_path` varchar(255) NULL DEFAULT NULL,
@@ -39,7 +39,7 @@ CREATE TABLE `mt_asset` (
   `asset_modified_by` integer(11) NULL DEFAULT NULL,
   `asset_modified_on` datetime NULL DEFAULT NULL,
   `asset_parent` integer(11) NULL DEFAULT NULL,
-  `asset_url` mediumtext NULL,
+  `asset_url` mediumtext NULL DEFAULT NULL,
   `asset_width` integer(11) NULL DEFAULT NULL,
   INDEX `mt_asset_blog_class_date` (`asset_blog_id`, `asset_class`, `asset_created_on`),
   INDEX `mt_asset_class` (`asset_class`),
@@ -49,7 +49,7 @@ CREATE TABLE `mt_asset` (
   INDEX `mt_asset_label` (`asset_label`),
   INDEX `mt_asset_parent` (`asset_parent`),
   PRIMARY KEY (`asset_id`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET utf8;
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 DROP TABLE IF EXISTS `mt_asset_meta`;
 
@@ -59,10 +59,10 @@ DROP TABLE IF EXISTS `mt_asset_meta`;
 CREATE TABLE `mt_asset_meta` (
   `asset_meta_asset_id` integer(11) NOT NULL,
   `asset_meta_type` varchar(75) NOT NULL,
-  `asset_meta_vblob` mediumblob NULL,
+  `asset_meta_vblob` mediumblob NULL DEFAULT NULL,
   `asset_meta_vchar` varchar(255) NULL DEFAULT NULL,
   `asset_meta_vchar_idx` varchar(255) NULL DEFAULT NULL,
-  `asset_meta_vclob` mediumtext NULL,
+  `asset_meta_vclob` mediumtext NULL DEFAULT NULL,
   `asset_meta_vdatetime` datetime NULL DEFAULT NULL,
   `asset_meta_vdatetime_idx` datetime NULL DEFAULT NULL,
   `asset_meta_vfloat` float NULL DEFAULT NULL,
@@ -74,7 +74,7 @@ CREATE TABLE `mt_asset_meta` (
   INDEX `mt_asset_meta_type_vflt` (`asset_meta_type`, `asset_meta_vfloat_idx`),
   INDEX `mt_asset_meta_type_vint` (`asset_meta_type`, `asset_meta_vinteger_idx`),
   PRIMARY KEY (`asset_meta_asset_id`, `asset_meta_type`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 DROP TABLE IF EXISTS `mt_association`;
 
@@ -99,7 +99,7 @@ CREATE TABLE `mt_association` (
   INDEX `mt_association_role_id` (`association_role_id`),
   INDEX `mt_association_type` (`association_type`),
   PRIMARY KEY (`association_id`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET utf8;
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 DROP TABLE IF EXISTS `mt_author`;
 
@@ -107,7 +107,7 @@ DROP TABLE IF EXISTS `mt_author`;
 -- Table: `mt_author`
 --
 CREATE TABLE `mt_author` (
-  `author_api_password` varchar(106) NULL DEFAULT NULL,
+  `author_api_password` varchar(60) NULL DEFAULT NULL,
   `author_auth_type` varchar(50) NULL DEFAULT NULL,
   `author_basename` varchar(255) NULL DEFAULT NULL,
   `author_can_create_blog` tinyint(4) NULL DEFAULT NULL,
@@ -128,7 +128,7 @@ CREATE TABLE `mt_author` (
   `author_nickname` varchar(255) NULL DEFAULT NULL,
   `author_password` varchar(124) NOT NULL,
   `author_preferred_language` varchar(50) NULL DEFAULT NULL,
-  `author_public_key` mediumtext NULL,
+  `author_public_key` mediumtext NULL DEFAULT NULL,
   `author_remote_auth_token` varchar(50) NULL DEFAULT NULL,
   `author_remote_auth_username` varchar(50) NULL DEFAULT NULL,
   `author_status` integer(11) NULL DEFAULT 1,
@@ -146,7 +146,7 @@ CREATE TABLE `mt_author` (
   INDEX `mt_author_status` (`author_status`),
   INDEX `mt_author_type` (`author_type`),
   PRIMARY KEY (`author_id`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET utf8;
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 DROP TABLE IF EXISTS `mt_author_meta`;
 
@@ -156,10 +156,10 @@ DROP TABLE IF EXISTS `mt_author_meta`;
 CREATE TABLE `mt_author_meta` (
   `author_meta_author_id` integer(11) NOT NULL,
   `author_meta_type` varchar(75) NOT NULL,
-  `author_meta_vblob` mediumblob NULL,
+  `author_meta_vblob` mediumblob NULL DEFAULT NULL,
   `author_meta_vchar` varchar(255) NULL DEFAULT NULL,
   `author_meta_vchar_idx` varchar(255) NULL DEFAULT NULL,
-  `author_meta_vclob` mediumtext NULL,
+  `author_meta_vclob` mediumtext NULL DEFAULT NULL,
   `author_meta_vdatetime` datetime NULL DEFAULT NULL,
   `author_meta_vdatetime_idx` datetime NULL DEFAULT NULL,
   `author_meta_vfloat` float NULL DEFAULT NULL,
@@ -171,7 +171,7 @@ CREATE TABLE `mt_author_meta` (
   INDEX `mt_author_meta_type_vflt` (`author_meta_type`, `author_meta_vfloat_idx`),
   INDEX `mt_author_meta_type_vint` (`author_meta_type`, `author_meta_vinteger_idx`),
   PRIMARY KEY (`author_meta_author_id`, `author_meta_type`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 DROP TABLE IF EXISTS `mt_author_summary`;
 
@@ -183,15 +183,15 @@ CREATE TABLE `mt_author_summary` (
   `author_summary_class` varchar(75) NOT NULL,
   `author_summary_expired` smallint(6) NULL DEFAULT NULL,
   `author_summary_type` varchar(75) NOT NULL,
-  `author_summary_vblob` mediumblob NULL,
+  `author_summary_vblob` mediumblob NULL DEFAULT NULL,
   `author_summary_vchar_idx` varchar(255) NULL DEFAULT NULL,
-  `author_summary_vclob` mediumtext NULL,
+  `author_summary_vclob` mediumtext NULL DEFAULT NULL,
   `author_summary_vinteger_idx` integer(11) NULL DEFAULT NULL,
   INDEX `mt_author_summary_class_vchar` (`author_summary_class`, `author_summary_vchar_idx`),
   INDEX `mt_author_summary_class_vint` (`author_summary_class`, `author_summary_vinteger_idx`),
   INDEX `mt_author_summary_id_class` (`author_summary_author_id`, `author_summary_class`),
   PRIMARY KEY (`author_summary_author_id`, `author_summary_type`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 DROP TABLE IF EXISTS `mt_blog`;
 
@@ -231,7 +231,7 @@ CREATE TABLE `mt_blog` (
   `blog_custom_dynamic_templates` varchar(25) NULL DEFAULT 'none',
   `blog_date_language` varchar(5) NULL DEFAULT NULL,
   `blog_days_on_index` integer(11) NULL DEFAULT NULL,
-  `blog_description` mediumtext NULL,
+  `blog_description` mediumtext NULL DEFAULT NULL,
   `blog_email_new_comments` tinyint(4) NULL DEFAULT NULL,
   `blog_email_new_pings` tinyint(4) NULL DEFAULT NULL,
   `blog_entries_on_index` integer(11) NULL DEFAULT NULL,
@@ -254,7 +254,7 @@ CREATE TABLE `mt_blog` (
   `blog_parent_id` integer(11) NULL DEFAULT NULL,
   `blog_ping_blogs` tinyint(4) NULL DEFAULT NULL,
   `blog_ping_google` tinyint(4) NULL DEFAULT NULL,
-  `blog_ping_others` mediumtext NULL,
+  `blog_ping_others` mediumtext NULL DEFAULT NULL,
   `blog_ping_technorati` tinyint(4) NULL DEFAULT NULL,
   `blog_ping_weblogs` tinyint(4) NULL DEFAULT NULL,
   `blog_remote_auth_token` varchar(50) NULL DEFAULT NULL,
@@ -269,13 +269,13 @@ CREATE TABLE `mt_blog` (
   `blog_theme_id` varchar(255) NULL DEFAULT NULL,
   `blog_use_comment_confirmation` tinyint(4) NULL DEFAULT NULL,
   `blog_use_revision` tinyint(4) NULL DEFAULT NULL,
-  `blog_welcome_msg` mediumtext NULL,
+  `blog_welcome_msg` mediumtext NULL DEFAULT NULL,
   `blog_words_in_excerpt` smallint(6) NULL DEFAULT NULL,
   INDEX `mt_blog_class` (`blog_class`),
   INDEX `mt_blog_name` (`blog_name`),
   INDEX `mt_blog_parent_id` (`blog_parent_id`),
   PRIMARY KEY (`blog_id`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET utf8;
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 DROP TABLE IF EXISTS `mt_blog_meta`;
 
@@ -285,10 +285,10 @@ DROP TABLE IF EXISTS `mt_blog_meta`;
 CREATE TABLE `mt_blog_meta` (
   `blog_meta_blog_id` integer(11) NOT NULL,
   `blog_meta_type` varchar(75) NOT NULL,
-  `blog_meta_vblob` mediumblob NULL,
+  `blog_meta_vblob` mediumblob NULL DEFAULT NULL,
   `blog_meta_vchar` varchar(255) NULL DEFAULT NULL,
   `blog_meta_vchar_idx` varchar(255) NULL DEFAULT NULL,
-  `blog_meta_vclob` mediumtext NULL,
+  `blog_meta_vclob` mediumtext NULL DEFAULT NULL,
   `blog_meta_vdatetime` datetime NULL DEFAULT NULL,
   `blog_meta_vdatetime_idx` datetime NULL DEFAULT NULL,
   `blog_meta_vfloat` float NULL DEFAULT NULL,
@@ -300,7 +300,7 @@ CREATE TABLE `mt_blog_meta` (
   INDEX `mt_blog_meta_type_vflt` (`blog_meta_type`, `blog_meta_vfloat_idx`),
   INDEX `mt_blog_meta_type_vint` (`blog_meta_type`, `blog_meta_vinteger_idx`),
   PRIMARY KEY (`blog_meta_blog_id`, `blog_meta_type`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 DROP TABLE IF EXISTS `mt_category`;
 
@@ -316,13 +316,13 @@ CREATE TABLE `mt_category` (
   `category_class` varchar(255) NULL DEFAULT 'category',
   `category_created_by` integer(11) NULL DEFAULT NULL,
   `category_created_on` datetime NULL DEFAULT NULL,
-  `category_description` mediumtext NULL,
+  `category_description` mediumtext NULL DEFAULT NULL,
   `category_id` integer(11) NOT NULL auto_increment,
   `category_label` varchar(100) NOT NULL,
   `category_modified_by` integer(11) NULL DEFAULT NULL,
   `category_modified_on` datetime NULL DEFAULT NULL,
   `category_parent` integer(11) NULL DEFAULT 0,
-  `category_ping_urls` mediumtext NULL,
+  `category_ping_urls` mediumtext NULL DEFAULT NULL,
   INDEX `mt_category_blog_basename` (`category_blog_id`, `category_basename`),
   INDEX `mt_category_blog_class` (`category_blog_id`, `category_class`),
   INDEX `mt_category_blog_id` (`category_blog_id`),
@@ -330,7 +330,7 @@ CREATE TABLE `mt_category` (
   INDEX `mt_category_label` (`category_label`),
   INDEX `mt_category_parent` (`category_parent`),
   PRIMARY KEY (`category_id`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET utf8;
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 DROP TABLE IF EXISTS `mt_category_meta`;
 
@@ -340,10 +340,10 @@ DROP TABLE IF EXISTS `mt_category_meta`;
 CREATE TABLE `mt_category_meta` (
   `category_meta_category_id` integer(11) NOT NULL,
   `category_meta_type` varchar(75) NOT NULL,
-  `category_meta_vblob` mediumblob NULL,
+  `category_meta_vblob` mediumblob NULL DEFAULT NULL,
   `category_meta_vchar` varchar(255) NULL DEFAULT NULL,
   `category_meta_vchar_idx` varchar(255) NULL DEFAULT NULL,
-  `category_meta_vclob` mediumtext NULL,
+  `category_meta_vclob` mediumtext NULL DEFAULT NULL,
   `category_meta_vdatetime` datetime NULL DEFAULT NULL,
   `category_meta_vdatetime_idx` datetime NULL DEFAULT NULL,
   `category_meta_vfloat` float NULL DEFAULT NULL,
@@ -355,7 +355,7 @@ CREATE TABLE `mt_category_meta` (
   INDEX `mt_category_meta_type_vflt` (`category_meta_type`, `category_meta_vfloat_idx`),
   INDEX `mt_category_meta_type_vint` (`category_meta_type`, `category_meta_vinteger_idx`),
   PRIMARY KEY (`category_meta_category_id`, `category_meta_type`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 DROP TABLE IF EXISTS `mt_category_set`;
 
@@ -370,11 +370,11 @@ CREATE TABLE `mt_category_set` (
   `category_set_modified_by` integer(11) NULL DEFAULT NULL,
   `category_set_modified_on` datetime NULL DEFAULT NULL,
   `category_set_name` varchar(255) NOT NULL DEFAULT '',
-  `category_set_order` mediumtext NULL,
+  `category_set_order` mediumtext NULL DEFAULT NULL,
   INDEX `mt_category_set_blog_id` (`category_set_blog_id`),
   INDEX `mt_category_set_name` (`category_set_name`),
   PRIMARY KEY (`category_set_id`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 DROP TABLE IF EXISTS `mt_cd`;
 
@@ -390,7 +390,7 @@ CREATE TABLE `mt_cd` (
   `cd_created_on` datetime NULL DEFAULT NULL,
   `cd_ct_unique_id` varchar(40) NOT NULL,
   `cd_current_revision` integer(11) NOT NULL DEFAULT 0,
-  `cd_data` mediumblob NULL,
+  `cd_data` mediumblob NULL DEFAULT NULL,
   `cd_id` integer(11) NOT NULL auto_increment,
   `cd_identifier` varchar(255) NULL DEFAULT NULL,
   `cd_label` varchar(255) NULL DEFAULT NULL,
@@ -407,7 +407,7 @@ CREATE TABLE `mt_cd` (
   INDEX `mt_cd_status` (`cd_status`),
   PRIMARY KEY (`cd_id`),
   UNIQUE `mt_cd_unique_id` (`cd_unique_id`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 DROP TABLE IF EXISTS `mt_cd_meta`;
 
@@ -417,10 +417,10 @@ DROP TABLE IF EXISTS `mt_cd_meta`;
 CREATE TABLE `mt_cd_meta` (
   `cd_meta_cd_id` integer(11) NOT NULL,
   `cd_meta_type` varchar(75) NOT NULL,
-  `cd_meta_vblob` mediumblob NULL,
+  `cd_meta_vblob` mediumblob NULL DEFAULT NULL,
   `cd_meta_vchar` varchar(255) NULL DEFAULT NULL,
   `cd_meta_vchar_idx` varchar(255) NULL DEFAULT NULL,
-  `cd_meta_vclob` mediumtext NULL,
+  `cd_meta_vclob` mediumtext NULL DEFAULT NULL,
   `cd_meta_vdatetime` datetime NULL DEFAULT NULL,
   `cd_meta_vdatetime_idx` datetime NULL DEFAULT NULL,
   `cd_meta_vfloat` float NULL DEFAULT NULL,
@@ -432,7 +432,7 @@ CREATE TABLE `mt_cd_meta` (
   INDEX `mt_cd_meta_type_vflt` (`cd_meta_type`, `cd_meta_vfloat_idx`),
   INDEX `mt_cd_meta_type_vint` (`cd_meta_type`, `cd_meta_vinteger_idx`),
   PRIMARY KEY (`cd_meta_cd_id`, `cd_meta_type`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 DROP TABLE IF EXISTS `mt_cd_rev`;
 
@@ -453,7 +453,7 @@ CREATE TABLE `mt_cd_rev` (
   `cd_rev_rev_number` integer(11) NOT NULL DEFAULT 0,
   INDEX `mt_cd_rev_cd_id` (`cd_rev_cd_id`),
   PRIMARY KEY (`cd_rev_id`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 DROP TABLE IF EXISTS `mt_cf`;
 
@@ -480,7 +480,7 @@ CREATE TABLE `mt_cf` (
   INDEX `mt_cf_content_type_id` (`cf_content_type_id`),
   PRIMARY KEY (`cf_id`),
   UNIQUE `mt_cf_unique_id` (`cf_unique_id`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 DROP TABLE IF EXISTS `mt_cf_idx`;
 
@@ -496,12 +496,12 @@ CREATE TABLE `mt_cf_idx` (
   `cf_idx_id` integer(11) NOT NULL auto_increment,
   `cf_idx_modified_by` integer(11) NULL DEFAULT NULL,
   `cf_idx_modified_on` datetime NULL DEFAULT NULL,
-  `cf_idx_value_blob` mediumblob NULL,
+  `cf_idx_value_blob` mediumblob NULL DEFAULT NULL,
   `cf_idx_value_datetime` datetime NULL DEFAULT NULL,
   `cf_idx_value_double` double NULL DEFAULT NULL,
   `cf_idx_value_float` float NULL DEFAULT NULL,
   `cf_idx_value_integer` integer(11) NULL DEFAULT NULL,
-  `cf_idx_value_text` mediumtext NULL,
+  `cf_idx_value_text` mediumtext NULL DEFAULT NULL,
   `cf_idx_value_varchar` varchar(255) NULL DEFAULT NULL,
   INDEX `mt_cf_idx_value_datetime` (`cf_idx_value_datetime`),
   INDEX `mt_cf_idx_value_double` (`cf_idx_value_double`),
@@ -509,7 +509,7 @@ CREATE TABLE `mt_cf_idx` (
   INDEX `mt_cf_idx_value_integer` (`cf_idx_value_integer`),
   INDEX `mt_cf_idx_value_varchar` (`cf_idx_value_varchar`),
   PRIMARY KEY (`cf_idx_id`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 DROP TABLE IF EXISTS `mt_comment`;
 
@@ -526,14 +526,14 @@ CREATE TABLE `mt_comment` (
   `comment_entry_id` integer(11) NOT NULL,
   `comment_id` integer(11) NOT NULL auto_increment,
   `comment_ip` varchar(50) NULL DEFAULT NULL,
-  `comment_junk_log` mediumtext NULL,
+  `comment_junk_log` mediumtext NULL DEFAULT NULL,
   `comment_junk_score` float NULL DEFAULT NULL,
   `comment_junk_status` smallint(6) NULL DEFAULT 1,
   `comment_last_moved_on` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
   `comment_modified_by` integer(11) NULL DEFAULT NULL,
   `comment_modified_on` datetime NULL DEFAULT NULL,
   `comment_parent_id` integer(11) NULL DEFAULT NULL,
-  `comment_text` mediumtext NULL,
+  `comment_text` mediumtext NULL DEFAULT NULL,
   `comment_url` varchar(255) NULL DEFAULT NULL,
   `comment_visible` tinyint(4) NULL DEFAULT NULL,
   INDEX `mt_comment_author` (`comment_author`),
@@ -550,7 +550,7 @@ CREATE TABLE `mt_comment` (
   INDEX `mt_comment_last_moved_on` (`comment_last_moved_on`),
   INDEX `mt_comment_visible_date` (`comment_visible`, `comment_created_on`),
   PRIMARY KEY (`comment_id`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET utf8;
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 DROP TABLE IF EXISTS `mt_comment_meta`;
 
@@ -560,10 +560,10 @@ DROP TABLE IF EXISTS `mt_comment_meta`;
 CREATE TABLE `mt_comment_meta` (
   `comment_meta_comment_id` integer(11) NOT NULL,
   `comment_meta_type` varchar(75) NOT NULL,
-  `comment_meta_vblob` mediumblob NULL,
+  `comment_meta_vblob` mediumblob NULL DEFAULT NULL,
   `comment_meta_vchar` varchar(255) NULL DEFAULT NULL,
   `comment_meta_vchar_idx` varchar(255) NULL DEFAULT NULL,
-  `comment_meta_vclob` mediumtext NULL,
+  `comment_meta_vclob` mediumtext NULL DEFAULT NULL,
   `comment_meta_vdatetime` datetime NULL DEFAULT NULL,
   `comment_meta_vdatetime_idx` datetime NULL DEFAULT NULL,
   `comment_meta_vfloat` float NULL DEFAULT NULL,
@@ -575,7 +575,7 @@ CREATE TABLE `mt_comment_meta` (
   INDEX `mt_comment_meta_type_vflt` (`comment_meta_type`, `comment_meta_vfloat_idx`),
   INDEX `mt_comment_meta_type_vint` (`comment_meta_type`, `comment_meta_vinteger_idx`),
   PRIMARY KEY (`comment_meta_comment_id`, `comment_meta_type`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 DROP TABLE IF EXISTS `mt_config`;
 
@@ -583,10 +583,10 @@ DROP TABLE IF EXISTS `mt_config`;
 -- Table: `mt_config`
 --
 CREATE TABLE `mt_config` (
-  `config_data` mediumtext NULL,
+  `config_data` mediumtext NULL DEFAULT NULL,
   `config_id` integer(11) NOT NULL auto_increment,
   PRIMARY KEY (`config_id`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET utf8;
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 DROP TABLE IF EXISTS `mt_content_type`;
 
@@ -598,8 +598,8 @@ CREATE TABLE `mt_content_type` (
   `content_type_created_by` integer(11) NULL DEFAULT NULL,
   `content_type_created_on` datetime NULL DEFAULT NULL,
   `content_type_data_label` varchar(40) NULL DEFAULT NULL,
-  `content_type_description` mediumtext NULL,
-  `content_type_fields` mediumblob NULL,
+  `content_type_description` mediumtext NULL DEFAULT NULL,
+  `content_type_fields` mediumblob NULL DEFAULT NULL,
   `content_type_id` integer(11) NOT NULL auto_increment,
   `content_type_modified_by` integer(11) NULL DEFAULT NULL,
   `content_type_modified_on` datetime NULL DEFAULT NULL,
@@ -610,7 +610,7 @@ CREATE TABLE `mt_content_type` (
   INDEX `mt_content_type_blog_id` (`content_type_blog_id`),
   PRIMARY KEY (`content_type_id`),
   UNIQUE `mt_content_type_unique_id` (`content_type_unique_id`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 DROP TABLE IF EXISTS `mt_deletefileinfo`;
 
@@ -624,7 +624,7 @@ CREATE TABLE `mt_deletefileinfo` (
   `deletefileinfo_id` integer(11) NOT NULL auto_increment,
   INDEX `mt_deletefileinfo_blog_id` (`deletefileinfo_blog_id`),
   PRIMARY KEY (`deletefileinfo_id`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 DROP TABLE IF EXISTS `mt_entry`;
 
@@ -646,20 +646,20 @@ CREATE TABLE `mt_entry` (
   `entry_created_by` integer(11) NULL DEFAULT NULL,
   `entry_created_on` datetime NULL DEFAULT NULL,
   `entry_current_revision` integer(11) NOT NULL DEFAULT 0,
-  `entry_excerpt` mediumtext NULL,
+  `entry_excerpt` mediumtext NULL DEFAULT NULL,
   `entry_id` integer(11) NOT NULL auto_increment,
-  `entry_keywords` mediumtext NULL,
+  `entry_keywords` mediumtext NULL DEFAULT NULL,
   `entry_modified_by` integer(11) NULL DEFAULT NULL,
   `entry_modified_on` datetime NULL DEFAULT NULL,
   `entry_ping_count` integer(11) NULL DEFAULT 0,
-  `entry_pinged_urls` mediumtext NULL,
+  `entry_pinged_urls` mediumtext NULL DEFAULT NULL,
   `entry_status` smallint(6) NOT NULL,
-  `entry_tangent_cache` mediumtext NULL,
+  `entry_tangent_cache` mediumtext NULL DEFAULT NULL,
   `entry_template_id` integer(11) NULL DEFAULT NULL,
-  `entry_text` mediumtext NULL,
-  `entry_text_more` mediumtext NULL,
+  `entry_text` mediumtext NULL DEFAULT NULL,
+  `entry_text_more` mediumtext NULL DEFAULT NULL,
   `entry_title` varchar(255) NULL DEFAULT NULL,
-  `entry_to_ping_urls` mediumtext NULL,
+  `entry_to_ping_urls` mediumtext NULL DEFAULT NULL,
   `entry_unpublished_on` datetime NULL DEFAULT NULL,
   `entry_week_number` integer(11) NULL DEFAULT NULL,
   INDEX `mt_entry_auth_stat_class` (`entry_author_id`, `entry_status`, `entry_class`),
@@ -681,7 +681,7 @@ CREATE TABLE `mt_entry` (
   INDEX `mt_entry_tag_count` (`entry_status`, `entry_class`, `entry_blog_id`, `entry_id`),
   INDEX `mt_entry_title` (`entry_title`),
   PRIMARY KEY (`entry_id`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET utf8;
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 DROP TABLE IF EXISTS `mt_entry_meta`;
 
@@ -691,10 +691,10 @@ DROP TABLE IF EXISTS `mt_entry_meta`;
 CREATE TABLE `mt_entry_meta` (
   `entry_meta_entry_id` integer(11) NOT NULL,
   `entry_meta_type` varchar(75) NOT NULL,
-  `entry_meta_vblob` mediumblob NULL,
+  `entry_meta_vblob` mediumblob NULL DEFAULT NULL,
   `entry_meta_vchar` varchar(255) NULL DEFAULT NULL,
   `entry_meta_vchar_idx` varchar(255) NULL DEFAULT NULL,
-  `entry_meta_vclob` mediumtext NULL,
+  `entry_meta_vclob` mediumtext NULL DEFAULT NULL,
   `entry_meta_vdatetime` datetime NULL DEFAULT NULL,
   `entry_meta_vdatetime_idx` datetime NULL DEFAULT NULL,
   `entry_meta_vfloat` float NULL DEFAULT NULL,
@@ -706,7 +706,7 @@ CREATE TABLE `mt_entry_meta` (
   INDEX `mt_entry_meta_type_vflt` (`entry_meta_type`, `entry_meta_vfloat_idx`),
   INDEX `mt_entry_meta_type_vint` (`entry_meta_type`, `entry_meta_vinteger_idx`),
   PRIMARY KEY (`entry_meta_entry_id`, `entry_meta_type`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 DROP TABLE IF EXISTS `mt_entry_rev`;
 
@@ -727,7 +727,7 @@ CREATE TABLE `mt_entry_rev` (
   `entry_rev_rev_number` integer(11) NOT NULL DEFAULT 0,
   INDEX `mt_entry_rev_entry_id` (`entry_rev_entry_id`),
   PRIMARY KEY (`entry_rev_id`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 DROP TABLE IF EXISTS `mt_entry_summary`;
 
@@ -739,15 +739,15 @@ CREATE TABLE `mt_entry_summary` (
   `entry_summary_entry_id` integer(11) NOT NULL,
   `entry_summary_expired` smallint(6) NULL DEFAULT NULL,
   `entry_summary_type` varchar(75) NOT NULL,
-  `entry_summary_vblob` mediumblob NULL,
+  `entry_summary_vblob` mediumblob NULL DEFAULT NULL,
   `entry_summary_vchar_idx` varchar(255) NULL DEFAULT NULL,
-  `entry_summary_vclob` mediumtext NULL,
+  `entry_summary_vclob` mediumtext NULL DEFAULT NULL,
   `entry_summary_vinteger_idx` integer(11) NULL DEFAULT NULL,
   INDEX `mt_entry_summary_class_vchar` (`entry_summary_class`, `entry_summary_vchar_idx`),
   INDEX `mt_entry_summary_class_vint` (`entry_summary_class`, `entry_summary_vinteger_idx`),
   INDEX `mt_entry_summary_id_class` (`entry_summary_entry_id`, `entry_summary_class`),
   PRIMARY KEY (`entry_summary_entry_id`, `entry_summary_type`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 DROP TABLE IF EXISTS `mt_failedlogin`;
 
@@ -767,7 +767,7 @@ CREATE TABLE `mt_failedlogin` (
   INDEX `mt_failedlogin_remote_ip` (`failedlogin_remote_ip`),
   INDEX `mt_failedlogin_start` (`failedlogin_start`),
   PRIMARY KEY (`failedlogin_id`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 DROP TABLE IF EXISTS `mt_fileinfo`;
 
@@ -781,7 +781,7 @@ CREATE TABLE `mt_fileinfo` (
   `fileinfo_category_id` integer(11) NULL DEFAULT NULL,
   `fileinfo_cd_id` integer(11) NULL DEFAULT NULL,
   `fileinfo_entry_id` integer(11) NULL DEFAULT NULL,
-  `fileinfo_file_path` mediumtext NULL,
+  `fileinfo_file_path` mediumtext NULL DEFAULT NULL,
   `fileinfo_id` integer(11) NOT NULL auto_increment,
   `fileinfo_startdate` varchar(80) NULL DEFAULT NULL,
   `fileinfo_template_id` integer(11) NULL DEFAULT NULL,
@@ -799,7 +799,7 @@ CREATE TABLE `mt_fileinfo` (
   INDEX `mt_fileinfo_templatemap_id` (`fileinfo_templatemap_id`),
   INDEX `mt_fileinfo_url` (`fileinfo_url`),
   PRIMARY KEY (`fileinfo_id`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET utf8;
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 DROP TABLE IF EXISTS `mt_filter`;
 
@@ -812,7 +812,7 @@ CREATE TABLE `mt_filter` (
   `filter_created_by` integer(11) NULL DEFAULT NULL,
   `filter_created_on` datetime NULL DEFAULT NULL,
   `filter_id` integer(11) NOT NULL auto_increment,
-  `filter_items` mediumblob NULL,
+  `filter_items` mediumblob NULL DEFAULT NULL,
   `filter_label` varchar(255) NULL DEFAULT NULL,
   `filter_modified_by` integer(11) NULL DEFAULT NULL,
   `filter_modified_on` datetime NULL DEFAULT NULL,
@@ -823,7 +823,7 @@ CREATE TABLE `mt_filter` (
   INDEX `mt_filter_label` (`filter_label`),
   INDEX `mt_filter_modified_on` (`filter_modified_on`),
   PRIMARY KEY (`filter_id`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 DROP TABLE IF EXISTS `mt_formatted_text`;
 
@@ -839,14 +839,14 @@ CREATE TABLE `mt_formatted_text` (
   `formatted_text_label` varchar(255) NULL DEFAULT NULL,
   `formatted_text_modified_by` integer(11) NULL DEFAULT NULL,
   `formatted_text_modified_on` datetime NULL DEFAULT NULL,
-  `formatted_text_text` mediumtext NULL,
+  `formatted_text_text` mediumtext NULL DEFAULT NULL,
   INDEX `mt_formatted_text_blog_c_by` (`formatted_text_blog_id`, `formatted_text_created_by`),
   INDEX `mt_formatted_text_blog_id` (`formatted_text_blog_id`),
   INDEX `mt_formatted_text_created_on` (`formatted_text_created_on`),
   INDEX `mt_formatted_text_label` (`formatted_text_label`),
   INDEX `mt_formatted_text_modified_on` (`formatted_text_modified_on`),
   PRIMARY KEY (`formatted_text_id`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 DROP TABLE IF EXISTS `mt_group`;
 
@@ -856,7 +856,7 @@ DROP TABLE IF EXISTS `mt_group`;
 CREATE TABLE `mt_group` (
   `group_created_by` integer(11) NULL DEFAULT NULL,
   `group_created_on` datetime NULL DEFAULT NULL,
-  `group_description` mediumtext NULL,
+  `group_description` mediumtext NULL DEFAULT NULL,
   `group_display_name` varchar(255) NULL DEFAULT NULL,
   `group_external_id` varchar(255) NULL DEFAULT NULL,
   `group_id` integer(11) NOT NULL auto_increment,
@@ -869,7 +869,7 @@ CREATE TABLE `mt_group` (
   INDEX `mt_group_name` (`group_name`),
   INDEX `mt_group_status` (`group_status`),
   PRIMARY KEY (`group_id`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 DROP TABLE IF EXISTS `mt_ipbanlist`;
 
@@ -887,7 +887,7 @@ CREATE TABLE `mt_ipbanlist` (
   INDEX `mt_ipbanlist_blog_id` (`ipbanlist_blog_id`),
   INDEX `mt_ipbanlist_ip` (`ipbanlist_ip`),
   PRIMARY KEY (`ipbanlist_id`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 DROP TABLE IF EXISTS `mt_log`;
 
@@ -904,8 +904,8 @@ CREATE TABLE `mt_log` (
   `log_id` integer(11) NOT NULL auto_increment,
   `log_ip` varchar(50) NULL DEFAULT NULL,
   `log_level` integer(11) NULL DEFAULT 1,
-  `log_message` mediumtext NULL,
-  `log_metadata` mediumtext NULL,
+  `log_message` mediumtext NULL DEFAULT NULL,
+  `log_metadata` mediumtext NULL DEFAULT NULL,
   `log_modified_by` integer(11) NULL DEFAULT NULL,
   `log_modified_on` datetime NULL DEFAULT NULL,
   INDEX `mt_log_blog_id` (`log_blog_id`),
@@ -913,7 +913,7 @@ CREATE TABLE `mt_log` (
   INDEX `mt_log_created_on` (`log_created_on`),
   INDEX `mt_log_level` (`log_level`),
   PRIMARY KEY (`log_id`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 DROP TABLE IF EXISTS `mt_notification`;
 
@@ -933,7 +933,7 @@ CREATE TABLE `mt_notification` (
   INDEX `mt_notification_blog_id` (`notification_blog_id`),
   INDEX `mt_notification_email` (`notification_email`),
   PRIMARY KEY (`notification_id`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 DROP TABLE IF EXISTS `mt_objectasset`;
 
@@ -952,7 +952,7 @@ CREATE TABLE `mt_objectasset` (
   INDEX `mt_objectasset_blog_obj` (`objectasset_blog_id`, `objectasset_object_ds`, `objectasset_object_id`),
   INDEX `mt_objectasset_id_ds` (`objectasset_object_id`, `objectasset_object_ds`),
   PRIMARY KEY (`objectasset_id`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET utf8;
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 DROP TABLE IF EXISTS `mt_objectcategory`;
 
@@ -974,7 +974,7 @@ CREATE TABLE `mt_objectcategory` (
   INDEX `mt_objectcategory_object_ds` (`objectcategory_object_ds`),
   INDEX `mt_objectcategory_object_id` (`objectcategory_object_id`),
   PRIMARY KEY (`objectcategory_id`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 DROP TABLE IF EXISTS `mt_objectscore`;
 
@@ -998,7 +998,7 @@ CREATE TABLE `mt_objectscore` (
   INDEX `mt_objectscore_ns_user_ds_obj` (`objectscore_namespace`, `objectscore_author_id`, `objectscore_object_ds`, `objectscore_object_id`),
   INDEX `mt_objectscore_user_ns` (`objectscore_author_id`, `objectscore_namespace`),
   PRIMARY KEY (`objectscore_id`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET utf8;
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 DROP TABLE IF EXISTS `mt_objecttag`;
 
@@ -1018,7 +1018,7 @@ CREATE TABLE `mt_objecttag` (
   INDEX `mt_objecttag_object_id` (`objecttag_object_id`),
   INDEX `mt_objecttag_tag_id` (`objecttag_tag_id`),
   PRIMARY KEY (`objecttag_id`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET utf8;
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 DROP TABLE IF EXISTS `mt_permission`;
 
@@ -1031,20 +1031,20 @@ CREATE TABLE `mt_permission` (
   `permission_blog_prefs` varchar(255) NULL DEFAULT NULL,
   `permission_created_by` integer(11) NULL DEFAULT NULL,
   `permission_created_on` datetime NULL DEFAULT NULL,
-  `permission_entry_prefs` mediumtext NULL,
+  `permission_entry_prefs` mediumtext NULL DEFAULT NULL,
   `permission_id` integer(11) NOT NULL auto_increment,
   `permission_modified_by` integer(11) NULL DEFAULT NULL,
   `permission_modified_on` datetime NULL DEFAULT NULL,
-  `permission_page_prefs` mediumtext NULL,
-  `permission_permissions` mediumtext NULL,
-  `permission_restrictions` mediumtext NULL,
+  `permission_page_prefs` mediumtext NULL DEFAULT NULL,
+  `permission_permissions` mediumtext NULL DEFAULT NULL,
+  `permission_restrictions` mediumtext NULL DEFAULT NULL,
   `permission_role_mask` integer(11) NULL DEFAULT 0,
   `permission_template_prefs` varchar(255) NULL DEFAULT NULL,
   INDEX `mt_permission_author_id` (`permission_author_id`),
   INDEX `mt_permission_blog_id` (`permission_blog_id`),
   INDEX `mt_permission_role_mask` (`permission_role_mask`),
   PRIMARY KEY (`permission_id`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET utf8;
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 DROP TABLE IF EXISTS `mt_placement`;
 
@@ -1063,7 +1063,7 @@ CREATE TABLE `mt_placement` (
   INDEX `mt_placement_entry_id` (`placement_entry_id`),
   INDEX `mt_placement_is_primary` (`placement_is_primary`),
   PRIMARY KEY (`placement_id`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET utf8;
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 DROP TABLE IF EXISTS `mt_plugindata`;
 
@@ -1071,14 +1071,14 @@ DROP TABLE IF EXISTS `mt_plugindata`;
 -- Table: `mt_plugindata`
 --
 CREATE TABLE `mt_plugindata` (
-  `plugindata_data` mediumblob NULL,
+  `plugindata_data` mediumblob NULL DEFAULT NULL,
   `plugindata_id` integer(11) NOT NULL auto_increment,
   `plugindata_key` varchar(255) NOT NULL,
   `plugindata_plugin` varchar(50) NOT NULL,
   INDEX `mt_plugindata_key` (`plugindata_key`),
   INDEX `mt_plugindata_plugin` (`plugindata_plugin`),
   PRIMARY KEY (`plugindata_id`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 DROP TABLE IF EXISTS `mt_rebuild_trigger`;
 
@@ -1100,7 +1100,7 @@ CREATE TABLE `mt_rebuild_trigger` (
   `rebuild_trigger_target_blog_id` integer(11) NULL DEFAULT NULL,
   INDEX `mt_rebuild_trigger_blog_id` (`rebuild_trigger_blog_id`),
   PRIMARY KEY (`rebuild_trigger_id`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 DROP TABLE IF EXISTS `mt_role`;
 
@@ -1110,13 +1110,13 @@ DROP TABLE IF EXISTS `mt_role`;
 CREATE TABLE `mt_role` (
   `role_created_by` integer(11) NULL DEFAULT NULL,
   `role_created_on` datetime NULL DEFAULT NULL,
-  `role_description` mediumtext NULL,
+  `role_description` mediumtext NULL DEFAULT NULL,
   `role_id` integer(11) NOT NULL auto_increment,
   `role_is_system` tinyint(4) NULL DEFAULT 0,
   `role_modified_by` integer(11) NULL DEFAULT NULL,
   `role_modified_on` datetime NULL DEFAULT NULL,
   `role_name` varchar(255) NOT NULL,
-  `role_permissions` mediumtext NULL,
+  `role_permissions` mediumtext NULL DEFAULT NULL,
   `role_role_mask` integer(11) NULL DEFAULT NULL,
   `role_role_mask2` integer(11) NULL DEFAULT NULL,
   `role_role_mask3` integer(11) NULL DEFAULT NULL,
@@ -1125,7 +1125,7 @@ CREATE TABLE `mt_role` (
   INDEX `mt_role_is_system` (`role_is_system`),
   INDEX `mt_role_name` (`role_name`),
   PRIMARY KEY (`role_id`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET utf8;
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 DROP TABLE IF EXISTS `mt_session`;
 
@@ -1133,7 +1133,7 @@ DROP TABLE IF EXISTS `mt_session`;
 -- Table: `mt_session`
 --
 CREATE TABLE `mt_session` (
-  `session_data` mediumblob NULL,
+  `session_data` mediumblob NULL DEFAULT NULL,
   `session_duration` integer(11) NULL DEFAULT NULL,
   `session_email` varchar(255) NULL DEFAULT NULL,
   `session_id` varchar(80) NOT NULL,
@@ -1145,7 +1145,7 @@ CREATE TABLE `mt_session` (
   INDEX `mt_session_name` (`session_name`),
   INDEX `mt_session_start` (`session_start`),
   PRIMARY KEY (`session_id`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 DROP TABLE IF EXISTS `mt_tag`;
 
@@ -1162,7 +1162,7 @@ CREATE TABLE `mt_tag` (
   INDEX `mt_tag_name_id` (`tag_name`, `tag_id`),
   INDEX `mt_tag_private_id_name` (`tag_is_private`, `tag_id`, `tag_name`),
   PRIMARY KEY (`tag_id`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET utf8;
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 DROP TABLE IF EXISTS `mt_tbping`;
 
@@ -1174,10 +1174,10 @@ CREATE TABLE `mt_tbping` (
   `tbping_blog_name` varchar(255) NULL DEFAULT NULL,
   `tbping_created_by` integer(11) NULL DEFAULT NULL,
   `tbping_created_on` datetime NULL DEFAULT NULL,
-  `tbping_excerpt` mediumtext NULL,
+  `tbping_excerpt` mediumtext NULL DEFAULT NULL,
   `tbping_id` integer(11) NOT NULL auto_increment,
   `tbping_ip` varchar(50) NOT NULL,
-  `tbping_junk_log` mediumtext NULL,
+  `tbping_junk_log` mediumtext NULL DEFAULT NULL,
   `tbping_junk_score` float NULL DEFAULT NULL,
   `tbping_junk_status` smallint(6) NOT NULL DEFAULT 1,
   `tbping_last_moved_on` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
@@ -1198,7 +1198,7 @@ CREATE TABLE `mt_tbping` (
   INDEX `mt_tbping_tb_visible` (`tbping_tb_id`, `tbping_visible`, `tbping_created_on`),
   INDEX `mt_tbping_visible_date` (`tbping_visible`, `tbping_created_on`),
   PRIMARY KEY (`tbping_id`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET utf8;
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 DROP TABLE IF EXISTS `mt_tbping_meta`;
 
@@ -1208,10 +1208,10 @@ DROP TABLE IF EXISTS `mt_tbping_meta`;
 CREATE TABLE `mt_tbping_meta` (
   `tbping_meta_tbping_id` integer(11) NOT NULL,
   `tbping_meta_type` varchar(75) NOT NULL,
-  `tbping_meta_vblob` mediumblob NULL,
+  `tbping_meta_vblob` mediumblob NULL DEFAULT NULL,
   `tbping_meta_vchar` varchar(255) NULL DEFAULT NULL,
   `tbping_meta_vchar_idx` varchar(255) NULL DEFAULT NULL,
-  `tbping_meta_vclob` mediumtext NULL,
+  `tbping_meta_vclob` mediumtext NULL DEFAULT NULL,
   `tbping_meta_vdatetime` datetime NULL DEFAULT NULL,
   `tbping_meta_vdatetime_idx` datetime NULL DEFAULT NULL,
   `tbping_meta_vfloat` float NULL DEFAULT NULL,
@@ -1223,7 +1223,7 @@ CREATE TABLE `mt_tbping_meta` (
   INDEX `mt_tbping_meta_type_vflt` (`tbping_meta_type`, `tbping_meta_vfloat_idx`),
   INDEX `mt_tbping_meta_type_vint` (`tbping_meta_type`, `tbping_meta_vinteger_idx`),
   PRIMARY KEY (`tbping_meta_tbping_id`, `tbping_meta_type`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 DROP TABLE IF EXISTS `mt_template`;
 
@@ -1249,7 +1249,7 @@ CREATE TABLE `mt_template` (
   `template_name` varchar(255) NOT NULL,
   `template_outfile` varchar(255) NULL DEFAULT NULL,
   `template_rebuild_me` tinyint(4) NULL DEFAULT NULL,
-  `template_text` mediumtext NULL,
+  `template_text` mediumtext NULL DEFAULT NULL,
   `template_type` varchar(25) NOT NULL,
   INDEX `mt_template_blog_id` (`template_blog_id`),
   INDEX `mt_template_content_type_id` (`template_content_type_id`),
@@ -1258,7 +1258,7 @@ CREATE TABLE `mt_template` (
   INDEX `mt_template_outfile` (`template_outfile`),
   INDEX `mt_template_type` (`template_type`),
   PRIMARY KEY (`template_id`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET utf8;
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 DROP TABLE IF EXISTS `mt_template_meta`;
 
@@ -1268,10 +1268,10 @@ DROP TABLE IF EXISTS `mt_template_meta`;
 CREATE TABLE `mt_template_meta` (
   `template_meta_template_id` integer(11) NOT NULL,
   `template_meta_type` varchar(75) NOT NULL,
-  `template_meta_vblob` mediumblob NULL,
+  `template_meta_vblob` mediumblob NULL DEFAULT NULL,
   `template_meta_vchar` varchar(255) NULL DEFAULT NULL,
   `template_meta_vchar_idx` varchar(255) NULL DEFAULT NULL,
-  `template_meta_vclob` mediumtext NULL,
+  `template_meta_vclob` mediumtext NULL DEFAULT NULL,
   `template_meta_vdatetime` datetime NULL DEFAULT NULL,
   `template_meta_vdatetime_idx` datetime NULL DEFAULT NULL,
   `template_meta_vfloat` float NULL DEFAULT NULL,
@@ -1283,7 +1283,7 @@ CREATE TABLE `mt_template_meta` (
   INDEX `mt_template_meta_type_vflt` (`template_meta_type`, `template_meta_vfloat_idx`),
   INDEX `mt_template_meta_type_vint` (`template_meta_type`, `template_meta_vinteger_idx`),
   PRIMARY KEY (`template_meta_template_id`, `template_meta_type`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 DROP TABLE IF EXISTS `mt_template_rev`;
 
@@ -1304,7 +1304,7 @@ CREATE TABLE `mt_template_rev` (
   `template_rev_template_id` integer(11) NOT NULL,
   INDEX `mt_template_rev_template_id` (`template_rev_template_id`),
   PRIMARY KEY (`template_rev_id`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 DROP TABLE IF EXISTS `mt_templatemap`;
 
@@ -1327,7 +1327,7 @@ CREATE TABLE `mt_templatemap` (
   INDEX `mt_templatemap_is_preferred` (`templatemap_is_preferred`),
   INDEX `mt_templatemap_template_id` (`templatemap_template_id`),
   PRIMARY KEY (`templatemap_id`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET utf8;
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 DROP TABLE IF EXISTS `mt_touch`;
 
@@ -1341,7 +1341,7 @@ CREATE TABLE `mt_touch` (
   `touch_object_type` varchar(255) NULL DEFAULT NULL,
   INDEX `mt_touch_blog_type` (`touch_blog_id`, `touch_object_type`, `touch_modified_on`),
   PRIMARY KEY (`touch_id`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET utf8;
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 DROP TABLE IF EXISTS `mt_trackback`;
 
@@ -1353,7 +1353,7 @@ CREATE TABLE `mt_trackback` (
   `trackback_category_id` integer(11) NOT NULL DEFAULT 0,
   `trackback_created_by` integer(11) NULL DEFAULT NULL,
   `trackback_created_on` datetime NULL DEFAULT NULL,
-  `trackback_description` mediumtext NULL,
+  `trackback_description` mediumtext NULL DEFAULT NULL,
   `trackback_entry_id` integer(11) NOT NULL DEFAULT 0,
   `trackback_id` integer(11) NOT NULL auto_increment,
   `trackback_is_disabled` tinyint(4) NULL DEFAULT 0,
@@ -1368,7 +1368,7 @@ CREATE TABLE `mt_trackback` (
   INDEX `mt_trackback_created_on` (`trackback_created_on`),
   INDEX `mt_trackback_entry_id` (`trackback_entry_id`),
   PRIMARY KEY (`trackback_id`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET utf8;
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 DROP TABLE IF EXISTS `mt_ts_error`;
 
@@ -1383,7 +1383,7 @@ CREATE TABLE `mt_ts_error` (
   INDEX `mt_ts_error_error_time` (`ts_error_error_time`),
   INDEX `mt_ts_error_funcid_time` (`ts_error_funcid`, `ts_error_error_time`),
   INDEX `mt_ts_error_jobid` (`ts_error_jobid`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 DROP TABLE IF EXISTS `mt_ts_exitstatus`;
 
@@ -1399,7 +1399,7 @@ CREATE TABLE `mt_ts_exitstatus` (
   INDEX `mt_ts_exitstatus_delete_after` (`ts_exitstatus_delete_after`),
   INDEX `mt_ts_exitstatus_funcid` (`ts_exitstatus_funcid`),
   PRIMARY KEY (`ts_exitstatus_jobid`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 DROP TABLE IF EXISTS `mt_ts_funcmap`;
 
@@ -1411,7 +1411,7 @@ CREATE TABLE `mt_ts_funcmap` (
   `ts_funcmap_funcname` varchar(255) NOT NULL,
   PRIMARY KEY (`ts_funcmap_funcid`),
   UNIQUE `mt_ts_funcmap_funcname` (`ts_funcmap_funcname`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 DROP TABLE IF EXISTS `mt_ts_job`;
 
@@ -1419,7 +1419,7 @@ DROP TABLE IF EXISTS `mt_ts_job`;
 -- Table: `mt_ts_job`
 --
 CREATE TABLE `mt_ts_job` (
-  `ts_job_arg` mediumblob NULL,
+  `ts_job_arg` mediumblob NULL DEFAULT NULL,
   `ts_job_coalesce` varchar(255) NULL DEFAULT NULL,
   `ts_job_funcid` integer(11) NOT NULL,
   `ts_job_grabbed_until` integer(11) NOT NULL,
@@ -1433,7 +1433,7 @@ CREATE TABLE `mt_ts_job` (
   INDEX `mt_ts_job_funcrun` (`ts_job_funcid`, `ts_job_run_after`),
   PRIMARY KEY (`ts_job_jobid`),
   UNIQUE `mt_ts_job_uniqfunc` (`ts_job_funcid`, `ts_job_uniqkey`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 SET foreign_key_checks=1;
 

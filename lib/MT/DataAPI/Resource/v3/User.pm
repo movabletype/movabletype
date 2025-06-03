@@ -15,4 +15,25 @@ use MT::Author;
 use MT::DataAPI::Resource::Common;
 use MT::DataAPI::Resource::v1::User;
 
+sub updatable_fields {
+    [ qw( apiPassword ), ];
+}
+
+sub fields {
+    [   apiPassword => {
+            name        => 'apiPassword',
+            alias       => 'api_password',
+            from_object => undef,
+            to_object   => sub {
+                my ( $hash, $obj ) = @_;
+                my $pass = $hash->{apiPassword};
+                if ( length $pass ) {
+                    $obj->api_password($pass);
+                }
+                return;
+            },
+        },
+    ];
+}
+
 1;
