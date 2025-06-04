@@ -15044,6 +15044,7 @@ li.nav-item, .mt-sharedPreviewNav .mt-sharedPreviewNav__rightNav li.mt-sharedPre
   }
   .site-list-button-modal .site-list-container table td .site-list-table-bagde-container {
     display: flex;
+    justify-content: space-between;
     flex-direction: row;
     flex-wrap: nowrap;
     align-items: center;
@@ -15053,8 +15054,6 @@ li.nav-item, .mt-sharedPreviewNav .mt-sharedPreviewNav__rightNav li.mt-sharedPre
   }
   .site-list-button-modal .site-list-container table td .site-list-table-action-buttons-mobile {
     display: flex;
-    flex-grow: 1;
-    justify-content: space-between;
   }
 }
 @media (max-width: 767.98px) {

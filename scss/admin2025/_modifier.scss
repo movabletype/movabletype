@@ -3840,6 +3840,7 @@ body:has(.mt-primaryNavigation) {
 
           .site-list-table-bagde-container {
             display: flex;
+            justify-content: space-between;
             flex-direction: row;
             flex-wrap: nowrap;
             align-items: center;
@@ -3851,8 +3852,6 @@ body:has(.mt-primaryNavigation) {
 
           .site-list-table-action-buttons-mobile {
             display: flex;
-            flex-grow: 1;
-            justify-content: space-between;
           }
         }
       }
