@@ -449,9 +449,10 @@ our %Requirements = (
         url    => "https://metacpan.org/pod/YAML::Tiny",
     },
     "YAML::XS" => {
-        label => "YAML::XS is optional; It is a better, fast and lightweight alternative to YAML::Tiny for YAML file handling.",
-        tags  => ["YAML", "Performance"],
-        url   => "https://metacpan.org/pod/YAML::XS",
+        label   => "YAML::XS is optional; It is a better, fast and lightweight alternative to YAML::Tiny for YAML file handling.",
+        tags    => ["YAML", "Performance"],
+        url     => "https://metacpan.org/pod/YAML::XS",
+        version => "v0.903.0",
     },
 );
 
