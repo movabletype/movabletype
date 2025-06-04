@@ -3559,7 +3559,6 @@ body:has(.mt-primaryNavigation) {
         padding: 14px var(--td-horizontal-spacing);
         width: 100%;
         overflow: hidden;
-        text-overflow: ellipsis;
         white-space: nowrap;
         position: relative;
 
@@ -3608,8 +3607,8 @@ body:has(.mt-primaryNavigation) {
           overflow: hidden;
           text-overflow: ellipsis;
           white-space: nowrap;
-          // svg icon 16px, margin-right 7px, td padding 16px
-          max-width: calc(100% - (16px + 7px + 16px));
+          // svg icon 16px, td padding 16px * 2, badge 74px
+          max-width: calc(100% - (16px + 16px * 2 + 74px));
 
           .mt-icon {
             margin-right: 7px;
