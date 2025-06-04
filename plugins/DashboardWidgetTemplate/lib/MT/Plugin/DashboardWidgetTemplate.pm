@@ -4,6 +4,8 @@ use strict;
 use warnings;
 use utf8;
 
+use MT::Util qw( encode_html );
+
 sub component {
     __PACKAGE__ =~ m/::([^:]+)\z/;
 }
@@ -241,9 +243,15 @@ sub cms_widgets {
     while (my $tmpl = $iter->()) {
         my $tmpl_id      = $tmpl->id;
         my $tmpl_blog_id = $tmpl->blog_id;
-        my $id           = 'dashboard_widget_template_' . $tmpl->id;
+        my $tmpl_name    = $tmpl->name;
+        my $pinned       = $tmpl->meta('dashboard_widget_pinned');
+        my $id           = 'dashboard_widget_template_' . $tmpl->id . ($pinned ? '_pinned' : '');
         $widgets->{$id} = {
-            label    => $tmpl->name,
+            label => sub {
+                (!$tmpl_blog_id || MT->instance->blog)
+                    ? $tmpl_name
+                    : ($tmpl_name . ' - ' . MT->model('blog')->load($tmpl_blog_id)->name);
+            },
             plugin   => plugin(),
             template => 'dashboard_widget_template.tmpl',
             handler  => sub {
@@ -254,9 +262,23 @@ sub cms_widgets {
                 if (my $blog = $app->blog) {
                     $ctx->stash('blog_id', $blog->id);
                     $ctx->stash('blog',    $blog);
+                    $t->param('label', encode_html($local_tmpl->name));
+                } elsif (!$tmpl_blog_id) {
+                    $t->param('label', encode_html($local_tmpl->name));
+                } else {
+                    my $tmpl_blog = MT->model('blog')->load($tmpl_blog_id);
+                    $t->param(
+                        'label',
+                        encode_html($local_tmpl->name) . ' - <a href="' . $app->mt_uri(
+                            args => {
+                                blog_id => $tmpl_blog_id,
+                            },
+                            )
+                            . '">'
+                            . encode_html($tmpl_blog->name) . '</a>'
+                    );
                 }
-                $t->param('label',     $local_tmpl->name);
-                $t->param('can_close', $local_tmpl->meta('dashboard_widget_pinned') ? 0 : 1);
+                $t->param('can_close', $pinned ? 0 : 1);
                 require MT::Sanitize;
                 $t->param(
                     'content',
@@ -264,14 +286,23 @@ sub cms_widgets {
                         $local_tmpl->output,
                         MT::Sanitize->parse_spec('* class style aria-label aria-labelledby aria-describedby aria-hidden,a href target,br/,img/ src alt,form,input/ type name value,select/ name,option value,button/ type,b,label,legend,strong,em,i,ul,li,ol,p,div,h1,h2,h3,h4,h5,h6,div,span')));
             },
-            singular  => 1,
-            set       => 'main',
-            view      => $tmpl_blog_id ? ['website', 'blog'] : 'user',
+            singular => 1,
+            set      => 'main',
+            view     => $tmpl_blog_id
+            ? $pinned
+                    ? ['website', 'blog']
+                    : ['user',    'website', 'blog']
+            : 'user',
             order     => sprintf("30.%03d", $order++),
-            pinned    => $tmpl->meta('dashboard_widget_pinned'),
+            pinned    => $pinned,
             condition => sub {
-                my $blog_id = MT->instance->param('blog_id') || 0;
-                $blog_id ? $tmpl_blog_id == $blog_id : !$tmpl_blog_id;
+                my $app     = MT->instance;
+                my $blog_id = $app->param('blog_id') || 0;
+
+                return
+                      $blog_id      ? $tmpl_blog_id == $blog_id
+                    : $tmpl_blog_id ? $app->user->has_perm($tmpl_blog_id)
+                    :                 1;
             },
         };
     }
