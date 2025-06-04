@@ -1841,7 +1841,7 @@ sub endpoints {
             },
         },
         {
-            id              => 'get_widgets',
+            id              => 'get_widget',
             route           => '/sites/:site_id/widgets/:widget_id',
             version         => 2,
             handler         => '$Core::MT::DataAPI::Endpoint::v2::Widget::get',
