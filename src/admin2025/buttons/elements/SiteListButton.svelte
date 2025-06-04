@@ -11,7 +11,7 @@
   export let open: boolean = false;
   export let buttonRef: HTMLElement;
   export let anchorRef: HTMLElement;
-  export let initialFavoriteSites: number[];
+  export let initialStarredSites: number[];
   $: {
     if (anchorRef) {
       if (open) {
@@ -26,12 +26,12 @@
     open = false;
   };
 
-  let favoriteSiteStore: Record<number, Site> = {};
+  let starredSiteStore: Record<number, Site> = {};
   let siteStore: Site[] = [];
-  let activeFavoriteSites: number[] = [];
+  let activeStarredSites: number[] = [];
 
   let sites: Site[] = [];
-  let favoriteSites: number[] = initialFavoriteSites; // copy to local variable
+  let starredSites: number[] = initialStarredSites; // copy to local variable
   let totalCount = 0;
   let page = 1;
   let pageMax = 1;
@@ -67,7 +67,7 @@
   };
   const filterApply = (): void => {
     siteStore = [];
-    activeFavoriteSites = favoriteSites; // save current favorite sites for this filter session
+    activeStarredSites = starredSites; // save current starred sites for this filter session
 
     items = [];
     if (siteType === "child_sites_only") {
@@ -105,23 +105,23 @@
       pageMax = result.pageMax;
       page = pageMax !== 0 ? result.page : 0;
 
-      const notFoundFavoriteSites: number[] = [];
-      activeFavoriteSites.forEach((id) => {
+      const notFoundStarredSites: number[] = [];
+      activeStarredSites.forEach((id) => {
         const index = result.sites.findIndex((site) => Number(site.id) === id);
         if (index !== -1) {
-          favoriteSiteStore[id] = result.sites[index];
+          starredSiteStore[id] = result.sites[index];
           result.sites.splice(index, 1);
         } else {
-          const site = favoriteSiteStore[id];
+          const site = starredSiteStore[id];
           if (!site) {
-            notFoundFavoriteSites.push(id);
+            notFoundStarredSites.push(id);
           } else {
             const isChildSite = site.parentSiteName.match(/^<a/);
             if (
               (siteType === "child_sites_only" && !isChildSite) ||
               (siteType === "parent_sites" && isChildSite)
             ) {
-              activeFavoriteSites = activeFavoriteSites.filter(
+              activeStarredSites = activeStarredSites.filter(
                 (_id) => _id !== id,
               );
             }
@@ -130,7 +130,7 @@
       });
       siteStore = [...result.sites];
 
-      if (notFoundFavoriteSites.length > 0) {
+      if (notFoundStarredSites.length > 0) {
         const result = await fetchSites({
           magicToken: magicToken,
           items: [
@@ -139,7 +139,7 @@
               type: "pack",
               args: {
                 op: "or",
-                items: notFoundFavoriteSites.map((id) => ({
+                items: notFoundStarredSites.map((id) => ({
                   type: "id",
                   args: { value: id, option: "equal" },
                 })),
@@ -149,33 +149,31 @@
           page: 0,
           limit: 200, // FIXME: 200 is a magic number
         });
-        notFoundFavoriteSites.forEach((id) => {
+        notFoundStarredSites.forEach((id) => {
           const index = result.sites.findIndex(
             (site) => Number(site.id) === id,
           );
           if (index !== -1) {
-            favoriteSiteStore[id] = result.sites[index];
+            starredSiteStore[id] = result.sites[index];
           } else {
-            activeFavoriteSites = activeFavoriteSites.filter(
-              (_id) => _id !== id,
-            );
+            activeStarredSites = activeStarredSites.filter((_id) => _id !== id);
             // this siteId is not longer available
-            favoriteSites = favoriteSites.filter((_id) => _id !== id);
+            starredSites = starredSites.filter((_id) => _id !== id);
           }
         });
       }
 
-      for (let i = 0; i < limit && i < activeFavoriteSites.length; i++) {
-        sites.push(favoriteSiteStore[activeFavoriteSites[i]]);
+      for (let i = 0; i < limit && i < activeStarredSites.length; i++) {
+        sites.push(starredSiteStore[activeStarredSites[i]]);
       }
       for (let i = 0; i < siteStore.length && sites.length < limit; i++) {
         sites.push(siteStore[i]);
       }
     } else {
-      const favSiteCount = activeFavoriteSites.length;
+      const favSiteCount = activeStarredSites.length;
       const offset = (page - 1) * limit;
       for (let i = offset; i < favSiteCount && sites.length < limit; i++) {
-        sites.push(favoriteSiteStore[activeFavoriteSites[i]]);
+        sites.push(starredSiteStore[activeStarredSites[i]]);
       }
       for (
         let i = offset - favSiteCount;
@@ -188,7 +186,7 @@
             magicToken,
             items: [
               ...items,
-              ...activeFavoriteSites.map((id) => ({
+              ...activeStarredSites.map((id) => ({
                 type: "id",
                 args: { value: id, option: "not_equal" },
               })),
@@ -208,11 +206,11 @@
     loading = false;
   };
 
-  const _saveFavoriteSites = async (favoriteSites: number[]): Promise<void> => {
+  const _saveStarredSites = async (starredSites: number[]): Promise<void> => {
     const body = new FormData();
     body.append("__mode", "save_starred_sites");
     body.append("magic_token", magicToken);
-    favoriteSites.forEach((id) => {
+    starredSites.forEach((id) => {
       body.append("id", String(id));
     });
     return fetch(window.ScriptURI, {
@@ -230,24 +228,24 @@
       });
   };
 
-  const updateFavoriteSites = (newFavoriteSites: number[]): void => {
-    const oldFavoriteSites = [...favoriteSites];
-    favoriteSites = newFavoriteSites;
-    _saveFavoriteSites(favoriteSites).catch((err) => {
+  const updateStarredSites = (newStarredSites: number[]): void => {
+    const oldStarredSites = [...starredSites];
+    starredSites = newStarredSites;
+    _saveStarredSites(starredSites).catch((err) => {
       alert(err.message);
-      favoriteSites = oldFavoriteSites;
+      starredSites = oldStarredSites;
     });
   };
 
-  const addFavoriteSite = (e: MouseEvent, site: Site): void => {
+  const addStarredSite = (e: MouseEvent, site: Site): void => {
     e.stopPropagation();
-    updateFavoriteSites([...new Set([...favoriteSites, Number(site.id)])]);
+    updateStarredSites([...new Set([...starredSites, Number(site.id)])]);
   };
 
-  const removeFavoriteSite = (e: MouseEvent, site: Site): void => {
+  const removeStarredSite = (e: MouseEvent, site: Site): void => {
     e.stopPropagation();
     const siteId = Number(site.id);
-    updateFavoriteSites(favoriteSites.filter((id) => id !== siteId));
+    updateStarredSites(starredSites.filter((id) => id !== siteId));
   };
 
   const clickEvent = (e: MouseEvent): void => {
@@ -269,7 +267,7 @@
     jQuery(tableBodyRef).sortable({
       delay: 100,
       distance: 3,
-      items: "tr[data-favorite-site-id]",
+      items: "tr[data-starred-site-id]",
       handle: ".site-list-table-sortable-handle",
       opacity: 0.8,
       start: function (_, ui) {
@@ -293,16 +291,16 @@
         if (!tableBodyRef) {
           return;
         }
-        favoriteSites = [];
+        starredSites = [];
         tableBodyRef.querySelectorAll("tr").forEach((elm) => {
-          const favoriteSiteId = elm.dataset.favoriteSiteId;
-          if (favoriteSiteId) {
-            favoriteSites.push(Number(favoriteSiteId));
+          const starredSiteId = elm.dataset.starredSiteId;
+          if (starredSiteId) {
+            starredSites.push(Number(starredSiteId));
           }
         });
-        for (let i = favoriteSites.length - 1; i >= 0; i--) {
+        for (let i = starredSites.length - 1; i >= 0; i--) {
           const siteIndex = sites.findIndex(
-            (site) => Number(site.id) === favoriteSites[i],
+            (site) => Number(site.id) === starredSites[i],
           );
           if (siteIndex !== -1) {
             const [site] = sites.splice(siteIndex, 1);
@@ -310,7 +308,7 @@
           }
         }
 
-        updateFavoriteSites(favoriteSites);
+        updateStarredSites(starredSites);
       },
     });
   };
@@ -453,9 +451,7 @@
               {:else}
                 {#each sites as site (site.id)}
                   <tr
-                    data-favorite-site-id={favoriteSites.includes(
-                      Number(site.id),
-                    )
+                    data-starred-site-id={starredSites.includes(Number(site.id))
                       ? site.id
                       : undefined}
                   >
@@ -471,28 +467,28 @@
                           >
                         {/if}
                         <span class="site-list-table-action-buttons-mobile">
-                          {#if favoriteSites.includes(Number(site.id))}
+                          {#if starredSites.includes(Number(site.id))}
                             <button
-                              on:click={(ev) => removeFavoriteSite(ev, site)}
+                              on:click={(ev) => removeStarredSite(ev, site)}
                               aria-label={window.trans(
-                                "Remove from favorite sites",
+                                "Remove from starred sites",
                               )}
                               aria-pressed="true"
-                              title={window.trans("Remove from favorite sites")}
+                              title={window.trans("Remove from starred sites")}
                               ><span>★</span></button
                             >
                           {:else}
                             <button
-                              on:click={(ev) => addFavoriteSite(ev, site)}
-                              aria-label={window.trans("Add to favorite sites")}
+                              on:click={(ev) => addStarredSite(ev, site)}
+                              aria-label={window.trans("Add to starred sites")}
                               aria-pressed="false"
-                              title={window.trans("Add to favorite sites")}
+                              title={window.trans("Add to starred sites")}
                               ><span>☆</span></button
                             >
                           {/if}
                           <span
                             class="site-list-table-sortable-handle"
-                            style={favoriteSites.includes(Number(site.id))
+                            style={starredSites.includes(Number(site.id))
                               ? "cursor: move"
                               : "visibility: hidden;"}
                           >
@@ -532,28 +528,28 @@
                     </td>
                     <td class="site-list-table-action">
                       <span class="site-list-table-action-buttons">
-                        {#if favoriteSites.includes(Number(site.id))}
+                        {#if starredSites.includes(Number(site.id))}
                           <button
-                            on:click={(ev) => removeFavoriteSite(ev, site)}
+                            on:click={(ev) => removeStarredSite(ev, site)}
                             aria-label={window.trans(
-                              "Remove from favorite sites",
+                              "Remove from starred sites",
                             )}
                             aria-pressed="true"
-                            title={window.trans("Remove from favorite sites")}
+                            title={window.trans("Remove from starred sites")}
                             ><span>★</span></button
                           >
                         {:else}
                           <button
-                            on:click={(ev) => addFavoriteSite(ev, site)}
-                            aria-label={window.trans("Add to favorite sites")}
+                            on:click={(ev) => addStarredSite(ev, site)}
+                            aria-label={window.trans("Add to starred sites")}
                             aria-pressed="false"
-                            title={window.trans("Add to favorite sites")}
+                            title={window.trans("Add to starred sites")}
                             ><span>☆</span></button
                           >
                         {/if}
                         <span
                           class="site-list-table-sortable-handle"
-                          style={favoriteSites.includes(Number(site.id))
+                          style={starredSites.includes(Number(site.id))
                             ? "cursor: move"
                             : "visibility: hidden;"}
                         >

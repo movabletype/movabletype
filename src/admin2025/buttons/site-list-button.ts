@@ -6,7 +6,7 @@ type SiteListButtonProps = {
   open: boolean;
   buttonRef: HTMLElement;
   anchorRef: HTMLElement;
-  initialFavoriteSites: number[];
+  initialStarredSites: number[];
 };
 
 export function svelteMountSiteListButton(
