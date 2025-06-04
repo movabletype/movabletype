@@ -247,7 +247,7 @@ sub thumbnail_file {
             require MT::Image;
             my ( $t_w, $t_h )
                 = MT::Image->get_image_info( Filename => $thumbnail );
-            if (   ( $param{Square} && $t_h != $t_w )
+            if ( !$t_h || !$t_w || ( $param{Square} && $t_h != $t_w )
                 || ( !$param{Square} && $t_h == $t_w ) )
             {
                 $already_exists = 0;
