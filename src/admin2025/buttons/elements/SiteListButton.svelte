@@ -272,9 +272,25 @@
       handle: ".site-list-table-sortable-handle",
       opacity: 0.8,
       start: function (_, ui) {
-        ui.placeholder.html(
-          "<td></td><td class='site-list-table-parent-site'></td><td class='site-list-table-action'></td>",
+        if (!tableBodyRef) {
+          return;
+        }
+        const columnSizePlaceholder = document.createElement("tr");
+        columnSizePlaceholder.classList.add(
+          "site-list-table-placeholder"
         );
+        columnSizePlaceholder.innerHTML =
+          "<td></td><td class='site-list-table-parent-site'></td><td class='site-list-table-action'></td>";
+        tableBodyRef.insertBefore(
+          columnSizePlaceholder,
+          tableBodyRef.firstChild
+        );
+        ui.placeholder.height(ui.item.height() as number);
+      },
+      stop: function () {
+        tableBodyRef
+          ?.querySelector(".site-list-table-placeholder")
+          ?.remove();
       },
       update: () => {
         if (!tableBodyRef) {

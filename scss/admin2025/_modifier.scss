@@ -3547,6 +3547,13 @@ body:has(.mt-primaryNavigation) {
       tr {
         text-align: left;
         background: #ffffff;
+
+        &.site-list-table-placeholder {
+          td {
+            padding: 0;
+            border: none;
+          }
+        }
       }
       tbody {
         overflow-y: scroll;
