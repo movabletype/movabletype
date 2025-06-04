@@ -269,6 +269,7 @@
     jQuery(tableBodyRef).sortable({
       delay: 100,
       distance: 3,
+      items: "tr[data-favorite-site-id]",
       handle: ".site-list-table-sortable-handle",
       opacity: 0.8,
       start: function (_, ui) {
@@ -276,21 +277,17 @@
           return;
         }
         const columnSizePlaceholder = document.createElement("tr");
-        columnSizePlaceholder.classList.add(
-          "site-list-table-placeholder"
-        );
+        columnSizePlaceholder.classList.add("site-list-table-placeholder");
         columnSizePlaceholder.innerHTML =
           "<td></td><td class='site-list-table-parent-site'></td><td class='site-list-table-action'></td>";
         tableBodyRef.insertBefore(
           columnSizePlaceholder,
-          tableBodyRef.firstChild
+          tableBodyRef.firstChild,
         );
         ui.placeholder.height(ui.item.height() as number);
       },
       stop: function () {
-        tableBodyRef
-          ?.querySelector(".site-list-table-placeholder")
-          ?.remove();
+        tableBodyRef?.querySelector(".site-list-table-placeholder")?.remove();
       },
       update: () => {
         if (!tableBodyRef) {
@@ -463,15 +460,51 @@
                       : undefined}
                   >
                     <td>
-                      {#if site.parentSiteName === "-"}
-                        <span class="badge badge-site"
-                          >{window.trans("Site")}</span
-                        >
-                      {:else}
-                        <span class="badge badge-child-site"
-                          >{window.trans("Child Site")}</span
-                        >
-                      {/if}
+                      <span class="site-list-table-bagde-container">
+                        {#if site.parentSiteName === "-"}
+                          <span class="badge badge-site"
+                            >{window.trans("Site")}</span
+                          >
+                        {:else}
+                          <span class="badge badge-child-site"
+                            >{window.trans("Child Site")}</span
+                          >
+                        {/if}
+                        <span class="site-list-table-action-buttons-mobile">
+                          {#if favoriteSites.includes(Number(site.id))}
+                            <button
+                              on:click={(ev) => removeFavoriteSite(ev, site)}
+                              aria-label={window.trans(
+                                "Remove from favorite sites",
+                              )}
+                              aria-pressed="true"
+                              title={window.trans("Remove from favorite sites")}
+                              ><span>★</span></button
+                            >
+                          {:else}
+                            <button
+                              on:click={(ev) => addFavoriteSite(ev, site)}
+                              aria-label={window.trans("Add to favorite sites")}
+                              aria-pressed="false"
+                              title={window.trans("Add to favorite sites")}
+                              ><span>☆</span></button
+                            >
+                          {/if}
+                          <span
+                            class="site-list-table-sortable-handle"
+                            style={favoriteSites.includes(Number(site.id))
+                              ? "cursor: move"
+                              : "visibility: hidden;"}
+                          >
+                            <SVG
+                              title={window.trans("Move")}
+                              class="mt-icon"
+                              href={`${window.StaticURI}images/admin2025/sprite.svg#ic_move`}
+                              style="height: 15px;"
+                            />
+                          </span>
+                        </span>
+                      </span>
                       <a
                         href={`${window.ScriptURI}?__mode=dashboard&blog_id=${site.id}`}
                         class="dashboard-link"
