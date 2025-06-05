@@ -176,7 +176,7 @@
         sites.push(starredSiteStore[activeStarredSites[i]]);
       }
       for (
-        let i = offset - favSiteCount;
+        let i = Math.max(offset - favSiteCount, 0);
         i < totalCount - favSiteCount && sites.length < limit;
         i++
       ) {
