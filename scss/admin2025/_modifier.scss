@@ -803,7 +803,7 @@ html[data-screen-id=dashboard][data-scope-type=user] {
   & > a{
     border-bottom: 1px solid $gray-lighter;
     &:after{
-          display: inline-block;
+          display: block;
           width: 0;
           height: 0;
           float: right;
@@ -2133,7 +2133,6 @@ fieldset.form-group{
     margin-bottom: 0;
   }
   &:last-child{
-    margin-bttom: 0;
     padding-bottom: 1rem;
     border-bottom: 0;
   }
@@ -2156,7 +2155,7 @@ fieldset.form-group{
   strong{
     font-size: 1.25rem;
     &.number{
-      font-famly: $font-family-numbers;
+      font-family: $font-family-numbers;
       font-size: 2rem;
       letter-spacing: -0.05rem;
     }
