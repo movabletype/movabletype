@@ -4085,7 +4085,9 @@ sub _hdlr_app_svg_icon {
     );
 
     my $tmpl = $app->load_core_tmpl( 'cms/include/svg_icon.tmpl', \%param );
-    return $ctx->build( $tmpl->output() );
+    my $output = $ctx->build( $tmpl->output() );
+    chomp $output;
+    return $output;
 }
 
 ###########################################################################
