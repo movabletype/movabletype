@@ -191,7 +191,7 @@
                 args: { value: id, option: "not_equal" },
               })),
             ],
-            page,
+            page: page + 1, // listing framework's page parameter is 1-indexed
             limit,
           });
           const storeOffset = page * limit;
