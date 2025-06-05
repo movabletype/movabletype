@@ -1,4 +1,4 @@
-SchemaVersion 9.0001
+SchemaVersion 9.0000
 plugins/BlockEditor
 plugins/ContentInfoWidget
 plugins/FormattedText

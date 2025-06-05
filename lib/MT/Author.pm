@@ -24,7 +24,7 @@ __PACKAGE__->install_properties(
             'url'                  => 'string(255)',
             'public_key'           => 'text',
             'preferred_language'   => 'string(50)',
-            'api_password'         => 'string(106)',
+            'api_password'         => 'string(60)',
             'remote_auth_username' => 'string(50)',
             'remote_auth_token'    => 'string(50)',
             'entry_prefs'          => 'string(255)',
@@ -694,33 +694,30 @@ sub remove_failedlogin {
 }
 
 sub set_password {
-    my $auth = shift;
+    my $auth   = shift;
     my ($pass) = @_;
-    $auth->column('password', crypt_password($pass));
-}
+    my @alpha  = ( 'a' .. 'z', 'A' .. 'Z', 0 .. 9 );
+    my $salt   = join '', map $alpha[ rand @alpha ], 1 .. 16;
+    my $crypt_sha;
 
-sub api_password {
-    my $self = shift;
-    if (@_) {
-        my ($new_password) = @_;
-        my $crypted = length($new_password) ? crypt_password($new_password) : '';
-        $self->column('api_password', $crypted);
-    } else {
-        return $self->column('api_password');
+    if ( eval { require MT::Util::Digest::SHA } ) {
+
+        # Can use SHA512
+        $crypt_sha
+            = '$6$'
+            . $salt . '$'
+            . MT::Util::Digest::SHA::sha512_base64( $salt . MT::Util::Encode::encode_utf8($pass) );
     }
-}
+    else {
 
-sub crypt_password {
-    my $pass  = shift;
+        # Use SHA-1 algorism
+        $crypt_sha
+            = '{SHA}'
+            . $salt . '$'
+            . MT::Util::perl_sha1_digest_hex( $salt . $pass );
+    }
 
-    require MIME::Base64;
-    require Crypt::URandom;
-    my $salt = MIME::Base64::encode_base64(Crypt::URandom::urandom(12));
-    chomp($salt);
-    $salt =~ s/\+/./g;
-
-    require MT::Util::Digest::SHA;
-    return '$6$' . $salt . '$' . MT::Util::Digest::SHA::sha512_base64($salt . MT::Util::Encode::encode_utf8($pass));
+    $auth->column( 'password', $crypt_sha );
 }
 
 sub is_valid_password {
@@ -730,21 +727,6 @@ sub is_valid_password {
     require MT::Auth;
     return MT::Auth->is_valid_password( $author, $pass, $crypted,
         $error_ref );
-}
-
-sub is_valid_api_password {
-    my ($author, $pass) = @_;
-    $pass = '' unless length($pass);
-
-    my $real_pass = $author->column('api_password');
-    return if !$real_pass;
-
-    if ($real_pass =~ m/^\$6\$(.*)\$(.*)/) {
-        my ($salt, $value) = ($1, $2);
-        require MT::Util::Digest::SHA;
-        return $value eq MT::Util::Digest::SHA::sha512_base64($salt . MT::Util::Encode::encode_utf8($pass));
-    }
-    return;
 }
 
 sub is_email_hidden {
@@ -852,6 +834,16 @@ sub save {
     my $auth = shift;
 
     if ( $auth->type == AUTHOR ) {
+        if ( !$auth->id ) {
+
+            # New author, undefined API password. Generate one.
+            if ( !defined $auth->api_password ) {
+                my @pool = ( 'a' .. 'z', 0 .. 9 );
+                my $pass = '';
+                for ( 1 .. 8 ) { $pass .= $pool[ rand @pool ] }
+                $auth->api_password($pass);
+            }
+        }
 
         # Generate basename
         unless ( $auth->basename() ) {

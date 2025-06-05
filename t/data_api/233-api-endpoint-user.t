@@ -1083,34 +1083,6 @@ sub suite {
                 is( $user, undef, 'Deleted user.' );
             },
         },
-
-        # create_user - api password can't be specified
-        {   path         => '/v3/users',
-            method       => 'POST',
-            is_superuser => 1,
-            params       => {
-                user => {
-                    name         => 'create-user-without-apipassword',
-                    displayName  => 'create user without apipassword',
-                    password     => 'password',
-                    email        => 'chuckd@sixapart.com',
-                    url          => 'http://www.sixapart.com/',
-                    dateFormat   => 'full',
-                    textFormat   => 'richtext',
-                    tagDelimiter => 'space',
-                    language     => 'ja',
-                    apiPassword  => 'specific',
-                },
-            },
-            complete => sub {
-                my ($data, $body) = @_;
-                my $result = MT::Util::from_json($body);
-                my $user   = $app->model('author')->load({ name => 'create-user-without-apipassword' });
-                note 'apiPassword:' . ($result->{apiPassword} || '""');
-                is $result->{apiPassword}, undef, 'apiPassword is not set';
-                is $user->api_password,    undef, 'apiPassword is not set';
-            },
-        },
     ];
 }
 
