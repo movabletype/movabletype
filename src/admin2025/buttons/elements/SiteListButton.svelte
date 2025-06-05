@@ -267,7 +267,7 @@
     jQuery(tableBodyRef).sortable({
       delay: 100,
       distance: 3,
-      items: "tr[data-starred-site-id]",
+      items: "tr[data-is-starred]",
       handle: ".site-list-table-sortable-handle",
       opacity: 0.8,
       start: function (_, ui) {
@@ -291,23 +291,32 @@
         if (!tableBodyRef) {
           return;
         }
-        starredSites = [];
-        tableBodyRef.querySelectorAll("tr").forEach((elm) => {
-          const starredSiteId = elm.dataset.starredSiteId;
-          if (starredSiteId) {
-            starredSites.push(Number(starredSiteId));
-          }
-        });
-        for (let i = starredSites.length - 1; i >= 0; i--) {
-          const siteIndex = sites.findIndex(
-            (site) => Number(site.id) === starredSites[i],
-          );
-          if (siteIndex !== -1) {
-            const [site] = sites.splice(siteIndex, 1);
-            sites.unshift(site);
-          }
-        }
 
+        const updatedSites: Site[] = [];
+        const updatedStarredSites: number[] = [];
+        tableBodyRef
+          .querySelectorAll<HTMLTableRowElement>("tr[data-site-id]")
+          .forEach((elm) => {
+            const siteId = Number(elm.dataset.siteId);
+            if (elm.dataset.isStarred) {
+              updatedStarredSites.push(Number(siteId));
+            }
+            updatedSites.push(
+              sites.find((site) => Number(site.id) === siteId) as Site,
+            );
+          });
+        sites = updatedSites;
+
+        // Find the index of the first siteId to replace if paginated
+        const index = starredSites.findIndex((id) =>
+          updatedStarredSites.includes(id),
+        );
+        starredSites = [...starredSites]; // clone
+        starredSites.splice(
+          index,
+          updatedStarredSites.length,
+          ...updatedStarredSites,
+        );
         updateStarredSites(starredSites);
       },
     });
@@ -451,9 +460,9 @@
               {:else}
                 {#each sites as site (site.id)}
                   <tr
-                    data-starred-site-id={starredSites.includes(Number(site.id))
-                      ? site.id
-                      : undefined}
+                    data-site-id={site.id}
+                    data-is-starred={starredSites.includes(Number(site.id)) ||
+                      undefined}
                   >
                     <td>
                       <span class="site-list-table-bagde-container">
