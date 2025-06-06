@@ -47,6 +47,11 @@ if (siteListButtonTargets.length > 0 && magicToken !== "") {
       limit: Number.parseInt(limit),
       open: false,
       anchorRef: siteListButtonTarget,
+      initialStarredSites:
+        siteListButtonTarget.dataset.starredSites
+          ?.split(",")
+          .map(Number)
+          .filter(Number.isInteger) || [],
     });
   });
 }

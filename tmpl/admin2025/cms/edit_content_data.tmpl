@@ -555,12 +555,6 @@ div.mce-notification-error {
   <!--// this MUST loaded after mt.js // -->
   <mtapp:script path="js/edit.js">
 
-<mt:unless name="optimize_ui">
-  <mtapp:script path="jqueryui/jquery.ui.touch-punch.js">
-<mt:else>
-  <mtapp:script path="jqueryui/jquery.ui.touch-punch.min.js">
-</mt:unless>
-
   <script>
   function toggleFile() {
       var fld = getByID("basename");

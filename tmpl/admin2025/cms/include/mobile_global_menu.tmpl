@@ -60,7 +60,12 @@
             </li>
           <mt:else>
             <li class="mt-mobileGlobalMenu__menu mt-mobileGlobalMenu__menu--<mt:var name="id" escape="html">">
-              <span <mt:if name="id" eq="site">data-is="site-list-button"</mt:if>>
+              <span
+                <mt:if name="id" eq="site">data-is="site-list-button"</mt:if>
+                <mt:loop name="data">
+                    data-<mt:var name="__key__">="<mt:var name="__value__" escape="html">"
+                </mt:loop>
+              >
                 <a
                     href="<mt:var name="href" escape="html">"
                     <mt:if name="target">target="<mt:var name="target" escape="html">"</mt:if>

@@ -254,4 +254,62 @@ subtest 'save_favorite_blogs' => sub {
     };
 };
 
+subtest 'save_starred_sites' => sub {
+    subtest 'Update favorite sites' => sub {
+        $user->starred_sites([]);
+        $user->save;
+
+        my $app = MT::Test::App->new('MT::App::CMS');
+        $app->login($user);
+        $app->js_post_ok({
+            __mode => 'save_starred_sites',
+            id     => [1, 2],
+        });
+
+        is_deeply $user->starred_sites, [1, 2];
+    };
+
+    subtest 'Update favorite sites with the empty array' => sub {
+        $user->starred_sites([1, 2]);
+        $user->save;
+
+        my $app = MT::Test::App->new('MT::App::CMS');
+        $app->login($user);
+        $app->js_post_ok({
+            __mode => 'save_starred_sites',
+        });
+
+        is_deeply $user->starred_sites, [];
+    };
+
+    subtest 'Update favorite sites with the largest number of cases' => sub {
+        $user->starred_sites([]);
+        $user->save;
+
+        my $app = MT::Test::App->new('MT::App::CMS');
+        $app->login($user);
+        $app->js_post_ok({
+            __mode => 'save_starred_sites',
+            id     => [(1 .. $MT::Author::MAX_STARRED_SITES)],
+        });
+
+        is scalar @{ $user->starred_sites }, $MT::Author::MAX_STARRED_SITES;
+    };
+
+    subtest 'Failed to register more than the maximum number' => sub {
+        $user->starred_sites([]);
+        $user->save;
+
+        my $app = MT::Test::App->new('MT::App::CMS');
+        $app->login($user);
+        local $ENV{HTTP_X_REQUESTED_WITH} = 'XMLHttpRequest';
+        $app->post({
+            __mode => 'save_starred_sites',
+            id     => [(1 .. $MT::Author::MAX_STARRED_SITES + 1)],
+        });
+        $app->status_is(400);
+        ok $app->json->{error};
+    };
+};
+
 done_testing;

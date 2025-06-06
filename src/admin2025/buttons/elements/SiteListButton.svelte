@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount } from "svelte";
+  import { onMount, tick } from "svelte";
   import SVG from "../../../svg/elements/SVG.svelte";
   import { portal } from "svelte-portal";
   import { isOuterClick } from "../outerClick";
@@ -10,6 +10,7 @@
   export let limit: number = 50;
   export let open: boolean = false;
   export let anchorRef: HTMLElement;
+  export let initialStarredSites: number[];
   $: {
     if (anchorRef) {
       if (open) {
@@ -24,11 +25,17 @@
     open = false;
   };
 
+  let starredSiteStore: Record<number, Site> = {};
+  let siteStore: Site[] = [];
+  let activeStarredSites: number[] = [];
+
   let sites: Site[] = [];
+  let starredSites: number[] = initialStarredSites; // copy to local variable
   let totalCount = 0;
   let page = 1;
   let pageMax = 1;
-  let siteType = "parent_sites";
+  let siteType: "parent_sites" | "parent_and_child_sites" | "child_sites_only" =
+    "parent_and_child_sites";
   let filterSiteName = "";
   let items: Array<{
     type: string;
@@ -58,6 +65,9 @@
     _fetchSites();
   };
   const filterApply = (): void => {
+    siteStore = [];
+    activeStarredSites = starredSites; // save current starred sites for this filter session
+
     items = [];
     if (siteType === "child_sites_only") {
       items = [{ type: "parent_website", args: { value: "" } }];
@@ -78,21 +88,163 @@
   const _fetchSites = async (): Promise<void> => {
     loading = true;
 
-    // data loading
-    const result = await fetchSites({
-      magicToken: magicToken,
-      items: items,
-      page: page,
-      limit: limit,
-    });
+    sites = [];
 
-    // data setting
-    totalCount = result.count;
-    pageMax = result.pageMax;
-    page = pageMax !== 0 ? result.page : 0;
-    sites = result.sites;
+    if (siteStore.length === 0) {
+      // initial data loading
+      const result = await fetchSites({
+        magicToken: magicToken,
+        items: items,
+        page: page,
+        limit: limit,
+      });
+
+      // data setting
+      totalCount = result.count;
+      pageMax = result.pageMax;
+      page = pageMax !== 0 ? result.page : 0;
+
+      const notFoundStarredSites: number[] = [];
+      activeStarredSites.forEach((id) => {
+        const index = result.sites.findIndex((site) => Number(site.id) === id);
+        if (index !== -1) {
+          starredSiteStore[id] = result.sites[index];
+          result.sites.splice(index, 1);
+        } else {
+          const site = starredSiteStore[id];
+          if (!site) {
+            notFoundStarredSites.push(id);
+          } else {
+            const isChildSite = site.parentSiteName.match(/^<a/);
+            if (
+              (siteType === "child_sites_only" && !isChildSite) ||
+              (siteType === "parent_sites" && isChildSite)
+            ) {
+              activeStarredSites = activeStarredSites.filter(
+                (_id) => _id !== id,
+              );
+            }
+          }
+        }
+      });
+      siteStore = [...result.sites];
+
+      if (notFoundStarredSites.length > 0) {
+        const result = await fetchSites({
+          magicToken: magicToken,
+          items: [
+            ...items,
+            {
+              type: "pack",
+              args: {
+                op: "or",
+                items: notFoundStarredSites.map((id) => ({
+                  type: "id",
+                  args: { value: id, option: "equal" },
+                })),
+              },
+            },
+          ],
+          page: 0,
+          limit: 200, // FIXME: 200 is a magic number
+        });
+        notFoundStarredSites.forEach((id) => {
+          const index = result.sites.findIndex(
+            (site) => Number(site.id) === id,
+          );
+          if (index !== -1) {
+            starredSiteStore[id] = result.sites[index];
+          } else {
+            activeStarredSites = activeStarredSites.filter((_id) => _id !== id);
+            // this siteId is not longer available
+            starredSites = starredSites.filter((_id) => _id !== id);
+          }
+        });
+      }
+
+      for (let i = 0; i < limit && i < activeStarredSites.length; i++) {
+        sites.push(starredSiteStore[activeStarredSites[i]]);
+      }
+      for (let i = 0; i < siteStore.length && sites.length < limit; i++) {
+        sites.push(siteStore[i]);
+      }
+    } else {
+      const favSiteCount = activeStarredSites.length;
+      const offset = (page - 1) * limit;
+      for (let i = offset; i < favSiteCount && sites.length < limit; i++) {
+        sites.push(starredSiteStore[activeStarredSites[i]]);
+      }
+      for (
+        let i = Math.max(offset - favSiteCount, 0);
+        i < totalCount - favSiteCount && sites.length < limit;
+        i++
+      ) {
+        if (!siteStore[i]) {
+          const page = Math.floor(i / limit);
+          const result = await fetchSites({
+            magicToken,
+            items: [
+              ...items,
+              ...activeStarredSites.map((id) => ({
+                type: "id",
+                args: { value: id, option: "not_equal" },
+              })),
+            ],
+            page: page + 1, // listing framework's page parameter is 1-indexed
+            limit,
+          });
+          const storeOffset = page * limit;
+          for (let j = 0; j < result.sites.length; j++) {
+            siteStore[storeOffset + j] = result.sites[j];
+          }
+        }
+        sites.push(siteStore[i]);
+      }
+    }
 
     loading = false;
+  };
+
+  const _saveStarredSites = async (starredSites: number[]): Promise<void> => {
+    const body = new FormData();
+    body.append("__mode", "save_starred_sites");
+    body.append("magic_token", magicToken);
+    starredSites.forEach((id) => {
+      body.append("id", String(id));
+    });
+    return fetch(window.ScriptURI, {
+      method: "POST",
+      body,
+      headers: {
+        "X-Requested-With": "XMLHttpRequest",
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.error) {
+          throw new Error(data.error);
+        }
+      });
+  };
+
+  const updateStarredSites = (newStarredSites: number[]): void => {
+    const oldStarredSites = [...starredSites];
+    starredSites = newStarredSites;
+    _saveStarredSites(starredSites).catch((err) => {
+      alert(err.message);
+      starredSites = oldStarredSites;
+    });
+  };
+
+  const addStarredSite = (e: MouseEvent, site: Site): void => {
+    e.stopPropagation();
+    updateStarredSites([...new Set([...starredSites, Number(site.id)])]);
+  };
+
+  const removeStarredSite = (e: MouseEvent, site: Site): void => {
+    e.stopPropagation();
+    const siteId = Number(site.id);
+    updateStarredSites(starredSites.filter((id) => id !== siteId));
   };
 
   const clickEvent = (e: MouseEvent): void => {
@@ -104,6 +256,76 @@
   onMount(async () => {
     filterApply();
   });
+
+  let tableBodyRef: HTMLElement | null = null;
+  const initSortable = async (): Promise<void> => {
+    await tick();
+    if (!tableBodyRef) {
+      return;
+    }
+    jQuery(tableBodyRef).sortable({
+      delay: 100,
+      distance: 3,
+      items: "tr[data-is-starred]",
+      handle: ".site-list-table-sortable-handle",
+      opacity: 0.8,
+      start: function (_, ui) {
+        if (!tableBodyRef) {
+          return;
+        }
+        const columnSizePlaceholder = document.createElement("tr");
+        columnSizePlaceholder.classList.add("site-list-table-placeholder");
+        columnSizePlaceholder.innerHTML =
+          "<td></td><td class='site-list-table-parent-site'></td><td class='site-list-table-action'></td>";
+        tableBodyRef.insertBefore(
+          columnSizePlaceholder,
+          tableBodyRef.firstChild,
+        );
+        ui.placeholder.height(ui.item.height() as number);
+      },
+      stop: function () {
+        tableBodyRef?.querySelector(".site-list-table-placeholder")?.remove();
+      },
+      update: () => {
+        if (!tableBodyRef) {
+          return;
+        }
+
+        const updatedSites: Site[] = [];
+        const updatedStarredSites: number[] = [];
+        tableBodyRef
+          .querySelectorAll<HTMLTableRowElement>("tr[data-site-id]")
+          .forEach((elm) => {
+            const siteId = Number(elm.dataset.siteId);
+            if (elm.dataset.isStarred) {
+              updatedStarredSites.push(Number(siteId));
+            }
+            updatedSites.push(
+              sites.find((site) => Number(site.id) === siteId) as Site,
+            );
+          });
+        sites = updatedSites;
+
+        // Find the index of the first siteId to replace if paginated
+        const index = starredSites.findIndex((id) =>
+          updatedStarredSites.includes(id),
+        );
+        starredSites = [...starredSites]; // clone
+        starredSites.splice(
+          index,
+          updatedStarredSites.length,
+          ...updatedStarredSites,
+        );
+        updateStarredSites(starredSites);
+      },
+    });
+  };
+
+  $: {
+    if (sites && sites.length > 0 && open) {
+      initSortable();
+    }
+  }
 </script>
 
 <svelte:body on:click={clickEvent} />
@@ -227,7 +449,7 @@
         </div>
         <div class="site-list-table-wrapper">
           <table>
-            <tbody>
+            <tbody bind:this={tableBodyRef}>
               {#if loading}
                 <tr>
                   <td colspan="2" class="loading"
@@ -235,18 +457,58 @@
                   >
                 </tr>
               {:else}
-                {#each sites as site}
-                  <tr>
+                {#each sites as site (site.id)}
+                  <tr
+                    data-site-id={site.id}
+                    data-is-starred={starredSites.includes(Number(site.id)) ||
+                      undefined}
+                  >
                     <td>
-                      {#if site.parentSiteName === "-"}
-                        <span class="badge badge-site"
-                          >{window.trans("Site")}</span
-                        >
-                      {:else}
-                        <span class="badge badge-child-site"
-                          >{window.trans("Child Site")}</span
-                        >
-                      {/if}
+                      <span class="site-list-table-bagde-container">
+                        {#if site.parentSiteName === "-"}
+                          <span class="badge badge-site"
+                            >{window.trans("Site")}</span
+                          >
+                        {:else}
+                          <span class="badge badge-child-site"
+                            >{window.trans("Child Site")}</span
+                          >
+                        {/if}
+                        <span class="site-list-table-action-buttons-mobile">
+                          {#if starredSites.includes(Number(site.id))}
+                            <button
+                              on:click={(ev) => removeStarredSite(ev, site)}
+                              aria-label={window.trans(
+                                "Remove from starred sites",
+                              )}
+                              aria-pressed="true"
+                              title={window.trans("Remove from starred sites")}
+                              ><span>★</span></button
+                            >
+                          {:else}
+                            <button
+                              on:click={(ev) => addStarredSite(ev, site)}
+                              aria-label={window.trans("Add to starred sites")}
+                              aria-pressed="false"
+                              title={window.trans("Add to starred sites")}
+                              ><span>☆</span></button
+                            >
+                          {/if}
+                          <span
+                            class="site-list-table-sortable-handle"
+                            style={starredSites.includes(Number(site.id))
+                              ? "cursor: move"
+                              : "visibility: hidden;"}
+                          >
+                            <SVG
+                              title={window.trans("Move")}
+                              class="mt-icon"
+                              href={`${window.StaticURI}images/admin2025/sprite.svg#ic_move`}
+                              style="height: 15px;"
+                            />
+                          </span>
+                        </span>
+                      </span>
                       <a
                         href={`${window.ScriptURI}?__mode=dashboard&blog_id=${site.id}`}
                         class="dashboard-link"
@@ -269,8 +531,44 @@
                         />
                       </a>
                     </td>
-                    <td>
+                    <td class="site-list-table-parent-site">
                       {@html site.parentSiteName}
+                    </td>
+                    <td class="site-list-table-action">
+                      <span class="site-list-table-action-buttons">
+                        {#if starredSites.includes(Number(site.id))}
+                          <button
+                            on:click={(ev) => removeStarredSite(ev, site)}
+                            aria-label={window.trans(
+                              "Remove from starred sites",
+                            )}
+                            aria-pressed="true"
+                            title={window.trans("Remove from starred sites")}
+                            ><span>★</span></button
+                          >
+                        {:else}
+                          <button
+                            on:click={(ev) => addStarredSite(ev, site)}
+                            aria-label={window.trans("Add to starred sites")}
+                            aria-pressed="false"
+                            title={window.trans("Add to starred sites")}
+                            ><span>☆</span></button
+                          >
+                        {/if}
+                        <span
+                          class="site-list-table-sortable-handle"
+                          style={starredSites.includes(Number(site.id))
+                            ? "cursor: move"
+                            : "visibility: hidden;"}
+                        >
+                          <SVG
+                            title={window.trans("Move")}
+                            class="mt-icon"
+                            href={`${window.StaticURI}images/admin2025/sprite.svg#ic_move`}
+                            style="height: 15px;"
+                          />
+                        </span>
+                      </span>
                     </td>
                   </tr>
                 {/each}
