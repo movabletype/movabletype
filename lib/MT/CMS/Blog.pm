@@ -1478,6 +1478,34 @@ sub save_favorite_blogs {
     $app->print_encode("true");
 }
 
+sub save_starred_sites {
+    my $app = shift;
+
+    $app->validate_param({
+        id => [qw/ID MULTI/],
+    }) or return $app->json_error($app->errstr);
+
+    $app->validate_magic()
+        or return $app->json_error($app->translate("Invalid request."));
+
+    my @ids = $app->multi_param('id');
+    if (scalar @ids > $MT::Author::MAX_STARRED_SITES) {
+        return $app->json_error(
+            $app->translate(
+                "You can only register a maximum of [_1] starred sites.",
+                $MT::Author::MAX_STARRED_SITES,
+            ),
+            400
+        );
+    }
+
+    my $user = $app->user;
+    $user->starred_sites(\@ids);
+    $user->save or return $app->json_error($user->errstr);
+
+    $app->json_result({});
+}
+
 sub dialog_select_weblog {
     my $app = shift;
 

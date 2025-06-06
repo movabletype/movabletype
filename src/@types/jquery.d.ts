@@ -1,1 +1,1 @@
-import "jqueryui";
+import "@types/jqueryui";

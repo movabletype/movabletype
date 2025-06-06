@@ -13,6 +13,8 @@ use MT::Util::Encode;
 use MT::Summary;    # Holds MT::Summarizable
 use base qw( MT::Object MT::Scorable MT::Summarizable );
 
+our $MAX_STARRED_SITES = 50;
+
 __PACKAGE__->install_properties(
     {   column_defs => {
             'id'                   => 'integer not null auto_increment',
@@ -52,6 +54,7 @@ __PACKAGE__->install_properties(
             'favorite_blogs'           => 'array meta',
             'favorite_websites'        => 'array meta',
             'favorite_sites'           => 'array meta',
+            'starred_sites'            => 'array meta',
             'password_reset'           => 'string meta',
             'password_reset_expires'   => 'string meta',
             'password_reset_return_to' => 'string meta',
