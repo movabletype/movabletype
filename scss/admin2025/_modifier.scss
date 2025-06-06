@@ -803,7 +803,7 @@ html[data-screen-id=dashboard][data-scope-type=user] {
   & > a{
     border-bottom: 1px solid $gray-lighter;
     &:after{
-          display: inline-block;
+          display: block;
           width: 0;
           height: 0;
           float: right;
@@ -1142,6 +1142,7 @@ html[data-screen-id=dashboard][data-scope-type=user] {
     }
   }
 }
+
 .mt-gts{
   margin: 0 0.5rem;
   color: $black;
@@ -2036,16 +2037,44 @@ fieldset.form-group{
 }
 
 /* Widgets */
+.mt-main-widget-container {
+  display: flex;
+  position: relative;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
 .mt-widget{
   @extend .card;
   margin-bottom: 2rem;
   border: 1px solid $gray-light;
   border-radius: $border-radius;
   background: transparent;
+  width: 100%;
   .mt-widget__list li:last-child{
     border-bottom: 0;
   }
 }
+
+.mt-widget--resizable {
+  resize: horizontal;
+  overflow: auto;
+  width: 100%;
+  min-width: 49%;
+
+  .mt-widget__title .mt-icon {
+    fill: $gray;
+    cursor: move;
+    width: 1.2rem;
+    margin-left: -0.5rem;
+  }
+}
+
+.mt-widget--half {
+  width: 49%;
+}
+
 .mt-widget__title{
   margin: 0;
   padding: 0.8rem 1rem;
@@ -2133,7 +2162,6 @@ fieldset.form-group{
     margin-bottom: 0;
   }
   &:last-child{
-    margin-bttom: 0;
     padding-bottom: 1rem;
     border-bottom: 0;
   }
@@ -2156,7 +2184,7 @@ fieldset.form-group{
   strong{
     font-size: 1.25rem;
     &.number{
-      font-famly: $font-family-numbers;
+      font-family: $font-family-numbers;
       font-size: 2rem;
       letter-spacing: -0.05rem;
     }

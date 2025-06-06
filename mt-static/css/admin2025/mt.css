@@ -12247,7 +12247,7 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-mainContentWrapper {
   border-bottom: 1px solid #E0E0E0;
 }
 .mt-primaryNavigation__item > a:after {
-  display: inline-block;
+  display: block;
   width: 0;
   height: 0;
   float: right;
@@ -13351,14 +13351,40 @@ fieldset.form-group {
 }
 
 /* Widgets */
+.mt-main-widget-container {
+  display: flex;
+  position: relative;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
 .mt-widget, .mt-widget--panel {
   margin-bottom: 2rem;
   border: 1px solid #CACACA;
   border-radius: 0.375rem;
   background: transparent;
+  width: 100%;
 }
 .mt-widget .mt-widget__list li:last-child, .mt-widget--panel .mt-widget__list li:last-child {
   border-bottom: 0;
+}
+
+.mt-widget--resizable {
+  resize: horizontal;
+  overflow: auto;
+  width: 100%;
+  min-width: 49%;
+}
+.mt-widget--resizable .mt-widget__title .mt-icon, .mt-widget--resizable .mt-widget__title .mt-icon--inverse, .mt-widget--resizable .mt-widget__title .mt-icon--danger, .mt-widget--resizable .mt-widget__title .mt-icon--warning, .mt-widget--resizable .mt-widget__title .mt-icon--info, .mt-widget--resizable .mt-widget__title .mt-icon--success, .mt-widget--resizable .mt-widget__title .mt-icon--secondary, .mt-widget--resizable .mt-widget__title .mt-icon--primary {
+  fill: #A5A5A5;
+  cursor: move;
+  width: 1.2rem;
+  margin-left: -0.5rem;
+}
+
+.mt-widget--half {
+  width: 49%;
 }
 
 .mt-widget__title {
@@ -13454,7 +13480,6 @@ fieldset.form-group {
   margin-bottom: 0;
 }
 .mt-widget--site:last-child {
-  margin-bttom: 0;
   padding-bottom: 1rem;
   border-bottom: 0;
 }
@@ -13478,7 +13503,7 @@ fieldset.form-group {
   font-size: 1.25rem;
 }
 .mt-widget__data strong.number {
-  font-famly: "Open Sans", "Roboto Condensed", Helvetica, Arial, Tahoma, "Droid Serif", Verdana, sans-serif;
+  font-family: "Open Sans", "Roboto Condensed", Helvetica, Arial, Tahoma, "Droid Serif", Verdana, sans-serif;
   font-size: 2rem;
   letter-spacing: -0.05rem;
 }

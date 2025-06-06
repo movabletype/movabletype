@@ -11940,7 +11940,7 @@ li {
   border-bottom: 1px solid #E0E0E0;
 }
 .mt-primaryNavigation__item > a:after {
-  display: inline-block;
+  display: block;
   width: 0;
   height: 0;
   float: right;
@@ -12815,7 +12815,6 @@ fieldset.form-group {
   margin-bottom: 0;
 }
 .mt-widget--site:last-child {
-  margin-bttom: 0;
   padding-bottom: 1rem;
   border-bottom: 0;
 }
@@ -12839,7 +12838,7 @@ fieldset.form-group {
   font-size: 1.25rem;
 }
 .mt-widget__data strong.number {
-  font-famly: "Open Sans", "Roboto Condensed", Helvetica, Arial, Tahoma, "Droid Serif", Verdana, sans-serif;
+  font-family: "Open Sans", "Roboto Condensed", Helvetica, Arial, Tahoma, "Droid Serif", Verdana, sans-serif;
   font-size: 2rem;
   letter-spacing: -0.05rem;
 }
