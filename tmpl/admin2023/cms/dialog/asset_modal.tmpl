@@ -27,6 +27,10 @@
 </mt:unless>
 </mt:setvarblock>
 
+<mt:setvarblock name="system_msg" append="1">
+  <mt:include name="include/alert_asset_upload.tmpl">
+</mt:setvarblock>
+
 <mt:setvarblock name="modal_body">
 <div class="row">
   <div id="content-body-left" class="col-auto d-none d-md-block">
@@ -62,6 +66,7 @@
   </mt:if>
 
   <div id="content-body-right" class="col-12 col-md">
+    <mt:include name="include/system_msg.tmpl">
     <div id="content-body-right-body" class="tab-content">
 
   <mt:if name="can_upload">
