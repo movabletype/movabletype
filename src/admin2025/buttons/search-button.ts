@@ -6,7 +6,6 @@ type SearchButtonProps = {
   magicToken: string;
   contentTypes: ContentType[];
   open: boolean;
-  buttonRef: HTMLElement;
   anchorRef: HTMLElement;
 };
 

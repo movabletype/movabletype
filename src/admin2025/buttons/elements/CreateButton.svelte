@@ -6,7 +6,6 @@
   export let contentTypes: ContentType[] = [];
   export let blog_id: string;
   export let open: boolean = false;
-  export let buttonRef: HTMLElement | null = null;
   export let anchorRef: HTMLElement | null = null;
   export let containerRef: HTMLElement | null = null;
   let modalRef: HTMLElement | null = null;
@@ -39,7 +38,7 @@
     }
 
     const eventTarget = e.target as Node;
-    if (open && isOuterClick([buttonRef, modalRef], eventTarget)) {
+    if (open && isOuterClick([anchorRef, modalRef], eventTarget)) {
       handleClose();
     }
   };

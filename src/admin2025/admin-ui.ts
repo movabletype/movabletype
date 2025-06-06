@@ -46,7 +46,6 @@ if (siteListButtonTargets.length > 0 && magicToken !== "") {
       magicToken: magicToken,
       limit: Number.parseInt(limit),
       open: false,
-      buttonRef: siteListButtonTarget,
       anchorRef: siteListButtonTarget,
       initialStarredSites:
         siteListButtonTarget.dataset.starredSites
@@ -85,7 +84,6 @@ if (
               (contentType) => contentType.can_create === 1,
             ),
             open: false,
-            buttonRef: createButtonTarget,
             anchorRef: createButtonTarget,
             containerRef: modalContainerTarget,
           },
@@ -94,8 +92,6 @@ if (
     }
     // Search button
     if (searchButtonTarget !== null) {
-      const searchButtonAnchor =
-        searchButtonTarget.getElementsByTagName("a")[0];
       svelteMountSearchButton(searchButtonTarget, {
         blogId: blogId,
         magicToken: magicToken,
@@ -103,8 +99,7 @@ if (
           (contentType) => contentType.can_search === 1,
         ),
         open: false,
-        buttonRef: searchButtonTarget,
-        anchorRef: searchButtonAnchor,
+        anchorRef: searchButtonTarget,
       });
     }
     // Search Form

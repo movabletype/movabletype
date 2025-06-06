@@ -9,7 +9,6 @@
   export let magicToken: string;
   export let limit: number = 50;
   export let open: boolean = false;
-  export let buttonRef: HTMLElement;
   export let anchorRef: HTMLElement;
   export let initialStarredSites: number[];
   $: {
@@ -250,7 +249,7 @@
 
   const clickEvent = (e: MouseEvent): void => {
     const eventTarget = e.target as Node;
-    if (open && isOuterClick([buttonRef, modalRef], eventTarget)) {
+    if (open && isOuterClick([anchorRef, modalRef], eventTarget)) {
       handleClose();
     }
   };
