@@ -1313,7 +1313,7 @@ sub backup {
                 my $xml_name = $asset_files->{$id}->[2];
                 require MT::Util;
                 print $fh "<file type='asset' name='"
-                    . MT::Util::encode_xml( $xml_name, 1, 1 )
+                    . MT::Util::Encode::encode_utf8_if_flagged(MT::Util::encode_html($xml_name))
                     . "' asset_id='"
                     . $id
                     . "' />\n";
