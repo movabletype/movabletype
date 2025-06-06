@@ -15,6 +15,7 @@
 
 <mt:setvarblock name="js_include" append="1">
 <mtapp:script path="jquery/jquery.mtremovewidget.js">
+<mtapp:script path="js/build/dashboard.js" type="module">
 <mtapp:script path="js/tc/client.js">
 </mt:setvarblock>
 
@@ -84,7 +85,11 @@ jQuery('button.remove-widget').mtRemoveWidget();
 </mt:setvarblock>
 
 <mt:setvarblock name="page_content">
-  <mt:section id="main" class="widget-container"><mt:var name="main"></mt:section>
+  <mt:section id="main" class="widget-container">
+    <div id="main-widget-container" class="mt-main-widget-container" data-current-widget-scope="<mt:var name="current_widget_scope" escape="html">" data-magic-token="<mt:var name="magic_token" escape="html">">
+      <mt:var name="main">
+    </div>
+  </mt:section>
   <mt:var name="select_widget_form" set="main">
 </mt:setvarblock>
 
