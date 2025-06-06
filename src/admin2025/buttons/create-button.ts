@@ -5,7 +5,6 @@ type CreateButtonProps = {
   blog_id: string;
   contentTypes: ContentType[];
   open: boolean;
-  buttonRef: HTMLElement | null;
   anchorRef: HTMLElement;
   containerRef: HTMLElement | null;
 };
