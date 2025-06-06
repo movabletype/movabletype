@@ -5,6 +5,7 @@ use warnings;
 use FindBin;
 use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
+use JSON;
 use MT::Test::Env;
 
 our $test_env;
@@ -45,6 +46,7 @@ YAML
 use MT;
 use MT::Test;
 use MT::Test::Permission;
+use MT::Test::App;
 
 $test_env->prepare_fixture('db');
 
@@ -69,6 +71,10 @@ $admin->widgets({
         },
         notification_dashboard => {
             order => 0,
+            set   => 'main',
+        },
+        site_list => {
+            order => 90,
             set   => 'main',
         },
         activity_log => {
@@ -109,9 +115,11 @@ subtest 'widgets' => sub {
         $order = undef;
         $app->load_widgets('dashboard', 'user', {});
         is_deeply(
-            $order, [qw(
+            $order,
+            [qw(
                 notification_dashboard
                 test_user_pinned_widget
+                site_list
                 mt_news
                 activity_log
             )],
@@ -122,7 +130,8 @@ subtest 'widgets' => sub {
         $order = undef;
         $app->load_widgets('dashboard', 'blog', {});
         is_deeply(
-            $order, [qw(
+            $order,
+            [qw(
                 test_blog_pinned_widget
                 site_list_for_mobile
                 site_list
@@ -132,6 +141,111 @@ subtest 'widgets' => sub {
     };
 
     $mock_app->unmock_all;
+};
+
+subtest 'update_widget_prefs' => sub {
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->login($admin);
+
+    subtest 'scope: user' => sub {
+        $app->post_ok({
+            __mode        => 'update_widget_prefs',
+            widget_action => 'save_layout',
+            widget_scope  => 'dashboard:user:' . $admin->id,
+            widget_layout => JSON->new->encode({
+                site_list => {
+                    order => 110,
+                    size  => 'half',
+                },
+            }),
+        });
+
+        is_deeply(
+            $admin->widgets->{ 'dashboard:user:' . $admin->id },
+            {
+                mt_news => {
+                    order => 100,
+                    set   => 'sidebar',
+                },
+                notification_dashboard => {
+                    order => 0,
+                    set   => 'main',
+                },
+                site_list => {
+                    order => 110,
+                    set   => 'main',
+                    size  => 'half',
+                },
+                activity_log => {
+                    order => 200,
+                    set   => 'sidebar',
+                },
+            },
+        );
+    };
+
+    subtest 'scope: website' => sub {
+        $app->post_ok({
+            __mode        => 'update_widget_prefs',
+            widget_action => 'save_layout',
+            widget_scope  => 'dashboard:blog:' . $blog->id,
+            widget_layout => JSON->new->encode({
+                site_list => {
+                    order => 150,
+                    size  => 'full',
+                },
+            }),
+        });
+
+        is_deeply(
+            $admin->widgets->{ 'dashboard:blog:' . $blog->id },
+            {
+                activity_log => {
+                    order => 200,
+                    set   => 'sidebar',
+                },
+                site_list => {
+                    order => 150,
+                    set   => 'main',
+                    size  => 'full',
+                },
+                site_list_for_mobile => {
+                    order => 50,
+                    set   => 'main',
+                },
+            },
+        );
+    };
+
+    subtest 'invalid order' => sub {
+        $app->post({
+            __mode        => 'update_widget_prefs',
+            widget_action => 'save_layout',
+            widget_scope  => 'dashboard:user:' . $admin->id,
+            widget_layout => JSON->new->encode({
+                site_list => {
+                    order => "fff",
+                    size  => 'half',
+                },
+            }),
+        });
+        $app->status_is(400);
+    };
+
+    subtest 'invalid size' => sub {
+        $app->post({
+            __mode        => 'update_widget_prefs',
+            widget_action => 'save_layout',
+            widget_scope  => 'dashboard:user:' . $admin->id,
+            widget_layout => JSON->new->encode({
+                site_list => {
+                    order => 100,
+                    size  => 'third',
+                },
+            }),
+        });
+        $app->status_is(400);
+    };
 };
 
 done_testing;

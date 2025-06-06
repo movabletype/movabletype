@@ -25,7 +25,7 @@ my $website   = MT::Website->load();
 my $blog      = MT::Test::Permission->make_blog(parent_id => $website->id,);
 my $blog_name = $blog->name;
 
-MT::Test::Permission->make_template(
+my $user_dashboard_unpinned_widget = MT::Test::Permission->make_template(
     name                    => '<user dashboard unpinned widget>',
     type                    => 'dashboard_widget',
     blog_id                 => 0,
@@ -35,7 +35,7 @@ User Dashboard Unpinned Widget
 MTML
 );
 
-MT::Test::Permission->make_template(
+my $user_dashboard_pinned_widget = MT::Test::Permission->make_template(
     name                    => '<user dashboard pinned widget> ',
     type                    => 'dashboard_widget',
     blog_id                 => 0,
@@ -45,7 +45,7 @@ MT::Test::Permission->make_template(
 MTML
 );
 
-MT::Test::Permission->make_template(
+my $blog_dashboard_unpinned_widget = MT::Test::Permission->make_template(
     name                    => '<blog dashboard unpinned widget>',
     type                    => 'dashboard_widget',
     blog_id                 => $blog->id,
@@ -55,7 +55,7 @@ Blog Dashboard Unpinned Widget
 MTML
 );
 
-MT::Test::Permission->make_template(
+my $blog_dashboard_pinned_widget = MT::Test::Permission->make_template(
     name                    => '<blog dashboard pinned widget>',
     type                    => 'dashboard_widget',
     blog_id                 => $blog->id,
@@ -81,8 +81,13 @@ subtest 'widgets' => sub {
         ok !$form->attr('method'), 'method attribute is removed';
         is $form->text, 'User Dashboard Pinned Widget', 'content is preserved';
 
-        my $option = $app->wq_find('select[name="widget_id"] option[value^="dashboard_widget_template_"]');
+        my $option = $app->wq_find('select[name="widget_id"] option[value^="dashboard_widget_template_' . $user_dashboard_unpinned_widget->id . '"]');
         is $option->html, '&lt;user dashboard unpinned widget&gt;', 'unpinned widget is added to the widget list';
+
+        $option = $app->wq_find('select[name="widget_id"] option[value^="dashboard_widget_template_' . $blog_dashboard_unpinned_widget->id . '"]');
+        is $option->html, '&lt;blog dashboard unpinned widget&gt; - ' . $blog_name, 'unpinned widget is added to the widget list';
+
+        is $app->wq_find('select[name="widget_id"] option[value^="dashboard_widget_template_' . $blog_dashboard_pinned_widget->id . '"]')->size, 0, 'pinned widget is not added to the widget list';
     };
 
     subtest 'scope: website' => sub {
@@ -96,7 +101,7 @@ subtest 'widgets' => sub {
         ok !$form->attr('method'), 'method attribute is removed';
         is $form->text, "Blog Dashboard Pinned Widget for $blog_name", 'content is preserved';
 
-        my $option = $app->wq_find('select[name="widget_id"] option[value^="dashboard_widget_template_"]');
+        my $option = $app->wq_find('select[name="widget_id"] option[value^="dashboard_widget_template_' . $blog_dashboard_unpinned_widget->id . '"]');
         is $option->html, '&lt;blog dashboard unpinned widget&gt;', 'unpinned widget is added to the widget list';
     };
 };

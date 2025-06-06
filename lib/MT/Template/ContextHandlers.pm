@@ -3246,6 +3246,8 @@ sub _hdlr_app_widget {
     my $token    = $ctx->var('magic_token')     || '';
     my $scope    = $ctx->var('widget_scope')    || 'system';
     my $singular = $ctx->var('widget_singular') || '';
+    my $size     = $ctx->var('widget_size')     || '';
+    my $set      = $ctx->var('widget_set')      || '';
 
     my $vars = $ctx->{__stash}{vars};
     local $vars->{widget_id} = $id;
@@ -3287,6 +3289,21 @@ EOT
         $widget_class = "mt-widget--panel";
     }
 
+    my $resize_class = '';
+    my $drag_handle = '';
+    if ( $set eq 'main' && $closable ) {
+        $resize_class = 'mt-widget--resizable';
+        $drag_handle = $ctx->invoke_handler( 'app:svgicon', {
+            id => 'ic_move',
+            title => $app->translate('Draggable'),
+        } );
+    }
+
+    my $size_class = '';
+    if ( $size eq 'half' ) {
+        $size_class = "mt-widget--half";
+    }
+
     my $bootstrap_display_class = '';
     my $widget_mobile           = $ctx->var('widget_mobile');
     if ( defined $widget_mobile ) {
@@ -3299,8 +3316,9 @@ EOT
     }
 
     my $widget = <<"EOT";
-<div id="$id" class="$widget_class $class $bootstrap_display_class">
+<div id="$id" class="$widget_class $class $bootstrap_display_class $resize_class $size_class">
   <h2 class="mt-widget__title">
+    $drag_handle
     $widget_header
     $header_action
   </h2>
