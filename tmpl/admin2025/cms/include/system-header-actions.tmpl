@@ -11,6 +11,9 @@
             <mt:if name="id" eq="site">
                 data-is="site-list-button"
             </mt:if>
+            <mt:loop name="data">
+                data-<mt:var name="__key__">="<mt:var name="__value__" escape="html">"
+            </mt:loop>
         >
             <mt:setvarblock name="escaped_menu_action_label"><mt:var name="label" escape="html"></mt:setvarblock>
             <a

@@ -48,6 +48,11 @@ if (siteListButtonTargets.length > 0 && magicToken !== "") {
       open: false,
       buttonRef: siteListButtonTarget,
       anchorRef: siteListButtonTarget,
+      initialStarredSites:
+        siteListButtonTarget.dataset.starredSites
+          ?.split(",")
+          .map(Number)
+          .filter(Number.isInteger) || [],
     });
   });
 }
