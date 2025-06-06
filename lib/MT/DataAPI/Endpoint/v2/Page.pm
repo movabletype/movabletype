@@ -41,6 +41,7 @@ DESCRIPTION
             { '$ref' => '#/components/parameters/page_maxComments' },
             { '$ref' => '#/components/parameters/page_maxTrackbacks' },
             { '$ref' => '#/components/parameters/page_no_text_filter' },
+            { '$ref' => '#/components/parameters/page_filterKeys' },
         ],
         responses => {
             200 => {
@@ -118,6 +119,7 @@ DESCRIPTION
             { '$ref' => '#/components/parameters/page_maxComments' },
             { '$ref' => '#/components/parameters/page_maxTrackbacks' },
             { '$ref' => '#/components/parameters/page_no_text_filter' },
+            { '$ref' => '#/components/parameters/page_filterKeys' },
         ],
         responses => {
             200 => {
@@ -189,6 +191,7 @@ DESCRIPTION
             { '$ref' => '#/components/parameters/page_maxComments' },
             { '$ref' => '#/components/parameters/page_maxTrackbacks' },
             { '$ref' => '#/components/parameters/page_no_text_filter' },
+            { '$ref' => '#/components/parameters/page_filterKeys' },
         ],
         responses => {
             200 => {
@@ -260,6 +263,7 @@ DESCRIPTION
             { '$ref' => '#/components/parameters/page_maxComments' },
             { '$ref' => '#/components/parameters/page_maxTrackbacks' },
             { '$ref' => '#/components/parameters/page_no_text_filter' },
+            { '$ref' => '#/components/parameters/page_filterKeys' },
         ],
         responses => {
             200 => {
@@ -367,6 +371,9 @@ sub create_openapi_spec {
 
 - manage_post
 DESCRIPTION
+        parameters => [
+            { '$ref' => '#/components/parameters/page_saveRevision' },
+        ],
         requestBody => {
             content => {
                 'application/x-www-form-urlencoded' => {
@@ -526,6 +533,9 @@ sub update_openapi_spec {
 
 - manage_pages
 DESCRIPTION
+        parameters => [
+            { '$ref' => '#/components/parameters/page_saveRevision' },
+        ],
         requestBody => {
             content => {
                 'application/x-www-form-urlencoded' => {

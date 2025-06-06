@@ -60,6 +60,9 @@ This is an optional parameter.
 Return categories in descending order.
 DESCRIPTION
             },
+            { '$ref' => '#/components/parameters/category_limit' },
+            { '$ref' => '#/components/parameters/category_offset' },
+            { '$ref' => '#/components/parameters/category_searchFields' },
         ],
         responses => {
             200 => {
