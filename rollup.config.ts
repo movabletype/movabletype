@@ -85,6 +85,7 @@ const mtStaticConfig = (inputfile) => {
 export default [
   srcConfig("src/contenttype.ts"),
   srcConfig("src/listing.ts"),
+  srcConfig("src/dashboard.ts"),
   srcConfig("src/admin2025/admin-ui.ts"),
   ...mtStaticInputFiles.map(mtStaticConfig),
 ];
