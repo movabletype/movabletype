@@ -15141,6 +15141,7 @@ li.nav-item, .mt-sharedPreviewNav .mt-sharedPreviewNav__rightNav li.mt-sharedPre
   border: 1px solid #c0c6c9;
   background-color: #fff;
   padding: 2px;
+  z-index: 2 !important;
 }
 
 .ui-datepicker .ui-datepicker-header {
