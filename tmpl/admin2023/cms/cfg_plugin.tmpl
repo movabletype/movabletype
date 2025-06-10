@@ -253,7 +253,10 @@ jQuery('.collapse.mt-collapse__content').on('show.bs.collapse', function (e) {
   <!-- /Plugin List --></div>
 <!-- /Plugin Group --></div>
 <div class="plugin-group">
-  <h3 class="plugin-group-name"><mt:var name="plugin_folder"></h3>
+  <h3 class="plugin-group-name">
+    <mt:var name="plugin_folder">
+    <mt:var name="plugin_label">
+  </h3>
   <div class="plugin-list">
     </mt:if>
   <mt:else>
@@ -273,6 +276,7 @@ jQuery('.collapse.mt-collapse__content').on('show.bs.collapse', function (e) {
               </span>
             </mt:if>
           </span>
+          <mt:var name="plugin_label">
     <mt:else>
           <svg role="img" class="mt-icon--secondary mt-pluginpanel__icon">
             <title>Enabled</title>
@@ -286,6 +290,7 @@ jQuery('.collapse.mt-collapse__content').on('show.bs.collapse', function (e) {
               </span>
             </mt:if>
           </a>
+          <mt:var name="plugin_label">
     </mt:if>
         </div>
     <mt:if name="can_config">
