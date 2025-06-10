@@ -8,6 +8,7 @@ package MT::CMS::Plugin;
 use strict;
 use warnings;
 use MT::Util qw( remove_html );
+use MT::Util::Checksums;
 
 sub cfg_plugins {
     my $app = shift;
@@ -322,10 +323,11 @@ sub build_plugin_table {
 
             if ( $last_fld ne $fld ) {
                 $row = {
-                    plugin_sig    => $plugin_sig,
-                    plugin_folder => $folder,
-                    plugin_set    => $fld ? $folder_counts{$fld} > 1 : 0,
-                    plugin_error  => $profile->{error},
+                    plugin_sig       => $plugin_sig,
+                    plugin_folder    => $folder,
+                    plugin_set       => $fld ? $folder_counts{$fld} > 1 : 0,
+                    plugin_error     => $profile->{error},
+                    plugin_full_path => $plugin->{full_path},
                 };
                 push @$data, $row;
                 $last_fld      = $fld;
@@ -434,10 +436,11 @@ sub build_plugin_table {
 
             if ( $last_fld ne $fld ) {
                 $row = {
-                    plugin_sig    => $plugin_sig,
-                    plugin_folder => $folder,
-                    plugin_set    => $fld ? $folder_counts{$fld} > 1 : 0,
-                    plugin_error  => $profile->{error},
+                    plugin_sig       => $plugin_sig,
+                    plugin_folder    => $folder,
+                    plugin_set       => $fld ? $folder_counts{$fld} > 1 : 0,
+                    plugin_error     => $profile->{error},
+                    plugin_full_path => $profile->{full_path},
                 };
                 push @$data, $row;
                 $last_fld      = $fld;
@@ -455,11 +458,31 @@ sub build_plugin_table {
                 plugin_system_error => $profile->{system_error},
                 plugin_disabled     => $profile->{enabled} ? 0 : 1,
                 plugin_id           => $id,
+                plugin_full_path    => $profile->{full_path},
             };
             push @$data, $row;
         }
         $next_is_first = 0;
     }
+
+    # set plugin_label parameter
+    if (-e MT::Util::Checksums::checksum_file()) {
+        my $individual_plugin = 1;
+        for my $pd (@{$data}[1 .. scalar(@{$data}) - 1]) {    # skip first individual folder data
+            if ($pd->{plugin_folder}) {
+                $individual_plugin = 0;
+            }
+            next unless $individual_plugin || $pd->{plugin_folder};    # skip other than individual plugins and plugin set folders
+            if (MT::Util::Checksums::test_checksums($pd->{plugin_full_path})) {
+                $pd->{plugin_label} = '<span class="badge badge-primary">' . $app->translate('user') . '</span>';
+            } else {
+                $pd->{plugin_label} = '<span class="badge badge-default">' . $app->translate('__PLUGIN_LABEL_DEFAULT') . '</span>';
+            }
+        }
+    }
+
+    $app->run_callbacks('build_plugin_table', $app, \%opt, $data);
+
     $param->{plugin_loop} = $data;
 }
 
