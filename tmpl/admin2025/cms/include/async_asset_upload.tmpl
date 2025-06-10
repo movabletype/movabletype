@@ -538,7 +538,7 @@ function createUploadBlock () {
 
     this.filename.hide();
     jQuery(thumbnail).appendTo(this.thumbnail);
-    jQuery('<a></a>').text(fname).attr('href', url).attr('target', '_blank').append('<mtapp:svgicon id="ic_permalink" title="View" size="sm">').appendTo(' <span class="filename"></span>').appendTo(this.thumbnail);
+    jQuery('<a></a>').text(fname).attr('href', url).attr('target', '_blank').append('<mtapp:svgicon id="ic_permalink" title="View" size="sm" encode_js="1">').appendTo(' <span class="filename"></span>').appendTo(this.thumbnail);
     if ( msg ) {
       jQuery(' <span class="bg-warning msg-warning" style="padding:0.5em"></span>').text(msg).appendTo(this.thumbnail);
     }

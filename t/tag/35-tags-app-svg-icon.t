@@ -62,34 +62,25 @@ __END__
 --- admin_theme_id
 admin2025
 --- template
-<mt:app:svgicon id="ic_user" title="User" size="small" color="primary">
+<mt:app:svgicon id="ic_user" title="User" size="small" color="primary">ok
 --- expected
-<svg role="img" class="mt-icon--primary mt-icon--small">
-    <title>User</title>
-    <use xlink:href="/mt-static/images/admin2025/sprite.svg#ic_user"></use>
-</svg>
+<svg role="img" class="mt-icon--primary mt-icon--small"><title>User</title><use xlink:href="/mt-static/images/admin2025/sprite.svg#ic_user"></use></svg>ok
 
 === mtapp:svgicon admin_theme_id=admin2023
 --- admin_theme_id
 admin2023
 --- template
-<mt:app:svgicon id="ic_sites">
+<mt:app:svgicon id="ic_sites">ok
 --- expected
-<svg role="img" class="mt-icon">
-    
-    <use xlink:href="/mt-static/images/sprite.svg#ic_sites"></use>
-</svg>
+<svg role="img" class="mt-icon"><use xlink:href="/mt-static/images/sprite.svg#ic_sites"></use></svg>ok
 
 === mtapp:svgicon admin_theme_id=''
 --- admin_theme_id
 ''
 --- template
-<mt:app:svgicon id="ic_add">
+<mt:app:svgicon id="ic_add">ok
 --- expected
-<svg role="img" class="mt-icon">
-    
-    <use xlink:href="/mt-static/images/sprite.svg#ic_add"></use>
-</svg>
+<svg role="img" class="mt-icon"><use xlink:href="/mt-static/images/sprite.svg#ic_add"></use></svg>ok
 
 === mtapp:svgicon id attribute is required
 --- admin_theme_id

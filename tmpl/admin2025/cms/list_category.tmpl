@@ -275,7 +275,7 @@ function createItem(id, parent, label, basename, number) {
   line += ' <span class="count float-end d-none d-md-block me-2">'+number+'</span>';
   </mt:unless>
   var $item = jQuery('<div id="cat-'+id+'" class="pcat-'+parent+' sortable-item mt-draggable" draggable="true" aria-grabbed="false"></div>');
-  $item.append('<div class="col-auto"><mtapp:svgicon id="ic_move" title="<__trans phrase="Draggable">" strip_linefeeds="1"></div>');
+  $item.append('<div class="col-auto"><mtapp:svgicon id="ic_move" title="<__trans phrase="Draggable">" encode_js="1"></div>');
   $item.append(jQuery('<div class="col"></div>').append(line));
   return $item;
 }
@@ -372,7 +372,7 @@ function initItem($item) {
     });
 
 <mt:setvarblock name="add_icon_title"><__trans phrase="Add child [_1]" params="<mt:var name="object_label">" escape="js"></mt:setvarblock>
-  jQuery('<span class="item-action plus clickable icon-plus icon16 action-icon d-inline-block" style="cursor: pointer;"><mtapp:svgicon id="ic_add" size="sm" title="$add_icon_title"></span>')
+  jQuery('<span class="item-action plus clickable icon-plus icon16 action-icon d-inline-block" style="cursor: pointer;"><mtapp:svgicon id="ic_add" size="sm" title="$add_icon_title" encode_js="1"></span>')
     .appendTo($item.find('.item-ctrl'))
     .on('click', function() {
       fixInteractions({ sortable: false });
@@ -409,7 +409,7 @@ function initItem($item) {
     });
 
 <mt:setvarblock name="remove_icon_title"><__trans phrase="Remove [_1]" params="<mt:var name="object_label_plural">" escape="js"></mt:setvarblock>
-  jQuery('<span class="item-action delete clickable icon-delete icon16 action-icon d-inline-block" style="cursor: pointer;"><mtapp:svgicon id="ic_trash" size="sm" title="$remove_icon_title"></span>')
+  jQuery('<span class="item-action delete clickable icon-delete icon16 action-icon d-inline-block" style="cursor: pointer;"><mtapp:svgicon id="ic_trash" size="sm" title="$remove_icon_title" encode_js="1"></span>')
     .appendTo($item.find('.item-ctrl'))
     .on('click', function() {
       fixInteractions();
