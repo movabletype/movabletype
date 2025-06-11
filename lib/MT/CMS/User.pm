@@ -1218,6 +1218,10 @@ PERMCHECK: {
         if ( UNIVERSAL::isa( $obj, 'MT::Group' ) ) {
             $row->{icon} = MT->static_path . 'images/icons/ic_group.svg';
         }
+        if (UNIVERSAL::isa( $obj, 'MT::Blog' )) {
+            $row->{link} = $app->uri(mode => 'dashboard', args => { blog_id => $obj->id });
+            $row->{label} = sprintf('%s (id:%d)', $row->{label}, $obj->id);
+        }
     };
 
     my $type = $app->param('_type') || '';  # user, author, group, site
