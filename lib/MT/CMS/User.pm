@@ -1313,6 +1313,7 @@ PERMCHECK: {
         }
         else {
             my $terms = {};
+            my $args = { sort => 'name' };
             if ($type eq 'author') {
                 $terms->{status} = MT::Author::ACTIVE();
                 $terms->{type}   = MT::Author::AUTHOR();
@@ -1323,10 +1324,12 @@ PERMCHECK: {
             }
             if ($type eq 'site') {
                 $terms->{class} = ['website', 'blog'];
+                $args->{sort}      = 'id';
+                $args->{direction} = 'descend';
             }
             $app->listing(
                 {   terms    => $terms,
-                    args     => { sort => 'name' },
+                    args     => $args,
                     type     => $type,
                     code     => $hasher,
                     params   => $params,
@@ -1482,7 +1485,8 @@ PERMCHECK: {
                 );
             }
             else {
-
+                $args->{sort}      = 'id';
+                $args->{direction} = 'descend';
                 $app->listing(
                     {   no_html => 1,
                         code    => $hasher,
