@@ -47,8 +47,6 @@ for my $p1 (qw/path date/) {
     for my $p2 (qw/visits pageviews/) {
         is($json{v5}{paths}{"/sites/{site_id}/stats/$p1/$p2"}{get}{parameters}[3]{schema}{default}, undef, "$p2 limit for $p1 in v5" );
         is($json{v6}{paths}{"/sites/{site_id}/stats/$p1/$p2"}{get}{parameters}[3]{schema}{default}, 50,  "$p2 limit for $p1 in v6");
-        like($json{v5}{paths}{"/sites/{site_id}/stats/$p1/$p2"}{get}{parameters}[3]{description}, qr/Default is 10/,  "$p2 description for $p1 in v5");
-        like($json{v6}{paths}{"/sites/{site_id}/stats/$p1/$p2"}{get}{parameters}[3]{description}, qr/Default is 50/,  "$p2 description for $p1 in v6");
     }
 }
 

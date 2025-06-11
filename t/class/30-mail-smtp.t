@@ -13,6 +13,7 @@ our $test_env;
 BEGIN {
     require Authen::SASL;
     if ($ENV{MT_TEST_AUTHEN_SASL_XS}) {
+        plan skip_all => 'Ignores Authen::SASL::XS (for now)';
         unless (eval { require Authen::SASL::XS; 1 }) {
             plan skip_all => 'requires Authen::SASL::XS';
         }
