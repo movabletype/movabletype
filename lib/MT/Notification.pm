@@ -41,11 +41,16 @@ sub class_label_plural {
 
 sub list_props {
     return {
+        id => {
+            base    => '__virtual.id',
+            order   => 100,
+            display => 'default',
+        },
         email => {
             auto    => 1,
             label   => 'Email Address',
             display => 'force',
-            order   => 100,
+            order   => 200,
             html    => sub {
                 my $prop = shift;
                 my ( $obj, $app ) = @_;
@@ -65,7 +70,7 @@ sub list_props {
             auto    => 1,
             label   => 'URL',
             display => 'force',
-            order   => 200,
+            order   => 300,
             html    => sub {
                 my $prop = shift;
                 my ( $obj, $app ) = @_;

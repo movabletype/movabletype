@@ -42,21 +42,26 @@ sub ban_ip {
 
 sub list_props {
     return {
+        id => {
+            base    => '__virtual.id',
+            order   => 100,
+            display => 'default',
+        },
         ip => {
             auto    => 1,
             label   => 'IP Address',
             display => 'force',
-            order   => 100,
+            order   => 200,
         },
         blog_name => {
             base    => '__virtual.blog_name',
             display => 'default',
-            order   => 200,
+            order   => 300,
         },
         created_on => {
             base    => '__virtual.created_on',
             display => 'default',
-            order   => 300,
+            order   => 400,
         },
         modified_on => {
             base    => '__virtual.modified_on',

@@ -368,11 +368,16 @@ sub backup_plugin_cb {
 
 sub list_props {
     return {
+        id => {
+            base    => '__virtual.id',
+            order   => 100,
+            display => 'default',
+        },
         name => {
             auto    => 1,
             label   => 'Name',
             display => 'force',
-            order   => 100,
+            order   => 200,
             html    => sub {
                 my ( $prop, $obj, $app ) = @_;
                 my $name        = MT::Util::encode_html( $obj->name );
@@ -438,13 +443,13 @@ sub list_props {
             label     => 'Display Name',
             display   => 'default',
             use_blank => 1,
-            order     => 200,
+            order     => 300,
         },
         member_count => {
             label              => '__GROUP_MEMBER_COUNT',
             display            => 'default',
             base               => '__virtual.object_count',
-            order              => 300,
+            order              => 400,
             count_class        => 'association',
             count_col          => 'group_id',
             count_terms        => { author_id => { not => 0 } },

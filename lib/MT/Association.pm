@@ -55,12 +55,17 @@ sub class_label_plural {
 
 sub list_props {
     return {
+        id => {
+            base    => '__virtual.id',
+            order   => 100,
+            display => 'default',
+        },
         user_name => {
             label        => 'User/Group',
             filter_label => 'User/Group Name',
             base         => '__virtual.string',
             display      => 'force',
-            order        => 100,
+            order        => 200,
             col          => 'name',               # this looks up author table
             html         => sub {
                 my ( $prop, $obj, $app ) = @_;
@@ -133,7 +138,7 @@ sub list_props {
             label        => 'Role',
             filter_label => 'Role Name',
             display      => 'force',
-            order        => 200,
+            order        => 300,
             base         => '__virtual.string',
             col          => 'name',               # this looks up role table
             sub_fields   => [
@@ -260,7 +265,7 @@ sub list_props {
             filter_label => 'Site Name',
             base         => '__virtual.string',
             display      => 'default',
-            order        => 300,
+            order        => 400,
             col => 'name',    # this looks up mt_blog.blog_nam column
             default_sort_order => 'ascend',
             bulk_html          => sub {
@@ -318,7 +323,7 @@ sub list_props {
         created_on => {
             base    => '__virtual.created_on',
             display => 'default',
-            order   => 400,
+            order   => 500,
         },
         role_id => {
             auto            => 1,
