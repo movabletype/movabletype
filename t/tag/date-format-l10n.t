@@ -97,3 +97,15 @@ __DATA__
 <MTEntries lastn='1'><MTEntryDate language="xx"></MTEntries>
 --- expected
 1978 nen 1 gatsu 31 nichi 07:45
+
+=== date format weekday name jp
+--- template
+<MTEntries lastn='1'><MTEntryDate format="%Y/%m/%d (%a)" language="jp"></MTEntries>
+--- expected
+1978/01/31 (火)
+
+=== date format weekday name en_us
+--- template
+<MTEntries lastn='1'><MTEntryDate format="%Y/%m/%d (%a)" language="en_us"></MTEntries>
+--- expected
+1978/01/31 (Tue)
