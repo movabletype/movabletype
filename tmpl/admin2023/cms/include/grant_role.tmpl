@@ -27,7 +27,12 @@
                   <img src="<mt:var name="icon">" class="rounded-circle" width="32" height="32">
                 </div>
               </mt:if>
-              <span class="panel-label"><mt:var name="label" escape="html"></span>
+              <mt:if name="label_html">
+                <span class="panel-label" style="display:none"><mt:var name="label" escape="html"></span>
+                <span class="panel-label-html"><mt:var name="label_html"></span>
+              <mt:else>
+                <span class="panel-label"><mt:var name="label" escape="html"></span>
+              </mt:if>
             </td>
             <td class="panel-description">
               <mt:ignore><!-- No, the duplicate escape modifiers below is not a typo. --></mt:ignore>
