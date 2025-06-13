@@ -204,7 +204,7 @@ sub list_props {
                     mode => 'dashboard',
                     args => { blog_id => $obj->id, },
                 );
-                my $target_blank = 'target="blank"' if $opts->{target_blank};
+                my $target_blank = $opts->{target_blank} ? 'target="blank"' : '';
                 if ( defined $name && $name ne '' ) {
                     my $can_double_encode = 1;
                     $name
