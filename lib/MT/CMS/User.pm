@@ -1196,6 +1196,9 @@ PERMCHECK: {
         $role = MT::Role->load($role_id);
     }
 
+    require MT::ListProperty;
+    my $blog_list_props = MT::ListProperty->list_properties('blog');
+
     my $hasher = sub {
         my ( $obj, $row ) = @_;
         $row->{label} = $row->{name};
@@ -1218,9 +1221,8 @@ PERMCHECK: {
         if ( UNIVERSAL::isa( $obj, 'MT::Group' ) ) {
             $row->{icon} = MT->static_path . 'images/icons/ic_group.svg';
         }
-        if (UNIVERSAL::isa( $obj, 'MT::Blog' )) {
-            $row->{link} = $app->uri(mode => 'dashboard', args => { blog_id => $obj->id });
-            $row->{label} = sprintf('%s (id:%d)', $row->{label}, $obj->id);
+        if (UNIVERSAL::isa($obj, 'MT::Blog')) {
+            $row->{label_html} = $blog_list_props->{name}->html($obj, $app);
         }
     };
 
