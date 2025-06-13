@@ -105,7 +105,12 @@ parameters:
                 <mt:if name="icon">
                   <div class="mt-user me-3"><img src="<mt:var name="icon">" class="rounded-circle" width="32" height="32"></div>
                 </mt:if>
-                <span class="panel-label"><mt:var name="label" escape="html"></span>
+                <mt:if name="label_html">
+                  <span class="panel-label" style="display:none"><mt:var name="label" escape="html"></span>
+                  <span class="panel-label-html"><mt:var name="label_html"></span>
+                <mt:else>
+                  <span class="panel-label"><mt:var name="label" escape="html"></span>
+                </mt:if>
                 <mt:if name="has_child"><mt:setvarblock name="parent_label"><mt:var name="label" escape="html"></mt:setvarblock>
                 <div class="mt-table__hierarchy">
                   <ul class="list-unstyled">
