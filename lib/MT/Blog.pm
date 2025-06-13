@@ -204,15 +204,16 @@ sub list_props {
                     mode => 'dashboard',
                     args => { blog_id => $obj->id, },
                 );
+                my $target_blank = 'target="blank"' if $opts->{target_blank};
                 if ( defined $name && $name ne '' ) {
                     my $can_double_encode = 1;
                     $name
                         = MT::Util::encode_html( $name, $can_double_encode );
-                    return qq{$scope_html <a href="$dashboard_link"> $name</a>};
+                    return qq{$scope_html <a href="$dashboard_link" $target_blank> $name</a>};
                 }
                 else {
                     return MT->translate(
-                        qq{[_1] ($scope_html <a href="[_2]">id:[_3]</a>)},
+                        qq{[_1] ($scope_html <a href="[_2]" $target_blank>id:[_3]</a>)},
                         'No Name', $dashboard_link, $obj->id, );
                 }
             }
