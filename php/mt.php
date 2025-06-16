@@ -521,7 +521,7 @@ class MT {
         isset($cfg['dataapiscript']) or
             $cfg['dataapiscript'] = 'mt-data-api.cgi';
         isset($cfg['dynamictemplateallowphp']) or
-            $cfg['dynamictemplateallowphp'] = 1;
+            $cfg['dynamictemplateallowphp'] = 0;
         isset($cfg['dynamictemplateallowsmartytags']) or $cfg['dynamictemplateallowsmartytags'] = 0;
     }
 

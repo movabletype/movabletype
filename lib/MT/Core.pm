@@ -2227,7 +2227,7 @@ BEGIN {
             'DisableMetaRefresh' => { default => 1 },
             'DynamicTemplateAllowPHP' => { default => 0 },
             'HidePrivateRelatedContentData' => { default => 0 },
-            'DynamicTemplateAllowSmartyTags' => { default => 1 },
+            'DynamicTemplateAllowSmartyTags' => { default => 0 },
             'AdminThemeId' => {
                 default => 'admin2025',
                 handler => \&AdminThemeId,
