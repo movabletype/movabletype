@@ -1698,6 +1698,7 @@ sub preview_data {
     for my $f ( @{ $content_type->fields } ) {
         next unless defined $f->{type} && $f->{type} ne '';
         next unless $registry->{ $f->{type} };
+        next unless $f->{id};
 
         my $handler;
         $handler = $registry->{ $f->{type} }{search_result_handler} if !!$self->{__search_term};

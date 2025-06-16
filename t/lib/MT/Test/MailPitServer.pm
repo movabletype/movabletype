@@ -123,14 +123,24 @@ sub delete_messages {
     my $self = shift;
     my $ui_port = $self->{ui_port};
     my $ua = LWP::UserAgent->new;
-    $ua->delete("http://localhost:$ui_port/api/v1/messages");
+    my $res = $ua->delete("http://localhost:$ui_port/api/v1/messages");
+    unless ($res->is_success) {
+        diag $res->status_line;
+        return;
+    }
+    1;
 }
 
 sub get_raw_message {
     my ($self, $id) = @_;
     my $ui_port = $self->{ui_port};
     my $ua = LWP::UserAgent->new;
-    $ua->get("http://localhost:$ui_port/api/v1/message/$id/raw");
+    my $res = $ua->get("http://localhost:$ui_port/api/v1/message/$id/raw");
+    unless ($res->is_success) {
+        diag $res->status_line;
+        return;
+    }
+    $res->decoded_content;
 }
 
 sub stop {

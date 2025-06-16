@@ -520,6 +520,24 @@ sub edit {
 
     $param->{basename_limit} = ( $blog ? $blog->basename_limit : 0 ) || 30;
 
+    $app->add_breadcrumb(
+        $app->translate($content_type->name),
+        $app->uri(
+            mode => 'list',
+            args => {
+                _type   => 'content_data',
+                type    => 'content_data_' . $content_type->id,
+                blog_id => $blog->id,
+            },
+        ),
+    );
+    if ($content_data && $content_data->id) {
+        $app->add_breadcrumb($content_data->label || $app->translate('(untitled)'));
+    } else {
+        $app->add_breadcrumb($app->translate('Create new [_1]', $content_type->name || '(untitled)'));
+        $param->{nav_new_content_data} = 1;
+    }
+
     $app->build_page( $app->load_tmpl('edit_content_data.tmpl'), $param );
 }
 

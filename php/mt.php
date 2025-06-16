@@ -14,7 +14,7 @@ require_once('lib/class.exception.php');
 
 define('VERSION', '9.000001');
 define('PRODUCT_VERSION', '9.0.1');
-define('DATA_API_DEFAULT_VERSION', '6');
+define('DATA_API_DEFAULT_VERSION', '7');
 
 $PRODUCT_NAME = '__PRODUCT_NAME__';
 if($PRODUCT_NAME == '__PRODUCT' . '_NAME__')
@@ -427,6 +427,7 @@ class MT {
                 $lc_name = preg_replace('/^mt_config_/', '', $lc_name);
                 $lc_name = preg_replace('/_/', '', $lc_name);
                 $value = $_ENV[$name];
+                unset($_ENV[$name]);
                 if (isset($value) && $value === "''") {
                     $value = '';
                 }

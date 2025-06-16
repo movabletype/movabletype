@@ -236,3 +236,27 @@ tag1:1,tag2:2
 <mt:Tags content_type="[% ct3_uid %]" glue=","><$mt:TagName$>:<$mt:TagCount$></mt:Tags>
 --- expected
 0:1
+
+=== MT:Tags with content_type="ct_id" has a content_type in stash
+--- template
+<mt:Tags type="content_type" content_type="[% ct_id %]"><mt:ContentTypeName>: <mt:TagName>
+</mt:Tags>
+--- expected
+test content type 1: tag1
+test content type 1: tag2
+
+=== MT:Tags with content_type="ct_unique_id" has a content_type in stash
+--- template
+<mt:Tags type="content_type" content_type="[% ct_uid %]"><mt:ContentTypeName>: <mt:TagName>
+</mt:Tags>
+--- expected
+test content type 1: tag1
+test content type 1: tag2
+
+=== MT:Tags with content_type="ct_name" has a content_type in stash
+--- template
+<mt:Tags type="content_type" content_type="[% ct_name %]"><mt:ContentTypeName>: <mt:TagName>
+</mt:Tags>
+--- expected
+test content type 1: tag1
+test content type 1: tag2

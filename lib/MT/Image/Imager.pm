@@ -91,7 +91,7 @@ sub _init_image_size {
 sub blob {
     my ( $image, $quality ) = @_;
     my $blob;
-    my $imager = $image->_imager;
+    my $imager = $image->_imager or return;
     my $is_jpeg = defined $image->{type} && $image->{type} eq 'jpeg';
     if ( $is_jpeg
         && ( $imager->getchannels == 2 || $imager->getchannels == 4 ) )
