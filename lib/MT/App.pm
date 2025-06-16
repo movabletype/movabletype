@@ -4225,7 +4225,11 @@ sub is_allowed_host {
         my $lc_trusted = lc $trusted;
         return 1 if $lc_trusted eq $lc_host;
         return 1 if $lc_trusted eq '*';
-        return 1 if $lc_trusted =~ /\A\*(\..+)\z/ && $lc_host =~ /\A[a-z0-9_\-]+\Q${1}\E\z/;
+        if (my ($match) = $lc_trusted =~ /\A\*(\..+)\z/) {
+            return 1
+                if $lc_host =~ /[a-z_\-]/                        # $lc_host is not IP address
+                && $lc_host =~ /\A[a-z0-9_\-]+\Q${match}\E\z/;
+        }
     }
     return;
 }
