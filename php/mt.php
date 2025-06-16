@@ -523,6 +523,7 @@ class MT {
         isset($cfg['dynamictemplateallowphp']) or
             $cfg['dynamictemplateallowphp'] = 0;
         isset($cfg['dynamictemplateallowsmartytags']) or $cfg['dynamictemplateallowsmartytags'] = 0;
+        isset($cfg['allowtestmodifier']) or $cfg['allowtestmodifier'] = 0;
     }
 
     function configure_paths($blog_site_path) {
