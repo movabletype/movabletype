@@ -2225,7 +2225,7 @@ BEGIN {
             'DefaultListLimit' => { default => '50' },
             'WaitAfterReboot' => { default => '1.0' },
             'DisableMetaRefresh' => { default => 1 },
-            'DynamicTemplateAllowPHP' => { default => 1 },
+            'DynamicTemplateAllowPHP' => { default => 0 },
             'HidePrivateRelatedContentData' => { default => 0 },
             'DynamicTemplateAllowSmartyTags' => { default => 1 },
             'AdminThemeId' => {
