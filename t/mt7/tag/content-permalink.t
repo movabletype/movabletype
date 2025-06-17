@@ -732,5 +732,5 @@ https://localhost/category/2017/#000004
 === Used outside of MTContents
 --- template
 <MTContentPermalink>
---- expected
+--- expected_error
 You used an 'mtContentPermalink' tag outside of the context of a content; Perhaps you mistakenly placed it outside of an 'MTContents' container tag?
