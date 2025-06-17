@@ -474,6 +474,10 @@ sub _has_some_modifier {
 
 sub feed_value_handler_multiple {
     my ( $app, $field_data, $values ) = @_;
+
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::warning(since => '8.6.0');
+
     unless ( ref $values eq 'ARRAY' ) {
         $values = [$values];
     }
