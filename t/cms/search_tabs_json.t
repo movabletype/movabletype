@@ -16,6 +16,7 @@ BEGIN {
 use MT::Test;
 use MT::Test::Permission;
 use MT::Test::App;
+use Test::Deep qw(cmp_bag);
 
 $test_env->prepare_fixture(
     sub {
@@ -63,14 +64,10 @@ subtest 'search_tabs_json' => sub {
         my $json = $app->json->{result};
         is( $json->{success}, 1, 'have a success with blog_id' );
 
-        is( scalar @{ $json->{data} }, 8, 'data count is 8 with blog_id' );
-        is_deeply(
-            [ map { $_->{key} } @{ $json->{data} } ],
-            [
-                qw/content_data entry page template asset log author blog/
-            ],
-            'should validate data keys with blog_id'
-        );
+        my @expected = qw(content_data entry page template asset log author blog);
+        push @expected, qw(comment) if MT->has_plugin('Comments');
+        is(scalar @{ $json->{data} }, scalar @expected, 'data count is ' . @expected . ' with blog_id');
+        cmp_bag([map { $_->{key} } @{ $json->{data} }], \@expected, 'should validate data keys with blog_id');
 
         $app->post_ok(
             {
@@ -82,15 +79,10 @@ subtest 'search_tabs_json' => sub {
         $json = $app->json->{result};
         is( $json->{success}, 1, 'have a success with blog_id 0' );
 
-        is( scalar @{ $json->{data} }, 10, 'data count is 10 with blog_id 0' );
+        push @expected, qw(group website);
+        is(scalar @{ $json->{data} }, scalar @expected, 'data count is ' . @expected . ' with blog_id 0');
 
-        is_deeply(
-            [ map { $_->{key} } @{ $json->{data} } ],
-            [
-                qw/content_data entry page template asset log author group blog website/
-            ],
-            'should validate data keys with blog_id 0'
-        );
+        cmp_bag([map { $_->{key} } @{ $json->{data} }], \@expected, 'should validate data keys with blog_id 0');
 
     };
 
@@ -145,14 +137,11 @@ subtest 'search_tabs_json' => sub {
         my $json = $app->json->{result};
         is( $json->{success}, 1, 'have a success with blog_id' );
 
-        is( scalar @{ $json->{data} }, 6, 'data count is 6 with blog_id' );
+        my @expected = qw(entry page template asset log author);
+        push @expected, qw(comment) if MT->has_plugin('Comments');
+        is(scalar @{ $json->{data} }, scalar @expected, 'data count is ' . @expected . ' with blog_id');
 
-        is_deeply(
-            [ map { $_->{key} } @{ $json->{data} } ],
-            [qw/entry page template asset log author/],
-            'should validate data keys with blog_id'
-        );
-
+        cmp_bag([map { $_->{key} } @{ $json->{data} }], \@expected, 'should validate data keys with blog_id');
     };
 };
 
