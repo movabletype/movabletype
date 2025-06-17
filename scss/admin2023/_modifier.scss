@@ -891,12 +891,15 @@ li{
     padding: 0;
   }
 
+  --#{$prefix}navbar-padding-x: 0.5rem;
+  --#{$prefix}navbar-padding-y: 1rem;
+
   background-color: $lochmara;
   padding-bottom: 0;
   padding-top: 0;
 
   .mt-sharedPreviewNav__logo {
-    @extend .ms-2;
+    @extend .me-2;
     @include media-breakpoint-down(sm) {
       margin-left: 14px;
     }
@@ -909,8 +912,7 @@ li{
 
   .mt-sharedPreviewNav__leftNav {
     @extend .nav;
-    @extend .float-start;
-    @extend .ms-auto;
+    @extend .me-auto;
 
     height: 40px;
     overflow: hidden;

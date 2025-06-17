@@ -5979,7 +5979,7 @@ textarea.form-control-lg {
   vertical-align: text-top !important;
 }
 
-.float-start, .float-left, .mt-sharedPreviewNav .mt-sharedPreviewNav__leftNav {
+.float-start, .float-left {
   float: left !important;
 }
 
@@ -6810,7 +6810,7 @@ textarea.form-control-lg {
   margin-right: 0.125rem !important;
 }
 
-.me-2, .mr-2 {
+.me-2, .mr-2, .mt-sharedPreviewNav .mt-sharedPreviewNav__logo {
   margin-right: 0.25rem !important;
 }
 
@@ -6830,7 +6830,7 @@ textarea.form-control-lg {
   margin-right: 2rem !important;
 }
 
-.me-auto, .mr-auto {
+.me-auto, .mr-auto, .mt-sharedPreviewNav .mt-sharedPreviewNav__leftNav {
   margin-right: auto !important;
 }
 
@@ -6874,7 +6874,7 @@ textarea.form-control-lg {
   margin-left: 0.125rem !important;
 }
 
-.ms-2, .ml-2, .mt-sharedPreviewNav .mt-sharedPreviewNav__logo {
+.ms-2, .ml-2 {
   margin-left: 0.25rem !important;
 }
 
@@ -6894,7 +6894,7 @@ textarea.form-control-lg {
   margin-left: 2rem !important;
 }
 
-.ms-auto, .ml-auto, .mt-sharedPreviewNav .mt-sharedPreviewNav__leftNav {
+.ms-auto, .ml-auto {
   margin-left: auto !important;
 }
 
@@ -12305,6 +12305,8 @@ li {
 
 /* Shared Preview Navigation */
 .mt-sharedPreviewNav {
+  --bs-navbar-padding-x: 0.5rem;
+  --bs-navbar-padding-y: 1rem;
   background-color: #0176BF;
   padding-bottom: 0;
   padding-top: 0;
