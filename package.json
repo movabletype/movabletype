@@ -80,7 +80,7 @@
     "prettier": "^3.3.3",
     "prettier-plugin-svelte": "^3.2.7",
     "rollup": "^4.28.0",
-    "rollup-plugin-css-only": "^4.3.0",
+    "rollup-plugin-css-only": "^4.5.2",
     "rollup-plugin-esbuild": "^6.1.1",
     "rollup-plugin-livereload": "^2.0.5",
     "rollup-plugin-svelte": "^7.2.2",
@@ -88,8 +88,8 @@
     "svelte": "^4.2.19",
     "svelte-check": "^4.0.5",
     "svelte-preprocess": "^5.0.4",
-    "typescript": "^5.6.3",
-    "vitest": "^2.1.6"
+    "typescript": "^5.7.3",
+    "vitest": "^2.1.9"
   },
   "dependencies": {
     "@riotjs/observable": "^4.1.1",
@@ -98,7 +98,7 @@
     "codemirror": "5.61.1",
     "jquery": "3.7.0",
     "jquery-migrate": "3.5.2",
-    "jquery-ui": "1.13.2",
+    "jquery-ui": "1.14.1",
     "jquery-ui-touch-punch": "github:movabletype/jquery-ui-touch-punch",
     "jquery-validation": "1.20.0",
     "js-cookie": "3.0.1",
