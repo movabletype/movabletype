@@ -58,7 +58,7 @@ sub list_props {
         id => {
             base    => '__virtual.id',
             order   => 100,
-            display => 'default',
+            display => 'optional',
         },
         user_name => {
             label        => 'User/Group',

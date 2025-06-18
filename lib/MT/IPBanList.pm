@@ -45,7 +45,7 @@ sub list_props {
         id => {
             base    => '__virtual.id',
             order   => 100,
-            display => 'default',
+            display => 'optional',
         },
         ip => {
             auto    => 1,
