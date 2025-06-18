@@ -20,6 +20,7 @@ jobs:
     strategy:
       matrix:
         config:
+          - {image: fedora42, mt_test_env: 'MT_TEST_RUN_APP_AS_CGI=1'}   # Perl 5.40 / PHP 8.4 / MySQL 9.3
           - {image: fedora40, mt_test_env: 'MT_TEST_IMAGE_DRIVER=ImageMagick' } # Perl 5.38 / PHP 8.2 / MariaDB 10.11
           - {image: centos7,  mt_test_env: 'MT_TEST_IMAGE_DRIVER=GD' }  # Perl 5.16 / PHP 7.1 / MariaDB 5.5
         test: 
@@ -130,7 +131,6 @@ jobs:
           - {image: bullseye, mt_test_env: 'MT_TEST_DISABLE_OBJECT_CACHE=1'}    # Perl 5.32 / PHP 7.4 / MariaDB 10.5
           - {image: fedora37, mt_test_env: 'MT_TEST_BUILDER=MT::Builder::Fast'} # Perl 5.36 / PHP 8.1 / MySQL 8.0
           - {image: fedora35, mt_test_env: 'MT_TEST_IMAGE_DRIVER=Imager MT_TEST_FORCE_DATAAPI_VERSION=6'}   # Perl 5.34 / PHP 8.0 / MySQL 8.0
-          - {image: fedora42, mt_test_env: 'MT_TEST_IMAGE_DRIVER=Imager MT_TEST_FORCE_DATAAPI_VERSION=6'}   # Perl 5.40 / PHP 8.4 / MySQL 9.3
         test:
           - "t/*.t"
           - "t/mt7/[^td]*"
