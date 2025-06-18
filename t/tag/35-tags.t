@@ -5,6 +5,7 @@ use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
+use utf8;
 
 BEGIN {
     $test_env = MT::Test::Env->new;
@@ -165,9 +166,9 @@ January 31, 1978  7:45 AM
 
 === test 13
 --- template
-<MTEntries lastn='1'><MTEntryDate language="pl"></MTEntries>
+<MTEntries lastn='1'><MTEntryDate language="ja"></MTEntries>
 --- expected
-31 stycznia 1978  7:45
+1978年1月31日 07:45
 
 === test 14
 --- template
