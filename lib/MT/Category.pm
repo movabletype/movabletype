@@ -104,7 +104,11 @@ sub list_props {
             auto  => 1,
             label => 'Basename',
         },
-        id     => 'ID',
+        id => {
+            base    => '__virtual.id',
+            order   => 100,
+            display => 'optional',
+        },
         parent => {
             auto  => 1,
             label => 'Parent',

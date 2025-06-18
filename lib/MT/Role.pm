@@ -47,11 +47,16 @@ sub class_label_plural {
 
 sub list_props {
     return {
+        id => {
+            base    => '__virtual.id',
+            order   => 100,
+            display => 'optional',
+        },
         name => {
             auto       => 1,
             label      => 'Name',
             display    => 'force',
-            order      => 100,
+            order      => 200,
             sub_fields => [
                 {   class => 'description',
                     label => 'Description',
@@ -115,7 +120,7 @@ sub list_props {
             base        => '__virtual.object_count',
             label       => 'Associations',
             display     => 'default',
-            order       => 200,
+            order       => 300,
             col_class   => '',
             count_class => 'association',
             count_col   => 'role_id',
@@ -172,7 +177,7 @@ sub list_props {
         },
         created_on => {
             base  => '__virtual.created_on',
-            order => 300,
+            order => 400,
         },
         modified_on => {
             base    => '__virtual.modified_on',
