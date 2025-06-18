@@ -341,11 +341,13 @@ sub core_methods {
         'view_content_type' => "${pkg}ContentType::edit",
         'save_content_type' => "${pkg}ContentType::save",
 
+        ## DEPRECATED since 8.6.0
      # 'cfg_content_type_data' => " ${pkg}ContentType::cfg_content_type_data",
         'select_list_content_type' =>
             "${pkg}ContentType::select_list_content_type",
         'select_edit_content_type' =>
             "${pkg}ContentType::select_edit_content_type",
+
         'validate_content_fields' => {
             code     => " ${pkg}ContentType::validate_content_fields",
             app_mode => 'JSON',

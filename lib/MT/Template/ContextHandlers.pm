@@ -4110,6 +4110,20 @@ sub _hdlr_app_svg_icon {
 
 ###########################################################################
 
+=head2 App:EmbedJsonResponse
+
+Returns a json for embedding a response in a template
+
+B<Attributes:>
+
+=over 4
+
+=item * mode (required)
+
+=back
+
+=cut
+
 sub _hdlr_app_embed_json_response {
     my ($ctx, $args, $cond) = @_;
 
