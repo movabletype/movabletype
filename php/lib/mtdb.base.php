@@ -1291,7 +1291,7 @@ abstract class MTDatabase {
             if (isset($args['scored_by'])) {
                 $voter = $this->fetch_author_by_name($args['scored_by']);
                 if (empty($voter)) {
-                    echo "Invalid scored by filter: ".$args['scored_by'];
+                    $ctx->error($ctx->mt->translate("No such user '[_1]'", $args['scored_by']));
                     return null;
                 }
                 $cexpr = create_rating_expr_function($voter->author_id, 'scored_by', $args['namespace']);
@@ -3303,7 +3303,9 @@ abstract class MTDatabase {
             if (isset($args['scored_by'])) {
                 $voter = $this->fetch_author_by_name($args['scored_by']);
                 if (empty($voter)) {
-                    echo "Invalid scored by filter: ".$args['scored_by'];
+                    $mt = MT::get_instance();
+                    $ctx = $mt->context();
+                    $ctx->error($mt->translate("No such user '[_1]'", $args['scored_by']));
                     return null;
                 }
                 $cexpr = create_rating_expr_function($voter->author_id, 'scored_by', $args['namespace'], 'comment');
@@ -3825,7 +3827,9 @@ abstract class MTDatabase {
             if (isset($args['scored_by'])) {
                 $voter = $this->fetch_author_by_name($args['scored_by']);
                 if (!$voter) {
-                    echo "Invalid scored by filter: ".$args['scored_by'];
+                    $mt = MT::get_instance();
+                    $ctx = $mt->context();
+                    $ctx->error($mt->translate("No such user '[_1]'", $args['scored_by']));
                     return null;
                 }
                 $cexpr = create_rating_expr_function($voter->author_id, 'scored_by', $args['namespace'], 'asset');

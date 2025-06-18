@@ -27,7 +27,7 @@ function smarty_function_mttextformat($args, &$ctx) {
 
     $entry = $ctx->stash('entry');
     if (!$entry) {
-        return $ctx->error($ctx->mt->translate("You used an '[_1]' tag outside of the context of the correct content; ", "mtTextFormat" ));
+        return $ctx->error($ctx->mt->translate("You used an '[_1]' tag outside of the context of the correct content;", "mtTextFormat" ));
     }
 
     $convert_breaks = $entry->convert_breaks;

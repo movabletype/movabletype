@@ -20,6 +20,7 @@ jobs:
     strategy:
       matrix:
         config:
+          - {image: fedora42, mt_test_env: 'MT_TEST_RUN_APP_AS_CGI=1'}   # Perl 5.40 / PHP 8.4 / MySQL 9.3
           - {image: fedora40, mt_test_env: 'MT_TEST_IMAGE_DRIVER=ImageMagick' } # Perl 5.38 / PHP 8.2 / MariaDB 10.11
           - {image: centos7,  mt_test_env: 'MT_TEST_IMAGE_DRIVER=GD' }  # Perl 5.16 / PHP 7.1 / MariaDB 5.5
         test: 

@@ -35,7 +35,7 @@ function smarty_block_mtarchives($args, $content, &$ctx, &$repeat) {
         try {
             $archiver = ArchiverFactory::get_archiver($curr_at);
         } catch (Exception $e) {
-            return $ctx->error($ctx->mt->translate("ArchiveType not found - [_1]", $at), E_USER_ERROR);
+            return $ctx->error($ctx->mt->translate("ArchiveType not found - [_1]", $at));
         }
         if ($archiver)
             $ctx->__stash['vars']['template_params'] = $archiver->get_template_params();

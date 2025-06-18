@@ -108,8 +108,6 @@ left FILE-CONTENT right
 left <mt:Include file="PATH"> right
 --- expected_error
 File inclusion is disabled by "AllowFileInclude" config directive.
---- expected_php_error
-left File include is disabled by "AllowFileInclude" config directive. right
 
 === test 883-3 include php file
 --- file_content
