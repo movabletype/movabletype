@@ -14329,10 +14329,10 @@ li.nav-item, .mt-sharedPreviewNav .mt-sharedPreviewNav__rightNav li.mt-sharedPre
 }
 
 @media (min-width: 768px) {
-  body:has(.mt-primaryNavigation):has(.collapsed) .debug-panel {
+  body:has(.mt-primaryNavigation):has(.mt-contentWrapper.collapsed) .debug-panel {
     margin-left: calc(var(--minimal-left-bar-width) + var(--bs-card-cap-padding-x)) !important;
   }
-  body:has(.mt-primaryNavigation):not(:has(.collapsed)) .debug-panel {
+  body:has(.mt-primaryNavigation):has(.mt-contentWrapper:not(.collapsed)) .debug-panel {
     margin-left: var(--left-bar-width) !important;
   }
 }
