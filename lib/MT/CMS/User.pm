@@ -1306,7 +1306,7 @@ PERMCHECK: {
                     params       => $params,
                     author_terms => $author_terms,
                     group_terms  => $group_terms,
-                    template     => 'include/listing_panel.tmpl',
+                    template     => 'include/grant_role.tmpl',
                     $no_limit ? ( no_limit => 1 ) : (),
                 }
             );
@@ -1330,7 +1330,7 @@ PERMCHECK: {
                     type     => $type,
                     code     => $hasher,
                     params   => $params,
-                    template => 'include/listing_panel.tmpl',
+                    template => 'include/grant_role.tmpl',
                     $type eq 'site'       ? ( pre_build => $pre_build ) : (),
                     $app->param('search') ? ( no_limit  => 1 )          : (),
                 }
