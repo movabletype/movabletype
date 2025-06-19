@@ -1226,7 +1226,6 @@ PERMCHECK: {
         my $params = {
             panel_type   => $type,
             list_noncron => 1,
-            panel_multi  => 1,
             has_group    => 1,
         };
         if ($type eq 'user') {
@@ -1358,7 +1357,6 @@ PERMCHECK: {
             },
         };
 
-        $params->{panel_multi}  = 1;
         $params->{blog_id}      = $blog_id;
         $params->{dialog_title} = $app->translate("Grant Permissions");
         $params->{panel_loop}   = [];
@@ -1375,7 +1373,6 @@ PERMCHECK: {
                 panel_number     => $i + 1,
                 panel_total      => $#panels + 1,
                 panel_has_steps  => ( $#panels == '0' ? 0 : 1 ),
-                panel_searchable => ( $source eq 'role' ? 0 : 1 ),
             };
 
             # Only show active user/groups.
