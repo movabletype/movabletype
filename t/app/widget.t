@@ -159,6 +159,7 @@ subtest 'update_widget_prefs' => sub {
                 },
             }),
         });
+        $admin->refresh;
 
         is_deeply(
             $admin->widgets->{ 'dashboard:user:' . $admin->id },
@@ -196,6 +197,7 @@ subtest 'update_widget_prefs' => sub {
                 },
             }),
         });
+        $admin->refresh;
 
         is_deeply(
             $admin->widgets->{ 'dashboard:blog:' . $blog->id },
