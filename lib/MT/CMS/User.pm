@@ -1199,6 +1199,35 @@ PERMCHECK: {
     require MT::ListProperty;
     my $blog_list_props = MT::ListProperty->list_properties('blog');
 
+    my $type = $app->param('_type') || '';  # user, author, group, site
+
+    my $pre_build = sub {
+        my ($param) = @_;
+
+        return unless $param->{panel_type} eq 'site';
+
+        my (%labels, %missing);
+
+        for my $obj (@{ $param->{object_loop} }) {
+            $labels{ $obj->{id} } = $obj->{label};
+            my $id = $obj->{parent_id};
+            $missing{$id} = 1 if $id and $this_user->has_perm($id);
+        }
+
+        for my $id (keys %missing) {
+            delete $missing{$id} if exists $labels{$id};
+        }
+
+        my @parents = $app->model('blog')->load([keys %missing]);
+
+        $labels{ $_->id } = $_->name for @parents;
+
+        for my $obj (@{ $param->{object_loop} }) {
+            my $id = $obj->{parent_id};
+            $obj->{parent_site_label} = $id && $labels{ $id } ? $labels{ $id } : '-';
+        }
+    };
+
     my $hasher = sub {
         my ( $obj, $row ) = @_;
         $row->{label} = $row->{name};
@@ -1226,8 +1255,6 @@ PERMCHECK: {
         }
     };
 
-    my $type = $app->param('_type') || '';  # user, author, group, site
-
     if ( $app->param('search') || $app->param('json') ) {
         my $params = {
             panel_type   => $type,
@@ -1254,6 +1281,7 @@ PERMCHECK: {
                     group_terms  => $group_terms,
                     template     => 'include/grant_role.tmpl',
                     $no_limit ? ( no_limit => 1 ) : (),
+                    pre_build => $pre_build,
                 }
             );
         }
@@ -1281,6 +1309,7 @@ PERMCHECK: {
                     params   => $params,
                     template => 'include/grant_role.tmpl',
                     $app->param('search') ? ( no_limit  => 1 )          : (),
+                    pre_build => $pre_build,
                 }
             );
         }
@@ -1424,6 +1453,7 @@ PERMCHECK: {
                         author_terms => $author_terms,
                         group_terms  => $group_terms,
                         args         => $args,
+                        pre_build    => $pre_build,
                     }
                 );
             }
@@ -1437,6 +1467,7 @@ PERMCHECK: {
                         params  => $panel_params,
                         terms   => $terms,
                         args    => $args,
+                        pre_build => $pre_build,
                     }
                 );
             }

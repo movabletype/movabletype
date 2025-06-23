@@ -34,6 +34,11 @@
                 <span class="panel-label"><mt:var name="label" escape="html"></span>
               </mt:if>
             </td>
+            <mt:if name="panel_type" eq="site">
+              <td>
+                <mt:var name="parent_site_label" escape="html">
+              </td>
+            </mt:if>
             <td class="panel-description">
               <mt:ignore><!-- No, the duplicate escape modifiers below is not a typo. --></mt:ignore>
               <mt:if name="link">
@@ -149,6 +154,11 @@
                     <th class="head panel-label primary" scope="col">
                       <span class="col-label"><mt:var name="panel_label"></span>
                     </th>
+                    <mt:if name="panel_type" eq="site">
+                      <th>
+                        <__trans phrase="Parent Site">
+                      </th>
+                    </mt:if>
                     <th class="head panel-description primary" scope="col">
                       <span class="col-label"><mt:var name="panel_description"></span>
                     </th>
