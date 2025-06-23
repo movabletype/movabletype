@@ -36,6 +36,8 @@ sub template_param_list_template {
         'dashboard_widget_template_list_template.tmpl'
     );
 
+    return 1 if ($app->param('filter_key') || '') eq 'backup_templates';
+
     # from MT::CMS::Template
     my $hasher = sub {
         my ($obj, $row) = @_;
