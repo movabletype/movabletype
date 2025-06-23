@@ -1222,7 +1222,7 @@ PERMCHECK: {
             $row->{icon} = MT->static_path . 'images/icons/ic_group.svg';
         }
         if (UNIVERSAL::isa($obj, 'MT::Blog')) {
-            $row->{label_html} = $blog_list_props->{name}->html($obj, $app);
+            $row->{label_html} = $blog_list_props->{name}->html($obj, $app, { no_link => 1 });
         }
     };
 
