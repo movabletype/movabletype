@@ -1242,7 +1242,7 @@ PERMCHECK: {
         }
 
         if (UNIVERSAL::isa($obj, 'MT::Blog')) {
-            $row->{label_html} = $blog_list_props->{name}->html($obj, $app);
+            $row->{label_html} = $blog_list_props->{name}->html($obj, $app, { no_link => 1 });
         }
 
         if (UNIVERSAL::isa($obj, 'MT::Blog') && $obj->is_blog()) {
