@@ -1999,7 +1999,7 @@ BEGIN {
                 default => sub { $_[0]->SearchThrottleIPWhitelist }
             },
             'SearchContentTypes' => undef,
-            'SearchMaxCharCount' => { default => 0 },
+            'SearchMaxCharCount' => { default => 1000 },
             'ContentDataSearchMaxCharCount' => {
                 default => sub { $_[0]->SearchMaxCharCount },
             },
