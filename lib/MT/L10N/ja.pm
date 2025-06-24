@@ -1522,6 +1522,8 @@ use vars qw( @ISA %Lexicon );
 	'Theme not found' => 'テーマがみつかりませんでした。',
 	'Themes Directory [_1] is not writable.' => 'テーマディレクトリ[_1]に書き込めません。',
 	'Themes directory [_1] is not writable.' => 'テーマディレクトリ[_1]に書き込めません。',
+	'[Deprecated]' => '[廃止済み]',
+	'[Removed]' => '[削除済み]',
 
 ## lib/MT/CMS/Tools.pm
 	'Any site' => '任意のサイト',
