@@ -81,6 +81,7 @@
     </mt:unless>
     <mt:if name="blog_id">
       <mt:unless name="errors">
+      <mt:unless name="removed">
         <mt:if name="current">
       <a href="<mt:var name="mt_url" />?__mode=dialog_refresh_templates&amp;blog_id=<mt:var name="blog_id">&amp;magic_token=<mt:var name="magic_token">&amp;return_args=<mt:var name="return_args" escape="url">" class="btn btn-default button apply-theme-link mt-open-dialog mt-modal-open">
         <__trans phrase="Refresh Templates">
@@ -93,6 +94,7 @@
         <__trans phrase="Apply">
       </a>
         </mt:if>
+      </mt:unless>
       </mt:unless>
     <mt:else>
       <mt:if name="is_administrator">
@@ -141,11 +143,13 @@
     </mt:if>
   </mt:unless>
 
+  <mt:unless name="removed">
     <div class="float-end theme-toggle-button">
       <a href="#theme-<mt:var name="id" escape="html">-details" data-bs-toggle="collapse" aria-expanded="false" aria-controls="theme-<mt:var name="id" escape="html">">
         <mtapp:svgicon id="ic_collapse" title="toggle_detail" color="secondary">
       </a>
     </div>
+  </mt:unless>
   </div>
 </div>
 </div>
