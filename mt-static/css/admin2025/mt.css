@@ -4058,8 +4058,8 @@ textarea.form-control-lg {
 }
 
 .navbar, .mt-sharedPreviewNav {
-  --bs-navbar-padding-x: 0;
-  --bs-navbar-padding-y: 0.5rem;
+  --bs-navbar-padding-x: 1rem;
+  --bs-navbar-padding-y: 1rem;
   --bs-navbar-color: rgba(0, 0, 0, 0.55);
   --bs-navbar-hover-color: rgba(0, 0, 0, 0.7);
   --bs-navbar-disabled-color: rgba(0, 0, 0, 0.3);
@@ -12935,8 +12935,6 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-mainContentWrapper {
 
 /* Shared Preview Navigation */
 .mt-sharedPreviewNav {
-  --bs-navbar-padding-x: 0.5rem;
-  --bs-navbar-padding-y: 1rem;
   background-color: #0176BF;
   padding-bottom: 0;
   padding-top: 0;
