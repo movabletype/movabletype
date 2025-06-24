@@ -47,7 +47,44 @@ sub list {
             },
             blog => $blog,
         );
-        $param{current_theme_name} = $current_theme->label if $current_theme;
+        if (my $theme_id = $blog->theme_id) {
+            if (!@{ $param{current_theme_loop} || [] }) {
+                my $theme = {
+                    id       => $theme_id,
+                    theme_id => $theme_id,
+                    current  => 1,
+                };
+                if ($current_theme) {
+                    # deprecated (some of the theme files may still exist, but the theme is not recommended to use anymore)
+                    my $label = $current_theme->label;
+                    $label                  = $label->() if ref $label eq 'CODE';
+                    $theme->{name}          = $theme->{label} = $label;
+                    $theme->{author_name}   = $current_theme->{author_name};
+                    $theme->{author_link}   = $current_theme->{author_link};
+                    $theme->{description}   = $app->translate('[Deprecated]') . ' ' . $current_theme->description;
+                    $theme->{deprecated}    = 1;
+                    $theme->{removed}       = 1;
+                    $theme->{theme_version} = $current_theme->version;
+
+                    @$theme{qw(thumbnail_url thumb_w thumb_h)}       = $current_theme->thumbnail(size => 'small');
+                    @$theme{qw(m_thumbnail_url m_thumb_w m_thumb_h)} = $current_theme->thumbnail(size => 'medium');
+                    @$theme{qw(l_thumbnail_url l_thumb_w l_thumb_h)} = $current_theme->thumbnail(size => 'large');
+                } else {
+                    # removed
+                    my $name = join ' ', map ucfirst, split /_/, $theme_id;
+                    $theme->{name}        = $theme->{label} = $name;
+                    $theme->{author_name} = '';
+                    $theme->{description} = $app->translate('[Removed]');
+                    $theme->{removed}     = 1;
+
+                    @$theme{qw(thumbnail_url thumb_w thumb_h)}       = MT::Theme->default_theme_thumbnail(size => 'small');
+                    @$theme{qw(m_thumbnail_url m_thumb_w m_thumb_h)} = MT::Theme->default_theme_thumbnail(size => 'medium');
+                    @$theme{qw(l_thumbnail_url l_thumb_w l_thumb_h)} = MT::Theme->default_theme_thumbnail(size => 'large');
+                }
+
+                $param{current_theme_loop} = [$theme];
+            }
+        }
     }
     $param{nav_config}   = 1;
     $param{nav_settings} = 1;
