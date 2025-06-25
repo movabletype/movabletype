@@ -14,7 +14,7 @@ use strict;
 use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 
-$VERSION = '1.13';
+$VERSION = '1.14';
 
 sub ProcessAPP12($$$);
 sub ProcessDucky($$$);
@@ -72,7 +72,7 @@ sub WriteDucky($$$);
     StrobeTime  => { },
     Resolution  => { },
     Protect     => { },
-    ConTake     => { },
+    ContTake    => { },
     ImageSize   => { PrintConv => '$val=~tr/-/x/;$val' },
     ColorMode   => { },
     Zoom        => { },
@@ -278,6 +278,7 @@ sub ProcessAPP12($$$)
             $tagInfo = { Name => ucfirst $tag };
             # put in Camera group if information in "Camera" section
             $$tagInfo{Groups} = { 2 => 'Camera' } if $section =~ /camera/i;
+            $et->VPrint(0, $$et{INDENT}, "[adding APP12:$$tagInfo{Name}]\n");
             AddTagToTable($tagTablePtr, $tag, $tagInfo);
         }
         $et->FoundTag($tagInfo, $val);
@@ -305,7 +306,7 @@ APP12 meta information.
 
 =head1 AUTHOR
 
-Copyright 2003-2024, Phil Harvey (philharvey66 at gmail.com)
+Copyright 2003-2025, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

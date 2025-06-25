@@ -6,7 +6,7 @@ use strict;
 use fields
     qw( databases retry_seconds dead_dsns retry_at funcmap_cache verbose all_abilities current_abilities current_job cached_drivers driver_cache_expiration scoreboard prioritize floor batch_size strict_remove_ability);
 
-our $VERSION = "1.17";
+our $VERSION = "1.18";
 
 use Carp qw( croak );
 use Data::ObjectDriver::Errors;
@@ -1182,7 +1182,7 @@ Given a job handle (a scalar string) I<$handle>, runs the job, then returns.
 
 =head2 C<$client-E<gt>grab_and_work_on($handle)>
 
-Similar to L<$client-E<gt>work_on($handle)>, except that the job will be grabbed
+Similar to L</$client-E<gt>work_on($handle)>, except that the job will be grabbed
 before being run. It guarantees that only one worker will work on it (at least
 in the C<grab_for> interval).
 
@@ -1252,7 +1252,7 @@ out of scope)
 
 =head1 PASSING IN AN EXISTING DRIVER
 
-You can pass in a existing C<Data::Object::Driver::DBI> object which also allows you
+You can pass in a existing L<Data::ObjectDriver> object which also allows you
 to reuse exist Database handles like so:
 
         my $dbh = DBI->connect( $dsn, "root", "", {

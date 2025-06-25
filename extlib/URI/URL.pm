@@ -5,7 +5,7 @@ use warnings;
 
 use parent 'URI::WithBase';
 
-our $VERSION = '5.29';
+our $VERSION = '5.32';
 
 # Provide as much as possible of the old URI::URL interface for backwards
 # compatibility...

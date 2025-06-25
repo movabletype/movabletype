@@ -1,17 +1,12 @@
 package Hash::Merge::Simple;
-BEGIN {
-  $Hash::Merge::Simple::VERSION = '0.051';
-}
-# ABSTRACT: Recursively merge two or more hashes, simply
-
-use warnings;
 use strict;
+use warnings;
 
-use vars qw/ @ISA @EXPORT_OK /;
-require Exporter;
-@ISA = qw/ Exporter /;
-@EXPORT_OK = qw/ merge clone_merge dclone_merge /;
+our $VERSION = '0.052';
 
+use Exporter ();
+our @ISA = qw/ Exporter /;
+our @EXPORT_OK = qw/ merge clone_merge dclone_merge /;
 
 # This was stoled from Catalyst::Utils... thanks guys!
 sub merge (@);
@@ -38,10 +33,9 @@ sub merge (@) {
             $merge{$key} = $right->{$key};
         }
     }
-    
+
     return \%merge;
 }
-
 
 sub clone_merge {
     require Clone;
@@ -49,26 +43,25 @@ sub clone_merge {
     return Clone::clone( $result );
 }
 
-
 sub dclone_merge {
     require Storable;
     my $result = merge @_;
     return Storable::dclone( $result );
 }
 
-
 1;
 
 __END__
+
 =pod
+
+=encoding UTF-8
+
+=for :stopwords Robert Krimen ACKNOWLEDGEMENTS Yuval Kogman Riedel
 
 =head1 NAME
 
 Hash::Merge::Simple - Recursively merge two or more hashes, simply
-
-=head1 VERSION
-
-version 0.051
 
 =head1 SYNOPSIS
 
@@ -87,7 +80,7 @@ version 0.051
     my $c = merge $a, $b;
     # $c is { a => 100, b => 2, c => 3, d => { i => 2, l => 4 }, r => {} }
 
-    # You can also merge more than two hashes at the same time 
+    # You can also merge more than two hashes at the same time
     # The precedence increases from left to right (the rightmost has the most precedence)
     my $everything = merge $this, $that, $mine, $yours, $kitchen_sink, ...;
 
@@ -149,7 +142,7 @@ Perform a merge, clone the merge, and return the result
 This is useful in cases where you need to ensure that the result can be tweaked without fear
 of giving/receiving any side effects
 
-This method will use L<Storable> (dclone) to do the cloning
+This method will use L<Storable> (C<dclone>) to do the cloning
 
 =head1 SEE ALSO
 
@@ -169,16 +162,32 @@ Sebastian Riedel C<sri@cpan.org>
 
 Yuval Kogman C<nothingmuch@woobling.org>
 
+=head1 BUGS
+
+Please report any bugs or feature requests on the bugtracker website
+L<https://rt.cpan.org/Public/Dist/Display.html?Name=Hash-Merge-Simple> or
+by email to
+L<bug-Hash-Merge-Simple@rt.cpan.org|mailto:bug-Hash-Merge-Simple@rt.cpan.org>.
+
+When submitting a bug or request, please include a test-file or a
+patch to an existing test-file that illustrates the bug or desired
+feature.
+
 =head1 AUTHOR
 
 Robert Krimen <robertkrimen@gmail.com>
 
+=head1 CONTRIBUTOR
+
+=for stopwords Graham Knop
+
+Graham Knop <haarg@haarg.org>
+
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2010 by Robert Krimen.
+This software is copyright (c) 2008 by Robert Krimen.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
 
 =cut
-
