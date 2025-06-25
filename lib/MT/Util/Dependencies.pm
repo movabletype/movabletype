@@ -1278,12 +1278,18 @@ sub check_extlib {
     _require_module('CPAN::Common::Index::Mirror') or return;
     _require_module('Parse::Distname')             or return;
     _require_module('version')                     or return;
+    if ($args{fetch_changes}) {
+        _require_module('LWP::UserAgent')   or return;
+        _require_module('Mojo::DOM')        or return;
+        _require_module('MT::Util::Encode') or return;
+    }
     my %modules = (%Requirements, %ExtLibOnly, %HiddenCoreDeps);
     my %extlib  = map { $_ => $modules{$_}{extlib} } grep { $modules{$_}{extlib} } keys %modules;
     my $index   = CPAN::Common::Index::Mirror->new({ mirror => 'https://www.cpan.org' });
     open my $fh, '<', $index->cached_package;
     my $seen;
 
+    my $ua = LWP::UserAgent->new;
     while (<$fh>) {
         chomp;
         if ($_ eq '') {
@@ -1293,14 +1299,31 @@ sub check_extlib {
         next unless $seen;
         my ($package, $version, $dist) = split /\s+/;
         my $extlib_version = $extlib{$package} or next;
-        my $distname       = Parse::Distname::parse_distname($dist)->{name_and_version};
+        my $info           = Parse::Distname::parse_distname($dist);
+        my $distname       = $info->{name_and_version};
         next unless version->parse($version) > version->parse($extlib_version);
         my $pinned = $modules{$package}{pinned} ? ' but it is pinned' : '';
+
         unless ($args{debug}) {
             next if $pinned;
             next if $distname =~ /^perl-/;
         }
         print STDERR "$package ($extlib_version) has a new version $version ($distname)$pinned\n";
+        if ($args{fetch_changes}) {
+            my $author = $info->{pause_id};
+            my $url    = "https://metacpan.org/release/$author/$distname/changes";
+            my $res    = $ua->get($url);
+            if ($res->is_success) {
+                my $changes = $res->decoded_content;
+                my $source  = Mojo::DOM->new($changes)->at('#metacpan_source')->all_text;
+                my ($range) = $source =~ /^(.+?)\n[^\n]*?$extlib_version/s;
+                if ($range) {
+                    print STDERR MT::Util::Encode::encode_utf8_if_flagged($range), "\n\n";
+                } else {
+                    print STDERR "Can't fetch changes: try $url\n\n";
+                }
+            }
+        }
     }
 }
 
