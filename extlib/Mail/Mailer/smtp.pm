@@ -1,14 +1,14 @@
-# Copyrights 1995-2019 by [Mark Overmeer <markov@cpan.org>].
+# Copyrights 1995-2024 by [Mark Overmeer <markov@cpan.org>].
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
-# Pod stripped from pm file by OODoc 2.02.
+# Pod stripped from pm file by OODoc 2.03.
 # This code is part of the bundle MailTools.  Meta-POD processed with
 # OODoc into POD and HTML manual-pages.  See README.md for Copyright.
 # Licensed under the same terms as Perl itself.
 
-package Mail::Mailer::smtp;
-use vars '$VERSION';
-$VERSION = '2.21';
+package Mail::Mailer::smtp;{
+our $VERSION = '2.22';
+}
 
 use base 'Mail::Mailer::rfc822';
 
@@ -30,10 +30,7 @@ sub exec {
         or return undef;
 
     if($opt{StartTLS})
-    {   $Net::SMTP::VERSION >= 1.28
-            or die "StartTLS requires Net::SMTP 1.28";
-
-        $smtp->starttls
+    {   $smtp->starttls
             or return undef;
     }
 
@@ -95,9 +92,9 @@ sub close(@)
     $ok;
 }
 
-package Mail::Mailer::smtp::pipe;
-use vars '$VERSION';
-$VERSION = '2.21';
+package Mail::Mailer::smtp::pipe;{
+our $VERSION = '2.22';
+}
 
 
 sub TIEHANDLE
