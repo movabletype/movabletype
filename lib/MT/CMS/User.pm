@@ -1228,7 +1228,7 @@ PERMCHECK: {
         }
 
         # for previous admin theme
-        {
+        if ($app->config->AdminThemeId ne 'admin2023') {
             my $loop = $param->{object_loop};
             my @has_child_sites    = grep { $_->{has_child}; } @$loop;
             my %has_child_site_ids = map { $_->{id} => 1 } @has_child_sites;
@@ -1255,7 +1255,7 @@ PERMCHECK: {
         $row->{description} = $row->{nickname} if exists $row->{nickname};
 
         # for previous admin theme
-        {
+        if ($app->config->AdminThemeId ne 'admin2023') {
             my $type = $app->param('type') || '';
             if ( $type && $type eq 'site' ) {
                 if (   !$app->param('search')
@@ -1300,7 +1300,7 @@ PERMCHECK: {
             $row->{label_html} = $blog_list_props->{name}->html($obj, $app, { no_link => 1 });
 
             # for previous admin theme
-            if ($obj->is_blog()) {
+            if ($app->config->AdminThemeId ne 'admin2023' && $obj->is_blog()) {
                 if (my $parent = $obj->website) {
                     # replace row only if the blog has a valid parent
                     $row->{has_child} = 1;
