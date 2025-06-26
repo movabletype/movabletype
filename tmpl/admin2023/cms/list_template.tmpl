@@ -257,11 +257,11 @@ function init() {
 </mt:setvarblock>
 <mt:setvar name="has_pulldown_actions" value="0">
 
-<mtapp:listing id="widget-set-listing" type="widget_set" hide_pager="1">
+<mtapp:listing id="widget-set-listing" listing_class="mb-5 listing" type="widget_set" hide_pager="1">
 <mt:if name="__first__">
   <mt:setvarblock name="table_header">
     <tr>
-      <th class="head cb">
+      <th class="head cb mt-table__control">
         <div class="form-check">
           <input type="checkbox" id="id-head" name="id-head" value="all" class="form-check-input select" />
           <label class="form-check-label" for="id-head"><span class="visually-hidden"><__trans phrase="Select All"></span></label>
@@ -290,7 +290,7 @@ function init() {
   </tbody>
 </mt:if>
 <mt:else>
-  <div id="widget-set-listing" class="listing zero-state-listing zero-state">
+  <div id="widget-set-listing" class="mb-5 listing zero-state-listing zero-state">
     <div class="listing-header">
       <mt:var name="listing_header">
     </div>

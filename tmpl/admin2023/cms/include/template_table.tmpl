@@ -59,11 +59,11 @@
 
 <mt:setvarblock name="table_id"><mt:var name="template_type" default="template" escape="html">-listing</mt:setvarblock>
 
-<mtapp:listing id="$table_id" hide_pager="1" class="show-all" listing_class="mb-3 mb-5 listing" type="template">
+<mtapp:listing id="$table_id" hide_pager="1" class="show-all" listing_class="mb-5 listing" type="template">
 <mt:if __first__>
   <mt:setvarblock name="table_header">
     <tr>
-      <th class="head cb">
+      <th class="head cb mt-table__control">
         <div class="form-check">
           <input id="select_all_<mt:var name="template_type" escape="html">" type="checkbox" name="id-head" value="all" class="form-check-input select" />
           <label class="form-check-label" for="select_all_<mt:var name="template_type" escape="html">"><span class="visually-hidden"><__trans phrase="Select All"></span></label>
@@ -224,7 +224,7 @@
       <__trans phrase="No [_1] could be found." params="<$mt:var name="template_type_label" lower_case="1"$>">
     </mtapp:statusmsg>
   </mt:setvarblock>
-  <div id="<$mt:var name="template_type" default="template" escape="html"$>-listing" class="mb-3 mb-5 listing zero-state-listing zero-state">
+  <div id="<$mt:var name="template_type" default="template" escape="html"$>-listing" class="mb-5 listing zero-state-listing zero-state">
     <mt:var name="listing_header">
     <mt:if name="template_type" ne="ct">
       <mt:var name="zero_state_listing">
