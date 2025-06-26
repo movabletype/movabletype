@@ -1246,6 +1246,7 @@ PERMCHECK: {
             }
             $param->{object_loop} = \@new_object_loop;
         }
+        return scalar(@{$param->{object_loop}});
     };
 
     my $hasher = sub {
