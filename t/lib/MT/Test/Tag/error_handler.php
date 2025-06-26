@@ -16,8 +16,6 @@ class MT_Test_Error_Handler {
 
         if ($error_no & E_NOTICE) {
             return;
-        } elseif ($error_no & E_USER_ERROR) {
-            print($error_msg."\n");
         } elseif (!empty($this->log) && !$this->do_ignore($error_msg)) {
             $ts = date('Y-m-d H:i:s');
             $error_msg = preg_replace('/\t/', '\\t', $error_msg);
