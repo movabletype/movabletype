@@ -70,7 +70,7 @@ left:123:right
 
 === raw smarty php allowed
 --- mt_config
-{DynamicTemplateAllowPHP => 1}
+{DynamicTemplateAllowPHP => 1, DynamicTemplateAllowSmartyTags => 1}
 --- template
 left:{{php}} echo 'a'. 'b'{{/php}}:right
 --- expected

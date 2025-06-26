@@ -8,16 +8,6 @@
 function datetime_to_timestamp($dt, $type = 'local') {
     $mktime = (isset($type) && $type == 'gmt') ? 'gmmktime' : 'mktime';
     $dt = preg_replace('/[^0-9]/', '', $dt);
-
-    // mktime on php7.x have returned FALSE when any of args were an empty string.
-    // Since php8.0 it throws an exception on the same condition.
-    // We preserve the old behavior for backward compatibility.
-    // XXX Use intval instead since the next major version
-    if (strlen($dt) < 14) {
-        trigger_error('Arguments for datetime_to_timestamp must be valid format.', E_USER_DEPRECATED);
-        return false;
-    }
-
     $ts = $mktime(substr($dt, 8, 2), substr($dt, 10, 2), substr($dt, 12, 2), substr($dt, 4, 2), substr($dt, 6, 2), substr($dt, 0, 4));
     return $ts;
 }
@@ -48,15 +38,7 @@ function start_end_month($ts) {
 
 function days_in($m, $y) {
 
-    // date($format, false) have returned epoch on php7.x and since php8.0 it's current time.
-    // We preserve the old behavior for backward compatibility.
-    // XXX Use intval instead since the next major version
-    if ($m === '' || $y === '') {
-        trigger_error('Arguments for days_in must not be empty strings.', E_USER_DEPRECATED);
-        return 31; // Jan 1970
-    }
-
-    return date('t', mktime(0, 0, 0, $m, 1, $y));
+    return date('t', mktime(0, 0, 0, intval($m), 1, intval($y)));
 }
 
 function start_end_day($ts) {
