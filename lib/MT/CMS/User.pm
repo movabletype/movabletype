@@ -1218,7 +1218,7 @@ PERMCHECK: {
             delete $missing{$id} if exists $labels{$id};
         }
 
-        my @parents = $app->model('blog')->load([keys %missing]);
+        my @parents = $app->model('blog')->load({ id => [keys %missing] }, { fetchonly => { id => 1, name => 1 } });
 
         $labels{ $_->id } = $_->name for @parents;
 
