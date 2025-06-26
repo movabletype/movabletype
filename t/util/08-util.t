@@ -36,7 +36,7 @@ use MT::Util qw( start_end_day start_end_week start_end_month start_end_year
     sax_parser trim ltrim rtrim asset_cleanup caturl
     weaken log_time make_string_csv browser_language sanitize_embed
     extract_url_path break_up_text dir_separator deep_do
-    deep_copy canonicalize_path is_valid_ip clear_site_stats_widget_cache);
+    deep_copy canonicalize_path clear_site_stats_widget_cache);
 
 $test_env->prepare_fixture('db_data');
 
@@ -490,20 +490,6 @@ ok( is_url('https://www.example.com/?foo=bar&baz=10%'),     'is_url() ssl' );
 ok( is_url('http://www.example.com:8080/?foo=bar&baz=10%'), 'is_url() port' );
 ok( !is_url('not a url'),    'is_url() not a url' );
 ok( !is_url('not http://_'), 'is_url() invalid url' );
-## is_valid_ip
-is( is_valid_ip('0.0.0.1'), '0.0.0.1', 'is_valid_ip() valid ip' );
-is( is_valid_ip('255.255.255.244'),
-    '255.255.255.244', 'is_valid_ip() valid ip' );
-is( is_valid_ip('123.123.123.123/1'),
-    '123.123.123.123/1', 'is_valid_ip() valid ip' );
-is( is_valid_ip('123.123.123.123/32'),
-    '123.123.123.123/32', 'is_valid_ip() valid ip' );
-is( is_valid_ip('0.0.0.0'),            '0', 'is_valid_ip() invalid ip' );
-is( is_valid_ip('255.255.255.255'),    '0', 'is_valid_ip() invalid ip' );
-is( is_valid_ip('0.0.0.0/1'),          '0', 'is_valid_ip() invalid ip' );
-is( is_valid_ip('255.255.255.255/32'), '0', 'is_valid_ip() invalid ip' );
-is( is_valid_ip('123.123.123.123/0'),  '0', 'is_valid_ip() invalid ip' );
-is( is_valid_ip('123.123.123.123/33'), '0', 'is_valid_ip() invalid ip' );
 
 ### other utilities
 
