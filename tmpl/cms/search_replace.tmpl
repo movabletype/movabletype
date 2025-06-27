@@ -90,7 +90,7 @@ function toggleContentTypeLimitedFields() {
   jQuery(selector).each(function () {
     var $li = jQuery(this);
     var $checkbox = $li.find('input[type=checkbox]');
-    if ($li.data('mtContentType') == contentTypeId) {
+    if ($li.data('mtContentType') == contentTypeId && contentTypeId.length == 1) {
       $li.show();
       $checkbox.prop('disabled', false);
     } else {
@@ -105,7 +105,7 @@ function toggleContentTypeDateTimeField() {
   var $select = jQuery('select#date_time_field_id');
   $select.find('option[data-mt-content-type]').each(function () {
     var $option = jQuery(this);
-    if ($option.data('mtContentType') == contentTypeId) {
+    if ($option.data('mtContentType') == contentTypeId && contentTypeId.length == 1) {
       $option.show()
              .prop('disabled', false);
     } else {
@@ -223,6 +223,7 @@ function toggleContentTypeDateTimeInputs() {
 
       <div id="search-bar-search-field" class="mt-3 mod">
     <mt:if name="object_type" eq="content_data">
+      <mt:if name="blog_id">
         <mtapp:setting
            id="content-type"
            label="<__trans phrase="Content Type">"
@@ -235,6 +236,7 @@ function toggleContentTypeDateTimeInputs() {
       </mt:loop>
            </select>
         </mtapp:setting>
+      </mt:if>
     </mt:if>
         <mtapp:setting
            id="search"
@@ -257,14 +259,14 @@ function toggleContentTypeDateTimeInputs() {
           </li>
           <li class="list-inline-item">
             <div class="custom-control custom-checkbox">
-              <input type="checkbox" id="is_limited" name="is_limited" value="1"<mt:if name="is_limited"> checked="checked"</mt:if> class="custom-control-input cb" onclick="toggleVisibility(this, 'limited-fields')" />
+              <input type="checkbox" id="is_limited" name="is_limited" value="1"<mt:if name="is_limited"> checked="checked"</mt:if> class="custom-control-input cb" />
               <label class="custom-control-label" for="is_limited"><__trans phrase="Limited Fields"></label>
             </div>
           </li>
         <mt:if name="can_search_by_date">
           <li class="list-inline-item">
             <div class="custom-control custom-checkbox">
-              <input type="checkbox" id="is_dateranged" name="is_dateranged" value="1"<mt:if name="is_dateranged"> checked="checked"</mt:if> class="custom-control-input cb" onclick="toggleVisibility(this, 'date-range')" />
+              <input type="checkbox" id="is_dateranged" name="is_dateranged" value="1"<mt:if name="is_dateranged"> checked="checked"</mt:if> class="custom-control-input cb" />
               <label class="custom-control-label" for="is_dateranged">
     <mt:if name="object_type" eq="content_data">
                 <__trans phrase="Date/Time Range">
@@ -274,7 +276,7 @@ function toggleContentTypeDateTimeInputs() {
               </label>
             </div>
           </li>
-        </mt:if>
+          </mt:if>
         <mt:if name="can_search_junk">
           <li class="list-inline-item">
             <div class="custom-control custom-checkbox">
@@ -378,6 +380,7 @@ function toggleContentTypeDateTimeInputs() {
       <div id="search-bar-replace-fields" class="mod" style="display: none;">
         <!-- Search -->
       <mt:if name="object_type" eq="content_data">
+        <mt:if name="blog_id">
         <mtapp:setting
            id="content-type-alt"
            label="<__trans phrase="Content Type">"
@@ -390,6 +393,7 @@ function toggleContentTypeDateTimeInputs() {
         </mt:loop>
            </select>
         </mtapp:setting>
+        </mt:if>
       </mt:if>
         <mtapp:setting
            id="search-alt"
@@ -500,13 +504,17 @@ jQuery(function() {
     jQuery('#search').trigger('focus');
 </mt:unless>
 
-    jQuery('select[name=content_type_id]').on('change', function () {
+    jQuery('select[name=content_type_id]').on('change', function() {
       toggleContentTypeLimitedFields();
       toggleContentTypeDateTimeField();
     });
     jQuery('select#date_time_field_id').on('change', toggleContentTypeDateTimeInputs);
 
+    toggleContentTypeLimitedFields();
     toggleContentTypeDateTimeField();
+
+    jQuery('#is_limited').on('change', function () { toggleVisibility(this, 'limited-fields') }).trigger('change');
+    jQuery('#is_dateranged').on('change', function () { toggleVisibility(this, 'date-range') }).trigger('change');
 });
 /* ]]> */
 </script>

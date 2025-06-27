@@ -88,17 +88,9 @@ sub core_search_apis {
                     $terms->{ $app->param('filter') }
                         = $app->param('filter_val');
                 }
-                my $content_type_id = $app->param('content_type_id') || 0;
-                my $content_type
-                    = $app->model('content_type')
-                    ->load( { id => $content_type_id } )
-                    || $app->model('content_type')->load(
-                    { blog_id => $blog_id || \'> 0' },
-                    { sort => 'name', limit => 0 }
-                    );
-                if ($content_type) {
-                    $terms->{content_type_id} = $content_type->id;
-                    $app->param( 'content_type_id', $content_type->id );
+                if (my $selected_content_type_id = $app->param('content_type_id')) {
+                    $terms->{content_type_id} = $selected_content_type_id;
+                    $app->param('content_type_id', $selected_content_type_id);
                 }
                 $args->{sort}      = 'authored_on';
                 $args->{direction} = 'descend';
@@ -664,6 +656,26 @@ sub can_search_replace {
     return 0;
 }
 
+sub load_all_content_types {
+    my ($blog_id, $user) = @_;
+    my $content_types = MT::Request->instance->stash('all_content_types_for_search');
+    unless ($content_types) {
+        $content_types = [];
+        my $iter  = MT->model('content_type')->load_iter({ blog_id => $blog_id || \'> 0' }, { sort => 'name' });
+        my $perms = $user->permissions($blog_id);
+        while (my $content_type = $iter->()) {
+            next
+                unless ($user->is_superuser
+                || $user->permissions(0)->can_do('manage_content_data')
+                || $perms->can_do('manage_content_data')
+                || $perms->can_do('search_content_data_' . $content_type->unique_id));
+            push @$content_types, $content_type;
+        }
+        MT::Request->instance->stash('all_content_types_for_search', $content_types);
+    }
+    return @$content_types;
+}
+
 sub search_replace {
     my $app     = shift;
 
@@ -725,23 +737,7 @@ sub search_replace {
         my $selected_content_type_id = $app->param('content_type_id');
         my $selected_content_type;
         my ( @content_types, @date_time_fields, @date_fields, @time_fields );
-        my $iter
-            = MT->model('content_type')
-            ->load_iter( { blog_id => $blog_id || \'> 0' },
-            { sort => 'name' } );
-        my $perms = $user->permissions($blog_id);
-        while ( my $content_type = $iter->() ) {
-
-            next
-                unless (
-                   $user->is_superuser
-                || $user->permissions(0)->can_do('manage_content_data')
-                || $perms->can_do('manage_content_data')
-                || $perms->can_do(
-                    'search_content_data_' . $content_type->unique_id
-                )
-                );
-
+        for my $content_type (load_all_content_types($blog_id, $user)) {
             push @content_types,
                 +{
                 content_type_id   => $content_type->id,
@@ -881,18 +877,14 @@ sub do_search_replace {
     }
     my ( $content_type, @content_types );
     if ( $type eq 'content_data' ) {
-        my $content_type_id = $app->param('content_type_id') || 0;
-        $content_type
-            = $app->model('content_type')->load( { id => $content_type_id } )
-            || $app->model('content_type')->load(
-            { blog_id => $blog_id || \'> 0' },
-            { sort => 'name', limit => 1 },
-            );
-
-        my $iter = $app->model('content_type')
-            ->load_iter( { blog_id => $blog_id || \'> 0' } );
-        while ( my $ct = $iter->() ) {
-            push @content_types, $ct;
+        @content_types = load_all_content_types($blog_id, $author);
+        if (my $selected_content_type_id = $app->param('content_type_id')) {
+            for my $ct (@content_types) {
+                if ($ct->id == $selected_content_type_id) {
+                    $content_type = $ct;
+                    last;
+                }
+            }
         }
     }
     if ($is_limited) {
@@ -912,12 +904,17 @@ sub do_search_replace {
         @cols = grep { $search_api_cols{$_} } @cols;
         $is_limited = 0 unless scalar @cols;
     }
+    my %cf_to_ct;
     if ( !$is_limited ) {
         @cols = grep { $_ ne 'plugin' }
             keys %{ $search_api->{search_cols} };
         if ( $type eq 'content_data' ) {
-            push @cols, map { '__field:' . $_->{id} }
-                map { @{ $_->searchable_fields } } @content_types;
+            for my $ct (@content_types) {
+                for my $f (@{$ct->searchable_fields}) {
+                    push @cols, '__field:' . $f->{id};
+                    $cf_to_ct{$f->{id}} = $ct;
+                }
+            }
         }
     }
     my $quicksearch_id;
@@ -1113,12 +1110,9 @@ sub do_search_replace {
         my %replace_cols;
         if ($do_replace) {
             %replace_cols = map { $_ => 1 } @{ $api->{replace_cols} };
-            if ($content_type) {
-                %replace_cols = (
-                    %replace_cols,
-                    map { '__field:' . $_->{id} => 1 }
-                        @{ $content_type->replaceable_fields }
-                );
+            if ($type eq 'content_data') {
+                my @fields = map { @{ $_->replaceable_fields } } ($content_type || @content_types);
+                %replace_cols = (%replace_cols, map { '__field:' . $_->{id} => 1 } @fields);
             }
         }
 
@@ -1152,9 +1146,8 @@ sub do_search_replace {
                     my $match_field = 0;
                     if ( $col =~ /^__field:(\d+)$/ ) {
                         $content_field_id = $1;
-                        $field_data
-                            = $content_type->get_field($content_field_id)
-                            or next;
+                        my $ct = $content_type || $cf_to_ct{$content_field_id} or next;
+                        $field_data = $ct->get_field($content_field_id) or next;
                         $field_registry
                             = $content_field_types->{ $field_data->{type} };
                         $text = $obj->data->{$content_field_id};
@@ -1241,7 +1234,7 @@ sub do_search_replace {
                                                 '"[_1]" is invalid for "[_2]" field of "[_3]" (ID:[_4]): [_5]',
                                                 $text,
                                                 $field_data->{options}{label},
-                                                $content_type->name,
+                                                join ',', map { $_->name } ($content_type || @content_types),
                                                 $obj->id,
                                                 $error,
                                             );
@@ -1568,7 +1561,7 @@ sub do_search_replace {
                     field       => '__field:' . $f->{id},
                     label       => $f->{options}{label},
                     selected    => exists( $cols{ '__field:' . $f->{id} } ),
-                    hidden      => ( $ct->id != $content_type->id ) ? 1 : 0,
+                    hidden      => ( $ct->id != ($content_type || $content_types[0])->id ) ? 1 : 0,
                     field_ct_id => $ct->id,
                     replaceable => (
                         grep { $_->{id} == $f->{id} }

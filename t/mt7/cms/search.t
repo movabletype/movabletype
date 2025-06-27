@@ -488,4 +488,47 @@ subtest 'dialog_grant_role' => sub {
     $expected->($app, ['author', 'Melody'], { limit => 25, listTotal => 2, offset => 0, rows => 2 });
 };
 
+subtest 'content_data replace for system search' => sub {
+    my (@cds, @cf_ids);
+    for my $ct_name ('ct', 'ct2') {
+        my $ct    = $objs->{content_type}{$ct_name};
+        my $cf_id = $ct->{content_field}{cf_single_line_text}->id;
+        push @cf_ids, $cf_id;
+        push @cds, MT::Test::Permission->make_content_data(
+            authored_on     => '20181128181600',
+            blog_id         => $blog_id,
+            content_type_id => $ct->{content_type}->id,
+            identifier      => "SYSTEM-SEARCH $ct_name identifier",
+            label           => "SYSTEM-SEARCH $ct_name label",
+            data            => { $cf_id => "SYSTEM-SEARCH $ct_name" },
+        );
+    }
+    my @cd_ids = map { $_->id } @cds;
+
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->login($author);
+
+    subtest 'system search' => sub {
+        $app->get_ok({ __mode => 'search_replace', blog_id => 0 });
+        $app->change_tab('content_data');
+        $app->search('SYSTEM-SEARCH', {});
+        is_deeply($app->found_ids, [@cd_ids[0, 1]], 'found all');
+        $app->replace('SYSTEM-SEARCH-mod', [@cd_ids[0, 1]]);
+        is_deeply($app->found_ids, [@cd_ids[1, 0]], 'selected ones are replaced');
+        is_deeply(
+            $app->found_titles, [
+                'SYSTEM-SEARCH ct2 label',
+                'SYSTEM-SEARCH ct label'
+            ],
+            'selected ones are replaced'
+        );
+
+        my @reloaded = MT::ContentData->load({ id => \@cd_ids });
+        is($reloaded[0]->data->{ $cf_ids[0] }, 'SYSTEM-SEARCH-mod ct',     'replaced');
+        is($reloaded[1]->data->{ $cf_ids[1] }, 'SYSTEM-SEARCH-mod ct2',    'replaced');
+    };
+
+    $_->remove for @cds;
+};
+
 done_testing;
