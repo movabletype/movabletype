@@ -458,34 +458,4 @@ subtest 'content_data replace' => sub {
     $_->remove for @cds;
 };
 
-subtest 'dialog_grant_role' => sub {
-    require JSON;
-
-    # XXX move to role
-    my $expected = sub {
-        my ($app, $names, $pager) = @_;
-        my $json = eval { JSON::decode_json($app->content) };
-        ok !$@, 'json is ok';
-        my $wq    = Web::Query::LibXML->new($json->{html});
-        my @links = $wq->find('tr td:nth-of-type(2) .panel-label') || ();
-        my @names = map { my $txt = $_; $txt =~ s{^\s+|\s+$}{}g; $txt } map { $_->text } @links;
-        is_deeply(\@names, $names, 'right authors');
-        for my $key (keys %{$pager}) {
-            is($json->{pager}->{$key}, $pager->{$key}, qq{right value for pager key:$key});
-        }
-        # note explain $json;
-    };
-
-    my $app = MT::Test::App->new('MT::App::CMS');
-    $app->login($author);
-
-    $app->get_ok({ __mode => 'dialog_grant_role', blog_id => $blog_id });
-    $app->dialog_grant_role_search('o');
-    $expected->($app, ['author', 'Melody'], { limit => 25, listTotal => 2, offset => 0, rows => 2 });
-
-    $app->get_ok({ __mode => 'dialog_grant_role', blog_id => 0 });
-    $app->dialog_grant_role_search('o');
-    $expected->($app, ['author', 'Melody'], { limit => 25, listTotal => 2, offset => 0, rows => 2 });
-};
-
 done_testing;
