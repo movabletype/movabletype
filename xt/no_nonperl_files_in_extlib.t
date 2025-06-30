@@ -27,7 +27,7 @@ for my $dir (@dirs) {
             return if $file =~ /\.(pm|pl)$/;
             my $name = basename($file);
             return if $known_files{$name};
-            fail $file and $fail;
+            fail $file and $fail = 1;
         },
         no_chdir => 1,
     }, $dir);
