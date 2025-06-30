@@ -40,7 +40,7 @@ jobs:
         include:
           - config: {image: chromiumdriver}
             test: selenium
-          - config: {image: fedora39, mt_test_env: 'MT_TEST_IMAGE_DRIVER=ImageMagick' }
+          - config: {image: fedora40, mt_test_env: 'MT_TEST_IMAGE_DRIVER=ImageMagick' }
             test: xt
     steps:
       - name: checkout
