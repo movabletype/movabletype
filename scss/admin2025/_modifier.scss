@@ -1615,7 +1615,7 @@ html[data-screen-id=dashboard][data-scope-type=user] {
   padding-top: 0;
 
   .mt-sharedPreviewNav__logo {
-    @extend .ms-2;
+    @extend .me-2;
     @include media-breakpoint-down(sm) {
       margin-left: 14px;
     }
@@ -1628,8 +1628,7 @@ html[data-screen-id=dashboard][data-scope-type=user] {
 
   .mt-sharedPreviewNav__leftNav {
     @extend .nav;
-    @extend .float-start;
-    @extend .ms-auto;
+    @extend .me-auto;
 
     height: 40px;
     overflow: hidden;

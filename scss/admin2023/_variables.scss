@@ -1147,8 +1147,8 @@ $nav-pills-link-active-bg:          $component-active-bg !default;
 // Navbar
 
 // scss-docs-start navbar-variables
-$navbar-padding-y:                  $spacer * .5 !default;
-$navbar-padding-x:                  null !default;
+$navbar-padding-y:                  $spacer * 1 !default;
+$navbar-padding-x:                  1rem !default;
 
 $navbar-nav-link-padding-x:         .5rem !default;
 
