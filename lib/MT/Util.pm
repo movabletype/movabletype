@@ -445,7 +445,7 @@ my %TsFormatCache;
 sub format_ts {
     my ( $format, $ts, $blog, $lang, $is_mail ) = @_;
     return '' unless defined $ts and $ts ne '' and !ref $ts;
-    unless ($lang) {
+    unless ($lang && $Languages{$lang}) {
         $lang
             = $blog && $blog->date_language
             ? $blog->date_language

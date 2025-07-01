@@ -164,11 +164,11 @@ January 31, 1978  7:45 AM
 --- expected
 1978-01-31T07:45:00
 
-=== test 13
+=== test 13 (unknown lang)
 --- template
-<MTEntries lastn='1'><MTEntryDate language="ja"></MTEntries>
+<MTEntries lastn='1'><MTEntryDate language="pl"></MTEntries>
 --- expected
-1978年1月31日 07:45
+January 31, 1978  7:45 AM
 
 === test 14
 --- template
