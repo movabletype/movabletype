@@ -15,7 +15,7 @@ use strict;
 use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 
-$VERSION = '1.04';
+$VERSION = '1.05';
 
 # Text tags
 %Image::ExifTool::Text::Main = (
@@ -191,7 +191,8 @@ sub ProcessTXT($$)
             $enc = 'unknown-8bit';
         }
     }
-    if ($$et{VALUE}{MIMEEncoding} ne $enc) {
+    # ($$et{VALUE}{MIMEEncoding} may be undef if it was ignored)
+    if (defined $$et{VALUE}{MIMEEncoding} and $$et{VALUE}{MIMEEncoding} ne $enc) {
         $$et{VALUE}{MIMEEncoding} = $enc;
         $et->VPrint(0,"  MIMEEncoding [override] = $enc\n");
     }
@@ -221,7 +222,7 @@ characteristics of TXT and CSV files.
 
 =head1 AUTHOR
 
-Copyright 2003-2024, Phil Harvey (philharvey66 at gmail.com)
+Copyright 2003-2025, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
