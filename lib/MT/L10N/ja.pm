@@ -4382,6 +4382,7 @@ use vars qw( @ISA %Lexicon );
 	'This user was classified as disabled.' => 'このユーザーは無効にされています。',
 	'This user was classified as pending.' => 'このユーザーは保留中にされています。',
 	'This user was locked out.' => 'このユーザーはロックされています。',
+	'Use this name when you sign in.' => '管理画面のサインインに使用します。',
 	'User properties' => 'ユーザー属性',
 	'Web Services Password' => 'Webサービスパスワード',
 	'You must use half-width character for password.' => 'パスワードには全角文字を利用できません。',
