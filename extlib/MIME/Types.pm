@@ -1,4 +1,4 @@
-# Copyrights 1999-2024 by [Mark Overmeer <markov@cpan.org>].
+# Copyrights 1999-2025 by [Mark Overmeer <mark@overmeer.net>].
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
 # Pod stripped from pm file by OODoc 2.03.
@@ -6,9 +6,9 @@
 # OODoc into POD and HTML manual-pages.  See README.md
 # Copyright Mark Overmeer.  Licensed under the same terms as Perl itself.
 
-package MIME::Types;
-use vars '$VERSION';
-$VERSION = '2.26';
+package MIME::Types;{
+our $VERSION = '2.28';
+}
 
 
 use strict;
@@ -42,6 +42,7 @@ sub _read_db($)
     open DB, '<:encoding(utf8)', $db
        or die "cannot open type database in $db: $!\n";
 
+	local $/ = "\n";
     while(1)
     {   my $header = <DB>;
         defined $header or last;
@@ -93,7 +94,7 @@ sub type($)
     return $record if ref $record;   # already extended
 
     my $simple   = $2;
-    my ($type, $ext, $enc) = split m/\;/, $record;
+    my ($type, $ext, $enc, $char) = split m/\;/, $record;
     my $os       = undef;   # XXX TODO
 
     $section->{$simple} = MIME::Type->new
@@ -101,6 +102,7 @@ sub type($)
       , extensions => [split /\,/, $ext]
       , encoding   => $enc
       , system     => $os
+      , charset    => $char
       );
 }
 

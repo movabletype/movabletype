@@ -73,7 +73,15 @@ sub parse {
   my ($self,$raw_cookie) = @_;
   return wantarray ? () : {} unless $raw_cookie;
 
+  my ($expires_name, $expires_value) = $raw_cookie =~ /(expires)=([^;]+)/ixsm;
+
   my %results;
+
+  if ( $expires_name ) {
+    $raw_cookie =~ s/$expires_name=$expires_value//xsm;
+    $results{$expires_name} = $self->new(-name => $expires_name, -value => $expires_value);
+  }
+
 
   my @pairs = split("[;,] ?",$raw_cookie);
   for (@pairs) {
