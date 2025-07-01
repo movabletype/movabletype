@@ -194,7 +194,7 @@ function substr_wref($str, $start, $length) {
 
 function format_ts($format, $ts, $blog, $lang = null) {
     global $Languages;
-    if (!isset($lang) || empty($lang)) { 
+    if (!isset($lang) || empty($lang) || empty($Languages[$lang])) {
         $mt = MT::get_instance();
         $lang = (
               $blog && $blog->blog_date_language
