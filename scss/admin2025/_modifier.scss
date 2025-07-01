@@ -3055,11 +3055,11 @@ li.nav-item {
 
 body:has(.mt-primaryNavigation) {
   @include media-breakpoint-up(md) {
-    &:has(.collapsed) .debug-panel {
+    &:has(.mt-contentWrapper.collapsed) .debug-panel {
       margin-left: calc(var(--minimal-left-bar-width) + var(--bs-card-cap-padding-x)) !important;
     }
 
-    &:not(:has(.collapsed)) .debug-panel {
+    &:has(.mt-contentWrapper:not(.collapsed)) .debug-panel {
       margin-left: var(--left-bar-width) !important;
     }
   }

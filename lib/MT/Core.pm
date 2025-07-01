@@ -1925,7 +1925,7 @@ BEGIN {
             'PublishCharset'          => { default => 'utf-8', },
             'SafeMode'                => { default => 1, },
             'AllowFileInclude'        => { default => 0, },
-            'AllowTestModifier'       => { default => 1 },
+            'AllowTestModifier'       => { default => 0 },
             'GlobalSanitizeSpec'      => {
                 default =>
                     'a href,b,i,br/,p,strong,em,ul,ol,li,blockquote,pre',
@@ -1999,7 +1999,7 @@ BEGIN {
                 default => sub { $_[0]->SearchThrottleIPWhitelist }
             },
             'SearchContentTypes' => undef,
-            'SearchMaxCharCount' => { default => 0 },
+            'SearchMaxCharCount' => { default => 1000 },
             'ContentDataSearchMaxCharCount' => {
                 default => sub { $_[0]->SearchMaxCharCount },
             },
@@ -2225,9 +2225,9 @@ BEGIN {
             'DefaultListLimit' => { default => '50' },
             'WaitAfterReboot' => { default => '1.0' },
             'DisableMetaRefresh' => { default => 1 },
-            'DynamicTemplateAllowPHP' => { default => 1 },
+            'DynamicTemplateAllowPHP' => { default => 0 },
             'HidePrivateRelatedContentData' => { default => 0 },
-            'DynamicTemplateAllowSmartyTags' => { default => 1 },
+            'DynamicTemplateAllowSmartyTags' => { default => 0 },
             'AdminThemeId' => {
                 default => 'admin2025',
                 handler => \&AdminThemeId,
