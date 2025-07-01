@@ -8,7 +8,10 @@ use Test::More;
 use MT::Test::Env;
 our $test_env;
 BEGIN {
-    $test_env = MT::Test::Env->new(AdminThemeID => 'admin2023');
+    plan skip_all => 'not for nameless admin theme'
+        if defined($ENV{MT_TEST_ADMIN_THEME_ID}) && $ENV{MT_TEST_ADMIN_THEME_ID} eq '0';
+
+    $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
