@@ -40,7 +40,7 @@ jobs:
         include:
           - config: {image: chromiumdriver}
             test: selenium
-          - config: {image: fedora39, mt_test_env: 'MT_TEST_IMAGE_DRIVER=ImageMagick' }
+          - config: {image: fedora40, mt_test_env: 'MT_TEST_IMAGE_DRIVER=ImageMagick' }
             test: xt
     steps:
       - name: checkout
@@ -53,7 +53,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: test
         if: ${{ matrix.test != 'php' && matrix.test != 'selenium' }}
-        run: docker run -t -v $PWD:/mt -w /mt ghcr.io/movabletype/movabletype/test:${{ matrix.config.image }} bash -c "cpanm -n Authen::SASL::XS; prove -lr -j4 -PMySQLPool=MT::Test::Env -It/lib ${{ matrix.test }}"
+        run: docker run -t -v $PWD:/mt -w /mt ghcr.io/movabletype/movabletype/test:${{ matrix.config.image }} bash -c "prove -lr -j4 -PMySQLPool=MT::Test::Env -It/lib ${{ matrix.test }}"
       - name: test php
         if: ${{ matrix.test == 'php' }}
         run: docker run -t -v $PWD:/mt -w /mt ghcr.io/movabletype/movabletype/test:${{ matrix.config.image }} bash -c "phpunit && make test-php-lint"
@@ -77,7 +77,6 @@ jobs:
         config:
           - {image: cloud7,   mt_test_env: 'MT_TEST_IMAGE_DRIVER=GraphicsMagick' }
           - {image: fedora41, mt_test_env: 'MT_TEST_ADMIN_THEME_ID=0'}   # Perl 5.40 / PHP 8.3 / MySQL 8.4
-          - {image: buster,   mt_test_env: 'MT_TEST_RUN_APP_AS_CGI=1'}   # Perl 5.28.0 / PHP 7.3 / MariaDB 10.3
         test: 
           - "t/*.t"
           - "t/mt7/[^td]*"
