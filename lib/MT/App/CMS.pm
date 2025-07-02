@@ -509,7 +509,7 @@ sub core_page_actions {
                     return 0 unless $blog;
                     my $theme = $blog->theme;
                     return 0 if $theme && $theme->{deprecated};
-                    return $blog->template_set;
+                    return $theme || $blog->template_set;
                 },
                 order  => 1000,
                 dialog => 1
@@ -1389,7 +1389,7 @@ sub core_list_actions {
                     return 1 unless $blog;
                     my $theme = $blog->theme;
                     return 0 if $theme && $theme->{deprecated};
-                    return $blog->template_set;
+                    return $theme || $blog->template_set;
                 },
             },
 
