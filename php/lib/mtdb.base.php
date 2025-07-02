@@ -421,7 +421,7 @@ abstract class MTDatabase {
                 $ctx = $mt->context();
                 $blog = $ctx->stash('blog');
                 if (!empty($blog)) {
-                    $tag = is_array($ctx->_tag_stack) ? $ctx->_tag_stack[count($ctx->_tag_stack)-1][0] : null;
+                    $tag = is_array($ctx->_tag_stack) && count($ctx->_tag_stack) ? $ctx->_tag_stack[count($ctx->_tag_stack)-1][0] : null;
                     if (!empty($tag)
                     && ($tag === 'mtwebsitepingcount'
                         || $tag === 'mtwebsiteentrycount'
@@ -1453,7 +1453,7 @@ abstract class MTDatabase {
                 if (!empty($sort_field)) $no_resort = 1;
                 if ($args['sort_by'] == 'score' || $args['sort_by'] == 'rate') {
                     $post_sort_limit = $limit;
-                    $post_sort_offset = $offset;
+                    $post_sort_offset = $offset ?? null;
                     $limit = 0; $offset = 0;
                     $no_resort = 0;
                     $sort_field = "entry_modified_on";
@@ -2599,13 +2599,15 @@ abstract class MTDatabase {
                 }
                 $order_sql = "order by $sort_col $order";
     
+                $sort_filter = '';
+
                 if (isset($args['start_string'])) {
                     $val = $args['start_string'];
                     if ($order == 'asc')
                         $val_order = '>';
                     else
                         $val_order = '<';
-                    $sort_filter =  " and $sort_col $val_order ". $this->ph('sort_start_string', $bind_sort_filter, $val);
+                    $sort_filter .= " and $sort_col $val_order ". $this->ph('sort_start_string', $bind_sort_filter, $val);
                 }
     
                 if (isset($args['start_num'])) {
@@ -4009,13 +4011,15 @@ abstract class MTDatabase {
                 $assets_tmp[$a->asset_id] = $a;
             }
             $scores = $this->fetch_avg_scores($args['namespace'], 'asset', $order,
-                $id_filter . "\n" .
-                $blog_filter . "\n" .
-                $author_filter . "\n" .
-                $day_filter . "\n" .
-                $type_filter . "\n" .
-                $ext_filter . "\n" .
-                $thumb_filter . "\n",
+                implode(' ', array(
+                    isset($id_filter) ? $id_filter : '',
+                    isset($blog_filter) ? $blog_filter : '',
+                    isset($author_filter) ? $author_filter : '',
+                    isset($day_filter) ? $day_filter : '',
+                    isset($type_filter) ? $type_filter : '',
+                    isset($ext_filter) ? $ext_filter : '',
+                    isset($thumb_filter) ? $thumb_filter : ''
+                )),
                 $bind2
             );
             $assets_sorted = array();
@@ -5636,7 +5640,7 @@ abstract class MTDatabase {
         if ($cacheable) {
             if (!empty($args['cd_id']))
                 $this->_cd_tag_cache[$args['cd_id']] = $tags;
-            elseif (empty($args['cd_id']))
+            elseif (!empty($args['blog_id']))
                 $this->_blog_tag_cache[$args['blog_id'].":$class"] = $tags;
         }
         return $tags;

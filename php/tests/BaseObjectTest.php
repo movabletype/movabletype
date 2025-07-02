@@ -26,7 +26,7 @@ class BaseObjectTest extends TestCase {
 
         $error_reporting_org = error_reporting();
 
-        if (version_compare(phpversion(), '8.1', '>=') && version_compare(phpversion(), '8.4', '<')) {
+        if (version_compare(phpversion(), '8.1', '>=') && version_compare(phpversion(), '8.5', '<')) {
             error_reporting(error_reporting()  & ~E_CORE_WARNING & ~E_COMPILE_WARNING);
         }
 
