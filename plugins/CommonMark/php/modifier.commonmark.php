@@ -14,8 +14,13 @@ function CommonMark() {
 }
 
 # -- Smarty Modifier Interface ------------------------------------------------
+/**
+ * @throws \League\CommonMark\Exception\CommonMarkException
+ */
 function smarty_modifier_commonmark($text) {
-    $converter =& CommonMark();
+    $commonMark = CommonMark();
+    $converter =& $commonMark;
+
     return $converter->convert($text);
 }
 ?>
