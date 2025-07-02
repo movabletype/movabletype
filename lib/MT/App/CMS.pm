@@ -507,7 +507,9 @@ sub core_page_actions {
                 condition => sub {
                     my $blog = MT->app->blog;
                     return 0 unless $blog;
-                    return $blog->theme_id || $blog->template_set;
+                    my $theme = $blog->theme;
+                    return 0 if $theme && $theme->{deprecated};
+                    return $blog->template_set;
                 },
                 order  => 1000,
                 dialog => 1
@@ -1385,7 +1387,9 @@ sub core_list_actions {
                     return 0 if $tmpl_type eq 'backup_templates';
                     my $blog = $app->blog;
                     return 1 unless $blog;
-                    return $blog->theme_id || $blog->template_set;
+                    my $theme = $blog->theme;
+                    return 0 if $theme && $theme->{deprecated};
+                    return $blog->template_set;
                 },
             },
 
