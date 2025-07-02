@@ -47,6 +47,7 @@ sub list {
             },
             blog => $blog,
         );
+        $param{current_theme_name} = $current_theme->label if $current_theme;
         if (my $theme_id = $blog->theme_id) {
             if (!@{ $param{current_theme_loop} || [] }) {
                 my $theme = {
