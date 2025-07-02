@@ -117,6 +117,8 @@
               <option value="<mt:var name="value">" <mt:if name="selected">selected="selected"</mt:if>><mt:var name="label"></option>
             </mt:loop>
             </select>
+          <mt:elseif name="element" eq="textarea">
+            <textarea id="<mt:var name="id">" class="form-control text full" name="<mt:var name="id">"><mt:var name="$id" escape="html"></textarea>
           <mt:else>
             <input type="<mt:var name="type">" name="<mt:var name="id">" class="form-control <mt:var name="type"><mt:if name="type" eq="text"> full</mt:if>" value="<mt:if name="$id"><mt:var name="$id" escape="html"><mt:else><mt:var name="default" escape="html"></mt:if>" />
           </mt:if>

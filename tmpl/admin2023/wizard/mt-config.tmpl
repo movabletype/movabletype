@@ -32,7 +32,8 @@ DBHost <mt:var name="database_host"></mt:if><mt:if name="database_port">
 DBPort <mt:var name="database_port"></mt:if><mt:if name="database_socket">
 DBSocket <mt:var name="database_socket"></mt:if><mt:if name="database_odbcdriver">
 ODBCDriver <mt:var name="odbcdriver"></mt:if><mt:if name="database_odbcencrypt">
-ODBCEncrypt <mt:var name="odbcencrypt"></mt:if></mt:if>
+ODBCEncrypt <mt:var name="odbcencrypt"></mt:if><mt:if name="connect_options"><mt:loop name="connect_options" sort_by="key">
+DBIConnectOptions <mt:var name="__key__">=<mt:var name="__value__"></mt:loop></mt:if></mt:if>
 
 #======== MAIL =======================
 EmailAddressMain <mt:var name="email_address_main"><mt:if name="mail_transfer">
