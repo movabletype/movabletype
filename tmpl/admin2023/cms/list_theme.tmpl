@@ -127,6 +127,7 @@
     </mt:if>
     </div>
   <mt:if name="description">
+    <mt:if name="deprecated"><p class="mt-3 mb-0"><strong><__trans phrase="This theme has been deprecated. You can not reapply it or refresh its templates."></strong></p></mt:if>
     <p class="mt-3 description"><mt:var name="description" escape="html" nl2br="1"></p>
   </mt:if>
   <mt:unless name="current">
