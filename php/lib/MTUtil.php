@@ -194,7 +194,7 @@ function substr_wref($str, $start, $length) {
 
 function format_ts($format, $ts, $blog, $lang = null) {
     global $Languages;
-    if (!isset($lang) || empty($lang)) { 
+    if (!isset($lang) || empty($lang) || empty($Languages[$lang])) {
         $mt = MT::get_instance();
         $lang = (
               $blog && $blog->blog_date_language
@@ -228,7 +228,7 @@ function format_ts($format, $ts, $blog, $lang = null) {
         $f['b'] = substr_wref($L[1][$f['m']-1], 0, 3);
         $f['B'] = $L[1][$f['m']-1];
         if ($lang == 'ja') {
-            $f['a'] = substr($L[0][$f['w']], 0, 8);
+            $f['a'] = substr($L[0][$f['w']], 0, 3);
         } else {
             $f['a'] = substr_wref($L[0][$f['w']], 0, 3);
         }

@@ -8,7 +8,7 @@ sub PROTOCOL_VERSION_1_0A() {1.001}
 
 sub OAUTH_VERSION() {'1.0'}
 
-our $VERSION = '0.28';
+our $VERSION = '0.31';
 our $SKIP_UTF8_DOUBLE_ENCODE_CHECK = 0;
 our $PROTOCOL_VERSION = PROTOCOL_VERSION_1_0;
 
@@ -118,7 +118,7 @@ You probably should start with L<Net::OAuth::Client>.
 
 =head1 ABSTRACT
 
-OAuth is 
+OAuth is
 
 "An open protocol to allow secure API authentication in a simple and standard method from desktop and web applications."
 
@@ -130,13 +130,13 @@ Net::OAuth provides:
 
 =over
 
-=item * classes that encapsulate OAuth messages (requests and responses).  
+=item * classes that encapsulate OAuth messages (requests and responses).
 
 =item * message signing
 
 =item * message serialization and parsing.
 
-=item * 2-legged requests (aka. tokenless requests, aka. consumer requests), see L</"CONSUMER REQUESTS"> 
+=item * 2-legged requests (aka. tokenless requests, aka. consumer requests), see L</"CONSUMER REQUESTS">
 
 =back
 
@@ -144,7 +144,7 @@ Net::OAuth does not provide:
 
 =over
 
-=item * Consumer or Service Provider encapsulation  
+=item * Consumer or Service Provider encapsulation
 
 =item * token/nonce/key storage/management
 
@@ -197,7 +197,7 @@ To create a message, the easiest way is to use the factory methods (Net::OAuth->
 
 The more verbose way is to use the class directly:
 
- use Net::OAuth::UserAuthRequest; 
+ use Net::OAuth::UserAuthRequest;
  $request = Net::OAuth::UserAuthRequest->new(%params);
 
 You can also create a message by deserializing it from a Authorization header, URL, query hash, or POST body
@@ -314,7 +314,7 @@ This method is a trivial signature which adds no security.  Not recommended.
 
 =head3 HMAC-SHA1 SIGNATURES
 
-This method is available if you have Digest::HMAC_SHA1 installed.  This is by far the most commonly used method.
+This method is available if you have Digest::SHA installed.  This is by far the most commonly used method.
 
 =head3 HMAC-SHA256 SIGNATURES
 
@@ -334,7 +334,7 @@ Consumer:
  $private_key = Crypt::OpenSSL::RSA->new_private_key($keystring);
  $request = Net::OAuth->request('request token')->new(%params);
  $request->sign($private_key);
- 
+
 Service Provider:
 
  use Crypt::OpenSSL::RSA;
@@ -368,7 +368,7 @@ See L<Net::OAuth::ConsumerRequest>
 
 =head2 I18N
 
-Per the OAuth spec, when making the signature Net::OAuth first encodes parameters to UTF-8. This means that any parameters you pass to Net::OAuth, if they might be outside of ASCII character set, should be run through Encode::decode() (or an equivalent PerlIO layer) first to decode them to Perl's internal character sructure.
+Per the OAuth spec, when making the signature Net::OAuth first encodes parameters to UTF-8. This means that any parameters you pass to Net::OAuth, if they might be outside of ASCII character set, should be run through Encode::decode() (or an equivalent PerlIO layer) first to decode them to Perl's internal character structure.
 
 =head2 OAUTH 1.0A
 
@@ -385,8 +385,8 @@ Net::OAuth defaults to OAuth 1.0 spec compliance, and supports OAuth 1.0 Rev A w
 
 It is recommended that any new projects use this switch if possible, and existing projects move to supporting this switch as soon as possible.  Probably the easiest way for existing projects to do this is to turn on the switch and run your test suite.  The Net::OAuth constructor will throw an exception where the new protocol parameters (callback, callback_confirmed, verifier) are missing.
 
-Internally, the Net::OAuth::Message constructor checks $Net::OAuth::PROTOCOL_VERSION and attempts to load the equivalent subclass in the Net::OAuth::V1_0A:: namespace.  So if you instantiate a Net::OAuth::RequestTokenRequest object, you will end up with a Net::OAuth::V1_0A::RequestTokenRequest (a subclass of Net::OAuth::RequestTokenRequest) if the protocol version is set to PROTOCOL_VERSION_1_0A.  You can also select a 1.0a subclass on a per-message basis by passing 
-    
+Internally, the Net::OAuth::Message constructor checks $Net::OAuth::PROTOCOL_VERSION and attempts to load the equivalent subclass in the Net::OAuth::V1_0A:: namespace.  So if you instantiate a Net::OAuth::RequestTokenRequest object, you will end up with a Net::OAuth::V1_0A::RequestTokenRequest (a subclass of Net::OAuth::RequestTokenRequest) if the protocol version is set to PROTOCOL_VERSION_1_0A.  You can also select a 1.0a subclass on a per-message basis by passing
+
     protocol_version => Net::OAuth::PROTOCOL_VERSION_1_0A
 
 in the API parameters hash.
@@ -401,7 +401,7 @@ If you are not sure whether the entity you are communicating with is 1.0A compli
         if ($@ =~ /Missing required parameter 'callback_confirmed'/) {
             # fall back to OAuth 1.0
             $response = Net::OAuth->response('request token')->from_post_body(
-                $res->content, 
+                $res->content,
                 protocol_version => Net::OAuth::PROTOCOL_VERSION_1_0
             );
             $is_oauth_1_0 = 1; # from now on treat the server as OAuth 1.0 compliant
@@ -436,18 +436,18 @@ Check out L<WWW::Netflix::API> for a Netflix-specific OAuth API
 =item * Add convenience methods for SPs
 
 Something like:
-    
+
     # direct from CGI.pm object
     $request = Net::OAuth->request('Request Token')->from_cgi_query($cgi, %api_params);
-    
+
     # direct from Catalyst::Request object
-    $request = Net::OAuth->request('Request Token')->from_catalyst_request($c->req, %api_params); 
-    
+    $request = Net::OAuth->request('Request Token')->from_catalyst_request($c->req, %api_params);
+
     # from Auth header and GET and POST params in one
     local $/;
     my $post_body = <STDIN>;
     $request = Net::OAuth->request('Request Token')->from_auth_get_and_post(
-        $ENV{HTTP_AUTHORIZATION}, 
+        $ENV{HTTP_AUTHORIZATION},
         $ENV{QUERY_STRING},
         $post_body,
         %api_params
@@ -457,11 +457,13 @@ Something like:
 
 =head1 AUTHOR
 
-Keith Grennan, C<< <kgrennan at cpan.org> >>
+Originally by Keith Grennan <kgrennan@cpan.org>
+
+Currently maintained by Robert Rothenberg <rrwo@cpan.org>
 
 =head1 COPYRIGHT & LICENSE
 
-Copyright 2009 Keith Grennan, all rights reserved.
+Copyright 2007-2012, 2024-2025 Keith Grennan
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

@@ -16,7 +16,7 @@ use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::JSON;
 
-$VERSION = '1.02';
+$VERSION = '1.03';
 
 sub ProcessCBOR($$$);
 sub ReadCBORValue($$$$);
@@ -160,6 +160,7 @@ sub ReadCBORValue($$$$)
             Start   => $dumpStart,
             DataPos => $$et{cbor_datapos},
             Prefix  => $$et{INDENT},
+            Out     => $et->Options('TextOut'),
         ) if $verbose > 2;
         while ($num) {
             $$et{cbor_pre} = "$i) ";
@@ -200,6 +201,7 @@ sub ReadCBORValue($$$$)
                 Start   => $dumpStart,
                 DataPos => $$et{cbor_datapos},
                 Prefix  => $$et{INDENT} . '  ',
+                Out     => $et->Options('TextOut'),
             ) if $verbose > 2;
         }
         # read next value (note: in the case of multiple tags,
@@ -259,6 +261,7 @@ sub ReadCBORValue($$$$)
         DataPos => $$et{cbor_datapos},
         Prefix  => $$et{INDENT} . '  ',
         MaxLen  => $verbose < 5 ? ($verbose == 3 ? 96 : 2048) : undef,
+        Out     => $et->Options('TextOut'),
     ) if $verbose > 2;
     return($val, $err, $pos);
 }
@@ -321,7 +324,7 @@ specification.
 
 =head1 AUTHOR
 
-Copyright 2003-2024, Phil Harvey (philharvey66 at gmail.com)
+Copyright 2003-2025, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

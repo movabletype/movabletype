@@ -15,7 +15,7 @@ use vars qw($VERSION @ISA $makeMissing);
 use Image::ExifTool qw(:Utils :Vars);
 use Image::ExifTool::XMP;
 
-$VERSION = '1.36';
+$VERSION = '1.37';
 @ISA = qw(Exporter);
 
 # set this to a language code to generate Lang module with 'MISSING' entries
@@ -158,6 +158,7 @@ PTILoop:    for ($index=0; $index<@infoArray; ++$index) {
                 my $writable = $format ? 'true' : 'false';
                 # check our conversions to make sure we can really write this tag
                 if ($writable eq 'true') {
+                    $writable = 'false' if defined $$tagInfo{Writable} and not $$tagInfo{Writable};
                     foreach ('PrintConv','ValueConv') {
                         next unless $$tagInfo{$_};
                         next if $$tagInfo{$_ . 'Inv'};
@@ -167,7 +168,7 @@ PTILoop:    for ($index=0; $index<@infoArray; ++$index) {
                         last;
                     }
                 }
-                $format = $$tagInfo{Format} || $$table{FORMAT} if not defined $format or $format eq '1';
+                $format = $$tagInfo{Format} || $$table{FORMAT} if not $format or $format eq '1';
                 $format = 'struct' if $$tagInfo{Struct};
                 if (defined $format) {
                     $format =~ s/\[.*\$.*\]//;   # remove expressions from format
@@ -258,7 +259,7 @@ PTILoop:    for ($index=0; $index<@infoArray; ++$index) {
                     # add bitmask values to main lookup
                     if ($$conv{BITMASK}) {
                         foreach $key (keys %{$$conv{BITMASK}}) {
-                            my $mask = 0x01 << $key;
+                            my $mask = "Bit$key";
                             next if not $mask or $$conv{$mask};
                             $$conv{$mask} = $$conv{BITMASK}{$key};
                         }
@@ -650,7 +651,7 @@ and values.
 
 ~head1 AUTHOR
 
-Copyright 2003-2024, Phil Harvey (philharvey66 at gmail.com)
+Copyright 2003-2025, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
@@ -834,7 +835,7 @@ Number of modules updated, or negative on error.
 
 =head1 AUTHOR
 
-Copyright 2003-2024, Phil Harvey (philharvey66 at gmail.com)
+Copyright 2003-2025, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

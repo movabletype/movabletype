@@ -2,7 +2,7 @@ package URI::QueryParam;
 use strict;
 use warnings;
 
-our $VERSION = '5.29';
+our $VERSION = '5.32';
 
 1;
 

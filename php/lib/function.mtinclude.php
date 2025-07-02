@@ -213,7 +213,7 @@ function smarty_function_mtinclude($args, &$ctx) {
     } elseif (isset($args['file']) && ($args['file'])) {
         $mt = MT::get_instance();
         if ( !$mt->config('AllowFileInclude') ) {
-            return $ctx->error('File include is disabled by "AllowFileInclude" config directive.');
+            return $ctx->error('File inclusion is disabled by "AllowFileInclude" config directive.');
         }
         $file = $args['file'];
         $cache_id = 'file::' . $blog_id . '::' . $file;

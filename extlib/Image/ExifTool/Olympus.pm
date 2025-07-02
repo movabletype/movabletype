@@ -40,7 +40,7 @@ use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::Exif;
 use Image::ExifTool::APP12;
 
-$VERSION = '2.82';
+$VERSION = '2.86';
 
 sub PrintLensInfo($$$);
 
@@ -113,10 +113,11 @@ my %olympusLensTypes = (
     '0 34 00' => 'Olympus Zuiko Digital ED 9-18mm F4.0-5.6', #7
     '0 34 10' => 'Olympus M.Zuiko Digital ED 12-45mm F4.0 Pro', #IB
     '0 35 00' => 'Olympus Zuiko Digital 14-54mm F2.8-3.5 II', #PH
-    '0 35 10' => 'Olympus M.Zuiko 100-400mm F5.0-6.3', #IB
+    '0 35 10' => 'Olympus M.Zuiko 100-400mm F5.0-6.3', #IB (also OM System M.Zuiko Digital ED 100-400mm F5.0-6.3 IS II", forum2833)
     '0 36 10' => 'Olympus M.Zuiko Digital ED 8-25mm F4 Pro', #IB
     '0 37 10' => 'Olympus M.Zuiko Digital ED 40-150mm F4.0 Pro', #forum3833
     '0 39 10' => 'Olympus M.Zuiko Digital ED 90mm F3.5 Macro IS Pro', #forum3833
+    '0 40 10' => 'Olympus M.Zuiko Digital ED 150-600mm F5.0-6.3', #forum15652
     # Sigma lenses
     '1 01 00' => 'Sigma 18-50mm F3.5-5.6 DC', #8
     '1 01 10' => 'Sigma 30mm F2.8 EX DN', #NJ
@@ -196,6 +197,7 @@ my %olympusLensTypes = (
   # '65535 07 40' - Seen for LUMIX S 16-35/F4 on Panasonic DC-S1H (ref PH)
     # Other makes
     '24 01 10' => 'Venus Optics Laowa 50mm F2.8 2x Macro', #DonKomarechka
+    'f7 03 10' => 'LAOWA C&D-Dreamer MFT 7.5mm F2.0', #forum3833
 );
 
 # lookup for Olympus camera types (ref PH)
@@ -440,8 +442,11 @@ my %olympusCameraTypes = (
     S0089 => 'E-M5MarkIII',
     S0092 => 'E-M1MarkIII', #IB
     S0093 => 'E-P7', #IB
+    S0094 => 'E-M10MarkIIIS', #forum17050
     S0095 => 'OM-1', #IB
     S0101 => 'OM-5', #IB
+    S0121 => 'OM-1MarkII', #forum15652
+    S0123 => 'OM-3', #forum17208
     SR45 => 'D220',
     SR55 => 'D320L',
     SR83 => 'D340L',
@@ -545,6 +550,7 @@ my %filters = (
     4 => 'Light Tone',
     5 => 'Pin Hole', # (SZ-10 magic filter 2,SZ-31MR,E-PL3)
     6 => 'Grainy Film',
+    8 => 'Underwater', #forum17348
     9 => 'Diorama',
     10 => 'Cross Process',
     12 => 'Fish Eye', # (SZ-10 magic filter 3)
@@ -576,6 +582,9 @@ my %filters = (
     39 => 'Partial Color', #forum6269
     40 => 'Partial Color II', #forum6269
     41 => 'Partial Color III', #forum6269
+    42 => 'Bleach Bypass', #forum17348
+    43 => 'Bleach Bypass II', #forum17348
+    44 => 'Instant Film', #forum17348
 );
 
 my %toneLevelType = (
@@ -1932,6 +1941,7 @@ my %indexInfo = (
             3 => 'Trains',
             4 => 'Birds',
             5 => 'Dogs & Cats',
+            6 => 'Human', #forum16072
         },{
             0 => 'Object Not Found',
             1 => 'Object Found',
@@ -2839,24 +2849,32 @@ my %indexInfo = (
         RawConv => '$val=~s/\0+$//; $val',  # (may be null terminated)
         Count => 4,
     },
-    0x100 => { Name => 'WB_RBLevels',       Writable => 'int16u', Count => 2 }, #6
+    0x100 => {  #6
+        Name => 'WB_RBLevels',
+        Writable => 'int16u',
+        Notes => q{
+            These tags store 2 values, red and blue levels, for some models, but 4
+            values, presumably RBGG levels, for other models
+        },
+        Count => -1,
+    }, #6
     # 0x101 - in-camera AutoWB unless it is all 0's or all 256's (ref IB)
-    0x102 => { Name => 'WB_RBLevels3000K',  Writable => 'int16u', Count => 2 }, #11
-    0x103 => { Name => 'WB_RBLevels3300K',  Writable => 'int16u', Count => 2 }, #11
-    0x104 => { Name => 'WB_RBLevels3600K',  Writable => 'int16u', Count => 2 }, #11
-    0x105 => { Name => 'WB_RBLevels3900K',  Writable => 'int16u', Count => 2 }, #11
-    0x106 => { Name => 'WB_RBLevels4000K',  Writable => 'int16u', Count => 2 }, #11
-    0x107 => { Name => 'WB_RBLevels4300K',  Writable => 'int16u', Count => 2 }, #11
-    0x108 => { Name => 'WB_RBLevels4500K',  Writable => 'int16u', Count => 2 }, #11
-    0x109 => { Name => 'WB_RBLevels4800K',  Writable => 'int16u', Count => 2 }, #11
-    0x10a => { Name => 'WB_RBLevels5300K',  Writable => 'int16u', Count => 2 }, #11
-    0x10b => { Name => 'WB_RBLevels6000K',  Writable => 'int16u', Count => 2 }, #11
-    0x10c => { Name => 'WB_RBLevels6600K',  Writable => 'int16u', Count => 2 }, #11
-    0x10d => { Name => 'WB_RBLevels7500K',  Writable => 'int16u', Count => 2 }, #11
-    0x10e => { Name => 'WB_RBLevelsCWB1',   Writable => 'int16u', Count => 2 }, #11
-    0x10f => { Name => 'WB_RBLevelsCWB2',   Writable => 'int16u', Count => 2 }, #11
-    0x110 => { Name => 'WB_RBLevelsCWB3',   Writable => 'int16u', Count => 2 }, #11
-    0x111 => { Name => 'WB_RBLevelsCWB4',   Writable => 'int16u', Count => 2 }, #11
+    0x102 => { Name => 'WB_RBLevels3000K',  Writable => 'int16u', Count => -1 }, #11
+    0x103 => { Name => 'WB_RBLevels3300K',  Writable => 'int16u', Count => -1 }, #11
+    0x104 => { Name => 'WB_RBLevels3600K',  Writable => 'int16u', Count => -1 }, #11
+    0x105 => { Name => 'WB_RBLevels3900K',  Writable => 'int16u', Count => -1 }, #11
+    0x106 => { Name => 'WB_RBLevels4000K',  Writable => 'int16u', Count => -1 }, #11
+    0x107 => { Name => 'WB_RBLevels4300K',  Writable => 'int16u', Count => -1 }, #11
+    0x108 => { Name => 'WB_RBLevels4500K',  Writable => 'int16u', Count => -1 }, #11
+    0x109 => { Name => 'WB_RBLevels4800K',  Writable => 'int16u', Count => -1 }, #11
+    0x10a => { Name => 'WB_RBLevels5300K',  Writable => 'int16u', Count => -1 }, #11
+    0x10b => { Name => 'WB_RBLevels6000K',  Writable => 'int16u', Count => -1 }, #11
+    0x10c => { Name => 'WB_RBLevels6600K',  Writable => 'int16u', Count => -1 }, #11
+    0x10d => { Name => 'WB_RBLevels7500K',  Writable => 'int16u', Count => -1 }, #11
+    0x10e => { Name => 'WB_RBLevelsCWB1',   Writable => 'int16u', Count => -1 }, #11
+    0x10f => { Name => 'WB_RBLevelsCWB2',   Writable => 'int16u', Count => -1 }, #11
+    0x110 => { Name => 'WB_RBLevelsCWB3',   Writable => 'int16u', Count => -1 }, #11
+    0x111 => { Name => 'WB_RBLevelsCWB4',   Writable => 'int16u', Count => -1 }, #11
     0x113 => { Name => 'WB_GLevel3000K',    Writable => 'int16u' }, #11
     0x114 => { Name => 'WB_GLevel3300K',    Writable => 'int16u' }, #11
     0x115 => { Name => 'WB_GLevel3600K',    Writable => 'int16u' }, #11
@@ -3243,6 +3261,7 @@ my %indexInfo = (
                     3 => 'Trains',
                     4 => 'Birds',
                     5 => 'Dogs & Cats',
+                    6 => 'Human', #forum16072
                 },{
                     0 => 'Face Priority',
                     1 => 'Target Priority',
@@ -4181,7 +4200,7 @@ Olympus or Epson maker notes in EXIF information.
 
 =head1 AUTHOR
 
-Copyright 2003-2024, Phil Harvey (philharvey66 at gmail.com)
+Copyright 2003-2025, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
