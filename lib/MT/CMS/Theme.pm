@@ -116,13 +116,12 @@ sub _build_theme_table {
 
         if ( $classes->{current} ) {
             next if $theme->id ne ( $current || '' );
-            next if $theme->{deprecated};
         }
         else {
             next if !$theme->{class} || !$classes->{ $theme->{class} };
             next if $theme->id eq ( $current || '' );
-            next if $theme->{deprecated};
         }
+        next if $theme->{deprecated};
         my @keys = qw( id author_name author_link version );
         my %theme;
         $theme{$_} = $theme->{$_} for @keys;
@@ -134,7 +133,6 @@ sub _build_theme_table {
         $theme{theme_version} = $theme->version;
         $theme{theme_type}    = $theme->{type};
         $theme{protected}     = $theme->{protected};
-        $theme{deprecated}    = $theme->{deprecated};
         my ( $errors, $warnings ) = $theme->validate_versions( $opts{blog} );
         $theme{errors}        = $errors;
         $theme{warnings}      = $warnings;
