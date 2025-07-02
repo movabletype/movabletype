@@ -33,7 +33,7 @@ BEGIN {
                 config_package => 'DBI::mysql',
                 display        => [
                     'dbserver', 'dbname', 'dbuser', 'dbpass',
-                    'dbport',   'dbsocket'
+                    'dbport',   'dbsocket', 'connect_options'
                 ],
                 recommended => 1,
             },
@@ -43,13 +43,13 @@ BEGIN {
                 dbd_version    => '1.32',
                 config_package => 'DBI::postgres',
                 display =>
-                    [ 'dbserver', 'dbname', 'dbuser', 'dbpass', 'dbport' ],
+                    [ 'dbserver', 'dbname', 'dbuser', 'dbpass', 'dbport', 'connect_options' ],
             },
             'sqlite' => {
                 label          => 'SQLite Database',
                 dbd_package    => 'DBD::SQLite',
                 config_package => 'DBI::sqlite',
-                display        => ['dbpath'],
+                display        => ['dbpath', 'connect_options'],
             },
         },
         db_form_data => {
@@ -107,6 +107,15 @@ BEGIN {
                 type     => 'text',
                 label    => 'Database Socket',
                 order    => 20,
+            },
+            connect_options => {
+                advanced => 1,
+                element  => 'textarea',
+                label    => 'Connect Options',
+                order    => 100,
+                hint     => sub {
+                    MT->translate("You may need to pass additional, driver-specific parameters, especially when the server requires a secure connection. Each line should have a NAME=VALUE. See the driver's manual for a list of available names and values.");
+                },
             },
         },
         object_types => {
