@@ -62,7 +62,7 @@ sub list {
                     $theme->{name}          = $theme->{label} = $label;
                     $theme->{author_name}   = $current_theme->{author_name};
                     $theme->{author_link}   = $current_theme->{author_link};
-                    $theme->{description}   = $app->translate('[Deprecated]') . ' ' . $current_theme->description;
+                    $theme->{description}   = $current_theme->description;
                     $theme->{deprecated}    = 1;
                     $theme->{removed}       = 1;
                     $theme->{theme_version} = $current_theme->version;
@@ -75,7 +75,7 @@ sub list {
                     my $name = join ' ', map ucfirst, split /_/, $theme_id;
                     $theme->{name}        = $theme->{label} = $name;
                     $theme->{author_name} = '';
-                    $theme->{description} = $app->translate('[Removed]');
+                    $theme->{description} = $app->translate('This theme has been removed.');
                     $theme->{removed}     = 1;
 
                     @$theme{qw(thumbnail_url thumb_w thumb_h)}       = MT::Theme->default_theme_thumbnail(size => 'small');
