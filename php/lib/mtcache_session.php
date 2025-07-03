@@ -13,7 +13,7 @@ class MTCache_session extends MTCacheBase {
 
     function get ($key, $ttl = null) {
         $ret = $this->get_multi($key, $ttl);
-        return $ret[0];
+        return $ret[0] ?? null;
     }
 
     function get_multi ($keys, $ttl = null) {
