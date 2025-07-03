@@ -3,7 +3,18 @@ name: CommonMark
 version: 1.0
 author_name: "Six Apart Ltd."
 description: CommonMark
+schema_version: 1.0
 text_filters:
     commonmark:
         label: CommonMark
         code: $CommonMark::CommonMark::common_mark
+callbacks:
+    MT::Upgrade::upgrade_end: |
+        sub {
+            if ($] < 5.026) {
+                my $cfg = MT->config;
+                $cfg->PluginSwitch( 'CommonMark=0', 1 );
+                $cfg->save_config;
+            }
+            return 1;
+        }
