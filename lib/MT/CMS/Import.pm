@@ -24,6 +24,13 @@ sub start_import {
 
     my %param;
 
+    if ( !defined($blog->site_path) ) {
+        $param{missing_site_path} = 1;
+    }
+    elsif ( !(-d $blog->site_path) ) {
+        $param{missing_site_dir} = $blog->site_path;
+    }
+
     # FIXME: This should build a category hierarchy!
     my $cat_class = $app->model('category');
     my $iter      = $cat_class->load_iter(
