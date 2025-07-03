@@ -259,7 +259,10 @@ function showPasswordField() {
        id="name"
        required="1"
        label="<__trans phrase="Username">"
-       label_for="name">
+       label_for="name"
+       show_hint="1"
+       hint_id="usedForSignIn"
+       hint="<__trans phrase="Use this name when you sign in.">">
       <input type="text" name="name" id="name" class="form-control text" value="<mt:var name="name" escape="html">" <mt:unless name="auth_mode_mt"><mt:unless name="new_user_external_auth">disabled="disabled"</mt:unless></mt:unless> />
       <mt:unless name="auth_mode_mt">
         <mt:unless name="new_user_external_auth">
