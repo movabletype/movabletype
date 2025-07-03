@@ -36,6 +36,7 @@ return array(
     'Nette\\Schema\\Processor' => $vendorDir . '/nette/schema/src/Schema/Processor.php',
     'Nette\\Schema\\Schema' => $vendorDir . '/nette/schema/src/Schema/Schema.php',
     'Nette\\Schema\\ValidationException' => $vendorDir . '/nette/schema/src/Schema/ValidationException.php',
+    'Nette\\ShouldNotHappenException' => $vendorDir . '/nette/utils/src/exceptions.php',
     'Nette\\SmartObject' => $vendorDir . '/nette/utils/src/SmartObject.php',
     'Nette\\StaticClass' => $vendorDir . '/nette/utils/src/StaticClass.php',
     'Nette\\UnexpectedValueException' => $vendorDir . '/nette/utils/src/exceptions.php',

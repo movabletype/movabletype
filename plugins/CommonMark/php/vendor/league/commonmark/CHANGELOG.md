@@ -6,6 +6,23 @@ Updates should follow the [Keep a CHANGELOG](https://keepachangelog.com/) princi
 
 ## [Unreleased][unreleased]
 
+## [2.7.0]
+
+This is a **security release** to address a potential cross-site scripting (XSS) vulnerability when using the `AttributesExtension` with untrusted user input.
+
+### Added
+- Added `attributes/allow` config option to specify which attributes users are allowed to set on elements (default allows virtually all attributes)
+
+### Changed
+- The `AttributesExtension` blocks all attributes starting with `on` unless explicitly allowed via the `attributes/allow` config option
+- The `allow_unsafe_links` option is now respected by the `AttributesExtension` when users specify `href` and `src` attributes
+
+## [2.6.2] - 2025-04-18
+
+### Fixed
+
+- Fixed Attributes extension parsing regression (#1071)
+
 ## [2.6.1] - 2024-12-29
 
 ### Fixed
@@ -683,7 +700,9 @@ No changes were introduced since the previous release.
     - Alternative 1: Use `CommonMarkConverter` or `GithubFlavoredMarkdownConverter` if you don't need to customize the environment
     - Alternative 2: Instantiate a new `Environment` and add the necessary extensions yourself
 
-[unreleased]: https://github.com/thephpleague/commonmark/compare/2.6.1...main
+[unreleased]: https://github.com/thephpleague/commonmark/compare/2.7.0...HEAD
+[2.7.0]: https://github.com/thephpleague/commonmark/compare/2.6.2...2.7.0
+[2.6.2]: https://github.com/thephpleague/commonmark/compare/2.6.1...2.6.2
 [2.6.1]: https://github.com/thephpleague/commonmark/compare/2.6.0...2.6.1
 [2.6.0]: https://github.com/thephpleague/commonmark/compare/2.5.3...2.6.0
 [2.5.3]: https://github.com/thephpleague/commonmark/compare/2.5.2...2.5.3
