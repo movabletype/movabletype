@@ -1880,6 +1880,7 @@ use vars qw( @ISA %Lexicon );
 	'Blog URL' => 'ブログURL',
 	'Change Settings' => '設定の変更',
 	'Classic Blog' => 'クラシックブログ',
+	'Connect Options' => '接続オプション',
 	'Contact' => '連絡先',
 	'Convert Line Breaks' => '改行を変換',
 	'Create Child Sites' => '子サイトの作成',
@@ -1997,6 +1998,7 @@ use vars qw( @ISA %Lexicon );
 	'tar.gz' => 'tar.gz',
 	'zip' => 'zip',
 	q{This is often 'localhost'.} => q{通常「localhost」のままで構いません。},
+	q{You may need to pass additional, driver-specific parameters, especially when the server requires a secure connection. Each line should have a NAME=VALUE. See the driver's manual for a list of available names and values.} => q{特にデータベースサーバーがセキュアな接続を要求する場合、データベースドライバーに固有のパラメーターを追加で設定しなければならないことがあります。一行ずつNAME=VALUEの形式で記述してください。利用可能な名前や値の一覧はデータベースドライバーのマニュアルをご覧ください。},
 
 ## lib/MT/DataAPI/Callback/Blog.pm
 	'Cannot apply website theme to blog: [_1]' => 'ウェブサイトテーマをブログに適用する事はできません: [_1]',
