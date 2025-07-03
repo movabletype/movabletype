@@ -126,7 +126,7 @@ sub init_core_registry {
                 handler => \&configure,
                 params  => [
                     qw(dbpath dbname dbport dbserver dbsocket
-                        dbtype dbuser dbpass odbcdriver odbcencrypt publish_charset)
+                        dbtype dbuser dbpass odbcdriver odbcencrypt publish_charset connect_options)
                 ]
             },
             optional => {
@@ -623,6 +623,18 @@ sub configure {
             my $current_charset = $cfg->PublishCharset;
             $cfg->PublishCharset( $param{publish_charset} )
                 if $param{publish_charset};
+            if ($param{connect_options}) {
+                my %connect_options;
+                for my $line (split /[\r\n]+/, $param{connect_options}) {
+                    my ($key, $value) = split /=/, $line, 2;
+                    next unless $key;
+                    if ($value =~ /^(['"])(.+?)\1$/) {
+                        $value = $2;
+                    }
+                    $connect_options{$key} = $value;
+                }
+                $cfg->DBIConnectOptions(\%connect_options);
+            }
 
             if ( $dbtype eq 'sqlite' ) {
                 require File::Spec;
@@ -986,6 +998,7 @@ sub seed {
                 odbcencrypt     => 'database_odbcencrypt',
                 setnames        => 'use_setnames',
                 publish_charset => 'publish_charset',
+                connect_options => 'connect_options',
             );
 
             $param{use_dbms}      = 1;
@@ -999,6 +1012,18 @@ sub seed {
                 $param{$key} = $param{$id}
                     if $param{$id};
             }
+        }
+        if ($param{connect_options}) {
+            my %connect_options;
+            for my $line (split /[\r\n]+/, $param{connect_options}) {
+                my ($key, $value) = split /=/, $line, 2;
+                next unless $key;
+                if ($value =~ /^(['"])(.+?)\1$/) {
+                    $value = $2;
+                }
+                $connect_options{$key} = $value;
+            }
+            $param{connect_options} = \%connect_options;
         }
     }
 
