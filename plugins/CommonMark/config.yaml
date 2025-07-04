@@ -9,6 +9,9 @@ text_filters:
     commonmark:
         label: CommonMark
         code: $CommonMark::CommonMark::common_mark
+    gfm:
+        label: GitHub Flavored Markdown
+        code: $CommonMark::CommonMark::gfm
 callbacks:
     MT::Upgrade::upgrade_end: |
         sub {
