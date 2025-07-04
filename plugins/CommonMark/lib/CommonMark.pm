@@ -1,5 +1,6 @@
 package CommonMark;
 
+use v5.26.0;
 use strict;
 use warnings;
 use Markdown::Perl;
