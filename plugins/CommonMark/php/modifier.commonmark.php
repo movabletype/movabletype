@@ -22,4 +22,3 @@ function smarty_modifier_commonmark($text) {
 
     return $converter->convert($text);
 }
-?>
