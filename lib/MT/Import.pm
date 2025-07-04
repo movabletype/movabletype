@@ -242,11 +242,6 @@ sub get_options_html {
             if ref $options_param eq 'CODE';
 
         $param->{blog_id} = $blog_id;
-        $param->{missing_paths}
-            = (    ( defined $blog->site_path || defined $blog->archive_path )
-                && ( -d $blog->site_path || -d $blog->archive_path ) )
-            ? 0
-            : 1;
 
         # XXX always true because of autovivification
         $tmpl->param($param) if $param;
