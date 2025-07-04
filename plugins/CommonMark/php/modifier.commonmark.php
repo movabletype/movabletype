@@ -6,7 +6,6 @@ function CommonMark() {
     global $COMMON_MARK;
     if (!is_object($COMMON_MARK)) {
         $COMMON_MARK = new CommonMarkConverter([
-            'html_input' => 'strip',
             'allow_unsafe_links' => false,
         ]);
     }

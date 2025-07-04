@@ -10,7 +10,6 @@ sub common_mark {
     my ($text, $ctx) = @_;
     my $md = Markdown::Perl->new(
         mode => 'cmark',
-        use_setext_headings => 1,
     );
     $md->convert($text);
 }
