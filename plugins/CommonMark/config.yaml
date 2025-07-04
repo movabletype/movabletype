@@ -4,6 +4,7 @@ version: 1.0
 author_name: "Six Apart Ltd."
 description: <MT_TRANS phrase="CommonMark is a standard, unambiguous syntax specification for Markdown.">
 schema_version: 1.0
+l10n_class: CommonMark::L10N
 text_filters:
     commonmark:
         label: CommonMark
