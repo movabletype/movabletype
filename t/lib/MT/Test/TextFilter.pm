@@ -3,7 +3,7 @@
 # For more information, consult your Movable Type license.
 #
 
-package MT::Test::Tag;
+package MT::Test::TextFilter;
 
 use strict;
 use warnings;
@@ -15,6 +15,7 @@ use MT::I18N;
 use MT::Test::PHP;
 use File::Spec;
 use Text::Diff 'diff';
+use MT::Test::Permission;
 
 BEGIN {
     eval qq{ use Test::Base -Base; 1 }
@@ -28,24 +29,12 @@ sub vars {
     $vars;
 }
 
-sub _test_name_prefix {
-    my ($archive_type) = @_;
-    $archive_type ? "$archive_type: " : '';
-}
+my $convert_breaks;
+
+sub set { $convert_breaks = shift }
 
 sub run_perl_tests {
-    my ( $blog_id, $callback, $archive_type ) = @_;
-
-    if ( $callback && !ref $callback ) {
-        $archive_type = $callback;
-        $callback     = undef;
-    }
-    if ($archive_type) {
-        $vars->{archive_type} = $archive_type;
-    }
-    $archive_type ||= '';
-
-    my $test_name_prefix = $self->_test_name_prefix($archive_type);
+    my ($blog_id, $callback) = @_;
 
     MT->instance;
 
@@ -58,51 +47,53 @@ sub run_perl_tests {
 
             MT::Request->instance->reset;
 
-            my $tmpl = MT::Template->new( type => 'index' );
-            $tmpl->text( _filter_vars( $block->template ) );
+            my $entry = MT::Test::Permission->make_entry(
+                blog_id        => $blog_id,
+                author_id      => 1,
+                title          => 'Test',
+                text           => _filter_vars($block->text),
+                convert_breaks => $convert_breaks,
+            );
+            my $entry_id = $entry->id;
+
+            my $tmpl = MT::Template->new(type => 'index');
+            $tmpl->text(qq{<mt:Entries id="$entry_id"><mt:EntryBody></mt:Entries>});
             my $ctx = $tmpl->context;
 
-            my $blog = MT::Blog->load( $block->blog_id || $blog_id );
-            $ctx->stash( 'blog',          $blog );
-            $ctx->stash( 'blog_id',       $blog->id );
-            $ctx->stash( 'local_blog_id', $blog->id );
-            $ctx->stash( 'local_lang_id', lc(MT->current_language) );
-            $ctx->stash( 'builder',       MT->builder );
+            my $blog = MT::Blog->load($block->blog_id || $blog_id);
+            $ctx->stash('blog',          $blog);
+            $ctx->stash('blog_id',       $blog->id);
+            $ctx->stash('local_blog_id', $blog->id);
+            $ctx->stash('local_lang_id', lc(MT->current_language));
+            $ctx->stash('builder',       MT->builder);
 
-            $callback->( $ctx, $block ) if $callback;
+            $callback->($ctx, $block) if $callback;
 
             my $got = eval { $tmpl->build };
             diag $@ if $@;
 
-            ( my $method_name = $archive_type ) =~ tr|A-Z-|a-z_|;
-
-            if ( my $error = $ctx->errstr ) {
+            if (my $error = $ctx->errstr) {
                 my $expected_error_method = "expected";
                 my @extra_error_methods   = (
-                    "expected_todo_error_$method_name",
                     "expected_todo_error",
-                    "expected_error_$method_name",
                     "expected_error"
                 );
                 for my $method (@extra_error_methods) {
-                    if ( exists $block->{$method} ) {
+                    if (exists $block->{$method}) {
                         $expected_error_method = $method;
                         last;
                     }
                 }
                 $error =~ s/^(\r\n|\r|\n|\s)+|(\r\n|\r|\n|\s)+\z//g;
                 local $TODO = "may fail" if $expected_error_method =~ /^expected_todo_/;
-                is( $error,
-                    _filter_vars( $block->$expected_error_method ),
-                    $test_name_prefix . $block->name . ' (error)'
+                is(
+                    $error,
+                    _filter_vars($block->$expected_error_method),
+                    $block->name . ' (error)'
                 );
-            }
-            else {
+            } else {
                 my $expected_method = 'expected';
-                my @extra_methods   = (
-                    "expected_todo_$method_name",
-                    "expected_$method_name", "expected_todo"
-                );
+                my @extra_methods   = ("expected_todo");
                 for my $method (@extra_methods) {
                     if (exists $block->{$method}) {
                         $expected_method = $method;
@@ -113,19 +104,22 @@ sub run_perl_tests {
                 $got =~ s/^(\r\n|\r|\n|\s)+|(\r\n|\r|\n|\s)+\z//g if defined $got;
 
                 if ($ENV{MT_TEST_ENABLE_SSI_PHP_MOCK} && $blog->include_system eq 'php') {
-                    $got = MT::Test::PHP->run($got);
+                    $got = MT::Test::PHP->run(encode_utf8($got));
                 }
 
                 local $TODO = "may fail" if $expected_method =~ /^expected_todo/;
 
                 my $expected     = _filter_vars($block->$expected_method);
                 my $expected_ref = ref($expected);
-                my $name         = $test_name_prefix . $block->name;
+                my $name         = $block->name;
+
+                $got      = _trim($got);
+                $expected = _trim($expected);
 
                 if ($expected_ref && $expected_ref eq 'Regexp') {
                     like($got, $expected, $name);
                 } else {
-                    ok($got eq $expected, $name) or diag diff(\$expected, \$got, {STYLE => 'Unified'});
+                    ok($got eq $expected, $name) or diag diff(\$expected, \$got, { STYLE => 'Unified' });
                 }
             }
             __PACKAGE__->_update_config($prev_config);
@@ -134,21 +128,12 @@ sub run_perl_tests {
 }
 
 sub run_php_tests {
-    my ( $blog_id, $callback, $archive_type ) = @_;
+    my ($blog_id, $callback) = @_;
 
 SKIP: {
-        unless ( has_php() ) {
+        unless (has_php()) {
             skip "Can't find executable file: php", 2 * blocks;
         }
-
-        if ( $callback && !ref $callback ) {
-            $archive_type = $callback;
-            $callback     = undef;
-        }
-        if ($archive_type) {
-            $vars->{archive_type} = $archive_type;
-        }
-        $archive_type ||= '';
 
         my $blog = MT::Blog->load($blog_id);
         if ($blog and $blog->language ne lc MT->config->DefaultLanguage) {
@@ -157,49 +142,49 @@ SKIP: {
             $blog->save;
         }
 
-        my $test_name_prefix = $self->_test_name_prefix($archive_type);
-
         run {
             my $block = shift;
         SKIP: {
-                skip $block->skip, 2 if $block->skip;
+                skip $block->skip,    2 if $block->skip;
                 skip 'skip php test', 2 if __PACKAGE__->_check_skip_php($block);
 
                 my $prev_config = __PACKAGE__->_update_config($block->mt_config);
 
-                my $template = _filter_vars( $block->template );
-                $template    = Encode::encode_utf8( $template ) if Encode::is_utf8( $template );
+                my $entry = MT::Test::Permission->make_entry(
+                    blog_id        => $blog_id,
+                    author_id      => 1,
+                    title          => 'Test',
+                    text           => _filter_vars($block->text),
+                    convert_breaks => $convert_breaks,
+                );
+                my $entry_id = $entry->id;
+
+                my $template = qq{<mt:Entries id="$entry_id"><mt:EntryBody></mt:Entries>};
                 my $text     = $block->text || '';
                 my $extra    = $callback ? ($callback->($block) || '') : '';
 
                 my $log;
                 require MT::Util::UniqueID;
-                local $ENV{MT_TEST_PHP_ERROR_LOG_FILE_PATH} = $ENV{MT_TEST_PHP_ERROR_LOG_FILE_PATH}
+                local $ENV{MT_TEST_PHP_ERROR_LOG_FILE_PATH} =
+                      $ENV{MT_TEST_PHP_ERROR_LOG_FILE_PATH}
                     ? $ENV{MT_TEST_PHP_ERROR_LOG_FILE_PATH}
                     : $log = File::Spec->catfile($ENV{MT_TEST_ROOT}, 'php-' . MT::Util::UniqueID::create_session_id() . '.log');
                 my $block_name = $block->name || $block->seq_num;
                 $ENV{REQUEST_URI} = "$0 [$block_name]";
                 my $got;
+
                 if ($^O eq 'MSWin32' or $ENV{MT_TEST_NO_PHP_DAEMON} or lc($ENV{MT_TEST_BACKEND} // '') eq 'sqlite') {
-                    my $php_script = php_test_script( $block_name, $block->blog_id || $blog_id, $template, $text, $extra );
-                    $got = Encode::decode_utf8(MT::Test::PHP->run($php_script));
+                    my $php_script = php_test_script($block_name, $block->blog_id || $blog_id, $template, $text, $extra);
+                    $got = Encode::decode_utf8(MT::Test::PHP->run(encode_utf8($php_script)));
                 } else {
                     $got = Encode::decode_utf8(MT::Test::PHP->daemon($template, $block->blog_id || $blog_id, $extra, $text));
                 }
 
                 my $php_error = MT::Test::PHP->retrieve_php_logs($log);
 
-                ( my $method_name = $archive_type ) =~ tr|A-Z-|a-z_|;
-
                 # those with $method_name have higher precedence
                 # and todo does, too
                 my @extra_methods = (
-                    "expected_php_todo_error_$method_name",
-                    "expected_php_todo_$method_name",
-                    "expected_todo_$method_name",
-                    "expected_php_error_$method_name",
-                    "expected_error_$method_name",
-                    "expected_$method_name",
                     "expected_php_todo",
                     "expected_todo_error",
                     "expected_todo",
@@ -210,7 +195,7 @@ SKIP: {
                 my $expected_method = "expected";
                 for my $method (@extra_methods) {
 
-                    if ( exists $block->{$method} ) {
+                    if (exists $block->{$method}) {
                         $expected_method = $method;
                         last;
                     }
@@ -227,8 +212,11 @@ SKIP: {
 
                 local $TODO = "may fail" if $expected_method =~ /^expected_(?:php_)?todo/;
 
-                my $expected     = _filter_vars($expected_src);
-                my $name         = $test_name_prefix . $block->name . ' - dynamic';
+                my $expected = _filter_vars($expected_src);
+                my $name     = $block->name . ' - dynamic';
+
+                $got      = _trim($got);
+                $expected = _trim($expected);
 
                 if ($expected_ref && $expected_ref eq 'Regexp') {
                     $expected = qr{$expected} if ref($expected) ne 'Regexp';
@@ -238,7 +226,7 @@ SKIP: {
                 }
                 my $ignore_php_warnings = __PACKAGE__->_check_ignore_php_warnings($block) || $ENV{MT_TEST_IGNORE_PHP_WARNINGS};
                 if ($ignore_php_warnings && $php_error) {
-                    SKIP: {
+                SKIP: {
                         local $TODO = 'for now';
                         ok !$php_error, 'no php warnings';
                     }
@@ -251,7 +239,7 @@ SKIP: {
     }
 }
 
-sub MT::Test::Tag::_filter_vars {
+sub MT::Test::TextFilter::_filter_vars {
     my $str = shift;
     return $str unless defined $str;
     $str =~ s/\[% $_ %\]/$vars->{$_}/g for keys %$vars;
@@ -259,8 +247,8 @@ sub MT::Test::Tag::_filter_vars {
     $str;
 }
 
-sub MT::Test::Tag::php_test_script {    # full qualified to avoid Spiffy magic
-    my ( $block_name, $blog_id, $template, $text, $extra ) = @_;
+sub MT::Test::TextFilter::php_test_script {    # full qualified to avoid Spiffy magic
+    my ($block_name, $blog_id, $template, $text, $extra) = @_;
     $text ||= '';
 
     $template =~ s/<\$(mt.+?)\$>/<$1>/gi;
@@ -364,6 +352,15 @@ sub _check_ignore_php_warnings {
         }
     }
     return;
+}
+
+sub MT::Test::TextFilter::_trim {
+    my $str = shift;
+    $str = '' unless defined $str;
+    $str =~ s/\n+//g;
+    $str =~ s/^\s+//;
+    $str =~ s/\s+$//;
+    $str;
 }
 
 1;

@@ -99,7 +99,7 @@ PHP
         : 'content stash does not exist';
     is( $result, $expected, $test_name );
 
-    my $php_error = MT::Test::Tag->_retrieve_php_logs($log);
+    my $php_error = MT::Test::PHP->retrieve_php_logs($log);
 
     if ($ENV{MT_TEST_IGNORE_PHP_WARNINGS} && $php_error) {
         SKIP: {
