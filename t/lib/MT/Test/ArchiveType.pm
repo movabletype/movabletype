@@ -305,7 +305,7 @@ PHP
             $test_script .= <<'PHP';
 include_once($MT_HOME . '/php/mt.php');
 include_once($MT_HOME . '/php/lib/MTUtil.php');
-include_once($MT_HOME . '/t/lib/MT/Test/Tag/error_handler.php');
+include_once($MT_HOME . '/t/lib/MT/Test/PHP/error_handler.php');
 
 $error_handler = new MT_Test_Error_Handler();
 set_error_handler([$error_handler, 'handler']);
