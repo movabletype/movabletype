@@ -12,6 +12,8 @@ use MT::Test::Env;
 
 our $test_env;
 BEGIN {
+    plan skip_all => 'Requires Perl 5.26' if $] < 5.026;
+
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
