@@ -305,7 +305,7 @@ PHP
             $test_script .= <<'PHP';
 include_once($MT_HOME . '/php/mt.php');
 include_once($MT_HOME . '/php/lib/MTUtil.php');
-include_once($MT_HOME . '/t/lib/MT/Test/Tag/error_handler.php');
+include_once($MT_HOME . '/t/lib/MT/Test/PHP/error_handler.php');
 
 $error_handler = new MT_Test_Error_Handler();
 set_error_handler([$error_handler, 'handler']);
@@ -434,7 +434,7 @@ if ($ctx->_compile_source('evaluated template', $tmpl, $_var_compiled)) {
 PHP
 
             my $result = Encode::decode_utf8(MT::Test::PHP->run($test_script));
-            my $php_error = MT::Test::Tag->_retrieve_php_logs($log);
+            my $php_error = MT::Test::PHP->retrieve_php_logs($log);
 
             # those with $method_name have higher precedence
             # and todo does, too
