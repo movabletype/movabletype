@@ -1325,7 +1325,15 @@ PERMCHECK: {
         }
     };
 
-    my $panel_loop_template = $sites_view eq 'tree' ? 'include/listing_panel.tmpl' : 'include/grant_role.tmpl';
+    my ($dialog_template, $panel_loop_template);
+
+    if ($sites_view eq 'tree') {
+        $dialog_template     = 'dialog/create_association.tmpl';
+        $panel_loop_template = 'include/listing_panel.tmpl';
+    } elsif ($sites_view eq 'list') {
+        $dialog_template     = 'dialog/create_association_list.tmpl';
+        $panel_loop_template = 'include/grant_role.tmpl';
+    }
 
     if ( $app->param('search') || $app->param('json') ) {
         my $params = {
@@ -1566,9 +1574,8 @@ PERMCHECK: {
 
         $params->{build_compose_menus} = 0;
         $params->{build_user_menus}    = 0;
-        $params->{panel_loop_template} = $panel_loop_template;
 
-        $app->load_tmpl( 'dialog/create_association.tmpl', $params );
+        $app->load_tmpl( $dialog_template, $params );
     }
 }
 

@@ -89,7 +89,7 @@ function returnRoleSelection(ok) {
                 var label = panel.selectionList.itemHash[key].label
                 ids.push(id);
                 parent.jQuery('span.items').append(
-                  '<span id="selected-role-' + id + '" class="badge badge-pill badge-default sticky-label selected-item me-2" aria-label="Close">' + label + '&nbsp;<span aria-hidden="true" class="tag-pill remove clickable" style="cursor: pointer;">×</span>');
+                  '<span id="selected-role-' + id + '" class="badge badge-pill badge-default sticky-label selected-item mr-2" aria-label="Close">' + label + '&nbsp;<span aria-hidden="true" class="tag-pill remove clickable" style="cursor: pointer;">×</span>');
             }
         }
         parent.jQuery('input#new_created_user_role').val( ids.join(",") );
@@ -108,12 +108,13 @@ function init() {
         var tagName = element.tagName ? element.tagName.toLowerCase() : null;
 
         // handle checkboxes
-        if ( tagName == "input" && TC.hasClassName( element, "select" ) ) {
-            var parent = TC.getParentByTagName( element, "tr" );
-            var parent_li = TC.getParentByTagName( element, "li" );
-            if (parent) this.setFocus( parent );
-            // evt.preventDefault();
-            return this.select( element, (parent_li ? parent_li : parent) );
+        if ( tagName == "input" &&
+            TC.hasClassName( element, "select" ) ) {
+            if ((element.type == "checkbox") || (element.type == "radio"))
+                var parent = TC.getParentByTagName( element, "tr" );
+                if (parent) this.setFocus( parent );
+                evt.preventDefault();
+                return this.select( element );
         }
 
         // handle rows
@@ -311,7 +312,7 @@ function init() {
         history.pushState(args, '', CMSScriptURI + '?' + args);
     });
     if ( jQuery('#modal-search-author').length ) {
-      jQuery('#modal-search-author div.form-inline').prepend(jQuery('.select_assoc_type_wrapper'));
+      jQuery('#modal-search-author').prepend(jQuery('.select_assoc_type'));
       jQuery('.select_assoc_type').trigger('change');
     }
     else {
@@ -342,7 +343,7 @@ TC.attachLoadEvent(init);
 
 <div class="modal-header">
     <h4 class="mt-0 modal-title"><mt:var name="page_title"></h4>
-    <button type="button" class="close btn-close" aria-label="Close" data-mt-modal-close>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close" data-mt-modal-close>
       <span aria-hidden="true">&times;</span>
     </button>
 </div>
@@ -402,17 +403,15 @@ TC.attachLoadEvent(init);
 </div>
 <mt:else>
     <mt:if name="has_group">
-    <div class="col-auto ps-0 pe-3 select_assoc_type_wrapper">
-      <select class="select_assoc_type form-select">
+      <select class="custom-select form-control select_assoc_type mr-3">
         <option value="both" selected><__trans phrase="all"></option>
         <option value="group"><__trans phrase="Groups"></option>
         <option value="author"><__trans phrase="Users"></option>
       </select>
-    </div>
     </mt:if>
 
     <mt:loop name="panel_loop">
-      <mt:include name="include/listing_panel.tmpl" use_page_content="1">
+        <mt:include name="include/grant_role.tmpl" use_page_content="1">
     </mt:loop>
 </mt:if>
 </mt:setvarblock>
