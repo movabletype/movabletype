@@ -1050,12 +1050,6 @@ html[data-screen-id=dashboard][data-scope-type=user] {
   bottom: 0;
 }
 
-@include media-breakpoint-down(md) {
-  .mt-footerWrapper {
-    padding: 0;
-  }
-}
-
 @include media-breakpoint-up(md) {
   body[data-is-collapsed="true"] {
     .mt-footerWrapper {

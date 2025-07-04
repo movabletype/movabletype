@@ -12452,11 +12452,6 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-mainContentWrapper {
   bottom: 0;
 }
 
-@media (max-width: 767.98px) {
-  .mt-footerWrapper {
-    padding: 0;
-  }
-}
 @media (min-width: 768px) {
   body[data-is-collapsed=true] .mt-footerWrapper {
     padding-left: calc(32px + var(--left-bar-mouseover-width));
