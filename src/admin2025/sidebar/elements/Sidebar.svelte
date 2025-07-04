@@ -38,9 +38,11 @@
       if (collapsed) {
         buttonRef.classList.remove("expanded");
         buttonRef.classList.add("collapsed");
+        document.body.dataset.isCollapsed = "true";
       } else {
         buttonRef.classList.remove("collapsed");
         buttonRef.classList.add("expanded");
+        document.body.dataset.isCollapsed = "false";
       }
     }
   }
