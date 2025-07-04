@@ -38,16 +38,38 @@ sub get_json {
         dialog      => 1,
         json        => 1,
     };
-    note explain($formdata);
     $self->post_ok($formdata);
 }
 
 sub get_names_and_pager {
     my ($self) = @_;
-    my $json  = JSON::decode_json($self->content);
-    my $wq    = Web::Query::LibXML->new($json->{html});
-    my @links = $wq->find('tr td:nth-of-type(2) .panel-label') || ();
-    my @names = map { my $txt = $_; $txt =~ s{^\s+|\s+$}{}g; $txt } map { $_->text } @links;
+    my $json   = JSON::decode_json($self->content);
+    my $wq     = Web::Query::LibXML->new($json->{html});
+    my @names  = map {
+        my $txt = $_;
+        $txt =~ s{^\s+|\s+$}{}g;
+        $txt;
+    } $wq->find('tr td:nth-of-type(2) .panel-label')->text;
+    note explain([\@names, $json->{pager}]);
+    return (\@names, $json->{pager});
+}
+
+sub get_site_tree_and_pager {
+    my ($self) = @_;
+    my $json   = JSON::decode_json($self->content);
+    my $wq     = Web::Query::LibXML->new($json->{html});
+    my @names;
+    $wq->find('tr td:nth-of-type(2) .panel-label')->each(sub {
+        my ($i, $elem) = @_;
+        my $name = $elem->text;
+        $name =~ s{^\s+|\s+$}{}g;
+        push @names, $name;
+        push @names, map {
+            my $txt = $_;
+            $txt =~ s{^\s+|\s+$}{}g;
+            $txt;
+        } $elem->parent->find('.child-panel-label')->text;
+    });
     note explain([\@names, $json->{pager}]);
     return (\@names, $json->{pager});
 }
