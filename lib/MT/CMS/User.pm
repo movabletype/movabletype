@@ -1201,6 +1201,9 @@ PERMCHECK: {
 
     my $type = $app->param('_type') || '';  # user, author, group, site
 
+    my $sites_in_tree = $app->config->GrantRoleSitesInTree;
+    # MT::Util::Deprecated::warning(since => '8.8.0') if $sites_in_tree;
+
     my $pre_build = sub {
         my ($param) = @_;
 
@@ -1228,7 +1231,7 @@ PERMCHECK: {
         }
 
         # for previous admin theme
-        if ($app->config->AdminThemeId ne 'admin2023') {
+        if ($sites_in_tree) {
             my $loop = $param->{object_loop};
             my @has_child_sites    = grep { $_->{has_child}; } @$loop;
             my %has_child_site_ids = map { $_->{id} => 1 } @has_child_sites;
@@ -1255,7 +1258,7 @@ PERMCHECK: {
         $row->{description} = $row->{nickname} if exists $row->{nickname};
 
         # for previous admin theme
-        if ($app->config->AdminThemeId ne 'admin2023') {
+        if ($sites_in_tree) {
             my $type = $app->param('type') || '';
             if ( $type && $type eq 'site' ) {
                 if (   !$app->param('search')
@@ -1300,7 +1303,7 @@ PERMCHECK: {
             $row->{label_html} = $blog_list_props->{name}->html($obj, $app, { no_link => 1 });
 
             # for previous admin theme
-            if ($app->config->AdminThemeId ne 'admin2023' && $obj->is_blog()) {
+            if ($sites_in_tree && $obj->is_blog()) {
                 if (my $parent = $obj->website) {
                     # replace row only if the blog has a valid parent
                     $row->{has_child} = 1;
@@ -1322,6 +1325,8 @@ PERMCHECK: {
             }
         }
     };
+
+    my $panel_loop_template = $sites_in_tree ? 'include/listing_panel.tmpl' : 'include/grant_role.tmpl';
 
     if ( $app->param('search') || $app->param('json') ) {
         my $params = {
@@ -1348,7 +1353,7 @@ PERMCHECK: {
                     params       => $params,
                     author_terms => $author_terms,
                     group_terms  => $group_terms,
-                    template     => 'include/grant_role.tmpl',
+                    template     => $panel_loop_template,
                     $no_limit ? ( no_limit => 1 ) : (),
                     pre_build => $pre_build,
                 }
@@ -1376,7 +1381,7 @@ PERMCHECK: {
                     type     => $type,
                     code     => $hasher,
                     params   => $params,
-                    template => 'include/grant_role.tmpl',
+                    template => $panel_loop_template,
                     $app->param('search') ? ( no_limit  => 1 )          : (),
                     pre_build => $pre_build,
                 }
@@ -1562,6 +1567,7 @@ PERMCHECK: {
 
         $params->{build_compose_menus} = 0;
         $params->{build_user_menus}    = 0;
+        $params->{panel_loop_template} = $panel_loop_template;
 
         $app->load_tmpl( 'dialog/create_association.tmpl', $params );
     }
