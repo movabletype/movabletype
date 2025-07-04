@@ -177,7 +177,7 @@ SKIP: {
                     my $php_script = php_test_script($block_name, $block->blog_id || $blog_id, $template, $text, $extra);
                     $got = Encode::decode_utf8(MT::Test::PHP->run(encode_utf8($php_script)));
                 } else {
-                    $got = Encode::decode_utf8(MT::Test::PHP->daemon($template, $block->blog_id || $blog_id, $extra, $text));
+                    $got = Encode::decode_utf8(MT::Test::PHP->daemon($template, $block->blog_id || $blog_id, $extra, encode_utf8($text)));
                 }
 
                 my $php_error = MT::Test::PHP->retrieve_php_logs($log);
