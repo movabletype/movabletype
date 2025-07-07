@@ -6,7 +6,7 @@ function GitHubFlavoredMarkdown() {
     global $GFM;
     if (!is_object($GFM)) {
         $GFM = new GitHubFlavoredMarkdownConverter([
-            'allow_unsafe_links' => false,
+            // 'allow_unsafe_links' => false,
         ]);
     }
     return $GFM;
