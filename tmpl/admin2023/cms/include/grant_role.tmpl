@@ -8,8 +8,6 @@ parameters:
     items_prompt
     panel_description
 
-    panel_multi (multiple selection or not)
-    panel_searchable
     panel_last
     panel_first
 
@@ -36,21 +34,13 @@ parameters:
   </mt:if>
   </div>
 
-  <mt:if name="panel_multi">
   <div class="selected-items modal-selections pb-4">
     <span class="modal-selections__label"><mt:var name="items_prompt">:</span>
   </div>
-  </mt:if>
-
-  <mt:if name="rebuild_trigger">
-  <div class="modal-rebuildtriggers">
-    <mt:var name="modal_rebuildtriggers">
-  </div>
-  </mt:if>
 
   <div class="modal-body">
 
-<mt:if name="panel_searchable">
+<mt:if name="panel_type" ne="role">
   <div class="align-items-center p-4 border rounded" style="background:#F4F4F4;">
     <form action="" method="get" id="modal-search-<mt:var name="panel_type">">
       <div class="row form-inline ps-4">
@@ -68,21 +58,17 @@ parameters:
   </div>
 </mt:if>
 
-  <div id="selector-<mt:var name="panel_type">" class="selector listing list-data<mt:if name="panel_multi"> list-multi</mt:if>">
+  <div id="selector-<mt:var name="panel_type">" class="selector listing list-data list-multi">
     <form action="" method="get" onsubmit="return false">
       <div class="mt-table--outline">
         <table class="table mt-table">
           <thead>
             <tr>
               <th class="head cb mt-table__control">
-            <mt:if name="panel_multi">
                 <div class="form-check">
-                  <input id="select_all_<mt:if name="object_type"><mt:var name="object_type"><mt:else><mt:var name="panel_type"></mt:if>" type="checkbox" value="all" class="form-check-input select" />
-                  <label class="form-check-label" for="select_all_<mt:if name="object_type"><mt:var name="object_type"><mt:else><mt:var name="panel_type"></mt:if>"><span class="visually-hidden"><__trans phrase="Select All"></span></label>
+                  <input id="select_all_<mt:var name="object_type">" type="checkbox" value="all" class="form-check-input select" />
+                  <label class="form-check-label" for="select_all_<mt:var name="object_type">"><span class="visually-hidden"><__trans phrase="Select All"></span></label>
                 </div>
-            <mt:else>
-                &nbsp;
-            </mt:if>
               </th>
               <th class="head panel-label primary" scope="col"><span class="col-label"><mt:var name="panel_label"></span></th>
               <th class="head panel-description primary" scope="col"><span class="col-label"><mt:var name="panel_description"></span></th>
@@ -94,11 +80,11 @@ parameters:
           <tbody>
           <mt:loop name="object_loop">
             <mt:unless name="disabled">
-            <tr id="<mt:if name="object_type"><mt:var name="object_type"><mt:else><mt:var name="panel_type"></mt:if>-<mt:var name="id">">
+              <tr id="<mt:var name="object_type">-<mt:var name="id">">
               <td class="cb" scope="row">
                 <div class="form-check">
-                  <input id="select_<mt:if name="object_type"><mt:var name="object_type"><mt:else><mt:var name="panel_type"></mt:if>_<mt:var name="id" escape="html">" type="<mt:if name="panel_multi">checkbox<mt:else>radio</mt:if>" class="form-check-input select" name="<mt:var name="panel_type">-cb" value="<mt:var name="id">" />
-                  <label class="form-check-label" for="select_<mt:if name="object_type"><mt:var name="object_type"><mt:else><mt:var name="panel_type"></mt:if>_<mt:var name="id" escape="html">"><span class="visually-hidden"><__trans phrase="Select"></span></label>
+                  <input id="select_<mt:var name="object_type">_<mt:var name="id" escape="html">" type="checkbox" class="form-check-input select" name="<mt:var name="panel_type">-cb" value="<mt:var name="id">" />
+                  <label class="form-check-label" for="select_<mt:var name="object_type">_<mt:var name="id" escape="html">"><span class="visually-hidden"><__trans phrase="Select"></span></label>
                 </div>
               </td>
               <td class="panel-label-tr">
@@ -152,15 +138,12 @@ parameters:
       <ul class="float-end pagination"></ul>
     </nav>
   </div>
-  <mt:if name="after_listing_panel">
-  <div class="listing-panel-options">
-    <mt:var name="after_listing_panel">
-  </div>
-  </mt:if>
 
   </div> <!-- modal-body -->
 
-<mt:setvarblock name="modal_footer">
+<mt:if name="use_page_content">
+  </div>
+  <div class="modal-footer">
   <div class="actions-bar actions-bar-bottom">
     <form action="" method="get" onsubmit="return false" onclick="window.focus();">
 
@@ -200,12 +183,6 @@ parameters:
 
     </form>
   </div>
-</mt:setvarblock>
-
-<mt:if name="use_page_content">
-  </div>
-  <div class="modal-footer">
-    <mt:var name="modal_footer">
   </div>
 </mt:if>
 
