@@ -126,11 +126,7 @@ function init() {
             if(tagName == "li") {
                 parent = element;
             } else {
-                if( TC.hasClassName( TC.getParentByTagName( element, "li" ), "child_obj") ) {
-                    parent = TC.getParentByTagName( element, "li" );
-                } else {
-                    parent = TC.getParentByTagName( element, "tr" );
-                }
+                parent = TC.getParentByTagName( element, "tr" );
             }
         } else {
             parent = TC.getParentByTagName( element, "tr" );
@@ -161,26 +157,9 @@ function init() {
         if (this.selectionList) {
             var self = this;
             if (checked){
-                if(jQuery(row).hasClass('child_obj')){
-                    var label = jQuery(row).parents('.has_child').find('.panel-label').text() + '/' + jQuery(row).find('.child-panel-label').text();
-                    self.selectionList.add(row.id, {label: label});
-                } else {
-                    self.selectionList.add(row.id);
-                }
-                if(jQuery(row).hasClass('has_child')){
-                  jQuery(row).find('.list-unstyled li').each(function(){
-                    var label = jQuery(row).find('.panel-label').text() + '/' + jQuery(this).find('.child-panel-label').text();
-                    self.selectionList.add(this.id, {label: label});
-                  });
-                }
+                self.selectionList.add(row.id);
             } else {
                 this.selectionList.remove(row.id);
-                if(jQuery(row).hasClass('has_child')){
-                  var self = this;
-                  jQuery(row).find('.list-unstyled li').each(function(){
-                    self.selectionList.remove(this.id);
-                  });
-                }
             }
         } else {
             var count = ts.selected().length;
@@ -203,11 +182,6 @@ function init() {
     if (panel.selectionList) {
         panel.selectionList.remove = function(name) {
             var self = this;
-            if(jQuery('#'+name).hasClass('has_child')){
-                jQuery('#'+name).find('.list-unstyled li').each(function(){
-                  self.remove.call(self, this.id);
-                });
-            }
             if (name in this.itemHash) {
                 var pos;
                 for (pos = 0; pos < this.itemList.length; pos++) {
@@ -412,7 +386,7 @@ TC.attachLoadEvent(init);
     </mt:if>
 
     <mt:loop name="panel_loop">
-      <mt:include name="include/listing_panel.tmpl" use_page_content="1">
+        <mt:include name="include/grant_role.tmpl" use_page_content="1">
     </mt:loop>
 </mt:if>
 </mt:setvarblock>
