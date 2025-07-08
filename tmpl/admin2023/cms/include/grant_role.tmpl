@@ -94,7 +94,7 @@ parameters:
           <tbody>
           <mt:loop name="object_loop">
             <mt:unless name="disabled">
-            <tr id="<mt:if name="object_type"><mt:var name="object_type"><mt:else><mt:var name="panel_type"></mt:if>-<mt:var name="id">" class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
+            <tr id="<mt:if name="object_type"><mt:var name="object_type"><mt:else><mt:var name="panel_type"></mt:if>-<mt:var name="id">">
               <td class="cb" scope="row">
                 <div class="form-check">
                   <input id="select_<mt:if name="object_type"><mt:var name="object_type"><mt:else><mt:var name="panel_type"></mt:if>_<mt:var name="id" escape="html">" type="<mt:if name="panel_multi">checkbox<mt:else>radio</mt:if>" class="form-check-input select" name="<mt:var name="panel_type">-cb" value="<mt:var name="id">" />
