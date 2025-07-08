@@ -6072,8 +6072,6 @@ foo <!-- foo--->
 @@@ Test 651
 !!! text
 foo <?php echo $a; ?>
-!!! expected_php_todo
-<p>foo <?php echo $a; ?></p>
 !!! expected
 <p>foo <?php echo $a; ?></p>
 

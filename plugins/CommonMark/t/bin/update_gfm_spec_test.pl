@@ -49,7 +49,6 @@ my %todo = (
     qq{xmpp:foo\@bar.baz/txt/bin\n} => 'both', # 635
     qq{foo <!-- not a comment -- two hyphens -->\n} => 'both', # 649
     qq{foo <!--> foo -->\n\nfoo <!-- foo--->\n} => 'both', # 650
-    qq{foo <?php echo \$a; ?>\n} => 'PHP', # 651
 );
 
 my $test = path("$FindBin::Bin/../02_gfm_spec_test.t")->slurp;
