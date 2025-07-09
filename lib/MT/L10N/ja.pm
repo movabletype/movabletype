@@ -1365,6 +1365,8 @@ use vars qw( @ISA %Lexicon );
 	'You do not have import permission' => 'インポートの権限がありません。',
 	'You do not have permission to create users' => 'ユーザーを作成する権限がありません。',
 	'You need to provide a password if you are going to create new users for each user listed in your site.' => 'サイトにユーザーを追加するためには、パスワードを指定する必要があります。',
+	q{Before you import entries in your site, we recommend that you <a href='[_1]'>configure your site's publishing paths</a> first.} => q{サイトに記事をインポートする前に、まず<a href='[_1]'>サイトパスを設定</a>してください。},
+	q{Site's publishing directory does not exist. [_1]} => 'サイトパスに設定されたディレクトリが存在しません。 [_1]',
 
 ## lib/MT/CMS/Log.pm
 	'(system)' => 'システム',

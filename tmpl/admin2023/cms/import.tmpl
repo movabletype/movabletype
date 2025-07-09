@@ -2,6 +2,25 @@
 <mt:setvar name="position_actions_bottom" value="1">
 <mt:setvar name="import" value="1">
 
+<mt:setvarblock name="system_msg" append="1">
+  <mt:if name="missing_site_dir">
+      <mtapp:statusmsg
+          id="missing-site-dir"
+          class="warning"
+          can_close="0">
+          <__trans phrase="Site's publishing directory does not exist. [_1]" params="<mt:var name="missing_site_dir">">
+      </mtapp:statusmsg>
+  </mt:if>
+  <mt:if name="missing_site_path">
+    <mtapp:statusmsg
+        id="missing-site-path"
+        class="danger"
+        can_close="0">
+        <__trans phrase="Before you import entries in your site, we recommend that you <a href='[_1]'>configure your site's publishing paths</a> first." params="<mt:var name="script_url">?__mode=cfg_prefs&amp;blog_id=<mt:var name="blog_id">">
+    </mtapp:statusmsg>
+  </mt:if>
+</mt:setvarblock>
+
 <mt:setvarblock name="js_include" append="1">
 <script>
 /* <![CDATA[ */
@@ -168,7 +187,8 @@ function selectBlog() {
          type="submit"
          accesskey="s"
          title="<__trans phrase="Import Entries (s)">"
-         class="inport action primary button btn btn-primary">
+         class="inport action primary button btn btn-primary"
+         <mt:if name="missing_site_path">disabled</mt:if>>
         <__trans phrase="Import Entries">
       </button>
     </mt:setvarblock>
