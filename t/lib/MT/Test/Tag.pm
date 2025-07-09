@@ -169,7 +169,6 @@ SKIP: {
 
                 my $template = _filter_vars( $block->template );
                 $template    = Encode::encode_utf8( $template ) if Encode::is_utf8( $template );
-                my $text     = $block->text || '';
                 my $extra    = $callback ? ($callback->($block) || '') : '';
 
                 my $log;
@@ -181,10 +180,10 @@ SKIP: {
                 $ENV{REQUEST_URI} = "$0 [$block_name]";
                 my $got;
                 if ($^O eq 'MSWin32' or $ENV{MT_TEST_NO_PHP_DAEMON} or lc($ENV{MT_TEST_BACKEND} // '') eq 'sqlite') {
-                    my $php_script = php_test_script( $block_name, $block->blog_id || $blog_id, $template, $text, $extra );
+                    my $php_script = php_test_script( $block_name, $block->blog_id || $blog_id, $template, $extra );
                     $got = Encode::decode_utf8(MT::Test::PHP->run($php_script));
                 } else {
-                    $got = Encode::decode_utf8(MT::Test::PHP->daemon($template, $block->blog_id || $blog_id, $extra, $text));
+                    $got = Encode::decode_utf8(MT::Test::PHP->daemon($template, $block->blog_id || $blog_id, $extra));
                 }
 
                 my $php_error = MT::Test::PHP->retrieve_php_logs($log);
@@ -273,10 +272,6 @@ sub MT::Test::Tag::php_test_script {    # full qualified to avoid Spiffy magic
 
 \$tmpl = <<<__TMPL__
 $template
-__TMPL__
-;
-\$text = <<<__TMPL__
-$text
 __TMPL__
 ;
 PHP

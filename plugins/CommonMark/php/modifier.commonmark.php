@@ -17,8 +17,6 @@ function CommonMark() {
  * @throws \League\CommonMark\Exception\CommonMarkException
  */
 function smarty_modifier_commonmark($text) {
-    $commonMark = CommonMark();
-    $converter =& $commonMark;
-
+    $converter = CommonMark();
     return $converter->convert($text);
 }

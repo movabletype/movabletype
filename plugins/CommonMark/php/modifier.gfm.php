@@ -17,8 +17,6 @@ function GitHubFlavoredMarkdown() {
  * @throws \League\CommonMark\Exception\CommonMarkException
  */
 function smarty_modifier_gfm($text) {
-    $gfm = GitHubFlavoredMarkdown();
-    $converter =& $gfm;
-
+    $converter = GitHubFlavoredMarkdown();
     return $converter->convert($text);
 }

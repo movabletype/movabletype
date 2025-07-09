@@ -48,9 +48,7 @@ print STDERR "Updated spec.json ($version)\n";
 
 my $spec = decode_json($spec_json);
 
-my %todo = (
-    qq{foo <?php echo \$a; ?>\n} => 'PHP',
-);
+my %todo = ();
 
 my $test = path("$FindBin::Bin/../01_spec_test.t")->slurp;
 $test =~ s/(?:# spec version: [0-9.]+\n\n)?__END__\n.+//s;
