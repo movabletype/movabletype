@@ -32,7 +32,6 @@ sub edit {
         category_id               => [qw/ID/],
         category_ids              => [qw/MAYBE_IDS/],    # may contain -1?
         convert_breaks            => [qw/MAYBE_STRING/],
-        convert_breaks_for_mobile => [qw/MAYBE_STRING/],
         dirty                     => [qw/MAYBE_STRING/],
         id                        => [qw/ID/],
         include_asset_ids         => [qw/IDS/],
@@ -598,7 +597,7 @@ sub edit {
 
     ## Load text filters if user displays them
     my %entry_filters;
-    my $filter = $app->param('convert_breaks_for_mobile') || $app->param('convert_breaks'); # convert_breaks_for_mobile is deprecated
+    my $filter = $app->param('convert_breaks');
     if ( defined $filter ) {
         my @filters = split /\s*,\s*/, $filter;
         $entry_filters{$_} = 1 for @filters;
@@ -922,7 +921,7 @@ sub _build_entry_preview {
     # translates naughty words when PublishCharset is NOT UTF-8
     MT::Util::translate_naughty_words($entry);
 
-    my $convert_breaks = $app->param('convert_breaks_for_mobile') || $app->param('convert_breaks'); # convert_breaks_for_mobile is deprecated
+    my $convert_breaks = $app->param('convert_breaks');
     $entry->convert_breaks(
         ( $convert_breaks || '' ) eq '_richtext'
         ? 'richtext'
@@ -1230,7 +1229,6 @@ sub save {
         blog_id                   => [qw/ID/],
         category_ids              => [qw/MAYBE_IDS/],    # may contain -1?
         class                     => [qw/MAYBE_STRING/],
-        convert_breaks_for_mobile => [qw/MAYBE_STRING/],
         id                        => [qw/ID/],
         include_asset_ids         => [qw/IDS/],
         is_power_edit             => [qw/MAYBE_STRING/],
@@ -1365,9 +1363,6 @@ sub save {
         unless $perms->can_do("edit_${type}_basename");
     require MT::Entry;
     $values{status} = MT::Entry::FUTURE() if $app->param('scheduled');
-    if ( $app->param('mobile_view') && $app->param('convert_breaks_for_mobile')) {
-        $values{convert_breaks} = $app->param('convert_breaks_for_mobile'); # convert_breaks_for_mobile is deprecated
-    }
     $values{convert_breaks} = 'richtext'
         if ( $values{convert_breaks} || '' ) eq '_richtext';
     $obj->set_values( \%values );
