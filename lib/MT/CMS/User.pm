@@ -1206,7 +1206,7 @@ PERMCHECK: {
     my $pre_build = sub {
         my ($param) = @_;
 
-        return unless $param->{panel_type} eq 'site';
+        return scalar(@{$param->{object_loop} || []}) unless $param->{panel_type} eq 'site';
 
         my (%labels, %missing);
 
