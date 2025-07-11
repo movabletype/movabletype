@@ -17,6 +17,7 @@ use MT::Test;
 use MT::Test::Fixture;
 use MT::Test::App qw(MT::Test::Role::CMS::GrantRole);
 use Test::Deep    qw'cmp_bag cmp_deeply superhashof';
+use MT::App::CMS;
 
 $test_env->prepare_fixture('db');
 
@@ -24,7 +25,7 @@ my @authors;
 push @authors, MT->model('author')->load(1);
 
 my $limit = 3;
-$test_env->update_config(DefaultListPrefs => { Rows => $limit });    # DefaultListPrefs is deprecated but is the only way to overwrite the listing framework preset for now
+$MT::App::CMS::LIST_PREF_DEFAULT_ROW = $limit;
 $test_env->update_config(CMSSearchLimit   => $limit);
 
 for my $number (2 .. 10) {

@@ -3748,6 +3748,8 @@ sub return_to_user_dashboard {
         $app->uri( mode => 'dashboard', args => \%param ) );
 }
 
+our $LIST_PREF_DEFAULT_ROW = 25;
+
 sub list_pref {
     my $app      = shift;
     my ($list)   = @_;
@@ -3763,7 +3765,7 @@ sub list_pref {
     # defaults:
     my $d = $app->config->DefaultListPrefs || {};
     my %default = (
-        Rows       => 25,
+        Rows       => $LIST_PREF_DEFAULT_ROW,
         Format     => 'Compact',
         SortOrder  => 'Ascend',      # Ascend|Descend
         Button     => 'Above',       # Above|Below|Both
@@ -3784,7 +3786,7 @@ sub list_pref {
     }
     else {
         $list_pref = {
-            rows  => $default{Rows}       || 25,
+            rows  => $default{Rows},
             view  => $default{Format}     || 'compact',
             bar   => $default{Button}     || 'above',
             dates => $default{DateFormat} || 'relative',
