@@ -207,12 +207,21 @@ sub list_props {
                     my $can_double_encode = 1;
                     $name
                         = MT::Util::encode_html( $name, $can_double_encode );
-                    return qq{$scope_html <a href="$dashboard_link"> $name</a>};
+                    if ($opts->{no_link}) {
+                        return "$scope_html $name";
+                    } else {
+                        return qq{$scope_html <a href="$dashboard_link">$name</a>};
+                    }
                 }
                 else {
-                    return MT->translate(
-                        qq{[_1] ($scope_html <a href="[_2]">id:[_3]</a>)},
-                        'No Name', $dashboard_link, $obj->id, );
+                    if ($opts->{no_link}) {
+                        return MT->translate(qq{[_1] ($scope_html id:[_3])}, 'No Name', $dashboard_link, $obj->id);
+                    } else {
+                        return MT->translate(
+                            qq{[_1] ($scope_html <a href="[_2]">id:[_3]</a>)},
+                            'No Name', $dashboard_link, $obj->id,
+                        );
+                    }
                 }
             }
         },
