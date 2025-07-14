@@ -477,12 +477,15 @@ sub build_plugin_table {
             next if $pd->{plugin_disabled};
             if (exists $plugin_versions->{ $pd->{plugin_sig} }) {
                 if ($plugin_versions->{ $pd->{plugin_sig} } eq $pd->{plugin_version}) {
-                    $pd->{plugin_label} = '<span class="badge badge-default">' . $app->translate('__PLUGIN_LABEL_DEFAULT') . '</span>';
+                    $pd->{plugin_label_value} = $app->translate('__PLUGIN_LABEL_DEFAULT');
+                    $pd->{plugin_label} = '<span class="badge badge-default">' . $pd->{plugin_label_value} . '</span>';
                 } else {
-                    $pd->{plugin_label} = '<span class="badge badge-info">' . $app->translate('__PLUGIN_LABEL_DEFAULT_BUT_CHANGED') . '</span>';
+                    $pd->{plugin_label_value} = $app->translate('__PLUGIN_LABEL_DEFAULT_BUT_CHANGED');
+                    $pd->{plugin_label} = '<span class="badge badge-info">' . $pd->{plugin_label_value} . '</span>';
                 }
             } else {
-                $pd->{plugin_label} = '<span class="badge badge-primary">' . $app->translate('user') . '</span>';
+                $pd->{plugin_label_value} = $app->translate('user');
+                $pd->{plugin_label} = '<span class="badge badge-primary">' . $pd->{plugin_label_value} . '</span>';
             }
         }
     }
