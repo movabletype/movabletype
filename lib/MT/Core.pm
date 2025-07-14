@@ -2055,6 +2055,7 @@ BEGIN {
 
             #'UseJcodeModule'  => { default => 0, },
             'DefaultTimezone'    => { default => '0', },
+            'DefaultListPrefs'   => { type    => 'HASH', },
             'DeleteFilesAfterRebuild'   => { default => 0, },
             'DeleteFilesAtRebuild'      => { default => 1, },
             'RebuildAtDelete'           => { default => 1, },

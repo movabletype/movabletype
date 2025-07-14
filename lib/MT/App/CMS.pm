@@ -3861,6 +3861,7 @@ sub list_pref {
     my $mode = $app->mode;
 
     # defaults:
+    my $d = $app->config->DefaultListPrefs || {};
     my %default = (
         Rows       => 25,
         Format     => 'Compact',
@@ -3871,6 +3872,7 @@ sub list_pref {
     if ( ( $list eq 'comment' ) || ( $list eq 'ping' ) ) {
         $default{Format} = 'expanded';
     }
+    $default{$_} = lc( $d->{$_} ) for keys %$d;
     my $list_pref;
     if ( $list eq 'main_menu' ) {
         $list_pref = {
