@@ -77,7 +77,7 @@ elements:
             mappings:
               individual:
                 archive_type: Individual
-                file_template: %y/%-f
+                file_template: '%y/%-f'
                 preferred: 1
         page:
           page:
@@ -92,14 +92,14 @@ elements:
             mappings:
               category:
                 archive_type: Category
-                file_template: %-c/%i
+                file_template: '%-c/%i'
                 preferred: 1
           yearly_entry_listing:
             label: Yearly Entry Listing
             mappings:
               yearly:
                 archive_type: Yearly
-                file_template: %y/%i
+                file_template: '%y/%i'
                 preferred: 1
         module:
           layout:
