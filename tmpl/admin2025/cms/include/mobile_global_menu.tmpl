@@ -25,14 +25,20 @@
         </mt:if>
         </a>
         <div class="mt-productHeader_wrapper">
+          <mt:if name="scope_type" like="website|blog">
+            <a href="<mt:var name="script_url">?__mode=dashboard&blog_id=<mt:var name="blog_id" escape="html">" title="<mt:var name="curr_website_name" trim="1" escape="html">">
+          </mt:if>
           <mt:if name="scope_type" eq="blog">
             <span class="mt-productHeader__website_name" title="<mt:var name="curr_website_name" trim="1" escape="html">">
               <mt:var name="curr_website_name" escape="html">
             </span>
           </mt:if>
-          <span class="mt-productHeader__name" title="<mt:var name="product_header_name" trim="1" escape="html">">
+          <span class="mt-productHeader__name" title="<mt:var name="product_header_name" trim="1">">
             <mt:var name="product_header_name">
           </span>
+          <mt:if name="scope_type" like="website|blog">
+            </a>
+          </mt:if>
         </div>
       </h1>
 
