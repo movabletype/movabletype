@@ -1,0 +1,14 @@
+<mt:IfArchiveTypeEnabled archive_type="Yearly">
+    <mt:ArchiveList archive_type="Yearly">
+        <mt:ArchiveListHeader>
+<nav class="widget-archive-yearly widget">
+  <h3><__trans phrase="[_1] Archives" params="<$mt:ArchiveTypeLabel$>"></h3>
+  <ol>
+        </mt:ArchiveListHeader>
+    <li><a href="<$mt:ArchiveLink encode_html="1"$>"><__trans phrase="[_1] ([_2])" params="<$mt:ArchiveTitle$>%%<$mt:ArchiveCount$>"></a></li>
+        <mt:ArchiveListFooter>
+  </ol>
+</nav>
+        </mt:ArchiveListFooter>
+    </mt:ArchiveList>
+</mt:IfArchiveTypeEnabled>
