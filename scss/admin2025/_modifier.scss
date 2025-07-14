@@ -608,7 +608,7 @@ html[data-screen-id=dashboard][data-scope-type=user] {
     }
 
     &:hover {
-      background-color: #0176BF;
+      background-color: #003874;
       color: #FFFFFF;
       svg {
         fill: #FFFFFF;
@@ -999,7 +999,7 @@ html[data-screen-id=dashboard][data-scope-type=user] {
     &:not(.mt-systemHeaderActions__user) {
       &.open,
       &:hover {
-        background-color: #0176BF;
+        background-color: #003874;
         color: $white;
         svg {
           fill: $white;

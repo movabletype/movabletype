@@ -12065,7 +12065,7 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-mainContentWrapper {
   line-height: 1;
 }
 .mt-primaryNavigation__control .site_menu_actions__button:hover, .mt-primaryNavigation__control--invert .site_menu_actions__button:hover {
-  background-color: #0176BF;
+  background-color: #003874;
   color: #FFFFFF;
 }
 .mt-primaryNavigation__control .site_menu_actions__button:hover svg, .mt-primaryNavigation__control--invert .site_menu_actions__button:hover svg {
@@ -12412,7 +12412,7 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-mainContentWrapper {
   border-radius: 4px;
 }
 .mt-systemHeaderActions .mt-systemHeaderAction:not(.mt-systemHeaderActions__user).open, .mt-systemHeaderActions .mt-systemHeaderAction:not(.mt-systemHeaderActions__user):hover {
-  background-color: #0176BF;
+  background-color: #003874;
   color: #FFFFFF;
 }
 .mt-systemHeaderActions .mt-systemHeaderAction:not(.mt-systemHeaderActions__user).open svg, .mt-systemHeaderActions .mt-systemHeaderAction:not(.mt-systemHeaderActions__user):hover svg {
