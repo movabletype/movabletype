@@ -12025,15 +12025,17 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-mainContentWrapper {
   white-space: nowrap;
   overflow: visible;
   text-overflow: ellipsis;
-  border-bottom: 1px solid #F4F4F4;
   position: sticky;
-  padding: 0 20px 0 0;
+  padding: 4px 4px 0 4px;
   background: #FFFFFF;
   z-index: 2;
   width: var(--left-bar-width);
   display: flex;
   justify-content: flex-start;
   flex-wrap: wrap;
+  border-width: 0px 1px 1px 0px;
+  border-style: solid;
+  border-color: #F4F4F4;
 }
 .mt-primaryNavigation__control .site_menu_actions__button, .mt-primaryNavigation__control--invert .site_menu_actions__button {
   display: flex;
@@ -12048,6 +12050,8 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-mainContentWrapper {
   color: #212529;
   font-size: 12px;
   text-decoration: none;
+  border-radius: 4px;
+  margin-bottom: 4px;
 }
 .mt-primaryNavigation__control .site_menu_actions__button svg, .mt-primaryNavigation__control--invert .site_menu_actions__button svg {
   margin-bottom: 6px;
@@ -12373,12 +12377,13 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-mainContentWrapper {
 .mt-systemHeaderActions:before {
   display: block;
   content: "";
-  height: 80%;
-  position: absolute;
-  top: 10%;
-  left: 0;
   width: 1px;
-  background-color: #CACACA;
+  height: 62%;
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translate(-50%, -50%);
+  background-color: #E0E0E0;
 }
 .mt-systemHeaderActions .mt-systemHeaderAction {
   display: flex;
@@ -12390,8 +12395,12 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-mainContentWrapper {
   line-height: 100%;
   padding: 4px 0;
   width: 48px;
-  height: 100%;
   justify-content: center;
+  border-radius: 4px;
+  margin: 2px;
+}
+.mt-systemHeaderActions .mt-systemHeaderAction:nth-of-type(1) {
+  margin-left: 3px;
 }
 .mt-systemHeaderActions .mt-systemHeaderAction .userActionButton {
   margin: 0;
@@ -12403,7 +12412,7 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-mainContentWrapper {
   border-radius: 4px;
 }
 .mt-systemHeaderActions .mt-systemHeaderAction:not(.mt-systemHeaderActions__user).open, .mt-systemHeaderActions .mt-systemHeaderAction:not(.mt-systemHeaderActions__user):hover {
-  background-color: #595959;
+  background-color: #0176BF;
   color: #FFFFFF;
 }
 .mt-systemHeaderActions .mt-systemHeaderAction:not(.mt-systemHeaderActions__user).open svg, .mt-systemHeaderActions .mt-systemHeaderAction:not(.mt-systemHeaderActions__user):hover svg {

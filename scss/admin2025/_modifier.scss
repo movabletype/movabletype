@@ -563,9 +563,8 @@ html[data-screen-id=dashboard][data-scope-type=user] {
   overflow: visible;
   text-overflow: ellipsis;
 
-  border-bottom: 1px solid $gray-lightest;
   position: sticky;
-  padding: 0 20px 0 0;
+  padding: 4px 4px 0 4px;
   background: $white;
   z-index: 2;
   width: var(--left-bar-width);
@@ -573,6 +572,9 @@ html[data-screen-id=dashboard][data-scope-type=user] {
   display: flex;
   justify-content: flex-start;
   flex-wrap:wrap;
+  border-width: 0px 1px 1px 0px;
+  border-style: solid;
+  border-color: $gray-lightest;
 
   @extend %mt-primaryNavigationAnimation;
 
@@ -590,6 +592,8 @@ html[data-screen-id=dashboard][data-scope-type=user] {
     color: #212529;
     font-size: 12px;
     text-decoration: none;
+    border-radius: 4px;
+    margin-bottom: 4px;
 
     svg {
       margin-bottom: 6px;
@@ -954,12 +958,13 @@ html[data-screen-id=dashboard][data-scope-type=user] {
   &:before {
     display: block;
     content: "";
-    height: 80%;
-    position: absolute;
-    top: 10%;
-    left: 0;
     width: 1px;
-    background-color: #CACACA;
+    height: 62%;
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translate(-50%, -50%);
+    background-color: #E0E0E0;
   }
 
   .mt-systemHeaderAction {
@@ -972,8 +977,14 @@ html[data-screen-id=dashboard][data-scope-type=user] {
     line-height: 100%;
     padding: 4px 0;
     width: 48px;
-    height: 100%;
+    // height: 100%;
     justify-content: center;
+    border-radius: 4px;
+    margin: 2px;
+
+    &:nth-of-type(1) {
+      margin-left: 3px;
+    }
 
     .userActionButton {
       margin: 0;
@@ -988,7 +999,7 @@ html[data-screen-id=dashboard][data-scope-type=user] {
     &:not(.mt-systemHeaderActions__user) {
       &.open,
       &:hover {
-        background-color: $gray-darker;
+        background-color: #0176BF;
         color: $white;
         svg {
           fill: $white;
