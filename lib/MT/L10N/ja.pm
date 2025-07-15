@@ -565,7 +565,7 @@ use vars qw( @ISA %Lexicon );
 	'Compose' => '投稿',
 	'Content Data' => 'コンテンツデータ',
 	'Content Types' => 'コンテンツタイプ',
-	'Create Role' => '新しいロールを作成',
+	'Create Role' => '新しいロールの作成',
 	'Delete' => '削除',
 	'Design' => 'デザイン',
 	'Disable' => '無効',
