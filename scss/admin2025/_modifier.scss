@@ -253,6 +253,14 @@ li{
         flex-wrap: wrap;
         justify-content: flex-start;
         width: 190px;
+
+        a {
+          display: block;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          white-space: nowrap;
+          width: 100%;
+        }
       }
       .mt-productHeader__website_name {
         font-size: 0.85rem;
@@ -1344,6 +1352,8 @@ html[data-screen-id=dashboard][data-scope-type=user] {
     display: flex;
     align-items: center;
     margin-left: 16px;
+    margin-right: 16px;
+
     a{
       display: block;
     }
@@ -1358,7 +1368,16 @@ html[data-screen-id=dashboard][data-scope-type=user] {
       display: flex;
       flex-wrap: wrap;
       justify-content: flex-start;
-      width: 190px;
+      width: calc(100% - 48px);
+
+      a {
+        display: block;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+        width: 100%;
+      }
+
     }
     .mt-productHeader__website_name {
       font-size: 0.85rem;
