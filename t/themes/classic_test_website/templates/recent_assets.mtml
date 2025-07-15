@@ -1,0 +1,16 @@
+<mt:If tag="AssetCount" include_blogs="children" include_with_website="1">
+    <mt:Assets type="image" lastn="10" include_blogs="children" include_with_website="1">
+        <mt:AssetsHeader>
+<div class="widget-recent-assets widget">
+    <h3 class="widget-header"><__trans phrase="Recent Assets"></h3>
+    <div class="widget-content">
+        <ul>
+        </mt:AssetsHeader>
+        <li class="item"><a class="asset-image" href="<$mt:AssetURL$>"><img src="<$mt:AssetThumbnailURL height="70"$>" class="asset-img-thumb" alt="<$mt:AssetLabel$>" title="<$mt:AssetLabel$>" /></a></li>
+        <mt:AssetsFooter>
+        </ul>
+    </div>
+</div>
+        </mt:AssetsFooter>
+    </mt:Assets>
+</mt:If>

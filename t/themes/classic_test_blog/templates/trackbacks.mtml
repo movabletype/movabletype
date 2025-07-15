@@ -1,0 +1,38 @@
+<mt:Ignore><!-- Display TrackBacks for the entry/page or TrackBack details if TrackBacks are being accepted --></mt:Ignore>
+<mt:IfPingsActive>
+<div id="trackbacks" class="trackbacks">
+    <h2 class="trackbacks-header"><$mt:EntryTrackbackCount singular="<__trans phrase="1 TrackBack">" plural="<__trans phrase="# TrackBacks">" none="<__trans phrase="No TrackBacks">"$></h2>
+
+    <mt:Ignore><!-- Display TrackBack details if TrackBacks are being accepted --></mt:Ignore>
+    <mt:IfPingsAccepted>
+    <div class="trackbacks-info">
+        <p><__trans phrase="TrackBack URL: [_1]" params="<$mt:EntryTrackbackLink$>"></p>
+    </div>
+    </mt:IfPingsAccepted>
+
+
+    <mt:Ignore><!-- Display TrackBacks --></mt:Ignore>
+    <mt:Pings>
+        <mt:PingsHeader>
+    <div class="trackbacks-content">
+        </mt:PingsHeader>
+        <div class="trackback" id="ping-<$mt:PingID$>">
+            <div class="inner">
+                <div class="trackback-header">
+                    <div class="asset-meta">
+                        <__trans phrase="<a href="[_1]">[_2]</a> from [_3] on <a href="[_4]">[_5]</a>" params="<$mt:PingURL$>%%<$mt:PingTitle$>%%<$mt:PingBlogName$>%%#ping-<$mt:PingID$>%%<$mt:PingDate$>">
+                    </div>
+                </div>
+                <div class="trackback-content">
+                    <p>
+                        <__trans phrase="[_1] <a href="[_2]">Read More</a>" params="<$mt:PingExcerpt$>%%<$mt:PingURL$>">
+                    </p>
+                </div>
+            </div>
+        </div>
+        <mt:PingsFooter>
+    </div>
+        </mt:PingsFooter>
+    </mt:Pings>
+</div>
+</mt:IfPingsActive>

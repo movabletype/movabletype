@@ -1,0 +1,14 @@
+<mt:Blogs include_blogs="children">
+    <mt:If name="__first__">
+<div class="widget-blogs widget-archives widget">
+    <h3 class="widget-header"><__trans phrase="Blogs"></h3>
+    <div class="widget-content">
+        <ul>
+        </mt:If>
+            <li><a href="<$mt:BlogURL$>"><$mt:BlogName$></a></li>
+        <mt:If name="__last__">
+        </ul>
+    </div>
+</div>
+        </mt:If>
+</mt:Blogs>

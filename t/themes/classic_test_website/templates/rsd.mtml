@@ -1,0 +1,14 @@
+<$mt:HTTPContentType type="application/rsd+xml"$><?xml version="1.0"?>
+<rsd version="1.0" xmlns="http://archipelago.phrasewise.com/rsd">
+<service>
+<engineName><$mt:ProductName version="1"$></engineName>
+<engineLink>http://www.sixapart.com/movabletype/</engineLink>
+<homePageLink><$mt:BlogURL$></homePageLink>
+<apis>
+<api name="MetaWeblog" preferred="true" apiLink="<$mt:CGIPath$><$mt:XMLRPCScript$>" blogID="<$mt:BlogID$>" />
+<api name="MovableType" preferred="false" apiLink="<$mt:CGIPath$><$mt:XMLRPCScript$>" blogID="<$mt:BlogID$>" />
+<api name="Blogger" preferred="false" apiLink="<$mt:CGIPath$><$mt:XMLRPCScript$>" blogID="<$mt:BlogID$>" />
+<api name="Atom" preferred="false" apiLink="<$mt:CGIPath$><$mt:AtomScript$>/weblog" blogID="<$mt:BlogID$>" />
+</apis>
+</service>
+</rsd>
