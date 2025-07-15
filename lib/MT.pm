@@ -1510,7 +1510,7 @@ sub init_plugins {
                 for my $dirname (@dirnames) {
                     next if ( $dirname =~ /^\.\.?$/ || $dirname =~ /~$/ );
 
-                    $plugin_full_path
+                    my $plugin_dir = $plugin_full_path
                         = File::Spec->catfile( $PluginPath, $dirname );
                     if ( -f $plugin_full_path ) {
                         next if exists $Plugins{$dirname} && $Plugins{$dirname}{error};
@@ -1526,7 +1526,7 @@ sub init_plugins {
                     $plugin_envelope = "$plugin_lastdir/" . $dirname;
 
                     # handle config.yaml
-                    my $yaml = File::Spec->catdir( $plugin_full_path,
+                    my $yaml = File::Spec->catdir( $plugin_dir,
                         'config.yaml' );
 
                     if ( -f $yaml ) {
@@ -1536,7 +1536,7 @@ sub init_plugins {
                     }
 
                     my @names;
-                    if ( opendir my $DH, $plugin_full_path ) {
+                    if ( opendir my $DH, $plugin_dir ) {
                         @names = readdir $DH;
                         closedir $DH;
                     }
