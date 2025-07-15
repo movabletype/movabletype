@@ -4,7 +4,7 @@ use warnings;
 use utf8;
 use 5.010;
 use FindBin;
-use lib "$FindBin::Bin/../lib";    # t/lib
+use lib "$FindBin::Bin/../../../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
 use Data::Dumper;
