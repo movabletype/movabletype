@@ -12,7 +12,7 @@ use base qw( MT );
 
 use File::Spec;
 use MT::Request;
-use MT::Util qw( encode_html encode_url is_valid_email is_url );
+use MT::Util qw( encode_html encode_url is_valid_email is_url browser_language );
 use MT::Util::RequestError qw( parse_init_cgi_error );
 use MT::I18N;
 use MT::Util::Encode;
@@ -3119,7 +3119,7 @@ sub pre_run {
                 if $auth->has_column('preferred_language');
         }
     } elsif (ref $app ne 'MT::App::Wizard') {
-        $app->set_language(MT->config->DefaultLanguage);
+        $app->set_language(browser_language() || MT->config->DefaultLanguage);
     }
 
     # allow language override
