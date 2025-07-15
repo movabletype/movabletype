@@ -1370,6 +1370,7 @@ sub init_plugins {
 
 {
     my $plugin_full_path;
+    my %AddedPlugins;
 
     sub add_plugin {
         my $class = shift;
@@ -1391,11 +1392,11 @@ sub init_plugins {
         Carp::confess(
             "You cannot register multiple plugin objects from a single script. $plugin_sig"
             )
-            if exists( $Plugins{$plugin_sig} )
-            && ( exists $Plugins{$plugin_sig}{object} );
+            if exists( $AddedPlugins{$plugin_full_path} )
+            && ( exists $AddedPlugins{$plugin_full_path}{object} );
 
         $Components{ lc $id } = $plugin if $id;
-        $Plugins{$plugin_sig}{object} = $plugin;
+        $AddedPlugins{$plugin_full_path}{object} = $plugin;
         $plugin->{full_path} = $plugin_full_path;
         $plugin->path($plugin_full_path);
         unless ( $plugin->{registry} && ( %{ $plugin->{registry} } ) ) {
@@ -1414,22 +1415,24 @@ sub init_plugins {
         if (!$use_plugins
             || ( exists $PluginSwitch->{$plugin_sig}
                 && !$PluginSwitch->{$plugin_sig} )
+            || ( exists $PluginSwitch->{$plugin_full_path}
+                && !$PluginSwitch->{$plugin_full_path} )
             )
         {
-            $Plugins{$plugin_sig}{full_path} = $plugin_full_path;
-            $Plugins{$plugin_sig}{enabled}   = 0;
+            $AddedPlugins{$plugin_full_path}{full_path} = $plugin_full_path;
+            $AddedPlugins{$plugin_full_path}{enabled}   = 0;
             return 0;
         }
-        return 0 if exists $Plugins{$plugin_sig};
-        $Plugins{$plugin_sig}{full_path} = $plugin_full_path;
+        return 0 if exists $AddedPlugins{$plugin_full_path};
+        $AddedPlugins{$plugin_full_path}{full_path} = $plugin_full_path;
         $timer->pause_partial if $timer;
         eval "# line " . __LINE__ . " " . __FILE__ . "\nrequire '$plugin_file';";
         $timer->mark( "Loaded plugin " . $sig ) if $timer;
         if (my $error = $@) {
-            $Plugins{$plugin_sig}{error} = $mt->translate("Errored plugin [_1] is disabled by the system", $plugin_sig);
-            $Plugins{$plugin_sig}{system_error} = $error;
-            $Plugins{$plugin_sig}{enabled} = 0;
-            $PluginSwitch->{$plugin_sig} = 0;
+            $AddedPlugins{$plugin_full_path}{error}        = $mt->translate("Errored plugin [_1] is disabled by the system", $plugin_sig);
+            $AddedPlugins{$plugin_full_path}{system_error} = $error;
+            $AddedPlugins{$plugin_full_path}{enabled}      = 0;
+            $PluginSwitch->{$plugin_full_path}             = 0;
             eval {
                 require MT::Util::Log;
                 MT::Util::Log::init();
@@ -1438,7 +1441,7 @@ sub init_plugins {
             return;
         }
         else {
-            if ( !$Plugins{$plugin_sig}{object} ) {
+            if ( !$AddedPlugins{$plugin_full_path}{object} ) {
                 # A plugin did not register itself, so
                 # create a dummy plugin object which will
                 # cause it to show up in the plugin listing
@@ -1446,9 +1449,9 @@ sub init_plugins {
                 MT->add_plugin( {} );
             }
         }
-        $Plugins{$plugin_sig}{enabled} = 1;
+        $AddedPlugins{$plugin_full_path}{enabled} = 1;
         $PluginSwitch->{$plugin_sig} = 1;
-        return $Plugins{$plugin_sig}{object};
+        return $AddedPlugins{$plugin_full_path}{object};
     }
 
     sub __load_plugin_with_yaml {
@@ -1463,14 +1466,16 @@ sub init_plugins {
             && (!$use_plugins
                 || ( exists $PluginSwitch->{$plugin_dir}
                     && !$PluginSwitch->{$plugin_dir} )
+                || ( exists $PluginSwitch->{$plugin_full_path}
+                    && !$PluginSwitch->{$plugin_full_path} )
             )
             )
         {
-            $Plugins{$plugin_dir}{full_path} = $plugin_full_path;
-            $Plugins{$plugin_dir}{enabled}   = 0;
+            $AddedPlugins{$plugin_full_path}{full_path} = $plugin_full_path;
+            $AddedPlugins{$plugin_full_path}{enabled}   = 0;
             return;
         }
-        return if exists $Plugins{$plugin_dir};
+        return if exists $AddedPlugins{$plugin_full_path};
         my $id = lc $plugin_dir;
         $id =~ s/\.\w+$//;
         my $p = $pclass->new(
@@ -1513,12 +1518,12 @@ sub init_plugins {
                     my $plugin_dir = $plugin_full_path
                         = File::Spec->catfile( $PluginPath, $dirname );
                     if ( -f $plugin_full_path ) {
-                        next if exists $Plugins{$dirname} && $Plugins{$dirname}{error};
+                        next if exists $AddedPlugins{$plugin_full_path} && $AddedPlugins{$plugin_full_path}{error};
                         $plugin_envelope = $plugin_lastdir;
                         if ($plugin_full_path =~ /\.pl$/) {
                             my $obj = __load_plugin( $mt, $timer, $PluginSwitch, $use_plugins, $plugin_full_path, $dirname );
                             push @loaded_plugins, $obj if $obj;
-                            push @errors, [$plugin_full_path, $Plugins{$dirname}{error}] if $Plugins{$dirname}{error};
+                            push @errors, [$plugin_full_path, $AddedPlugins{$plugin_full_path}{error}] if $AddedPlugins{$plugin_full_path}{error};
                         }
                         next;
                     }
@@ -1549,11 +1554,12 @@ sub init_plugins {
                             = File::Spec->catfile( $plugin_full_path,
                             $name );
                         if ( -f $plugin_file ) {
+                            $plugin_full_path = $plugin_file;
                             my $sig = $dirname . '/' . $name;
-                            next if exists $Plugins{$sig} && $Plugins{$sig}{error};
+                            next if exists $AddedPlugins{$plugin_full_path} && $AddedPlugins{$plugin_full_path}{error};
                             my $obj = __load_plugin( $mt, $timer, $PluginSwitch, $use_plugins, $plugin_file, $sig );
                             push @loaded_plugins, $obj if $obj;
-                            push @errors, [$plugin_full_path, $Plugins{$sig}{error}] if $Plugins{$sig}{error};
+                            push @errors, [$plugin_full_path, $AddedPlugins{$plugin_full_path}{error}] if $AddedPlugins{$plugin_full_path}{error};
                         }
                     }
                 }
@@ -1568,14 +1574,16 @@ sub init_plugins {
                 require version;
                 my $dup_version = eval { version->parse($dup->version    || 0) } || 0;
                 my $cur_version = eval { version->parse($plugin->version || 0) } || 0;
-                my ($version_to_drop, $sig_to_drop);
+                my ($version_to_drop, $sig_to_drop, $path_to_drop);
                 if ($cur_version > $dup_version) {
                     $deduped_plugins{$name} = $plugin;
                     $version_to_drop        = $dup->version || '';
                     $sig_to_drop            = $dup->{plugin_sig};
+                    $path_to_drop           = $dup->path;
                 } else {
                     $version_to_drop = $plugin->version || '';
                     $sig_to_drop     = $plugin->{plugin_sig};
+                    $path_to_drop    = $plugin->path;
                 }
                 my $error = $mt->translate("Conflicted plugin [_1] [_2] is disabled by the system", $name, $version_to_drop);
                 eval {
@@ -1583,10 +1591,10 @@ sub init_plugins {
                     MT::Util::Log::init();
                     MT::Util::Log->error($error);
                 };
-                $Plugins{$sig_to_drop}{enabled} = 0;
-                $Plugins{$sig_to_drop}{system_error} = $error;
-                delete $Plugins{$sig_to_drop}{object};
-                $PluginSwitch->{$sig_to_drop} = 0;
+                $AddedPlugins{$path_to_drop}{enabled}      = 0;
+                $AddedPlugins{$path_to_drop}{system_error} = $error;
+                delete $AddedPlugins{$path_to_drop}{object};
+                $PluginSwitch->{$path_to_drop} = 0;
                 @Components = grep { ($_->{plugin_sig} || '') ne $sig_to_drop } @Components;
                 next;
             }
