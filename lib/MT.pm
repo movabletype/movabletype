@@ -1505,26 +1505,26 @@ sub init_plugins {
             $plugin_lastdir =~ s!^.*[\\/]!!;
 
             if ( opendir my $DH, $PluginPath ) {
-                my @p = readdir $DH;
+                my @dirnames = readdir $DH;
                 closedir $DH;
-                for my $plugin (@p) {
-                    next if ( $plugin =~ /^\.\.?$/ || $plugin =~ /~$/ );
+                for my $dirname (@dirnames) {
+                    next if ( $dirname =~ /^\.\.?$/ || $dirname =~ /~$/ );
 
                     $plugin_full_path
-                        = File::Spec->catfile( $PluginPath, $plugin );
+                        = File::Spec->catfile( $PluginPath, $dirname );
                     if ( -f $plugin_full_path ) {
-                        next if exists $Plugins{$plugin} && $Plugins{$plugin}{error};
+                        next if exists $Plugins{$dirname} && $Plugins{$dirname}{error};
                         $plugin_envelope = $plugin_lastdir;
                         if ($plugin_full_path =~ /\.pl$/) {
-                            my $obj = __load_plugin( $mt, $timer, $PluginSwitch, $use_plugins, $plugin_full_path, $plugin );
+                            my $obj = __load_plugin( $mt, $timer, $PluginSwitch, $use_plugins, $plugin_full_path, $dirname );
                             push @loaded_plugins, $obj if $obj;
-                            push @errors, [$plugin_full_path, $Plugins{$plugin}{error}] if $Plugins{$plugin}{error};
+                            push @errors, [$plugin_full_path, $Plugins{$dirname}{error}] if $Plugins{$dirname}{error};
                         }
                         next;
                     }
 
-                    my $plugin_dir = $plugin;
-                    $plugin_envelope = "$plugin_lastdir/" . $plugin;
+                    my $plugin_dir = $dirname;
+                    $plugin_envelope = "$plugin_lastdir/" . $dirname;
 
                     # handle config.yaml
                     my $yaml = File::Spec->catdir( $plugin_full_path,
@@ -1536,21 +1536,21 @@ sub init_plugins {
                         next;
                     }
 
-                    my @plugins;
-                    if ( opendir my $subdir, $plugin_full_path ) {
-                        @plugins = readdir $subdir;
-                        closedir $subdir;
+                    my @names;
+                    if ( opendir my $DH, $plugin_full_path ) {
+                        @names = readdir $DH;
+                        closedir $DH;
                     }
                     else {
                         warn "Cannot read directory: $plugin_full_path";
                     }
-                    for my $plugin (@plugins) {
-                        next if $plugin !~ /\.pl$/;
+                    for my $name (@names) {
+                        next if $name !~ /\.pl$/;
                         my $plugin_file
                             = File::Spec->catfile( $plugin_full_path,
-                            $plugin );
+                            $name );
                         if ( -f $plugin_file ) {
-                            my $sig = $plugin_dir . '/' . $plugin;
+                            my $sig = $plugin_dir . '/' . $name;
                             next if exists $Plugins{$sig} && $Plugins{$sig}{error};
                             my $obj = __load_plugin( $mt, $timer, $PluginSwitch, $use_plugins, $plugin_file, $sig );
                             push @loaded_plugins, $obj if $obj;
