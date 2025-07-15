@@ -329,7 +329,7 @@ sub init_data {
 
     my $test_root = $ENV{MT_TEST_ROOT} || "$ENV{MT_HOME}/t";
     my $themedir = File::Spec->catdir( $MT::MT_DIR => 'themes' );
-    MT->config->ThemesDirectory( [$themedir] );
+    MT->config->ThemesDirectory( [$themedir, "$MT::MT_DIR/t/themes"] );
     require MT::Theme;
 
     require MT::Website;
