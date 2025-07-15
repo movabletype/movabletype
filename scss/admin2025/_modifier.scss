@@ -180,6 +180,18 @@ li{
     display: none;
   }
 }
+
+%mt-header-vertical-divider {
+  display: block;
+  content: "";
+  width: 1px;
+  height: 62%;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #E0E0E0;
+}
+
 .mt-header {
   display: flex;
   flex-wrap: nowrap;
@@ -217,14 +229,8 @@ li{
     flex-grow: 0;
 
     &:after {
-      display: block;
-      content: "";
-      height: 80%;
-      position: absolute;
-      top: 10%;
-      right: 0;
-      width: 1px;
-      background-color: $gray-light;
+     @extend %mt-header-vertical-divider;
+     right: 0;
     }
 
     .mt-productHeader__logo{
@@ -956,15 +962,8 @@ html[data-screen-id=dashboard][data-scope-type=user] {
   position: relative;
 
   &:before {
-    display: block;
-    content: "";
-    width: 1px;
-    height: 62%;
-    position: absolute;
-    top: 50%;
+    @extend %mt-header-vertical-divider;
     left: 0;
-    transform: translate(-50%, -50%);
-    background-color: #E0E0E0;
   }
 
   .mt-systemHeaderAction {
