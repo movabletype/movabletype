@@ -1523,7 +1523,6 @@ sub init_plugins {
                         next;
                     }
 
-                    my $plugin_dir = $dirname;
                     $plugin_envelope = "$plugin_lastdir/" . $dirname;
 
                     # handle config.yaml
@@ -1531,7 +1530,7 @@ sub init_plugins {
                         'config.yaml' );
 
                     if ( -f $yaml ) {
-                        my $obj = __load_plugin_with_yaml( $use_plugins, $PluginSwitch, $plugin_dir );
+                        my $obj = __load_plugin_with_yaml( $use_plugins, $PluginSwitch, $dirname );
                         push @loaded_plugins, $obj if $obj;
                         next;
                     }
@@ -1550,7 +1549,7 @@ sub init_plugins {
                             = File::Spec->catfile( $plugin_full_path,
                             $name );
                         if ( -f $plugin_file ) {
-                            my $sig = $plugin_dir . '/' . $name;
+                            my $sig = $dirname . '/' . $name;
                             next if exists $Plugins{$sig} && $Plugins{$sig}{error};
                             my $obj = __load_plugin( $mt, $timer, $PluginSwitch, $use_plugins, $plugin_file, $sig );
                             push @loaded_plugins, $obj if $obj;
