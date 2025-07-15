@@ -1406,9 +1406,9 @@ sub init_plugins {
     }
 
     sub __load_plugin {
-        my ( $mt, $timer, $PluginSwitch, $use_plugins, $plugin, $sig ) = @_;
-        die "Bad plugin filename '$plugin'"
-            if ( $plugin !~ /^([-\\\/\@\:\w\.\s~]+)$/ );
+        my ( $mt, $timer, $PluginSwitch, $use_plugins, $plugin_file, $sig ) = @_;
+        die "Bad plugin filename '$plugin_file'"
+            if ( $plugin_file !~ /^([-\\\/\@\:\w\.\s~]+)$/ );
         local $plugin_sig      = $sig;
         local $plugin_registry = {};
         if (!$use_plugins
@@ -1423,7 +1423,7 @@ sub init_plugins {
         return 0 if exists $Plugins{$plugin_sig};
         $Plugins{$plugin_sig}{full_path} = $plugin_full_path;
         $timer->pause_partial if $timer;
-        eval "# line " . __LINE__ . " " . __FILE__ . "\nrequire '$plugin';";
+        eval "# line " . __LINE__ . " " . __FILE__ . "\nrequire '$plugin_file';";
         $timer->mark( "Loaded plugin " . $sig ) if $timer;
         if (my $error = $@) {
             $Plugins{$plugin_sig}{error} = $mt->translate("Errored plugin [_1] is disabled by the system", $plugin_sig);
