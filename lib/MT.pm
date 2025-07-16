@@ -1570,12 +1570,15 @@ sub init_plugins {
             }
         }
 
+        my %is_actually_loaded = map {$_->path => 1} @loaded_plugins;
+
         # Drop conflicting plugins
         my %sig_to_path;
         my %deduped_plugins;
         for my $full_path (keys %AddedPlugins) {
             my $sig = $AddedPlugins{$full_path}{sig};
             push @{$sig_to_path{$sig} ||= []}, $full_path;
+            next unless $is_actually_loaded{$full_path};
             my $plugin = $AddedPlugins{$full_path}{object} or next;
             my $name = $plugin->name;
             if (my $dup = $deduped_plugins{$name}) {
@@ -1640,6 +1643,7 @@ sub init_plugins {
 
         for my $full_path (keys %AddedPlugins) {
             my $sig = $AddedPlugins{$full_path}{sig};
+            next unless $is_actually_loaded{$full_path};
             my $plugin = $AddedPlugins{$full_path}{object};
             if (!$plugin or $AddedPlugins{$full_path}{error}) {
                 $PluginSwitch->{$full_path} = 0;
