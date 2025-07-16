@@ -1382,6 +1382,14 @@ sub init_plugins {
         $plugin->{name} ||= $plugin_sig;
         $plugin->{plugin_sig} = $plugin_sig;
 
+        my $temporary_path;
+        if (!$plugin_full_path) {
+            # maybe testing
+            $plugin_full_path = (caller())[1];
+            $plugin_full_path =~ File::Basename::dirname($plugin_full_path) if $plugin_full_path =~ /config\.yaml$/;
+            $temporary_path   = 1;
+        }
+
         my $id = $plugin->id;
         unless ($plugin_envelope) {
             warn "MT->add_plugin improperly called outside of MT plugin load loop.";
@@ -1399,6 +1407,7 @@ sub init_plugins {
         unless ($plugin->{registry} && (%{ $plugin->{registry} })) {
             $plugin->{registry} = $plugin_registry;
         }
+        $plugin_full_path = undef if $temporary_path;
         1;
     }
 
