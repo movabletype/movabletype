@@ -1375,7 +1375,7 @@ sub init_plugins {
     sub add_plugin {
         my $class = shift;
         my ($plugin) = @_;
-        if ( ref $plugin eq 'HASH' ) {
+        if (ref $plugin eq 'HASH') {
             require MT::Plugin;
             $plugin = MT::Plugin->new($plugin);
         }
@@ -1384,39 +1384,36 @@ sub init_plugins {
 
         my $id = $plugin->id;
         unless ($plugin_envelope) {
-            warn
-                "MT->add_plugin improperly called outside of MT plugin load loop.";
+            warn "MT->add_plugin improperly called outside of MT plugin load loop.";
             return;
         }
         $plugin->envelope($plugin_envelope);
-        Carp::confess(
-            "You cannot register multiple plugin objects from a single script. $plugin_sig"
-            )
-            if exists( $AddedPlugins{$plugin_full_path} )
-            && ( exists $AddedPlugins{$plugin_full_path}{object} );
+        Carp::confess("You cannot register multiple plugin objects from a single script. $plugin_sig")
+            if exists($AddedPlugins{$plugin_full_path})
+            && (exists $AddedPlugins{$plugin_full_path}{object});
 
         $AddedPlugins{$plugin_full_path}{object} = $plugin;
         $AddedPlugins{$plugin_full_path}{sig}    = $plugin_sig;
-        $plugin->{full_path} = $plugin_full_path;
+        $plugin->{full_path}                     = $plugin_full_path;
         $plugin->path($plugin_full_path);
-        unless ( $plugin->{registry} && ( %{ $plugin->{registry} } ) ) {
+        unless ($plugin->{registry} && (%{ $plugin->{registry} })) {
             $plugin->{registry} = $plugin_registry;
         }
         1;
     }
 
     sub __load_plugin {
-        my ( $mt, $timer, $PluginSwitch, $use_plugins, $plugin_file, $sig ) = @_;
+        my ($mt, $timer, $PluginSwitch, $use_plugins, $plugin_file, $sig) = @_;
         die "Bad plugin filename '$plugin_file'"
-            if ( $plugin_file !~ /^([-\\\/\@\:\w\.\s~]+)$/ );
+            if ($plugin_file !~ /^([-\\\/\@\:\w\.\s~]+)$/);
         local $plugin_sig      = $sig;
         local $plugin_registry = {};
-        if (!$use_plugins
-            || ( exists $PluginSwitch->{$plugin_sig}
-                && !$PluginSwitch->{$plugin_sig} )
-            || ( exists $PluginSwitch->{$plugin_full_path}
-                && !$PluginSwitch->{$plugin_full_path} )
-            )
+        if (
+            !$use_plugins
+            || (exists $PluginSwitch->{$plugin_sig}
+                && !$PluginSwitch->{$plugin_sig})
+            || (exists $PluginSwitch->{$plugin_full_path}
+                && !$PluginSwitch->{$plugin_full_path}))
         {
             $AddedPlugins{$plugin_full_path}{full_path} = $plugin_full_path;
             $AddedPlugins{$plugin_full_path}{enabled}   = 0;
@@ -1435,7 +1432,7 @@ sub init_plugins {
             }
             eval "# line " . __LINE__ . " " . __FILE__ . "\nrequire '$plugin_file';";
         }
-        $timer->mark( "Loaded plugin " . $sig ) if $timer;
+        $timer->mark("Loaded plugin " . $sig) if $timer;
         if (my $error = $@) {
             $AddedPlugins{$plugin_full_path}{error}        = $mt->translate("Errored plugin [_1] is disabled by the system", $plugin_sig);
             $AddedPlugins{$plugin_full_path}{system_error} = $error;
@@ -1448,14 +1445,13 @@ sub init_plugins {
                 MT::Util::Log->error($error);
             };
             return;
-        }
-        else {
-            if ( !$AddedPlugins{$plugin_full_path}{object} ) {
+        } else {
+            if (!$AddedPlugins{$plugin_full_path}{object}) {
                 # A plugin did not register itself, so
                 # create a dummy plugin object which will
                 # cause it to show up in the plugin listing
                 # by it's filename.
-                MT->add_plugin( {} );
+                MT->add_plugin({});
             }
         }
         $AddedPlugins{$plugin_full_path}{enabled} = 1;
@@ -1464,21 +1460,21 @@ sub init_plugins {
     }
 
     sub __load_plugin_with_yaml {
-        my ( $use_plugins, $PluginSwitch, $plugin_dir ) = @_;
-        my $pclass
-            = $plugin_dir =~ m/\.pack$/
+        my ($use_plugins, $PluginSwitch, $plugin_dir) = @_;
+        my $pclass =
+            $plugin_dir =~ m/\.pack$/
             ? 'MT::Component'
             : 'MT::Plugin';
 
         # Don't process disabled plugin config.yaml files.
-        if ($pclass eq 'MT::Plugin'
-            && (!$use_plugins
-                || ( exists $PluginSwitch->{$plugin_dir}
-                    && !$PluginSwitch->{$plugin_dir} )
-                || ( exists $PluginSwitch->{$plugin_full_path}
-                    && !$PluginSwitch->{$plugin_full_path} )
-            )
-            )
+        if (
+            $pclass eq 'MT::Plugin'
+            && (
+                !$use_plugins
+                || (exists $PluginSwitch->{$plugin_dir}
+                    && !$PluginSwitch->{$plugin_dir})
+                || (exists $PluginSwitch->{$plugin_full_path}
+                    && !$PluginSwitch->{$plugin_full_path})))
         {
             $AddedPlugins{$plugin_full_path}{full_path} = $plugin_full_path;
             $AddedPlugins{$plugin_full_path}{enabled}   = 0;
@@ -1488,12 +1484,11 @@ sub init_plugins {
         return if exists $AddedPlugins{$plugin_full_path};
         my $id = lc $plugin_dir;
         $id =~ s/\.\w+$//;
-        my $p = $pclass->new(
-            {   id       => $id,
-                path     => $plugin_full_path,
-                envelope => $plugin_envelope
-            }
-        );
+        my $p = $pclass->new({
+            id       => $id,
+            path     => $plugin_full_path,
+            envelope => $plugin_envelope
+        });
         $p->load_required_meta() if $pclass eq 'MT::Plugin';
 
         # rebless? based on config?
@@ -1505,10 +1500,10 @@ sub init_plugins {
 
     sub _init_plugins_core {
         my $mt = shift;
-        my ( $PluginSwitch, $use_plugins, $PluginPaths ) = @_;
+        my ($PluginSwitch, $use_plugins, $PluginPaths) = @_;
 
         my $timer;
-        if ( $mt->config->PerformanceLogging ) {
+        if ($mt->config->PerformanceLogging) {
             $timer = $mt->get_timer();
         }
 
@@ -1519,21 +1514,22 @@ sub init_plugins {
             $plugin_lastdir =~ s![\\/]$!!;
             $plugin_lastdir =~ s!^.*[\\/]!!;
 
-            if ( opendir my $DH, $PluginPath ) {
+            if (opendir my $DH, $PluginPath) {
                 my @dirnames = readdir $DH;
                 closedir $DH;
                 for my $dirname (@dirnames) {
-                    next if ( $dirname =~ /^\.\.?$/ || $dirname =~ /~$/ );
+                    next if ($dirname =~ /^\.\.?$/ || $dirname =~ /~$/);
 
-                    my $plugin_dir = $plugin_full_path
-                        = File::Spec->catfile( $PluginPath, $dirname );
-                    if ( -f $plugin_full_path ) {
+                    my $plugin_dir = $plugin_full_path = File::Spec->catfile($PluginPath, $dirname);
+                    if (-f $plugin_full_path) {
                         next if exists $AddedPlugins{$plugin_full_path} && $AddedPlugins{$plugin_full_path}{error};
                         $plugin_envelope = $plugin_lastdir;
                         if ($plugin_full_path =~ /\.pl$/) {
-                            my $obj = __load_plugin( $mt, $timer, $PluginSwitch, $use_plugins, $plugin_full_path, $dirname );
+                            my $obj = __load_plugin($mt, $timer, $PluginSwitch, $use_plugins, $plugin_full_path, $dirname);
                             push @loaded_plugins, $obj if $obj;
-                            push @errors, [$plugin_full_path, $AddedPlugins{$plugin_full_path}{error}] if $AddedPlugins{$plugin_full_path}{error};
+                            if ($AddedPlugins{$plugin_full_path}{error}) {
+                                push @errors, [$plugin_full_path, $AddedPlugins{$plugin_full_path}{error}];
+                            }
                         }
                         next;
                     }
@@ -1541,52 +1537,50 @@ sub init_plugins {
                     $plugin_envelope = "$plugin_lastdir/" . $dirname;
 
                     # handle config.yaml
-                    my $yaml = File::Spec->catdir( $plugin_dir,
-                        'config.yaml' );
+                    my $yaml = File::Spec->catdir($plugin_dir, 'config.yaml');
 
-                    if ( -f $yaml ) {
-                        my $obj = __load_plugin_with_yaml( $use_plugins, $PluginSwitch, $dirname );
+                    if (-f $yaml) {
+                        my $obj = __load_plugin_with_yaml($use_plugins, $PluginSwitch, $dirname);
                         push @loaded_plugins, $obj if $obj;
                         next;
                     }
 
                     my @names;
-                    if ( opendir my $DH, $plugin_dir ) {
+                    if (opendir my $DH, $plugin_dir) {
                         @names = readdir $DH;
                         closedir $DH;
-                    }
-                    else {
+                    } else {
                         warn "Cannot read directory: $plugin_full_path";
                     }
                     for my $name (@names) {
                         next if $name !~ /\.pl$/;
-                        my $plugin_file
-                            = File::Spec->catfile( $plugin_full_path,
-                            $name );
-                        if ( -f $plugin_file ) {
+                        my $plugin_file = File::Spec->catfile($plugin_dir, $name);
+                        if (-f $plugin_file) {
                             $plugin_full_path = $plugin_file;
                             my $sig = $dirname . '/' . $name;
                             next if exists $AddedPlugins{$plugin_full_path} && $AddedPlugins{$plugin_full_path}{error};
-                            my $obj = __load_plugin( $mt, $timer, $PluginSwitch, $use_plugins, $plugin_file, $sig );
+                            my $obj = __load_plugin($mt, $timer, $PluginSwitch, $use_plugins, $plugin_file, $sig);
                             push @loaded_plugins, $obj if $obj;
-                            push @errors, [$plugin_full_path, $AddedPlugins{$plugin_full_path}{error}] if $AddedPlugins{$plugin_full_path}{error};
+                            if ($AddedPlugins{$plugin_full_path}{error}) {
+                                push @errors, [$plugin_full_path, $AddedPlugins{$plugin_full_path}{error}];
+                            }
                         }
                     }
                 }
             }
         }
 
-        my %is_actually_loaded = map {$_->path => 1} @loaded_plugins;
+        my %is_actually_loaded = map { $_->path => 1 } @loaded_plugins;
 
         # Drop conflicting plugins
         my %sig_to_path;
         my %deduped_plugins;
         for my $full_path (keys %AddedPlugins) {
             my $sig = $AddedPlugins{$full_path}{sig};
-            push @{$sig_to_path{$sig} ||= []}, $full_path;
+            push @{ $sig_to_path{$sig} ||= [] }, $full_path;
             next unless $is_actually_loaded{$full_path};
             my $plugin = $AddedPlugins{$full_path}{object} or next;
-            my $name = $plugin->name;
+            my $name   = $plugin->name;
             if (my $dup = $deduped_plugins{$name}) {
                 require version;
                 my $dup_version = eval { version->parse($dup->version    || 0) } || 0;
@@ -1602,7 +1596,7 @@ sub init_plugins {
                     $sig_to_drop     = $plugin->{plugin_sig};
                     $path_to_drop    = $plugin->path;
                 }
-                my $error = $mt->translate("Conflicted plugin [_1] [_2] is disabled by the system", $path_to_drop, $version_to_drop);
+                my $error         = $mt->translate("Conflicted plugin [_1] [_2] is disabled by the system", $path_to_drop, $version_to_drop);
                 my $visible_error = $MT::Debug ? $error : $mt->translate("Conflicted plugin [_1] [_2] is disabled by the system", $name, $version_to_drop);
                 eval {
                     require MT::Util::Log;
@@ -1657,12 +1651,12 @@ sub init_plugins {
             }
             my $plugin_dir = -d $full_path ? $full_path : File::Basename::dirname($full_path);
             foreach my $lib (qw(lib extlib)) {
-                my $plib = File::Spec->catdir( $plugin_dir, $lib );
+                my $plib = File::Spec->catdir($plugin_dir, $lib);
                 next if $included_paths{$plib}++;
                 unshift @INC, $plib if -d $plib;
             }
             my $id = $plugin->id;
-            $Components{lc $id} = $plugin if $id;
+            $Components{ lc $id } = $plugin if $id;
             push @Components, $plugin;
             if ($plugin->isa('MT::Plugin')) {
                 $plugin->init;
