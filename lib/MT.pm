@@ -1621,7 +1621,6 @@ sub init_plugins {
             $deduped_plugins{$name} = $plugin;
         }
 
-        my %included_paths;
         # normalize
         for my $sig (keys %sig_to_path) {
             if (@{ $sig_to_path{$sig} } == 1) {
@@ -1649,6 +1648,7 @@ sub init_plugins {
             }
         }
 
+        my %included_paths;
         for my $full_path (keys %AddedPlugins) {
             my $sig = $AddedPlugins{$full_path}{sig};
             next unless $is_actually_loaded{$full_path};
@@ -1657,11 +1657,10 @@ sub init_plugins {
                 $PluginSwitch->{$full_path} = 0;
                 next;
             }
+            my $plugin_dir = -d $full_path ? $full_path : File::Basename::dirname($full_path);
             foreach my $lib (qw(lib extlib)) {
-                my $plib
-                    = File::Spec->catdir( $plugin->{full_path}, $lib );
-                next if exists $included_paths{$plib};
-                $included_paths{$plib} = 1;
+                my $plib = File::Spec->catdir( $plugin_dir, $lib );
+                next if $included_paths{$plib}++;
                 unshift @INC, $plib if -d $plib;
             }
 
