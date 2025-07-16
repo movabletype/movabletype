@@ -1397,6 +1397,7 @@ sub init_plugins {
 
         $Components{ lc $id } = $plugin if $id;
         $AddedPlugins{$plugin_full_path}{object} = $plugin;
+        $AddedPlugins{$plugin_full_path}{sig}    = $plugin_sig;
         $plugin->{full_path} = $plugin_full_path;
         $plugin->path($plugin_full_path);
         unless ( $plugin->{registry} && ( %{ $plugin->{registry} } ) ) {
@@ -1421,6 +1422,7 @@ sub init_plugins {
         {
             $AddedPlugins{$plugin_full_path}{full_path} = $plugin_full_path;
             $AddedPlugins{$plugin_full_path}{enabled}   = 0;
+            $AddedPlugins{$plugin_full_path}{sig}       = $plugin_sig;
             return 0;
         }
         return 0 if exists $AddedPlugins{$plugin_full_path};
@@ -1432,6 +1434,7 @@ sub init_plugins {
             $AddedPlugins{$plugin_full_path}{error}        = $mt->translate("Errored plugin [_1] is disabled by the system", $plugin_sig);
             $AddedPlugins{$plugin_full_path}{system_error} = $error;
             $AddedPlugins{$plugin_full_path}{enabled}      = 0;
+            $AddedPlugins{$plugin_full_path}{sig}          = $plugin_sig;
             $PluginSwitch->{$plugin_full_path}             = 0;
             eval {
                 require MT::Util::Log;
@@ -1473,6 +1476,7 @@ sub init_plugins {
         {
             $AddedPlugins{$plugin_full_path}{full_path} = $plugin_full_path;
             $AddedPlugins{$plugin_full_path}{enabled}   = 0;
+            $AddedPlugins{$plugin_full_path}{sig}       = $plugin_dir;
             return;
         }
         return if exists $AddedPlugins{$plugin_full_path};
@@ -1567,8 +1571,12 @@ sub init_plugins {
         }
 
         # Drop conflicting plugins
+        my %sig_to_path;
         my %deduped_plugins;
-        for my $plugin (@loaded_plugins) {
+        for my $full_path (keys %AddedPlugins) {
+            my $sig = $AddedPlugins{$full_path}{sig};
+            push @{$sig_to_path{$sig} ||= []}, $full_path;
+            my $plugin = $AddedPlugins{$full_path}{object} or next;
             my $name = $plugin->name;
             if (my $dup = $deduped_plugins{$name}) {
                 require version;
@@ -1593,6 +1601,7 @@ sub init_plugins {
                 };
                 $AddedPlugins{$path_to_drop}{enabled}      = 0;
                 $AddedPlugins{$path_to_drop}{system_error} = $error;
+                $AddedPlugins{$path_to_drop}{sig}          = $sig_to_drop;
                 delete $AddedPlugins{$path_to_drop}{object};
                 $PluginSwitch->{$path_to_drop} = 0;
                 @Components = grep { ($_->{plugin_sig} || '') ne $sig_to_drop } @Components;
