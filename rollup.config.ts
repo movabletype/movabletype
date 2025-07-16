@@ -39,7 +39,6 @@ const srcConfig = (inputFile) => {
         sourceMap: true,
         minify: production,
       }),
-      css({ output: inputFile.replace(/^src\//, "").replace(/ts$/, "css") }),
       svelte({
         preprocess: sveltePreprocess({ sourceMap: !production }),
         compilerOptions: {
