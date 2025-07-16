@@ -1428,7 +1428,15 @@ sub init_plugins {
         return 0 if exists $AddedPlugins{$plugin_full_path};
         $AddedPlugins{$plugin_full_path}{full_path} = $plugin_full_path;
         $timer->pause_partial if $timer;
-        eval "# line " . __LINE__ . " " . __FILE__ . "\nrequire '$plugin_file';";
+        {
+            local @INC = @INC;
+            my $plugin_dir = -d $plugin_full_path ? $plugin_full_path : File::Basename::dirname($plugin_full_path);
+            for my $lib (qw(lib extlib)) {
+                my $plib = File::Spec->catdir($plugin_dir, $lib);
+                unshift @INC, $plib if -d $plib;
+            }
+            eval "# line " . __LINE__ . " " . __FILE__ . "\nrequire '$plugin_file';";
+        }
         $timer->mark( "Loaded plugin " . $sig ) if $timer;
         if (my $error = $@) {
             $AddedPlugins{$plugin_full_path}{error}        = $mt->translate("Errored plugin [_1] is disabled by the system", $plugin_sig);
