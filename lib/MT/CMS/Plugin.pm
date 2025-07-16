@@ -8,7 +8,7 @@ package MT::CMS::Plugin;
 use strict;
 use warnings;
 use MT::Util qw( remove_html );
-use MT::Util::Checksums;
+use MT::Util::PluginVersions;
 
 sub cfg_plugins {
     my $app = shift;
@@ -466,17 +466,23 @@ sub build_plugin_table {
     }
 
     # set plugin_label parameter
-    if (-e MT::Util::Checksums::checksum_file()) {
+    if (-e MT::Util::PluginVersions::plugin_versions_file()) {
+        my $plugin_versions   = MT::Util::PluginVersions::load_plugin_versions;
         my $individual_plugin = 1;
         for my $pd (@{$data}[1 .. scalar(@{$data}) - 1]) {    # skip first individual folder data
             if ($pd->{plugin_folder}) {
                 $individual_plugin = 0;
             }
-            next unless $individual_plugin || $pd->{plugin_folder};    # skip other than individual plugins and plugin set folders
-            if (MT::Util::Checksums::test_checksums($pd->{plugin_full_path})) {
-                $pd->{plugin_label} = '<span class="badge badge-primary">' . $app->translate('user') . '</span>';
+            next unless $individual_plugin || !$pd->{plugin_folder};    # skip other than plugins
+            next if $pd->{plugin_disabled};
+            if (exists $plugin_versions->{ $pd->{plugin_sig} }) {
+                if ($plugin_versions->{ $pd->{plugin_sig} } eq $pd->{plugin_version}) {
+                    $pd->{plugin_label} = '<span class="badge badge-default">' . $app->translate('__PLUGIN_LABEL_DEFAULT') . '</span>';
+                } else {
+                    $pd->{plugin_label} = '<span class="badge badge-info">' . $app->translate('__PLUGIN_LABEL_DEFAULT_BUT_CHANGED') . '</span>';
+                }
             } else {
-                $pd->{plugin_label} = '<span class="badge badge-default">' . $app->translate('__PLUGIN_LABEL_DEFAULT') . '</span>';
+                $pd->{plugin_label} = '<span class="badge badge-primary">' . $app->translate('user') . '</span>';
             }
         }
     }
