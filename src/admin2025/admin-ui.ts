@@ -1,5 +1,6 @@
 import { svelteMountCreateButton } from "./buttons/create-button";
 import { svelteMountSidebar } from "./sidebar/sidebar";
+import { getCollapsedState } from "./sidebar/utils";
 import { svelteMountSearchButton } from "./buttons/search-button";
 import { svelteMountSiteListButton } from "./buttons/site-list-button";
 import { svelteMountSearchForm } from "./forms/search/search-form";
@@ -9,14 +10,9 @@ const sidebarTarget = document.querySelector<HTMLButtonElement>(
   '[data-is="primary-navigation-toggle"]',
 );
 if (sidebarTarget !== null) {
-  const sessionName = "collapsed";
-  const sessionCollapsed = sessionStorage.getItem(sessionName);
-
   svelteMountSidebar(sidebarTarget, {
-    collapsed: sessionCollapsed === "true",
+    collapsed: getCollapsedState() ?? false,
     buttonRef: sidebarTarget.getElementsByTagName("button")[0],
-    sessionName: sessionName,
-    isStored: sessionCollapsed !== null,
   });
 }
 

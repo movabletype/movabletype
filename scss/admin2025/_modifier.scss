@@ -498,7 +498,7 @@ li{
         mask-image: url(../../images/admin2025/icons/ic_close.svg);
       }
     }
-    &.collapsed {
+    .mt-has-primary-navigation-collapsed & {
       .mt-primaryNavigation__toggle_icon{
         mask-image: url(../../images/admin2025/icons/ic_open.svg);
       }
@@ -507,7 +507,7 @@ li{
 }
 
 
-.mt-contentWrapper.collapsed {
+.mt-has-primary-navigation-collapsed .mt-contentWrapper {
 
   .mt-primaryNavigation {
     transform: translateX(-100%);
@@ -1053,7 +1053,7 @@ html[data-screen-id=dashboard][data-scope-type=user] {
 }
 
 @include media-breakpoint-up(md) {
-  body[data-is-collapsed="true"] {
+  .mt-has-primary-navigation-collapsed {
     .mt-mainContent {
       padding-left: calc(32px + var(--left-bar-mouseover-width));
     }
@@ -1077,7 +1077,7 @@ html[data-screen-id=dashboard][data-scope-type=user] {
 }
 
 @include media-breakpoint-up(md) {
-  body[data-is-collapsed="true"] {
+  .mt-has-primary-navigation-collapsed {
     .mt-footerWrapper {
       padding-left: calc(32px + var(--left-bar-mouseover-width));
     }
@@ -1459,7 +1459,7 @@ html[data-screen-id=dashboard][data-scope-type=user] {
       &:after {
         transform: translateY(-50%) rotate(225deg);
       }
-      &.collapsed:after {
+      .mt-has-primary-navigation-collapsed &:after {
         transform: translateY(-50%) rotate(45deg);
       }
     }
@@ -3113,15 +3113,13 @@ li.nav-item {
   @include mt-mainContentWrapperAnimation();
 }
 
-body:has(.mt-primaryNavigation) {
-  @include media-breakpoint-up(md) {
-    &:has(.mt-contentWrapper.collapsed) .debug-panel {
-      margin-left: calc(var(--minimal-left-bar-width) + var(--bs-card-cap-padding-x)) !important;
-    }
+@include media-breakpoint-up(md) {
+  .mt-has-primary-navigation-collapsed .mt-primaryNavigation .mt-contentWrapper .debug-panel {
+    margin-left: calc(var(--minimal-left-bar-width) + var(--bs-card-cap-padding-x)) !important;
+  }
 
-    &:has(.mt-contentWrapper:not(.collapsed)) .debug-panel {
-      margin-left: var(--left-bar-width) !important;
-    }
+  html .mt-primaryNavigation .mt-contentWrapper .debug-panel {
+    margin-left: var(--left-bar-width) !important;
   }
 }
 

@@ -20,7 +20,7 @@ const mtStaticInputFiles = [
     .map((file) => `src/mt-static/plugins/DashboardWidgetTemplate/js/${file}`),
 ];
 
-const srcConfig = (inputFile) => {
+const srcConfig = (inputFile, output = {}) => {
   return {
     input: [inputFile],
     output: {
@@ -28,6 +28,7 @@ const srcConfig = (inputFile) => {
       entryFileNames: inputFile.replace(/^src\//, "").replace(/ts$/, "js"),
       format: "esm",
       sourcemap: !production,
+      ...output,
     },
     plugins: [
       resolve({
@@ -86,5 +87,8 @@ export default [
   srcConfig("src/listing.ts"),
   srcConfig("src/dashboard.ts"),
   srcConfig("src/admin2025/admin-ui.ts"),
+  srcConfig("src/admin2025/admin-ui-immediate.ts", {
+    format: "iife",
+  }),
   ...mtStaticInputFiles.map(mtStaticConfig),
 ];
