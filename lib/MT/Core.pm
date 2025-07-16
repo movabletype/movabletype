@@ -2263,6 +2263,7 @@ BEGIN {
             'LogEachFilePublishedInTheBackground' => undef,
             'TrimFilePath' => { default => 0 },
             'UseRiot' => { default => 1 },
+            'GrantRoleSitesView' => { default => 'tree' }, # DEPRECATED
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {
