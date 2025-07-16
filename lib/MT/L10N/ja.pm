@@ -1318,7 +1318,6 @@ use vars qw( @ISA %Lexicon );
 	q{Failed to save relationship between [_1] (ID: [_2]) and Asset (ID: [_3]): [_4]} => q{[_1] (ID:[_2])とアセット(ID:[_3])の関連付けを設定できませんでした。: [_4]},
 
 ## lib/MT/CMS/Export.pm
-	'Export Site Entries' => '記事のエクスポート',
 	'Please select a site.' => 'サイトを選択してください。',
 	'You do not have export permissions' => 'エクスポートする権限がありません。',
 	q{Loading site '[_1]' failed: [_2]} => q{サイト '[_1]' をロードできません: [_2]},
