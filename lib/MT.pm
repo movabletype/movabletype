@@ -1395,7 +1395,6 @@ sub init_plugins {
             if exists( $AddedPlugins{$plugin_full_path} )
             && ( exists $AddedPlugins{$plugin_full_path}{object} );
 
-        $Components{ lc $id } = $plugin if $id;
         $AddedPlugins{$plugin_full_path}{object} = $plugin;
         $AddedPlugins{$plugin_full_path}{sig}    = $plugin_sig;
         $plugin->{full_path} = $plugin_full_path;
@@ -1403,7 +1402,6 @@ sub init_plugins {
         unless ( $plugin->{registry} && ( %{ $plugin->{registry} } ) ) {
             $plugin->{registry} = $plugin_registry;
         }
-        push @Components, $plugin;
         1;
     }
 
@@ -1615,7 +1613,6 @@ sub init_plugins {
                 $AddedPlugins{$path_to_drop}{sig}          = $sig_to_drop;
                 delete $AddedPlugins{$path_to_drop}{object};
                 $PluginSwitch->{$path_to_drop} = 0;
-                @Components = grep { ($_->{plugin_sig} || '') ne $sig_to_drop } @Components;
                 next;
             }
             $deduped_plugins{$name} = $plugin;
@@ -1663,7 +1660,9 @@ sub init_plugins {
                 next if $included_paths{$plib}++;
                 unshift @INC, $plib if -d $plib;
             }
-
+            my $id = $plugin->id;
+            $Components{lc $id} = $plugin if $id;
+            push @Components, $plugin;
             if ($plugin->isa('MT::Plugin')) {
                 $plugin->init;
             }
