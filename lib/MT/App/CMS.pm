@@ -1649,7 +1649,7 @@ sub core_site_menu_actions {
             view      => ['blog', 'website'],
             class     => 'view_site',
             condition => sub { $app->blog ? 1 : 0; },
-            label     => 'View Your Site',
+            label     => 'View Site',
             icon      => 'ic_view',
             href      => sub { $app->blog->site_url; },
             order     => 300,

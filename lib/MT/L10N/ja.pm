@@ -642,7 +642,6 @@ use vars qw( @ISA %Lexicon );
 	'Upload' => 'アップロード',
 	'Use Publishing Profile' => '公開プロファイルを設定',
 	'User' => 'ユーザー',
-	'View Site' => 'サイトの表示',
 	'Web Services' => 'Webサービス',
 	'Website' => 'ウェブサイト',
 	'_WARNING_DELETE_USER' => 'ユーザーの削除操作は取り消せず、削除したユーザーは復元できません。また、このユーザーが作成した記事やウェブページ、コンテンツデータは作成者不明となります。このユーザーを利用しなくなったり、システムへのアクセスを禁止したい場合は、ユーザーのアカウントを無効にすることをおすすめします。選択したユーザーを削除してよろしいですか?',
@@ -5782,7 +5781,7 @@ use vars qw( @ISA %Lexicon );
 	'New [_1] creation' => '[_1]を新規作成',
 
 ## tmpl/admin2025/cms/include/primary_navigation.tmpl
-	'View Your Site' => 'サイトを見る',
+	'View Site' => 'サイトを見る',
 
 ## tmpl/admin2025/cms/include/system-header-actions.tmpl
 	'Select target and search text...' => '対象を選んでテキスト検索...',
