@@ -1611,7 +1611,40 @@ sub init_plugins {
         }
 
         my %included_paths;
-        for my $plugin (values %deduped_plugins) {
+        # normalize
+        for my $sig (keys %sig_to_path) {
+            if (@{ $sig_to_path{$sig} } == 1) {
+                my $path = $sig_to_path{$sig}[0];
+                if (exists $PluginSwitch->{$path}) {
+                    $PluginSwitch->{$sig} = delete $PluginSwitch->{$path};
+                }
+                for my $key (keys %{ $AddedPlugins{$path} }) {
+                    $Plugins{$sig}{$key} = $AddedPlugins{$path}{$key};
+                }
+            } else {
+                my @paths = @{ $sig_to_path{$sig} };
+                for my $path (@paths) {
+                    if ($AddedPlugins{$path}{object}) {
+                        $PluginSwitch->{$sig} = 1;
+                        for my $key (keys %{ $AddedPlugins{$path} }) {
+                            $Plugins{$sig}{$key} = $AddedPlugins{$path}{$key};
+                        }
+                    } else {
+                        for my $key (keys %{ $AddedPlugins{$path} }) {
+                            $Plugins{$path}{$key} = $AddedPlugins{$path}{$key};
+                        }
+                    }
+                }
+            }
+        }
+
+        for my $full_path (keys %AddedPlugins) {
+            my $sig = $AddedPlugins{$full_path}{sig};
+            my $plugin = $AddedPlugins{$full_path}{object};
+            if (!$plugin or $AddedPlugins{$full_path}{error}) {
+                $PluginSwitch->{$full_path} = 0;
+                next;
+            }
             foreach my $lib (qw(lib extlib)) {
                 my $plib
                     = File::Spec->catdir( $plugin->{full_path}, $lib );
