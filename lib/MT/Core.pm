@@ -2252,6 +2252,7 @@ BEGIN {
                 type    => 'ARRAY',
                 handler => \&TrustedHosts,
             },
+            'GrantRoleSitesView' => { default => 'tree' }, # DEPRECATED
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {
