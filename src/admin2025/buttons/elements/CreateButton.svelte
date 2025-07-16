@@ -2,13 +2,17 @@
   import { portal } from "svelte-portal";
   import { isOuterClick } from "../outerClick";
   import { type ContentType } from "src/@types/contenttype";
+  import { fetchContentTypes } from "src/utils/fetch-content-types";
 
   export let contentTypes: ContentType[] = [];
   export let blog_id: string;
+  export let magicToken: string;
   export let open: boolean = false;
   export let anchorRef: HTMLElement | null = null;
   export let containerRef: HTMLElement | null = null;
   let modalRef: HTMLElement | null = null;
+  let contentTypesFetched = false;
+  let isLoading = false;
 
   $: {
     if (anchorRef) {
@@ -23,6 +27,25 @@
 
       if (open) {
         anchorRef.classList.add("open");
+
+        if (!contentTypesFetched && !isLoading) {
+          isLoading = true;
+          fetchContentTypes({
+            blogId: blog_id,
+            magicToken: magicToken,
+          })
+            .then((data) => {
+              contentTypes = data.contentTypes.filter(
+                (contentType) => contentType.can_create === 1,
+              );
+              contentTypesFetched = true;
+              isLoading = false;
+            })
+            .catch((error) => {
+              console.error("Failed to fetch content types:", error);
+              isLoading = false;
+            });
+        }
       } else {
         anchorRef.classList.remove("open");
       }
@@ -64,7 +87,9 @@
       </button>
     </div>
     <div class="modal-body">
-      {#if contentTypes.length > 0}
+      {#if isLoading}
+        <p>{window.trans("Loading...")}</p>
+      {:else if contentTypes.length > 0}
         <p class="block-title">{window.trans("Content Data")}</p>
         <ul class="create-button-list">
           {#each contentTypes as contentType}

@@ -5,6 +5,7 @@
   import { ContentType } from "src/@types/contenttype";
   import { SearchTab } from "../search-button";
   import SearchForm from "../../forms/search/SearchForm.svelte";
+  import { fetchContentTypes } from "src/utils/fetch-content-types";
 
   export let blogId: string;
   export let magicToken: string;
@@ -14,10 +15,32 @@
   export let searchTabs: SearchTab[];
   export let objectType;
 
+  let contentTypesFetched = false;
+  let isLoading = false;
+
   $: {
     if (anchorRef) {
       if (open) {
         anchorRef.classList.add("open");
+
+        if (!contentTypesFetched && !isLoading) {
+          isLoading = true;
+          fetchContentTypes({
+            blogId: blogId,
+            magicToken: magicToken,
+          })
+            .then((data) => {
+              contentTypes = data.contentTypes.filter(
+                (contentType) => contentType.can_search === 1,
+              );
+              contentTypesFetched = true;
+              isLoading = false;
+            })
+            .catch((error) => {
+              console.error("Failed to fetch content types:", error);
+              isLoading = false;
+            });
+        }
       } else {
         anchorRef.classList.remove("open");
       }
@@ -83,13 +106,17 @@
       </button>
     </div>
     <div class="modal-body">
-      <SearchForm
-        {blogId}
-        {magicToken}
-        {contentTypes}
-        {objectType}
-        {searchTabs}
-      />
+      {#if isLoading}
+        <p>{window.trans("Loading...")}</p>
+      {:else}
+        <SearchForm
+          {blogId}
+          {magicToken}
+          {contentTypes}
+          {objectType}
+          {searchTabs}
+        />
+      {/if}
     </div>
   </div>
 {/if}

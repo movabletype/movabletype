@@ -3,6 +3,7 @@ import CreateButton from "./elements/CreateButton.svelte";
 
 type CreateButtonProps = {
   blog_id: string;
+  magicToken: string;
   contentTypes: ContentType[];
   open: boolean;
   anchorRef: HTMLElement;
