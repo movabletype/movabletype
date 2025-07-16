@@ -1359,7 +1359,6 @@ use vars qw( @ISA %Lexicon );
 	q{User '[_1]' (ID:[_2]) was added to group '[_3]' (ID:[_4]) by '[_5]'} => q{[_5]がユーザー「[_1](ID:[_2])」をグループ「[_3](ID:[_4])」に追加しました。},
 
 ## lib/MT/CMS/Import.pm
-	'Import Site Entries' => '記事のインポート',
 	'Importer type [_1] was not found.' => '[_1]というインポート形式は存在しません。',
 	'You do not have import permission' => 'インポートの権限がありません。',
 	'You do not have permission to create users' => 'ユーザーを作成する権限がありません。',

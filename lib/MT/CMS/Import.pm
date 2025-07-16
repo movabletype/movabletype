@@ -160,7 +160,7 @@ sub do_import {
     $app->validate_magic() or return;
 
     $app->add_breadcrumb(
-        $app->translate('Import Site Entries'),
+        $app->translate('Import [_1] Entries', $blog->class_label),
         $app->uri(
             mode => 'start_import',
             args => { blog_id => $blog_id },
