@@ -1602,14 +1602,15 @@ sub init_plugins {
                     $sig_to_drop     = $plugin->{plugin_sig};
                     $path_to_drop    = $plugin->path;
                 }
-                my $error = $mt->translate("Conflicted plugin [_1] [_2] is disabled by the system", $name, $version_to_drop);
+                my $error = $mt->translate("Conflicted plugin [_1] [_2] is disabled by the system", $path_to_drop, $version_to_drop);
+                my $visible_error = $MT::Debug ? $error : $mt->translate("Conflicted plugin [_1] [_2] is disabled by the system", $name, $version_to_drop);
                 eval {
                     require MT::Util::Log;
                     MT::Util::Log::init();
                     MT::Util::Log->error($error);
                 };
                 $AddedPlugins{$path_to_drop}{enabled}      = 0;
-                $AddedPlugins{$path_to_drop}{system_error} = $error;
+                $AddedPlugins{$path_to_drop}{system_error} = $visible_error;
                 $AddedPlugins{$path_to_drop}{sig}          = $sig_to_drop;
                 delete $AddedPlugins{$path_to_drop}{object};
                 $PluginSwitch->{$path_to_drop} = 0;
