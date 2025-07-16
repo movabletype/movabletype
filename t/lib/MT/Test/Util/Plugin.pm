@@ -8,7 +8,7 @@ use File::Basename qw(dirname);
 use Mojo::Template;
 use Data::Section::Simple qw(get_data_section);
 use MT::Util::YAML;
-use Data::Dump;
+use Data::Dump;  ## no critic('TooMuchCode::ProhibitUnusedImport')
 use String::CamelCase qw(decamelize);
 
 my $templates = get_data_section();
