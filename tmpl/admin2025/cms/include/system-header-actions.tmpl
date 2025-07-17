@@ -17,6 +17,9 @@
             <mt:loop name="data">
                 data-<mt:var name="__key__">="<mt:var name="__value__" escape="html">"
             </mt:loop>
+            data-bs-toggle="tooltip"
+            data-bs-placement="bottom"
+            data-bs-title="<mt:var name="escaped_menu_action_label" escape="html">"
         >
             <mtapp:svgicon id="$icon" title="<mt:var name="escaped_menu_action_label">">
         </a>

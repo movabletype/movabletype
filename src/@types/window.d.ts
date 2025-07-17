@@ -1,4 +1,5 @@
 import type { TinyMCE } from "tinymce6";
+import { Tooltip } from "bootstrap";
 
 declare global {
   interface Window {
@@ -11,4 +12,7 @@ declare global {
   }
 
   const tinymce: TinyMCE;
+  const bootstrap: {
+    Tooltip: Tooltip;
+  };
 }

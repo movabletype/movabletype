@@ -116,4 +116,10 @@ if (
       });
     }
   });
+
+  document
+    .querySelectorAll('[data-bs-toggle="tooltip"]')
+    .forEach(function (elm) {
+      new bootstrap.Tooltip(elm);
+    });
 }
