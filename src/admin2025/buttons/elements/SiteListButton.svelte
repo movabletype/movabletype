@@ -3,6 +3,7 @@
   import SVG from "../../../svg/elements/SVG.svelte";
   import { portal } from "svelte-portal";
   import { isOuterClick } from "../outerClick";
+  import { modal } from "../../svelte";
   import { fetchSites } from "src/utils/fetch-sites";
   import { Site } from "src/@types/site";
 
@@ -337,6 +338,7 @@
     class="site-list-button-modal-overlay"
     on:click={handleClose}
     use:portal={"body"}
+    use:modal
   ></div>
   <div
     class="modal site-list-button-modal"

@@ -2,6 +2,7 @@
   import { onMount } from "svelte";
   import { portal } from "svelte-portal";
   import { isOuterClick } from "../outerClick";
+  import { modal } from "../../svelte";
   import { ContentType } from "src/@types/contenttype";
   import { SearchTab } from "../search-button";
   import SearchForm from "../../forms/search/SearchForm.svelte";
@@ -65,6 +66,7 @@
     class="search-button-modal-overlay"
     on:click={handleClose}
     use:portal={"body"}
+    use:modal
   ></div>
   <div
     class="modal search-button-modal"
