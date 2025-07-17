@@ -4,7 +4,6 @@
   import { type ContentType } from "src/@types/contenttype";
   import { fetchContentTypes } from "src/utils/fetch-content-types";
 
-  export let contentTypes: ContentType[] = [];
   export let blog_id: string;
   export let magicToken: string;
   export let open: boolean = false;
@@ -13,6 +12,7 @@
   let modalRef: HTMLElement | null = null;
   let contentTypesFetched = false;
   let isLoading = false;
+  let contentTypes: ContentType[] = [];
 
   $: {
     if (anchorRef) {

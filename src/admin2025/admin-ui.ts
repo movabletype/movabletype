@@ -71,7 +71,6 @@ if (createButtonTargets.length > 0 && magicToken !== "") {
       props: {
         blog_id: blogId,
         magicToken: magicToken,
-        contentTypes: [],
         open: false,
         anchorRef: createButtonTarget,
         containerRef: modalContainerTarget,
@@ -84,7 +83,6 @@ if (searchButtonTarget !== null && magicToken !== "") {
   svelteMountSearchButton(searchButtonTarget, {
     blogId: blogId,
     magicToken: magicToken,
-    contentTypes: [],
     open: false,
     anchorRef: searchButtonTarget,
   });
@@ -97,6 +95,5 @@ if (searchFormTarget !== null && magicToken !== "") {
   svelteMountSearchForm(searchFormTarget, {
     blogId: blogId,
     magicToken: magicToken,
-    contentTypes: [],
   });
 }

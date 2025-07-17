@@ -5,10 +5,10 @@
 
   export let blogId: string;
   export let magicToken: string;
-  export let contentTypes: ContentType[] = [];
   export let searchTabs: SearchTab[] = [];
   export let objectType: string;
 
+  let contentTypes: ContentType[] = [];
   let searchTextRef: HTMLInputElement | null = null;
 
   $: {

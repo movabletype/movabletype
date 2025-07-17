@@ -1,10 +1,8 @@
-import { ContentType } from "src/@types/contenttype";
 import SearchForm from "./SearchForm.svelte";
 
 type SearchFormProps = {
   blogId: string;
   magicToken: string;
-  contentTypes: ContentType[];
 };
 
 export interface SearchTab {

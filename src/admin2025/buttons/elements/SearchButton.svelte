@@ -9,12 +9,12 @@
 
   export let blogId: string;
   export let magicToken: string;
-  export let contentTypes: ContentType[] = [];
   export let open: boolean = false;
   export let anchorRef: HTMLElement;
   export let searchTabs: SearchTab[];
   export let objectType;
 
+  let contentTypes: ContentType[] = [];
   let contentTypesFetched = false;
   let isLoading = false;
 
