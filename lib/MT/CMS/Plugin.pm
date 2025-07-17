@@ -147,6 +147,24 @@ sub plugin_control {
             $cfg->PluginSwitch(
                 $plugin_sig . '=' . ( $state eq 'on' ? '1' : '0' ), 1 );
 
+            require File::Spec;
+            if ($state eq 'on' && File::Spec->file_name_is_absolute($plugin_sig)) {
+                # Disable other plugin(s) that have the same signature
+                my $real_sig = $MT::Plugins{$plugin_sig}{sig};
+                my @full_paths;
+                for my $sig (keys %MT::Plugins) {
+                    next if $sig eq $plugin_sig;
+                    if ($real_sig eq ($MT::Plugins{$sig}{sig} || '')) {
+                        push @full_paths, $MT::Plugins{$sig}{full_path};
+                    }
+                }
+                my $switch = $cfg->PluginSwitch;
+                $switch->{$real_sig} = 1;
+                $switch->{$_}        = 0 for @full_paths;
+                delete $switch->{$plugin_sig};
+                $cfg->PluginSwitch($switch, 1);
+            }
+
             ## trans("Plugin '[_1]' is enabled by [_2]")
             ## trans("Plugin '[_1]' is disabled by [_2]")
             my $message
