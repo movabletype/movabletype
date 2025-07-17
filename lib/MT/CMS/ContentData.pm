@@ -534,7 +534,7 @@ sub edit {
     if ($content_data && $content_data->id) {
         $app->add_breadcrumb($content_data->label || $app->translate('(untitled)'));
     } else {
-        $app->add_breadcrumb($app->translate('Create new [_1]', $content_type->name || '(untitled)'));
+        $app->add_breadcrumb($app->translate('Create [_1]', $content_type->name || '(untitled)'));
         $param->{nav_new_content_data} = 1;
     }
 
