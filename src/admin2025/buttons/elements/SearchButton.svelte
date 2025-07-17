@@ -30,7 +30,6 @@
             magicToken: magicToken,
           })
             .then((data) => {
-              console.log(data);
               contentTypes = data.contentTypes.filter(
                 (contentType) => contentType.can_search === 1,
               );

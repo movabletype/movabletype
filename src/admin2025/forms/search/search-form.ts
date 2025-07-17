@@ -44,7 +44,6 @@ export function svelteMountSearchForm(
   searchFormButton.addEventListener(
     "click",
     (event: MouseEvent) => {
-      console.log("Search form button clicked");
       event.preventDefault();
       searchFormProps.isLoading = true;
       app.$set(searchFormProps);
