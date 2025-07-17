@@ -259,7 +259,7 @@ sub edit {
                         }
                     )
                 );
-                $app->add_breadcrumb( $app->translate('New Entry') );
+                $app->add_breadcrumb( $app->translate('Create Entry') );
                 $param->{nav_new_entry} = 1;
             }
             elsif ( $type eq 'page' ) {
@@ -273,7 +273,7 @@ sub edit {
                         }
                     )
                 );
-                $app->add_breadcrumb( $app->translate('New Page') );
+                $app->add_breadcrumb( $app->translate('Create Page') );
                 $param->{nav_new_page} = 1;
             }
         }
