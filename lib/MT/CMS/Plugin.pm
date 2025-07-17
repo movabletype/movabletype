@@ -477,15 +477,18 @@ sub build_plugin_table {
             next if $pd->{plugin_disabled};
             if (exists $plugin_versions->{ $pd->{plugin_sig} }) {
                 if ($plugin_versions->{ $pd->{plugin_sig} } eq $pd->{plugin_version}) {
+                    my $tooltip = $app->translate('This is a plugin bundled with Movable Type.');
                     $pd->{plugin_label_value} = $app->translate('__PLUGIN_LABEL_DEFAULT');
-                    $pd->{plugin_label} = '<span class="badge badge-default">' . $pd->{plugin_label_value} . '</span>';
+                    $pd->{plugin_label}       = qq(<span class="badge badge-default" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="${tooltip}">) . $pd->{plugin_label_value} . '</span>';
                 } else {
+                    my $tooltip = $app->translate('This is a plugin bundled with Movable Type, but the version is different. This may be due to a Movable Type update or the plugin being overwritten.');
                     $pd->{plugin_label_value} = $app->translate('__PLUGIN_LABEL_DEFAULT_BUT_MODIFIED');
-                    $pd->{plugin_label} = '<span class="badge badge-info">' . $pd->{plugin_label_value} . '</span>';
+                    $pd->{plugin_label}       = qq(<span class="badge badge-info" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="${tooltip}">) . $pd->{plugin_label_value} . '</span>';
                 }
             } else {
+                my $tooltip = $app->translate('This is a plugin that was added to Movable Type later.');
                 $pd->{plugin_label_value} = $app->translate('Add');
-                $pd->{plugin_label} = '<span class="badge badge-primary">' . $pd->{plugin_label_value} . '</span>';
+                $pd->{plugin_label}       = qq(<span class="badge badge-primary" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="${tooltip}">) . $pd->{plugin_label_value} . '</span>';
             }
         }
     }
