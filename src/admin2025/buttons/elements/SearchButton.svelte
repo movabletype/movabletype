@@ -30,6 +30,7 @@
             magicToken: magicToken,
           })
             .then((data) => {
+              console.log(data);
               contentTypes = data.contentTypes.filter(
                 (contentType) => contentType.can_search === 1,
               );
@@ -106,17 +107,14 @@
       </button>
     </div>
     <div class="modal-body">
-      {#if isLoading}
-        <p>{window.trans("Loading...")}</p>
-      {:else}
-        <SearchForm
-          {blogId}
-          {magicToken}
-          {contentTypes}
-          {objectType}
-          {searchTabs}
-        />
-      {/if}
+      <SearchForm
+        {blogId}
+        {magicToken}
+        {contentTypes}
+        {objectType}
+        {searchTabs}
+        {isLoading}
+      />
     </div>
   </div>
 {/if}

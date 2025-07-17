@@ -5,10 +5,11 @@
 
   export let blogId: string;
   export let magicToken: string;
+  export let contentTypes: ContentType[] = [];
   export let searchTabs: SearchTab[] = [];
   export let objectType: string;
+  export let isLoading: boolean = false;
 
-  let contentTypes: ContentType[] = [];
   let searchTextRef: HTMLInputElement | null = null;
 
   $: {
@@ -42,22 +43,26 @@
   </div>
 
   <div class="search-content-type">
-    <select
-      class="custom-select form-control form-select"
-      class:disabled={objectType !== "content_data"}
-      name="content_type_id"
-      disabled={objectType !== "content_data" || contentTypes.length === 0}
-    >
-      {#if contentTypes.length > 0}
-        {#each contentTypes as contentType}
-          <option value={contentType.id}>{contentType.name}</option>
-        {/each}
-      {:else}
-        <option value="">
-          {window.trans("No Content Type could be found.")}
-        </option>
-      {/if}
-    </select>
+    {#if isLoading}
+      <p>{window.trans("Loading...")}</p>
+    {:else}
+      <select
+        class="custom-select form-control form-select"
+        class:disabled={objectType !== "content_data"}
+        name="content_type_id"
+        disabled={objectType !== "content_data" || contentTypes.length === 0}
+      >
+        {#if contentTypes.length > 0}
+          {#each contentTypes as contentType}
+            <option value={contentType.id}>{contentType.name}</option>
+          {/each}
+        {:else}
+          <option value="">
+            {window.trans("No Content Type could be found.")}
+          </option>
+        {/if}
+      </select>
+    {/if}
   </div>
 
   <div class="search-input-group">
