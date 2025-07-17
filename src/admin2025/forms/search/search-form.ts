@@ -67,6 +67,8 @@ export function svelteMountSearchForm(
         })
         .catch((error) => {
           console.error("Failed to fetch content types:", error);
+          searchFormProps.isLoading = false;
+          app.$set(searchFormProps);
         });
     },
     { once: true },
