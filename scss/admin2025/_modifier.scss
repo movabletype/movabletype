@@ -86,7 +86,7 @@ body{
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-body:has(.mt-modal-custom) {
+body:has(.mt-modal-overlay) {
   overflow: hidden;
   padding-right: var(--scrollbar-width);
 
