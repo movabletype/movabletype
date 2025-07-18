@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount, tick } from "svelte";
+  import { tick } from "svelte";
   import SVG from "../../../svg/elements/SVG.svelte";
   import { portal } from "svelte-portal";
   import { isOuterClick } from "../outerClick";
@@ -11,10 +11,17 @@
   export let open: boolean = false;
   export let anchorRef: HTMLElement;
   export let initialStarredSites: number[];
+
+  let sitesFetched = false;
+
   $: {
     if (anchorRef) {
       if (open) {
         anchorRef.classList.add("open");
+        if (!sitesFetched) {
+          sitesFetched = true;
+          filterApply();
+        }
       } else {
         anchorRef.classList.remove("open");
       }
@@ -253,9 +260,6 @@
       handleClose();
     }
   };
-  onMount(async () => {
-    filterApply();
-  });
 
   let tableBodyRef: HTMLElement | null = null;
   const initSortable = async (): Promise<void> => {
@@ -322,7 +326,7 @@
   };
 
   $: {
-    if (sites && sites.length > 0 && open) {
+    if (sites && sites.length > 0 && open && !loading) {
       initSortable();
     }
   }

@@ -1,10 +1,8 @@
-import { ContentType } from "src/@types/contenttype";
 import SearchButton from "./elements/SearchButton.svelte";
 
 type SearchButtonProps = {
   blogId: string;
   magicToken: string;
-  contentTypes: ContentType[];
   open: boolean;
   anchorRef: HTMLElement;
 };
