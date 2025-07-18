@@ -11554,6 +11554,7 @@ Adjustments
   --modal-z-index: 1300;
   --left-bar-z-index: 1200;
   --header-z-index: 1200;
+  --scrollbar-width: 0px;
 }
 
 html {
@@ -11567,6 +11568,14 @@ body {
   color: #212529;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+body:has(.mt-modal-overlay) {
+  overflow: hidden;
+  padding-right: var(--scrollbar-width);
+}
+body:has(.mt-modal-overlay) .mt-systemHeaderActions {
+  padding-right: var(--scrollbar-width);
 }
 
 @media (min-width: 768px) {
@@ -11749,6 +11758,13 @@ li {
   flex-wrap: wrap;
   justify-content: flex-start;
   width: 190px;
+}
+.mt-header .mt-header__logo .mt-productHeader__logo .mt-productHeader_wrapper a {
+  display: block;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  width: 100%;
 }
 .mt-header .mt-header__logo .mt-productHeader__logo .mt-productHeader__website_name {
   font-size: 0.85rem;
@@ -12704,6 +12720,7 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-mainContentWrapper {
   display: flex;
   align-items: center;
   margin-left: 16px;
+  margin-right: 16px;
 }
 .mt-mobileGlobalMenu__dropdownMenu .mt-productHeader__logo a {
   display: block;
@@ -12719,7 +12736,14 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-mainContentWrapper {
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-start;
-  width: 190px;
+  width: calc(100% - 48px);
+}
+.mt-mobileGlobalMenu__dropdownMenu .mt-productHeader__logo .mt-productHeader_wrapper a {
+  display: block;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  width: 100%;
 }
 .mt-mobileGlobalMenu__dropdownMenu .mt-productHeader__logo .mt-productHeader__website_name {
   font-size: 0.85rem;

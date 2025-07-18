@@ -507,7 +507,9 @@ sub core_page_actions {
                 condition => sub {
                     my $blog = MT->app->blog;
                     return 0 unless $blog;
-                    return $blog->theme_id || $blog->template_set;
+                    my $theme = $blog->theme;
+                    return 0 if $theme && $theme->{deprecated};
+                    return $theme || $blog->template_set;
                 },
                 order  => 1000,
                 dialog => 1
@@ -1385,7 +1387,9 @@ sub core_list_actions {
                     return 0 if $tmpl_type eq 'backup_templates';
                     my $blog = $app->blog;
                     return 1 unless $blog;
-                    return $blog->theme_id || $blog->template_set;
+                    my $theme = $blog->theme;
+                    return 0 if $theme && $theme->{deprecated};
+                    return $theme || $blog->template_set;
                 },
             },
 
@@ -1649,7 +1653,7 @@ sub core_site_menu_actions {
             view      => ['blog', 'website'],
             class     => 'view_site',
             condition => sub { $app->blog ? 1 : 0; },
-            label     => 'View Your Site',
+            label     => 'View Site',
             icon      => 'ic_view',
             href      => sub { $app->blog->site_url; },
             order     => 300,
@@ -3861,6 +3865,7 @@ sub list_pref {
     my $mode = $app->mode;
 
     # defaults:
+    my $d = $app->config->DefaultListPrefs || {};
     my %default = (
         Rows       => 25,
         Format     => 'Compact',
@@ -3871,6 +3876,7 @@ sub list_pref {
     if ( ( $list eq 'comment' ) || ( $list eq 'ping' ) ) {
         $default{Format} = 'expanded';
     }
+    $default{$_} = lc( $d->{$_} ) for keys %$d;
     my $list_pref;
     if ( $list eq 'main_menu' ) {
         $list_pref = {

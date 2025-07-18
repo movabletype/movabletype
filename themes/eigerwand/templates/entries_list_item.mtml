@@ -1,0 +1,27 @@
+<mt:If name="heading_level" like="h1|h2|h3|h4|h5|h6">
+  <mt:Var name="heading_level" setvar="heading_tag"/>
+<mt:Else>
+  <mt:Var name="heading_tag" value="h3"/>
+</mt:If>
+
+<article id="entry-<$mt:EntryID$>" class="entry" aria-labelledby="entry-title-<$mt:EntryID$>">
+  <a class="entry-link" href="<$mt:EntryPermalink encode_html="1"$>">
+    <<mt:Var name="heading_tag"> class="title entry-title" id="entry-title-<$mt:EntryID$>"><$mt:EntryTitle$></<mt:Var name="heading_tag">>
+
+    <span class="entry-time">
+      <span class="visually-hidden"><__trans phrase="Posted on"></span>
+      <time datetime="<$mt:EntryDate format_name="iso8601"$>" itemprop="datePublished"><$mt:EntryDate format="%x"$></time>
+    </span>
+
+    <mt:IfArchiveTypeEnabled archive_type="Category">
+      <mt:If tag="EntryPrimaryCategory">
+        <mt:EntryPrimaryCategory>
+          <span class="entry-category">
+            <span class="visually-hidden"><__trans phrase="in"></span>
+            <span class="label <$mt:CategoryBasename$>"><$mt:CategoryLabel$></span>
+          </span>
+        </mt:EntryPrimaryCategory>
+      </mt:If>
+    </mt:IfArchiveTypeEnabled>
+  </a>
+</article>

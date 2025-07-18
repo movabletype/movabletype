@@ -1,0 +1,7 @@
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.header > .nav > select, .widget-archive-dropdown > select').forEach( $select => {
+    $select.addEventListener('change', e => {
+      window.location = e.target.value;
+    })
+  })
+})

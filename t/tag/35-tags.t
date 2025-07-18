@@ -2529,13 +2529,13 @@ foo-subfoo
 --- template
 <MTBlogs><MTBlogTemplatesetID></MTBlogs>
 --- expected
-classic-blog
+classic-test-blog
 
 === test 479
 --- template
 <MTBlogs><MTBlogThemeID></MTBlogs>
 --- expected
-classic-blog
+classic-test-blog
 
 === test 480
 --- template
@@ -2706,7 +2706,7 @@ narnia.na
 --- template
 <MTWebsiteThemeID>
 --- expected
-classic-website
+classic-test-website
 
 === test 510
 --- SKIP
@@ -3182,6 +3182,12 @@ Foo
 <MTSetVarBlock name="foo"><span>Foo</span></MTSetVarBlock><MTGetVar name="foo" escape="html">
 --- expected
 &lt;span&gt;Foo&lt;/span&gt;
+
+=== test 591-2 double escape
+--- template
+<MTSetVarBlock name="foo">&</MTSetVarBlock><MTGetVar name="foo" escape="html" escape="html">
+--- expected
+&amp;amp;
 
 === test 592
 --- SKIP
@@ -4010,13 +4016,13 @@ About
 --- template
 <MTBlogs><MTBlogThemeID raw='1'></MTBlogs>
 --- expected
-classic_blog
+classic_test_blog
 
 === test 741
 --- template
 <MTWebsiteThemeID raw='1'>
 --- expected
-classic_website
+classic_test_website
 
 === test 742
 --- template

@@ -70,6 +70,7 @@ Adjustments
   --modal-z-index: 1300;
   --left-bar-z-index: 1200;
   --header-z-index: 1200;
+  --scrollbar-width: 0px;
 
   @extend %modal-variables;
 }
@@ -84,6 +85,14 @@ body{
   color: $body-color;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+body:has(.mt-modal-overlay) {
+  overflow: hidden;
+  padding-right: var(--scrollbar-width);
+
+  .mt-systemHeaderActions {
+    padding-right: var(--scrollbar-width);
+  }
 }
 @include media-breakpoint-up(md) {
   html {
@@ -259,6 +268,14 @@ li{
         flex-wrap: wrap;
         justify-content: flex-start;
         width: 190px;
+
+        a {
+          display: block;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          white-space: nowrap;
+          width: 100%;
+        }
       }
       .mt-productHeader__website_name {
         font-size: 0.85rem;
@@ -1353,6 +1370,8 @@ html[data-screen-id=dashboard][data-scope-type=user] {
     display: flex;
     align-items: center;
     margin-left: 16px;
+    margin-right: 16px;
+
     a{
       display: block;
     }
@@ -1367,7 +1386,16 @@ html[data-screen-id=dashboard][data-scope-type=user] {
       display: flex;
       flex-wrap: wrap;
       justify-content: flex-start;
-      width: 190px;
+      width: calc(100% - 48px);
+
+      a {
+        display: block;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+        width: 100%;
+      }
+
     }
     .mt-productHeader__website_name {
       font-size: 0.85rem;

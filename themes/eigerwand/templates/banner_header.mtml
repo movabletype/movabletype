@@ -1,0 +1,15 @@
+<div class="site-title">
+  <a href="<$mt:SiteURL encode_html="1"$>">
+    <mt:Assets type="image" tag="@SITE_LOGO" ignore_archive_context="1" limit="1">
+      <img
+        alt="<$mt:SiteName encode_html="1"$>"
+        src="<$mt:AssetThumbnailURL encode_html="1"$>"
+        width="<$mt:AssetProperty property="image_width"$>"
+        height="<$mt:AssetProperty property="image_height"$>"
+        decoding="async"
+      >
+    <mt:Else>
+      <$mt:SiteName$>
+    </mt:Assets>
+  </a>
+</div>

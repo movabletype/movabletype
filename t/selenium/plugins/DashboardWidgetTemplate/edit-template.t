@@ -4,7 +4,7 @@ use warnings;
 use utf8;
 use 5.010;
 use FindBin;
-use lib "$FindBin::Bin/../lib";    # t/lib
+use lib "$FindBin::Bin/../../../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
 use Data::Dumper;
@@ -41,7 +41,7 @@ subtest 'create new dashboard widget template' => sub {
     $s->wait_until_ready;
     assert_no_browser_errors();
 
-    is($s->get_current_value('input[name="type"]') => 'dashboard_widget', "type input should be dashboard_widget");
+    is($s->get_current_value('#template-listing-form input[name="type"]') => 'dashboard_widget', "type input should be dashboard_widget");
     like($s->get_current_value('#useful-links a[href$="#system"]', 'class'), qr/d-none/);
 
     $s->driver->find_element('label[for="code-highlight-switch"]')->click;

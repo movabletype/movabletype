@@ -117,28 +117,6 @@ sub replace {
     $self->post_ok($form->click);
 }
 
-sub dialog_grant_role_search {
-    my ($self, $value, $opts) = @_;
-    my $form   = $self->find_searchform('grant') or return;
-    my $params = { search => $value, _type => 'user' };
-
-    for my $key (keys %$opts) {
-        next unless exists $params->{$key};
-        $params->{$key} = $opts->{$key};
-    }
-
-    $self->post_ok({
-        %$params,
-        __mode      => (scalar $self->{cgi}->param('__mode')),
-        magic_token => (scalar $self->{cgi}->param('magic_token')),
-        return_args => (scalar $self->{cgi}->param('return_args')),
-        blog_id     => (scalar $self->{cgi}->param('blog_id')),
-        type        => (scalar $self->{cgi}->param('type')),
-        dialog      => 1,
-        json        => 1,
-    });
-}
-
 # This should be implemented in HTML::Form?
 sub _change_checkbox {
     my ($checkbox, $on) = @_;

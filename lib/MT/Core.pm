@@ -2055,6 +2055,7 @@ BEGIN {
 
             #'UseJcodeModule'  => { default => 0, },
             'DefaultTimezone'    => { default => '0', },
+            'DefaultListPrefs'   => { type    => 'HASH', },
             'DeleteFilesAfterRebuild'   => { default => 0, },
             'DeleteFilesAtRebuild'      => { default => 1, },
             'RebuildAtDelete'           => { default => 1, },
@@ -2109,8 +2110,8 @@ BEGIN {
             'ProcessMemoryCommand' => { default => \&ProcessMemoryCommand },
             'EnableAddressBook'    => { default => 0 },
             'SingleCommunity'      => { default => 1 },
-            'DefaultWebsiteTheme'  => { default => 'mont-blanc' },
-            'DefaultBlogTheme'     => { default => 'mont-blanc' },
+            'DefaultWebsiteTheme'  => { default => 'eigerwand' },
+            'DefaultBlogTheme'     => { default => 'eigerwand' },
             'ThemeStaticFileExtensions' => {
                 default =>
                     'html jpg jpeg gif png js css ico flv swf otf ttf svg webp map json'
@@ -2251,6 +2252,7 @@ BEGIN {
                 type    => 'ARRAY',
                 handler => \&TrustedHosts,
             },
+            'GrantRoleSitesView' => { default => 'tree' }, # DEPRECATED
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {
