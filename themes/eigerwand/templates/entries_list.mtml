@@ -1,17 +1,17 @@
-<mt:Entries lastn="10">
-  <mt:EntriesHeader>
-    <section id="posts">
-      <h2 class="section-title"><__trans phrase="Recent Entries"></h2>
+<section id="posts">
+  <h2 class="section-title"><__trans phrase="Recent Entries"></h2>
+  <mt:Entries lastn="10">
+    <mt:EntriesHeader>
       <div class="list">
-  </mt:EntriesHeader>
+    </mt:EntriesHeader>
 
-  <$mt:Include module="<__trans phrase="Entries List Item">" heading_level="h3"$>
+    <$mt:Include module="<__trans phrase="Entries List Item">" heading_level="h3"$>
 
-  <mt:EntriesFooter>
+    <mt:EntriesFooter>
       </div>
       <div class="nav">
         <a href="<$mt:Link template="main_index" encode_html="1"$>"><__trans phrase="Read more"></a>
       </div>
-    </section>
-  </mt:EntriesFooter>
-</mt:Entries>
+    </mt:EntriesFooter>
+  </mt:Entries>
+</section>

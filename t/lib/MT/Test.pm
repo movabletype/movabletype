@@ -329,7 +329,7 @@ sub init_data {
 
     my $test_root = $ENV{MT_TEST_ROOT} || "$ENV{MT_HOME}/t";
     my $themedir = File::Spec->catdir( $MT::MT_DIR => 'themes' );
-    MT->config->ThemesDirectory( [$themedir] );
+    MT->config->ThemesDirectory( [$themedir, "$MT::MT_DIR/t/themes"] );
     require MT::Theme;
 
     require MT::Website;
@@ -355,15 +355,15 @@ sub init_data {
             language             => 'en_us',
             date_language        => 'en_us',
             file_extension       => 'html',
-            theme_id             => 'classic_website',
+            theme_id             => 'classic_test_website',
         }
     );
     $website->id(2);
     $website->class('website');
     $website->save() or die "Couldn't save website 2: " . $website->errstr;
-    my $classic_website = MT::Theme->load('classic_website')
+    my $classic_test_website = MT::Theme->load('classic_test_website')
         or die MT::Theme->errstr;
-    $classic_website->apply($website);
+    $classic_test_website->apply($website);
     $website->save() or die "Couldn't save blog 1: " . $website->errstr;
 
     clear_cache();
@@ -398,7 +398,7 @@ sub init_data {
             language             => 'en_us',
             date_language        => 'en_us',
             file_extension       => 'html',
-            theme_id             => 'classic_blog',
+            theme_id             => 'classic_test_blog',
         }
     );
     $blog->id(1);
@@ -406,9 +406,9 @@ sub init_data {
     $blog->parent_id(2);
     $blog->save() or die "Couldn't save blog 1: " . $blog->errstr;
 
-    my $classic_blog = MT::Theme->load('classic_blog')
+    my $classic_test_blog = MT::Theme->load('classic_test_blog')
         or die MT::Theme->errstr;
-    $classic_blog->apply($blog);
+    $classic_test_blog->apply($blog);
     $blog->save() or die "Couldn't save blog 1: " . $blog->errstr;
 
     #    $blog->create_default_templates('mt_blog');

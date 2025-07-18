@@ -113,7 +113,7 @@ $test_env->prepare_fixture(sub {
         $test_app->post({
             __mode   => 'apply_theme',
             blog_id  => $w->id,
-            theme_id => 'classic_website',
+            theme_id => 'classic_test_website',
         });
 
         # Create categories
@@ -1256,13 +1256,13 @@ localhost
 --- template _mt_websites
 <mt:BlogTemplateSetID>
 --- expected
-classic-website
+classic-test-website
 
 === mt:BlogThemeID
 --- template _mt_websites
 <mt:BlogThemeID>
 --- expected
-classic-website
+classic-test-website
 
 === mt:EntriesHeader, mt:EntriesFooter
 --- template _mt_websites

@@ -65,7 +65,7 @@ $test_env->prepare_fixture(sub {
                 children_modified_on => '20000101000000',
                 language             => 'en_us',
                 file_extension       => 'html',
-                theme_id             => 'classic_blog',
+                theme_id             => 'classic_test_blog',
             }
         );
         $blog->id($i);

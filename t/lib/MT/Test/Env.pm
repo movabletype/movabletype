@@ -913,9 +913,9 @@ sub prepare_fixture {
     require MT::Theme;
     my $blog = MT::Blog->load(1);
     if ($blog) {
-        MT::Theme->load('classic_blog');
+        MT::Theme->load('classic_test_blog');
     } else {
-        MT::Theme->load('classic_website');
+        MT::Theme->load('classic_test_website');
     }
 
     $ENV{MT_TEST_LOADED_FIXTURE} = 1;

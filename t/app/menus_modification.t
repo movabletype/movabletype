@@ -35,8 +35,8 @@ $test_env->prepare_fixture('db');
 
 my $objs = MT::Test::Fixture->prepare({
     website => [{
-            name     => 'classic_site',
-            theme_id => 'classic_website',
+            name     => 'classic_test_site',
+            theme_id => 'classic_test_website',
         }, {
             name     => 'modified_site',
             theme_id => 'modify_menus',
@@ -47,7 +47,7 @@ my $objs = MT::Test::Fixture->prepare({
     ],
 });
 
-my $classic_site   = $objs->{website}{classic_site};
+my $classic_test_site   = $objs->{website}{classic_test_site};
 my $modified_site  = $objs->{website}{modified_site};
 my $modified_site2 = $objs->{website}{modified_site2};
 
@@ -56,7 +56,7 @@ my $admin = MT::Author->load(1);
 subtest 'Classic site shows entry/page menus' => sub {
     my $app = MT::Test::App->new;
     $app->login($admin);
-    $app->get_ok({ __mode => 'dashboard', blog_id => $classic_site->id });
+    $app->get_ok({ __mode => 'dashboard', blog_id => $classic_test_site->id });
     ok !$app->generic_error, 'no error';
     my $entry_menu = $app->wq_find('li#menu-entry');
     ok $entry_menu && $entry_menu->text =~ /Entries/, 'entry_menu exists';
