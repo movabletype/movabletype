@@ -49,7 +49,7 @@ elements:
         index:
           main_index:
             label: Entries Index
-            outfile: entries/index.html
+            outfile: archives.html
             rebuild_me: 1
           feed_recent:
             label: 'Feed - Recent Entries'
