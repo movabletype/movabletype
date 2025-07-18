@@ -67,8 +67,9 @@ sub update_plugin_versions {
 }
 
 sub _generate_plugin_versions {
+    my $home     = $ENV{MT_HOME} || '.';
     my $temp_dir = File::Temp::tempdir(CLEANUP => 1);
-    my $cmd      = qq(touch ${temp_dir}/mtconf && MT_CONFIG=${temp_dir}/mtconf MT_CONFIG_ObjectDriver=DBI::sqlite MT_CONFIG_Database=${temp_dir}/mtdb perl -Iextlib -Ilib -MMT -E 'MT->new; map { say(\$_->{plugin_sig} . "," . \$_->version) } sort { \$a->{plugin_sig} cmp \$b->{plugin_sig} } grep { \$_ && \$_->isa("MT::Plugin") } map { \$MT::Plugins{\$_}->{object} } keys %MT::Plugins');
+    my $cmd      = qq(touch ${temp_dir}/mtconf && MT_CONFIG=${temp_dir}/mtconf MT_CONFIG_ObjectDriver=DBI::sqlite MT_CONFIG_Database=${temp_dir}/mtdb perl -I${home}/extlib -I${home}/lib -MMT -E 'MT->new; map { say(\$_->{plugin_sig} . "," . \$_->version) } sort { \$a->{plugin_sig} cmp \$b->{plugin_sig} } grep { \$_ && \$_->isa("MT::Plugin") } map { \$MT::Plugins{\$_}->{object} } keys %MT::Plugins');
     `$cmd`;
 }
 
