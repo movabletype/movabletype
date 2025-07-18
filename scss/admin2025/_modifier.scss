@@ -70,6 +70,7 @@ Adjustments
   --modal-z-index: 1300;
   --left-bar-z-index: 1200;
   --header-z-index: 1200;
+  --scrollbar-width: 0px;
 
   @extend %modal-variables;
 }
@@ -84,6 +85,14 @@ body{
   color: $body-color;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+body:has(.mt-modal-overlay) {
+  overflow: hidden;
+  padding-right: var(--scrollbar-width);
+
+  .mt-systemHeaderActions {
+    padding-right: var(--scrollbar-width);
+  }
 }
 @include media-breakpoint-up(md) {
   html {
