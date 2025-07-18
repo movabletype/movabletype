@@ -1,0 +1,22 @@
+<nav class="nav" aria-label="<__trans phrase="Main Navigation">">
+  <ul>
+    <li><a href="<$mt:Link template="main_index" encode_html="1"$>"><__trans phrase="Entries List"></a></li>
+    <mt:Pages tag="@ADD_TO_SITE_NAV">
+      <li><a href="<$mt:PagePermalink encode_html="1"$>"><$mt:PageTitle$></a></li>
+    </mt:Pages>
+    <mt:Pages tag="@ABOUT_PAGE" limit="1">
+      <li><a href="<$mt:PagePermalink encode_html="1"$>"><__trans phrase="About"></a></li>
+    </mt:Pages>
+  </ul>
+
+  <select>
+    <option value="" selected><__trans phrase="Menu"></option>
+    <option value="<$mt:Link template="main_index" encode_html="1"$>"><__trans phrase="Entries List"></option>
+    <mt:Pages tag="@ADD_TO_SITE_NAV">
+      <option value="<$mt:PagePermalink encode_html="1"$>"><$mt:PageTitle$></option>
+    </mt:Pages>
+    <mt:Pages tag="@ABOUT_PAGE" limit="1">
+      <option value="<$mt:PagePermalink encode_html="1"$>"><__trans phrase="About"></option>
+    </mt:Pages>
+  </select>
+</nav>

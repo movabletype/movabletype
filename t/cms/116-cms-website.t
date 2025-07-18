@@ -386,14 +386,14 @@ SKIP: {
         $app->content_like(qr/$pages/, 'Listing screen has "Pages" column.');
     }
 
-    my $classic_website = quotemeta '<option value="classic_website">Classic Website</option>';
+    my $classic_test_website = quotemeta '<option value="classic_test_website">Classic Test Website</option>';
     $app->content_like(
-        qr/$classic_website/,
+        qr/$classic_test_website/,
         'Listing screen has website theme filters.'
     );
 
-    my $classic_blog = quotemeta '<option value="classic_blog">Classic Blog</option>';
-    $app->content_like(qr/$classic_blog/, 'Listing screen has blog theme filters.');
+    my $classic_test_blog = quotemeta '<option value="classic_test_blog">Classic Test Blog</option>';
+    $app->content_like(qr/$classic_test_blog/, 'Listing screen has blog theme filters.');
 };
 
 done_testing();

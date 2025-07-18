@@ -32,7 +32,7 @@ $test_env->prepare_fixture('db');
 my $objs = MT::Test::Fixture->prepare({
     website => [{
         name  => 'test site',
-        theme => 'classic_website',
+        theme => 'classic_test_website',
     }],
     category => [qw/foo bar baz/],
     entry    => [{
