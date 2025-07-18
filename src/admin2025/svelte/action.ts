@@ -1,4 +1,4 @@
-export const modal = (node: HTMLElement) => {
+export const modalOverlay = (node: HTMLElement) => {
   const scrollbarWidth =
     window.innerWidth - document.documentElement.clientWidth;
   if (scrollbarWidth > 0) {
@@ -8,5 +8,5 @@ export const modal = (node: HTMLElement) => {
     );
   }
 
-  node.classList.add("mt-modal-custom");
+  node.classList.add("mt-modal-overlay");
 };
