@@ -305,7 +305,7 @@ sub suite {
                     name     => 'test-api-permission-website',
                     url      => 'http://narnia2.na/',
                     sitePath => 'relative/path',
-                    themeId  => 'classic_website',
+                    themeId  => 'classic_test_website',
                 },
             },
             is_superuser => 1,
@@ -459,7 +459,7 @@ sub suite {
                     name         => 'test-api-permission-website-2',
                     url          => 'http://narnia2.na/',
                     sitePath     => $test_env->root,
-                    themeId      => 'classic_website',
+                    themeId      => 'classic_test_website',
                     serverOffset => -5.5,
                     language     => 'de',
                 },
@@ -490,7 +490,7 @@ sub suite {
                 is( $got->{name}, 'test-api-permission-website-2', 'name' ),
                     is( $got->{url}, 'http://narnia2.na/', 'url' );
                 is( $got->{sitePath},     $test_env->root,     'sitePath' );
-                is( $got->{themeId},      'classic_website', 'themeId' );
+                is( $got->{themeId},      'classic_test_website', 'themeId' );
                 is( $got->{serverOffset}, -5.5,              'serverOffset' );
                 is( $got->{language},     'de',              'language' );
             },
@@ -505,7 +505,7 @@ sub suite {
                     name     => 'test-api-website-3',
                     url      => 'http://narnia2.na/',
                     sitePath => $test_env->root . '/',
-                    themeId  => 'classic_website',
+                    themeId  => 'classic_test_website',
                 },
             },
             result => sub {
@@ -585,7 +585,7 @@ sub suite {
                     url      => 'blog',
                     name     => 'blog',
                     sitePath => 'blog',
-                    themeId  => 'classic_website',
+                    themeId  => 'classic_test_website',
                 },
             },
             is_superuser => 1,
@@ -594,7 +594,7 @@ sub suite {
                 +{  error => {
                         code => 409,
                         message =>
-                            "Cannot apply website theme to blog: classic_website\n",
+                            "Cannot apply website theme to blog: classic_test_website\n",
                     },
                 };
             },
@@ -607,7 +607,7 @@ sub suite {
                     url      => 'blog',
                     name     => 'blog',
                     sitePath => 'blog',
-                    themeId  => 'classic_blog',
+                    themeId  => 'classic_test_blog',
                 },
             },
             author_id => 0,
@@ -622,7 +622,7 @@ sub suite {
                     url      => 'blog',
                     name     => 'blog',
                     sitePath => 'blog',
-                    themeId  => 'classic_blog',
+                    themeId  => 'classic_test_blog',
                 },
             },
             restrictions => { 0 => [qw/ create_site /], },
@@ -639,7 +639,7 @@ sub suite {
                     url      => 'blog',
                     name     => 'blog',
                     sitePath => 'blog',
-                    themeId  => 'classic_blog',
+                    themeId  => 'classic_test_blog',
                 },
             },
             is_superuser => 1,
@@ -716,7 +716,7 @@ sub suite {
             method => 'POST',
             params => {
                 blog => {
-                    themeId       => 'classic_blog',
+                    themeId       => 'classic_test_blog',
                     name          => 'blog-3 name',
                     url           => 'blog-3',
                     siteSubdomain => 'www',
@@ -752,7 +752,7 @@ sub suite {
 
                 my $got = $app->current_format->{unserialize}->($body);
 
-                is( $got->{themeId}, 'classic_blog', 'themeId' );
+                is( $got->{themeId}, 'classic_test_blog', 'themeId' );
                 is( $got->{name},    'blog-3 name',  'name' ),
                     is( $got->{url}, 'http://www.narnia.na/blog-3/', 'url' );
                 is( $got->{sitePath},     $test_env->root, 'sitePath' );
@@ -770,7 +770,7 @@ sub suite {
                     name     => 'test-api-blog-3',
                     url      => 'http://narnia2.na/',
                     sitePath => $test_env->root . '/',
-                    themeId  => 'classic_blog',
+                    themeId  => 'classic_test_blog',
                 },
             },
             result => sub {

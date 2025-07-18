@@ -99,7 +99,7 @@ my ($website1, $website2, $website3);
 );
     $website3 = MT::Test::Permission->make_website(
     name => 'website3',
-    theme_id => 'classic_website',
+    theme_id => 'classic_test_website',
 );
 }
 

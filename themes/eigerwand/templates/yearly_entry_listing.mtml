@@ -1,0 +1,34 @@
+<mt:IncludeBlock module="<__trans phrase="Layout">">
+  <div class="content">
+    <nav aria-label="<__trans phrase="Breadcrumb">">
+      <ol class="breadcrumb">
+        <li><a href="<$mt:SiteURL encode_html="1"$>"><__trans phrase="Home"></a></li>
+        <li><a href="<$mt:Link template="main_index" encode_html="1"$>"><__trans phrase="Entries List"></a></li>
+        <li><__trans phrase="[_1] Archives" params="<$mt:ArchiveTitle$>"></li>
+      </ol>
+    </nav>
+    <main class="main">
+      <section id="posts">
+        <h1 class="section-title"><__trans phrase="[_1] Archives" params="<$mt:ArchiveTitle$>"></h1>
+        <div class="list">
+          <mt:Entries>
+            <$mt:Include module="<__trans phrase="Entries List Item">" heading_level="h2"$>
+          </mt:Entries>
+        </div>
+        <nav class="pagination" aria-label="<__trans phrase="Pagination">">
+          <ul>
+            <mt:ArchivePrevious>
+              <li><a rel="prev" href="<$mt:ArchiveLink encode_html="1"$>"><$mt:ArchiveTitle$></a></li>
+            </mt:ArchivePrevious>
+            <mt:ArchiveNext>
+              <li><a rel="next" href="<$mt:ArchiveLink encode_html="1"$>"><$mt:ArchiveTitle$></a></li>
+            </mt:ArchiveNext>
+          </ul>
+        </nav>
+      </section>
+    </main>
+    <aside class="related">
+      <$mt:WidgetSet name="<__trans phrase="Related Contents (Entries)">"$>
+    </aside>
+  </div>
+</mt:IncludeBlock>

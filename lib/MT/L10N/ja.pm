@@ -1519,6 +1519,7 @@ use vars qw( @ISA %Lexicon );
 	'Theme not found' => 'テーマがみつかりませんでした。',
 	'Themes Directory [_1] is not writable.' => 'テーマディレクトリ[_1]に書き込めません。',
 	'Themes directory [_1] is not writable.' => 'テーマディレクトリ[_1]に書き込めません。',
+	'This theme has been removed.' => 'このテーマは削除されました。',
 
 ## lib/MT/CMS/Tools.pm
 	'Any site' => '任意のサイト',
@@ -5294,6 +5295,7 @@ use vars qw( @ISA %Lexicon );
 	'Themes in Use' => '利用しているテーマ',
 	'This theme cannot be applied to the child site due to [_1] errors' => '次の理由により、テーマを適用できませんでした',
 	'This theme cannot be applied to the site due to [_1] errors' => '次の理由により、テーマを適用できませんでした。',
+	'This theme has been deprecated. You can not reapply it or refresh its templates.' => 'このテーマは廃止されました。再適用やテンプレートの初期化は行えません。',
 	'Uninstall' => 'アンインストール',
 	'Warnings' => '警告',
 	'[quant,_1,warning,warnings]' => '[quant,_1,,,]件の警告',
