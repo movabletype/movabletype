@@ -83,7 +83,7 @@ sub make_website {
         children_modified_on => '20000101000000',
         language             => 'en_us',
         file_extension       => 'html',
-        theme_id             => 'classic_website',
+        theme_id             => 'classic_test_website',
     };
 
     if (%params) {
@@ -141,7 +141,7 @@ sub make_blog {
         children_modified_on => '20000101000000',
         language             => 'en_us',
         file_extension       => 'html',
-        theme_id             => 'classic_blog',
+        theme_id             => 'classic_test_blog',
         parent_id            => 1,
     };
 

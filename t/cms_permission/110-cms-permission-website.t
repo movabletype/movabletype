@@ -325,7 +325,7 @@ subtest 'mode = save (new)' => sub {
         __mode        => 'save',
         _type         => 'website',
         name          => 'websiteName',
-        website_theme => 'classic_website',
+        website_theme => 'classic_test_website',
         site_url      => 'http://localhost',
     });
     $app->has_no_permission_error("save (new) by admin");
@@ -335,7 +335,7 @@ subtest 'mode = save (new)' => sub {
         __mode        => 'save',
         _type         => 'website',
         name          => 'WebsiteName',
-        website_theme => 'classic_website',
+        website_theme => 'classic_test_website',
         site_url      => 'http://localhost',
     });
     $app->has_no_permission_error("save (new) by permitted user");
@@ -345,7 +345,7 @@ subtest 'mode = save (new)' => sub {
         __mode        => 'save',
         _type         => 'website',
         name          => 'WebsiteName',
-        website_theme => 'classic_website',
+        website_theme => 'classic_test_website',
         site_url      => 'http://localhost',
     });
     $app->has_permission_error("save (new) by blog admin");
