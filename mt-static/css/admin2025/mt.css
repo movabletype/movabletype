@@ -11570,11 +11570,11 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-body:has(.mt-modal-custom) {
+body:has(.mt-modal-overlay) {
   overflow: hidden;
   padding-right: var(--scrollbar-width);
 }
-body:has(.mt-modal-custom) .mt-systemHeaderActions {
+body:has(.mt-modal-overlay) .mt-systemHeaderActions {
   padding-right: var(--scrollbar-width);
 }
 
