@@ -6,7 +6,10 @@ package MT::Util::PluginVersions;
 
 use strict;
 use warnings;
-use File::Temp ();
+use ExtUtils::Manifest ();
+use File::Temp         ();
+
+my $HasGit;
 
 sub plugin_versions_file {
     my $home = $ENV{MT_TEST_ROOT} || $ENV{MT_HOME} || '.';
@@ -17,25 +20,61 @@ sub load_plugin_versions {
     my $file = plugin_versions_file();
     return unless -f $file;
     open my $fh, '<', $file or die "$!: $file";
+    my $data = do { local $/; <$fh> };
+    close $fh;
+    _parse_plugin_versions($data);
+}
+
+sub _parse_plugin_versions {
+    my $data = shift;
+    return unless $data;
     my %map;
-    while (<$fh>) {
-        chomp;
+    for (split /\n/, $data) {
         next if /^#/ or /^\s*$/;
-        my ($plugin_sig, $version) = split /,/, $_;
-        $map{$plugin_sig} = $version;
+        my ($sig, $version) = split /,/, $_;
+        my $path =
+            $sig =~ /\.pl$/
+            ? "plugins/${sig}"
+            : "plugins/${sig}/config.yaml";
+        $map{$path} = {
+            sig     => $sig,
+            version => $version,
+        };
     }
     \%map;
 }
 
 sub update_plugin_versions {
+    my $file = plugin_versions_file();
+    my @files;
+    my $manifested;
+    if (-e './MANIFEST') {
+        @files      = keys %{ ExtUtils::Manifest::maniread() };
+        $manifested = 1;
+    } elsif (-d '.git' && _has_git()) {
+        my $skip = ExtUtils::Manifest::maniskip();
+        @files = grep { !$skip->($_) } split /\n/, `git ls-tree -r --name-only HEAD`;
+    }
+    my $data                = _generate_plugin_versions();
+    my $plugin_versions_map = _parse_plugin_versions($data);
+    open my $out, '>', $file or die "$!: $file";
+    for my $f (sort @files) {
+        next unless $plugin_versions_map->{$f};
+        print $out $plugin_versions_map->{$f}{sig}, ",", $plugin_versions_map->{$f}{version}, "\n";
+    }
+    close $out;
+    ExtUtils::Manifest::mkmanifest() if $manifested;
+}
+
+sub _generate_plugin_versions {
     my $temp_dir = File::Temp::tempdir(CLEANUP => 1);
     my $cmd      = qq(touch ${temp_dir}/mtconf && MT_CONFIG=${temp_dir}/mtconf MT_CONFIG_ObjectDriver=DBI::sqlite MT_CONFIG_Database=${temp_dir}/mtdb perl -Iextlib -Ilib -MMT -E 'MT->new; map { say(\$_->{plugin_sig} . "," . \$_->version) } sort { \$a->{plugin_sig} cmp \$b->{plugin_sig} } grep { \$_ && \$_->isa("MT::Plugin") } map { \$MT::Plugins{\$_}->{object} } keys %MT::Plugins');
-    my $result   = `$cmd`;
+    `$cmd`;
+}
 
-    my $file = plugin_versions_file();
-    open my $out, '>', $file or die "$!: $file";
-    print $out $result;
-    close $out;
+sub _has_git {
+    return $HasGit if defined $HasGit;
+    $HasGit = `git --version` =~ /^git version/s ? 1 : 0;
 }
 
 1;
