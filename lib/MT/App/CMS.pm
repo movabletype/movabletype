@@ -5109,6 +5109,8 @@ sub setup_editor_param {
             }
             $param->{content_css} = $css;
         }
+
+        $param->{link_default_target} = $blog->link_default_target;
     }
 
     $param->{object_type} = $app->param('_type') || '';
