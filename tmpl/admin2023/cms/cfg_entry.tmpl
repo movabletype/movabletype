@@ -263,11 +263,11 @@
   </mtapp:settinggroup>
 
   <mtapp:settinggroup id="wysiwyg-editor-setting" class="mb-3">
-    <legend class="h3"><__trans phrase="WYSIWYG Editor Setting"></legend>
+    <legend class="h3"><__trans phrase="Editor Setting"></legend>
     <mtapp:setting
        id="content_css"
        label="<__trans phrase="Content CSS">"
-       hint="<__trans phrase="Content CSS will be applied when WYSIWYG editor does support. You can specify CSS file by URL or {{theme_static}} placeholder. Example: {{theme_static}}path/to/cssfile.css">"
+       hint="<__trans phrase="Content CSS will be applied if supported by the editor in use. You can specify CSS file by URL or {{theme_static}} placeholder. Example: {{theme_static}}path/to/cssfile.css">"
        hint_id="contentCss"
        show_hint="1">
        <input type="text" name="content_css" class="form-control" value="<mt:var name="content_css" escape="html">" placeholder="http://www.example.com/path/to/cssfile.css" aria-describedby="contentCss" />
