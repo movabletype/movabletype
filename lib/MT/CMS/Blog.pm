@@ -2186,6 +2186,10 @@ sub save_filter {
         if ( !( $screen && $app->can_do('edit_blog_config') )
         && ( defined $name && $name eq '' ) );
 
+    if (defined(my $link_default_target = $app->param('link_default_target'))) {
+        return $eh->error(MT->translate("Invalid value: [_1]", $link_default_target)) unless $link_default_target =~ m{\A_(blank|self)\z};
+    }
+
 #TBD
 #    return $eh->error( MT->translate("Site URL must be an absolute URL.") )
 #      if ( $screen eq 'cfg_prefs' )
