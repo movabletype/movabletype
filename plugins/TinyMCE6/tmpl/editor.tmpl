@@ -10,7 +10,8 @@ MT.Editor.TinyMCE.config.init_instance_callback = function (inst) {
   inst.dom.addStyle('@media (max-width: 767.98px) { body { font-size: 16px!important; } }');
 };
 jQuery.extend(MT.Editor.TinyMCE.config, <mt:Var name="config" to_json="1" mteval="1" />, {
-  plugin_mt_can_upload: <mt:If name="can_upload">true<mt:Else>false</mt:If>
+  plugin_mt_can_upload: <mt:If name="can_upload">true<mt:Else>false</mt:If>,
+  link_default_target: '<mt:Var name="link_default_target" escape="js">'
 });
 </script>
 </mt:setvarblock>
