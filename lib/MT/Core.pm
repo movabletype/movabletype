@@ -1939,7 +1939,6 @@ BEGIN {
                 default =>
                     'a href,b,i,br/,p,strong,em,ul,ol,li,blockquote,pre',
             },
-            'GenerateTrackBackRSS'                   => { default => 0, },
             'DBIRaiseError'                          => { default => 0, },
             'DBIShowErrorStatement'                  => { default => 0, },
             'DBIConnectOptions'                      => { type => 'HASH' },
