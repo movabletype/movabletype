@@ -31,7 +31,7 @@ sub _parse_plugin_versions {
     my %map;
     for (split /\n/, $data) {
         next if /^#/ or /^\s*$/;
-        my ($sig, $version) = split /,/, $_;
+        my ($sig, $version) = split /\t/, $_;
         my $path =
             $sig =~ /\.pl$/
             ? "plugins/${sig}"
@@ -60,7 +60,7 @@ sub update_plugin_versions {
     open my $out, '>', $file or die "$!: $file";
     for my $f (sort @files) {
         next unless $plugin_versions_map->{$f};
-        print $out $plugin_versions_map->{$f}{sig}, ",", $plugin_versions_map->{$f}{version}, "\n";
+        print $out $plugin_versions_map->{$f}{sig}, "\t", $plugin_versions_map->{$f}{version}, "\n";
     }
     close $out;
     ExtUtils::Manifest::mkmanifest() if $manifested;
@@ -70,7 +70,7 @@ sub _generate_plugin_versions {
     my $home        = $ENV{MT_HOME} || '.';
     my $temp_dir    = File::Temp::tempdir(CLEANUP => 1);
     my $plugin_path = MT->config->PluginPath;
-    my $cmd         = qq(touch ${temp_dir}/mtconf && MT_CONFIG=${temp_dir}/mtconf MT_CONFIG_ObjectDriver=DBI::sqlite MT_CONFIG_Database=${temp_dir}/mtdb MT_CONFIG_PluginPath=${plugin_path} perl -I${home}/extlib -I${home}/lib -MMT -E 'MT->new; map { say(\$_->{plugin_sig} . "," . \$_->version) } sort { \$a->{plugin_sig} cmp \$b->{plugin_sig} } grep { \$_ && \$_->isa("MT::Plugin") } map { \$MT::Plugins{\$_}->{object} } keys %MT::Plugins');
+    my $cmd         = qq(touch ${temp_dir}/mtconf && MT_CONFIG=${temp_dir}/mtconf MT_CONFIG_ObjectDriver=DBI::sqlite MT_CONFIG_Database=${temp_dir}/mtdb MT_CONFIG_PluginPath=${plugin_path} perl -I${home}/extlib -I${home}/lib -MMT -E 'MT->new; map { say(\$_->{plugin_sig} . "\t" . \$_->version) } sort { \$a->{plugin_sig} cmp \$b->{plugin_sig} } grep { \$_ && \$_->isa("MT::Plugin") } map { \$MT::Plugins{\$_}->{object} } keys %MT::Plugins');
     `$cmd`;
 }
 
