@@ -408,6 +408,7 @@ sub as_html {
 
     my $app = MT->instance;
     $param->{enclose} = 0 unless exists $param->{enclose};
+    my $enclose = $param->{enclose};
 
     if ( $param->{include} ) {
         my $fname = $asset->file_name;
@@ -462,7 +463,7 @@ sub as_html {
                 = $thumb
                 ? sprintf(
                 '<img src="%s" %s alt="%s" %s />',
-                MT::Util::encode_html( $thumb->url ),   $dimensions,
+                MT::Util::encode_html( $enclose ? $thumb->column('url') : $thumb->url ),   $dimensions,
                 MT::Util::encode_html( $asset->label ), $wrap_style
                 )
                 : MT->translate('View image');
@@ -470,8 +471,8 @@ sub as_html {
             if ($param->{image_default_link} == 1) {
                 $text = sprintf(
                     q|<a href="%s" data-test="popup-now" onclick="window.open('%s','popup','width=%d,height=%d,scrollbars=yes,resizable=no,toolbar=no,directories=no,location=no,menubar=no,status=no,left=0,top=0'); return false">%s</a>|,
-                    MT::Util::encode_html( $popup->url ),
-                    MT::Util::encode_html( $popup->url ),
+                    MT::Util::encode_html( $enclose ? $popup->column('url') : $popup->url ),
+                    MT::Util::encode_html( $enclose ? $popup->column('url') : $popup->url ),
                     $asset->image_width,
                     $asset->image_height + 1,
                     $link,
@@ -479,7 +480,7 @@ sub as_html {
             } else {
                 $text = sprintf(
                     q|<a href="%s">%s</a>|,
-                    MT::Util::encode_html( $popup->url ),
+                    MT::Util::encode_html( $enclose ? $popup->column('url') : $popup->url ),
                     $link,
                 );
             }
@@ -488,9 +489,9 @@ sub as_html {
             if ( $param->{thumb} ) {
                 $text = sprintf(
                     '<a href="%s"><img alt="%s" src="%s" %s %s /></a>',
-                    MT::Util::encode_html( $asset->url ),
+                    MT::Util::encode_html( $enclose ? $asset->column('url') : $asset->url ),
                     MT::Util::encode_html( $asset->label ),
-                    MT::Util::encode_html( $thumb->url ),
+                    MT::Util::encode_html( $enclose ? $asset->column('url') : $thumb->url ),
                     $dimensions,
                     $wrap_style,
                 );
@@ -499,7 +500,7 @@ sub as_html {
                 $text = sprintf(
                     '<img alt="%s" src="%s" %s %s />',
                     MT::Util::encode_html( $asset->label ),
-                    MT::Util::encode_html( $asset->url ),
+                    MT::Util::encode_html( $enclose ? $asset->column('url') : $asset->url ),
                     $dimensions, $wrap_style,
                 );
             }
@@ -509,7 +510,7 @@ sub as_html {
         require MT::Util;
         $text = sprintf(
             '<a href="%s">%s</a>',
-            MT::Util::encode_html( $asset->url ),
+            MT::Util::encode_html( $enclose ? $asset->column('url') : $asset->url ),
             MT::Util::encode_html( $asset->display_name )
         );
     }
