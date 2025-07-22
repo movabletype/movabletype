@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import { portal } from "svelte-portal";
+  import { setGlobalCollapsedDomAttribute } from "../utils";
 
   export let buttonRef: HTMLButtonElement;
   export let collapsed = false;
@@ -38,11 +39,11 @@
       if (collapsed) {
         buttonRef.classList.remove("expanded");
         buttonRef.classList.add("collapsed");
-        document.body.dataset.isCollapsed = "true";
+        setGlobalCollapsedDomAttribute(true);
       } else {
         buttonRef.classList.remove("collapsed");
         buttonRef.classList.add("expanded");
-        document.body.dataset.isCollapsed = "false";
+        setGlobalCollapsedDomAttribute(false);
       }
     }
   }

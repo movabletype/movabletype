@@ -1,0 +1,14 @@
+<mt:IfCommentsActive>
+<section id="comments" class="feedback">
+  <h2><$mt:EntryCommentCount singular="<__trans phrase="Comment">" plural="<__trans phrase="Comments">" none="<__trans phrase="Comments">"$></h2>
+  <mt:Comments>
+  <$mt:Include module="<__trans phrase="Comment Detail">"$>
+  </mt:Comments>
+  <mt:IfCommentsAccepted>
+    <mt:IfRegistrationAllowed>
+  <p id="comment-greeting" class="message"><__trans phrase="Leave a comment"></p>
+    </mt:IfRegistrationAllowed>
+  <$mt:Include module="<__trans phrase="Comment Form">"$>
+  </mt:IfCommentsAccepted>
+</section>
+</mt:IfCommentsActive>

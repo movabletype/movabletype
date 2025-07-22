@@ -21,7 +21,7 @@ $test_env->prepare_fixture('db');
 my $objs = MT::Test::Fixture->prepare({
     website => [{
         name         => 'testsite',
-        theme_id     => 'classic_website',
+        theme_id     => 'classic_test_website',
         site_path    => 'TEST_ROOT/site',
         archive_path => 'TEST_ROOT/site/archive',
     }],

@@ -1,0 +1,16 @@
+<mt:IfArchiveTypeEnabled archive_type="Page">
+  <mt:If tag="SiteEntryCount">
+    <mt:Pages sort_by="title" sort_order="ascend">
+      <mt:PagesHeader>
+<nav class="widget-pages widget">
+  <h3><__trans phrase="Pages"></h3>
+  <ul>
+      </mt:PagesHeader>
+    <li><a href="<$mt:PagePermalink encode_html="1"$>"><$mt:PageTitle$></a></li>
+      <mt:PagesFooter>
+  </ul>
+</nav>
+      </mt:PagesFooter>
+    </mt:Pages>
+  </mt:If>
+</mt:IfArchiveTypeEnabled>

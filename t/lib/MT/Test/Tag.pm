@@ -259,8 +259,7 @@ sub MT::Test::Tag::_filter_vars {
 }
 
 sub MT::Test::Tag::php_test_script {    # full qualified to avoid Spiffy magic
-    my ( $block_name, $blog_id, $template, $text, $extra ) = @_;
-    $text ||= '';
+    my ( $block_name, $blog_id, $template, $extra ) = @_;
 
     $template =~ s/<\$(mt.+?)\$>/<$1>/gi;
     $template =~ s/\$/\\\$/g;

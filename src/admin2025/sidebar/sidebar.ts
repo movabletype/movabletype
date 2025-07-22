@@ -1,10 +1,9 @@
 import Sidebar from "./elements/Sidebar.svelte";
+import { getCollapsedState, setCollapsedState } from "./utils";
 
 type SidebarProps = {
   collapsed: boolean;
   buttonRef: HTMLButtonElement;
-  sessionName: string;
-  isStored: boolean;
 };
 
 export function svelteMountSidebar(target: Element, props: SidebarProps): void {
@@ -13,7 +12,7 @@ export function svelteMountSidebar(target: Element, props: SidebarProps): void {
     props: {
       collapsed: props.collapsed,
       buttonRef: props.buttonRef,
-      isStored: props.isStored,
+      isStored: getCollapsedState() !== null,
     },
   });
 
@@ -24,6 +23,6 @@ export function svelteMountSidebar(target: Element, props: SidebarProps): void {
       props.collapsed = true;
     }
     app.$set(props);
-    sessionStorage.setItem(props.sessionName, props.collapsed.toString());
+    setCollapsedState(props.collapsed);
   });
 }

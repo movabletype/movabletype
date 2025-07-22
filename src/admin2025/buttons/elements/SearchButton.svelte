@@ -2,22 +2,46 @@
   import { onMount } from "svelte";
   import { portal } from "svelte-portal";
   import { isOuterClick } from "../outerClick";
+  import { modalOverlay } from "../../svelte/action";
   import { ContentType } from "src/@types/contenttype";
   import { SearchTab } from "../search-button";
   import SearchForm from "../../forms/search/SearchForm.svelte";
+  import { fetchContentTypes } from "src/utils/fetch-content-types";
 
   export let blogId: string;
   export let magicToken: string;
-  export let contentTypes: ContentType[] = [];
   export let open: boolean = false;
   export let anchorRef: HTMLElement;
   export let searchTabs: SearchTab[];
   export let objectType;
 
+  let contentTypes: ContentType[] = [];
+  let contentTypesFetched = false;
+  let isLoading = false;
+
   $: {
     if (anchorRef) {
       if (open) {
         anchorRef.classList.add("open");
+
+        if (!contentTypesFetched && !isLoading) {
+          isLoading = true;
+          fetchContentTypes({
+            blogId: blogId,
+            magicToken: magicToken,
+          })
+            .then((data) => {
+              contentTypes = data.contentTypes.filter(
+                (contentType) => contentType.can_search === 1,
+              );
+              contentTypesFetched = true;
+              isLoading = false;
+            })
+            .catch((error) => {
+              console.error("Failed to fetch content types:", error);
+              isLoading = false;
+            });
+        }
       } else {
         anchorRef.classList.remove("open");
       }
@@ -65,6 +89,7 @@
     class="search-button-modal-overlay"
     on:click={handleClose}
     use:portal={"body"}
+    use:modalOverlay
   ></div>
   <div
     class="modal search-button-modal"
@@ -89,6 +114,7 @@
         {contentTypes}
         {objectType}
         {searchTabs}
+        {isLoading}
       />
     </div>
   </div>

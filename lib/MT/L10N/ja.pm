@@ -565,7 +565,7 @@ use vars qw( @ISA %Lexicon );
 	'Compose' => '投稿',
 	'Content Data' => 'コンテンツデータ',
 	'Content Types' => 'コンテンツタイプ',
-	'Create Role' => '新しいロールを作成',
+	'Create Role' => '新しいロールの作成',
 	'Delete' => '削除',
 	'Design' => 'デザイン',
 	'Disable' => '無効',
@@ -1317,7 +1317,6 @@ use vars qw( @ISA %Lexicon );
 	q{Failed to save relationship between [_1] (ID: [_2]) and Asset (ID: [_3]): [_4]} => q{[_1] (ID:[_2])とアセット(ID:[_3])の関連付けを設定できませんでした。: [_4]},
 
 ## lib/MT/CMS/Export.pm
-	'Export Site Entries' => '記事のエクスポート',
 	'Please select a site.' => 'サイトを選択してください。',
 	'You do not have export permissions' => 'エクスポートする権限がありません。',
 	q{Loading site '[_1]' failed: [_2]} => q{サイト '[_1]' をロードできません: [_2]},
@@ -1359,7 +1358,6 @@ use vars qw( @ISA %Lexicon );
 	q{User '[_1]' (ID:[_2]) was added to group '[_3]' (ID:[_4]) by '[_5]'} => q{[_5]がユーザー「[_1](ID:[_2])」をグループ「[_3](ID:[_4])」に追加しました。},
 
 ## lib/MT/CMS/Import.pm
-	'Import Site Entries' => '記事のインポート',
 	'Importer type [_1] was not found.' => '[_1]というインポート形式は存在しません。',
 	'You do not have import permission' => 'インポートの権限がありません。',
 	'You do not have permission to create users' => 'ユーザーを作成する権限がありません。',
@@ -1521,6 +1519,7 @@ use vars qw( @ISA %Lexicon );
 	'Theme not found' => 'テーマがみつかりませんでした。',
 	'Themes Directory [_1] is not writable.' => 'テーマディレクトリ[_1]に書き込めません。',
 	'Themes directory [_1] is not writable.' => 'テーマディレクトリ[_1]に書き込めません。',
+	'This theme has been removed.' => 'このテーマは削除されました。',
 
 ## lib/MT/CMS/Tools.pm
 	'Any site' => '任意のサイト',
@@ -5296,6 +5295,7 @@ use vars qw( @ISA %Lexicon );
 	'Themes in Use' => '利用しているテーマ',
 	'This theme cannot be applied to the child site due to [_1] errors' => '次の理由により、テーマを適用できませんでした',
 	'This theme cannot be applied to the site due to [_1] errors' => '次の理由により、テーマを適用できませんでした。',
+	'This theme has been deprecated. You can not reapply it or refresh its templates.' => 'このテーマは廃止されました。再適用やテンプレートの初期化は行えません。',
 	'Uninstall' => 'アンインストール',
 	'Warnings' => '警告',
 	'[quant,_1,warning,warnings]' => '[quant,_1,,,]件の警告',

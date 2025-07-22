@@ -195,8 +195,8 @@ sub init_app {
     require MT::DefaultTemplates;
     require MT::Theme::TemplateSet;
     require Class::Method::Modifiers;
-    Class::Method::Modifiers::around(
-        'MT::DefaultTemplates::templates',
+    Class::Method::Modifiers::install_modifier(
+        'MT::DefaultTemplates', 'around', 'templates',
         sub {
             my $app = MT->instance;
             if (   ($app->mode eq 'view')
@@ -208,16 +208,16 @@ sub init_app {
             my $orig = shift;
             return $orig->(@_);
         });
-    Class::Method::Modifiers::around(
-        'MT::Theme::TemplateSet::_type',
+    Class::Method::Modifiers::install_modifier(
+        'MT::Theme::TemplateSet', 'around', '_type',
         sub {
             my $orig = shift;
             my ($tmpl) = @_;
             return 'dashboard_widget' if $tmpl->type eq 'dashboard_widget';
             return $orig->(@_);
         });
-    Class::Method::Modifiers::around(
-        'MT::Theme::TemplateSet::export',
+    Class::Method::Modifiers::install_modifier(
+        'MT::Theme::TemplateSet', 'around', 'export',
         sub {
             my $orig   = shift;
             my $result = $orig->(@_);

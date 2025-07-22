@@ -1,0 +1,1 @@
+(function(){"use strict";const s="collapsed",l=()=>{const t=sessionStorage.getItem(s);return t==="true"?!0:t==="false"?!1:null},a=t=>{t?document.documentElement.classList.add("mt-has-primary-navigation-collapsed"):document.documentElement.classList.remove("mt-has-primary-navigation-collapsed")};var e;a((e=l())!==null&&e!==void 0?e:!1)})();

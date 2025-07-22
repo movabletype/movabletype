@@ -15,10 +15,7 @@ BEGIN {
 
 use MT::Test::Fixture;
 
-my @themes = ([qw(classic_website classic_blog)]);
-if (-d "addons/Commercial.pack") {
-    push @themes, [qw(professional_website professional_blog)];
-}
+my @themes = ([qw(eigerwand eigerwand)]);
 if (-d "themes/eiger") {
     push @themes, [qw(eiger eiger)];
 }

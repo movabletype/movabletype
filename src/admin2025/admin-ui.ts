@@ -1,6 +1,6 @@
-import { fetchContentTypes } from "src/utils/fetch-content-types";
 import { svelteMountCreateButton } from "./buttons/create-button";
 import { svelteMountSidebar } from "./sidebar/sidebar";
+import { getCollapsedState } from "./sidebar/utils";
 import { svelteMountSearchButton } from "./buttons/search-button";
 import { svelteMountSiteListButton } from "./buttons/site-list-button";
 import { svelteMountSearchForm } from "./forms/search/search-form";
@@ -10,14 +10,9 @@ const sidebarTarget = document.querySelector<HTMLButtonElement>(
   '[data-is="primary-navigation-toggle"]',
 );
 if (sidebarTarget !== null) {
-  const sessionName = "collapsed";
-  const sessionCollapsed = sessionStorage.getItem(sessionName);
-
   svelteMountSidebar(sidebarTarget, {
-    collapsed: sessionCollapsed === "true",
+    collapsed: getCollapsedState() ?? false,
     buttonRef: sidebarTarget.getElementsByTagName("button")[0],
-    sessionName: sessionName,
-    isStored: sessionCollapsed !== null,
   });
 }
 
@@ -65,55 +60,36 @@ const searchButtonTarget = document.querySelector<HTMLElement>(
 const modalContainerTarget =
   document.querySelector<HTMLElement>("div.mt-modal");
 
-if (
-  (createButtonTargets.length > 0 || searchButtonTarget !== null) &&
-  magicToken !== ""
-) {
-  fetchContentTypes({
+if (createButtonTargets.length > 0 && magicToken !== "") {
+  createButtonTargets.forEach((createButtonTarget) => {
+    svelteMountCreateButton({
+      target: createButtonTarget,
+      props: {
+        blog_id: blogId,
+        magicToken: magicToken,
+        open: false,
+        anchorRef: createButtonTarget,
+        containerRef: modalContainerTarget,
+      },
+    });
+  });
+}
+
+if (searchButtonTarget !== null && magicToken !== "") {
+  svelteMountSearchButton(searchButtonTarget, {
     blogId: blogId,
     magicToken: magicToken,
-  }).then((data) => {
-    // Create button
-    if (createButtonTargets.length > 0) {
-      createButtonTargets.forEach((createButtonTarget) => {
-        svelteMountCreateButton({
-          target: createButtonTarget,
-          props: {
-            blog_id: blogId,
-            contentTypes: data.contentTypes.filter(
-              (contentType) => contentType.can_create === 1,
-            ),
-            open: false,
-            anchorRef: createButtonTarget,
-            containerRef: modalContainerTarget,
-          },
-        });
-      });
-    }
-    // Search button
-    if (searchButtonTarget !== null) {
-      svelteMountSearchButton(searchButtonTarget, {
-        blogId: blogId,
-        magicToken: magicToken,
-        contentTypes: data.contentTypes.filter(
-          (contentType) => contentType.can_search === 1,
-        ),
-        open: false,
-        anchorRef: searchButtonTarget,
-      });
-    }
-    // Search Form
-    const searchFormTarget = document.querySelector<HTMLElement>(
-      '[data-is="search-form"]',
-    );
-    if (searchFormTarget !== null) {
-      svelteMountSearchForm(searchFormTarget, {
-        blogId: blogId,
-        magicToken: magicToken,
-        contentTypes: data.contentTypes.filter(
-          (contentType) => contentType.can_search === 1,
-        ),
-      });
-    }
+    open: false,
+    anchorRef: searchButtonTarget,
+  });
+}
+
+const searchFormTarget = document.querySelector<HTMLElement>(
+  '[data-is="search-form"]',
+);
+if (searchFormTarget !== null && magicToken !== "") {
+  svelteMountSearchForm(searchFormTarget, {
+    blogId: blogId,
+    magicToken: magicToken,
   });
 }
