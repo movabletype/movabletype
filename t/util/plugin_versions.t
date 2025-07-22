@@ -70,13 +70,13 @@ ok !-f $plugin_versions_file, "PLUGIN_VERSIONS does not exist yet";
 
 ok -f $plugin_versions_file, "PLUGIN_VERSIONS exists now";
 my $plugin_versions = $plugin_versions_file->slurp;
-like $plugin_versions => qr!AddedPluginYaml,[0-9.]!,                 "has AddedPluginYaml in PLUGIN_VERSIONS";
-like $plugin_versions => qr!AddedPluginPl/AddedPluginPl\.pl,[0-9.]!, "has AddedPluginPl/AddedPluginPl.pl in PLUGIN_VERSIONS";
+like $plugin_versions => qr!AddedPluginYaml\t[0-9.]!,                 "has AddedPluginYaml in PLUGIN_VERSIONS";
+like $plugin_versions => qr!AddedPluginPl/AddedPluginPl\.pl\t[0-9.]!, "has AddedPluginPl/AddedPluginPl.pl in PLUGIN_VERSIONS";
 
 my $updated_manifest = $manifest_file->slurp;
 like $updated_manifest => qr!PLUGIN_VERSIONS!, "MANIFEST has PLUGIN_VERSIONS as well";
 
-my $expected = join "\n", map { $_->{plugin_sig} . "," . $_->version } sort { $a->{plugin_sig} cmp $b->{plugin_sig} } grep { $_ && $_->isa("MT::Plugin") } map { $MT::Plugins{$_}->{object} } keys %MT::Plugins;
+my $expected = join "\n", map { $_->{plugin_sig} . "\t" . $_->version } sort { $a->{plugin_sig} cmp $b->{plugin_sig} } grep { $_ && $_->isa("MT::Plugin") } map { $MT::Plugins{$_}->{object} } keys %MT::Plugins;
 $expected .= "\n";
 is $plugin_versions, $expected, "everything is genuine and tracked";
 
@@ -100,8 +100,8 @@ unlink $plugin_versions_file;
 
 ok -f $plugin_versions_file, "PLUGIN_VERSIONS exists now";
 $plugin_versions = $plugin_versions_file->slurp;
-like $plugin_versions => qr!AddedPluginYaml,[0-9.]!,                 "has AddedPluginYaml in PLUGIN_VERSIONS";
-like $plugin_versions => qr!AddedPluginPl/AddedPluginPl\.pl,[0-9.]!, "has AddedPluginPl/AddedPluginPl.pl in PLUGIN_VERSIONS";
+like $plugin_versions => qr!AddedPluginYaml\t[0-9.]!,                 "has AddedPluginYaml in PLUGIN_VERSIONS";
+like $plugin_versions => qr!AddedPluginPl/AddedPluginPl\.pl\t[0-9.]!, "has AddedPluginPl/AddedPluginPl.pl in PLUGIN_VERSIONS";
 
 is $plugin_versions, $expected, "everything is genuine and tracked";
 
