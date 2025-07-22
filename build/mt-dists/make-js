@@ -59,7 +59,6 @@ my @files = (
     "tmpl/${admin_theme_id}cms/field_html/field_html_categories.tmpl",
     "tmpl/${admin_theme_id}cms/field_html/field_html_content_type.tmpl",
     "tmpl/${admin_theme_id}cms/field_html/field_html_multi_line_text.tmpl",
-    "tmpl/${admin_theme_id}cms/include/asset_upload.tmpl",
     "tmpl/${admin_theme_id}cms/include/async_asset_list.tmpl",
     "tmpl/${admin_theme_id}cms/include/async_asset_upload.tmpl",
     "tmpl/${admin_theme_id}cms/include/category_selector.tmpl",
