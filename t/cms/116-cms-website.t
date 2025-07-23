@@ -356,6 +356,49 @@ subtest 'Test cfg_entry mode' => sub {
             );
         }
     }
+
+    $app->get_ok({
+        __mode  => 'cfg_entry',
+        blog_id => $website->id,
+    });
+    is $app->wq_find('select#link_default_target option[value="_self"][selected]')->size, 1, 'link_default_target is set to _self by default';
+
+    $app->post_ok({
+        __mode              => 'save',
+        _type               => 'blog',
+        id                  => $website->id,
+        blog_id             => $website->id,
+        return_args         => '__mode=cfg_entry&_type=blog&blog_id=' . $website->id . '&id=' . $website->id,
+        cfg_screen          => 'cfg_entry',
+        link_default_target => '_blank',
+    });
+
+    $website->refresh;
+    is $website->link_default_target, '_blank', 'link_default_target is updated to _blank';
+
+    $app->get_ok({
+        __mode  => 'cfg_entry',
+        blog_id => $website->id,
+    });
+
+    is $app->wq_find('select#link_default_target option[value="_blank"][selected]')->size, 1, 'link_default_target is set to _blank';
+
+    my $unsupported_target = '_top';
+    $app->post_ok({
+        __mode              => 'save',
+        _type               => 'blog',
+        id                  => $website->id,
+        blog_id             => $website->id,
+        return_args         => '__mode=cfg_entry&_type=blog&blog_id=' . $website->id . '&id=' . $website->id,
+        cfg_screen          => 'cfg_entry',
+        link_default_target => $unsupported_target,
+    });
+
+    my $link_default_target_error = $app->wq_find('#error');
+    like $link_default_target_error->text, qr/$unsupported_target/;
+
+    $website->refresh;
+    is $website->link_default_target, '_blank', 'link_default_target remains _blank after unsupported target save attempt';
 };
 
 note 'Website listing screen';

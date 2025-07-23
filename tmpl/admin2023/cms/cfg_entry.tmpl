@@ -263,14 +263,28 @@
   </mtapp:settinggroup>
 
   <mtapp:settinggroup id="wysiwyg-editor-setting" class="mb-3">
-    <legend class="h3"><__trans phrase="WYSIWYG Editor Setting"></legend>
+    <legend class="h3"><__trans phrase="Editor Setting"></legend>
     <mtapp:setting
        id="content_css"
        label="<__trans phrase="Content CSS">"
-       hint="<__trans phrase="Content CSS will be applied when WYSIWYG editor does support. You can specify CSS file by URL or {{theme_static}} placeholder. Example: {{theme_static}}path/to/cssfile.css">"
+       hint="<__trans phrase="Content CSS will be applied if supported by the editor in use. You can specify CSS file by URL or {{theme_static}} placeholder. Example: {{theme_static}}path/to/cssfile.css">"
        hint_id="contentCss"
        show_hint="1">
        <input type="text" name="content_css" class="form-control" value="<mt:var name="content_css" escape="html">" placeholder="http://www.example.com/path/to/cssfile.css" aria-describedby="contentCss" />
+    </mtapp:setting>
+
+    <mtapp:setting
+      id="link_default_target"
+      label="<__trans phrase="Default Link Target">"
+      hint="<__trans phrase="Default value of target attribute when inserting a link.">"
+      hint_id="linkDefaultTarget"
+      show_hint="1">
+      <div class="form-inline">
+        <select name="link_default_target" id="link_default_target" class="custom-select form-control form-select">
+          <option value="_self"<mt:if name="link_default_target" eq="_self"> selected="selected"</mt:if>><__trans phrase="LINK_TARGET_SELF"></option>
+          <option value="_blank"<mt:if name="link_default_target" eq="_blank"> selected="selected"</mt:if>><__trans phrase="LINK_TARGET_BLANK"></option>
+        </select>
+      </div>
     </mtapp:setting>
   </mtapp:settinggroup>
 
