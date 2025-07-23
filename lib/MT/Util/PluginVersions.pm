@@ -36,7 +36,8 @@ sub _parse_plugin_versions {
             $sig =~ /\.pl$/
             ? "plugins/${sig}"
             : "plugins/${sig}/config.yaml";
-        $map{$path} = {
+        $map{$sig} = {
+            path    => $path,
             sig     => $sig,
             version => $version,
         };
@@ -59,8 +60,9 @@ sub update_plugin_versions {
     my $plugin_versions_map = _parse_plugin_versions($data);
     open my $out, '>', $file or die "$!: $file";
     for my $f (sort @files) {
-        next unless $plugin_versions_map->{$f};
-        print $out $plugin_versions_map->{$f}{sig}, "\t", $plugin_versions_map->{$f}{version}, "\n";
+        my ($matched) = grep { $_->{path} eq $f } values %{$plugin_versions_map};
+        next unless $matched;
+        print $out $matched->{sig}, "\t", $matched->{version}, "\n";
     }
     close $out;
     ExtUtils::Manifest::mkmanifest() if $manifested;

@@ -476,16 +476,16 @@ sub build_plugin_table {
             next unless $individual_plugin || !$pd->{plugin_folder};    # skip other than plugins
             next if $pd->{plugin_disabled};
             if (exists $plugin_versions->{ $pd->{plugin_sig} }) {
-                if ($plugin_versions->{ $pd->{plugin_sig} } eq $pd->{plugin_version}) {
+                if ($plugin_versions->{ $pd->{plugin_sig} }{version} eq $pd->{plugin_version}) {
                     $pd->{plugin_label_value} = $app->translate('__PLUGIN_LABEL_DEFAULT');
-                    $pd->{plugin_label} = '<span class="badge badge-default">' . $pd->{plugin_label_value} . '</span>';
+                    $pd->{plugin_label}       = '<span class="badge badge-default">' . $pd->{plugin_label_value} . '</span>';
                 } else {
                     $pd->{plugin_label_value} = $app->translate('__PLUGIN_LABEL_DEFAULT_BUT_CHANGED');
-                    $pd->{plugin_label} = '<span class="badge badge-info">' . $pd->{plugin_label_value} . '</span>';
+                    $pd->{plugin_label}       = '<span class="badge badge-info">' . $pd->{plugin_label_value} . '</span>';
                 }
             } else {
                 $pd->{plugin_label_value} = $app->translate('user');
-                $pd->{plugin_label} = '<span class="badge badge-primary">' . $pd->{plugin_label_value} . '</span>';
+                $pd->{plugin_label}       = '<span class="badge badge-primary">' . $pd->{plugin_label_value} . '</span>';
             }
         }
     }
