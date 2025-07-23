@@ -76,6 +76,7 @@ like $plugin_versions => qr!AddedPluginPl/AddedPluginPl\.pl\t[0-9.]!, "has Added
 my $updated_manifest = $manifest_file->slurp;
 like $updated_manifest => qr!PLUGIN_VERSIONS!, "MANIFEST has PLUGIN_VERSIONS as well";
 
+MT->instance;
 my $expected = join "\n", map { $_->{plugin_sig} . "\t" . $_->version } sort { $a->{plugin_sig} cmp $b->{plugin_sig} } grep { $_ && $_->isa("MT::Plugin") } map { $MT::Plugins{$_}->{object} } keys %MT::Plugins;
 $expected .= "\n";
 is $plugin_versions, $expected, "everything is genuine and tracked";

@@ -7,13 +7,17 @@ package MT::Util::PluginVersions;
 use strict;
 use warnings;
 use ExtUtils::Manifest ();
-use File::Temp         ();
+use File::Spec;
+use File::Temp ();
 
 my $HasGit;
 
+sub _home {
+    $ENV{MT_TEST_ROOT} || $ENV{MT_HOME} || '.';
+}
+
 sub plugin_versions_file {
-    my $home = $ENV{MT_TEST_ROOT} || $ENV{MT_HOME} || '.';
-    $home . '/PLUGIN_VERSIONS';
+    _home() . '/PLUGIN_VERSIONS';
 }
 
 sub load_plugin_versions {
@@ -69,10 +73,10 @@ sub update_plugin_versions {
 }
 
 sub _generate_plugin_versions {
-    my $home        = $ENV{MT_HOME} || '.';
-    my $temp_dir    = File::Temp::tempdir(CLEANUP => 1);
-    my $plugin_path = MT->config->PluginPath;
-    my $cmd         = qq(touch ${temp_dir}/mtconf && MT_CONFIG=${temp_dir}/mtconf MT_CONFIG_ObjectDriver=DBI::sqlite MT_CONFIG_Database=${temp_dir}/mtdb MT_CONFIG_PluginPath=${plugin_path} perl -I${home}/extlib -I${home}/lib -MMT -E 'MT->new; map { say(\$_->{plugin_sig} . "\t" . \$_->version) } sort { \$a->{plugin_sig} cmp \$b->{plugin_sig} } grep { \$_ && \$_->isa("MT::Plugin") } map { \$MT::Plugins{\$_}->{object} } keys %MT::Plugins');
+    my $temp_dir     = File::Temp::tempdir(CLEANUP => 1);
+    my $plugin_path  = File::Spec->rel2abs(_home() . '/plugins');
+    my $home_for_lib = $ENV{MT_HOME} || '.';
+    my $cmd          = qq(touch ${temp_dir}/mtconf && MT_CONFIG=${temp_dir}/mtconf MT_CONFIG_ObjectDriver=DBI::sqlite MT_CONFIG_Database=${temp_dir}/mtdb MT_CONFIG_PluginPath=${plugin_path} perl -I${home_for_lib}/extlib -I${home_for_lib}/lib -MMT -E 'MT->new; map { say(\$_->{plugin_sig} . "\t" . \$_->version) } sort { \$a->{plugin_sig} cmp \$b->{plugin_sig} } grep { \$_ && \$_->isa("MT::Plugin") } map { \$MT::Plugins{\$_}->{object} } keys %MT::Plugins');
     `$cmd`;
 }
 
