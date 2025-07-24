@@ -7,6 +7,7 @@ use Carp::Always;
 use Test::More;
 use File::Spec;
 use Cwd ();
+use Encode ();
 use Fcntl qw/:flock/;
 use File::Find ();
 use File::Path 'mkpath';
@@ -284,6 +285,7 @@ sub save_file {
 
     open my $fh, '>', $file or die "$file: $!";
     binmode $fh;
+    $body = Encode::encode('utf8', $body) if Encode::is_utf8($body);
     print $fh $body;
     $file;
 }
