@@ -275,7 +275,7 @@ jQuery('.collapse.mt-collapse__content').on('show.bs.collapse', function (e) {
   <mt:else>
     <div class="mt-pluginpanel">
       <div class="mt-collapse__container align-items-center">
-        <div class="col-auto">
+        <div class="col">
     <mt:if name="plugin_disabled">
           <svg role="img" class="mt-icon mt-pluginpanel__icon">
             <title>Disabled</title>
@@ -305,9 +305,15 @@ jQuery('.collapse.mt-collapse__content').on('show.bs.collapse', function (e) {
     </mt:if>
         </div>
     <mt:if name="can_config">
-        <div class="col text-right">
+        <div class="col-auto text-right">
           <div class="plugin-status">
       <mt:unless name="blog_view">
+        <mt:if name="plugin_deprecated_log_exists">
+          <span class="alert-error-inline icon-left icon-error">
+            <mtapp:svgicon id="ic_error" size="sm" title="<__trans phrase="Failed to load">" color="warning">
+            <a href="<mt:var name="script_url">?__mode=dialog_list_deprecated_log&amp;blog_id=<mt:var name="blog_id">&amp;plugin_sig=<mt:var name="plugin_sig">" class="mt-open-dialog mt-modal-open" data-mt-modal-large><__trans phrase="Deprecated warning."></a>
+          </span>
+        </mt:if>
         <mt:if name="plugin_system_error">
             <span class="alert-error-inline icon-left icon-error text-muted">
               <mtapp:svgicon id="ic_caution" size="sm" title="<__trans phrase="Failed to load">" color="danger">

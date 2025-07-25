@@ -275,7 +275,7 @@ jQuery('.collapse.mt-collapse__content').on('show.bs.collapse', function (e) {
   <mt:else>
     <div class="mt-pluginpanel">
       <div class="mt-collapse__container align-items-center">
-        <div class="col-auto ps-4">
+        <div class="col ps-4">
     <mt:if name="plugin_disabled">
           <svg role="img" class="mt-icon mt-pluginpanel__icon">
             <title>Disabled</title>
@@ -305,7 +305,7 @@ jQuery('.collapse.mt-collapse__content').on('show.bs.collapse', function (e) {
     </mt:if>
         </div>
     <mt:if name="can_config">
-        <div class="col text-right pe-4">
+        <div class="col-auto text-right pe-4">
           <div class="plugin-status">
       <mt:unless name="blog_view">
         <mt:if name="plugin_deprecated_log_exists">
