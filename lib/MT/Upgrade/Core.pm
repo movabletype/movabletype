@@ -380,9 +380,6 @@ sub upgrade_templates {
     my $blog_count      = $blog_class->count({ class => '*' });
     my $installed_count = 0;
     for my $val (@$tmpl_list) {
-        if (!$Installing) {
-            next if $val->{type} eq 'search_results';
-        }
         if (!$install) {
             if (!$val->{global}) {
                 next if $val->{set} ne 'system';
