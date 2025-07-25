@@ -48,8 +48,7 @@ for my $tmpl (@{ MT::DefaultTemplates->templates }) {
         next;
     }
 
-    next if $tmpl->{set} ne 'system';             # only system templates will by installed
-    next if $tmpl->{type} eq 'search_results';    # search_results is explicitly excluded in MT::Upgrade::Core
+    next if $tmpl->{set} ne 'system';    # only system templates will by installed
     push @blog_system_tmpl_keys, $tmpl->{type};
 }
 @global_tmpl_names     = sort @global_tmpl_names;
