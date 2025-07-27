@@ -4,6 +4,7 @@ use strict;
 use warnings;
 use FindBin;
 use lib "$FindBin::Bin/../lib"; # t/lib
+use File::Spec;
 use Test::More;
 use MT::Test::Env;
 our $test_env;
@@ -522,6 +523,29 @@ sub suite {
             },
         },
 
+        # set a theme without class (parent site)
+        {
+            path         => '/v2/sites',
+            method       => 'POST',
+            is_superuser => 1,
+            params       => {
+                website => {
+                    name     => 'test-api-website-4',
+                    url      => 'http://narnia2.na/',
+                    sitePath => $test_env->root . '/',
+                    themeId  => 'other_theme',
+                },
+            },
+            result => sub {
+                $app->model('website')->load({ name => 'test-api-website-4' });
+            },
+            complete => sub {
+                my ($data, $body) = @_;
+                my $got = $app->current_format->{unserialize}->($body);
+                is $got->{themeId}, 'other_theme';
+            },
+        },
+
         # insert_new_blog - irregular tests
         {    # website
             path   => '/v2/sites/1',
@@ -783,6 +807,29 @@ sub suite {
 
                 # is( $got->{sitePath},     $test_env->root,     'sitePath' );
                 ok( ( $got->{sitePath} !~ m{(/|\\)$} ), 'sitePath' );
+            },
+        },
+
+        # set a theme without class (child site)
+        {
+            path         => '/v2/sites/2',
+            method       => 'POST',
+            is_superuser => 1,
+            params       => {
+                blog => {
+                    name     => 'test-api-blog-4',
+                    url      => 'http://narnia2.na/',
+                    sitePath => $test_env->root . '/',
+                    themeId  => 'other_theme',
+                },
+            },
+            result => sub {
+                $app->model('blog')->load({ name => 'test-api-blog-4' });
+            },
+            complete => sub {
+                my ($data, $body) = @_;
+                my $got = $app->current_format->{unserialize}->($body);
+                is $got->{themeId}, 'other_theme';
             },
         },
 
@@ -1145,6 +1192,46 @@ sub suite {
 
                 # is( $got->{sitePath},     $test_env->root,     'sitePath' );
                 ok( ( $got->{sitePath} !~ m{(/|\\)$} ), 'sitePath' );
+            },
+        },
+
+        # apply a theme without class (parent site)
+        {
+            path         => '/v2/sites/3',
+            method       => 'PUT',
+            is_superuser => 1,
+            params       => {
+                website => {
+                    themeId => 'other_theme',
+                },
+            },
+            result => sub {
+                $app->model('website')->load(3);
+            },
+            complete => sub {
+                my ($data, $body) = @_;
+                my $got = $app->current_format->{unserialize}->($body);
+                is $got->{themeId}, 'other_theme';
+            },
+        },
+
+        # apply a theme without class (child site)
+        {
+            path         => '/v2/sites/1',
+            method       => 'PUT',
+            is_superuser => 1,
+            params       => {
+                blog => {
+                    themeId => 'other_theme',
+                },
+            },
+            result => sub {
+                $app->model('blog')->load(1);
+            },
+            complete => sub {
+                my ($data, $body) = @_;
+                my $got = $app->current_format->{unserialize}->($body);
+                is $got->{themeId}, 'other_theme';
             },
         },
 
