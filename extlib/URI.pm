@@ -3,7 +3,7 @@ package URI;
 use strict;
 use warnings;
 
-our $VERSION = '5.25';
+our $VERSION = '5.32';
 
 # 1=version 5.10 and earlier; 0=version 5.11 and later
 use constant HAS_RESERVED_SQUARE_BRACKETS => $ENV{URI_HAS_RESERVED_SQUARE_BRACKETS} ? 1 : 0;
@@ -970,6 +970,9 @@ C<URI> objects belonging to the ftp scheme support the common,
 generic and server methods.  In addition, they provide two methods for
 accessing the userinfo sub-components: $uri->user and $uri->password.
 
+It also supports accessing to the encryption mode ($uri->encrypt_mode),
+which has its own defaults for I<ftps> and I<ftpes> URI schemes.
+
 =item B<gopher>:
 
 The I<gopher> URI scheme is specified in
@@ -996,6 +999,15 @@ implemented.  The scheme is used to reference HTTP servers through SSL
 connections.  Its syntax is the same as http, but the default
 port is different.
 
+=item B<geo>:
+
+The I<geo> URI scheme is specified in L<RFC 5870|http://tools.ietf.org/html/rfc5870>.
+The scheme is used to reference physical location in a two- or
+three-dimensional coordinate reference system in a compact, simple,
+human-readable, and protocol-independent way.
+
+C<URI> objects belonging to the geo scheme support the common methods.
+
 =item B<icap>:
 
 The I<icap> URI scheme is specified in L<RFC 3507|http://tools.ietf.org/html/rfc3507>.
@@ -1010,6 +1022,15 @@ The I<icaps> URI scheme is specified in L<RFC 3507|http://tools.ietf.org/html/rf
 The scheme is used to reference ICAP servers through SSL
 connections.  Its syntax is the same as icap, including the same
 default port.
+
+=item B<irc>:
+
+The I<irc> URI scheme is specified in L<draft-butcher-irc-url-04|https://datatracker.ietf.org/doc/html/draft-butcher-irc-url-04>.
+The scheme is used to reference IRC servers and their resources.
+
+C<URI> objects belonging to the irc or ircs scheme support login
+methods, and the following IRC-specific ones: $uri->entity,
+$uri->flags, $uri->options.
 
 =item B<ldap>:
 
@@ -1078,6 +1099,13 @@ See I<news> scheme.
 
 See I<news> scheme and L<RFC 5538|https://tools.ietf.org/html/rfc5538>.
 
+=item B<otpauth>:
+
+The I<otpauth> URI scheme is specified in L<https://github.com/google/google-authenticator/wiki/Key-Uri-Format>.
+The scheme is used to encode secret keys for use in TOTP or HOTP schemes.
+
+C<URI> objects belonging to the otpauth scheme support the common methods.
+
 =item B<pop>:
 
 The I<pop> URI scheme is specified in RFC 2384. The scheme is used to
@@ -1124,6 +1152,13 @@ I<sip> parameters: $uri->params_form and $uri->params.
 
 See I<sip> scheme.  Its syntax is the same as sip, but the default
 port is different.
+
+=item B<smb>:
+
+C<URI> objects belonging to the smb scheme support the common,
+generic and server methods. In addition, they provide methods to
+access the userinfo sub-components ($uri->user and $uri->password)
+as well as $uri->authdomain and $uri->sharename methods.
 
 =item B<snews>:
 

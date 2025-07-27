@@ -62,6 +62,9 @@ sub change_tab {
             }
         }
     }
+    my $limit = $form->find_input('limit');
+    $limit->readonly(0);
+    $limit->value('');
     $self->post_ok($form->click);
 }
 
@@ -74,12 +77,16 @@ sub change_content_type {
 
     my @input = $form->find_input('search_cols');
     for my $elem (@input) {
-        my $val             = _checkbox_attr_value($elem);
-        my $checkbox        = $self->wq_find(qq{#search_form input[name="search_cols"][value="$val"]});
-        my $li              = $checkbox->parent->parent;
-        my $ct_cf_belogs_to = $li->attr('data-mt-content-type');
-        $elem->disabled($ct_cf_belogs_to && $ct_cf_belogs_to == $ct_id ? '' : 'disabled');
+        my $val              = _checkbox_attr_value($elem);
+        my $checkbox         = $self->wq_find(qq{#search_form input[name="search_cols"][value="$val"]});
+        my $li               = $checkbox->parent->parent;
+        my $ct_cf_belongs_to = $li->attr('data-mt-content-type');
+        $elem->disabled($ct_cf_belongs_to == $ct_id ? '' : 'disabled') if $ct_cf_belongs_to;
     }
+}
+
+sub have_more_link_exists {
+    $_[0]->wq_find('#have-more-count')->size ? 1 : 0;
 }
 
 sub search {
@@ -89,6 +96,9 @@ sub search {
     my $do_search = $form->find_input('do_search');
     $do_search->readonly(0);
     $do_search->value(1);
+    if ($opts->{limit} && $opts->{limit} eq 'all' && $self->have_more_link_exists) {
+        $form->find_input('limit')->readonly(0);
+    }
     $self->apply_opts($form, $opts) if $opts;
     $self->post_ok($form->click);
 }
@@ -105,28 +115,6 @@ sub replace {
     $replace_ids->value(join(',', @$target));
     $self->apply_opts($form, $opts) if $opts;
     $self->post_ok($form->click);
-}
-
-sub dialog_grant_role_search {
-    my ($self, $value, $opts) = @_;
-    my $form   = $self->find_searchform('grant') or return;
-    my $params = { search => $value, _type => 'user' };
-
-    for my $key (keys %$opts) {
-        next unless exists $params->{$key};
-        $params->{$key} = $opts->{$key};
-    }
-
-    $self->post_ok({
-        %$params,
-        __mode      => (scalar $self->{cgi}->param('__mode')),
-        magic_token => (scalar $self->{cgi}->param('magic_token')),
-        return_args => (scalar $self->{cgi}->param('return_args')),
-        blog_id     => (scalar $self->{cgi}->param('blog_id')),
-        type        => (scalar $self->{cgi}->param('type')),
-        dialog      => 1,
-        json        => 1,
-    });
 }
 
 # This should be implemented in HTML::Form?
@@ -214,6 +202,7 @@ my $TitleContainerSelectors = {
         asset        => 'td:nth-of-type(3) a',
         blog         => 'td:nth-of-type(2) a',
         website      => 'td:nth-of-type(2) a',
+        author       => 'td:nth-of-type(2) a',
     },
     mt7 => {
         content_data => 'td.id strong',
@@ -222,6 +211,7 @@ my $TitleContainerSelectors = {
         asset        => 'td:nth-of-type(3) a',
         blog         => 'td:nth-of-type(2) a',
         website      => 'td:nth-of-type(2) a',
+        author       => 'td:nth-of-type(2) a',
     },
 };
 

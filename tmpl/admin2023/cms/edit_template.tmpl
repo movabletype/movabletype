@@ -340,16 +340,16 @@
 </mt:setvartemplate>
 
 <mt:setvarblock name="html_head" append="1">
-<script type="text/javascript" src="<$mt:var name="static_uri"$>codemirror/lib/codemirror.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
-<link rel="stylesheet" href="<$mt:var name="static_uri"$>codemirror/lib/codemirror.css?v=<mt:var name="mt_version_id" escape="URL">">
+<mtapp:script type="text/javascript" path="codemirror/lib/codemirror.js">
+<mtapp:stylesheet path="codemirror/lib/codemirror.css">
 
-<script type="text/javascript" src="<$mt:var name="static_uri"$>codemirror/mt/xml.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
-<script type="text/javascript" src="<$mt:var name="static_uri"$>codemirror/mt/javascript.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
-<script type="text/javascript" src="<$mt:var name="static_uri"$>codemirror/mt/css.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
-<script type="text/javascript" src="<$mt:var name="static_uri"$>codemirror/mt/htmlmixed.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
-<link rel="stylesheet" href="<$mt:var name="static_uri"$>codemirror/mt/mt.css?v=<mt:var name="mt_version_id" escape="URL">">
+<mtapp:script type="text/javascript" path="codemirror/mt/xml.js">
+<mtapp:script type="text/javascript" path="codemirror/mt/javascript.js">
+<mtapp:script type="text/javascript" path="codemirror/mt/css.js">
+<mtapp:script type="text/javascript" path="codemirror/mt/htmlmixed.js">
+<mtapp:stylesheet path="codemirror/mt/mt.css">
 
-<script type="text/javascript" src="<mt:var name="static_uri">js/tc/client.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+<mtapp:script type="text/javascript" path="js/tc/client.js">
 <script type="text/javascript">
 /* <![CDATA[ */
 var tag_inserts = {};
@@ -768,17 +768,17 @@ function setSyntaxHighlight(on_or_off) {
           </div>
         </li>
         <li>
-          <div class="form-row align-items-center">
-            <div class="col">
+          <div class="row align-items-center">
+            <div class="col-auto">
               <div class="custom-control custom-radio">
                 <input type="radio" value="1" name="cache_expire_type" id="expire-time" class="form-check-input" onclick="toggleCache('expire-time');"<mt:if name="cache_expire_type" eq="1"> checked="checked"</mt:if>>
                 <label class="form-check-label" for="expire-time"><__trans phrase="Expire after"></label>
               </div>
             </div>
-            <div class="col">
+            <div class="col-3 ps-0">
               <input type="text" id="cache-time-value" class="text num form-control" name="cache_expire_interval" value="<$mt:var name="cache_expire_interval" escape="html">" maxlength="3" <mt:unless name="cache_expire_type" eq="1"> disabled="disabled"</mt:unless> />
             </div>
-            <div class="col">
+            <div class="col-3 ps-0">
               <select id="cache-time-unit" class="custom-select form-control form-select" name="cache_expire_period"<mt:unless name="cache_expire_type" eq="1"> disabled="disabled"</mt:unless>>
                 <option value="minutes"<mt:if name="cache_expire_period" eq="minutes"> selected="selected"</mt:if>><__trans phrase="minutes"></option>
                 <option value="hours"<mt:if name="cache_expire_period" eq="hours"> selected="selected"</mt:if>><__trans phrase="hours"></option>

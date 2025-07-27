@@ -12,6 +12,7 @@ sub check_all {
 
     $class->check_mt($param);
     $class->check_perl($param);
+    $class->check_os_version($param);
     $class->check_memcached($param);
     $class->check_server_model($param);
     $class->check_dependencies($param);
@@ -24,7 +25,6 @@ sub check_mt {
     require MT;
     $param->{version}                   = MT->version_id;
     $param->{mt_home}                   = $ENV{MT_HOME};
-    $param->{os}                        = $^O;
     $param->{current_working_directory} = _mt_getcwd();
 
     $param;
@@ -48,14 +48,43 @@ sub _mt_getcwd {
 
 sub check_perl {
     my ($class, $param) = @_;
-    my $perl_version = ref($^V) eq 'version' ? $^V->normal : ($^V ? join('.', unpack 'C*', $^V) : $]);
-    $param->{perl_is_too_old} = 1 if $] < 5.016000;
-    $param->{perl_version}    = $perl_version;
+    $param->{perl_is_too_old} = 1 if $] < 5.016003;
+    $param->{perl_version}    = sprintf('%vd', $^V);
 
     my %seen;
     $param->{perl_include_path} = [grep { !$seen{$_}++ } @INC];
 
     $param;
+}
+
+sub check_os_version {
+    my ($class, $param) = @_;
+    if ($^O eq 'darwin') {
+        my @versions = (`sw_vers -ProductVersion`, `sw_vers -BuildVersion`);
+        return $param->{os} = join " ", "macOS", map { chomp; $_ } @versions;
+    } elsif ($^O eq 'MSWin32') {
+        if (eval { require Win32; 1; }) {
+            my $name = Win32::GetOSDisplayName();
+            my ($build_version) = $name =~ /Build (\d+)/;
+            $name =~ s/Windows 10/Windows 11/ if $build_version and $build_version >= 22000;
+            return $param->{os} = $name;
+        }
+    } else {
+        if (-f '/etc/os-release' and open my $fh, '<', '/etc/os-release') {
+            my %release;
+            while(<$fh>) {
+                chomp;
+                next unless /=/;
+                my ($key, $value) = split /=/, $_, 2;
+                $value =~ s/^"//;
+                $value =~ s/"$//;
+                $release{$key} = $value;
+            }
+            return $param->{os} = join " ", $release{NAME}, $release{VERSION} || $release{VERSION_ID};
+        }
+    }
+    require Config;
+    return $param->{os} = "Unknown (" . (join " ", $Config::Config{osname}, $Config::Config{osvers}) . ")";
 }
 
 sub check_memcached {
@@ -193,6 +222,7 @@ sub check_dependencies {
                     my $formats = join ", ", map { $imglib{$_} ? "<strong>$_</strong>" : $_ } sort Graphics::Magick->QueryFormat;
                     $hash{extra_html} = MT->translate("Supported format: [_1]", $formats);
                 } elsif ($module eq 'Imager') {
+                    eval { require Imager::File::WEBP; };
                     my $formats = join ", ", map { $imglib{$_} ? "<strong>$_</strong>" : $_ } sort Imager->read_types;
                     $hash{extra_html} = MT->translate("Supported format: [_1]", $formats);
                 }
@@ -203,6 +233,7 @@ sub check_dependencies {
         $param->{$key} = \@modified;
         $param->{"missing_$key"} = \@missing;
     }
+    $param->{lacks_core_modules} = MT::Util::Dependencies->lacks_core_modules;
 
     $param;
 }

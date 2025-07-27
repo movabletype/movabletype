@@ -1,5 +1,5 @@
 /**
- * TinyMCE version 6.7.3 (2023-11-15)
+ * TinyMCE version 6.8.5 (TBD)
  */
 
 (function () {
@@ -351,7 +351,7 @@
     };
 
     const keys = Object.keys;
-    const hasOwnProperty$1 = Object.hasOwnProperty;
+    const hasOwnProperty = Object.hasOwnProperty;
     const each = (obj, f) => {
       const props = keys(obj);
       for (let k = 0, len = props.length; k < len; k++) {
@@ -420,7 +420,7 @@
     const get$g = (obj, key) => {
       return has$2(obj, key) ? Optional.from(obj[key]) : Optional.none();
     };
-    const has$2 = (obj, key) => hasOwnProperty$1.call(obj, key);
+    const has$2 = (obj, key) => hasOwnProperty.call(obj, key);
     const hasNonNullableKey = (obj, key) => has$2(obj, key) && obj[key] !== undefined && obj[key] !== null;
 
     const is$1 = (lhs, rhs, comparator = tripleEquals) => lhs.exists(left => comparator(left, rhs));
@@ -1631,7 +1631,7 @@
     const shallow$1 = (old, nu) => {
       return nu;
     };
-    const deep = (old, nu) => {
+    const deep$1 = (old, nu) => {
       const bothObjects = isPlainObject(old) && isPlainObject(nu);
       return bothObjects ? deepMerge(old, nu) : nu;
     };
@@ -1652,7 +1652,7 @@
         return ret;
       };
     };
-    const deepMerge = baseMerge(deep);
+    const deepMerge = baseMerge(deep$1);
     const merge$1 = baseMerge(shallow$1);
 
     const required$2 = () => ({
@@ -2401,6 +2401,7 @@
 
     const clone$1 = (original, isDeep) => SugarElement.fromDom(original.dom.cloneNode(isDeep));
     const shallow = original => clone$1(original, false);
+    const deep = original => clone$1(original, true);
 
     const getHtml = element => {
       if (isShadowRoot(element)) {
@@ -2814,6 +2815,13 @@
     const get$8 = element => read(element, 'class');
     const add$3 = (element, clazz) => add$4(element, 'class', clazz);
     const remove$3 = (element, clazz) => remove$4(element, 'class', clazz);
+    const toggle$5 = (element, clazz) => {
+      if (contains$2(get$8(element), clazz)) {
+        return remove$3(element, clazz);
+      } else {
+        return add$3(element, clazz);
+      }
+    };
 
     const add$2 = (element, clazz) => {
       if (supports(element)) {
@@ -2837,6 +2845,11 @@
       }
       cleanClass(element);
     };
+    const toggle$4 = (element, clazz) => {
+      const result = supports(element) ? element.dom.classList.toggle(clazz) : toggle$5(element, clazz);
+      cleanClass(element);
+      return result;
+    };
     const has = (element, clazz) => supports(element) && element.dom.classList.contains(clazz);
 
     const add$1 = (element, classes) => {
@@ -2847,6 +2860,11 @@
     const remove$1 = (element, classes) => {
       each$1(classes, x => {
         remove$2(element, x);
+      });
+    };
+    const toggle$3 = (element, classes) => {
+      each$1(classes, x => {
+        toggle$4(element, x);
       });
     };
     const hasAll = (element, classes) => forall(classes, clazz => has(element, clazz));
@@ -3693,7 +3711,7 @@
         exhibit: exhibit$6
     });
 
-    const focus$3 = element => element.dom.focus();
+    const focus$3 = (element, preventScroll = false) => element.dom.focus({ preventScroll });
     const blur$1 = element => element.dom.blur();
     const hasFocus = element => {
       const root = getRootNode(element).dom;
@@ -6042,7 +6060,7 @@
       return contains$2(keys, raw.which);
     };
     const and = preds => event => forall(preds, pred => pred(event));
-    const isShift = event => {
+    const isShift$1 = event => {
       const raw = event.raw;
       return raw.shiftKey === true;
     };
@@ -6050,7 +6068,7 @@
       const raw = event.raw;
       return raw.ctrlKey === true;
     };
-    const isNotShift = not(isShift);
+    const isNotShift = not(isShift$1);
 
     const rule = (matches, action) => ({
       matches,
@@ -6210,7 +6228,7 @@
       const exit = (component, simulatedEvent, tabbingConfig) => tabbingConfig.onEscape.bind(f => f(component, simulatedEvent));
       const getKeydownRules = constant$1([
         rule(and([
-          isShift,
+          isShift$1,
           inSet(TAB)
         ]), goBackwards),
         rule(inSet(TAB), goForwards),
@@ -6391,7 +6409,7 @@
       rule(inSet(UP), north$1(moveNorth$1)),
       rule(inSet(DOWN), south$1(moveSouth$1)),
       rule(and([
-        isShift,
+        isShift$1,
         inSet(TAB)
       ]), handleTab),
       rule(and([
@@ -6565,7 +6583,7 @@
       rule(inSet(UP), move$1(moveUp)),
       rule(inSet(DOWN), move$1(moveDown)),
       rule(and([
-        isShift,
+        isShift$1,
         inSet(TAB)
       ]), fireShiftTab),
       rule(and([
@@ -6599,11 +6617,11 @@
         inSet(ENTER)
       ]), specialInfo.onEnter),
       rule(and([
-        isShift,
+        isShift$1,
         inSet(ENTER)
       ]), specialInfo.onShiftEnter),
       rule(and([
-        isShift,
+        isShift$1,
         inSet(TAB)
       ]), specialInfo.onShiftTab),
       rule(and([
@@ -8083,94 +8101,24 @@
       };
     };
 
-    function _typeof(obj) {
-      '@babel/helpers - typeof';
-      return _typeof = 'function' == typeof Symbol && 'symbol' == typeof Symbol.iterator ? function (obj) {
-        return typeof obj;
-      } : function (obj) {
-        return obj && 'function' == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? 'symbol' : typeof obj;
-      }, _typeof(obj);
-    }
-    function _setPrototypeOf(o, p) {
-      _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) {
-        o.__proto__ = p;
-        return o;
-      };
-      return _setPrototypeOf(o, p);
-    }
-    function _isNativeReflectConstruct() {
-      if (typeof Reflect === 'undefined' || !Reflect.construct)
-        return false;
-      if (Reflect.construct.sham)
-        return false;
-      if (typeof Proxy === 'function')
-        return true;
-      try {
-        Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {
-        }));
-        return true;
-      } catch (e) {
-        return false;
-      }
-    }
-    function _construct(Parent, args, Class) {
-      if (_isNativeReflectConstruct()) {
-        _construct = Reflect.construct;
-      } else {
-        _construct = function _construct(Parent, args, Class) {
-          var a = [null];
-          a.push.apply(a, args);
-          var Constructor = Function.bind.apply(Parent, a);
-          var instance = new Constructor();
-          if (Class)
-            _setPrototypeOf(instance, Class.prototype);
-          return instance;
-        };
-      }
-      return _construct.apply(null, arguments);
-    }
-    function _toConsumableArray(arr) {
-      return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread();
-    }
-    function _arrayWithoutHoles(arr) {
-      if (Array.isArray(arr))
-        return _arrayLikeToArray(arr);
-    }
-    function _iterableToArray(iter) {
-      if (typeof Symbol !== 'undefined' && iter[Symbol.iterator] != null || iter['@@iterator'] != null)
-        return Array.from(iter);
-    }
-    function _unsupportedIterableToArray(o, minLen) {
-      if (!o)
-        return;
-      if (typeof o === 'string')
-        return _arrayLikeToArray(o, minLen);
-      var n = Object.prototype.toString.call(o).slice(8, -1);
-      if (n === 'Object' && o.constructor)
-        n = o.constructor.name;
-      if (n === 'Map' || n === 'Set')
-        return Array.from(o);
-      if (n === 'Arguments' || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-        return _arrayLikeToArray(o, minLen);
-    }
-    function _arrayLikeToArray(arr, len) {
-      if (len == null || len > arr.length)
-        len = arr.length;
-      for (var i = 0, arr2 = new Array(len); i < len; i++)
-        arr2[i] = arr[i];
-      return arr2;
-    }
-    function _nonIterableSpread() {
-      throw new TypeError('Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.');
-    }
-    var hasOwnProperty = Object.hasOwnProperty, setPrototypeOf = Object.setPrototypeOf, isFrozen = Object.isFrozen, getPrototypeOf = Object.getPrototypeOf, getOwnPropertyDescriptor = Object.getOwnPropertyDescriptor;
-    var freeze = Object.freeze, seal = Object.seal, create$1 = Object.create;
-    var _ref = typeof Reflect !== 'undefined' && Reflect, apply = _ref.apply, construct = _ref.construct;
-    if (!apply) {
-      apply = function apply(fun, thisValue, args) {
-        return fun.apply(thisValue, args);
-      };
-    }
+    /*! @license DOMPurify 3.1.7 | (c) Cure53 and other contributors | Released under the Apache license 2.0 and Mozilla Public License 2.0 | github.com/cure53/DOMPurify/blob/3.1.7/LICENSE */
+
+    const {
+      entries,
+      setPrototypeOf,
+      isFrozen,
+      getPrototypeOf,
+      getOwnPropertyDescriptor
+    } = Object;
+    let {
+      freeze,
+      seal,
+      create: create$1
+    } = Object; // eslint-disable-line import/no-mutable-exports
+    let {
+      apply,
+      construct
+    } = typeof Reflect !== 'undefined' && Reflect;
     if (!freeze) {
       freeze = function freeze(x) {
         return x;
@@ -8181,21 +8129,35 @@
         return x;
       };
     }
-    if (!construct) {
-      construct = function construct(Func, args) {
-        return _construct(Func, _toConsumableArray(args));
+    if (!apply) {
+      apply = function apply(fun, thisValue, args) {
+        return fun.apply(thisValue, args);
       };
     }
-    var arrayForEach = unapply(Array.prototype.forEach);
-    var arrayPop = unapply(Array.prototype.pop);
-    var arrayPush = unapply(Array.prototype.push);
-    var stringToLowerCase = unapply(String.prototype.toLowerCase);
-    var stringMatch = unapply(String.prototype.match);
-    var stringReplace = unapply(String.prototype.replace);
-    var stringIndexOf = unapply(String.prototype.indexOf);
-    var stringTrim = unapply(String.prototype.trim);
-    var regExpTest = unapply(RegExp.prototype.test);
-    var typeErrorCreate = unconstruct(TypeError);
+    if (!construct) {
+      construct = function construct(Func, args) {
+        return new Func(...args);
+      };
+    }
+    const arrayForEach = unapply(Array.prototype.forEach);
+    const arrayPop = unapply(Array.prototype.pop);
+    const arrayPush = unapply(Array.prototype.push);
+    const stringToLowerCase = unapply(String.prototype.toLowerCase);
+    const stringToString = unapply(String.prototype.toString);
+    const stringMatch = unapply(String.prototype.match);
+    const stringReplace = unapply(String.prototype.replace);
+    const stringIndexOf = unapply(String.prototype.indexOf);
+    const stringTrim = unapply(String.prototype.trim);
+    const objectHasOwnProperty = unapply(Object.prototype.hasOwnProperty);
+    const regExpTest = unapply(RegExp.prototype.test);
+    const typeErrorCreate = unconstruct(TypeError);
+
+    /**
+     * Creates a new function that calls the given function with a specified thisArg and arguments.
+     *
+     * @param {Function} func - The function to be wrapped and called.
+     * @returns {Function} A new function that calls the given function with a specified thisArg and arguments.
+     */
     function unapply(func) {
       return function (thisArg) {
         for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
@@ -8204,6 +8166,13 @@
         return apply(func, thisArg, args);
       };
     }
+
+    /**
+     * Creates a new function that constructs an instance of the given constructor function with the provided arguments.
+     *
+     * @param {Function} func - The constructor function to be wrapped and called.
+     * @returns {Function} A new function that constructs an instance of the given constructor function with the provided arguments.
+     */
     function unconstruct(func) {
       return function () {
         for (var _len2 = arguments.length, args = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
@@ -8212,16 +8181,30 @@
         return construct(func, args);
       };
     }
+
+    /**
+     * Add properties to a lookup table
+     *
+     * @param {Object} set - The set to which elements will be added.
+     * @param {Array} array - The array containing elements to be added to the set.
+     * @param {Function} transformCaseFunc - An optional function to transform the case of each element before adding to the set.
+     * @returns {Object} The modified set with added elements.
+     */
     function addToSet(set, array) {
+      let transformCaseFunc = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : stringToLowerCase;
       if (setPrototypeOf) {
+        // Make 'in' and truthy checks like Boolean(set.constructor)
+        // independent of any properties defined on Object.prototype.
+        // Prevent prototype setters from intercepting set as a this value.
         setPrototypeOf(set, null);
       }
-      var l = array.length;
+      let l = array.length;
       while (l--) {
-        var element = array[l];
+        let element = array[l];
         if (typeof element === 'string') {
-          var lcElement = stringToLowerCase(element);
+          const lcElement = transformCaseFunc(element);
           if (lcElement !== element) {
+            // Config presets (e.g. tags.js, attrs.js) are immutable.
             if (!isFrozen(array)) {
               array[l] = lcElement;
             }
@@ -8232,19 +8215,56 @@
       }
       return set;
     }
+
+    /**
+     * Clean up an array to harden against CSPP
+     *
+     * @param {Array} array - The array to be cleaned.
+     * @returns {Array} The cleaned version of the array
+     */
+    function cleanArray(array) {
+      for (let index = 0; index < array.length; index++) {
+        const isPropertyExist = objectHasOwnProperty(array, index);
+        if (!isPropertyExist) {
+          array[index] = null;
+        }
+      }
+      return array;
+    }
+
+    /**
+     * Shallow clone an object
+     *
+     * @param {Object} object - The object to be cloned.
+     * @returns {Object} A new object that copies the original.
+     */
     function clone(object) {
-      var newObject = create$1(null);
-      var property;
-      for (property in object) {
-        if (apply(hasOwnProperty, object, [property])) {
-          newObject[property] = object[property];
+      const newObject = create$1(null);
+      for (const [property, value] of entries(object)) {
+        const isPropertyExist = objectHasOwnProperty(object, property);
+        if (isPropertyExist) {
+          if (Array.isArray(value)) {
+            newObject[property] = cleanArray(value);
+          } else if (value && typeof value === 'object' && value.constructor === Object) {
+            newObject[property] = clone(value);
+          } else {
+            newObject[property] = value;
+          }
         }
       }
       return newObject;
     }
+
+    /**
+     * This method automatically checks if the prop is function or getter and behaves accordingly.
+     *
+     * @param {Object} object - The object to look up the getter function in its prototype chain.
+     * @param {String} prop - The property name for which to find the getter function.
+     * @returns {Function} The getter function found in the prototype chain or a fallback function.
+     */
     function lookupGetter(object, prop) {
       while (object !== null) {
-        var desc = getOwnPropertyDescriptor(object, prop);
+        const desc = getOwnPropertyDescriptor(object, prop);
         if (desc) {
           if (desc.get) {
             return unapply(desc.get);
@@ -8255,708 +8275,230 @@
         }
         object = getPrototypeOf(object);
       }
-      function fallbackValue(element) {
-        console.warn('fallback value for', element);
+      function fallbackValue() {
         return null;
       }
       return fallbackValue;
     }
-    var html$1 = freeze([
-      'a',
-      'abbr',
-      'acronym',
-      'address',
-      'area',
-      'article',
-      'aside',
-      'audio',
-      'b',
-      'bdi',
-      'bdo',
-      'big',
-      'blink',
-      'blockquote',
-      'body',
-      'br',
-      'button',
-      'canvas',
-      'caption',
-      'center',
-      'cite',
-      'code',
-      'col',
-      'colgroup',
-      'content',
-      'data',
-      'datalist',
-      'dd',
-      'decorator',
-      'del',
-      'details',
-      'dfn',
-      'dialog',
-      'dir',
-      'div',
-      'dl',
-      'dt',
-      'element',
-      'em',
-      'fieldset',
-      'figcaption',
-      'figure',
-      'font',
-      'footer',
-      'form',
-      'h1',
-      'h2',
-      'h3',
-      'h4',
-      'h5',
-      'h6',
-      'head',
-      'header',
-      'hgroup',
-      'hr',
-      'html',
-      'i',
-      'img',
-      'input',
-      'ins',
-      'kbd',
-      'label',
-      'legend',
-      'li',
-      'main',
-      'map',
-      'mark',
-      'marquee',
-      'menu',
-      'menuitem',
-      'meter',
-      'nav',
-      'nobr',
-      'ol',
-      'optgroup',
-      'option',
-      'output',
-      'p',
-      'picture',
-      'pre',
-      'progress',
-      'q',
-      'rp',
-      'rt',
-      'ruby',
-      's',
-      'samp',
-      'section',
-      'select',
-      'shadow',
-      'small',
-      'source',
-      'spacer',
-      'span',
-      'strike',
-      'strong',
-      'style',
-      'sub',
-      'summary',
-      'sup',
-      'table',
-      'tbody',
-      'td',
-      'template',
-      'textarea',
-      'tfoot',
-      'th',
-      'thead',
-      'time',
-      'tr',
-      'track',
-      'tt',
-      'u',
-      'ul',
-      'var',
-      'video',
-      'wbr'
-    ]);
-    var svg$1 = freeze([
-      'svg',
-      'a',
-      'altglyph',
-      'altglyphdef',
-      'altglyphitem',
-      'animatecolor',
-      'animatemotion',
-      'animatetransform',
-      'circle',
-      'clippath',
-      'defs',
-      'desc',
-      'ellipse',
-      'filter',
-      'font',
-      'g',
-      'glyph',
-      'glyphref',
-      'hkern',
-      'image',
-      'line',
-      'lineargradient',
-      'marker',
-      'mask',
-      'metadata',
-      'mpath',
-      'path',
-      'pattern',
-      'polygon',
-      'polyline',
-      'radialgradient',
-      'rect',
-      'stop',
-      'style',
-      'switch',
-      'symbol',
-      'text',
-      'textpath',
-      'title',
-      'tref',
-      'tspan',
-      'view',
-      'vkern'
-    ]);
-    var svgFilters = freeze([
-      'feBlend',
-      'feColorMatrix',
-      'feComponentTransfer',
-      'feComposite',
-      'feConvolveMatrix',
-      'feDiffuseLighting',
-      'feDisplacementMap',
-      'feDistantLight',
-      'feFlood',
-      'feFuncA',
-      'feFuncB',
-      'feFuncG',
-      'feFuncR',
-      'feGaussianBlur',
-      'feImage',
-      'feMerge',
-      'feMergeNode',
-      'feMorphology',
-      'feOffset',
-      'fePointLight',
-      'feSpecularLighting',
-      'feSpotLight',
-      'feTile',
-      'feTurbulence'
-    ]);
-    var svgDisallowed = freeze([
-      'animate',
-      'color-profile',
-      'cursor',
-      'discard',
-      'fedropshadow',
-      'font-face',
-      'font-face-format',
-      'font-face-name',
-      'font-face-src',
-      'font-face-uri',
-      'foreignobject',
-      'hatch',
-      'hatchpath',
-      'mesh',
-      'meshgradient',
-      'meshpatch',
-      'meshrow',
-      'missing-glyph',
-      'script',
-      'set',
-      'solidcolor',
-      'unknown',
-      'use'
-    ]);
-    var mathMl$1 = freeze([
-      'math',
-      'menclose',
-      'merror',
-      'mfenced',
-      'mfrac',
-      'mglyph',
-      'mi',
-      'mlabeledtr',
-      'mmultiscripts',
-      'mn',
-      'mo',
-      'mover',
-      'mpadded',
-      'mphantom',
-      'mroot',
-      'mrow',
-      'ms',
-      'mspace',
-      'msqrt',
-      'mstyle',
-      'msub',
-      'msup',
-      'msubsup',
-      'mtable',
-      'mtd',
-      'mtext',
-      'mtr',
-      'munder',
-      'munderover'
-    ]);
-    var mathMlDisallowed = freeze([
-      'maction',
-      'maligngroup',
-      'malignmark',
-      'mlongdiv',
-      'mscarries',
-      'mscarry',
-      'msgroup',
-      'mstack',
-      'msline',
-      'msrow',
-      'semantics',
-      'annotation',
-      'annotation-xml',
-      'mprescripts',
-      'none'
-    ]);
-    var text$1 = freeze(['#text']);
-    var html = freeze([
-      'accept',
-      'action',
-      'align',
-      'alt',
-      'autocapitalize',
-      'autocomplete',
-      'autopictureinpicture',
-      'autoplay',
-      'background',
-      'bgcolor',
-      'border',
-      'capture',
-      'cellpadding',
-      'cellspacing',
-      'checked',
-      'cite',
-      'class',
-      'clear',
-      'color',
-      'cols',
-      'colspan',
-      'controls',
-      'controlslist',
-      'coords',
-      'crossorigin',
-      'datetime',
-      'decoding',
-      'default',
-      'dir',
-      'disabled',
-      'disablepictureinpicture',
-      'disableremoteplayback',
-      'download',
-      'draggable',
-      'enctype',
-      'enterkeyhint',
-      'face',
-      'for',
-      'headers',
-      'height',
-      'hidden',
-      'high',
-      'href',
-      'hreflang',
-      'id',
-      'inputmode',
-      'integrity',
-      'ismap',
-      'kind',
-      'label',
-      'lang',
-      'list',
-      'loading',
-      'loop',
-      'low',
-      'max',
-      'maxlength',
-      'media',
-      'method',
-      'min',
-      'minlength',
-      'multiple',
-      'muted',
-      'name',
-      'nonce',
-      'noshade',
-      'novalidate',
-      'nowrap',
-      'open',
-      'optimum',
-      'pattern',
-      'placeholder',
-      'playsinline',
-      'poster',
-      'preload',
-      'pubdate',
-      'radiogroup',
-      'readonly',
-      'rel',
-      'required',
-      'rev',
-      'reversed',
-      'role',
-      'rows',
-      'rowspan',
-      'spellcheck',
-      'scope',
-      'selected',
-      'shape',
-      'size',
-      'sizes',
-      'span',
-      'srclang',
-      'start',
-      'src',
-      'srcset',
-      'step',
-      'style',
-      'summary',
-      'tabindex',
-      'title',
-      'translate',
-      'type',
-      'usemap',
-      'valign',
-      'value',
-      'width',
-      'xmlns',
-      'slot'
-    ]);
-    var svg = freeze([
-      'accent-height',
-      'accumulate',
-      'additive',
-      'alignment-baseline',
-      'ascent',
-      'attributename',
-      'attributetype',
-      'azimuth',
-      'basefrequency',
-      'baseline-shift',
-      'begin',
-      'bias',
-      'by',
-      'class',
-      'clip',
-      'clippathunits',
-      'clip-path',
-      'clip-rule',
-      'color',
-      'color-interpolation',
-      'color-interpolation-filters',
-      'color-profile',
-      'color-rendering',
-      'cx',
-      'cy',
-      'd',
-      'dx',
-      'dy',
-      'diffuseconstant',
-      'direction',
-      'display',
-      'divisor',
-      'dur',
-      'edgemode',
-      'elevation',
-      'end',
-      'fill',
-      'fill-opacity',
-      'fill-rule',
-      'filter',
-      'filterunits',
-      'flood-color',
-      'flood-opacity',
-      'font-family',
-      'font-size',
-      'font-size-adjust',
-      'font-stretch',
-      'font-style',
-      'font-variant',
-      'font-weight',
-      'fx',
-      'fy',
-      'g1',
-      'g2',
-      'glyph-name',
-      'glyphref',
-      'gradientunits',
-      'gradienttransform',
-      'height',
-      'href',
-      'id',
-      'image-rendering',
-      'in',
-      'in2',
-      'k',
-      'k1',
-      'k2',
-      'k3',
-      'k4',
-      'kerning',
-      'keypoints',
-      'keysplines',
-      'keytimes',
-      'lang',
-      'lengthadjust',
-      'letter-spacing',
-      'kernelmatrix',
-      'kernelunitlength',
-      'lighting-color',
-      'local',
-      'marker-end',
-      'marker-mid',
-      'marker-start',
-      'markerheight',
-      'markerunits',
-      'markerwidth',
-      'maskcontentunits',
-      'maskunits',
-      'max',
-      'mask',
-      'media',
-      'method',
-      'mode',
-      'min',
-      'name',
-      'numoctaves',
-      'offset',
-      'operator',
-      'opacity',
-      'order',
-      'orient',
-      'orientation',
-      'origin',
-      'overflow',
-      'paint-order',
-      'path',
-      'pathlength',
-      'patterncontentunits',
-      'patterntransform',
-      'patternunits',
-      'points',
-      'preservealpha',
-      'preserveaspectratio',
-      'primitiveunits',
-      'r',
-      'rx',
-      'ry',
-      'radius',
-      'refx',
-      'refy',
-      'repeatcount',
-      'repeatdur',
-      'restart',
-      'result',
-      'rotate',
-      'scale',
-      'seed',
-      'shape-rendering',
-      'specularconstant',
-      'specularexponent',
-      'spreadmethod',
-      'startoffset',
-      'stddeviation',
-      'stitchtiles',
-      'stop-color',
-      'stop-opacity',
-      'stroke-dasharray',
-      'stroke-dashoffset',
-      'stroke-linecap',
-      'stroke-linejoin',
-      'stroke-miterlimit',
-      'stroke-opacity',
-      'stroke',
-      'stroke-width',
-      'style',
-      'surfacescale',
-      'systemlanguage',
-      'tabindex',
-      'targetx',
-      'targety',
-      'transform',
-      'transform-origin',
-      'text-anchor',
-      'text-decoration',
-      'text-rendering',
-      'textlength',
-      'type',
-      'u1',
-      'u2',
-      'unicode',
-      'values',
-      'viewbox',
-      'visibility',
-      'version',
-      'vert-adv-y',
-      'vert-origin-x',
-      'vert-origin-y',
-      'width',
-      'word-spacing',
-      'wrap',
-      'writing-mode',
-      'xchannelselector',
-      'ychannelselector',
-      'x',
-      'x1',
-      'x2',
-      'xmlns',
-      'y',
-      'y1',
-      'y2',
-      'z',
-      'zoomandpan'
-    ]);
-    var mathMl = freeze([
-      'accent',
-      'accentunder',
-      'align',
-      'bevelled',
-      'close',
-      'columnsalign',
-      'columnlines',
-      'columnspan',
-      'denomalign',
-      'depth',
-      'dir',
-      'display',
-      'displaystyle',
-      'encoding',
-      'fence',
-      'frame',
-      'height',
-      'href',
-      'id',
-      'largeop',
-      'length',
-      'linethickness',
-      'lspace',
-      'lquote',
-      'mathbackground',
-      'mathcolor',
-      'mathsize',
-      'mathvariant',
-      'maxsize',
-      'minsize',
-      'movablelimits',
-      'notation',
-      'numalign',
-      'open',
-      'rowalign',
-      'rowlines',
-      'rowspacing',
-      'rowspan',
-      'rspace',
-      'rquote',
-      'scriptlevel',
-      'scriptminsize',
-      'scriptsizemultiplier',
-      'selection',
-      'separator',
-      'separators',
-      'stretchy',
-      'subscriptshift',
-      'supscriptshift',
-      'symmetric',
-      'voffset',
-      'width',
-      'xmlns'
-    ]);
-    var xml = freeze([
-      'xlink:href',
-      'xml:id',
-      'xlink:title',
-      'xml:space',
-      'xmlns:xlink'
-    ]);
-    var MUSTACHE_EXPR = seal(/\{\{[\w\W]*|[\w\W]*\}\}/gm);
-    var ERB_EXPR = seal(/<%[\w\W]*|[\w\W]*%>/gm);
-    var DATA_ATTR = seal(/^data-[\-\w.\u00B7-\uFFFF]/);
-    var ARIA_ATTR = seal(/^aria-[\-\w]+$/);
-    var IS_ALLOWED_URI = seal(/^(?:(?:(?:f|ht)tps?|mailto|tel|callto|cid|xmpp):|[^a-z]|[a-z+.\-]+(?:[^a-z+.\-:]|$))/i);
-    var IS_SCRIPT_OR_DATA = seal(/^(?:\w+script|data):/i);
-    var ATTR_WHITESPACE = seal(/[\u0000-\u0020\u00A0\u1680\u180E\u2000-\u2029\u205F\u3000]/g);
-    var DOCTYPE_NAME = seal(/^html$/i);
-    var getGlobal = function getGlobal() {
+
+    const html$1 = freeze(['a', 'abbr', 'acronym', 'address', 'area', 'article', 'aside', 'audio', 'b', 'bdi', 'bdo', 'big', 'blink', 'blockquote', 'body', 'br', 'button', 'canvas', 'caption', 'center', 'cite', 'code', 'col', 'colgroup', 'content', 'data', 'datalist', 'dd', 'decorator', 'del', 'details', 'dfn', 'dialog', 'dir', 'div', 'dl', 'dt', 'element', 'em', 'fieldset', 'figcaption', 'figure', 'font', 'footer', 'form', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'head', 'header', 'hgroup', 'hr', 'html', 'i', 'img', 'input', 'ins', 'kbd', 'label', 'legend', 'li', 'main', 'map', 'mark', 'marquee', 'menu', 'menuitem', 'meter', 'nav', 'nobr', 'ol', 'optgroup', 'option', 'output', 'p', 'picture', 'pre', 'progress', 'q', 'rp', 'rt', 'ruby', 's', 'samp', 'section', 'select', 'shadow', 'small', 'source', 'spacer', 'span', 'strike', 'strong', 'style', 'sub', 'summary', 'sup', 'table', 'tbody', 'td', 'template', 'textarea', 'tfoot', 'th', 'thead', 'time', 'tr', 'track', 'tt', 'u', 'ul', 'var', 'video', 'wbr']);
+
+    // SVG
+    const svg$1 = freeze(['svg', 'a', 'altglyph', 'altglyphdef', 'altglyphitem', 'animatecolor', 'animatemotion', 'animatetransform', 'circle', 'clippath', 'defs', 'desc', 'ellipse', 'filter', 'font', 'g', 'glyph', 'glyphref', 'hkern', 'image', 'line', 'lineargradient', 'marker', 'mask', 'metadata', 'mpath', 'path', 'pattern', 'polygon', 'polyline', 'radialgradient', 'rect', 'stop', 'style', 'switch', 'symbol', 'text', 'textpath', 'title', 'tref', 'tspan', 'view', 'vkern']);
+    const svgFilters = freeze(['feBlend', 'feColorMatrix', 'feComponentTransfer', 'feComposite', 'feConvolveMatrix', 'feDiffuseLighting', 'feDisplacementMap', 'feDistantLight', 'feDropShadow', 'feFlood', 'feFuncA', 'feFuncB', 'feFuncG', 'feFuncR', 'feGaussianBlur', 'feImage', 'feMerge', 'feMergeNode', 'feMorphology', 'feOffset', 'fePointLight', 'feSpecularLighting', 'feSpotLight', 'feTile', 'feTurbulence']);
+
+    // List of SVG elements that are disallowed by default.
+    // We still need to know them so that we can do namespace
+    // checks properly in case one wants to add them to
+    // allow-list.
+    const svgDisallowed = freeze(['animate', 'color-profile', 'cursor', 'discard', 'font-face', 'font-face-format', 'font-face-name', 'font-face-src', 'font-face-uri', 'foreignobject', 'hatch', 'hatchpath', 'mesh', 'meshgradient', 'meshpatch', 'meshrow', 'missing-glyph', 'script', 'set', 'solidcolor', 'unknown', 'use']);
+    const mathMl$1 = freeze(['math', 'menclose', 'merror', 'mfenced', 'mfrac', 'mglyph', 'mi', 'mlabeledtr', 'mmultiscripts', 'mn', 'mo', 'mover', 'mpadded', 'mphantom', 'mroot', 'mrow', 'ms', 'mspace', 'msqrt', 'mstyle', 'msub', 'msup', 'msubsup', 'mtable', 'mtd', 'mtext', 'mtr', 'munder', 'munderover', 'mprescripts']);
+
+    // Similarly to SVG, we want to know all MathML elements,
+    // even those that we disallow by default.
+    const mathMlDisallowed = freeze(['maction', 'maligngroup', 'malignmark', 'mlongdiv', 'mscarries', 'mscarry', 'msgroup', 'mstack', 'msline', 'msrow', 'semantics', 'annotation', 'annotation-xml', 'mprescripts', 'none']);
+    const text$1 = freeze(['#text']);
+
+    const html = freeze(['accept', 'action', 'align', 'alt', 'autocapitalize', 'autocomplete', 'autopictureinpicture', 'autoplay', 'background', 'bgcolor', 'border', 'capture', 'cellpadding', 'cellspacing', 'checked', 'cite', 'class', 'clear', 'color', 'cols', 'colspan', 'controls', 'controlslist', 'coords', 'crossorigin', 'datetime', 'decoding', 'default', 'dir', 'disabled', 'disablepictureinpicture', 'disableremoteplayback', 'download', 'draggable', 'enctype', 'enterkeyhint', 'face', 'for', 'headers', 'height', 'hidden', 'high', 'href', 'hreflang', 'id', 'inputmode', 'integrity', 'ismap', 'kind', 'label', 'lang', 'list', 'loading', 'loop', 'low', 'max', 'maxlength', 'media', 'method', 'min', 'minlength', 'multiple', 'muted', 'name', 'nonce', 'noshade', 'novalidate', 'nowrap', 'open', 'optimum', 'pattern', 'placeholder', 'playsinline', 'popover', 'popovertarget', 'popovertargetaction', 'poster', 'preload', 'pubdate', 'radiogroup', 'readonly', 'rel', 'required', 'rev', 'reversed', 'role', 'rows', 'rowspan', 'spellcheck', 'scope', 'selected', 'shape', 'size', 'sizes', 'span', 'srclang', 'start', 'src', 'srcset', 'step', 'style', 'summary', 'tabindex', 'title', 'translate', 'type', 'usemap', 'valign', 'value', 'width', 'wrap', 'xmlns', 'slot']);
+    const svg = freeze(['accent-height', 'accumulate', 'additive', 'alignment-baseline', 'amplitude', 'ascent', 'attributename', 'attributetype', 'azimuth', 'basefrequency', 'baseline-shift', 'begin', 'bias', 'by', 'class', 'clip', 'clippathunits', 'clip-path', 'clip-rule', 'color', 'color-interpolation', 'color-interpolation-filters', 'color-profile', 'color-rendering', 'cx', 'cy', 'd', 'dx', 'dy', 'diffuseconstant', 'direction', 'display', 'divisor', 'dur', 'edgemode', 'elevation', 'end', 'exponent', 'fill', 'fill-opacity', 'fill-rule', 'filter', 'filterunits', 'flood-color', 'flood-opacity', 'font-family', 'font-size', 'font-size-adjust', 'font-stretch', 'font-style', 'font-variant', 'font-weight', 'fx', 'fy', 'g1', 'g2', 'glyph-name', 'glyphref', 'gradientunits', 'gradienttransform', 'height', 'href', 'id', 'image-rendering', 'in', 'in2', 'intercept', 'k', 'k1', 'k2', 'k3', 'k4', 'kerning', 'keypoints', 'keysplines', 'keytimes', 'lang', 'lengthadjust', 'letter-spacing', 'kernelmatrix', 'kernelunitlength', 'lighting-color', 'local', 'marker-end', 'marker-mid', 'marker-start', 'markerheight', 'markerunits', 'markerwidth', 'maskcontentunits', 'maskunits', 'max', 'mask', 'media', 'method', 'mode', 'min', 'name', 'numoctaves', 'offset', 'operator', 'opacity', 'order', 'orient', 'orientation', 'origin', 'overflow', 'paint-order', 'path', 'pathlength', 'patterncontentunits', 'patterntransform', 'patternunits', 'points', 'preservealpha', 'preserveaspectratio', 'primitiveunits', 'r', 'rx', 'ry', 'radius', 'refx', 'refy', 'repeatcount', 'repeatdur', 'restart', 'result', 'rotate', 'scale', 'seed', 'shape-rendering', 'slope', 'specularconstant', 'specularexponent', 'spreadmethod', 'startoffset', 'stddeviation', 'stitchtiles', 'stop-color', 'stop-opacity', 'stroke-dasharray', 'stroke-dashoffset', 'stroke-linecap', 'stroke-linejoin', 'stroke-miterlimit', 'stroke-opacity', 'stroke', 'stroke-width', 'style', 'surfacescale', 'systemlanguage', 'tabindex', 'tablevalues', 'targetx', 'targety', 'transform', 'transform-origin', 'text-anchor', 'text-decoration', 'text-rendering', 'textlength', 'type', 'u1', 'u2', 'unicode', 'values', 'viewbox', 'visibility', 'version', 'vert-adv-y', 'vert-origin-x', 'vert-origin-y', 'width', 'word-spacing', 'wrap', 'writing-mode', 'xchannelselector', 'ychannelselector', 'x', 'x1', 'x2', 'xmlns', 'y', 'y1', 'y2', 'z', 'zoomandpan']);
+    const mathMl = freeze(['accent', 'accentunder', 'align', 'bevelled', 'close', 'columnsalign', 'columnlines', 'columnspan', 'denomalign', 'depth', 'dir', 'display', 'displaystyle', 'encoding', 'fence', 'frame', 'height', 'href', 'id', 'largeop', 'length', 'linethickness', 'lspace', 'lquote', 'mathbackground', 'mathcolor', 'mathsize', 'mathvariant', 'maxsize', 'minsize', 'movablelimits', 'notation', 'numalign', 'open', 'rowalign', 'rowlines', 'rowspacing', 'rowspan', 'rspace', 'rquote', 'scriptlevel', 'scriptminsize', 'scriptsizemultiplier', 'selection', 'separator', 'separators', 'stretchy', 'subscriptshift', 'supscriptshift', 'symmetric', 'voffset', 'width', 'xmlns']);
+    const xml = freeze(['xlink:href', 'xml:id', 'xlink:title', 'xml:space', 'xmlns:xlink']);
+
+    // eslint-disable-next-line unicorn/better-regex
+    const MUSTACHE_EXPR = seal(/\{\{[\w\W]*|[\w\W]*\}\}/gm); // Specify template detection regex for SAFE_FOR_TEMPLATES mode
+    const ERB_EXPR = seal(/<%[\w\W]*|[\w\W]*%>/gm);
+    const TMPLIT_EXPR = seal(/\${[\w\W]*}/gm);
+    const DATA_ATTR = seal(/^data-[\-\w.\u00B7-\uFFFF]/); // eslint-disable-line no-useless-escape
+    const ARIA_ATTR = seal(/^aria-[\-\w]+$/); // eslint-disable-line no-useless-escape
+    const IS_ALLOWED_URI = seal(/^(?:(?:(?:f|ht)tps?|mailto|tel|callto|sms|cid|xmpp):|[^a-z]|[a-z+.\-]+(?:[^a-z+.\-:]|$))/i // eslint-disable-line no-useless-escape
+    );
+    const IS_SCRIPT_OR_DATA = seal(/^(?:\w+script|data):/i);
+    const ATTR_WHITESPACE = seal(/[\u0000-\u0020\u00A0\u1680\u180E\u2000-\u2029\u205F\u3000]/g // eslint-disable-line no-control-regex
+    );
+    const DOCTYPE_NAME = seal(/^html$/i);
+    const CUSTOM_ELEMENT = seal(/^[a-z][.\w]*(-[.\w]+)+$/i);
+
+    var EXPRESSIONS = /*#__PURE__*/Object.freeze({
+      __proto__: null,
+      MUSTACHE_EXPR: MUSTACHE_EXPR,
+      ERB_EXPR: ERB_EXPR,
+      TMPLIT_EXPR: TMPLIT_EXPR,
+      DATA_ATTR: DATA_ATTR,
+      ARIA_ATTR: ARIA_ATTR,
+      IS_ALLOWED_URI: IS_ALLOWED_URI,
+      IS_SCRIPT_OR_DATA: IS_SCRIPT_OR_DATA,
+      ATTR_WHITESPACE: ATTR_WHITESPACE,
+      DOCTYPE_NAME: DOCTYPE_NAME,
+      CUSTOM_ELEMENT: CUSTOM_ELEMENT
+    });
+
+    // https://developer.mozilla.org/en-US/docs/Web/API/Node/nodeType
+    const NODE_TYPE = {
+      element: 1,
+      attribute: 2,
+      text: 3,
+      cdataSection: 4,
+      entityReference: 5,
+      // Deprecated
+      entityNode: 6,
+      // Deprecated
+      progressingInstruction: 7,
+      comment: 8,
+      document: 9,
+      documentType: 10,
+      documentFragment: 11,
+      notation: 12 // Deprecated
+    };
+    const getGlobal = function getGlobal() {
       return typeof window === 'undefined' ? null : window;
     };
-    var _createTrustedTypesPolicy = function _createTrustedTypesPolicy(trustedTypes, document) {
-      if (_typeof(trustedTypes) !== 'object' || typeof trustedTypes.createPolicy !== 'function') {
+
+    /**
+     * Creates a no-op policy for internal use only.
+     * Don't export this function outside this module!
+     * @param {TrustedTypePolicyFactory} trustedTypes The policy factory.
+     * @param {HTMLScriptElement} purifyHostElement The Script element used to load DOMPurify (to determine policy name suffix).
+     * @return {TrustedTypePolicy} The policy created (or null, if Trusted Types
+     * are not supported or creating the policy failed).
+     */
+    const _createTrustedTypesPolicy = function _createTrustedTypesPolicy(trustedTypes, purifyHostElement) {
+      if (typeof trustedTypes !== 'object' || typeof trustedTypes.createPolicy !== 'function') {
         return null;
       }
-      var suffix = null;
-      var ATTR_NAME = 'data-tt-policy-suffix';
-      if (document.currentScript && document.currentScript.hasAttribute(ATTR_NAME)) {
-        suffix = document.currentScript.getAttribute(ATTR_NAME);
+
+      // Allow the callers to control the unique policy name
+      // by adding a data-tt-policy-suffix to the script element with the DOMPurify.
+      // Policy creation with duplicate names throws in Trusted Types.
+      let suffix = null;
+      const ATTR_NAME = 'data-tt-policy-suffix';
+      if (purifyHostElement && purifyHostElement.hasAttribute(ATTR_NAME)) {
+        suffix = purifyHostElement.getAttribute(ATTR_NAME);
       }
-      var policyName = 'dompurify' + (suffix ? '#' + suffix : '');
+      const policyName = 'dompurify' + (suffix ? '#' + suffix : '');
       try {
         return trustedTypes.createPolicy(policyName, {
-          createHTML: function createHTML(html) {
+          createHTML(html) {
             return html;
+          },
+          createScriptURL(scriptUrl) {
+            return scriptUrl;
           }
         });
       } catch (_) {
+        // Policy creation failed (most likely another DOMPurify script has
+        // already run). Skip creating the policy, as this will only cause errors
+        // if TT are enforced.
         console.warn('TrustedTypes policy ' + policyName + ' could not be created.');
         return null;
       }
     };
     function createDOMPurify() {
-      var window = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : getGlobal();
-      var DOMPurify = function DOMPurify(root) {
-        return createDOMPurify(root);
-      };
-      DOMPurify.version = '2.3.8';
+      let window = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : getGlobal();
+      const DOMPurify = root => createDOMPurify(root);
+
+      /**
+       * Version label, exposed for easier checks
+       * if DOMPurify is up to date or not
+       */
+      DOMPurify.version = '3.1.7';
+
+      /**
+       * Array of elements that DOMPurify removed during sanitation.
+       * Empty if nothing was removed.
+       */
       DOMPurify.removed = [];
-      if (!window || !window.document || window.document.nodeType !== 9) {
+      if (!window || !window.document || window.document.nodeType !== NODE_TYPE.document) {
+        // Not running in a browser, provide a factory function
+        // so that you can pass your own Window
         DOMPurify.isSupported = false;
         return DOMPurify;
       }
-      var originalDocument = window.document;
-      var document = window.document;
-      var DocumentFragment = window.DocumentFragment, HTMLTemplateElement = window.HTMLTemplateElement, Node = window.Node, Element = window.Element, NodeFilter = window.NodeFilter, _window$NamedNodeMap = window.NamedNodeMap, NamedNodeMap = _window$NamedNodeMap === void 0 ? window.NamedNodeMap || window.MozNamedAttrMap : _window$NamedNodeMap, HTMLFormElement = window.HTMLFormElement, DOMParser = window.DOMParser, trustedTypes = window.trustedTypes;
-      var ElementPrototype = Element.prototype;
-      var cloneNode = lookupGetter(ElementPrototype, 'cloneNode');
-      var getNextSibling = lookupGetter(ElementPrototype, 'nextSibling');
-      var getChildNodes = lookupGetter(ElementPrototype, 'childNodes');
-      var getParentNode = lookupGetter(ElementPrototype, 'parentNode');
+      let {
+        document
+      } = window;
+      const originalDocument = document;
+      const currentScript = originalDocument.currentScript;
+      const {
+        DocumentFragment,
+        HTMLTemplateElement,
+        Node,
+        Element,
+        NodeFilter,
+        NamedNodeMap = window.NamedNodeMap || window.MozNamedAttrMap,
+        HTMLFormElement,
+        DOMParser,
+        trustedTypes
+      } = window;
+      const ElementPrototype = Element.prototype;
+      const cloneNode = lookupGetter(ElementPrototype, 'cloneNode');
+      const remove = lookupGetter(ElementPrototype, 'remove');
+      const getNextSibling = lookupGetter(ElementPrototype, 'nextSibling');
+      const getChildNodes = lookupGetter(ElementPrototype, 'childNodes');
+      const getParentNode = lookupGetter(ElementPrototype, 'parentNode');
+
+      // As per issue #47, the web-components registry is inherited by a
+      // new document created via createHTMLDocument. As per the spec
+      // (http://w3c.github.io/webcomponents/spec/custom/#creating-and-passing-registries)
+      // a new empty registry is used when creating a template contents owner
+      // document, so we use that as our parent document to ensure nothing
+      // is inherited.
       if (typeof HTMLTemplateElement === 'function') {
-        var template = document.createElement('template');
+        const template = document.createElement('template');
         if (template.content && template.content.ownerDocument) {
           document = template.content.ownerDocument;
         }
       }
-      var trustedTypesPolicy = _createTrustedTypesPolicy(trustedTypes, originalDocument);
-      var emptyHTML = trustedTypesPolicy ? trustedTypesPolicy.createHTML('') : '';
-      var _document = document, implementation = _document.implementation, createNodeIterator = _document.createNodeIterator, createDocumentFragment = _document.createDocumentFragment, getElementsByTagName = _document.getElementsByTagName;
-      var importNode = originalDocument.importNode;
-      var documentMode = {};
-      try {
-        documentMode = clone(document).documentMode ? document.documentMode : {};
-      } catch (_) {
-      }
-      var hooks = {};
-      DOMPurify.isSupported = typeof getParentNode === 'function' && implementation && typeof implementation.createHTMLDocument !== 'undefined' && documentMode !== 9;
-      var MUSTACHE_EXPR$1 = MUSTACHE_EXPR, ERB_EXPR$1 = ERB_EXPR, DATA_ATTR$1 = DATA_ATTR, ARIA_ATTR$1 = ARIA_ATTR, IS_SCRIPT_OR_DATA$1 = IS_SCRIPT_OR_DATA, ATTR_WHITESPACE$1 = ATTR_WHITESPACE;
-      var IS_ALLOWED_URI$1 = IS_ALLOWED_URI;
-      var ALLOWED_TAGS = null;
-      var DEFAULT_ALLOWED_TAGS = addToSet({}, [].concat(_toConsumableArray(html$1), _toConsumableArray(svg$1), _toConsumableArray(svgFilters), _toConsumableArray(mathMl$1), _toConsumableArray(text$1)));
-      var ALLOWED_ATTR = null;
-      var DEFAULT_ALLOWED_ATTR = addToSet({}, [].concat(_toConsumableArray(html), _toConsumableArray(svg), _toConsumableArray(mathMl), _toConsumableArray(xml)));
-      var CUSTOM_ELEMENT_HANDLING = Object.seal(Object.create(null, {
+      let trustedTypesPolicy;
+      let emptyHTML = '';
+      const {
+        implementation,
+        createNodeIterator,
+        createDocumentFragment,
+        getElementsByTagName
+      } = document;
+      const {
+        importNode
+      } = originalDocument;
+      let hooks = {};
+
+      /**
+       * Expose whether this browser supports running the full DOMPurify.
+       */
+      DOMPurify.isSupported = typeof entries === 'function' && typeof getParentNode === 'function' && implementation && implementation.createHTMLDocument !== undefined;
+      const {
+        MUSTACHE_EXPR,
+        ERB_EXPR,
+        TMPLIT_EXPR,
+        DATA_ATTR,
+        ARIA_ATTR,
+        IS_SCRIPT_OR_DATA,
+        ATTR_WHITESPACE,
+        CUSTOM_ELEMENT
+      } = EXPRESSIONS;
+      let {
+        IS_ALLOWED_URI: IS_ALLOWED_URI$1
+      } = EXPRESSIONS;
+
+      /**
+       * We consider the elements and attributes below to be safe. Ideally
+       * don't add any new ones but feel free to remove unwanted ones.
+       */
+
+      /* allowed element names */
+      let ALLOWED_TAGS = null;
+      const DEFAULT_ALLOWED_TAGS = addToSet({}, [...html$1, ...svg$1, ...svgFilters, ...mathMl$1, ...text$1]);
+
+      /* Allowed attribute names */
+      let ALLOWED_ATTR = null;
+      const DEFAULT_ALLOWED_ATTR = addToSet({}, [...html, ...svg, ...mathMl, ...xml]);
+
+      /*
+       * Configure how DOMPUrify should handle custom elements and their attributes as well as customized built-in elements.
+       * @property {RegExp|Function|null} tagNameCheck one of [null, regexPattern, predicate]. Default: `null` (disallow any custom elements)
+       * @property {RegExp|Function|null} attributeNameCheck one of [null, regexPattern, predicate]. Default: `null` (disallow any attributes not on the allow list)
+       * @property {boolean} allowCustomizedBuiltInElements allow custom elements derived from built-ins if they pass CUSTOM_ELEMENT_HANDLING.tagNameCheck. Default: `false`.
+       */
+      let CUSTOM_ELEMENT_HANDLING = Object.seal(create$1(null, {
         tagNameCheck: {
           writable: true,
           configurable: false,
@@ -8976,123 +8518,196 @@
           value: false
         }
       }));
-      var FORBID_TAGS = null;
-      var FORBID_ATTR = null;
-      var ALLOW_ARIA_ATTR = true;
-      var ALLOW_DATA_ATTR = true;
-      var ALLOW_UNKNOWN_PROTOCOLS = false;
-      var SAFE_FOR_TEMPLATES = false;
-      var WHOLE_DOCUMENT = false;
-      var SET_CONFIG = false;
-      var FORCE_BODY = false;
-      var RETURN_DOM = false;
-      var RETURN_DOM_FRAGMENT = false;
-      var RETURN_TRUSTED_TYPE = false;
-      var SANITIZE_DOM = true;
-      var KEEP_CONTENT = true;
-      var IN_PLACE = false;
-      var USE_PROFILES = {};
-      var FORBID_CONTENTS = null;
-      var DEFAULT_FORBID_CONTENTS = addToSet({}, [
-        'annotation-xml',
-        'audio',
-        'colgroup',
-        'desc',
-        'foreignobject',
-        'head',
-        'iframe',
-        'math',
-        'mi',
-        'mn',
-        'mo',
-        'ms',
-        'mtext',
-        'noembed',
-        'noframes',
-        'noscript',
-        'plaintext',
-        'script',
-        'style',
-        'svg',
-        'template',
-        'thead',
-        'title',
-        'video',
-        'xmp'
-      ]);
-      var DATA_URI_TAGS = null;
-      var DEFAULT_DATA_URI_TAGS = addToSet({}, [
-        'audio',
-        'video',
-        'img',
-        'source',
-        'image',
-        'track'
-      ]);
-      var URI_SAFE_ATTRIBUTES = null;
-      var DEFAULT_URI_SAFE_ATTRIBUTES = addToSet({}, [
-        'alt',
-        'class',
-        'for',
-        'id',
-        'label',
-        'name',
-        'pattern',
-        'placeholder',
-        'role',
-        'summary',
-        'title',
-        'value',
-        'style',
-        'xmlns'
-      ]);
-      var MATHML_NAMESPACE = 'http://www.w3.org/1998/Math/MathML';
-      var SVG_NAMESPACE = 'http://www.w3.org/2000/svg';
-      var HTML_NAMESPACE = 'http://www.w3.org/1999/xhtml';
-      var NAMESPACE = HTML_NAMESPACE;
-      var IS_EMPTY_INPUT = false;
-      var PARSER_MEDIA_TYPE;
-      var SUPPORTED_PARSER_MEDIA_TYPES = [
-        'application/xhtml+xml',
-        'text/html'
-      ];
-      var DEFAULT_PARSER_MEDIA_TYPE = 'text/html';
-      var transformCaseFunc;
-      var CONFIG = null;
-      var formElement = document.createElement('form');
-      var isRegexOrFunction = function isRegexOrFunction(testValue) {
+
+      /* Explicitly forbidden tags (overrides ALLOWED_TAGS/ADD_TAGS) */
+      let FORBID_TAGS = null;
+
+      /* Explicitly forbidden attributes (overrides ALLOWED_ATTR/ADD_ATTR) */
+      let FORBID_ATTR = null;
+
+      /* Decide if ARIA attributes are okay */
+      let ALLOW_ARIA_ATTR = true;
+
+      /* Decide if custom data attributes are okay */
+      let ALLOW_DATA_ATTR = true;
+
+      /* Decide if unknown protocols are okay */
+      let ALLOW_UNKNOWN_PROTOCOLS = false;
+
+      /* Decide if self-closing tags in attributes are allowed.
+       * Usually removed due to a mXSS issue in jQuery 3.0 */
+      let ALLOW_SELF_CLOSE_IN_ATTR = true;
+
+      /* Output should be safe for common template engines.
+       * This means, DOMPurify removes data attributes, mustaches and ERB
+       */
+      let SAFE_FOR_TEMPLATES = false;
+
+      /* Output should be safe even for XML used within HTML and alike.
+       * This means, DOMPurify removes comments when containing risky content.
+       */
+      let SAFE_FOR_XML = true;
+
+      /* Decide if document with <html>... should be returned */
+      let WHOLE_DOCUMENT = false;
+
+      /* Track whether config is already set on this instance of DOMPurify. */
+      let SET_CONFIG = false;
+
+      /* Decide if all elements (e.g. style, script) must be children of
+       * document.body. By default, browsers might move them to document.head */
+      let FORCE_BODY = false;
+
+      /* Decide if a DOM `HTMLBodyElement` should be returned, instead of a html
+       * string (or a TrustedHTML object if Trusted Types are supported).
+       * If `WHOLE_DOCUMENT` is enabled a `HTMLHtmlElement` will be returned instead
+       */
+      let RETURN_DOM = false;
+
+      /* Decide if a DOM `DocumentFragment` should be returned, instead of a html
+       * string  (or a TrustedHTML object if Trusted Types are supported) */
+      let RETURN_DOM_FRAGMENT = false;
+
+      /* Try to return a Trusted Type object instead of a string, return a string in
+       * case Trusted Types are not supported  */
+      let RETURN_TRUSTED_TYPE = false;
+
+      /* Output should be free from DOM clobbering attacks?
+       * This sanitizes markups named with colliding, clobberable built-in DOM APIs.
+       */
+      let SANITIZE_DOM = true;
+
+      /* Achieve full DOM Clobbering protection by isolating the namespace of named
+       * properties and JS variables, mitigating attacks that abuse the HTML/DOM spec rules.
+       *
+       * HTML/DOM spec rules that enable DOM Clobbering:
+       *   - Named Access on Window (§7.3.3)
+       *   - DOM Tree Accessors (§3.1.5)
+       *   - Form Element Parent-Child Relations (§4.10.3)
+       *   - Iframe srcdoc / Nested WindowProxies (§4.8.5)
+       *   - HTMLCollection (§4.2.10.2)
+       *
+       * Namespace isolation is implemented by prefixing `id` and `name` attributes
+       * with a constant string, i.e., `user-content-`
+       */
+      let SANITIZE_NAMED_PROPS = false;
+      const SANITIZE_NAMED_PROPS_PREFIX = 'user-content-';
+
+      /* Keep element content when removing element? */
+      let KEEP_CONTENT = true;
+
+      /* If a `Node` is passed to sanitize(), then performs sanitization in-place instead
+       * of importing it into a new Document and returning a sanitized copy */
+      let IN_PLACE = false;
+
+      /* Allow usage of profiles like html, svg and mathMl */
+      let USE_PROFILES = {};
+
+      /* Tags to ignore content of when KEEP_CONTENT is true */
+      let FORBID_CONTENTS = null;
+      const DEFAULT_FORBID_CONTENTS = addToSet({}, ['annotation-xml', 'audio', 'colgroup', 'desc', 'foreignobject', 'head', 'iframe', 'math', 'mi', 'mn', 'mo', 'ms', 'mtext', 'noembed', 'noframes', 'noscript', 'plaintext', 'script', 'style', 'svg', 'template', 'thead', 'title', 'video', 'xmp']);
+
+      /* Tags that are safe for data: URIs */
+      let DATA_URI_TAGS = null;
+      const DEFAULT_DATA_URI_TAGS = addToSet({}, ['audio', 'video', 'img', 'source', 'image', 'track']);
+
+      /* Attributes safe for values like "javascript:" */
+      let URI_SAFE_ATTRIBUTES = null;
+      const DEFAULT_URI_SAFE_ATTRIBUTES = addToSet({}, ['alt', 'class', 'for', 'id', 'label', 'name', 'pattern', 'placeholder', 'role', 'summary', 'title', 'value', 'style', 'xmlns']);
+      const MATHML_NAMESPACE = 'http://www.w3.org/1998/Math/MathML';
+      const SVG_NAMESPACE = 'http://www.w3.org/2000/svg';
+      const HTML_NAMESPACE = 'http://www.w3.org/1999/xhtml';
+      /* Document namespace */
+      let NAMESPACE = HTML_NAMESPACE;
+      let IS_EMPTY_INPUT = false;
+
+      /* Allowed XHTML+XML namespaces */
+      let ALLOWED_NAMESPACES = null;
+      const DEFAULT_ALLOWED_NAMESPACES = addToSet({}, [MATHML_NAMESPACE, SVG_NAMESPACE, HTML_NAMESPACE], stringToString);
+
+      /* Parsing of strict XHTML documents */
+      let PARSER_MEDIA_TYPE = null;
+      const SUPPORTED_PARSER_MEDIA_TYPES = ['application/xhtml+xml', 'text/html'];
+      const DEFAULT_PARSER_MEDIA_TYPE = 'text/html';
+      let transformCaseFunc = null;
+
+      /* Keep a reference to config to pass to hooks */
+      let CONFIG = null;
+
+      /* Ideally, do not touch anything below this line */
+      /* ______________________________________________ */
+
+      const formElement = document.createElement('form');
+      const isRegexOrFunction = function isRegexOrFunction(testValue) {
         return testValue instanceof RegExp || testValue instanceof Function;
       };
-      var _parseConfig = function _parseConfig(cfg) {
+
+      /**
+       * _parseConfig
+       *
+       * @param  {Object} cfg optional config literal
+       */
+      // eslint-disable-next-line complexity
+      const _parseConfig = function _parseConfig() {
+        let cfg = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
         if (CONFIG && CONFIG === cfg) {
           return;
         }
-        if (!cfg || _typeof(cfg) !== 'object') {
+
+        /* Shield configuration object from tampering */
+        if (!cfg || typeof cfg !== 'object') {
           cfg = {};
         }
+
+        /* Shield configuration object from prototype pollution */
         cfg = clone(cfg);
-        ALLOWED_TAGS = 'ALLOWED_TAGS' in cfg ? addToSet({}, cfg.ALLOWED_TAGS) : DEFAULT_ALLOWED_TAGS;
-        ALLOWED_ATTR = 'ALLOWED_ATTR' in cfg ? addToSet({}, cfg.ALLOWED_ATTR) : DEFAULT_ALLOWED_ATTR;
-        URI_SAFE_ATTRIBUTES = 'ADD_URI_SAFE_ATTR' in cfg ? addToSet(clone(DEFAULT_URI_SAFE_ATTRIBUTES), cfg.ADD_URI_SAFE_ATTR) : DEFAULT_URI_SAFE_ATTRIBUTES;
-        DATA_URI_TAGS = 'ADD_DATA_URI_TAGS' in cfg ? addToSet(clone(DEFAULT_DATA_URI_TAGS), cfg.ADD_DATA_URI_TAGS) : DEFAULT_DATA_URI_TAGS;
-        FORBID_CONTENTS = 'FORBID_CONTENTS' in cfg ? addToSet({}, cfg.FORBID_CONTENTS) : DEFAULT_FORBID_CONTENTS;
-        FORBID_TAGS = 'FORBID_TAGS' in cfg ? addToSet({}, cfg.FORBID_TAGS) : {};
-        FORBID_ATTR = 'FORBID_ATTR' in cfg ? addToSet({}, cfg.FORBID_ATTR) : {};
-        USE_PROFILES = 'USE_PROFILES' in cfg ? cfg.USE_PROFILES : false;
-        ALLOW_ARIA_ATTR = cfg.ALLOW_ARIA_ATTR !== false;
-        ALLOW_DATA_ATTR = cfg.ALLOW_DATA_ATTR !== false;
-        ALLOW_UNKNOWN_PROTOCOLS = cfg.ALLOW_UNKNOWN_PROTOCOLS || false;
-        SAFE_FOR_TEMPLATES = cfg.SAFE_FOR_TEMPLATES || false;
-        WHOLE_DOCUMENT = cfg.WHOLE_DOCUMENT || false;
-        RETURN_DOM = cfg.RETURN_DOM || false;
-        RETURN_DOM_FRAGMENT = cfg.RETURN_DOM_FRAGMENT || false;
-        RETURN_TRUSTED_TYPE = cfg.RETURN_TRUSTED_TYPE || false;
-        FORCE_BODY = cfg.FORCE_BODY || false;
-        SANITIZE_DOM = cfg.SANITIZE_DOM !== false;
-        KEEP_CONTENT = cfg.KEEP_CONTENT !== false;
-        IN_PLACE = cfg.IN_PLACE || false;
-        IS_ALLOWED_URI$1 = cfg.ALLOWED_URI_REGEXP || IS_ALLOWED_URI$1;
+        PARSER_MEDIA_TYPE =
+        // eslint-disable-next-line unicorn/prefer-includes
+        SUPPORTED_PARSER_MEDIA_TYPES.indexOf(cfg.PARSER_MEDIA_TYPE) === -1 ? DEFAULT_PARSER_MEDIA_TYPE : cfg.PARSER_MEDIA_TYPE;
+
+        // HTML tags and attributes are not case-sensitive, converting to lowercase. Keeping XHTML as is.
+        transformCaseFunc = PARSER_MEDIA_TYPE === 'application/xhtml+xml' ? stringToString : stringToLowerCase;
+
+        /* Set configuration parameters */
+        ALLOWED_TAGS = objectHasOwnProperty(cfg, 'ALLOWED_TAGS') ? addToSet({}, cfg.ALLOWED_TAGS, transformCaseFunc) : DEFAULT_ALLOWED_TAGS;
+        ALLOWED_ATTR = objectHasOwnProperty(cfg, 'ALLOWED_ATTR') ? addToSet({}, cfg.ALLOWED_ATTR, transformCaseFunc) : DEFAULT_ALLOWED_ATTR;
+        ALLOWED_NAMESPACES = objectHasOwnProperty(cfg, 'ALLOWED_NAMESPACES') ? addToSet({}, cfg.ALLOWED_NAMESPACES, stringToString) : DEFAULT_ALLOWED_NAMESPACES;
+        URI_SAFE_ATTRIBUTES = objectHasOwnProperty(cfg, 'ADD_URI_SAFE_ATTR') ? addToSet(clone(DEFAULT_URI_SAFE_ATTRIBUTES),
+        // eslint-disable-line indent
+        cfg.ADD_URI_SAFE_ATTR,
+        // eslint-disable-line indent
+        transformCaseFunc // eslint-disable-line indent
+        ) // eslint-disable-line indent
+        : DEFAULT_URI_SAFE_ATTRIBUTES;
+        DATA_URI_TAGS = objectHasOwnProperty(cfg, 'ADD_DATA_URI_TAGS') ? addToSet(clone(DEFAULT_DATA_URI_TAGS),
+        // eslint-disable-line indent
+        cfg.ADD_DATA_URI_TAGS,
+        // eslint-disable-line indent
+        transformCaseFunc // eslint-disable-line indent
+        ) // eslint-disable-line indent
+        : DEFAULT_DATA_URI_TAGS;
+        FORBID_CONTENTS = objectHasOwnProperty(cfg, 'FORBID_CONTENTS') ? addToSet({}, cfg.FORBID_CONTENTS, transformCaseFunc) : DEFAULT_FORBID_CONTENTS;
+        FORBID_TAGS = objectHasOwnProperty(cfg, 'FORBID_TAGS') ? addToSet({}, cfg.FORBID_TAGS, transformCaseFunc) : {};
+        FORBID_ATTR = objectHasOwnProperty(cfg, 'FORBID_ATTR') ? addToSet({}, cfg.FORBID_ATTR, transformCaseFunc) : {};
+        USE_PROFILES = objectHasOwnProperty(cfg, 'USE_PROFILES') ? cfg.USE_PROFILES : false;
+        ALLOW_ARIA_ATTR = cfg.ALLOW_ARIA_ATTR !== false; // Default true
+        ALLOW_DATA_ATTR = cfg.ALLOW_DATA_ATTR !== false; // Default true
+        ALLOW_UNKNOWN_PROTOCOLS = cfg.ALLOW_UNKNOWN_PROTOCOLS || false; // Default false
+        ALLOW_SELF_CLOSE_IN_ATTR = cfg.ALLOW_SELF_CLOSE_IN_ATTR !== false; // Default true
+        SAFE_FOR_TEMPLATES = cfg.SAFE_FOR_TEMPLATES || false; // Default false
+        SAFE_FOR_XML = cfg.SAFE_FOR_XML !== false; // Default true
+        WHOLE_DOCUMENT = cfg.WHOLE_DOCUMENT || false; // Default false
+        RETURN_DOM = cfg.RETURN_DOM || false; // Default false
+        RETURN_DOM_FRAGMENT = cfg.RETURN_DOM_FRAGMENT || false; // Default false
+        RETURN_TRUSTED_TYPE = cfg.RETURN_TRUSTED_TYPE || false; // Default false
+        FORCE_BODY = cfg.FORCE_BODY || false; // Default false
+        SANITIZE_DOM = cfg.SANITIZE_DOM !== false; // Default true
+        SANITIZE_NAMED_PROPS = cfg.SANITIZE_NAMED_PROPS || false; // Default false
+        KEEP_CONTENT = cfg.KEEP_CONTENT !== false; // Default true
+        IN_PLACE = cfg.IN_PLACE || false; // Default false
+        IS_ALLOWED_URI$1 = cfg.ALLOWED_URI_REGEXP || IS_ALLOWED_URI;
         NAMESPACE = cfg.NAMESPACE || HTML_NAMESPACE;
+        CUSTOM_ELEMENT_HANDLING = cfg.CUSTOM_ELEMENT_HANDLING || {};
         if (cfg.CUSTOM_ELEMENT_HANDLING && isRegexOrFunction(cfg.CUSTOM_ELEMENT_HANDLING.tagNameCheck)) {
           CUSTOM_ELEMENT_HANDLING.tagNameCheck = cfg.CUSTOM_ELEMENT_HANDLING.tagNameCheck;
         }
@@ -9102,18 +8717,16 @@
         if (cfg.CUSTOM_ELEMENT_HANDLING && typeof cfg.CUSTOM_ELEMENT_HANDLING.allowCustomizedBuiltInElements === 'boolean') {
           CUSTOM_ELEMENT_HANDLING.allowCustomizedBuiltInElements = cfg.CUSTOM_ELEMENT_HANDLING.allowCustomizedBuiltInElements;
         }
-        PARSER_MEDIA_TYPE = SUPPORTED_PARSER_MEDIA_TYPES.indexOf(cfg.PARSER_MEDIA_TYPE) === -1 ? PARSER_MEDIA_TYPE = DEFAULT_PARSER_MEDIA_TYPE : PARSER_MEDIA_TYPE = cfg.PARSER_MEDIA_TYPE;
-        transformCaseFunc = PARSER_MEDIA_TYPE === 'application/xhtml+xml' ? function (x) {
-          return x;
-        } : stringToLowerCase;
         if (SAFE_FOR_TEMPLATES) {
           ALLOW_DATA_ATTR = false;
         }
         if (RETURN_DOM_FRAGMENT) {
           RETURN_DOM = true;
         }
+
+        /* Parse profile info */
         if (USE_PROFILES) {
-          ALLOWED_TAGS = addToSet({}, _toConsumableArray(text$1));
+          ALLOWED_TAGS = addToSet({}, text$1);
           ALLOWED_ATTR = [];
           if (USE_PROFILES.html === true) {
             addToSet(ALLOWED_TAGS, html$1);
@@ -9135,123 +8748,203 @@
             addToSet(ALLOWED_ATTR, xml);
           }
         }
+
+        /* Merge configuration parameters */
         if (cfg.ADD_TAGS) {
           if (ALLOWED_TAGS === DEFAULT_ALLOWED_TAGS) {
             ALLOWED_TAGS = clone(ALLOWED_TAGS);
           }
-          addToSet(ALLOWED_TAGS, cfg.ADD_TAGS);
+          addToSet(ALLOWED_TAGS, cfg.ADD_TAGS, transformCaseFunc);
         }
         if (cfg.ADD_ATTR) {
           if (ALLOWED_ATTR === DEFAULT_ALLOWED_ATTR) {
             ALLOWED_ATTR = clone(ALLOWED_ATTR);
           }
-          addToSet(ALLOWED_ATTR, cfg.ADD_ATTR);
+          addToSet(ALLOWED_ATTR, cfg.ADD_ATTR, transformCaseFunc);
         }
         if (cfg.ADD_URI_SAFE_ATTR) {
-          addToSet(URI_SAFE_ATTRIBUTES, cfg.ADD_URI_SAFE_ATTR);
+          addToSet(URI_SAFE_ATTRIBUTES, cfg.ADD_URI_SAFE_ATTR, transformCaseFunc);
         }
         if (cfg.FORBID_CONTENTS) {
           if (FORBID_CONTENTS === DEFAULT_FORBID_CONTENTS) {
             FORBID_CONTENTS = clone(FORBID_CONTENTS);
           }
-          addToSet(FORBID_CONTENTS, cfg.FORBID_CONTENTS);
+          addToSet(FORBID_CONTENTS, cfg.FORBID_CONTENTS, transformCaseFunc);
         }
+
+        /* Add #text in case KEEP_CONTENT is set to true */
         if (KEEP_CONTENT) {
           ALLOWED_TAGS['#text'] = true;
         }
+
+        /* Add html, head and body to ALLOWED_TAGS in case WHOLE_DOCUMENT is true */
         if (WHOLE_DOCUMENT) {
-          addToSet(ALLOWED_TAGS, [
-            'html',
-            'head',
-            'body'
-          ]);
+          addToSet(ALLOWED_TAGS, ['html', 'head', 'body']);
         }
+
+        /* Add tbody to ALLOWED_TAGS in case tables are permitted, see #286, #365 */
         if (ALLOWED_TAGS.table) {
           addToSet(ALLOWED_TAGS, ['tbody']);
           delete FORBID_TAGS.tbody;
         }
+        if (cfg.TRUSTED_TYPES_POLICY) {
+          if (typeof cfg.TRUSTED_TYPES_POLICY.createHTML !== 'function') {
+            throw typeErrorCreate('TRUSTED_TYPES_POLICY configuration option must provide a "createHTML" hook.');
+          }
+          if (typeof cfg.TRUSTED_TYPES_POLICY.createScriptURL !== 'function') {
+            throw typeErrorCreate('TRUSTED_TYPES_POLICY configuration option must provide a "createScriptURL" hook.');
+          }
+
+          // Overwrite existing TrustedTypes policy.
+          trustedTypesPolicy = cfg.TRUSTED_TYPES_POLICY;
+
+          // Sign local variables required by `sanitize`.
+          emptyHTML = trustedTypesPolicy.createHTML('');
+        } else {
+          // Uninitialized policy, attempt to initialize the internal dompurify policy.
+          if (trustedTypesPolicy === undefined) {
+            trustedTypesPolicy = _createTrustedTypesPolicy(trustedTypes, currentScript);
+          }
+
+          // If creating the internal policy succeeded sign internal variables.
+          if (trustedTypesPolicy !== null && typeof emptyHTML === 'string') {
+            emptyHTML = trustedTypesPolicy.createHTML('');
+          }
+        }
+
+        // Prevent further manipulation of configuration.
+        // Not available in IE8, Safari 5, etc.
         if (freeze) {
           freeze(cfg);
         }
         CONFIG = cfg;
       };
-      var MATHML_TEXT_INTEGRATION_POINTS = addToSet({}, [
-        'mi',
-        'mo',
-        'mn',
-        'ms',
-        'mtext'
-      ]);
-      var HTML_INTEGRATION_POINTS = addToSet({}, [
-        'foreignobject',
-        'desc',
-        'title',
-        'annotation-xml'
-      ]);
-      var COMMON_SVG_AND_HTML_ELEMENTS = addToSet({}, [
-        'title',
-        'style',
-        'font',
-        'a',
-        'script'
-      ]);
-      var ALL_SVG_TAGS = addToSet({}, svg$1);
-      addToSet(ALL_SVG_TAGS, svgFilters);
-      addToSet(ALL_SVG_TAGS, svgDisallowed);
-      var ALL_MATHML_TAGS = addToSet({}, mathMl$1);
-      addToSet(ALL_MATHML_TAGS, mathMlDisallowed);
-      var _checkValidNamespace = function _checkValidNamespace(element) {
-        var parent = getParentNode(element);
+      const MATHML_TEXT_INTEGRATION_POINTS = addToSet({}, ['mi', 'mo', 'mn', 'ms', 'mtext']);
+      const HTML_INTEGRATION_POINTS = addToSet({}, ['annotation-xml']);
+
+      // Certain elements are allowed in both SVG and HTML
+      // namespace. We need to specify them explicitly
+      // so that they don't get erroneously deleted from
+      // HTML namespace.
+      const COMMON_SVG_AND_HTML_ELEMENTS = addToSet({}, ['title', 'style', 'font', 'a', 'script']);
+
+      /* Keep track of all possible SVG and MathML tags
+       * so that we can perform the namespace checks
+       * correctly. */
+      const ALL_SVG_TAGS = addToSet({}, [...svg$1, ...svgFilters, ...svgDisallowed]);
+      const ALL_MATHML_TAGS = addToSet({}, [...mathMl$1, ...mathMlDisallowed]);
+
+      /**
+       * @param  {Element} element a DOM element whose namespace is being checked
+       * @returns {boolean} Return false if the element has a
+       *  namespace that a spec-compliant parser would never
+       *  return. Return true otherwise.
+       */
+      const _checkValidNamespace = function _checkValidNamespace(element) {
+        let parent = getParentNode(element);
+
+        // In JSDOM, if we're inside shadow DOM, then parentNode
+        // can be null. We just simulate parent in this case.
         if (!parent || !parent.tagName) {
           parent = {
-            namespaceURI: HTML_NAMESPACE,
+            namespaceURI: NAMESPACE,
             tagName: 'template'
           };
         }
-        var tagName = stringToLowerCase(element.tagName);
-        var parentTagName = stringToLowerCase(parent.tagName);
+        const tagName = stringToLowerCase(element.tagName);
+        const parentTagName = stringToLowerCase(parent.tagName);
+        if (!ALLOWED_NAMESPACES[element.namespaceURI]) {
+          return false;
+        }
         if (element.namespaceURI === SVG_NAMESPACE) {
+          // The only way to switch from HTML namespace to SVG
+          // is via <svg>. If it happens via any other tag, then
+          // it should be killed.
           if (parent.namespaceURI === HTML_NAMESPACE) {
             return tagName === 'svg';
           }
+
+          // The only way to switch from MathML to SVG is via`
+          // svg if parent is either <annotation-xml> or MathML
+          // text integration points.
           if (parent.namespaceURI === MATHML_NAMESPACE) {
             return tagName === 'svg' && (parentTagName === 'annotation-xml' || MATHML_TEXT_INTEGRATION_POINTS[parentTagName]);
           }
+
+          // We only allow elements that are defined in SVG
+          // spec. All others are disallowed in SVG namespace.
           return Boolean(ALL_SVG_TAGS[tagName]);
         }
         if (element.namespaceURI === MATHML_NAMESPACE) {
+          // The only way to switch from HTML namespace to MathML
+          // is via <math>. If it happens via any other tag, then
+          // it should be killed.
           if (parent.namespaceURI === HTML_NAMESPACE) {
             return tagName === 'math';
           }
+
+          // The only way to switch from SVG to MathML is via
+          // <math> and HTML integration points
           if (parent.namespaceURI === SVG_NAMESPACE) {
             return tagName === 'math' && HTML_INTEGRATION_POINTS[parentTagName];
           }
+
+          // We only allow elements that are defined in MathML
+          // spec. All others are disallowed in MathML namespace.
           return Boolean(ALL_MATHML_TAGS[tagName]);
         }
         if (element.namespaceURI === HTML_NAMESPACE) {
+          // The only way to switch from SVG to HTML is via
+          // HTML integration points, and from MathML to HTML
+          // is via MathML text integration points
           if (parent.namespaceURI === SVG_NAMESPACE && !HTML_INTEGRATION_POINTS[parentTagName]) {
             return false;
           }
           if (parent.namespaceURI === MATHML_NAMESPACE && !MATHML_TEXT_INTEGRATION_POINTS[parentTagName]) {
             return false;
           }
+
+          // We disallow tags that are specific for MathML
+          // or SVG and should never appear in HTML namespace
           return !ALL_MATHML_TAGS[tagName] && (COMMON_SVG_AND_HTML_ELEMENTS[tagName] || !ALL_SVG_TAGS[tagName]);
         }
+
+        // For XHTML and XML documents that support custom namespaces
+        if (PARSER_MEDIA_TYPE === 'application/xhtml+xml' && ALLOWED_NAMESPACES[element.namespaceURI]) {
+          return true;
+        }
+
+        // The code should never reach this place (this means
+        // that the element somehow got namespace that is not
+        // HTML, SVG, MathML or allowed via ALLOWED_NAMESPACES).
+        // Return false just in case.
         return false;
       };
-      var _forceRemove = function _forceRemove(node) {
-        arrayPush(DOMPurify.removed, { element: node });
+
+      /**
+       * _forceRemove
+       *
+       * @param  {Node} node a DOM node
+       */
+      const _forceRemove = function _forceRemove(node) {
+        arrayPush(DOMPurify.removed, {
+          element: node
+        });
         try {
-          node.parentNode.removeChild(node);
+          // eslint-disable-next-line unicorn/prefer-dom-node-remove
+          getParentNode(node).removeChild(node);
         } catch (_) {
-          try {
-            node.outerHTML = emptyHTML;
-          } catch (_) {
-            node.remove();
-          }
+          remove(node);
         }
       };
-      var _removeAttribute = function _removeAttribute(name, node) {
+
+      /**
+       * _removeAttribute
+       *
+       * @param  {String} name an Attribute name
+       * @param  {Node} node a DOM node
+       */
+      const _removeAttribute = function _removeAttribute(name, node) {
         try {
           arrayPush(DOMPurify.removed, {
             attribute: node.getAttributeNode(name),
@@ -9264,364 +8957,659 @@
           });
         }
         node.removeAttribute(name);
+
+        // We void attribute values for unremovable "is"" attributes
         if (name === 'is' && !ALLOWED_ATTR[name]) {
           if (RETURN_DOM || RETURN_DOM_FRAGMENT) {
             try {
               _forceRemove(node);
-            } catch (_) {
-            }
+            } catch (_) {}
           } else {
             try {
               node.setAttribute(name, '');
-            } catch (_) {
-            }
+            } catch (_) {}
           }
         }
       };
-      var _initDocument = function _initDocument(dirty) {
-        var doc;
-        var leadingWhitespace;
+
+      /**
+       * _initDocument
+       *
+       * @param  {String} dirty a string of dirty markup
+       * @return {Document} a DOM, filled with the dirty markup
+       */
+      const _initDocument = function _initDocument(dirty) {
+        /* Create a HTML document */
+        let doc = null;
+        let leadingWhitespace = null;
         if (FORCE_BODY) {
           dirty = '<remove></remove>' + dirty;
         } else {
-          var matches = stringMatch(dirty, /^[\r\n\t ]+/);
+          /* If FORCE_BODY isn't used, leading whitespace needs to be preserved manually */
+          const matches = stringMatch(dirty, /^[\r\n\t ]+/);
           leadingWhitespace = matches && matches[0];
         }
-        if (PARSER_MEDIA_TYPE === 'application/xhtml+xml') {
+        if (PARSER_MEDIA_TYPE === 'application/xhtml+xml' && NAMESPACE === HTML_NAMESPACE) {
+          // Root of XHTML doc must contain xmlns declaration (see https://www.w3.org/TR/xhtml1/normative.html#strict)
           dirty = '<html xmlns="http://www.w3.org/1999/xhtml"><head></head><body>' + dirty + '</body></html>';
         }
-        var dirtyPayload = trustedTypesPolicy ? trustedTypesPolicy.createHTML(dirty) : dirty;
+        const dirtyPayload = trustedTypesPolicy ? trustedTypesPolicy.createHTML(dirty) : dirty;
+        /*
+         * Use the DOMParser API by default, fallback later if needs be
+         * DOMParser not work for svg when has multiple root element.
+         */
         if (NAMESPACE === HTML_NAMESPACE) {
           try {
             doc = new DOMParser().parseFromString(dirtyPayload, PARSER_MEDIA_TYPE);
-          } catch (_) {
-          }
+          } catch (_) {}
         }
+
+        /* Use createHTMLDocument in case DOMParser is not available */
         if (!doc || !doc.documentElement) {
           doc = implementation.createDocument(NAMESPACE, 'template', null);
           try {
-            doc.documentElement.innerHTML = IS_EMPTY_INPUT ? '' : dirtyPayload;
+            doc.documentElement.innerHTML = IS_EMPTY_INPUT ? emptyHTML : dirtyPayload;
           } catch (_) {
+            // Syntax error if dirtyPayload is invalid xml
           }
         }
-        var body = doc.body || doc.documentElement;
+        const body = doc.body || doc.documentElement;
         if (dirty && leadingWhitespace) {
           body.insertBefore(document.createTextNode(leadingWhitespace), body.childNodes[0] || null);
         }
+
+        /* Work on whole document or just its body */
         if (NAMESPACE === HTML_NAMESPACE) {
           return getElementsByTagName.call(doc, WHOLE_DOCUMENT ? 'html' : 'body')[0];
         }
         return WHOLE_DOCUMENT ? doc.documentElement : body;
       };
-      var _createIterator = function _createIterator(root) {
-        return createNodeIterator.call(root.ownerDocument || root, root, NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_COMMENT | NodeFilter.SHOW_TEXT, null, false);
+
+      /**
+       * Creates a NodeIterator object that you can use to traverse filtered lists of nodes or elements in a document.
+       *
+       * @param  {Node} root The root element or node to start traversing on.
+       * @return {NodeIterator} The created NodeIterator
+       */
+      const _createNodeIterator = function _createNodeIterator(root) {
+        return createNodeIterator.call(root.ownerDocument || root, root,
+        // eslint-disable-next-line no-bitwise
+        NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_COMMENT | NodeFilter.SHOW_TEXT | NodeFilter.SHOW_PROCESSING_INSTRUCTION | NodeFilter.SHOW_CDATA_SECTION, null);
       };
-      var _isClobbered = function _isClobbered(elm) {
-        return elm instanceof HTMLFormElement && (typeof elm.nodeName !== 'string' || typeof elm.textContent !== 'string' || typeof elm.removeChild !== 'function' || !(elm.attributes instanceof NamedNodeMap) || typeof elm.removeAttribute !== 'function' || typeof elm.setAttribute !== 'function' || typeof elm.namespaceURI !== 'string' || typeof elm.insertBefore !== 'function');
+
+      /**
+       * _isClobbered
+       *
+       * @param  {Node} elm element to check for clobbering attacks
+       * @return {Boolean} true if clobbered, false if safe
+       */
+      const _isClobbered = function _isClobbered(elm) {
+        return elm instanceof HTMLFormElement && (typeof elm.nodeName !== 'string' || typeof elm.textContent !== 'string' || typeof elm.removeChild !== 'function' || !(elm.attributes instanceof NamedNodeMap) || typeof elm.removeAttribute !== 'function' || typeof elm.setAttribute !== 'function' || typeof elm.namespaceURI !== 'string' || typeof elm.insertBefore !== 'function' || typeof elm.hasChildNodes !== 'function');
       };
-      var _isNode = function _isNode(object) {
-        return _typeof(Node) === 'object' ? object instanceof Node : object && _typeof(object) === 'object' && typeof object.nodeType === 'number' && typeof object.nodeName === 'string';
+
+      /**
+       * Checks whether the given object is a DOM node.
+       *
+       * @param  {Node} object object to check whether it's a DOM node
+       * @return {Boolean} true is object is a DOM node
+       */
+      const _isNode = function _isNode(object) {
+        return typeof Node === 'function' && object instanceof Node;
       };
-      var _executeHook = function _executeHook(entryPoint, currentNode, data) {
+
+      /**
+       * _executeHook
+       * Execute user configurable hooks
+       *
+       * @param  {String} entryPoint  Name of the hook's entry point
+       * @param  {Node} currentNode node to work on with the hook
+       * @param  {Object} data additional hook parameters
+       */
+      const _executeHook = function _executeHook(entryPoint, currentNode, data) {
         if (!hooks[entryPoint]) {
           return;
         }
-        arrayForEach(hooks[entryPoint], function (hook) {
+        arrayForEach(hooks[entryPoint], hook => {
           hook.call(DOMPurify, currentNode, data, CONFIG);
         });
       };
-      var _sanitizeElements = function _sanitizeElements(currentNode) {
-        var content;
+
+      /**
+       * _sanitizeElements
+       *
+       * @protect nodeName
+       * @protect textContent
+       * @protect removeChild
+       *
+       * @param   {Node} currentNode to check for permission to exist
+       * @return  {Boolean} true if node was killed, false if left alive
+       */
+      const _sanitizeElements = function _sanitizeElements(currentNode) {
+        let content = null;
+
+        /* Execute a hook if present */
         _executeHook('beforeSanitizeElements', currentNode, null);
+
+        /* Check if element is clobbered or can clobber */
         if (_isClobbered(currentNode)) {
           _forceRemove(currentNode);
           return true;
         }
-        if (regExpTest(/[\u0080-\uFFFF]/, currentNode.nodeName)) {
-          _forceRemove(currentNode);
-          return true;
-        }
-        var tagName = transformCaseFunc(currentNode.nodeName);
+
+        /* Now let's check the element's type and name */
+        const tagName = transformCaseFunc(currentNode.nodeName);
+
+        /* Execute a hook if present */
         _executeHook('uponSanitizeElement', currentNode, {
-          tagName: tagName,
+          tagName,
           allowedTags: ALLOWED_TAGS
         });
-        if (currentNode.hasChildNodes() && !_isNode(currentNode.firstElementChild) && (!_isNode(currentNode.content) || !_isNode(currentNode.content.firstElementChild)) && regExpTest(/<[/\w]/g, currentNode.innerHTML) && regExpTest(/<[/\w]/g, currentNode.textContent)) {
+
+        /* Detect mXSS attempts abusing namespace confusion */
+        if (currentNode.hasChildNodes() && !_isNode(currentNode.firstElementChild) && regExpTest(/<[/\w]/g, currentNode.innerHTML) && regExpTest(/<[/\w]/g, currentNode.textContent)) {
           _forceRemove(currentNode);
           return true;
         }
-        if (tagName === 'select' && regExpTest(/<template/i, currentNode.innerHTML)) {
+
+        /* Remove any occurrence of processing instructions */
+        if (currentNode.nodeType === NODE_TYPE.progressingInstruction) {
           _forceRemove(currentNode);
           return true;
         }
+
+        /* Remove any kind of possibly harmful comments */
+        if (SAFE_FOR_XML && currentNode.nodeType === NODE_TYPE.comment && regExpTest(/<[/\w]/g, currentNode.data)) {
+          _forceRemove(currentNode);
+          return true;
+        }
+
+        /* Remove element if anything forbids its presence */
         if (!ALLOWED_TAGS[tagName] || FORBID_TAGS[tagName]) {
-          if (!FORBID_TAGS[tagName] && _basicCustomElementTest(tagName)) {
-            if (CUSTOM_ELEMENT_HANDLING.tagNameCheck instanceof RegExp && regExpTest(CUSTOM_ELEMENT_HANDLING.tagNameCheck, tagName))
+          /* Check if we have a custom element to handle */
+          if (!FORBID_TAGS[tagName] && _isBasicCustomElement(tagName)) {
+            if (CUSTOM_ELEMENT_HANDLING.tagNameCheck instanceof RegExp && regExpTest(CUSTOM_ELEMENT_HANDLING.tagNameCheck, tagName)) {
               return false;
-            if (CUSTOM_ELEMENT_HANDLING.tagNameCheck instanceof Function && CUSTOM_ELEMENT_HANDLING.tagNameCheck(tagName))
+            }
+            if (CUSTOM_ELEMENT_HANDLING.tagNameCheck instanceof Function && CUSTOM_ELEMENT_HANDLING.tagNameCheck(tagName)) {
               return false;
+            }
           }
+
+          /* Keep content except for bad-listed elements */
           if (KEEP_CONTENT && !FORBID_CONTENTS[tagName]) {
-            var parentNode = getParentNode(currentNode) || currentNode.parentNode;
-            var childNodes = getChildNodes(currentNode) || currentNode.childNodes;
+            const parentNode = getParentNode(currentNode) || currentNode.parentNode;
+            const childNodes = getChildNodes(currentNode) || currentNode.childNodes;
             if (childNodes && parentNode) {
-              var childCount = childNodes.length;
-              for (var i = childCount - 1; i >= 0; --i) {
-                parentNode.insertBefore(cloneNode(childNodes[i], true), getNextSibling(currentNode));
+              const childCount = childNodes.length;
+              for (let i = childCount - 1; i >= 0; --i) {
+                const childClone = cloneNode(childNodes[i], true);
+                childClone.__removalCount = (currentNode.__removalCount || 0) + 1;
+                parentNode.insertBefore(childClone, getNextSibling(currentNode));
               }
             }
           }
           _forceRemove(currentNode);
           return true;
         }
+
+        /* Check whether element has a valid namespace */
         if (currentNode instanceof Element && !_checkValidNamespace(currentNode)) {
           _forceRemove(currentNode);
           return true;
         }
-        if ((tagName === 'noscript' || tagName === 'noembed') && regExpTest(/<\/no(script|embed)/i, currentNode.innerHTML)) {
+
+        /* Make sure that older browsers don't get fallback-tag mXSS */
+        if ((tagName === 'noscript' || tagName === 'noembed' || tagName === 'noframes') && regExpTest(/<\/no(script|embed|frames)/i, currentNode.innerHTML)) {
           _forceRemove(currentNode);
           return true;
         }
-        if (SAFE_FOR_TEMPLATES && currentNode.nodeType === 3) {
+
+        /* Sanitize element content to be template-safe */
+        if (SAFE_FOR_TEMPLATES && currentNode.nodeType === NODE_TYPE.text) {
+          /* Get the element's text content */
           content = currentNode.textContent;
-          content = stringReplace(content, MUSTACHE_EXPR$1, ' ');
-          content = stringReplace(content, ERB_EXPR$1, ' ');
+          arrayForEach([MUSTACHE_EXPR, ERB_EXPR, TMPLIT_EXPR], expr => {
+            content = stringReplace(content, expr, ' ');
+          });
           if (currentNode.textContent !== content) {
-            arrayPush(DOMPurify.removed, { element: currentNode.cloneNode() });
+            arrayPush(DOMPurify.removed, {
+              element: currentNode.cloneNode()
+            });
             currentNode.textContent = content;
           }
         }
+
+        /* Execute a hook if present */
         _executeHook('afterSanitizeElements', currentNode, null);
         return false;
       };
-      var _isValidAttribute = function _isValidAttribute(lcTag, lcName, value) {
+
+      /**
+       * _isValidAttribute
+       *
+       * @param  {string} lcTag Lowercase tag name of containing element.
+       * @param  {string} lcName Lowercase attribute name.
+       * @param  {string} value Attribute value.
+       * @return {Boolean} Returns true if `value` is valid, otherwise false.
+       */
+      // eslint-disable-next-line complexity
+      const _isValidAttribute = function _isValidAttribute(lcTag, lcName, value) {
+        /* Make sure attribute cannot clobber */
         if (SANITIZE_DOM && (lcName === 'id' || lcName === 'name') && (value in document || value in formElement)) {
           return false;
         }
-        if (ALLOW_DATA_ATTR && !FORBID_ATTR[lcName] && regExpTest(DATA_ATTR$1, lcName));
-        else if (ALLOW_ARIA_ATTR && regExpTest(ARIA_ATTR$1, lcName));
-        else if (!ALLOWED_ATTR[lcName] || FORBID_ATTR[lcName]) {
-          if (_basicCustomElementTest(lcTag) && (CUSTOM_ELEMENT_HANDLING.tagNameCheck instanceof RegExp && regExpTest(CUSTOM_ELEMENT_HANDLING.tagNameCheck, lcTag) || CUSTOM_ELEMENT_HANDLING.tagNameCheck instanceof Function && CUSTOM_ELEMENT_HANDLING.tagNameCheck(lcTag)) && (CUSTOM_ELEMENT_HANDLING.attributeNameCheck instanceof RegExp && regExpTest(CUSTOM_ELEMENT_HANDLING.attributeNameCheck, lcName) || CUSTOM_ELEMENT_HANDLING.attributeNameCheck instanceof Function && CUSTOM_ELEMENT_HANDLING.attributeNameCheck(lcName)) || lcName === 'is' && CUSTOM_ELEMENT_HANDLING.allowCustomizedBuiltInElements && (CUSTOM_ELEMENT_HANDLING.tagNameCheck instanceof RegExp && regExpTest(CUSTOM_ELEMENT_HANDLING.tagNameCheck, value) || CUSTOM_ELEMENT_HANDLING.tagNameCheck instanceof Function && CUSTOM_ELEMENT_HANDLING.tagNameCheck(value)));
-          else {
+
+        /* Allow valid data-* attributes: At least one character after "-"
+            (https://html.spec.whatwg.org/multipage/dom.html#embedding-custom-non-visible-data-with-the-data-*-attributes)
+            XML-compatible (https://html.spec.whatwg.org/multipage/infrastructure.html#xml-compatible and http://www.w3.org/TR/xml/#d0e804)
+            We don't need to check the value; it's always URI safe. */
+        if (ALLOW_DATA_ATTR && !FORBID_ATTR[lcName] && regExpTest(DATA_ATTR, lcName)) ; else if (ALLOW_ARIA_ATTR && regExpTest(ARIA_ATTR, lcName)) ; else if (!ALLOWED_ATTR[lcName] || FORBID_ATTR[lcName]) {
+          if (
+          // First condition does a very basic check if a) it's basically a valid custom element tagname AND
+          // b) if the tagName passes whatever the user has configured for CUSTOM_ELEMENT_HANDLING.tagNameCheck
+          // and c) if the attribute name passes whatever the user has configured for CUSTOM_ELEMENT_HANDLING.attributeNameCheck
+          _isBasicCustomElement(lcTag) && (CUSTOM_ELEMENT_HANDLING.tagNameCheck instanceof RegExp && regExpTest(CUSTOM_ELEMENT_HANDLING.tagNameCheck, lcTag) || CUSTOM_ELEMENT_HANDLING.tagNameCheck instanceof Function && CUSTOM_ELEMENT_HANDLING.tagNameCheck(lcTag)) && (CUSTOM_ELEMENT_HANDLING.attributeNameCheck instanceof RegExp && regExpTest(CUSTOM_ELEMENT_HANDLING.attributeNameCheck, lcName) || CUSTOM_ELEMENT_HANDLING.attributeNameCheck instanceof Function && CUSTOM_ELEMENT_HANDLING.attributeNameCheck(lcName)) ||
+          // Alternative, second condition checks if it's an `is`-attribute, AND
+          // the value passes whatever the user has configured for CUSTOM_ELEMENT_HANDLING.tagNameCheck
+          lcName === 'is' && CUSTOM_ELEMENT_HANDLING.allowCustomizedBuiltInElements && (CUSTOM_ELEMENT_HANDLING.tagNameCheck instanceof RegExp && regExpTest(CUSTOM_ELEMENT_HANDLING.tagNameCheck, value) || CUSTOM_ELEMENT_HANDLING.tagNameCheck instanceof Function && CUSTOM_ELEMENT_HANDLING.tagNameCheck(value))) ; else {
             return false;
           }
-        } else if (URI_SAFE_ATTRIBUTES[lcName]);
-        else if (regExpTest(IS_ALLOWED_URI$1, stringReplace(value, ATTR_WHITESPACE$1, '')));
-        else if ((lcName === 'src' || lcName === 'xlink:href' || lcName === 'href') && lcTag !== 'script' && stringIndexOf(value, 'data:') === 0 && DATA_URI_TAGS[lcTag]);
-        else if (ALLOW_UNKNOWN_PROTOCOLS && !regExpTest(IS_SCRIPT_OR_DATA$1, stringReplace(value, ATTR_WHITESPACE$1, '')));
-        else if (!value);
-        else {
+          /* Check value is safe. First, is attr inert? If so, is safe */
+        } else if (URI_SAFE_ATTRIBUTES[lcName]) ; else if (regExpTest(IS_ALLOWED_URI$1, stringReplace(value, ATTR_WHITESPACE, ''))) ; else if ((lcName === 'src' || lcName === 'xlink:href' || lcName === 'href') && lcTag !== 'script' && stringIndexOf(value, 'data:') === 0 && DATA_URI_TAGS[lcTag]) ; else if (ALLOW_UNKNOWN_PROTOCOLS && !regExpTest(IS_SCRIPT_OR_DATA, stringReplace(value, ATTR_WHITESPACE, ''))) ; else if (value) {
           return false;
-        }
+        } else ;
         return true;
       };
-      var _basicCustomElementTest = function _basicCustomElementTest(tagName) {
-        return tagName.indexOf('-') > 0;
+
+      /**
+       * _isBasicCustomElement
+       * checks if at least one dash is included in tagName, and it's not the first char
+       * for more sophisticated checking see https://github.com/sindresorhus/validate-element-name
+       *
+       * @param {string} tagName name of the tag of the node to sanitize
+       * @returns {boolean} Returns true if the tag name meets the basic criteria for a custom element, otherwise false.
+       */
+      const _isBasicCustomElement = function _isBasicCustomElement(tagName) {
+        return tagName !== 'annotation-xml' && stringMatch(tagName, CUSTOM_ELEMENT);
       };
-      var _sanitizeAttributes = function _sanitizeAttributes(currentNode) {
-        var attr;
-        var value;
-        var lcName;
-        var l;
+
+      /**
+       * _sanitizeAttributes
+       *
+       * @protect attributes
+       * @protect nodeName
+       * @protect removeAttribute
+       * @protect setAttribute
+       *
+       * @param  {Node} currentNode to sanitize
+       */
+      const _sanitizeAttributes = function _sanitizeAttributes(currentNode) {
+        /* Execute a hook if present */
         _executeHook('beforeSanitizeAttributes', currentNode, null);
-        var attributes = currentNode.attributes;
+        const {
+          attributes
+        } = currentNode;
+
+        /* Check if we have attributes; if not we might have a text node */
         if (!attributes) {
           return;
         }
-        var hookEvent = {
+        const hookEvent = {
           attrName: '',
           attrValue: '',
           keepAttr: true,
           allowedAttributes: ALLOWED_ATTR
         };
-        l = attributes.length;
+        let l = attributes.length;
+
+        /* Go backwards over all attributes; safely remove bad ones */
         while (l--) {
-          attr = attributes[l];
-          var _attr = attr, name = _attr.name, namespaceURI = _attr.namespaceURI;
-          value = name === 'value' ? attr.value : stringTrim(attr.value);
-          lcName = transformCaseFunc(name);
-          var initValue = value;
+          const attr = attributes[l];
+          const {
+            name,
+            namespaceURI,
+            value: attrValue
+          } = attr;
+          const lcName = transformCaseFunc(name);
+          let value = name === 'value' ? attrValue : stringTrim(attrValue);
+          const initValue = value;
+
+          /* Execute a hook if present */
           hookEvent.attrName = lcName;
           hookEvent.attrValue = value;
           hookEvent.keepAttr = true;
-          hookEvent.forceKeepAttr = undefined;
+          hookEvent.forceKeepAttr = undefined; // Allows developers to see this is a property they can set
           _executeHook('uponSanitizeAttribute', currentNode, hookEvent);
           value = hookEvent.attrValue;
+
+          /* Did the hooks approve of the attribute? */
           if (hookEvent.forceKeepAttr) {
             continue;
           }
+
+          /* Did the hooks approve of the attribute? */
           if (!hookEvent.keepAttr) {
             _removeAttribute(name, currentNode);
             continue;
           }
-          if (regExpTest(/\/>/i, value)) {
+
+          /* Work around a security issue in jQuery 3.0 */
+          if (!ALLOW_SELF_CLOSE_IN_ATTR && regExpTest(/\/>/i, value)) {
             _removeAttribute(name, currentNode);
             continue;
           }
+
+          /* Sanitize attribute content to be template-safe */
           if (SAFE_FOR_TEMPLATES) {
-            value = stringReplace(value, MUSTACHE_EXPR$1, ' ');
-            value = stringReplace(value, ERB_EXPR$1, ' ');
+            arrayForEach([MUSTACHE_EXPR, ERB_EXPR, TMPLIT_EXPR], expr => {
+              value = stringReplace(value, expr, ' ');
+            });
           }
-          var lcTag = transformCaseFunc(currentNode.nodeName);
+
+          /* Is `value` valid for this attribute? */
+          const lcTag = transformCaseFunc(currentNode.nodeName);
           if (!_isValidAttribute(lcTag, lcName, value)) {
             _removeAttribute(name, currentNode);
             continue;
           }
+
+          /* Full DOM Clobbering protection via namespace isolation,
+           * Prefix id and name attributes with `user-content-`
+           */
+          if (SANITIZE_NAMED_PROPS && (lcName === 'id' || lcName === 'name')) {
+            // Remove the attribute with this value
+            _removeAttribute(name, currentNode);
+
+            // Prefix the value and later re-create the attribute with the sanitized value
+            value = SANITIZE_NAMED_PROPS_PREFIX + value;
+          }
+
+          /* Work around a security issue with comments inside attributes */
+          if (SAFE_FOR_XML && regExpTest(/((--!?|])>)|<\/(style|title)/i, value)) {
+            _removeAttribute(name, currentNode);
+            continue;
+          }
+
+          /* Handle attributes that require Trusted Types */
+          if (trustedTypesPolicy && typeof trustedTypes === 'object' && typeof trustedTypes.getAttributeType === 'function') {
+            if (namespaceURI) ; else {
+              switch (trustedTypes.getAttributeType(lcTag, lcName)) {
+                case 'TrustedHTML':
+                  {
+                    value = trustedTypesPolicy.createHTML(value);
+                    break;
+                  }
+                case 'TrustedScriptURL':
+                  {
+                    value = trustedTypesPolicy.createScriptURL(value);
+                    break;
+                  }
+              }
+            }
+          }
+
+          /* Handle invalid data-* attribute set by try-catching it */
           if (value !== initValue) {
             try {
               if (namespaceURI) {
                 currentNode.setAttributeNS(namespaceURI, name, value);
               } else {
+                /* Fallback to setAttribute() for browser-unrecognized namespaces e.g. "x-schema". */
                 currentNode.setAttribute(name, value);
               }
-            } catch (_) {
-              _removeAttribute(name, currentNode);
-            }
+              if (_isClobbered(currentNode)) {
+                _forceRemove(currentNode);
+              } else {
+                arrayPop(DOMPurify.removed);
+              }
+            } catch (_) {}
           }
         }
+
+        /* Execute a hook if present */
         _executeHook('afterSanitizeAttributes', currentNode, null);
       };
-      var _sanitizeShadowDOM = function _sanitizeShadowDOM(fragment) {
-        var shadowNode;
-        var shadowIterator = _createIterator(fragment);
+
+      /**
+       * _sanitizeShadowDOM
+       *
+       * @param  {DocumentFragment} fragment to iterate over recursively
+       */
+      const _sanitizeShadowDOM = function _sanitizeShadowDOM(fragment) {
+        let shadowNode = null;
+        const shadowIterator = _createNodeIterator(fragment);
+
+        /* Execute a hook if present */
         _executeHook('beforeSanitizeShadowDOM', fragment, null);
         while (shadowNode = shadowIterator.nextNode()) {
+          /* Execute a hook if present */
           _executeHook('uponSanitizeShadowNode', shadowNode, null);
+
+          /* Sanitize tags and elements */
           if (_sanitizeElements(shadowNode)) {
             continue;
           }
+
+          /* Deep shadow DOM detected */
           if (shadowNode.content instanceof DocumentFragment) {
             _sanitizeShadowDOM(shadowNode.content);
           }
+
+          /* Check attributes, sanitize if necessary */
           _sanitizeAttributes(shadowNode);
         }
+
+        /* Execute a hook if present */
         _executeHook('afterSanitizeShadowDOM', fragment, null);
       };
-      DOMPurify.sanitize = function (dirty, cfg) {
-        var body;
-        var importedNode;
-        var currentNode;
-        var oldNode;
-        var returnNode;
+
+      /**
+       * Sanitize
+       * Public method providing core sanitation functionality
+       *
+       * @param {String|Node} dirty string or DOM node
+       * @param {Object} cfg object
+       */
+      // eslint-disable-next-line complexity
+      DOMPurify.sanitize = function (dirty) {
+        let cfg = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+        let body = null;
+        let importedNode = null;
+        let currentNode = null;
+        let returnNode = null;
+        /* Make sure we have a string to sanitize.
+          DO NOT return early, as this will return the wrong type if
+          the user has requested a DOM object rather than a string */
         IS_EMPTY_INPUT = !dirty;
         if (IS_EMPTY_INPUT) {
           dirty = '<!-->';
         }
+
+        /* Stringify, in case dirty is an object */
         if (typeof dirty !== 'string' && !_isNode(dirty)) {
-          if (typeof dirty.toString !== 'function') {
-            throw typeErrorCreate('toString is not a function');
-          } else {
+          if (typeof dirty.toString === 'function') {
             dirty = dirty.toString();
             if (typeof dirty !== 'string') {
               throw typeErrorCreate('dirty is not a string, aborting');
             }
+          } else {
+            throw typeErrorCreate('toString is not a function');
           }
         }
+
+        /* Return dirty HTML if DOMPurify cannot run */
         if (!DOMPurify.isSupported) {
-          if (_typeof(window.toStaticHTML) === 'object' || typeof window.toStaticHTML === 'function') {
-            if (typeof dirty === 'string') {
-              return window.toStaticHTML(dirty);
-            }
-            if (_isNode(dirty)) {
-              return window.toStaticHTML(dirty.outerHTML);
-            }
-          }
           return dirty;
         }
+
+        /* Assign config vars */
         if (!SET_CONFIG) {
           _parseConfig(cfg);
         }
+
+        /* Clean up removed elements */
         DOMPurify.removed = [];
+
+        /* Check if dirty is correctly typed for IN_PLACE */
         if (typeof dirty === 'string') {
           IN_PLACE = false;
         }
         if (IN_PLACE) {
+          /* Do some early pre-sanitization to avoid unsafe root nodes */
           if (dirty.nodeName) {
-            var tagName = transformCaseFunc(dirty.nodeName);
+            const tagName = transformCaseFunc(dirty.nodeName);
             if (!ALLOWED_TAGS[tagName] || FORBID_TAGS[tagName]) {
               throw typeErrorCreate('root node is forbidden and cannot be sanitized in-place');
             }
           }
         } else if (dirty instanceof Node) {
+          /* If dirty is a DOM element, append to an empty document to avoid
+             elements being stripped by the parser */
           body = _initDocument('<!---->');
           importedNode = body.ownerDocument.importNode(dirty, true);
-          if (importedNode.nodeType === 1 && importedNode.nodeName === 'BODY') {
+          if (importedNode.nodeType === NODE_TYPE.element && importedNode.nodeName === 'BODY') {
+            /* Node is already a body, use as is */
             body = importedNode;
           } else if (importedNode.nodeName === 'HTML') {
             body = importedNode;
           } else {
+            // eslint-disable-next-line unicorn/prefer-dom-node-append
             body.appendChild(importedNode);
           }
         } else {
-          if (!RETURN_DOM && !SAFE_FOR_TEMPLATES && !WHOLE_DOCUMENT && dirty.indexOf('<') === -1) {
+          /* Exit directly if we have nothing to do */
+          if (!RETURN_DOM && !SAFE_FOR_TEMPLATES && !WHOLE_DOCUMENT &&
+          // eslint-disable-next-line unicorn/prefer-includes
+          dirty.indexOf('<') === -1) {
             return trustedTypesPolicy && RETURN_TRUSTED_TYPE ? trustedTypesPolicy.createHTML(dirty) : dirty;
           }
+
+          /* Initialize the document to work on */
           body = _initDocument(dirty);
+
+          /* Check we have a DOM node from the data */
           if (!body) {
             return RETURN_DOM ? null : RETURN_TRUSTED_TYPE ? emptyHTML : '';
           }
         }
+
+        /* Remove first element node (ours) if FORCE_BODY is set */
         if (body && FORCE_BODY) {
           _forceRemove(body.firstChild);
         }
-        var nodeIterator = _createIterator(IN_PLACE ? dirty : body);
+
+        /* Get node iterator */
+        const nodeIterator = _createNodeIterator(IN_PLACE ? dirty : body);
+
+        /* Now start iterating over the created document */
         while (currentNode = nodeIterator.nextNode()) {
-          if (currentNode.nodeType === 3 && currentNode === oldNode) {
-            continue;
-          }
+          /* Sanitize tags and elements */
           if (_sanitizeElements(currentNode)) {
             continue;
           }
+
+          /* Shadow DOM detected, sanitize it */
           if (currentNode.content instanceof DocumentFragment) {
             _sanitizeShadowDOM(currentNode.content);
           }
+
+          /* Check attributes, sanitize if necessary */
           _sanitizeAttributes(currentNode);
-          oldNode = currentNode;
         }
-        oldNode = null;
+
+        /* If we sanitized `dirty` in-place, return it. */
         if (IN_PLACE) {
           return dirty;
         }
+
+        /* Return sanitized string or DOM */
         if (RETURN_DOM) {
           if (RETURN_DOM_FRAGMENT) {
             returnNode = createDocumentFragment.call(body.ownerDocument);
             while (body.firstChild) {
+              // eslint-disable-next-line unicorn/prefer-dom-node-append
               returnNode.appendChild(body.firstChild);
             }
           } else {
             returnNode = body;
           }
-          if (ALLOWED_ATTR.shadowroot) {
+          if (ALLOWED_ATTR.shadowroot || ALLOWED_ATTR.shadowrootmode) {
+            /*
+              AdoptNode() is not used because internal state is not reset
+              (e.g. the past names map of a HTMLFormElement), this is safe
+              in theory but we would rather not risk another attack vector.
+              The state that is cloned by importNode() is explicitly defined
+              by the specs.
+            */
             returnNode = importNode.call(originalDocument, returnNode, true);
           }
           return returnNode;
         }
-        var serializedHTML = WHOLE_DOCUMENT ? body.outerHTML : body.innerHTML;
+        let serializedHTML = WHOLE_DOCUMENT ? body.outerHTML : body.innerHTML;
+
+        /* Serialize doctype if allowed */
         if (WHOLE_DOCUMENT && ALLOWED_TAGS['!doctype'] && body.ownerDocument && body.ownerDocument.doctype && body.ownerDocument.doctype.name && regExpTest(DOCTYPE_NAME, body.ownerDocument.doctype.name)) {
           serializedHTML = '<!DOCTYPE ' + body.ownerDocument.doctype.name + '>\n' + serializedHTML;
         }
+
+        /* Sanitize final string template-safe */
         if (SAFE_FOR_TEMPLATES) {
-          serializedHTML = stringReplace(serializedHTML, MUSTACHE_EXPR$1, ' ');
-          serializedHTML = stringReplace(serializedHTML, ERB_EXPR$1, ' ');
+          arrayForEach([MUSTACHE_EXPR, ERB_EXPR, TMPLIT_EXPR], expr => {
+            serializedHTML = stringReplace(serializedHTML, expr, ' ');
+          });
         }
         return trustedTypesPolicy && RETURN_TRUSTED_TYPE ? trustedTypesPolicy.createHTML(serializedHTML) : serializedHTML;
       };
-      DOMPurify.setConfig = function (cfg) {
+
+      /**
+       * Public method to set the configuration once
+       * setConfig
+       *
+       * @param {Object} cfg configuration object
+       */
+      DOMPurify.setConfig = function () {
+        let cfg = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
         _parseConfig(cfg);
         SET_CONFIG = true;
       };
+
+      /**
+       * Public method to remove the configuration
+       * clearConfig
+       *
+       */
       DOMPurify.clearConfig = function () {
         CONFIG = null;
         SET_CONFIG = false;
       };
+
+      /**
+       * Public method to check if an attribute value is valid.
+       * Uses last set config, if any. Otherwise, uses config defaults.
+       * isValidAttribute
+       *
+       * @param  {String} tag Tag name of containing element.
+       * @param  {String} attr Attribute name.
+       * @param  {String} value Attribute value.
+       * @return {Boolean} Returns true if `value` is valid. Otherwise, returns false.
+       */
       DOMPurify.isValidAttribute = function (tag, attr, value) {
+        /* Initialize shared config vars if necessary. */
         if (!CONFIG) {
           _parseConfig({});
         }
-        var lcTag = transformCaseFunc(tag);
-        var lcName = transformCaseFunc(attr);
+        const lcTag = transformCaseFunc(tag);
+        const lcName = transformCaseFunc(attr);
         return _isValidAttribute(lcTag, lcName, value);
       };
+
+      /**
+       * AddHook
+       * Public method to add DOMPurify hooks
+       *
+       * @param {String} entryPoint entry point for the hook to add
+       * @param {Function} hookFunction function to execute
+       */
       DOMPurify.addHook = function (entryPoint, hookFunction) {
         if (typeof hookFunction !== 'function') {
           return;
@@ -9629,16 +9617,37 @@
         hooks[entryPoint] = hooks[entryPoint] || [];
         arrayPush(hooks[entryPoint], hookFunction);
       };
+
+      /**
+       * RemoveHook
+       * Public method to remove a DOMPurify hook at a given entryPoint
+       * (pops it from the stack of hooks if more are present)
+       *
+       * @param {String} entryPoint entry point for the hook to remove
+       * @return {Function} removed(popped) hook
+       */
       DOMPurify.removeHook = function (entryPoint) {
         if (hooks[entryPoint]) {
           return arrayPop(hooks[entryPoint]);
         }
       };
+
+      /**
+       * RemoveHooks
+       * Public method to remove all DOMPurify hooks at a given entryPoint
+       *
+       * @param  {String} entryPoint entry point for the hooks to remove
+       */
       DOMPurify.removeHooks = function (entryPoint) {
         if (hooks[entryPoint]) {
           hooks[entryPoint] = [];
         }
       };
+
+      /**
+       * RemoveAllHooks
+       * Public method to remove all DOMPurify hooks
+       */
       DOMPurify.removeAllHooks = function () {
         hooks = {};
       };
@@ -10158,6 +10167,10 @@
         processor: 'boolean',
         default: editor.hasPlugin('help')
       });
+      registerOption('default_font_stack', {
+        processor: 'string[]',
+        default: []
+      });
     };
     const isReadOnly = option$2('readonly');
     const getHeightOption = option$2('height');
@@ -10196,6 +10209,7 @@
     const getSidebarShow = option$2('sidebar_show');
     const promotionEnabled = option$2('promotion');
     const useHelpAccessibility = option$2('help_accessibility');
+    const getDefaultFontStack = option$2('default_font_stack');
     const isSkinDisabled = editor => editor.options.get('skin') === false;
     const isMenubarEnabled = editor => editor.options.get('menubar') !== false;
     const getSkinUrl = editor => {
@@ -10211,6 +10225,7 @@
         }
       }
     };
+    const getSkinUrlOption = editor => Optional.from(editor.options.get('skin_url'));
     const getLineHeightFormats = editor => editor.options.get('line_height_formats').split(' ');
     const isToolbarEnabled = editor => {
       const toolbar = getToolbar(editor);
@@ -10268,6 +10283,7 @@
         get ToolbarLocation () { return ToolbarLocation$1; },
         register: register$e,
         getSkinUrl: getSkinUrl,
+        getSkinUrlOption: getSkinUrlOption,
         isReadOnly: isReadOnly,
         isSkinDisabled: isSkinDisabled,
         getHeightOption: getHeightOption,
@@ -10315,7 +10331,8 @@
         getResize: getResize,
         getPasteAsText: getPasteAsText,
         getSidebarShow: getSidebarShow,
-        useHelpAccessibility: useHelpAccessibility
+        useHelpAccessibility: useHelpAccessibility,
+        getDefaultFontStack: getDefaultFontStack
     });
 
     const autocompleteSelector = '[data-mce-autocompleter]';
@@ -11889,6 +11906,24 @@
     const fireToggleToolbarDrawer = (editor, state) => {
       editor.dispatch('ToggleToolbarDrawer', { state });
     };
+    const fireStylesTextUpdate = (editor, data) => {
+      editor.dispatch('StylesTextUpdate', data);
+    };
+    const fireAlignTextUpdate = (editor, data) => {
+      editor.dispatch('AlignTextUpdate', data);
+    };
+    const fireFontSizeTextUpdate = (editor, data) => {
+      editor.dispatch('FontSizeTextUpdate', data);
+    };
+    const fireFontSizeInputTextUpdate = (editor, data) => {
+      editor.dispatch('FontSizeInputTextUpdate', data);
+    };
+    const fireBlocksTextUpdate = (editor, data) => {
+      editor.dispatch('BlocksTextUpdate', data);
+    };
+    const fireFontFamilyTextUpdate = (editor, data) => {
+      editor.dispatch('FontFamilyTextUpdate', data);
+    };
 
     const composeUnbinders = (f, g) => () => {
       f();
@@ -12272,13 +12307,28 @@
       const id = name === 'forecolor' ? 'tox-icon-text-color__color' : 'tox-icon-highlight-bg-color__color';
       splitButtonApi.setIconFill(id, newColor);
     };
+    const setTooltip = (buttonApi, tooltip) => {
+      buttonApi.setTooltip(tooltip);
+    };
     const select$1 = (editor, format) => value => {
       const optCurrentHex = getCurrentColor(editor, format);
       return is$1(optCurrentHex, value.toUpperCase());
     };
-    const registerTextColorButton = (editor, name, format, tooltip, lastColor) => {
+    const getToolTipText = (editor, format, lastColor) => {
+      if (isEmpty(lastColor)) {
+        return format === 'forecolor' ? 'Text color' : 'Background color';
+      }
+      const tooltipPrefix = format === 'forecolor' ? 'Text color {0}' : 'Background color {0}';
+      const colors = getColors$1(getColors$2(editor, format), format, false);
+      const colorText = find$5(colors, c => c.value === lastColor).getOr({ text: '' }).text;
+      return editor.translate([
+        tooltipPrefix,
+        editor.translate(colorText)
+      ]);
+    };
+    const registerTextColorButton = (editor, name, format, lastColor) => {
       editor.ui.registry.addSplitButton(name, {
-        tooltip,
+        tooltip: getToolTipText(editor, format, lastColor.get()),
         presets: 'color',
         icon: name === 'forecolor' ? 'text-color' : 'highlight-bg-color',
         select: select$1(editor, format),
@@ -12301,6 +12351,7 @@
           const handler = e => {
             if (e.name === name) {
               setIconColor(splitButtonApi, e.name, e.color);
+              setTooltip(splitButtonApi, getToolTipText(editor, format, e.color));
             }
           };
           editor.on('TextColorChange', handler);
@@ -12315,6 +12366,7 @@
         text,
         icon: name === 'forecolor' ? 'text-color' : 'highlight-bg-color',
         onSetup: api => {
+          setTooltip(api, getToolTipText(editor, format, lastColor.get()));
           setIconColor(api, name, lastColor.get());
           return onSetupEditableToggle(editor)(api);
         },
@@ -12395,8 +12447,8 @@
       const fallbackColorBackground = getDefaultBackgroundColor(editor);
       const lastForeColor = Cell(fallbackColorForeground);
       const lastBackColor = Cell(fallbackColorBackground);
-      registerTextColorButton(editor, 'forecolor', 'forecolor', 'Text color', lastForeColor);
-      registerTextColorButton(editor, 'backcolor', 'hilitecolor', 'Background color', lastBackColor);
+      registerTextColorButton(editor, 'forecolor', 'forecolor', lastForeColor);
+      registerTextColorButton(editor, 'backcolor', 'hilitecolor', lastBackColor);
       registerTextColorMenuItem(editor, 'forecolor', 'forecolor', 'Text color', lastForeColor);
       registerTextColorMenuItem(editor, 'backcolor', 'hilitecolor', 'Background color', lastBackColor);
     };
@@ -12500,7 +12552,11 @@
 
     const cellOverEvent = generate$6('cell-over');
     const cellExecuteEvent = generate$6('cell-execute');
-    const makeAnnouncementText = backstage => (row, col) => backstage.shared.providers.translate(`${ col } columns, ${ row } rows`);
+    const makeAnnouncementText = backstage => (row, col) => backstage.shared.providers.translate([
+      '{0} columns, {1} rows',
+      col,
+      row
+    ]);
     const makeCell = (row, col, label) => {
       const emitCellOver = c => emitWith(c, cellOverEvent, {
         row,
@@ -12632,6 +12688,13 @@
         setIconFill: (id, value) => {
           descendant(component.element, `svg path[class="${ id }"], rect[class="${ id }"]`).each(underlinePath => {
             set$9(underlinePath, 'fill', value);
+          });
+        },
+        setTooltip: tooltip => {
+          const translatedTooltip = providersBackstage.translate(tooltip);
+          setAll$1(component.element, {
+            'aria-label': translatedTooltip,
+            'title': translatedTooltip
           });
         }
       });
@@ -13403,16 +13466,23 @@
       });
     };
     const register$b = (editor, sharedBackstage) => {
+      const autocompleterId = generate$6('autocompleter');
       const processingAction = Cell(false);
       const activeState = Cell(false);
       const autocompleter = build$1(InlineView.sketch({
         dom: {
           tag: 'div',
-          classes: ['tox-autocompleter']
+          classes: ['tox-autocompleter'],
+          attributes: { id: autocompleterId }
         },
         components: [],
         fireDismissalEventInstead: {},
-        inlineBehaviours: derive$1([config('dismissAutocompleter', [run$1(dismissRequested(), () => cancelIfNecessary())])]),
+        inlineBehaviours: derive$1([config('dismissAutocompleter', [
+            run$1(dismissRequested(), () => cancelIfNecessary()),
+            run$1(highlight$1(), (_, se) => {
+              getOpt(se.event.target, 'id').each(id => set$9(SugarElement.fromDom(editor.getBody()), 'aria-activedescendant', id));
+            })
+          ])]),
         lazySink: sharedBackstage.getSink
       }));
       const isMenuOpen = () => InlineView.isOpen(autocompleter);
@@ -13420,6 +13490,12 @@
       const hideIfNecessary = () => {
         if (isMenuOpen()) {
           InlineView.hide(autocompleter);
+          editor.dom.remove(autocompleterId, false);
+          const editorBody = SugarElement.fromDom(editor.getBody());
+          getOpt(editorBody, 'aria-owns').filter(ariaOwnsAttr => ariaOwnsAttr === autocompleterId).each(() => {
+            remove$7(editorBody, 'aria-owns');
+            remove$7(editorBody, 'aria-activedescendant');
+          });
         }
       };
       const getMenu = () => InlineView.getContent(autocompleter).bind(tmenu => {
@@ -13464,9 +13540,38 @@
         const combinedItems = getCombinedItems(lookupData);
         if (combinedItems.length > 0) {
           display(lookupData, combinedItems);
+          set$9(SugarElement.fromDom(editor.getBody()), 'aria-owns', autocompleterId);
+          if (!editor.inline) {
+            cloneAutocompleterToEditorDoc();
+          }
         } else {
           hideIfNecessary();
         }
+      };
+      const cloneAutocompleterToEditorDoc = () => {
+        if (editor.dom.get(autocompleterId)) {
+          editor.dom.remove(autocompleterId, false);
+        }
+        const docElm = editor.getDoc().documentElement;
+        const selection = editor.selection.getNode();
+        const newElm = deep(autocompleter.element);
+        setAll(newElm, {
+          border: '0',
+          clip: 'rect(0 0 0 0)',
+          height: '1px',
+          margin: '-1px',
+          overflow: 'hidden',
+          padding: '0',
+          position: 'absolute',
+          width: '1px',
+          top: `${ selection.offsetTop }px`,
+          left: `${ selection.offsetLeft }px`
+        });
+        editor.dom.add(docElm, newElm.dom);
+        descendant(newElm, '[role="menu"]').each(child => {
+          remove$6(child, 'position');
+          remove$6(child, 'max-height');
+        });
       };
       editor.on('AutocompleterStart', ({lookupData}) => {
         activeState.set(true);
@@ -14233,6 +14338,11 @@
 
     const renderCollection = (spec, providersBackstage, initialData) => {
       const pLabel = spec.label.map(label => renderLabel$3(label, providersBackstage));
+      const icons = providersBackstage.icons();
+      const getIcon = icon => {
+        var _a;
+        return (_a = icons[icon]) !== null && _a !== void 0 ? _a : icon;
+      };
       const runOnItem = f => (comp, se) => {
         closest$1(se.event.target, '[data-collection-item-value]').each(target => {
           f(comp, se, target, get$f(target, 'data-collection-item-value'));
@@ -14242,7 +14352,7 @@
         const htmlLines = map$2(items, item => {
           const itemText = global$8.translate(item.text);
           const textContent = spec.columns === 1 ? `<div class="tox-collection__item-label">${ itemText }</div>` : '';
-          const iconContent = `<div class="tox-collection__item-icon">${ item.icon }</div>`;
+          const iconContent = `<div class="tox-collection__item-icon">${ getIcon(item.icon) }</div>`;
           const mapItemName = {
             '_': ' ',
             ' - ': ' ',
@@ -14664,6 +14774,7 @@
         };
       }
     });
+    const isShift = event => isShift$1(event.event);
     const spectrumPart = required({
       schema: [customField('mouseIsDown', () => Cell(false))],
       name: 'spectrum',
@@ -14675,11 +14786,12 @@
           behaviours: derive$1([
             Keying.config({
               mode: 'special',
-              onLeft: spectrum => model.onLeft(spectrum, detail),
-              onRight: spectrum => model.onRight(spectrum, detail),
-              onUp: spectrum => model.onUp(spectrum, detail),
-              onDown: spectrum => model.onDown(spectrum, detail)
+              onLeft: (spectrum, event) => model.onLeft(spectrum, detail, isShift(event)),
+              onRight: (spectrum, event) => model.onRight(spectrum, detail, isShift(event)),
+              onUp: (spectrum, event) => model.onUp(spectrum, detail, isShift(event)),
+              onDown: (spectrum, event) => model.onDown(spectrum, detail, isShift(event))
             }),
+            Tabstopping.config({}),
             Focusing.config({})
           ]),
           events: derive$2([
@@ -14737,7 +14849,7 @@
     const yRange = detail => range(detail, maxY, minY);
     const halfX = detail => xRange(detail) / 2;
     const halfY = detail => yRange(detail) / 2;
-    const step = detail => detail.stepSize;
+    const step = (detail, useMultiplier) => useMultiplier ? detail.stepSize * detail.speedMultiplier : detail.stepSize;
     const snap = detail => detail.snapToGrid;
     const snapStart = detail => detail.snapStart;
     const rounded = detail => detail.rounded;
@@ -14940,13 +15052,13 @@
       const max = maxX(detail);
       fireSliderChange$2(spectrum, max);
     };
-    const moveBy$2 = (direction, spectrum, detail) => {
+    const moveBy$2 = (direction, spectrum, detail, useMultiplier) => {
       const f = direction > 0 ? increaseBy : reduceBy;
-      const xValue = f(currentValue(detail), minX(detail), maxX(detail), step(detail));
+      const xValue = f(currentValue(detail), minX(detail), maxX(detail), step(detail, useMultiplier));
       fireSliderChange$2(spectrum, xValue);
       return Optional.some(xValue);
     };
-    const handleMovement$2 = direction => (spectrum, detail) => moveBy$2(direction, spectrum, detail).map(always);
+    const handleMovement$2 = direction => (spectrum, detail, useMultiplier) => moveBy$2(direction, spectrum, detail, useMultiplier).map(always);
     const getValueFromEvent$2 = simulatedEvent => {
       const pos = getEventSource(simulatedEvent);
       return pos.map(p => p.left);
@@ -15048,13 +15160,13 @@
       const max = maxY(detail);
       fireSliderChange$1(spectrum, max);
     };
-    const moveBy$1 = (direction, spectrum, detail) => {
+    const moveBy$1 = (direction, spectrum, detail, useMultiplier) => {
       const f = direction > 0 ? increaseBy : reduceBy;
-      const yValue = f(currentValue(detail), minY(detail), maxY(detail), step(detail));
+      const yValue = f(currentValue(detail), minY(detail), maxY(detail), step(detail, useMultiplier));
       fireSliderChange$1(spectrum, yValue);
       return Optional.some(yValue);
     };
-    const handleMovement$1 = direction => (spectrum, detail) => moveBy$1(direction, spectrum, detail).map(always);
+    const handleMovement$1 = direction => (spectrum, detail, useMultiplier) => moveBy$1(direction, spectrum, detail, useMultiplier).map(always);
     const getValueFromEvent$1 = simulatedEvent => {
       const pos = getEventSource(simulatedEvent);
       return pos.map(p => {
@@ -15137,14 +15249,14 @@
       fireSliderChange(spectrum, val);
       return val;
     };
-    const moveBy = (direction, isVerticalMovement, spectrum, detail) => {
+    const moveBy = (direction, isVerticalMovement, spectrum, detail, useMultiplier) => {
       const f = direction > 0 ? increaseBy : reduceBy;
-      const xValue = isVerticalMovement ? currentValue(detail).x : f(currentValue(detail).x, minX(detail), maxX(detail), step(detail));
-      const yValue = !isVerticalMovement ? currentValue(detail).y : f(currentValue(detail).y, minY(detail), maxY(detail), step(detail));
+      const xValue = isVerticalMovement ? currentValue(detail).x : f(currentValue(detail).x, minX(detail), maxX(detail), step(detail, useMultiplier));
+      const yValue = !isVerticalMovement ? currentValue(detail).y : f(currentValue(detail).y, minY(detail), maxY(detail), step(detail, useMultiplier));
       fireSliderChange(spectrum, sliderValue(xValue, yValue));
       return Optional.some(xValue);
     };
-    const handleMovement = (direction, isVerticalMovement) => (spectrum, detail) => moveBy(direction, isVerticalMovement, spectrum, detail).map(always);
+    const handleMovement = (direction, isVerticalMovement) => (spectrum, detail, useMultiplier) => moveBy(direction, isVerticalMovement, spectrum, detail, useMultiplier).map(always);
     const setToMin = (spectrum, detail) => {
       const mX = minX(detail);
       const mY = minY(detail);
@@ -15196,6 +15308,7 @@
 
     const SliderSchema = [
       defaulted('stepSize', 1),
+      defaulted('speedMultiplier', 10),
       defaulted('onChange', noop),
       defaulted('onChoose', noop),
       defaulted('onInit', noop),
@@ -15297,6 +15410,9 @@
         detail.onDragEnd(slider, getThumb(slider));
         choose(slider);
       };
+      const focusWidget = component => {
+        getPart(component, detail, 'spectrum').map(Keying.focusIn);
+      };
       return {
         uid: detail.uid,
         dom: detail.dom,
@@ -15304,9 +15420,7 @@
         behaviours: augment(detail.sliderBehaviours, [
           Keying.config({
             mode: 'special',
-            focusIn: slider => {
-              return getPart(slider, detail, 'spectrum').map(Keying.focusIn).map(always);
-            }
+            focusIn: focusWidget
           }),
           Representing.config({
             store: {
@@ -15333,7 +15447,10 @@
           }),
           run$1(touchstart(), onDragStart),
           run$1(touchend(), onDragEnd),
-          run$1(mousedown(), onDragStart),
+          run$1(mousedown(), (component, event) => {
+            focusWidget(component);
+            onDragStart(component, event);
+          }),
           run$1(mouseup(), onDragEnd)
         ]),
         apis: {
@@ -15390,7 +15507,12 @@
         dom: {
           tag: 'div',
           classes: [getClass('hue-slider')],
-          attributes: { role: 'presentation' }
+          attributes: {
+            'role': 'slider',
+            'aria-valuemin': 0,
+            'aria-valuemax': 360,
+            'aria-valuenow': 120
+          }
         },
         rounded: false,
         model: {
@@ -15403,6 +15525,7 @@
         ],
         sliderBehaviours: derive$1([Focusing.config({})]),
         onChange: (slider, _thumb, value) => {
+          set$9(slider.element, 'aria-valuenow', Math.floor(360 - value * 3.6));
           emitWith(slider, sliderUpdate, { value });
         }
       });
@@ -15689,7 +15812,7 @@
       return rgbFormSketcher;
     };
 
-    const paletteFactory = (_translate, getClass) => {
+    const paletteFactory = (translate, getClass) => {
       const spectrumPart = Slider.parts.spectrum({
         dom: {
           tag: 'canvas',
@@ -15736,6 +15859,11 @@
           x: hsv.saturation,
           y: 100 - hsv.value
         });
+        set$9(slider.element, 'aria-valuetext', translate([
+          'Saturation {0}%, Brightness {1}%',
+          hsv.saturation,
+          hsv.value
+        ]));
       };
       const factory = _detail => {
         const getInitialValue = constant$1({
@@ -15743,6 +15871,13 @@
           y: 0
         });
         const onChange = (slider, _thumb, value) => {
+          if (!isNumber(value)) {
+            set$9(slider.element, 'aria-valuetext', translate([
+              'Saturation {0}%, Brightness {1}%',
+              Math.floor(value.x),
+              Math.floor(100 - value.y)
+            ]));
+          }
           emitWith(slider, paletteUpdate, { value });
         };
         const onInit = (_slider, _thumb, spectrum, _value) => {
@@ -15755,7 +15890,14 @@
         return Slider.sketch({
           dom: {
             tag: 'div',
-            attributes: { role: 'presentation' },
+            attributes: {
+              'role': 'slider',
+              'aria-valuetext': translate([
+                'Saturation {0}%, Brightness {1}%',
+                0,
+                0
+              ])
+            },
             classes: [getClass('sv-palette')]
           },
           model: {
@@ -15962,7 +16104,11 @@
       'aria.input.invalid': 'Invalid input'
     };
     const translate$1 = providerBackstage => key => {
-      return providerBackstage.translate(english[key]);
+      if (isString(key)) {
+        return providerBackstage.translate(english[key]);
+      } else {
+        return providerBackstage.translate(key);
+      }
     };
     const renderColorPicker = (_spec, providerBackstage, initialData) => {
       const getClass = key => 'tox-' + key;
@@ -19040,7 +19186,7 @@
       const memUrlPickerButton = record(renderButton$1({
         name: spec.name,
         icon: Optional.some('browse'),
-        text: spec.label.getOr(''),
+        text: spec.picker_text.or(spec.label).getOr(''),
         enabled: spec.enabled,
         primary: false,
         buttonType: Optional.none(),
@@ -21029,7 +21175,7 @@
     });
 
     const promotionMessage = '\u26A1\ufe0fUpgrade';
-    const promotionLink = 'https://www.tiny.cloud/tinymce-self-hosted-premium-features/?utm_source=TinyMCE&utm_medium=SPAP&utm_campaign=SPAP&utm_id=editorreferral';
+    const promotionLink = 'https://www.tiny.cloud/tinymce-self-hosted-premium-features/?utm_campaign=self_hosted_upgrade_promo&utm_source=tiny&utm_medium=referral';
     const renderPromotion = spec => {
       return {
         uid: spec.uid,
@@ -21407,7 +21553,7 @@
       },
       components: [{ dom: fromHtml('<div class="tox-spinner"><div></div><div></div><div></div></div>') }]
     });
-    const focusBusyComponent = throbber => Composing.getCurrent(throbber).each(comp => focus$3(comp.element));
+    const focusBusyComponent = throbber => Composing.getCurrent(throbber).each(comp => focus$3(comp.element, true));
     const toggleEditorTabIndex = (editor, state) => {
       const tabIndexAttr = 'tabindex';
       const dataTabIndexAttr = `data-mce-${ tabIndexAttr }`;
@@ -23008,37 +23154,74 @@
       editor.on('remove', () => styleSheetLoader.unload(stylesheetUrl));
       return styleSheetLoader.load(stylesheetUrl);
     };
-    const loadUiSkins = (editor, skinUrl) => {
-      const skinUiCss = skinUrl + '/skin.min.css';
-      return loadStylesheet(editor, skinUiCss, editor.ui.styleSheetLoader);
+    const loadRawCss = (editor, key, css, styleSheetLoader) => {
+      editor.on('remove', () => styleSheetLoader.unloadRawCss(key));
+      return styleSheetLoader.loadRawCss(key, css);
     };
-    const loadShadowDomUiSkins = (editor, skinUrl) => {
+    const loadUiSkins = async (editor, skinUrl) => {
+      const skinResourceIdentifier = getSkinUrlOption(editor).getOr('default');
+      const skinUiCss = 'ui/' + skinResourceIdentifier + '/skin.css';
+      const css = tinymce.Resource.get(skinUiCss);
+      if (isString(css)) {
+        return Promise.resolve(loadRawCss(editor, skinUiCss, css, editor.ui.styleSheetLoader));
+      } else {
+        const skinUiCss = skinUrl + '/skin.min.css';
+        return loadStylesheet(editor, skinUiCss, editor.ui.styleSheetLoader);
+      }
+    };
+    const loadShadowDomUiSkins = async (editor, skinUrl) => {
       const isInShadowRoot$1 = isInShadowRoot(SugarElement.fromDom(editor.getElement()));
       if (isInShadowRoot$1) {
-        const shadowDomSkinCss = skinUrl + '/skin.shadowdom.min.css';
-        return loadStylesheet(editor, shadowDomSkinCss, global$7.DOM.styleSheetLoader);
-      } else {
-        return Promise.resolve();
+        const skinResourceIdentifier = getSkinUrlOption(editor).getOr('default');
+        const shadowDomSkinCss = 'ui/' + skinResourceIdentifier + '/skin.shadowdom.css';
+        const css = tinymce.Resource.get(shadowDomSkinCss);
+        if (isString(css)) {
+          loadRawCss(editor, shadowDomSkinCss, css, global$7.DOM.styleSheetLoader);
+          return Promise.resolve();
+        } else {
+          const shadowDomSkinCss = skinUrl + '/skin.shadowdom.min.css';
+          return loadStylesheet(editor, shadowDomSkinCss, global$7.DOM.styleSheetLoader);
+        }
       }
     };
-    const loadSkin = (isInline, editor) => {
+    const loadUrlSkin = async (isInline, editor) => {
+      getSkinUrlOption(editor).fold(() => {
+        const skinResourceIdentifier = getSkinUrl(editor);
+        if (skinResourceIdentifier) {
+          editor.contentCSS.push(skinResourceIdentifier + (isInline ? '/content.inline' : '/content') + '.min.css');
+        }
+      }, skinUrl => {
+        const skinContentCss = 'ui/' + skinUrl + (isInline ? '/content.inline' : '/content') + '.css';
+        const css = tinymce.Resource.get(skinContentCss);
+        if (isString(css)) {
+          loadRawCss(editor, skinContentCss, css, editor.ui.styleSheetLoader);
+        } else {
+          const skinResourceIdentifier = getSkinUrl(editor);
+          if (skinResourceIdentifier) {
+            editor.contentCSS.push(skinResourceIdentifier + (isInline ? '/content.inline' : '/content') + '.min.css');
+          }
+        }
+      });
       const skinUrl = getSkinUrl(editor);
-      if (skinUrl) {
-        editor.contentCSS.push(skinUrl + (isInline ? '/content.inline' : '/content') + '.min.css');
-      }
       if (!isSkinDisabled(editor) && isString(skinUrl)) {
         return Promise.all([
           loadUiSkins(editor, skinUrl),
           loadShadowDomUiSkins(editor, skinUrl)
-        ]).then(fireSkinLoaded(editor), fireSkinLoadError(editor, 'Skin could not be loaded'));
-      } else {
-        return Promise.resolve(fireSkinLoaded(editor)());
+        ]).then();
       }
+    };
+    const loadSkin = (isInline, editor) => {
+      return loadUrlSkin(isInline, editor).then(fireSkinLoaded(editor), fireSkinLoadError(editor, 'Skin could not be loaded'));
     };
     const iframe = curry(loadSkin, false);
     const inline = curry(loadSkin, true);
 
-    const generateSelectItems = (_editor, backstage, spec) => {
+    const makeTooltipText = (editor, labelWithPlaceholder, value) => editor.translate([
+      labelWithPlaceholder,
+      editor.translate(value)
+    ]);
+
+    const generateSelectItems = (backstage, spec) => {
       const generateItem = (rawItem, response, invalid, value) => {
         const translatedText = backstage.shared.providers.translate(rawItem.title);
         if (rawItem.type === 'separator') {
@@ -23101,18 +23284,31 @@
       const dataset = spec.dataset;
       const getStyleItems = dataset.type === 'basic' ? () => map$2(dataset.data, d => processBasic(d, spec.isSelectedFor, spec.getPreviewFor)) : dataset.getData;
       return {
-        items: generateSelectItems(editor, backstage, spec),
+        items: generateSelectItems(backstage, spec),
         getStyleItems
       };
     };
-    const createSelectButton = (editor, backstage, spec) => {
+    const createSelectButton = (editor, backstage, spec, tooltipWithPlaceholder, textUpdateEventName) => {
       const {items, getStyleItems} = createMenuItems(editor, backstage, spec);
-      const getApi = comp => ({ getComponent: constant$1(comp) });
-      const onSetup = onSetupEvent(editor, 'NodeChange', api => {
-        const comp = api.getComponent();
-        spec.updateText(comp);
-        Disabling.set(api.getComponent(), !editor.selection.isEditable());
+      const getApi = comp => ({
+        getComponent: constant$1(comp),
+        setTooltip: tooltip => {
+          const translatedTooltip = backstage.shared.providers.translate(tooltip);
+          setAll$1(comp.element, {
+            'aria-label': translatedTooltip,
+            'title': translatedTooltip
+          });
+        }
       });
+      const onSetup = api => {
+        const handler = e => api.setTooltip(makeTooltipText(editor, tooltipWithPlaceholder, e.value));
+        editor.on(textUpdateEventName, handler);
+        return composeUnbinders(onSetupEvent(editor, 'NodeChange', api => {
+          const comp = api.getComponent();
+          spec.updateText(comp);
+          Disabling.set(api.getComponent(), !editor.selection.isEditable());
+        })(api), () => editor.off(textUpdateEventName, handler));
+      };
       return renderCommonDropdown({
         text: spec.icon.isSome() ? Optional.none() : spec.text,
         icon: spec.icon,
@@ -23165,6 +23361,9 @@
       };
     };
 
+    const menuTitle$4 = 'Align';
+    const btnTooltip$4 = 'Alignment {0}';
+    const fallbackAlignment = 'left';
     const alignMenuItems = [
       {
         title: 'Left',
@@ -23197,13 +23396,14 @@
       const getPreviewFor = _format => Optional.none;
       const updateSelectMenuIcon = comp => {
         const match = getMatchingValue();
-        const alignment = match.fold(constant$1('left'), item => item.title.toLowerCase());
+        const alignment = match.fold(constant$1(fallbackAlignment), item => item.title.toLowerCase());
         emitWith(comp, updateMenuIcon, { icon: `align-${ alignment }` });
+        fireAlignTextUpdate(editor, { value: alignment });
       };
       const dataset = buildBasicStaticDataset(alignMenuItems);
       const onAction = rawItem => () => find$5(alignMenuItems, item => item.format === rawItem.format).each(item => editor.execCommand(item.command));
       return {
-        tooltip: 'Align',
+        tooltip: makeTooltipText(editor, btnTooltip$4, fallbackAlignment),
         text: Optional.none(),
         icon: Optional.some('align-left'),
         isSelectedFor,
@@ -23216,11 +23416,11 @@
         isInvalid: item => !editor.formatter.canApply(item.format)
       };
     };
-    const createAlignButton = (editor, backstage) => createSelectButton(editor, backstage, getSpec$4(editor));
+    const createAlignButton = (editor, backstage) => createSelectButton(editor, backstage, getSpec$4(editor), btnTooltip$4, 'AlignTextUpdate');
     const createAlignMenu = (editor, backstage) => {
       const menuItems = createMenuItems(editor, backstage, getSpec$4(editor));
       editor.ui.registry.addNestedMenuItem('align', {
-        text: backstage.shared.providers.translate('Align'),
+        text: backstage.shared.providers.translate(menuTitle$4),
         onSetup: onSetupEditableToggle(editor),
         getSubmenuItems: () => menuItems.items.validateItems(menuItems.getStyleItems())
       });
@@ -23235,8 +23435,10 @@
       }));
     };
 
+    const menuTitle$3 = 'Blocks';
+    const btnTooltip$3 = 'Block {0}';
+    const fallbackFormat = 'Paragraph';
     const getSpec$3 = editor => {
-      const fallbackFormat = 'Paragraph';
       const isSelectedFor = format => () => editor.formatter.match(format);
       const getPreviewFor = format => () => {
         const fmt = editor.formatter.get(format);
@@ -23253,10 +23455,11 @@
         const detectedFormat = findNearest(editor, () => dataset.data);
         const text = detectedFormat.fold(constant$1(fallbackFormat), fmt => fmt.title);
         emitWith(comp, updateMenuText, { text });
+        fireBlocksTextUpdate(editor, { value: text });
       };
       const dataset = buildBasicSettingsDataset(editor, 'block_formats', Delimiter.SemiColon);
       return {
-        tooltip: 'Blocks',
+        tooltip: makeTooltipText(editor, btnTooltip$3, fallbackFormat),
         text: Optional.some(fallbackFormat),
         icon: Optional.none(),
         isSelectedFor,
@@ -23269,16 +23472,19 @@
         isInvalid: item => !editor.formatter.canApply(item.format)
       };
     };
-    const createBlocksButton = (editor, backstage) => createSelectButton(editor, backstage, getSpec$3(editor));
+    const createBlocksButton = (editor, backstage) => createSelectButton(editor, backstage, getSpec$3(editor), btnTooltip$3, 'BlocksTextUpdate');
     const createBlocksMenu = (editor, backstage) => {
       const menuItems = createMenuItems(editor, backstage, getSpec$3(editor));
       editor.ui.registry.addNestedMenuItem('blocks', {
-        text: 'Blocks',
+        text: menuTitle$3,
         onSetup: onSetupEditableToggle(editor),
         getSubmenuItems: () => menuItems.items.validateItems(menuItems.getStyleItems())
       });
     };
 
+    const menuTitle$2 = 'Fonts';
+    const btnTooltip$2 = 'Font {0}';
+    const systemFont = 'System Font';
     const systemStackFonts = [
       '-apple-system',
       'Segoe UI',
@@ -23290,25 +23496,27 @@
       const fonts = fontFamily.split(/\s*,\s*/);
       return map$2(fonts, font => font.replace(/^['"]+|['"]+$/g, ''));
     };
-    const isSystemFontStack = fontFamily => {
-      const matchesSystemStack = () => {
+    const matchesStack = (fonts, stack) => stack.length > 0 && forall(stack, font => fonts.indexOf(font.toLowerCase()) > -1);
+    const isSystemFontStack = (fontFamily, userStack) => {
+      if (fontFamily.indexOf('-apple-system') === 0 || userStack.length > 0) {
         const fonts = splitFonts(fontFamily.toLowerCase());
-        return forall(systemStackFonts, font => fonts.indexOf(font.toLowerCase()) > -1);
-      };
-      return fontFamily.indexOf('-apple-system') === 0 && matchesSystemStack();
+        return matchesStack(fonts, systemStackFonts) || matchesStack(fonts, userStack);
+      } else {
+        return false;
+      }
     };
     const getSpec$2 = editor => {
-      const systemFont = 'System Font';
       const getMatchingValue = () => {
         const getFirstFont = fontFamily => fontFamily ? splitFonts(fontFamily)[0] : '';
         const fontFamily = editor.queryCommandValue('FontName');
         const items = dataset.data;
         const font = fontFamily ? fontFamily.toLowerCase() : '';
+        const userStack = getDefaultFontStack(editor);
         const matchOpt = find$5(items, item => {
           const format = item.format;
           return format.toLowerCase() === font || getFirstFont(format).toLowerCase() === getFirstFont(font).toLowerCase();
         }).orThunk(() => {
-          return someIf(isSystemFontStack(font), {
+          return someIf(isSystemFontStack(font, userStack), {
             title: systemFont,
             format: font
           });
@@ -23337,10 +23545,11 @@
         const {matchOpt, font} = getMatchingValue();
         const text = matchOpt.fold(constant$1(font), item => item.title);
         emitWith(comp, updateMenuText, { text });
+        fireFontFamilyTextUpdate(editor, { value: text });
       };
       const dataset = buildBasicSettingsDataset(editor, 'font_family_formats', Delimiter.SemiColon);
       return {
-        tooltip: 'Fonts',
+        tooltip: makeTooltipText(editor, btnTooltip$2, systemFont),
         text: Optional.some(systemFont),
         icon: Optional.none(),
         isSelectedFor,
@@ -23353,11 +23562,11 @@
         isInvalid: never
       };
     };
-    const createFontFamilyButton = (editor, backstage) => createSelectButton(editor, backstage, getSpec$2(editor));
+    const createFontFamilyButton = (editor, backstage) => createSelectButton(editor, backstage, getSpec$2(editor), btnTooltip$2, 'FontFamilyTextUpdate');
     const createFontFamilyMenu = (editor, backstage) => {
       const menuItems = createMenuItems(editor, backstage, getSpec$2(editor));
       editor.ui.registry.addNestedMenuItem('fontfamily', {
-        text: backstage.shared.providers.translate('Fonts'),
+        text: backstage.shared.providers.translate(menuTitle$2),
         onSetup: onSetupEditableToggle(editor),
         getSubmenuItems: () => menuItems.items.validateItems(menuItems.getStyleItems())
       });
@@ -23486,6 +23695,7 @@
         }
       };
       const makeStepperButton = (action, title, tooltip, classes) => {
+        const editorOffCellStepButton = Cell(noop);
         const translatedTooltip = backstage.shared.providers.translate(tooltip);
         const altExecuting = generate$6('altExecuting');
         const onSetup = onSetupEvent(editor, 'NodeChange SwitchMode', api => {
@@ -23512,8 +23722,8 @@
               onControlAttached({
                 onSetup,
                 getApi
-              }, editorOffCell),
-              onControlDetached({ getApi }, editorOffCell),
+              }, editorOffCellStepButton),
+              onControlDetached({ getApi }, editorOffCellStepButton),
               run$1(keydown(), (comp, se) => {
                 if (se.event.raw.keyCode === Keys.space() || se.event.raw.keyCode === Keys.enter()) {
                   if (!Disabling.isDisabled(comp)) {
@@ -23541,15 +23751,12 @@
           }
         });
       };
-      const memMinus = record(makeStepperButton(focusBack => decrease(false, focusBack), 'minus', 'Decrease font size', ['highlight-on-focus']));
-      const memPlus = record(makeStepperButton(focusBack => increase(false, focusBack), 'plus', 'Increase font size', ['highlight-on-focus']));
+      const memMinus = record(makeStepperButton(focusBack => decrease(false, focusBack), 'minus', 'Decrease font size', []));
+      const memPlus = record(makeStepperButton(focusBack => increase(false, focusBack), 'plus', 'Increase font size', []));
       const memInput = record({
         dom: {
           tag: 'div',
-          classes: [
-            'tox-input-wrapper',
-            'highlight-on-focus'
-          ]
+          classes: ['tox-input-wrapper']
         },
         components: [Input.sketch({
             inputBehaviours: derive$1([
@@ -23649,6 +23856,9 @@
       };
     };
 
+    const menuTitle$1 = 'Font sizes';
+    const btnTooltip$1 = 'Font size {0}';
+    const fallbackFontSize = '12pt';
     const legacyFontSizes = {
       '8pt': '1',
       '10pt': '2',
@@ -23712,11 +23922,12 @@
         const {matchOpt, size} = getMatchingValue();
         const text = matchOpt.fold(constant$1(size), match => match.title);
         emitWith(comp, updateMenuText, { text });
+        fireFontSizeTextUpdate(editor, { value: text });
       };
       const dataset = buildBasicSettingsDataset(editor, 'font_size_formats', Delimiter.Space);
       return {
-        tooltip: 'Font sizes',
-        text: Optional.some('12pt'),
+        tooltip: makeTooltipText(editor, btnTooltip$1, fallbackFontSize),
+        text: Optional.some(fallbackFontSize),
         icon: Optional.none(),
         isSelectedFor,
         getPreviewFor,
@@ -23728,7 +23939,7 @@
         isInvalid: never
       };
     };
-    const createFontSizeButton = (editor, backstage) => createSelectButton(editor, backstage, getSpec$1(editor));
+    const createFontSizeButton = (editor, backstage) => createSelectButton(editor, backstage, getSpec$1(editor), btnTooltip$1, 'FontSizeTextUpdate');
     const getConfigFromUnit = unit => {
       var _a;
       const baseConfig = { step: 1 };
@@ -23755,10 +23966,11 @@
             'unsupportedLength',
             'empty'
           ]);
+          const currentValue = getCurrentValue();
           const parsedText = parse(text, [
             'unsupportedLength',
             'empty'
-          ]).or(parse(getCurrentValue(), [
+          ]).or(parse(currentValue, [
             'unsupportedLength',
             'empty'
           ]));
@@ -23766,7 +23978,11 @@
           const defaultUnit = getFontSizeInputDefaultUnit(editor);
           const unit = parsedText.map(res => res.unit).filter(u => u !== '').getOr(defaultUnit);
           const newValue = updateFunction(value, getConfigFromUnit(unit).step);
-          return `${ isValidValue(newValue) ? newValue : value }${ unit }`;
+          const res = `${ isValidValue(newValue) ? newValue : value }${ unit }`;
+          if (res !== currentValue) {
+            fireFontSizeInputTextUpdate(editor, { value: res });
+          }
+          return res;
         }
       };
     };
@@ -23774,12 +23990,14 @@
     const createFontSizeMenu = (editor, backstage) => {
       const menuItems = createMenuItems(editor, backstage, getSpec$1(editor));
       editor.ui.registry.addNestedMenuItem('fontsize', {
-        text: 'Font sizes',
+        text: menuTitle$1,
         onSetup: onSetupEditableToggle(editor),
         getSubmenuItems: () => menuItems.items.validateItems(menuItems.getStyleItems())
       });
     };
 
+    const menuTitle = 'Formats';
+    const btnTooltip = 'Format {0}';
     const getSpec = (editor, dataset) => {
       const fallbackFormat = 'Paragraph';
       const isSelectedFor = format => () => editor.formatter.match(format);
@@ -23807,9 +24025,10 @@
         const detectedFormat = findNearest(editor, constant$1(flattenedItems));
         const text = detectedFormat.fold(constant$1(fallbackFormat), fmt => fmt.title);
         emitWith(comp, updateMenuText, { text });
+        fireStylesTextUpdate(editor, { value: text });
       };
       return {
-        tooltip: 'Formats',
+        tooltip: makeTooltipText(editor, btnTooltip, fallbackFormat),
         text: Optional.some(fallbackFormat),
         icon: Optional.none(),
         isSelectedFor,
@@ -23827,7 +24046,7 @@
         type: 'advanced',
         ...backstage.styles
       };
-      return createSelectButton(editor, backstage, getSpec(editor, dataset));
+      return createSelectButton(editor, backstage, getSpec(editor, dataset), btnTooltip, 'StylesTextUpdate');
     };
     const createStylesMenu = (editor, backstage) => {
       const dataset = {
@@ -23836,7 +24055,7 @@
       };
       const menuItems = createMenuItems(editor, backstage, getSpec(editor, dataset));
       editor.ui.registry.addNestedMenuItem('styles', {
-        text: 'Formats',
+        text: menuTitle,
         onSetup: onSetupEditableToggle(editor),
         getSubmenuItems: () => menuItems.items.validateItems(menuItems.getStyleItems())
       });
@@ -24211,7 +24430,14 @@
         },
         isActive: () => descendant(comp.element, 'span').exists(button => comp.getSystem().getByDom(button).exists(Toggling.isOn)),
         setText: text => descendant(comp.element, 'span').each(button => comp.getSystem().getByDom(button).each(buttonComp => emitWith(buttonComp, updateMenuText, { text }))),
-        setIcon: icon => descendant(comp.element, 'span').each(button => comp.getSystem().getByDom(button).each(buttonComp => emitWith(buttonComp, updateMenuIcon, { icon })))
+        setIcon: icon => descendant(comp.element, 'span').each(button => comp.getSystem().getByDom(button).each(buttonComp => emitWith(buttonComp, updateMenuIcon, { icon }))),
+        setTooltip: tooltip => {
+          const translatedTooltip = sharedBackstage.providers.translate(tooltip);
+          setAll$1(comp.element, {
+            'aria-label': translatedTooltip,
+            'title': translatedTooltip
+          });
+        }
       });
       const editorOffCell = Cell(noop);
       const specialisation = {
@@ -24499,15 +24725,12 @@
       const {mainUi, uiMotherships} = uiRefs;
       const lastToolbarWidth = Cell(0);
       const outerContainer = mainUi.outerContainer;
-      editor.on('SkinLoaded', () => {
-        setToolbar(editor, uiRefs, rawUiConfig, backstage);
-      });
       iframe(editor);
       const eTargetNode = SugarElement.fromDom(args.targetNode);
       const uiRoot = getContentContainer(getRootNode(eTargetNode));
       attachSystemAfter(eTargetNode, mainUi.mothership);
       attachUiMotherships(editor, uiRoot, uiRefs);
-      editor.on('PostRender', () => {
+      editor.on('SkinLoaded', () => {
         OuterContainer.setSidebar(outerContainer, rawUiConfig.sidebar, getSidebarShow(editor));
         setToolbar(editor, uiRefs, rawUiConfig, backstage);
         lastToolbarWidth.set(editor.getWin().innerWidth);
@@ -27496,7 +27719,7 @@
               dom: {
                 tag: 'a',
                 attributes: {
-                  'href': 'https://www.tiny.cloud/powered-by-tiny?utm_campaign=editor_referral&utm_medium=poweredby&utm_source=tinymce&utm_content=v6',
+                  'href': 'https://www.tiny.cloud/powered-by-tiny?utm_campaign=poweredby&utm_source=tiny&utm_medium=referral&utm_content=v6',
                   'rel': 'noopener',
                   'target': '_blank',
                   'aria-label': global$8.translate([
@@ -28443,7 +28666,8 @@
         'media',
         'file'
       ]),
-      enabled
+      enabled,
+      optionString('picker_text')
     ]);
     const urlInputSchema = objOf(urlInputFields);
     const urlInputDataProcessor = objOf([
@@ -29507,47 +29731,71 @@
         ModalDialog.setIdle(lazyDialog());
       }
     });
-    const renderModalDialog = (spec, initialData, dialogEvents, backstage) => {
-      const updateState = (_comp, incoming) => Optional.some(incoming);
-      return build$1(renderDialog$1({
-        ...spec,
-        firstTabstop: 1,
-        lazySink: backstage.shared.getSink,
-        extraBehaviours: [
-          Reflecting.config({
-            channel: `${ dialogChannel }-${ spec.id }`,
-            updateState,
-            initialData
-          }),
-          memory({}),
-          ...spec.extraBehaviours
-        ],
-        onEscape: comp => {
-          emit(comp, formCancelEvent);
-        },
-        dialogEvents,
-        eventOrder: {
-          [receive()]: [
-            Reflecting.name(),
-            Receiving.name()
-          ],
-          [attachedToDom()]: [
-            'scroll-lock',
-            Reflecting.name(),
-            'messages',
-            'dialog-events',
-            'alloy.base.behaviour'
-          ],
-          [detachedFromDom()]: [
-            'alloy.base.behaviour',
-            'dialog-events',
-            'messages',
-            Reflecting.name(),
-            'scroll-lock'
-          ]
-        }
-      }));
+    const fullscreenClass = 'tox-dialog--fullscreen';
+    const largeDialogClass = 'tox-dialog--width-lg';
+    const mediumDialogClass = 'tox-dialog--width-md';
+    const getDialogSizeClass = size => {
+      switch (size) {
+      case 'large':
+        return Optional.some(largeDialogClass);
+      case 'medium':
+        return Optional.some(mediumDialogClass);
+      default:
+        return Optional.none();
+      }
     };
+    const updateDialogSizeClass = (size, component) => {
+      const dialogBody = SugarElement.fromDom(component.element.dom);
+      if (!has(dialogBody, fullscreenClass)) {
+        remove$1(dialogBody, [
+          largeDialogClass,
+          mediumDialogClass
+        ]);
+        getDialogSizeClass(size).each(dialogSizeClass => add$2(dialogBody, dialogSizeClass));
+      }
+    };
+    const toggleFullscreen = (comp, currentSize) => {
+      const dialogBody = SugarElement.fromDom(comp.element.dom);
+      const classes = get$7(dialogBody);
+      const currentSizeClass = find$5(classes, c => c === largeDialogClass || c === mediumDialogClass).or(getDialogSizeClass(currentSize));
+      toggle$3(dialogBody, [
+        fullscreenClass,
+        ...currentSizeClass.toArray()
+      ]);
+    };
+    const renderModalDialog = (spec, dialogEvents, backstage) => build$1(renderDialog$1({
+      ...spec,
+      firstTabstop: 1,
+      lazySink: backstage.shared.getSink,
+      extraBehaviours: [
+        memory({}),
+        ...spec.extraBehaviours
+      ],
+      onEscape: comp => {
+        emit(comp, formCancelEvent);
+      },
+      dialogEvents,
+      eventOrder: {
+        [receive()]: [
+          Reflecting.name(),
+          Receiving.name()
+        ],
+        [attachedToDom()]: [
+          'scroll-lock',
+          Reflecting.name(),
+          'messages',
+          'dialog-events',
+          'alloy.base.behaviour'
+        ],
+        [detachedFromDom()]: [
+          'alloy.base.behaviour',
+          'dialog-events',
+          'messages',
+          Reflecting.name(),
+          'scroll-lock'
+        ]
+      }
+    }));
     const mapMenuButtons = (buttons, menuItemStates = {}) => {
       const mapItems = button => {
         const items = map$2(button.items, item => {
@@ -29820,20 +30068,17 @@
       return instanceApi;
     };
 
-    const getDialogSizeClasses = size => {
-      switch (size) {
-      case 'large':
-        return ['tox-dialog--width-lg'];
-      case 'medium':
-        return ['tox-dialog--width-md'];
-      default:
-        return [];
-      }
-    };
     const renderDialog = (dialogInit, extra, backstage) => {
       const dialogId = generate$6('dialog');
       const internalDialog = dialogInit.internalDialog;
       const header = getHeader(internalDialog.title, dialogId, backstage);
+      const dialogSize = Cell(internalDialog.size);
+      const dialogSizeClasses = getDialogSizeClass(dialogSize.get()).toArray();
+      const updateState = (comp, incoming) => {
+        dialogSize.set(incoming.internalDialog.size);
+        updateDialogSizeClass(incoming.internalDialog.size, comp);
+        return Optional.some(incoming);
+      };
       const body = renderModalBody({
         body: internalDialog.body,
         initialData: internalDialog.initialData
@@ -29842,32 +30087,27 @@
       const objOfCells = extractCellsToObject(storedMenuButtons);
       const footer = someIf(storedMenuButtons.length !== 0, renderModalFooter({ buttons: storedMenuButtons }, dialogId, backstage));
       const dialogEvents = initDialog(() => instanceApi, getEventExtras(() => dialog, backstage.shared.providers, extra), backstage.shared.getSink);
-      const dialogSize = getDialogSizeClasses(internalDialog.size);
       const spec = {
         id: dialogId,
         header,
         body,
         footer,
-        extraClasses: dialogSize,
-        extraBehaviours: [],
+        extraClasses: dialogSizeClasses,
+        extraBehaviours: [Reflecting.config({
+            channel: `${ dialogChannel }-${ dialogId }`,
+            updateState,
+            initialData: dialogInit
+          })],
         extraStyles: {}
       };
-      const dialog = renderModalDialog(spec, dialogInit, dialogEvents, backstage);
+      const dialog = renderModalDialog(spec, dialogEvents, backstage);
       const modalAccess = (() => {
         const getForm = () => {
           const outerForm = ModalDialog.getBody(dialog);
           return Composing.getCurrent(outerForm).getOr(outerForm);
         };
-        const toggleFullscreen = () => {
-          const fullscreenClass = 'tox-dialog--fullscreen';
-          const sugarBody = SugarElement.fromDom(dialog.element.dom);
-          if (!has(sugarBody, fullscreenClass)) {
-            remove$1(sugarBody, dialogSize);
-            add$2(sugarBody, fullscreenClass);
-          } else {
-            remove$2(sugarBody, fullscreenClass);
-            add$1(sugarBody, dialogSize);
-          }
+        const toggleFullscreen$1 = () => {
+          toggleFullscreen(dialog, dialogSize.get());
         };
         return {
           getId: constant$1(dialogId),
@@ -29875,7 +30115,7 @@
           getBody: () => ModalDialog.getBody(dialog),
           getFooter: () => ModalDialog.getFooter(dialog),
           getFormWrapper: getForm,
-          toggleFullscreen
+          toggleFullscreen: toggleFullscreen$1
         };
       })();
       const instanceApi = getDialogApi(modalAccess, extra.redial, objOfCells);
@@ -29885,21 +30125,19 @@
       };
     };
 
-    const getInlineDialogSizeClass = size => {
-      switch (size) {
-      case 'medium':
-        return Optional.some('tox-dialog--width-md');
-      default:
-        return Optional.none();
-      }
-    };
-    const renderInlineDialog = (dialogInit, extra, backstage, ariaAttrs = false) => {
+    const renderInlineDialog = (dialogInit, extra, backstage, ariaAttrs = false, refreshDocking) => {
       const dialogId = generate$6('dialog');
       const dialogLabelId = generate$6('dialog-label');
       const dialogContentId = generate$6('dialog-content');
       const internalDialog = dialogInit.internalDialog;
-      const dialogSize = getInlineDialogSizeClass(internalDialog.size);
-      const updateState = (_comp, incoming) => Optional.some(incoming);
+      const dialogSize = Cell(internalDialog.size);
+      const dialogSizeClass = getDialogSizeClass(dialogSize.get()).toArray();
+      const updateState = (comp, incoming) => {
+        dialogSize.set(incoming.internalDialog.size);
+        updateDialogSizeClass(incoming.internalDialog.size, comp);
+        refreshDocking();
+        return Optional.some(incoming);
+      };
       const memHeader = record(renderInlineHeader({
         title: internalDialog.title,
         draggable: true
@@ -29930,7 +30168,7 @@
           classes: [
             'tox-dialog',
             inlineClass,
-            ...dialogSize.toArray()
+            ...dialogSizeClass
           ],
           attributes: {
             role: 'dialog',
@@ -29982,16 +30220,8 @@
           ...optMemFooter.map(memFooter => memFooter.asSpec()).toArray()
         ]
       });
-      const toggleFullscreen = () => {
-        const fullscreenClass = 'tox-dialog--fullscreen';
-        const sugarBody = SugarElement.fromDom(dialog.element.dom);
-        if (!hasAll(sugarBody, [fullscreenClass])) {
-          remove$1(sugarBody, [inlineClass]);
-          add$1(sugarBody, [fullscreenClass]);
-        } else {
-          remove$1(sugarBody, [fullscreenClass]);
-          add$1(sugarBody, [inlineClass]);
-        }
+      const toggleFullscreen$1 = () => {
+        toggleFullscreen(dialog, dialogSize.get());
       };
       const instanceApi = getDialogApi({
         getId: constant$1(dialogId),
@@ -30002,7 +30232,7 @@
           const body = memBody.get(dialog);
           return Composing.getCurrent(body).getOr(body);
         },
-        toggleFullscreen
+        toggleFullscreen: toggleFullscreen$1
       }, extra.redial, objOfCells);
       return {
         dialog,
@@ -30108,7 +30338,13 @@
       const iframeUri = new global(internalDialog.url, { base_uri: new global(window.location.href) });
       const iframeDomain = `${ iframeUri.protocol }://${ iframeUri.host }${ iframeUri.port ? ':' + iframeUri.port : '' }`;
       const messageHandlerUnbinder = unbindable();
+      const updateState = (_comp, incoming) => Optional.some(incoming);
       const extraBehaviours = [
+        Reflecting.config({
+          channel: `${ dialogChannel }-${ dialogId }`,
+          updateState,
+          initialData: internalDialog
+        }),
         config('messages', [
           runOnAttached(() => {
             const unbind = bind(SugarElement.fromDom(window), 'message', e => {
@@ -30149,7 +30385,7 @@
         extraBehaviours,
         extraStyles: styles
       };
-      const dialog = renderModalDialog(spec, internalDialog, dialogEvents, backstage);
+      const dialog = renderModalDialog(spec, dialogEvents, backstage);
       const instanceApi = getUrlDialogApi(dialog);
       return {
         dialog,
@@ -30343,7 +30579,9 @@
           };
           const refreshDocking = () => inlineDialog.on(dialog => {
             InlineView.reposition(dialog);
-            Docking.refresh(dialog);
+            if (!isStickyToolbar$1 || !isToolbarLocationTop) {
+              Docking.refresh(dialog);
+            }
           });
           const dialogUi = renderInlineDialog(dialogInit, {
             redial: DialogManager.redial,
@@ -30353,7 +30591,7 @@
               inlineDialog.clear();
               closeWindow(dialogUi.instanceApi);
             }
-          }, extras.backstages.popup, windowParams.ariaAttrs);
+          }, extras.backstages.popup, windowParams.ariaAttrs, refreshDocking);
           const inlineDialogComp = build$1(InlineView.sketch({
             lazySink: extras.backstages.popup.shared.getSink,
             dom: {
@@ -30409,7 +30647,7 @@
               inlineDialog.clear();
               closeWindow(dialogUi.instanceApi);
             }
-          }, extras.backstages.popup, windowParams.ariaAttrs);
+          }, extras.backstages.popup, windowParams.ariaAttrs, refreshDocking);
           const inlineDialogComp = build$1(InlineView.sketch({
             lazySink: extras.backstages.popup.shared.getSink,
             dom: {
@@ -30466,7 +30704,7 @@
           };
           InlineView.showWithinBounds(inlineDialogComp, premade(dialogUi.dialog), { anchor }, getInlineDialogBounds);
           Docking.refresh(inlineDialogComp);
-          editor.on('ResizeEditor ScrollWindow ElementScroll', refreshDocking);
+          editor.on('ResizeEditor ScrollWindow ElementScroll ResizeWindow', refreshDocking);
           dialogUi.instanceApi.setData(initialData);
           Keying.focusIn(dialogUi.dialog);
           return dialogUi.instanceApi;

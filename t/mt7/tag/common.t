@@ -46,7 +46,7 @@ filters {
     expected_error => [qw( chomp )],
 };
 
-$test_env->prepare_fixture('content_data');
+$test_env->prepare_fixture('content_data/dirty');
 
 my $blog    = MT->model('blog')->load({ name => 'My Site' });
 my $blog_id = $blog->id;

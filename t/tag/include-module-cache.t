@@ -18,7 +18,7 @@ use MT::Test;
 use MT::Test::Permission;
 use MT::Test::Tag;
 use MT::Memcached;
-use MT::Test::Memcached;
+use MT::Touch;
 
 my $app = MT->instance;
 
@@ -26,99 +26,186 @@ $test_env->prepare_fixture('db');
 
 my $blog = MT::Blog->load(1);
 $blog->include_cache(1);
+$blog->include_system('');
 $blog->save;
 
 my $template = MT::Test::Permission->make_template(
-    blog_id => $blog->id,
-    type    => 'custom',
-    name    => 'MyTemplate',
-    text    => 'MODULE-CONTENT'
+    blog_id          => $blog->id,
+    type             => 'custom',
+    name             => 'MyTemplate',
+    text             => 'MODULE-CONTENT',
+    include_with_ssi => 0,
 );
 
-MT::Test::Tag->vars->{no_php_memcached} = !MT::Test::PHP->supports_memcached;
+my ($i, $memd);
 
-_teardown();
-MT::Test::Tag->run_perl_tests($blog->id, sub { setup(1) });
-_teardown();
-MT::Test::Tag->run_php_tests($blog->id, sub { setup() });
-_teardown();
+for my $cache_driver ('session', 'memcached') {
 
-my ($i, $memd, $memd_server);
+    MT::Memcached->cleanup;    # unset is_available flag so that cache driver can be switchable
+    my $memcached_servers;
+    if ($cache_driver eq 'memcached') {
+        next if $^O eq 'MSWin32';
+        require MT::Test::Memcached;
+        $memd              = MT::Test::Memcached->new;
+        $memcached_servers = [$memd->address];
+    } else {
+        $memcached_servers = [];
+    }
+    MT->config('MemcachedServers', $memcached_servers);
+    MT->config('MemcachedServers', $memcached_servers, 1);
+    MT->config->save_config;
+
+    subtest 'cache driver is right one' => sub {
+        require MT::Cache::Negotiate;
+        my $cache_driver = MT::Cache::Negotiate->new;
+        my $driver       = $cache_driver->{__cache_driver};
+        if (@$memcached_servers) {
+            is(ref($driver), 'MT::Memcached', 'cache driver is memcached');
+            $cache_driver->set('writable', 'working');
+            is($cache_driver->get('writable'), 'working', 'mecached is working');
+            ok(MT::Memcached->is_available, 'memcached is available');
+        } else {
+            is(ref($driver), 'MT::Cache::Session', 'cache driver is session');
+        }
+    };
+
+    subtest $cache_driver => sub {
+        MT::Test::Tag->run_perl_tests($blog->id, sub { setup($_[1]); });
+    };
+
+SKIP: {
+        subtest $cache_driver => sub {
+            plan skip_all => "PHP does not support memcached", 1 unless MT::Test::PHP->supports_memcached;
+            MT::Test::Tag->run_php_tests($blog->id, sub { setup($_[0]); return; });
+        };
+    }
+}
 
 sub setup {
-    my $perl = shift;
+    my ($block) = @_;
+
+    if (defined($block->reset_test_count)) {
+        $i = 1;
+        require MT::Cache::Negotiate;
+        my $cache_driver = MT::Cache::Negotiate->new;
+        $cache_driver->flush_all;
+    }
+
+    if (my $str = $block->template_module_cache_setting) {
+        my $hash = eval($str);
+        while (my ($key, $val) = each(%$hash)) {
+            $template->$key($val);
+        }
+    }
+
     $template->text('MODULE-CONTENT' . $i++);
+    $template->modified_by(1) if defined($block->set_template_modified_on);
     $template->save;
-    MT::Memcached->cleanup if $perl;    # unset is_available flag so that cache driver can be switchable
-    sleep(1) unless $perl;              # workaround for fragile memcached test
-    return;
-}
+    sleep(1);    # make sure cache get ttl is 1 second at least
 
-sub memcached_filter {
-    my $val = shift;
-    $val =~ s{MEMCACHED_SERVER}{$memd_server};
-    return $val;
-}
-
-sub _teardown {
-    $memd->stop if $memd;
-    $memd = MT::Test::Memcached->new or plan skip_all => "Memcached is not available";
-    $memd_server = $memd->address;
-    $i = 1;
+    if (defined($block->do_touch)) {
+        MT::Touch->touch($blog->id, $template->cache_expire_event);
+        sleep(1);
+    }
 }
 
 done_testing;
 
 __DATA__
 
-=== include module cache 1
---- mt_config
-{MemcachedServers => []}
+=== cache not enabled
+--- reset_test_count
+--- template_module_cache_setting
+{cache_expire_type => undef}
 --- template
 <mt:Include module="MyTemplate">
 --- expected
 MODULE-CONTENT1
 
-=== include module cache 2
---- mt_config
-{MemcachedServers => []}
+=== set cache by attribute
 --- template
 <mt:Include module="MyTemplate" cache="1">
 --- expected
 MODULE-CONTENT2
 
-=== include module cache 3
---- mt_config
-{MemcachedServers => []}
+=== get cache by attribute
 --- template
 <mt:Include module="MyTemplate" cache="1">
 --- expected
 MODULE-CONTENT2
 
-=== include module cache with memcached 1
---- mt_config memcached_filter
-{MemcachedServers => 'MEMCACHED_SERVER'}
+=== cache is not used
 --- template
 <mt:Include module="MyTemplate">
 --- expected
 MODULE-CONTENT4
 
-=== include module cache with memcached 2
---- skip_php
-[% no_php_memcached %]
---- mt_config memcached_filter
-{MemcachedServers => 'MEMCACHED_SERVER'}
+=== make sure get cache again
 --- template
 <mt:Include module="MyTemplate" cache="1">
+--- expected
+MODULE-CONTENT2
+
+=== cache expires by template modified_on
+--- set_template_modified_on
+--- template
+<mt:Include module="MyTemplate" cache="1">
+--- expected
+MODULE-CONTENT6
+
+=== with cache_expire_type=2, type=entry 1 set cache
+--- reset_test_count
+--- template_module_cache_setting
+{cache_expire_type => 2, cache_expire_event => 'entry'}
+--- template
+<mt:Include module="MyTemplate">
+--- expected
+MODULE-CONTENT1
+
+=== with cache_expire_type=2, type=entry 2 get cache
+--- template
+<mt:Include module="MyTemplate">
+--- expected
+MODULE-CONTENT1
+
+=== with cache_expire_type=2, type=entry 3 cache expires by object touch
+--- do_touch
+--- template
+<mt:Include module="MyTemplate">
+--- expected
+MODULE-CONTENT3
+
+=== with cache_expire_type=2, type=entry 4 get cache again
+--- template
+<mt:Include module="MyTemplate">
+--- expected
+MODULE-CONTENT3
+
+=== with cache_expire_type=2, type=entry 5 cache expires by template modified_on
+--- set_template_modified_on
+--- template
+<mt:Include module="MyTemplate">
 --- expected
 MODULE-CONTENT5
 
-=== include module cache with memcached 3
---- skip_php
-[% no_php_memcached %]
---- mt_config memcached_filter
-{MemcachedServers => 'MEMCACHED_SERVER'}
+=== with cache_expire_type=2, type=author 1 set cache
+--- reset_test_count
+--- template_module_cache_setting
+{cache_expire_type => 2, cache_expire_event => 'author'}
 --- template
-<mt:Include module="MyTemplate" cache="1">
+<mt:Include module="MyTemplate">
 --- expected
-MODULE-CONTENT5
+MODULE-CONTENT1
+
+=== with cache_expire_type=2, type=author 2 get cache
+--- template
+<mt:Include module="MyTemplate">
+--- expected
+MODULE-CONTENT1
+
+=== with cache_expire_type=2, type=author 3 cache expires by object touch
+--- do_touch
+--- template
+<mt:Include module="MyTemplate">
+--- expected
+MODULE-CONTENT3

@@ -1,0 +1,220 @@
+name: movabletype/movabletype
+on:
+  push:
+    branches:
+    - "**/*"
+  pull_request:
+  schedule:
+    - cron:  '30 0 * * 0' # Sunday Only
+concurrency:
+#   # This item has no matching transformer
+#   maximum_number_of_builds: 0
+  group: "${{ github.ref }}"
+  cancel-in-progress: true
+env:
+  MT_TEST_IGNORE_FIXTURE: '0'
+jobs:
+  test_job1:
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        config:
+          - {image: fedora42, mt_test_env: 'MT_TEST_RUN_APP_AS_CGI=1'}   # Perl 5.40 / PHP 8.4 / MySQL 9.3
+          - {image: fedora40, mt_test_env: 'MT_TEST_IMAGE_DRIVER=ImageMagick' } # Perl 5.38 / PHP 8.2 / MariaDB 10.11
+          - {image: centos7,  mt_test_env: 'MT_TEST_IMAGE_DRIVER=GD' }  # Perl 5.16 / PHP 7.1 / MariaDB 5.5
+        test: 
+          - "t/*.t"
+          - "t/mt7/[^td]*"
+          - "t/mt7/d*"
+          - "t/mt7/t*"
+          - "t/admin_theme_id/ t/app/ t/class/ t/cms/ t/model/ t/mt_object/ t/object_driver/ t/task/ t/template/ t/tools t/util t/upgrade"
+          - "t/cms_permission/"
+          - "t/data_api/"
+          - "t/tag/"
+          - "plugins/*/t"
+          - php
+        exclude:
+          - config: {image: centos7, mt_test_env: 'MT_TEST_IMAGE_DRIVER=GD'}
+            test: php
+        include:
+          - config: {image: chromiumdriver}
+            test: selenium
+          - config: {image: fedora40, mt_test_env: 'MT_TEST_IMAGE_DRIVER=ImageMagick' }
+            test: xt
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4.1.0
+      - name: docker login
+        uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: test
+        if: ${{ matrix.test != 'php' && matrix.test != 'selenium' }}
+        run: docker run -t -v $PWD:/mt -w /mt ghcr.io/movabletype/movabletype/test:${{ matrix.config.image }} bash -c "prove -lr -j4 -PMySQLPool=MT::Test::Env -It/lib ${{ matrix.test }}"
+      - name: test php
+        if: ${{ matrix.test == 'php' }}
+        run: docker run -t -v $PWD:/mt -w /mt ghcr.io/movabletype/movabletype/test:${{ matrix.config.image }} bash -c "phpunit && make test-php-lint"
+      - name: test selenium
+        if: ${{ matrix.test == 'selenium' }}
+        run: docker run -t -v $PWD:/mt -w /mt ghcr.io/movabletype/movabletype/test:${{ matrix.config.image }} bash -c "MT_TEST_SELENIUM_MAX_RETRY=5 prove -lr -j1 -PMySQLPool=MT::Test::Env -It/lib t/selenium"
+
+  test_job2:
+    needs: [test_job1]
+    if: >-
+      ${{
+        github.event_name == 'schedule'
+        || startsWith(github.ref_name, 'support-')
+        || startsWith(github.ref_name, 'release-')
+        || (github.ref_name == 'develop')
+        || contains(github.ref_name, 'cron')
+      }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        config:
+          - {image: cloud7,   mt_test_env: 'MT_TEST_IMAGE_DRIVER=GraphicsMagick' }
+          - {image: fedora41, mt_test_env: 'MT_TEST_ADMIN_THEME_ID=0'}   # Perl 5.40 / PHP 8.3 / MySQL 8.4
+        test: 
+          - "t/*.t"
+          - "t/mt7/[^td]*"
+          - "t/mt7/d*"
+          - "t/mt7/t*"
+          - "t/admin_theme_id/ t/app/ t/class/ t/cms/ t/model/ t/mt_object/ t/object_driver/ t/task/ t/template/ t/tools t/util t/upgrade"
+          - "t/cms_permission/"
+          - "t/data_api/"
+          - "t/tag/"
+          - "plugins/*/t"
+          - php
+        include:
+          - config: {image: chromiumdriver}
+            test: selenium
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4.1.0
+      - name: docker login
+        uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: test
+        if: ${{ matrix.test != 'php' && matrix.test != 'selenium' }}
+        run: docker run -t -v $PWD:/mt -w /mt ghcr.io/movabletype/movabletype/test:${{ matrix.config.image }} bash -c "${{ matrix.config.mt_test_env }} prove -lr -j4 -PMySQLPool=MT::Test::Env -It/lib ${{ matrix.test }}"
+      - name: test php
+        if: ${{ matrix.test == 'php' }}
+        run: docker run -t -v $PWD:/mt -w /mt ghcr.io/movabletype/movabletype/test:${{ matrix.config.image }} bash -c "phpunit && make test-php-lint"
+      - name: test selenium
+        if: ${{ matrix.test == 'selenium' }}
+        run: docker run -t -v $PWD:/mt -w /mt ghcr.io/movabletype/movabletype/test:${{ matrix.config.image }} bash -c "BUILD_RELEASE_NUMBER=1 make && MT_TEST_SELENIUM_MAX_RETRY=5 MT_TEST_CRAWL=1 prove -j1 -PMySQLPool=MT::Test::Env -It/lib t/selenium/crawl.t"
+
+  test_job3:
+    needs: [test_job1]
+    if: >-
+      ${{
+        (github.repository == 'movabletype/movabletype')
+        && (
+          github.event_name == 'schedule'
+          || startsWith(github.ref_name, 'support-')
+          || startsWith(github.ref_name, 'release-')
+          || (github.ref_name == 'develop')
+          || contains(github.ref_name, 'cron')
+        )
+      }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        config:
+          - {image: bullseye, mt_test_env: 'MT_TEST_DISABLE_OBJECT_CACHE=1'}    # Perl 5.32 / PHP 7.4 / MariaDB 10.5
+          - {image: fedora37, mt_test_env: 'MT_TEST_BUILDER=MT::Builder::Fast'} # Perl 5.36 / PHP 8.1 / MySQL 8.0
+          - {image: fedora35, mt_test_env: 'MT_TEST_IMAGE_DRIVER=Imager MT_TEST_FORCE_DATAAPI_VERSION=6'}   # Perl 5.34 / PHP 8.0 / MySQL 8.0
+        test:
+          - "t/*.t"
+          - "t/mt7/[^td]*"
+          - "t/mt7/d*"
+          - "t/mt7/t*"
+          - "t/admin_theme_id/ t/app/ t/class/ t/cms/ t/model/ t/mt_object/ t/object_driver/ t/task/ t/template/ t/tools t/util t/upgrade"
+          - "t/cms_permission/"
+          - "t/data_api/"
+          - "t/tag/"
+          - "plugins/*/t"
+          - php
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4.1.0
+      - name: docker login
+        uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: test
+        if: ${{ matrix.test != 'php' && matrix.test != 'selenium' }}
+        run: docker run -t -v $PWD:/mt -w /mt ghcr.io/movabletype/movabletype/test:${{ matrix.config.image }} bash -c "${{ matrix.config.mt_test_env }} prove -lr -j4 -PMySQLPool=MT::Test::Env -It/lib ${{ matrix.test }}"
+      - name: test php
+        if: ${{ matrix.test == 'php' }}
+        run: docker run -t -v $PWD:/mt -w /mt ghcr.io/movabletype/movabletype/test:${{ matrix.config.image }} bash -c "phpunit && make test-php-lint"
+
+  node_lts:
+    needs: [test_job1]
+    if: >-
+      ${{
+        github.event_name == 'schedule'
+        || github.event_name == 'pull_request'
+        || startsWith(github.ref_name, 'support-')
+        || startsWith(github.ref_name, 'release-')
+        || (github.ref_name == 'develop')
+        || contains(github.ref_name, 'cron')
+      }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4.1.0
+      - name: test npm ci
+        run: docker run -t -v $PWD:/mt -w /mt node:20 bash -c "npm ci"
+      - name: npm run test
+        run: docker run -t -v $PWD:/mt -w /mt node:20 bash -c "npm run test"
+      - name: test svelte commands
+        run: docker run -t -v $PWD:/mt -w /mt node:20 bash -c "npm run svelte-check-types && npm run svelte-lint && npm run svelte-format && npm run build-svelte && git config --global --add safe.directory /mt && git add -N . && git diff --exit-code --name-only"
+      - name: reset git add
+        run: git reset
+      - name: test to copy files
+        run: docker run -t -v $PWD:/mt -w /mt node:20 bash -c 'npm run copy && git config --global --add safe.directory /mt && git add -N . && git diff --exit-code --name-only'
+      - name: test to build Riot.js tags
+        # TODO: replace yarn with npm run
+        run: docker run -t -v $PWD:/mt -w /mt node:20 bash -c 'yarn && yarn build-riot && yarn build-riot-admin2023 && yarn build-ss && git config --global --add safe.directory /mt && test "$(git diff)" = ""'
+
+  notify_slack:
+    runs-on: ubuntu-latest
+    needs:
+    - test_job1
+    - test_job2
+    - test_job3
+    - node_lts
+    if: ${{ always() }}
+    steps:
+    - name: Install jq
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y jq
+    - name: Filters if the "needs" context has "failure"
+      run: |
+        HAS_FAILURE=$(echo '${{ toJSON(needs) }}' | jq '[.[] | select(.result == "failure") | .result] | join(",")' | sed -e 's/"//g')
+        echo "HAS_FAILURE=${HAS_FAILURE}" >> "$GITHUB_ENV"
+    - name: SLACK_COLOR is danger
+      if: ${{ env.HAS_FAILURE }}
+      run: |
+        echo "SLACK_COLOR=danger" >> "$GITHUB_ENV"
+    - name: SLACK_COLOR is good
+      if: ${{ ! env.HAS_FAILURE }}
+      run: |
+        echo "SLACK_COLOR=good" >> "$GITHUB_ENV"
+    - uses: rtCamp/action-slack-notify@v2.2.1
+      env:
+        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
+        SLACK_USERNAME: "GitHub Actions ${{ github.repository }}"
+        SLACK_TITLE: 'Workflow #${{ github.run_number }}'
+        SLACK_ICON: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
+        SLACK_COLOR: "${{ env.SLACK_COLOR }}"

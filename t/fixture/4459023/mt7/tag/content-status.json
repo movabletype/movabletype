@@ -335,7 +335,6 @@
          "cd_label",
          "cd_modified_by",
          "cd_modified_on",
-         "cd_random",
          "cd_status",
          "cd_unique_id",
          "cd_unpublished_on",
@@ -349,17 +348,16 @@
             1,
             null,
             "__NOW__",
-            "fafcd4c962d8d53443785b3c0eface4159b8b889",
+            "f6731e797ae51a21028fa2b91656c6f4e4042df9",
             0,
             null,
             1,
-            "b1996672f84a9010998a53d251d60175f509def6",
+            "95818dd95ff74667c47506bdd897d7036789e0ee",
             null,
             null,
             "__NOW__",
-            3,
             1,
-            "b1996672f84a9010998a53d251d60175f509def6",
+            "95818dd95ff74667c47506bdd897d7036789e0ee",
             null,
             201722
          ],
@@ -370,17 +368,16 @@
             1,
             null,
             "__NOW__",
-            "fafcd4c962d8d53443785b3c0eface4159b8b889",
+            "f6731e797ae51a21028fa2b91656c6f4e4042df9",
             0,
             null,
             2,
-            "8f4823e4599495136549e7c4aedcdbccbab7f459",
+            "3b177dd56817352b57f1474004728a9213e55b9a",
             null,
             null,
             "__NOW__",
             2,
-            2,
-            "8f4823e4599495136549e7c4aedcdbccbab7f459",
+            "3b177dd56817352b57f1474004728a9213e55b9a",
             null,
             201722
          ]
@@ -393,7 +390,7 @@
       ],
       "rows" : [
          [
-            "DataAPIDisableSite 0\nDefaultSupportedLanguages en_us,ja\nDisableDataAPI 0\nDisableNotificationPings 1\nPluginAlias ContentType Information Widget=ContentInfoWidget\nPluginAlias Markdown=Markdown/Markdown.pl\nPluginAlias SmartyPants=Markdown/SmartyPants.pl\nPluginAlias Textile=Textile/textile2.pl\nPluginAlias WXR Importer=WXRImporter\nPluginAlias Widget Manager Upgrade Assistant=WidgetManager/WidgetManager.pl\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion blockeditor=1\nPluginSchemaVersion contenttypecolumn=0.01\nPluginSchemaVersion formattedtext=1.00\nPluginSchemaVersion tinymce5=1\nPluginSchemaVersion tinymce6=1\nPluginSwitch Awesome=1\nPluginSwitch BlockEditor=0\nPluginSwitch ContentInfoWidget=1\nPluginSwitch ContentTypeColumn=1\nPluginSwitch FormattedText=1\nPluginSwitch FormattedTextForTinyMCE5=0\nPluginSwitch FormattedTextForTinyMCE6=1\nPluginSwitch GoogleAnalyticsV4=1\nPluginSwitch IllegalObjectType=1\nPluginSwitch Markdown/Markdown.pl=1\nPluginSwitch Markdown/SmartyPants.pl=1\nPluginSwitch SortMethod=1\nPluginSwitch Textile/textile2.pl=0\nPluginSwitch TinyMCE5=0\nPluginSwitch TinyMCE6=1\nPluginSwitch WXRImporter=1\nPluginSwitch WidgetManager/WidgetManager.pl=0\nSchemaVersion 8.0000\nTrimFilePath 1\n",
+            "DataAPIDisableSite 0\nDefaultSupportedLanguages en_us,ja\nDisableDataAPI 0\nDisableNotificationPings 1\nHidePrivateRelatedContentData 1\nPluginAlias ContentType Information Widget=ContentInfoWidget\nPluginAlias Markdown=Markdown/Markdown.pl\nPluginAlias SmartyPants=Markdown/SmartyPants.pl\nPluginAlias Textile=Textile/textile2.pl\nPluginAlias WXR Importer=WXRImporter\nPluginAlias Widget Manager Upgrade Assistant=WidgetManager/WidgetManager.pl\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion blockeditor=1\nPluginSchemaVersion formattedtext=1.00\nPluginSchemaVersion tinymce5=1\nPluginSchemaVersion tinymce6=1\nPluginSwitch BlockEditor=0\nPluginSwitch ContentInfoWidget=1\nPluginSwitch FormattedText=1\nPluginSwitch FormattedTextForTinyMCE5=0\nPluginSwitch FormattedTextForTinyMCE6=1\nPluginSwitch GoogleAnalyticsV4=1\nPluginSwitch Markdown/Markdown.pl=1\nPluginSwitch Markdown/SmartyPants.pl=1\nPluginSwitch Textile/textile2.pl=0\nPluginSwitch TinyMCE5=0\nPluginSwitch TinyMCE6=1\nPluginSwitch WXRImporter=1\nPluginSwitch WidgetManager/WidgetManager.pl=0\nSchemaVersion 8.0002\nTrimFilePath 1\n",
             1
          ]
       ]
@@ -426,7 +423,7 @@
             null,
             "__NOW__",
             "test content data",
-            "fafcd4c962d8d53443785b3c0eface4159b8b889",
+            "f6731e797ae51a21028fa2b91656c6f4e4042df9",
             null,
             null
          ]
@@ -642,6 +639,28 @@
             "__NOW__",
             0,
             1,
+            "changed-password",
+            null,
+            null,
+            null,
+            null,
+            "__NOW__",
+            "Password Is Changed",
+            null,
+            1,
+            "The login password for '<mt:var name=\"account\">' was changed by a system administrator (<mt:var name=\"changed_by\">).\n\nPlease ask the administrator for the new password. If this change is unexpected, please report it to the administrtor.\n\n<mt:include module=\"Mail Footer\">\n",
+            "email"
+         ],
+         [
+            0,
+            0,
+            0,
+            1,
+            null,
+            null,
+            "__NOW__",
+            0,
+            2,
             "footer-email",
             null,
             null,
@@ -663,7 +682,7 @@
             null,
             "__NOW__",
             0,
-            2,
+            3,
             "lockout-ip",
             null,
             null,
@@ -685,7 +704,7 @@
             null,
             "__NOW__",
             0,
-            3,
+            4,
             "lockout-user",
             null,
             null,
@@ -707,7 +726,7 @@
             null,
             "__NOW__",
             0,
-            4,
+            5,
             "notify-entry",
             null,
             null,
@@ -729,7 +748,7 @@
             null,
             "__NOW__",
             0,
-            5,
+            6,
             "recover-password",
             null,
             null,
@@ -760,5 +779,5 @@
          ]
       ]
    },
-   "schema_version" : "WidgetManager 1.1; blockeditor 1; contenttypecolumn 0.01; core 8.0000; formattedtext 1.00; tinymce5 1; tinymce6 1"
+   "schema_version" : "WidgetManager 1.1; blockeditor 1; core 8.0002; formattedtext 1.00; tinymce5 1; tinymce6 1"
 }

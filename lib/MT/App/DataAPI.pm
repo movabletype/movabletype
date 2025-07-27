@@ -16,6 +16,7 @@ use MT::DataAPI::Endpoint::v3;
 use MT::DataAPI::Endpoint::v4;
 use MT::DataAPI::Endpoint::v5;
 use MT::DataAPI::Endpoint::v6;
+use MT::DataAPI::Endpoint::v7;
 use MT::DataAPI::Resource;
 use MT::DataAPI::Format;
 use MT::App::CMS;
@@ -28,8 +29,8 @@ our %endpoints = ();
 our %schemas   = ();
 
 sub id                 {'data_api'}
-sub DEFAULT_VERSION () {6}
-sub API_VERSION ()     {6.0}
+sub DEFAULT_VERSION () {7}
+sub API_VERSION ()     {7.0}
 
 sub init {
     my $app = shift;
@@ -75,6 +76,7 @@ sub core_endpoints {
         @{ MT::DataAPI::Endpoint::v4->endpoints },
         @{ MT::DataAPI::Endpoint::v5->endpoints },
         @{ MT::DataAPI::Endpoint::v6->endpoints },
+        @{ MT::DataAPI::Endpoint::v7->endpoints },
     ];
 }
 
@@ -609,10 +611,11 @@ sub mt_authorization_data {
 
     my %values = ();
 
-    $header =~ s/\A\s+|\s+\z//g;
+    $header =~ s/\A\s+//;
+    $header =~ s/\s+\z//;
 
     my ( $type, $rest ) = split /\s+/, $header, 2;
-    return undef unless $type;
+    return undef unless $type && $rest;
 
     $values{$type} = {};
 
@@ -771,8 +774,7 @@ sub send_cors_http_header {
 sub send_http_header {
     my $app = shift;
 
-    $app->set_header( 'X-Content-Type-Options' => 'nosniff' );
-    $app->set_header( 'Cache-Control'          => 'no-cache' );
+    $app->set_header( 'Cache-Control' => 'no-cache' );
 
     $app->send_cors_http_header(@_);
 
@@ -965,7 +967,7 @@ sub api {
         $app->param( 'blog_id', $id );
 
         require MT::CMS::Blog;
-        if (   !$user->is_superuser
+        if (   (!$user->is_superuser or MT->config->SuperuserRespectsDataAPIDisableSite)
             && !MT::CMS::Blog::data_api_is_enabled( $app, $id, $app->blog ) )
         {
             return $app->print_error(403);

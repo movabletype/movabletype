@@ -88,9 +88,7 @@ sub edit {
                 )
             {
                 $param->{dynamic_enabled} = 1;
-                $param->{warning_include} = 1
-                    unless $blog->include_system eq 'php'
-                    || $blog->include_system eq '';
+                $param->{warning_include} = 1 unless !$blog->include_system || $blog->include_system eq 'php';
             }
             eval "require List::Util; require Scalar::Util;";
             unless ($@) {
@@ -344,7 +342,7 @@ sub edit {
 
 sub pre_save {
     my $eh = shift;
-    my ( $app, $obj ) = @_;
+    my ( $app, $obj, $original ) = @_;
 
     if ( !$obj->id ) {
         my $site_path = $obj->site_path;
@@ -747,13 +745,7 @@ sub cms_pre_load_filtered_list {
             $blog_ids = undef;
             last;
         }
-        my $website = MT->model('website')->load( $perm->blog_id );
-        if ( $website && $website->class eq 'website' ) {
-            push @$blog_ids, $perm->blog_id;
-        }
-        elsif ( $website && $website->class eq 'blog' ) {
-            push @$blog_ids, $website->parent_id if $website->parent_id;
-        }
+        push @$blog_ids, $perm->blog_id;
     }
 
     $terms->{id} = $blog_ids

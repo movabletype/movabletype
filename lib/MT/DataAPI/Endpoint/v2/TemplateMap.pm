@@ -26,6 +26,7 @@ sub list_openapi_spec {
             { '$ref' => '#/components/parameters/templatemap_fields' },
             { '$ref' => '#/components/parameters/templatemap_includeIds' },
             { '$ref' => '#/components/parameters/templatemap_excludeIds' },
+            { '$ref' => '#/components/parameters/templatemap_filterKeys' },
         ],
         responses => {
             200 => {

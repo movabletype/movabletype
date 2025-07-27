@@ -252,6 +252,9 @@ sub edit {
             $param->{pings_loop} = \@pings;
 
             $param->{enable_data_api} = data_api_is_enabled( $app, $blog_id, $blog );
+            if (MT->config->SuperuserRespectsDataAPIDisableSite) {
+                $param->{superuser_respects_enable_data_api} = 1;
+            }
 
             _set_show_data_api_params($app, $cfg, $param);
         }
@@ -342,6 +345,9 @@ sub edit {
         # System level web services settings.
         $param->{disable_data_api} = $app->config->DisableDataAPI || grep { 'data_api' eq $_ } $app->config->RestrictedPSGIApp;
         $param->{enable_data_api} = data_api_is_enabled( $app, $blog_id, $blog );
+        if (MT->config->SuperuserRespectsDataAPIDisableSite) {
+            $param->{superuser_respects_enable_data_api} = 1;
+        }
 
         _set_show_data_api_params($app, $cfg, $param);
     }
@@ -1189,6 +1195,28 @@ sub rebuild_pages {
                 }
             }
             else {    # popup--just go to cnfrmn. page
+                # cf. tmpl/cms/popup/rebuilt.tmpl
+                if ($param{start_timestamp}) {
+                    my $elapsed = MT::Util::relative_date($param{start_timestamp}, time, $blog, undef, 3, MT->current_language);
+                    my $log_message;
+                    if ($all) {
+                        $log_message = MT->translate('The files for [_1] have been published.', $blog->name);
+                    } elsif ($is_one_index or $is_entry) {
+                        $log_message = MT->translate('Your [_1] has been published.', $archive_label);
+                    } elsif ($type ne 'index') {
+                        $log_message = MT->translate('Your [_1] archives have been published.', $archive_label);
+                    } else {
+                        $log_message = MT->translate('Your [_1] templates have been published.', $archive_label);
+                    }
+                    $log_message .= ' ' if $log_message && MT->current_language ne 'ja';
+                    $log_message .= MT->translate('Publish time: [_1].', $elapsed);
+                    MT->log({
+                        message  => $log_message,
+                        blog_id  => $blog->id,
+                        level    => MT::Log::INFO(),
+                        category => 'publish',
+                    });
+                }
                 return $app->load_tmpl( 'popup/rebuilt.tmpl', \%param );
             }
         }
@@ -1566,7 +1594,8 @@ sub can_delete {
 
 sub pre_save {
     my $eh = shift;
-    my ( $app, $obj ) = @_;
+    my ( $app, $obj, $original ) = @_;
+
     my $overlay = $app->param('overlay');
     my $screen = $app->param('cfg_screen') || '';
 
@@ -1664,6 +1693,11 @@ sub pre_save {
                     delete $obj->{changed_cols}{junk_folder_expiry};
                 }
             }
+
+            if ( ( $obj->sanitize_spec || '' ) eq '1' ) {
+                my $sanitize_spec_manual = $app->param('sanitize_spec_manual');
+                $obj->sanitize_spec($sanitize_spec_manual);
+            }
         }
         if ( $screen eq 'cfg_web_services' ) {
             my $ping_servers = $app->registry('ping_servers');
@@ -1753,8 +1787,8 @@ sub pre_save {
     }
 
     # Set parent site ID
-    my $blog_id = $app->param('blog_id');
     if ( !$obj->id and $obj->class eq 'blog' ) {
+        my $blog_id = $app->param('blog_id');
         $obj->parent_id($blog_id);
     }
 
@@ -1777,11 +1811,6 @@ sub pre_save {
             : $app->translate('Website Root')
             )
             unless $fmgr->exists($site_path) && $fmgr->can_write($site_path);
-    }
-
-    if ( ( $obj->sanitize_spec || '' ) eq '1' ) {
-        my $sanitize_spec_manual = $app->param('sanitize_spec_manual');
-        $obj->sanitize_spec($sanitize_spec_manual);
     }
 
     1;
@@ -2031,8 +2060,8 @@ sub post_save {
 
         # permission granted - need to update commenting cookie
         my %cookies = $app->cookies();
-        my ( $x, $y, $remember )
-            = split( /::/, $cookies{ $app->user_cookie() }->value );
+        my $user_cookie = $cookies{ $app->user_cookie() };
+        my ( $x, $y, $remember ) = split( /::/, $user_cookie ? $user_cookie->value : '' );
         my $cookie = $cookies{'commenter_id'};
         my $cookie_value = $cookie ? $cookie->value : ':';
         my ( $id, $blog_ids ) = split( ':', $cookie_value );
@@ -2158,6 +2187,9 @@ sub save_filter {
             MT->translate("Please choose a preferred archive type.") )
             if ( !$app->param('no_archives_are_active')
             && !$app->param('preferred_archive_type') );
+        return $eh->error(
+            MT->translate("The file extension must be shorter than 10 characters.") )
+            if length($app->param('file_extension')) > 10;
     }
     return 1;
 }
@@ -3596,9 +3628,11 @@ sub _determine_total {
     my $total = 0;
     if (   $archiver->entry_based
         || $archiver->contenttype_based
+        || $archiver->contenttype_author_based
         || $archiver->date_based )
     {
         if (   $archiver->contenttype_based
+            || $archiver->contenttype_author_based
             || $archiver->contenttype_date_based )
         {
             my $terms = {
@@ -3645,19 +3679,11 @@ sub _determine_total {
         my $terms = {
             blog_id => $blog_id,
             status  => MT::Entry::RELEASE(),
-            (   $archiver->contenttype_author_based ? ()
-                : ( class => 'entry' )
-            ),
-            (   $archiver->contenttype_author_based && $content_type_id
-                ? ( content_type_id => $content_type_id )
-                : ()
-            ),
+            class   => 'entry'
         };
-        my $obj_class
-            = $archiver->contenttype_author_based ? 'content_data' : 'entry';
         $total = MT::Author->count(
             { status => MT::Author::ACTIVE() },
-            {   join => MT->model($obj_class)
+            {   join => MT->model('entry')
                     ->join_on( 'author_id', $terms, { unique => 1 } ),
                 unique => 1,
             }

@@ -1,4 +1,4 @@
-# Copyrights 1999-2022 by [Mark Overmeer <markov@cpan.org>].
+# Copyrights 1999-2025 by [Mark Overmeer <mark@overmeer.net>].
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
 # Pod stripped from pm file by OODoc 2.03.
@@ -6,9 +6,9 @@
 # OODoc into POD and HTML manual-pages.  See README.md
 # Copyright Mark Overmeer.  Licensed under the same terms as Perl itself.
 
-package MIME::Type;
-use vars '$VERSION';
-$VERSION = '2.24';
+package MIME::Type;{
+our $VERSION = '2.28';
+}
 
 
 use strict;
@@ -34,19 +34,18 @@ sub init($)
     my $type = $self->{MT_type} = $args->{type}
        or croak "ERROR: Type parameter is obligatory.";
 
-    $self->{MT_simplified}      = $args->{simplified}
+    $self->{MT_simplified} = $args->{simplified}
        || $self->simplified($type);
 
-    $self->{MT_extensions}      = $args->{extensions} || [];
+    $self->{MT_extensions} = $args->{extensions} || [];
 
     $self->{MT_encoding}
        = $args->{encoding}          ? $args->{encoding}
        : $self->mediaType eq 'text' ? 'quoted-printable'
        :                              'base64';
 
-    $self->{MT_system}     = $args->{system}
-       if defined $args->{system};
-
+    $self->{MT_system}     = $args->{system}  if defined $args->{system};
+	$self->{MT_charset}    = $args->{charset} if defined $args->{charset};
     $self;
 }
 
@@ -67,9 +66,12 @@ sub simplified(;$)
 }
 
 
-sub extensions() { @{shift->{MT_extensions}} }
-sub encoding()   {shift->{MT_encoding}}
-sub system()     {shift->{MT_system}}
+sub extensions() { @{$_[0]->{MT_extensions}} }
+sub encoding()   { $_[0]->{MT_encoding} }
+sub system()     { $_[0]->{MT_system} }
+
+
+sub charset()    { $_[0]->{MT_charset} }
 
 #-------------------------------------------
 
@@ -114,5 +116,15 @@ sub cmp($)
     $self->simplified cmp $type;
 }
 sub equals($) { $_[0]->cmp($_[1])==0 }
+
+
+my %ctext;
+$ctext{$_} = 'US-ASCII' for qw/plain cql cql-expression cql-identifier css directory dns encaprtp enriched/;
+$ctext{$_} = 'UTF-8'    for qw/cache-manifest calendar csv csv-schema ecmascript/;
+$ctext{$_} = '_REQUIRED' for qw//;
+
+sub defaultCharset()
+{
+}
 
 1;

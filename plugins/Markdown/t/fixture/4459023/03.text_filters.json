@@ -335,7 +335,6 @@
          "cd_label",
          "cd_modified_by",
          "cd_modified_on",
-         "cd_random",
          "cd_status",
          "cd_unique_id",
          "cd_unpublished_on",
@@ -349,17 +348,16 @@
             1,
             null,
             "__NOW__",
-            "9d17088b9e3dfe69862f07b54f11ddd746fb0d80",
+            "0dc127d221b9a30aa6af3a9109d9dda5f2193756",
             0,
             "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u00011-\u0000\u0000\u0000\ttest text",
             1,
-            "9a015a91a6bf2504ac066ee895cd6a6fb2356251",
+            "471061ba844b92f88f91b53c77dd7d3d99608bcf",
             null,
             null,
             "__NOW__",
-            1,
             2,
-            "9a015a91a6bf2504ac066ee895cd6a6fb2356251",
+            "471061ba844b92f88f91b53c77dd7d3d99608bcf",
             null,
             201722
          ]
@@ -399,7 +397,7 @@
             null,
             null,
             "multi_line_text",
-            "4be68092e8a10ecf941e247e1a5ef9398cf53b3e"
+            "00c4095c5ee47333bab55b2b2f9eaa17e43cff8f"
          ]
       ]
    },
@@ -448,7 +446,7 @@
       ],
       "rows" : [
          [
-            "DataAPIDisableSite 0\nDefaultSupportedLanguages en_us,ja\nDisableDataAPI 0\nDisableNotificationPings 1\nPluginAlias ContentType Information Widget=ContentInfoWidget\nPluginAlias Markdown=Markdown/Markdown.pl\nPluginAlias SmartyPants=Markdown/SmartyPants.pl\nPluginAlias Textile=Textile/textile2.pl\nPluginAlias WXR Importer=WXRImporter\nPluginAlias Widget Manager Upgrade Assistant=WidgetManager/WidgetManager.pl\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion blockeditor=1\nPluginSchemaVersion contenttypecolumn=0.01\nPluginSchemaVersion formattedtext=1.00\nPluginSchemaVersion tinymce5=1\nPluginSchemaVersion tinymce6=1\nPluginSwitch Awesome=1\nPluginSwitch BlockEditor=0\nPluginSwitch ContentInfoWidget=1\nPluginSwitch ContentTypeColumn=1\nPluginSwitch FormattedText=1\nPluginSwitch FormattedTextForTinyMCE5=0\nPluginSwitch FormattedTextForTinyMCE6=1\nPluginSwitch GoogleAnalyticsV4=1\nPluginSwitch IllegalObjectType=1\nPluginSwitch Markdown/Markdown.pl=1\nPluginSwitch Markdown/SmartyPants.pl=1\nPluginSwitch SortMethod=1\nPluginSwitch Textile/textile2.pl=0\nPluginSwitch TinyMCE5=0\nPluginSwitch TinyMCE6=1\nPluginSwitch WXRImporter=1\nPluginSwitch WidgetManager/WidgetManager.pl=0\nSchemaVersion 8.0000\nTrimFilePath 1\n",
+            "DataAPIDisableSite 0\nDefaultSupportedLanguages en_us,ja\nDisableDataAPI 0\nDisableNotificationPings 1\nHidePrivateRelatedContentData 1\nPluginAlias ContentType Information Widget=ContentInfoWidget\nPluginAlias Markdown=Markdown/Markdown.pl\nPluginAlias SmartyPants=Markdown/SmartyPants.pl\nPluginAlias Textile=Textile/textile2.pl\nPluginAlias WXR Importer=WXRImporter\nPluginAlias Widget Manager Upgrade Assistant=WidgetManager/WidgetManager.pl\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion blockeditor=1\nPluginSchemaVersion formattedtext=1.00\nPluginSchemaVersion tinymce5=1\nPluginSchemaVersion tinymce6=1\nPluginSwitch BlockEditor=0\nPluginSwitch ContentInfoWidget=1\nPluginSwitch FormattedText=1\nPluginSwitch FormattedTextForTinyMCE5=0\nPluginSwitch FormattedTextForTinyMCE6=1\nPluginSwitch GoogleAnalyticsV4=1\nPluginSwitch Markdown/Markdown.pl=1\nPluginSwitch Markdown/SmartyPants.pl=1\nPluginSwitch Textile/textile2.pl=0\nPluginSwitch TinyMCE5=0\nPluginSwitch TinyMCE6=1\nPluginSwitch WXRImporter=1\nPluginSwitch WidgetManager/WidgetManager.pl=0\nSchemaVersion 8.0002\nTrimFilePath 1\n",
             1
          ]
       ]
@@ -476,12 +474,12 @@
             "__NOW__",
             null,
             "This is a sample.",
-            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002A\u0000\u0000\u0000\u0001H\u0000\u0000\u0000\u0006\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0004name-\u0000\u0000\u0000\u000fmulti line text\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\u000fmulti_line_text\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(4be68092e8a10ecf941e247e1a5ef9398cf53b3e\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00011",
+            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002A\u0000\u0000\u0000\u0001H\u0000\u0000\u0000\u0006\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(00c4095c5ee47333bab55b2b2f9eaa17e43cff8f\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\u000fmulti_line_text\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0004name-\u0000\u0000\u0000\u000fmulti line text\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00011",
             1,
             null,
             "__NOW__",
             "test content type",
-            "9d17088b9e3dfe69862f07b54f11ddd746fb0d80",
+            "0dc127d221b9a30aa6af3a9109d9dda5f2193756",
             null,
             null
          ]
@@ -697,6 +695,28 @@
             "__NOW__",
             0,
             1,
+            "changed-password",
+            null,
+            null,
+            null,
+            null,
+            "__NOW__",
+            "Password Is Changed",
+            null,
+            1,
+            "The login password for '<mt:var name=\"account\">' was changed by a system administrator (<mt:var name=\"changed_by\">).\n\nPlease ask the administrator for the new password. If this change is unexpected, please report it to the administrtor.\n\n<mt:include module=\"Mail Footer\">\n",
+            "email"
+         ],
+         [
+            0,
+            0,
+            0,
+            1,
+            null,
+            null,
+            "__NOW__",
+            0,
+            2,
             "footer-email",
             null,
             null,
@@ -718,7 +738,7 @@
             null,
             "__NOW__",
             0,
-            2,
+            3,
             "lockout-ip",
             null,
             null,
@@ -740,7 +760,7 @@
             null,
             "__NOW__",
             0,
-            3,
+            4,
             "lockout-user",
             null,
             null,
@@ -762,7 +782,7 @@
             null,
             "__NOW__",
             0,
-            4,
+            5,
             "notify-entry",
             null,
             null,
@@ -784,7 +804,7 @@
             null,
             "__NOW__",
             0,
-            5,
+            6,
             "recover-password",
             null,
             null,
@@ -806,7 +826,7 @@
             null,
             "__NOW__",
             0,
-            6,
+            7,
             null,
             null,
             null,
@@ -837,5 +857,5 @@
          ]
       ]
    },
-   "schema_version" : "WidgetManager 1.1; blockeditor 1; contenttypecolumn 0.01; core 8.0000; formattedtext 1.00; tinymce5 1; tinymce6 1"
+   "schema_version" : "WidgetManager 1.1; blockeditor 1; core 8.0002; formattedtext 1.00; tinymce5 1; tinymce6 1"
 }

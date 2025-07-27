@@ -23,6 +23,7 @@ sub list_openapi_spec {
             { '$ref' => '#/components/parameters/asset_searchFields' },
             { '$ref' => '#/components/parameters/asset_limit' },
             { '$ref' => '#/components/parameters/asset_offset' },
+            { '$ref' => '#/components/parameters/asset_filterKeys' },
             {
                 in          => 'query',
                 name        => 'class',
@@ -441,6 +442,8 @@ DESCRIPTION
             },
             { '$ref' => '#/components/parameters/asset_sortOrder' },
             { '$ref' => '#/components/parameters/asset_fields' },
+            { '$ref' => '#/components/parameters/asset_filterKeys' },
+            { '$ref' => '#/components/parameters/asset_searchFields' },
         ],
         responses => {
             200 => {
@@ -490,6 +493,8 @@ sub list_for_page_openapi_spec {
         parameters => [
             { '$ref' => '#/components/parameters/asset_limit' },
             { '$ref' => '#/components/parameters/asset_offset' },
+            { '$ref' => '#/components/parameters/asset_filterKeys' },
+            { '$ref' => '#/components/parameters/asset_searchFields' },
             {
                 in          => 'query',
                 name        => 'class',
@@ -604,6 +609,8 @@ sub list_for_site_and_tag_openapi_spec {
         parameters => [
             { '$ref' => '#/components/parameters/asset_limit' },
             { '$ref' => '#/components/parameters/asset_offset' },
+            { '$ref' => '#/components/parameters/asset_filterKeys' },
+            { '$ref' => '#/components/parameters/asset_searchFields' },
             {
                 in          => 'query',
                 name        => 'class',

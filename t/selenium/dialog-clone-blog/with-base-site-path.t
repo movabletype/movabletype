@@ -55,7 +55,7 @@ my $use_absolute = wait_until { $selenium->driver->find_elements('div.option.use
 is scalar @{$use_absolute}, 0, 'does not exist div.option.use-abosolute';
 
 my $relative_site_path_hint = wait_until {
-    $selenium->driver->find_elements('p.relative-site_path-hint')
+    $selenium->driver->find_elements('small.relative-site_path-hint')
 };
 is scalar @{$relative_site_path_hint}, 2, 'exists two p.relative-site_path-hint';
 
@@ -63,7 +63,7 @@ ok $relative_site_path_hint->[0]->is_displayed, 'visible p.relative-site_path-hi
 ok $relative_site_path_hint->[1]->is_displayed, 'visible p.relative-site_path-hint (archive path)';
 
 my $absolute_site_path_hint = wait_until {
-    $selenium->driver->find_elements('p.absolute-site_path-hint')
+    $selenium->driver->find_elements('small.absolute-site_path-hint')
 };
 is scalar @{$absolute_site_path_hint}, 0, 'does not exist p.absolute-site_path-hint';
 

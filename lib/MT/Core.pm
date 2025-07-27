@@ -33,7 +33,7 @@ BEGIN {
                 config_package => 'DBI::mysql',
                 display        => [
                     'dbserver', 'dbname', 'dbuser', 'dbpass',
-                    'dbport',   'dbsocket'
+                    'dbport',   'dbsocket', 'connect_options'
                 ],
                 recommended => 1,
             },
@@ -43,13 +43,13 @@ BEGIN {
                 dbd_version    => '1.32',
                 config_package => 'DBI::postgres',
                 display =>
-                    [ 'dbserver', 'dbname', 'dbuser', 'dbpass', 'dbport' ],
+                    [ 'dbserver', 'dbname', 'dbuser', 'dbpass', 'dbport', 'connect_options' ],
             },
             'sqlite' => {
                 label          => 'SQLite Database',
                 dbd_package    => 'DBD::SQLite',
                 config_package => 'DBI::sqlite',
-                display        => ['dbpath'],
+                display        => ['dbpath', 'connect_options'],
             },
         },
         db_form_data => {
@@ -107,6 +107,15 @@ BEGIN {
                 type     => 'text',
                 label    => 'Database Socket',
                 order    => 20,
+            },
+            connect_options => {
+                advanced => 1,
+                element  => 'textarea',
+                label    => 'Connect Options',
+                order    => 100,
+                hint     => sub {
+                    MT->translate("You may need to pass additional, driver-specific parameters, especially when the server requires a secure connection. Each line should have a NAME=VALUE. See the driver's manual for a list of available names and values.");
+                },
             },
         },
         object_types => {
@@ -1812,7 +1821,7 @@ BEGIN {
                 path    => 1,
                 type    => 'ARRAY',
             },
-            'EnableArchivePaths' => { default => 0, },
+            'EnableArchivePaths' => { default => 0, }, ## DEPRECATED
             'SearchTemplatePath' => {
                 default => 'search_templates',
                 path    => 1,
@@ -1849,6 +1858,8 @@ BEGIN {
             'HidePerformanceLoggingSettings' => { default => 0, },
             'CookieDomain'          => undef,
             'CookiePath'            => undef,
+            'CookieHttpOnly'        => { default => 0 },
+            'CookieSameSite'        => { default => 'Lax' },
             'MailModule'            => { default => 'MIME::Lite', },
             'MailEncoding'          => { default => 'UTF-8', },
             'MailTransfer'          => { default => 'sendmail' },
@@ -1860,6 +1871,7 @@ BEGIN {
             'SMTPPassword'          => undef,
             'SMTPPort'              => undef,
             'SMTPTimeout'           => { default => 10 },
+            'SMTPS'                 => undef,
             'SMTPSSLVerifyNone'     => undef,
             'SMTPSSLVersion'        => undef,
             'SMTPOptions'           => { type => 'HASH' },
@@ -1904,7 +1916,9 @@ BEGIN {
             'HTTPProxy'              => undef,
             'HTTPSProxy'             => undef,
             'HTTPNoProxy'            => { default => 'localhost', },
-            'HeaderCacheControl'     => undef,
+            'CacheControl'           => { default => 'no-store' },
+            'ForceCacheControl'      => undef,
+            'HeaderCacheControl'     => { alias => 'ForceCacheControl' },
             'ImageDriver'            => { default => 'ImageMagick', },
             'ImageQualityJpeg'       => { default => 85 },
             'ImageQualityPng'        => { default => 7 },
@@ -1924,6 +1938,7 @@ BEGIN {
             'PublishCharset'          => { default => 'utf-8', },
             'SafeMode'                => { default => 1, },
             'AllowFileInclude'        => { default => 0, },
+            'AllowTestModifier'       => { default => 1 },
             'GlobalSanitizeSpec'      => {
                 default =>
                     'a href,b,i,br/,p,strong,em,ul,ol,li,blockquote,pre',
@@ -1997,6 +2012,10 @@ BEGIN {
                 default => sub { $_[0]->SearchThrottleIPWhitelist }
             },
             'SearchContentTypes' => undef,
+            'SearchMaxCharCount' => { default => 0 },
+            'ContentDataSearchMaxCharCount' => {
+                default => sub { $_[0]->SearchMaxCharCount },
+            },
             'CMSSearchLimit'     => { default => 125 },
             'OneHourMaxPings'    => { default => 10, },
             'OneDayMaxPings'     => { default => 50, },
@@ -2161,6 +2180,7 @@ BEGIN {
                 default => {}
             },
             'DataAPIDisableSite'   => undef,
+            'SuperuserRespectsDataAPIDisableSite' => undef,
             'RebuildOffsetSeconds' => { default => 20 },
             'DisableDataAPI'       => { default => 0 },
 
@@ -2236,9 +2256,14 @@ BEGIN {
             'WaitAfterReboot' => { default => '1.0' },
             'DisableMetaRefresh' => { default => 1 },
             'DynamicTemplateAllowPHP' => { default => 1 },
+            'HidePrivateRelatedContentData' => { default => 0 },
+            'DynamicTemplateAllowSmartyTags' => { default => 1 },
             'AdminThemeId' => { default => 'admin2023' },
             'PHPErrorLogFilePath' => undef,
+            'LogEachFilePublishedInTheBackground' => undef,
             'TrimFilePath' => { default => 0 },
+            'UseRiot' => { default => 1 },
+            'GrantRoleSitesView' => { default => 'tree' }, # DEPRECATED
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {

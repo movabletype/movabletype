@@ -1,0 +1,243 @@
+<mt:unless name="json">
+<mt:ignore>
+<!--
+parameters:
+    panel_type (blog, author, role, group)
+    panel_title
+    panel_label
+    items_prompt
+    panel_description
+
+    panel_multi (multiple selection or not)
+    panel_searchable
+    panel_last
+    panel_first
+
+    object_loop
+        id
+        label
+        description
+        disabled (row is shown, but unselectable)
+-->
+</mt:ignore>
+
+<!-- Listing Panel -->
+<div id="<mt:var name="panel_type">-panel" style="display: none;">
+<mt:if name="use_page_content">
+  <div class="panel-body">
+</mt:if>
+
+  <div class="panel-header modal-description">
+  <mt:if name="panel_title">
+    <div><h4 class="title modal-label"><mt:var name="panel_title"></h4></div>
+  </mt:if>
+  <mt:if name="panel_has_steps">
+    <div class="text-right"><__trans phrase="Step [_1] of [_2]" params="<mt:var name="panel_number">%%<mt:var name="panel_total">"></div>
+  </mt:if>
+  </div>
+
+  <mt:if name="panel_multi">
+  <div class="selected-items modal-selections pb-4">
+    <span class="modal-selections__label"><mt:var name="items_prompt">:</span>
+  </div>
+  </mt:if>
+
+  <mt:if name="rebuild_trigger">
+  <div class="modal-rebuildtriggers">
+    <mt:var name="modal_rebuildtriggers">
+  </div>
+  </mt:if>
+
+  <div class="modal-body">
+
+<mt:if name="panel_searchable">
+  <div class="align-items-center p-4 border rounded" style="background:#F4F4F4;">
+    <form action="" method="get" id="modal-search-<mt:var name="panel_type">" class="form-inline">
+      <input type="text" class="form-control search-input text med" value="" placeholder="<__trans phrase="Search">" />
+      <input type="image" class="search-command search-submit ml-3 mr-3" src="<$mt:var name="static_uri"$>images/search-submit-dialog.png" title="<__trans phrase="Search">" />
+      <a href="javascript:void(0)" class="search-reset" style="display: none;"><__trans phrase="Reset"></a>
+    </form>
+  </div>
+</mt:if>
+
+  <div id="selector-<mt:var name="panel_type">" class="selector listing list-data<mt:if name="panel_multi"> list-multi</mt:if>">
+    <form action="" method="get" onsubmit="return false">
+      <div class="mt-table--outline">
+        <table class="table mt-table">
+          <thead>
+            <tr>
+              <th class="head cb mt-table__control">
+            <mt:if name="panel_multi">
+                <div class="custom-control custom-checkbox">
+                  <input id="select_all_<mt:if name="object_type"><mt:var name="object_type"><mt:else><mt:var name="panel_type"></mt:if>" type="checkbox" value="all" class="custom-control-input select" />
+                  <label class="custom-control-label" for="select_all_<mt:if name="object_type"><mt:var name="object_type"><mt:else><mt:var name="panel_type"></mt:if>"><span class="sr-only"><__trans phrase="Select All"></span></label>
+                </div>
+            <mt:else>
+                &nbsp;
+            </mt:if>
+              </th>
+              <th class="head panel-label primary" scope="col"><span class="col-label"><mt:var name="panel_label"></span></th>
+              <th class="head panel-description primary" scope="col"><span class="col-label"><mt:var name="panel_description"></span></th>
+            </tr>
+          </thead>
+</mt:unless>
+
+<mt:if name="object_loop">
+          <tbody>
+          <mt:loop name="object_loop">
+            <mt:unless name="disabled">
+            <tr id="<mt:if name="object_type"><mt:var name="object_type"><mt:else><mt:var name="panel_type"></mt:if>-<mt:var name="id">" class="<mt:if name="__odd__">odd<mt:else>even</mt:if><mt:if name="has_child"> has_child</mt:if>">
+              <td class="cb" scope="row">
+                <div class="custom-control custom-<mt:if name="panel_multi">checkbox<mt:else>radio</mt:if>">
+                  <input id="select_<mt:if name="object_type"><mt:var name="object_type"><mt:else><mt:var name="panel_type"></mt:if>_<mt:var name="id" escape="html">" type="<mt:if name="panel_multi">checkbox<mt:else>radio</mt:if>" class="custom-control-input select" name="<mt:var name="panel_type">-cb" value="<mt:var name="id">" />
+                  <label class="custom-control-label" for="select_<mt:if name="object_type"><mt:var name="object_type"><mt:else><mt:var name="panel_type"></mt:if>_<mt:var name="id" escape="html">"><span class="sr-only"><__trans phrase="Select"></span></label>
+                </div>
+              </td>
+              <td class="panel-label-tr">
+                <mt:if name="icon">
+                  <div class="mt-user mr-3"><img src="<mt:var name="icon">" class="rounded-circle" width="32" height="32"></div>
+                </mt:if>
+                <span class="panel-label"><mt:var name="label" escape="html"></span>
+                <mt:if name="has_child"><mt:setvarblock name="parent_label"><mt:var name="label" escape="html"></mt:setvarblock>
+                <div class="mt-table__hierarchy">
+                  <ul class="list-unstyled">
+                    <mt:loop name="child_obj">
+                    <li id="<mt:var name="panel_type">-<mt:var name="id">" class="child_obj">
+                      <div class="custom-control custom-<mt:if name="panel_multi">checkbox<mt:else>radio</mt:if>">
+                          <input id="select_child_<mt:if name="object_type"><mt:var name="object_type"><mt:else><mt:var name="panel_type"></mt:if>_<mt:var name="id" escape="html">" type="<mt:if name="panel_multi">checkbox<mt:else>radio</mt:if>" class="custom-control-input select" name="<mt:var name="panel_type">-cb" value="<mt:var name="id">" />
+                          <mt:if name="icon">
+                            <div class="mt-user mr-3"><img src="<mt:var name="icon">" width="32" height="32"></div>
+                          </mt:if>
+                          <label class="custom-control-label" for="select_child_<mt:if name="object_type"><mt:var name="object_type"><mt:else><mt:var name="panel_type"></mt:if>_<mt:var name="id" escape="html">"><span class="sr-only"><__trans phrase="Select"></span></label>
+                          <span class="child-panel-label"><mt:var name="label" escape="html"></span>
+                      </div>
+
+                    </li>
+                    </mt:loop>
+                  </ul>
+                </div>
+                </mt:if>
+              </td>
+              <td class="panel-description">
+              <mt:ignore><!-- No, the duplicate escape modifiers below is not a typo. --></mt:ignore>
+                <mt:if name="link"><span class="view-site-link"><a href="<mt:var name="link" escape="html">" target="_blank"><img src="<mt:var name="static_uri">images/spacer.gif" title="<__trans phrase="Go to [_1]" params="<mt:var name="label" escape="html" escape="html">">" width="13" height="9" alt="" /></a></span></mt:if>
+                <mt:if name="link"><span class="float_desc"></mt:if><mt:var name="description" escape="html"><mt:if name="link"></span></mt:if>
+              </td>
+            </tr>
+          <mt:if name="blogs">
+          <mt:loop name="blogs">
+            <tr id="<mt:var name="panel_type">-<mt:var name="id">" class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
+              <td class="cb" scope="row" >
+                <div class="custom-control custom-<mt:if name="panel_multi">checkbox<mt:else>radio</mt:if>">
+                  <input id="select_blog_<mt:var name="id" escape="html">" type="<mt:if name="panel_multi">checkbox<mt:else>radio</mt:if>" class="custom-control-input select" name="<mt:var name="panel_type">-cb" value="<mt:var name="id">" />
+                  <label class="custom-control-label" for="select_blog_<mt:var name="id" escape="html">"><span class="sr-only"><__trans phrase="Select"></span></label>
+                </div>
+              </td>
+              <td class="panel-label sub-label"><label><mt:var name="label" escape="html"></label></td>
+              <td class="panel-description">
+              <mt:Ignore><!-- No, the duplicate escape modifiers below is not a typo. --></mt:Ignore>
+                <mt:if name="link"><span class="view-site-link"><a href="<mt:var name="link" escape="html">" target="_blank"><img src="<mt:var name="static_uri">images/spacer.gif" title="<__trans phrase="Go to [_1]" params="<mt:var name="label" escape="html" escape="html">">" width="13" height="9" alt="" /></a></span></mt:if>
+                <mt:if name="link"><span class="float_desc"></mt:if><mt:var name="description" escape="html"><mt:if name="link"></span></mt:if>
+              </td>
+            </tr>
+          </mt:loop>
+          </mt:if>
+            </mt:unless>
+          </mt:loop>
+          </tbody>
+
+  <mt:unless name="json">
+        </table>
+      </div>
+  </mt:unless>
+
+<mt:else>
+
+  <mt:unless name="json">
+        </table>
+      </div>
+  </mt:unless>
+
+  <mt:if name="search">
+      <mtapp:statusmsg
+         id="search"
+         class="info"
+         can_close="0">
+        <__trans phrase="Sorry, there were no results for your search. Please try searching again.">
+      </mtapp:statusmsg>
+  <mt:else>
+      <mtapp:statusmsg
+         id="no-data"
+         class="info"
+         can_close="0">
+        <__trans phrase="Sorry, there is no data for this object set.">
+      </mtapp:statusmsg>
+  </mt:if>
+</mt:if>
+
+<mt:unless name="json">
+    </form>
+    <nav aria-label="Page Navigation" class="panel-pagination clearfix">
+      <ul class="float-right pagination"></ul>
+    </nav>
+  </div>
+  <mt:if name="after_listing_panel">
+  <div class="listing-panel-options">
+    <mt:var name="after_listing_panel">
+  </div>
+  </mt:if>
+
+  </div> <!-- modal-body -->
+
+<mt:setvarblock name="modal_footer">
+  <div class="actions-bar actions-bar-bottom">
+    <form action="" method="get" onsubmit="return false" onclick="window.focus();">
+
+    <a
+       accesskey="x"
+       data-dismiss="modal"
+       data-mt-modal-close
+       class="cancel action button mt-close-dialog btn btn-link btn-sm modal-cancel"
+       title="<__trans phrase="Cancel (x)">">
+      <__trans phrase="Cancel"></a>
+
+    <mt:unless name="panel_first">
+    <button
+       type="submit"
+       accesskey="b"
+       title="<__trans phrase="Back (b)">"
+       class="action previous button btn btn-default">
+      <__trans phrase="Back"></button>
+    </mt:unless>
+
+    <mt:if name="panel_last">
+      <button
+         type="submit"
+         accesskey="s"
+         title="<__trans phrase="OK (s)">"
+         class="close-button action primary button disabled btn btn-primary"
+         disabled="true">
+        <__trans phrase="OK"></button>
+    <mt:else>
+      <button
+         type="submit"
+         accesskey="s"
+         title="<__trans phrase="Continue (s)">"
+         class="continue action primary button next btn btn-primary"
+         disabled="true">
+        <__trans phrase="Continue"></button>
+    </mt:if>
+
+    </form>
+  </div>
+</mt:setvarblock>
+
+<mt:if name="use_page_content">
+  </div>
+  <div class="modal-footer">
+    <mt:var name="modal_footer">
+  </div>
+</mt:if>
+
+</div>
+</mt:unless>

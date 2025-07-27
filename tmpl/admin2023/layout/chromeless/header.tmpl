@@ -7,13 +7,13 @@
   <meta name="robots" content="noindex,nofollow" />
 
   <mt:unless name="optimize_ui">
-  <link rel="stylesheet" href="<mt:var name="static_uri">css/admin2023/mt.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
+  <mtapp:stylesheet path="css/admin2023/mt.css">
   <mt:else>
-  <link rel="stylesheet" href="<mt:var name="static_uri">css/admin2023/mt.min.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
+  <mtapp:stylesheet path="css/admin2023/mt.min.css">
   </mt:unless>
   <mt:unless name="screen_type" eq="popup-screen">
     <mt:unless name="screen_type" eq="chromeless-screen">
-  <link rel="stylesheet" href="<mt:var name="static_uri">css/chromeless.css?v=<mt:var name="mt_version_id" escape="URL">" />
+  <mtapp:stylesheet path="css/chromeless.css">
     </mt:unless>
   </mt:unless>
   <mt:var name="css_include">
@@ -24,7 +24,7 @@
 
   <mt:var name="html_head">
 
-  <script type="text/javascript" src="<mt:var name="static_uri">js/mt/util.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+  <mtapp:script type="text/javascript" path="js/mt/util.js">
 </head>
 <body>
 

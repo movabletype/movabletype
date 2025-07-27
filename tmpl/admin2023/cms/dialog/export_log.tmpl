@@ -1,0 +1,133 @@
+<mt:include name="include/basic_filter_forms.tmpl">
+<mt:setvarblock name="page_title"><__trans phrase="Download Log (CSV)"></mt:setvarblock>
+
+<mt:setvarblock name="form_header">
+  <form id="export-log-form" method="POST" action="<mt:var name="script_url" excape="html">" target="_top">
+    <input type="hidden" name="__mode" value="export_log">
+    <input type="hidden" name="blog_id" value="<mt:var name="blog_id">">
+    <input type="hidden" name="magic_token" value="<mt:var name="magic_token" escape="html">">
+</mt:setvarblock>
+
+<mt:setvarblock name="modal_body">
+  <div class="mb-3">
+    <mt:if name="is_system">
+      <__trans phrase="Download system-wide logs">
+    <mt:else>
+      <__trans phrase="Download site '[_1]' logs" params="<mt:var name="blog_name" escape="html">">
+    </mt:if>
+  </div>
+  <div class="form-check mb-3">
+    <input type="checkbox" id="is_dateranged" name="is_dateranged" value="1" class="form-check-input cb" />
+    <label class="form-check-label" for="is_dateranged">
+      <__trans phrase="Specify the period">
+    </label>
+  </div>
+  <div id="date-range" class="row align-items-center px-4" style="display: none;">
+    <div class="col-auto row align-items-center mb-3">
+      <__trans phrase="Created On">
+      <div class="date-options col-10 col-md-auto">
+        <mt:setvarblock name="date_input_from"><div class="col-5"><input name="from" type="text" class="form-control text required date text-date" disabled /></div></mt:setvarblock>
+        <mt:setvarblock name="date_input_to"><div class="col-5"><input name="to" type="text" class="form-control text required date text-date" disabled /></div></mt:setvarblock>
+        <mt:setvarblock name="date_input_origin"><div class="col-10"><input name="origin" type="text" class="form-control text required date text-date" disabled style="display: none;" /></div></mt:setvarblock>
+        <mt:setvarblock name="date_input_days"><div class="col-10"><input name="days" type="text" class="form-control text required digit days" disabled style="display: none;" /></div></mt:setvarblock>
+        <div class="date-option range row align-items-center"><__trans phrase="[_1] and [_2]" params="<mt:var name="date_input_from">%%<mt:var name="date_input_to">"></div>
+        <div class="date-option date row align-items-center" style="display: none;"><__trans phrase="__FILTER_DATE_ORIGIN" params="<mt:var name="date_input_origin">"></div>
+        <div class="date-option days row align-items-center" style="display: none;"><__trans phrase="_FILTER_DATE_DAYS" params="<mt:var name="date_input_days">"></div>
+      </div>
+    </div>
+    <div class="col-4 px-0 mb-3">
+      <select name="type" class="filter-date custom-select form-control m-1 form-select" disabled>
+        <option value="range"><__trans phrase="is between"></option>
+        <option value="days"><__trans phrase="is within the last"></option>
+        <option value="before"><__trans phrase="is before"></option>
+        <option value="after"><__trans phrase="is after"></option>
+      </select>
+    </div>
+  </div>
+</mt:setvarblock>
+
+<mt:setvarblock name="action_buttons">
+  <button type="submit" accesskey="s" id="export-log-download" class="btn btn-primary action primary button"><__trans phrase="Download Log (CSV)"></button>
+  <button type="submit" accesskey="x" class="cancel btn btn-default action" data-mt-modal-close><__trans phrase="Cancel"></button>
+</mt:setvarblock>
+
+<mt:setvarblock name="form_footer">
+  </form>
+</mt:setvarblock>
+
+<mt:setvarblock name="js_include" append="1">
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const showDateInput = function ($select) {
+    const opt = $select.val();
+    const type = opt === 'days' ? 'days'
+                 : ( opt === 'before' || opt === 'after' ) ? 'date'
+                 : 'range';
+
+    jQuery('.date-options .date-option').hide();
+    jQuery('.date-options .date-option input').prop('disabled', true);
+    jQuery(`.date-options .date-option.${type} input`).prop('disabled', false);
+    jQuery(`.date-options .date-option.${type} input`).show();
+    jQuery(`.date-options .date-option.${type}`).show();
+
+    jQuery('#date-range .date-options input').mtUnvalidate();
+  };
+
+  jQuery('.filter-date').on('change', function () {
+    showDateInput(jQuery(this));
+  })
+
+  jQuery('input.text-date').datepicker({
+    dateFormat: 'yy-mm-dd',
+    dayNamesMin: [<__trans phrase="_LOCALE_CALENDAR_HEADER_">],
+    monthNames: ['- 01','- 02','- 03','- 04','- 05','- 06','- 07','- 08','- 09','- 10','- 11','- 12'],
+    showMonthAfterYear: true,
+    prevText: '<',
+    nextText: '>'
+  });
+
+  jQuery('#is_dateranged').on('change', function () {
+    if ( jQuery(this).prop('checked') ) {
+      const $select = jQuery('#date-range select');
+      $select.prop('disabled', false);
+      showDateInput(jQuery(this));
+      jQuery('#date-range').show();
+    } else {
+      jQuery('#date-range').hide();
+      jQuery('#date-range .date-options .data-option input').prop('disabled', true);
+      jQuery('#date-range select').prop('disabled', true);
+    };
+  });
+
+  jQuery('#export-log-form').on('submit', function () {
+    if ( !jQuery('#is_dateranged').prop("checked") ) {
+      jQuery.fn.mtModal.close();
+      return true;
+    }
+
+    const opt = jQuery('#date-range select').val();
+    let isValid;
+    if ( opt === 'range' ) {
+      isValid = jQuery('#date-range .date-options input')
+        .filter('[name=from], [name=to]')
+        .mtValidate('simple');
+    } else if ( opt === 'before' || opt === 'after' ) {
+      isValid = jQuery('#date-range .date-options input[name=origin]')
+        .mtValidate('simple');
+    } else {
+      isValid = jQuery('#date-range .date-options input[name=days]')
+        .mtValidate('simple');
+    }
+
+    if ( isValid ) {
+      jQuery.fn.mtModal.close();
+    }
+
+    return isValid;
+  });
+});
+</script>
+</mt:setvarblock>
+
+<mt:include name="layout/modal.tmpl">
+<mt:var name="layout">

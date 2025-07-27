@@ -1755,10 +1755,24 @@ function openModalWithoutForm(href, opts) {
 
 }
 
+var resizeModalRetryCount = 0;
+var maxResizeModalRetryCount = 3;
 function resizeModal() {
   var modalHeight;
   var modalBodyHeight;
   var $iframeContents = window.top.jQuery('iframe.embed-responsive-item:visible').contents();
+
+  // if not retrieved, retry for `maxResizeModalRetryCount` times.
+  if ($iframeContents.length === 0) {
+    if (resizeModalRetryCount < maxResizeModalRetryCount) {
+      // If the iframe is not yet visible, retry after some time.
+      resizeModalRetryCount++;
+      return setTimeout(resizeModal, 100);
+    }
+  }
+  // reset retry count.
+  resizeModalRetryCount = 0;
+
   var $modalBody = $iframeContents.find('body .modal-body');
   if ( MT.Util.isMobileView() ) {
     var mobileScreenHeight = window.top.jQuery(window.top).height();

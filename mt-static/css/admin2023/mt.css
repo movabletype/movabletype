@@ -2352,7 +2352,8 @@ textarea.form-control-lg {
   -webkit-appearance: none;
      -moz-appearance: none;
           appearance: none;
-  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
 }
 
 .form-check-input[type="checkbox"] {
@@ -12254,6 +12255,11 @@ fieldset.form-group {
   background: #E3F2F4;
 }
 
+.mt-collapse__all {
+  margin-top: 0.5rem;
+  text-align: right;
+}
+
 .mt-archivemapping,
 .mt-pluginpanel {
   padding: 1rem 0;
@@ -12296,20 +12302,20 @@ fieldset.form-group {
   margin-top: 0.5rem;
 }
 
-.mt-collapse .mt-icon--secondary, .mt-draggable .mt-icon--secondary, .mt-draggable--entryField .mt-icon--secondary, .mt-archivemapping .mt-icon--secondary, .mt-pluginpanel .mt-icon--secondary, .mt-contentfield .mt-icon--secondary {
+.mt-collapse .mt-icon--secondary, .mt-draggable .mt-icon--secondary, .mt-draggable--entryField .mt-icon--secondary, .mt-archivemapping .mt-icon--secondary, .mt-pluginpanel .mt-icon--secondary, .mt-contentfield .mt-icon--secondary, .mt-collapse__all .mt-icon--secondary {
   margin: 0 .5rem 0 0;
   transition: 0.2s ease-in-out;
 }
 
-.mt-collapse .mt-icon--secondary.mt-pluginpanel__icon, .mt-draggable .mt-icon--secondary.mt-pluginpanel__icon, .mt-draggable--entryField .mt-icon--secondary.mt-pluginpanel__icon, .mt-archivemapping .mt-icon--secondary.mt-pluginpanel__icon, .mt-pluginpanel .mt-icon--secondary.mt-pluginpanel__icon, .mt-contentfield .mt-icon--secondary.mt-pluginpanel__icon {
+.mt-collapse .mt-icon--secondary.mt-pluginpanel__icon, .mt-draggable .mt-icon--secondary.mt-pluginpanel__icon, .mt-draggable--entryField .mt-icon--secondary.mt-pluginpanel__icon, .mt-archivemapping .mt-icon--secondary.mt-pluginpanel__icon, .mt-pluginpanel .mt-icon--secondary.mt-pluginpanel__icon, .mt-contentfield .mt-icon--secondary.mt-pluginpanel__icon, .mt-collapse__all .mt-icon--secondary.mt-pluginpanel__icon {
   margin: 0 0.2rem 0 0;
 }
 
-.mt-collapse a[aria-expanded="false"] .mt-icon--secondary, .mt-draggable a[aria-expanded="false"] .mt-icon--secondary, .mt-draggable--entryField a[aria-expanded="false"] .mt-icon--secondary, .mt-archivemapping a[aria-expanded="false"] .mt-icon--secondary, .mt-pluginpanel a[aria-expanded="false"] .mt-icon--secondary, .mt-contentfield a[aria-expanded="false"] .mt-icon--secondary {
+.mt-collapse a[aria-expanded="false"] .mt-icon--secondary, .mt-draggable a[aria-expanded="false"] .mt-icon--secondary, .mt-draggable--entryField a[aria-expanded="false"] .mt-icon--secondary, .mt-archivemapping a[aria-expanded="false"] .mt-icon--secondary, .mt-pluginpanel a[aria-expanded="false"] .mt-icon--secondary, .mt-contentfield a[aria-expanded="false"] .mt-icon--secondary, .mt-collapse__all a[aria-expanded="false"] .mt-icon--secondary {
   transform: rotate(180deg);
 }
 
-.mt-collapse a[aria-expanded="true"] .mt-icon--secondary, .mt-draggable a[aria-expanded="true"] .mt-icon--secondary, .mt-draggable--entryField a[aria-expanded="true"] .mt-icon--secondary, .mt-archivemapping a[aria-expanded="true"] .mt-icon--secondary, .mt-pluginpanel a[aria-expanded="true"] .mt-icon--secondary, .mt-contentfield a[aria-expanded="true"] .mt-icon--secondary {
+.mt-collapse a[aria-expanded="true"] .mt-icon--secondary, .mt-draggable a[aria-expanded="true"] .mt-icon--secondary, .mt-draggable--entryField a[aria-expanded="true"] .mt-icon--secondary, .mt-archivemapping a[aria-expanded="true"] .mt-icon--secondary, .mt-pluginpanel a[aria-expanded="true"] .mt-icon--secondary, .mt-contentfield a[aria-expanded="true"] .mt-icon--secondary, .mt-collapse__all a[aria-expanded="true"] .mt-icon--secondary {
   transform: rotate(0deg);
 }
 
@@ -13006,6 +13012,7 @@ li.nav-item, .mt-sharedPreviewNav .mt-sharedPreviewNav__rightNav li.mt-sharedPre
   border: 1px solid #c0c6c9;
   background-color: #fff;
   padding: 2px;
+  z-index: 2 !important;
 }
 
 .ui-datepicker .ui-datepicker-header {

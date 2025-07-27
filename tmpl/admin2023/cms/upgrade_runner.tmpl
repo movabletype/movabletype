@@ -28,7 +28,9 @@
       <span id="error-message-text"></span>
     </p>
   </div>
-  <form method="post" action="<mt:var name="mt_admin_url">" id="completed-action" style="display: none">
+  <form method="post" action="<mt:var name="script_url">" id="completed-action" style="display: none">
+    <input type="hidden" name="__mode" value="redirect">
+    <input type="hidden" name="token" id="redirect_token" value="">
   <mt:if name="installing">
     <input type="hidden" name="installed" value="1">
   </mt:if>
@@ -64,10 +66,10 @@
 </mt:setvarblock>
 
 <mt:setvarblock name="js_include" append="1">
-<script type="text/javascript" src="<mt:var name="static_uri">js/tc.js?v=<mt:var name="mt_version_id" escape="url">"></script>
-<script type="text/javascript" src="<mt:var name="static_uri">js/tc/client.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+<mtapp:script type="text/javascript" path="js/tc.js">
+<mtapp:script type="text/javascript" path="js/tc/client.js">
 <mt:if name="use_jquery_json">
-<script type="text/javascript" src="<mt:var name="static_uri">jquery/jquery.json.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+<mtapp:script type="text/javascript" path="jquery/jquery.json.js">
 </mt:if>
 
 <mt:unless name="up_to_date">
@@ -165,20 +167,17 @@
         el.scrollTop = el.scrollHeight;
     }
 
-    function setCookie (name, value, expires, path, domain, secure) {
-        var curCookie = name + "=" + escape(value) + (expires ? "; expires=" + expires : "") +
-            (path ? "; path=" + path : "") + (domain ? "; domain=" + domain : "") + (secure ? "secure" : "");
-        document.cookie = curCookie;
-    }
-
     function actionDone(c, result) {
         actionInteractive(c); // make sure our progress is up to date...
         if (result) {
             result = result.replace(/^(.|\n)*JSON:/, '');
             var response = eval('('+result+')');
-            if (response.cookie) {
-                setCookie(response.cookie['-name'], response.cookie['-value'],
-                response.cookie['-expires'], response.cookie['-path']);
+            if (response.redirect) {
+                const form = document.getElementById("completed-action");
+                Object.keys(response.redirect).forEach(key => {
+                    const input = document.getElementById("redirect_" + key);
+                    input.setAttribute("value", response.redirect[key]);
+                });
             }
             if (response.steps.length) {
                 if (!response.error) {

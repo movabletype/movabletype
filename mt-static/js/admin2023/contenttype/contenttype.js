@@ -39,7 +39,7 @@ riot.tag2('content-field', '<div class="mt-collapse__container"> <div class="col
     }.bind(this)
 });
 
-riot.tag2('content-fields', '<form name="content-type-form" action="{CMSScriptURI}" method="POST"> <input type="hidden" name="__mode" value="save"> <input type="hidden" name="blog_id" riot-value="{opts.blog_id}"> <input type="hidden" name="magic_token" riot-value="{opts.magic_token}"> <input type="hidden" name="return_args" riot-value="{opts.return_args}"> <input type="hidden" name="_type" value="content_type"> <input type="hidden" name="id" riot-value="{opts.id}"> <input if="{data}" type="hidden" name="data" riot-value="{data}"> <div class="row"> <div class="col"> <div if="{opts.id}" id="name-field" class="form-group"> <h3>{opts.name} <button type="button" class="btn btn-link" data-bs-toggle="modal" data-bs-target="#editDetail">{trans(\'Edit\')}</button></h3> <div id="editDetail" class="modal" data-role="dialog" aria-labelledby="editDetail" aria-hidden="true"> <div class="modal-dialog modal-lg" data-role="document"> <div class="modal-content"> <div class="modal-header"> <h4 class="modal-title">{trans(\'Content Type\')}</h4> <button type="button" class="close btn-close" data-bs-dismiss="modal" aria-label="Close"> <span aria-hidden="true">&times;</span> </button> </div> <div class="modal-body"> <div class="col"> <div id="name-field" class="form-group"> <label for="name" class="form-control-label">{trans(\'Content Type Name\')} <span class="badge badge-danger">{trans(\'Required\')}</span></label> <input type="text" name="name" id="name" class="form-control html5-form" riot-value="{opts.name}" onkeypress="{stopSubmitting}" required> </div> </div> <div class="col"> <div id="description-field" class="form-group"> <label for="description" class="form-control-label">{trans(\'Description\')}</label> <textarea name="description" id="description" class="form-control">{opts.description}</textarea> </div> </div> <div class="col"> <div id="label-field" class="form-group"> <label for="label_field" class="form-control-label">{trans(\'Data Label Field\')}</label> <select id="label_field" name="label_field" class="custom-select form-control html5-form form-select" onchange="{changeLabelField}"> <option value="" selected="{labelField == ⁗⁗}">{trans(\'Show input field to enter data label\')} <option each="{labelFields}" riot-value="{value}" selected="{value == parent.labelField}">{label}</option> </select> </div> </div> <div class="col"> <div id="unique_id-field" class="form-group"> <label for="unique_id" class="form-control-label">{trans(\'Unique ID\')}</label> <input type="text" class="form-control-plaintext w-50" id="unieuq_id" riot-value="{opts.unique_id}" readonly> </div> </div> <div class="col"> <div id="user_disp_option-field" class="form-group"> <label for="user_disp_option">{trans(\'Allow users to change the display and sort of fields by display option\')}</label> <input type="checkbox" class="mt-switch form-control" id="user_disp_option" checked="{opts.user_disp_option}" name="user_disp_option"><label for="user_disp_option" class="last-child">{trans(\'Allow users to change the display and sort of fields by display option\')}</label> </div> </div> </div> <div class="modal-footer"> <button type="button" class="btn btn-default" data-bs-dismiss="modal">{trans(\'close\')}</button> </div> </div> </div> </div> </div> <div if="{!opts.id}" id="name-field" class="form-group"> <label for="name" class="form-control-label">{trans(\'Name\')} <span class="badge badge-danger">{trans(\'Required\')}</span></label> <input type="text" name="name" id="name" class="form-control html5-form" riot-value="{opts.name}" onkeypress="{stopSubmitting}" required> </div> </div> </div> </form> <form> <fieldset id="content-fields" class="form-group"> <legend class="h3">{trans(\'Content Fields\')}</legend> <div class="mt-draggable__area" style="height:400px;" ondrop="{onDrop}" ondragover="{onDragOver}" ondragleave="{onDragLeave}"> <div show="{isEmpty}" class="mt-draggable__empty"> <img riot-src="{StaticURI}images/dragdrop.gif" alt="{trans(\'Drag and drop area\')}" width="240" height="120"> <p>{trans(\'Please add a content field.\')}</p> </div> <div class="mt-contentfield" draggable="true" aria-grabbed="false" each="{fields}" data-is="content-field" ondragstart="{onDragStart}" ondragend="{onDragEnd}" style="width: 100%;"></div> </div> </fieldset> </form> <button type="button" class="btn btn-primary" disabled="{!canSubmit()}" onclick="{submit}">{trans(⁗Save⁗)}</button>', 'content-fields .placeholder,[data-is="content-fields"] .placeholder{ height:26px; margin:4px; margin-left:10px; border-width:2px; border-style:dashed; border-radius:4px; border-color:#aaa; }', '', function(opts) {
+riot.tag2('content-fields', '<form name="content-type-form" action="{CMSScriptURI}" method="POST"> <input type="hidden" name="__mode" value="save"> <input type="hidden" name="blog_id" riot-value="{opts.blog_id}"> <input type="hidden" name="magic_token" riot-value="{opts.magic_token}"> <input type="hidden" name="return_args" riot-value="{opts.return_args}"> <input type="hidden" name="_type" value="content_type"> <input type="hidden" name="id" riot-value="{opts.id}"> <input if="{data}" type="hidden" name="data" riot-value="{data}"> <div class="row"> <div class="col"> <div if="{opts.id}" id="name-field" class="form-group"> <h3>{opts.name} <button type="button" class="btn btn-link" data-bs-toggle="modal" data-bs-target="#editDetail">{trans(\'Edit\')}</button></h3> <div id="editDetail" class="modal" data-role="dialog" aria-labelledby="editDetail" aria-hidden="true"> <div class="modal-dialog modal-lg" data-role="document"> <div class="modal-content"> <div class="modal-header"> <h4 class="modal-title">{trans(\'Content Type\')}</h4> <button type="button" class="close btn-close" data-bs-dismiss="modal" aria-label="Close"> <span aria-hidden="true">&times;</span> </button> </div> <div class="modal-body"> <div class="col"> <div id="name-field" class="form-group"> <label for="name" class="form-control-label">{trans(\'Content Type Name\')} <span class="badge badge-danger">{trans(\'Required\')}</span></label> <input type="text" name="name" id="name" class="form-control html5-form" riot-value="{opts.name}" onkeypress="{stopSubmitting}" required> </div> </div> <div class="col"> <div id="description-field" class="form-group"> <label for="description" class="form-control-label">{trans(\'Description\')}</label> <textarea name="description" id="description" class="form-control">{opts.description}</textarea> </div> </div> <div class="col"> <div id="label-field" class="form-group"> <label for="label_field" class="form-control-label">{trans(\'Data Label Field\')}</label> <select id="label_field" name="label_field" class="custom-select form-control html5-form form-select" onchange="{changeLabelField}"> <option value="" selected="{labelField == ⁗⁗}">{trans(\'Show input field to enter data label\')} <option each="{labelFields}" riot-value="{value}" selected="{value == parent.labelField}">{label}</option> </select> </div> </div> <div class="col"> <div id="unique_id-field" class="form-group"> <label for="unique_id" class="form-control-label">{trans(\'Unique ID\')}</label> <input type="text" class="form-control-plaintext w-50" id="unieuq_id" riot-value="{opts.unique_id}" readonly> </div> </div> <div class="col"> <div id="user_disp_option-field" class="form-group"> <label for="user_disp_option">{trans(\'Allow users to change the display and sort of fields by display option\')}</label> <input type="checkbox" class="mt-switch form-control" id="user_disp_option" checked="{opts.user_disp_option}" name="user_disp_option"><label for="user_disp_option" class="last-child">{trans(\'Allow users to change the display and sort of fields by display option\')}</label> </div> </div> </div> <div class="modal-footer"> <button type="button" class="btn btn-default" data-bs-dismiss="modal">{trans(\'close\')}</button> </div> </div> </div> </div> </div> <div if="{!opts.id}" id="name-field" class="form-group"> <label for="name" class="form-control-label">{trans(\'Name\')} <span class="badge badge-danger">{trans(\'Required\')}</span></label> <input type="text" name="name" id="name" class="form-control html5-form" riot-value="{opts.name}" onkeypress="{stopSubmitting}" required> </div> </div> </div> </form> <form> <fieldset id="content-fields" class="form-group"> <legend class="h3">{trans(\'Content Fields\')}</legend> <div class="mt-collapse__all"> <a data-bs-toggle="collapse" onclick="{toggleAll}" href="" aria-expanded="{isExpanded ? \'true\' : \'false\'}" aria-controls="" class="d-inline-block"> {isExpanded ? trans(\'Close all\') : trans(\'Edit all\')} <ss title="{trans(\'Edit\')}" class="mt-icon--secondary expand-all-icon" href="{StaticURI}images/sprite.svg#ic_collapse"></ss> </a> </div> <div class="mt-draggable__area" style="height:400px;" ondrop="{onDrop}" ondragover="{onDragOver}" ondragleave="{onDragLeave}"> <div show="{isEmpty}" class="mt-draggable__empty"> <img riot-src="{StaticURI}images/dragdrop.gif" alt="{trans(\'Drag and drop area\')}" width="240" height="120"> <p>{trans(\'Please add a content field.\')}</p> </div> <div class="mt-contentfield" draggable="true" aria-grabbed="false" each="{fields}" data-is="content-field" ondragstart="{onDragStart}" ondragend="{onDragEnd}" style="width: 100%;"></div> </div> <div class="mt-collapse__all"> <a data-bs-toggle="collapse" onclick="{toggleAll}" href=".mt-collapse__content" aria-expanded="{isExpanded ? \'true\' : \'false\'}" aria-controls="" class="d-inline-block"> {isExpanded ? trans(\'Close all\') : trans(\'Edit all\')} <ss title="{trans(\'Edit\')}" class="mt-icon--secondary expand-all-icon" href="{StaticURI}images/sprite.svg#ic_collapse"></ss> </a> </div> </fieldset> </form> <button type="button" class="btn btn-primary" disabled="{!canSubmit()}" onclick="{submit}">{trans(⁗Save⁗)}</button>', 'content-fields .placeholder,[data-is="content-fields"] .placeholder{ height:26px; margin:4px; margin-left:10px; border-width:2px; border-style:dashed; border-radius:4px; border-color:#aaa; }', '', function(opts) {
     self = this
     self.fields = opts.fields
     self.isEmpty = self.fields.length > 0 ? false : true
@@ -53,6 +53,7 @@ riot.tag2('content-fields', '<form name="content-type-form" action="{CMSScriptUR
     self.dragoverState = false
     self.labelFields = null
     self.labelField = opts.labelField
+    self.isExpanded = false
 
     self.on('updated', function () {
       var select = self.root.querySelector('#label_field')
@@ -92,11 +93,13 @@ riot.tag2('content-fields', '<form name="content-type-form" action="{CMSScriptUR
     jQuery(document).on('shown.bs.collapse', '.mt-collapse__content', function(e) {
       var target = document.getElementsByClassName('mt-draggable__area')[0]
       self.recalcHeight(target);
+      self.updateToggleAll()
     })
 
     jQuery(document).on('hidden.bs.collapse', '.mt-collapse__content', function(e) {
       var target = document.getElementsByClassName('mt-draggable__area')[0]
       self.recalcHeight(target);
+      self.updateToggleAll()
     })
 
     jQuery(document).on('focus', '.mt-draggable__area input, .mt-draggable__area textarea', function(e) {
@@ -282,20 +285,17 @@ riot.tag2('content-fields', '<form name="content-type-form" action="{CMSScriptUR
             var data = {}
             data.type = c.type
             data.options = options
-            if ( c.isNew ) {
-              data.order = i + 1
+            if (!c.isNew) {
+              data.id = c.id
+            }
+            var innerField = self.fields.filter( function (v) {
+              return v.id == c.id
+            })
+            if (innerField.length && innerField[0].order) {
+              data.order = innerField[0].order
             }
             else {
-              data.id = c.id
-              var innerField = self.fields.filter( function (v) {
-                return v.id == c.id
-              })
-              if (innerField.length) {
-                data.order = innerField[0].order
-              }
-              else {
-                data.order = i + 1
-              }
+              data.order = i + 1
             }
             fieldOptions.push(data)
           })
@@ -353,6 +353,27 @@ riot.tag2('content-fields', '<form name="content-type-form" action="{CMSScriptUR
 
     this.changeLabelField = function(e) {
         self.labelField = e.target.value
+    }.bind(this)
+
+    this.toggleAll = function() {
+      self.isExpanded = !self.isExpanded
+      self.fields.forEach(field => {
+        field.isShow = self.isExpanded ? 'show' : ''
+      })
+    }.bind(this)
+
+    this.updateToggleAll = function() {
+      collapseEls = document.querySelectorAll('.mt-collapse__content')
+      var isAllExpanded = true
+      collapseEls.forEach(collapseEl => {
+        if (collapseEl.classList.contains('show')) {
+          isAllExpanded = true
+        } else {
+          isAllExpanded = false
+        }
+      })
+      self.isExpanded = isAllExpanded ? true : false
+      self.update()
     }.bind(this)
 
     this._moveField = function(item, pos) {

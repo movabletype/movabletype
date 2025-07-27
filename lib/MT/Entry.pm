@@ -1810,11 +1810,6 @@ MT->add_callback(
     sub { MT->model('rebuild_trigger')->runner( 'post_entry_save', @_ ); }
 );
 MT->add_callback(
-    'api_post_save.entry', 10,
-    MT->component('core'),
-    sub { MT->model('rebuild_trigger')->runner( 'post_entry_save', @_ ); }
-);
-MT->add_callback(
     'cms_post_bulk_save.entries',
     10,
     MT->component('core'),

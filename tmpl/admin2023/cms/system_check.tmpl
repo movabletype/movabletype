@@ -6,7 +6,15 @@
       id="perl-is-too-old"
       class="error"
       can_close="0">
-      <__trans phrase="The version of Perl installed on your server ([_1]) is lower than the minimum supported version ([_2]). Please upgrade to at least Perl [_2]." params="<mt:var name="perl_version" escape="html">%%5.16.0">
+      <__trans phrase="The version of Perl installed on your server ([_1]) is lower than the minimum supported version ([_2]). Please upgrade to at least Perl [_2]." params="<mt:var name="perl_version" escape="html">%%5.16.3">
+    </mtapp:statusmsg>
+  </mt:if>
+  <mt:if name="lacks_core_modules">
+    <mtapp:statusmsg
+      id="perl-lacks-core-modules"
+      class="error"
+      can_close="0">
+      <__trans phrase="Movable Type does not work because your Perl does not have some of the core modules. Please ask your system administrator to install perl (or perl-core) properly.">
     </mtapp:statusmsg>
   </mt:if>
 </mt:setvarblock>
@@ -146,7 +154,7 @@
     </mt:if>
 
     <mt:if name="is_cgiwrap_or_suexec">
-    <li><__trans phrase="(Probably) running under cgiwrap or suexec"></li>'
+    <li><__trans phrase="(Probably) running under cgiwrap or suexec"></li>
     </mt:if>
 </ul>
 

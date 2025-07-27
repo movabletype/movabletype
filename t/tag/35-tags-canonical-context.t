@@ -151,7 +151,7 @@ $db = $mt->db();
 $ctx =& $mt->context();
 
 $fileinfo = new FileInfo;
-$fileinfo->Load($fileinfo_id);
+$fileinfo->LoadByIntId($fileinfo_id);
 
 $entry = $fileinfo->entry();
 $ctx->stash('entry', $entry);

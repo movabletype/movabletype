@@ -1,4 +1,4 @@
-# Copyrights 1999-2022 by [Mark Overmeer <markov@cpan.org>].
+# Copyrights 1999-2025 by [Mark Overmeer <mark@overmeer.net>].
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
 # Pod stripped from pm file by OODoc 2.03.
@@ -6,9 +6,9 @@
 # OODoc into POD and HTML manual-pages.  See README.md
 # Copyright Mark Overmeer.  Licensed under the same terms as Perl itself.
 
-package MIME::Types;
-use vars '$VERSION';
-$VERSION = '2.24';
+package MIME::Types;{
+our $VERSION = '2.28';
+}
 
 
 use strict;
@@ -42,6 +42,7 @@ sub _read_db($)
     open DB, '<:encoding(utf8)', $db
        or die "cannot open type database in $db: $!\n";
 
+	local $/ = "\n";
     while(1)
     {   my $header = <DB>;
         defined $header or last;
@@ -52,7 +53,6 @@ sub _read_db($)
         my $skip_section = $major eq 'EXTENSIONS' ? $skip_extensions
           : (($only_iana && !$is_iana) || ($only_complete && !$has_ext));
 
-#warn "Skipping section $header\n" if $skip_section;
         (my $section = $major) =~ s/^x-//;
         if($major eq 'EXTENSIONS')
         {   local $_;
@@ -94,7 +94,7 @@ sub type($)
     return $record if ref $record;   # already extended
 
     my $simple   = $2;
-    my ($type, $ext, $enc) = split m/\;/, $record;
+    my ($type, $ext, $enc, $char) = split m/\;/, $record;
     my $os       = undef;   # XXX TODO
 
     $section->{$simple} = MIME::Type->new
@@ -102,15 +102,24 @@ sub type($)
       , extensions => [split /\,/, $ext]
       , encoding   => $enc
       , system     => $os
+      , charset    => $char
       );
 }
 
 
 sub mimeTypeOf($)
-{   my ($self, $name) = @_;
-    (my $ext = lc $name) =~ s/.*\.//;
-    my $type = $typedb{EXTENSIONS}{$ext} or return;
-    $self->type($type);
+{   my $self = shift;
+    my $ext  = lc(shift);
+
+    # Extensions may contains multiple dots (rare)
+    while(1)
+    {   if(my $type = $typedb{EXTENSIONS}{$ext})
+        {   return $self->type($type);
+        }
+        $ext =~ s/.*?\.// or last;
+    }
+
+    undef;
 }
 
 

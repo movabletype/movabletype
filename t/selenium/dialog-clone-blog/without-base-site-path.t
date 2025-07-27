@@ -60,14 +60,14 @@ subtest 'selected checkbox' => sub {
     ok $use_absolute->[1]->is_selected, 'selected .use-absolute checkbox (archive path)';
 
     my $relative_site_path_hint = wait_until {
-        $selenium->driver->find_elements('p.relative-site_path-hint')
+        $selenium->driver->find_elements('small.relative-site_path-hint')
     };
     is scalar @{$relative_site_path_hint}, 2, 'exists p.relative-site_path-hint';
     ok $relative_site_path_hint->[0]->is_hidden, 'hidden p.relative-site_path-hint (site path)';
     ok $relative_site_path_hint->[1]->is_hidden, 'hidden p.relative-site_path-hint (archive path)';
 
     my $absolute_site_path_hint = wait_until {
-        $selenium->driver->find_elements('p.absolute-site_path-hint')
+        $selenium->driver->find_elements('small.absolute-site_path-hint')
     };
     is scalar @{$absolute_site_path_hint}, 2, 'exists two p.absolute-site_path-hint';
     ok $absolute_site_path_hint->[0]->is_displayed, 'visible p.absolute-site_path-hint (site path)';
@@ -82,14 +82,14 @@ subtest 'not selected checkbox' => sub {
     ok !$use_absolute->[1]->is_selected, 'not selected .use-absolute checkbox (archive path)';
 
     my $relative_site_path_hint = wait_until {
-        $selenium->driver->find_elements('p.relative-site_path-hint')
+        $selenium->driver->find_elements('small.relative-site_path-hint')
     };
     is scalar @{$relative_site_path_hint}, 2, 'exists p.relative-site_path-hint';
     ok $relative_site_path_hint->[0]->is_displayed, 'visible p.relative-site_path-hint (site path)';
     ok $relative_site_path_hint->[1]->is_displayed, 'visible p.relative-site_path-hint (archive path)';
 
     my $absolute_site_path_hint = wait_until {
-        $selenium->driver->find_elements('p.absolute-site_path-hint')
+        $selenium->driver->find_elements('small.absolute-site_path-hint')
     };
     is scalar @{$absolute_site_path_hint}, 2, 'exists two p.absolute-site_path-hint';
     ok $absolute_site_path_hint->[0]->is_hidden, 'hidden p.absolute-site_path-hint (site path)';

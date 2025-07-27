@@ -20,6 +20,9 @@ sub process {
     return $app->errtrans('TagSearch works with MT::App::Search.')
         unless $app->isa('MT::App::Search') || $app->isa('MT::App::DataAPI');
 
+    my $search_string = $app->param('tag') || $app->param('search');
+    return unless $app->check_search_max_char_count($search_string);
+
     my ( $count, $out ) = $app->check_cache();
     if ( defined $out ) {
         $app->run_callbacks( 'search_cache_hit', $count, $out );
@@ -126,9 +129,9 @@ sub search_terms {
     $app->{search_string} = $search_string;
 
     my @or_tag_names;
-    if (   ( $search_string =~ /\s+OR\s+/ )
-        || ( $search_string =~ /\s+AND\s+/ )
-        || ( $search_string =~ /\s*"\s*/ ) )
+    if (   ( $search_string =~ /\sOR\s/ )
+        || ( $search_string =~ /\sAND\s/ )
+        || ( $search_string =~ /"/ ) )
     {
         @or_tag_names = &_process_lucene_query($search_string);
     }
@@ -146,25 +149,6 @@ sub search_terms {
         @or_tag_names
             = sort { $counter->($a) cmp $counter->($b) } @or_tag_names;
     }
-
-    my @or_tags;
-    my $terms
-        = { $app->config->SearchPrivateTags ? () : ( is_private => '0' ) };
-    foreach my $or_tag_name (@or_tag_names) {
-        my %tags = map { $_ => 1, $tag_class->normalize($_) => 1 }
-            ( split( /,/, $or_tag_name ), $or_tag_name );
-        $terms->{name} = [ keys %tags ];
-        my @tags = $tag_class->load($terms);
-        my @tmp;
-        foreach my $tag (@tags) {
-            push @tmp, $tag->id;
-            my @more = $tag_class->load(
-                { n8d_id => $tag->n8d_id ? $tag->n8d_id : $tag->id } );
-            push @tmp, $_->id foreach @more;
-        }
-        push @or_tags, \@tmp if @tmp;
-    }
-    return ( undef, undef ) unless @or_tags;
 
     my $ot_class = $app->model('objecttag');
     my $class    = $app->model( $app->{searchparam}{Type} )
@@ -188,6 +172,40 @@ sub search_terms {
     if ( exists $app->{searchparam}{IncludeBlogs} ) {
         $terms{blog_id} = $app->{searchparam}{IncludeBlogs};
     }
+
+    if ($app->id eq 'data_api') {
+        if (!$app->user or !$app->user->is_superuser or $app->config->SuperuserRespectsDataAPIDisableSite) {
+            my @blog_term;
+            push @blog_term, {id => $terms{blog_id}} if defined $terms{blog_id};
+            push @blog_term, {class => '*'} unless @blog_term;
+            my @sites = $app->model('blog')->load(@blog_term);
+            require MT::CMS::Blog;
+            for my $site (@sites) {
+                if (!MT::CMS::Blog::data_api_is_enabled($app, $site->id, $site)) {
+                    return $app->error('Forbidden', 403);
+                }
+            }
+        }
+    }
+
+    my @or_tags;
+    my $terms
+        = { $app->config->SearchPrivateTags ? () : ( is_private => '0' ) };
+    foreach my $or_tag_name (@or_tag_names) {
+        my %tags = map { $_ => 1, $tag_class->normalize($_) => 1 }
+            ( split( /,/, $or_tag_name ), $or_tag_name );
+        $terms->{name} = [ keys %tags ];
+        my @tags = $tag_class->load($terms);
+        my @tmp;
+        foreach my $tag (@tags) {
+            push @tmp, $tag->id;
+            my @more = $tag_class->load(
+                { n8d_id => $tag->n8d_id ? $tag->n8d_id : $tag->id } );
+            push @tmp, $_->id foreach @more;
+        }
+        push @or_tags, \@tmp if @tmp;
+    }
+    return ( undef, undef ) unless @or_tags;
 
     my $depth = 1;
     my $alias = $ot_class->datasource . '_' . $depth;

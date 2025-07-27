@@ -9,14 +9,19 @@ use warnings;
 use Carp;
 use utf8;
 use base 'Exporter';
+use Cwd;
+use File::Spec;
+use List::Util qw(sum);
 
-our @EXPORT_OK = qw(perl_sha1_digest_hex cc_url cc_rdf cc_name cc_image);
+our @EXPORT_OK = qw(perl_sha1_digest_hex cc_url cc_rdf cc_name cc_image is_valid_ip);
 
 sub warning {
     my (%args) = @_;
-    my ($filename, $subroutine) = (caller 1)[1, 3];
+    my ($filename, $subroutine) = (caller)[1, 3];
+    $filename = Cwd::realpath($filename) unless File::Spec->file_name_is_absolute($filename);
+    $filename =~ s!\\!/!g if $^O eq 'MSWin32';
 
-    $args{name} ||= $subroutine;
+    $args{name} ||= $subroutine || 'main';
 
     my $msg;
     local $Carp::CarpLevel = 1;
@@ -30,14 +35,17 @@ sub warning {
         my $plugin = $MT::Plugins{$sig}{object};
         if ( $plugin && $plugin->path ) {
             my $plugin_path = $plugin->path;
-            if ( $filename =~ m/^$plugin_path/ ) {
-                MT->log(
-                    {   class    => 'plugin',
-                        category => $plugin->log_category_for_deprecated_fn,
-                        message  => MT->translate( "[_1] plugin is using deprecated call.", $sig ),
-                        metadata => $msg,
-                    }
-                );
+            $plugin_path =~ s!\\!/!g if $^O eq 'MSWin32';
+            if ( $filename =~ m/^\Q$plugin_path\E/ ) {
+                eval {
+                    MT->log(
+                        {   class    => 'plugin',
+                            category => $plugin->log_category_for_deprecated_fn,
+                            message  => MT->translate( "[_1] plugin is using deprecated call.", $sig ),
+                            metadata => $msg,
+                        }
+                    );
+                }
             }
         }
     }
@@ -276,6 +284,36 @@ sub cc_image {
         return $image_url;
     }
     "http://creativecommons.org/images/public/" . ($code eq 'pd' ? 'norights' : 'somerights');
+}
+
+sub is_valid_ip {
+    MT::Util::Deprecated::warning(since => '8.8.0');
+    my ($str) = @_;
+
+    my ( $ip, $cidr ) = split /\//, $str;
+    my @ips = split /\./, $ip;
+
+    # xxx.xxx.xxx.xxx
+    if (@ips) {
+        my $num = @ips;
+        return 0 if $num < 4;
+    }
+
+    # 0-255
+    foreach my $num (@ips) {
+        return 0 unless $num =~ /^\d+$/;
+        return 0 if ( $num < 0 || $num > 255 );
+    }
+
+    # 0.0.0.0 255.255.255.255
+    return 0 if ( sum(@ips) == 0 || sum(@ips) == 1020 );
+
+    # CIDR
+    if ( defined $cidr ) {
+        return 0 if ( $cidr < 1 || $cidr > 32 );
+    }
+
+    return $str;
 }
 
 1;

@@ -21,6 +21,7 @@ use MT::Test::App;
 use Image::ExifTool;
 
 my $has_image_magick = eval { require Image::Magick; 1 };
+my $image_driver     = MT->config->ImageDriver;
 
 $test_env->prepare_fixture('db_data');
 
@@ -139,21 +140,35 @@ subtest 'Regular JPEG image, wrt exif removal' => sub {
             my $exif = Image::ExifTool::ImageInfo($file);
             if ($exif_removal or $key eq 'thumbnail') {
                 ok !$exif->{Comment}, "$key has no Comment in exif" or note explain $exif;
-                ok $exif->{ProfileCMMType}, "but $key still has profile information in exif";
+                SKIP: {
+                    # FIXME
+                    local $TODO = 'Only for ImageMagick driver' unless $image_driver =~ /ImageMagick/;
+                    ok $exif->{ProfileCMMType}, "but $key still has profile information in exif";
+                }
                 is $exif->{Orientation} => 'Horizontal (normal)', "but $key still has orientation information in exif";
-                if ($has_image_magick) {
-                    my $magick = Image::Magick->new;
-                    $magick->Read($file);
-                    ok $magick->Get('icc'), "Image::Magick still returns icc";
+                SKIP: {
+                    if ($has_image_magick) {
+                        # FIXME
+                        local $TODO = 'Only for ImageMagick driver' unless $image_driver =~ /ImageMagick/;
+                        my $magick = Image::Magick->new;
+                        $magick->Read($file);
+                        ok $magick->Get('icc'), "Image::Magick still returns icc";
+                    }
                 }
             } else {
                 is $exif->{Comment} => 'mt_test', "$key still has Comment in exif";
-                ok $exif->{ProfileCMMType}, "$key still has profile information in exif";
+                SKIP: {
+                    local $TODO = 'Only for *Magick driver' unless $image_driver =~ /Magick/;
+                    ok $exif->{ProfileCMMType}, "$key still has profile information in exif";
+                }
                 is $exif->{Orientation} => 'Horizontal (normal)', "but $key still has orientation information in exif";
-                if ($has_image_magick) {
-                    my $magick = Image::Magick->new;
-                    $magick->Read($file);
-                    ok $magick->Get('icc'), "Image::Magick returns icc";
+                SKIP: {
+                    if ($has_image_magick) {
+                        local $TODO = 'Only for *Magick driver' unless $image_driver =~ /Magick/;
+                        my $magick = Image::Magick->new;
+                        $magick->Read($file);
+                        ok $magick->Get('icc'), "Image::Magick returns icc";
+                    }
                 }
             }
         }
@@ -196,6 +211,156 @@ subtest 'Regular JPEG image with wrong extension' => sub {
         'file_path'  => File::Spec->catfile(qw/ %a wrong-extension-test.jpg /),
         'file_name'  => 'wrong-extension-test.jpg',
         'url'        => '%a/wrong-extension-test.jpg',
+        'class'      => 'image',
+        'blog_id'    => '1',
+        'created_by' => '1'
+    };
+    my $result_values = do {
+        return +{} unless $created_asset;
+        my $values = $created_asset->column_values();
+        +{ map { $_ => $values->{$_} } keys %$expected_values };
+    };
+    is_deeply(
+        $result_values, $expected_values,
+        "Created asset's column values"
+    );
+};
+
+subtest 'Regular JPEG image with wrong extension separator' => sub {
+    my $newest_asset = MT::Asset->load(
+        { class => '*' },
+        { sort  => [{ column => 'id', desc => 'DESC' }] },
+    );
+
+    my $test_image = $test_env->path('wrong-extension-separator.jpg');
+    MT::Test::Image->write(file => $test_image);
+    (my $renamed_test_image = $test_image) =~ s/\.jpg/-jpg/;
+    rename $test_image => $renamed_test_image;
+
+    my $app = MT::Test::App->new('CMS');
+    $app->login($admin);
+    $app->js_post_ok({
+        __test_upload => [file => $renamed_test_image],
+        __mode        => 'js_upload_file',
+        blog_id       => $blog->id,
+        destination   => '%a',
+    });
+
+    $app->content_like(
+        qr/Extension changed from none to jpg/,
+        'Reported that the extension was changed'
+    );
+
+    my $created_asset = MT::Asset->load(
+        { id   => { '>' => $newest_asset->id } },
+        { sort => [{ column => 'id', desc => 'DESC' }] },
+    );
+    ok($created_asset, 'An asset is created');
+    my $expected_values = {
+        'file_ext'   => 'jpg',
+        'file_path'  => File::Spec->catfile(qw/ %a wrong-extension-separator-jpg.jpg /),
+        'file_name'  => 'wrong-extension-separator-jpg.jpg',
+        'url'        => '%a/wrong-extension-separator-jpg.jpg',
+        'class'      => 'image',
+        'blog_id'    => '1',
+        'created_by' => '1'
+    };
+    my $result_values = do {
+        return +{} unless $created_asset;
+        my $values = $created_asset->column_values();
+        +{ map { $_ => $values->{$_} } keys %$expected_values };
+    };
+    is_deeply(
+        $result_values, $expected_values,
+        "Created asset's column values"
+    );
+};
+
+subtest 'Regular JPEG image with string added like extension' => sub {
+    my $newest_asset = MT::Asset->load(
+        { class => '*' },
+        { sort  => [{ column => 'id', desc => 'DESC' }] },
+    );
+
+    my $test_image = $test_env->path('string-added-like-extension.jpg');
+    MT::Test::Image->write(file => $test_image);
+    my $renamed_test_image = $test_env->path('test.bak');
+    rename $test_image => $renamed_test_image or die $!;
+
+    my $app = MT::Test::App->new('CMS');
+    $app->login($admin);
+    $app->js_post_ok({
+        __test_upload => [file => $renamed_test_image],
+        __mode        => 'js_upload_file',
+        blog_id       => $blog->id,
+        destination   => '%a',
+    });
+
+    $app->content_like(
+        qr/Extension changed from none to jpg/,
+        'Reported that the extension was changed'
+    );
+
+    my $created_asset = MT::Asset->load(
+        { id   => { '>' => $newest_asset->id } },
+        { sort => [{ column => 'id', desc => 'DESC' }] },
+    );
+    ok($created_asset, 'An asset is created');
+    my $expected_values = {
+        'file_ext'   => 'jpg',
+        'file_path'  => File::Spec->catfile(qw/ %a test.bak.jpg /),
+        'file_name'  => 'test.bak.jpg',
+        'url'        => '%a/test.bak.jpg',
+        'class'      => 'image',
+        'blog_id'    => '1',
+        'created_by' => '1'
+    };
+    my $result_values = do {
+        return +{} unless $created_asset;
+        my $values = $created_asset->column_values();
+        +{ map { $_ => $values->{$_} } keys %$expected_values };
+    };
+    is_deeply(
+        $result_values, $expected_values,
+        "Created asset's column values"
+    );
+};
+
+subtest 'Regular JPEG image with extension string being filename' => sub {
+    my $newest_asset = MT::Asset->load(
+        { class => '*' },
+        { sort  => [{ column => 'id', desc => 'DESC' }] },
+    );
+
+    my $test_image = $test_env->path('extension-string-being-filename.jpg');
+    MT::Test::Image->write(file => $test_image);
+    my $renamed_test_image = $test_env->path('jpg');
+    rename $test_image => $renamed_test_image;
+
+    my $app = MT::Test::App->new('CMS');
+    $app->login($admin);
+    $app->js_post_ok({
+        __test_upload => [file => $renamed_test_image],
+        __mode        => 'js_upload_file',
+        blog_id       => $blog->id,
+        destination   => '%a',
+    });
+
+    $app->content_like(
+        qr/Extension changed from none to jpg/,
+        'Reported that the extension was changed'
+    );
+
+    my $created_asset = MT::Asset->load(
+        { id   => { '>' => $newest_asset->id } },
+        { sort => [{ column => 'id', desc => 'DESC' }] },
+    );
+    ok($created_asset, 'An asset is created');
+    my $expected_values = {
+        'file_ext'   => 'jpg',
+        'file_path'  => File::Spec->catfile(qw/ %a jpg.jpg /),
+        'file_name'  => 'jpg.jpg',
+        'url'        => '%a/jpg.jpg',
         'class'      => 'image',
         'blog_id'    => '1',
         'created_by' => '1'

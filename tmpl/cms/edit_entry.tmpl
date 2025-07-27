@@ -942,10 +942,10 @@
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
-          <mt:if name="asset_thumb">
-            <img id="list-image-<mt:var name="asset_id">" class="list-image" src="<mt:var name="asset_thumb">" style="display:none" />
-          </mt:if>
         </div>
+        <mt:if name="asset_thumb">
+          <img id="list-image-<mt:var name="asset_id">" class="list-image" src="<mt:var name="asset_thumb">" style="display:none" />
+        </mt:if>
       </li>
     </mt:loop>
     <mt:else>
@@ -1048,7 +1048,7 @@ div.mce-notification-error {
 
 <mt:setvarblock name="js_include" append="1">
   <!--// this MUST loaded after mt.js // -->
-  <script type="text/javascript" src="<$mt:var name="static_uri"$>js/edit.js?v=<$mt:var name="mt_version_id" escape="url"$>"></script>
+  <mtapp:script type="text/javascript" path="js/edit.js">
 </mt:setvarblock>
 
 <mt:unless name="editors">
@@ -1084,10 +1084,10 @@ div.mce-notification-error {
 </mt:setvarblock>
 
 <mt:setvarblock name="html_head" prepend="1">
-  <link rel="stylesheet" type="text/css" href="<$mt:var name="static_uri"$>css/editor/common.css?v=<$mt:var name="mt_version_id" escape="url"$>" />
-  <script type="text/javascript" src="<$mt:var name="static_uri"$>js/tc/focus.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
-  <script type="text/javascript" src="<$mt:var name="static_uri"$>js/tc/tagcomplete.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
-  <script type="text/javascript" src="<$mt:var name="static_uri"$>js/tc/client.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+  <mtapp:stylesheet path="css/editor/common.css">
+  <mtapp:script type="text/javascript" path="js/tc/focus.js">
+  <mtapp:script type="text/javascript" path="js/tc/tagcomplete.js">
+  <mtapp:script type="text/javascript" path="js/tc/client.js">
   <script type="text/javascript">
     /* <![CDATA[ */
       var orig_text_format;

@@ -9,13 +9,15 @@
          "asset_file_ext",
          "asset_file_name",
          "asset_file_path",
+         "asset_height",
          "asset_id",
          "asset_label",
          "asset_mime_type",
          "asset_modified_by",
          "asset_modified_on",
          "asset_parent",
-         "asset_url"
+         "asset_url",
+         "asset_width"
       ],
       "rows" : [
          [
@@ -27,13 +29,15 @@
             "tmpl",
             "test.tmpl",
             "__MT_HOME__/t/test.tmpl",
+            null,
             1,
             "Template",
             "text/plain",
             null,
             null,
             null,
-            "http://narnia.na/nana/files/test.tmpl"
+            "http://narnia.na/nana/files/test.tmpl",
+            null
          ],
          [
             1,
@@ -44,13 +48,15 @@
             "tmpl",
             "test.tmpl",
             "__MT_HOME__/t/test.tmpl",
+            null,
             2,
             "Template",
             "text/plain",
             null,
             null,
             null,
-            "http://narnia.na/nana/files/test.tmpl"
+            "http://narnia.na/nana/files/test.tmpl",
+            null
          ],
          [
             1,
@@ -61,13 +67,15 @@
             "tmpl",
             "test.tmpl",
             "__MT_HOME__/t/test.tmpl",
+            null,
             3,
             "Template",
             "text/plain",
             null,
             null,
             null,
-            "http://narnia.na/nana/files/test.tmpl"
+            "http://narnia.na/nana/files/test.tmpl",
+            null
          ]
       ]
    },
@@ -503,7 +511,6 @@
          "cd_label",
          "cd_modified_by",
          "cd_modified_on",
-         "cd_random",
          "cd_status",
          "cd_unique_id",
          "cd_unpublished_on",
@@ -517,17 +524,16 @@
             1,
             null,
             "__NOW__",
-            "571fcd732d57157f183f1de3cbf695d279ec5ecd",
+            "7baf3563a36fbc795d0ab22d6228b68bfb965da2",
             0,
-            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0003\u0000\u0000\u0000\u00011A\u0000\u0000\u0000\u0001-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u00012A\u0000\u0000\u0000\u0001-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u00013A\u0000\u0000\u0000\u0001-\u0000\u0000\u0000\u00011",
+            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0003\u0000\u0000\u0000\u00012A\u0000\u0000\u0000\u0001-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u00011A\u0000\u0000\u0000\u0001-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u00013A\u0000\u0000\u0000\u0001-\u0000\u0000\u0000\u00011",
             1,
-            "d6e3a45ce38d9c70c6c61853b653dcf4d6940c98",
+            "29acddb82ea6cac4f38d47bdc8b8c7513941880e",
             null,
             null,
             "__NOW__",
-            6,
             2,
-            "d6e3a45ce38d9c70c6c61853b653dcf4d6940c98",
+            "29acddb82ea6cac4f38d47bdc8b8c7513941880e",
             null,
             201722
          ],
@@ -538,38 +544,36 @@
             1,
             null,
             "__NOW__",
-            "571fcd732d57157f183f1de3cbf695d279ec5ecd",
+            "7baf3563a36fbc795d0ab22d6228b68bfb965da2",
             0,
-            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0003\u0000\u0000\u0000\u00012A\u0000\u0000\u0000\u0001-\u0000\u0000\u0000\u00012\u0000\u0000\u0000\u00011A\u0000\u0000\u0000\u0001-\u0000\u0000\u0000\u00012\u0000\u0000\u0000\u00013A\u0000\u0000\u0000\u0001-\u0000\u0000\u0000\u00012",
+            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0003\u0000\u0000\u0000\u00013A\u0000\u0000\u0000\u0001-\u0000\u0000\u0000\u00012\u0000\u0000\u0000\u00012A\u0000\u0000\u0000\u0001-\u0000\u0000\u0000\u00012\u0000\u0000\u0000\u00011A\u0000\u0000\u0000\u0001-\u0000\u0000\u0000\u00012",
             2,
-            "06a279882c75372fa1dda72d2513c21b0e21a421",
+            "fca0d484935f273067915528999e05d65780b404",
             null,
             null,
             "__NOW__",
+            2,
+            "fca0d484935f273067915528999e05d65780b404",
+            null,
+            201722
+         ],
+         [
+            1,
+            "2017-05-30 16:36:00",
+            1,
+            1,
+            null,
+            "__NOW__",
+            "7baf3563a36fbc795d0ab22d6228b68bfb965da2",
+            0,
+            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0003\u0000\u0000\u0000\u00013A\u0000\u0000\u0000\u0001-\u0000\u0000\u0000\u00013\u0000\u0000\u0000\u00011A\u0000\u0000\u0000\u0001-\u0000\u0000\u0000\u00013\u0000\u0000\u0000\u00012A\u0000\u0000\u0000\u0001-\u0000\u0000\u0000\u00013",
             3,
-            2,
-            "06a279882c75372fa1dda72d2513c21b0e21a421",
-            null,
-            201722
-         ],
-         [
-            1,
-            "2017-05-30 16:36:00",
-            1,
-            1,
-            null,
-            "__NOW__",
-            "571fcd732d57157f183f1de3cbf695d279ec5ecd",
-            0,
-            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0003\u0000\u0000\u0000\u00011A\u0000\u0000\u0000\u0001-\u0000\u0000\u0000\u00013\u0000\u0000\u0000\u00012A\u0000\u0000\u0000\u0001-\u0000\u0000\u0000\u00013\u0000\u0000\u0000\u00013A\u0000\u0000\u0000\u0001-\u0000\u0000\u0000\u00013",
-            3,
-            "3fd6fba227b03eb157319fa514bded3e53739dc4",
+            "7d778154ffeba264f78361170eaf7c86faad9451",
             null,
             null,
             "__NOW__",
-            5,
             2,
-            "3fd6fba227b03eb157319fa514bded3e53739dc4",
+            "7d778154ffeba264f78361170eaf7c86faad9451",
             null,
             201722
          ],
@@ -580,17 +584,16 @@
             2,
             null,
             "__NOW__",
-            "fd12f791e9c15a9c7ba9b54400f8f385f3af4abc",
+            "841081516d353b31d87a67e1623b605e67b5ef46",
             0,
             "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u00014A\u0000\u0000\u0000\u0003-\u0000\u0000\u0000\u00011-\u0000\u0000\u0000\u00012-\u0000\u0000\u0000\u00013",
             4,
-            "1811f94170df8b5f69ec8aab128038e90bdaa52b",
+            "a215eb1467a07123266f50fefe6c6330777fbf02",
             null,
             null,
             "__NOW__",
-            7,
             2,
-            "1811f94170df8b5f69ec8aab128038e90bdaa52b",
+            "a215eb1467a07123266f50fefe6c6330777fbf02",
             null,
             201722
          ]
@@ -630,7 +633,7 @@
             null,
             null,
             "asset",
-            "c9edf6038509da43205e2a110e5055c0d8b6e121"
+            "52bbd65eba8acc6118b577fb8a6b4b2658fb9fdd"
          ],
          [
             1,
@@ -647,7 +650,7 @@
             null,
             null,
             "tags",
-            "c878a3534180186ac23760852a5604ec1ce8bed5"
+            "0434b8eb93230d4a9ef9aaac6a33ebcf7a035880"
          ],
          [
             1,
@@ -664,7 +667,7 @@
             null,
             null,
             "categories",
-            "5182da827da3989e24bfd16629283c674d6b608b"
+            "dc92f8e8096f821c66e3a415051ba6c1a09e7d2e"
          ],
          [
             1,
@@ -681,7 +684,7 @@
             1,
             null,
             "content_type",
-            "9847f4321e99dbf4e7aecf6f5bbf4056ea2782f7"
+            "527c257525747d2cb4cb86e9f634e6346ff501cb"
          ]
       ]
    },
@@ -917,7 +920,7 @@
       ],
       "rows" : [
          [
-            "DataAPIDisableSite 0\nDefaultSupportedLanguages en_us,ja\nDisableDataAPI 0\nDisableNotificationPings 1\nPluginAlias ContentType Information Widget=ContentInfoWidget\nPluginAlias Markdown=Markdown/Markdown.pl\nPluginAlias SmartyPants=Markdown/SmartyPants.pl\nPluginAlias Textile=Textile/textile2.pl\nPluginAlias WXR Importer=WXRImporter\nPluginAlias Widget Manager Upgrade Assistant=WidgetManager/WidgetManager.pl\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion blockeditor=1\nPluginSchemaVersion contenttypecolumn=0.01\nPluginSchemaVersion formattedtext=1.00\nPluginSchemaVersion tinymce5=1\nPluginSchemaVersion tinymce6=1\nPluginSwitch Awesome=1\nPluginSwitch BlockEditor=0\nPluginSwitch ContentInfoWidget=1\nPluginSwitch ContentTypeColumn=1\nPluginSwitch FormattedText=1\nPluginSwitch FormattedTextForTinyMCE5=0\nPluginSwitch FormattedTextForTinyMCE6=1\nPluginSwitch GoogleAnalyticsV4=1\nPluginSwitch IllegalObjectType=1\nPluginSwitch Markdown/Markdown.pl=1\nPluginSwitch Markdown/SmartyPants.pl=1\nPluginSwitch SortMethod=1\nPluginSwitch Textile/textile2.pl=0\nPluginSwitch TinyMCE5=0\nPluginSwitch TinyMCE6=1\nPluginSwitch WXRImporter=1\nPluginSwitch WidgetManager/WidgetManager.pl=0\nSchemaVersion 8.0000\nTrimFilePath 1\n",
+            "DataAPIDisableSite 0\nDefaultSupportedLanguages en_us,ja\nDisableDataAPI 0\nDisableNotificationPings 1\nHidePrivateRelatedContentData 1\nPluginAlias ContentType Information Widget=ContentInfoWidget\nPluginAlias Markdown=Markdown/Markdown.pl\nPluginAlias SmartyPants=Markdown/SmartyPants.pl\nPluginAlias Textile=Textile/textile2.pl\nPluginAlias WXR Importer=WXRImporter\nPluginAlias Widget Manager Upgrade Assistant=WidgetManager/WidgetManager.pl\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion blockeditor=1\nPluginSchemaVersion formattedtext=1.00\nPluginSchemaVersion tinymce5=1\nPluginSchemaVersion tinymce6=1\nPluginSwitch BlockEditor=0\nPluginSwitch ContentInfoWidget=1\nPluginSwitch FormattedText=1\nPluginSwitch FormattedTextForTinyMCE5=0\nPluginSwitch FormattedTextForTinyMCE6=1\nPluginSwitch GoogleAnalyticsV4=1\nPluginSwitch Markdown/Markdown.pl=1\nPluginSwitch Markdown/SmartyPants.pl=1\nPluginSwitch Textile/textile2.pl=0\nPluginSwitch TinyMCE5=0\nPluginSwitch TinyMCE6=1\nPluginSwitch WXRImporter=1\nPluginSwitch WidgetManager/WidgetManager.pl=0\nSchemaVersion 8.0002\nTrimFilePath 1\n",
             1
          ]
       ]
@@ -945,12 +948,12 @@
             "__NOW__",
             null,
             "This is a sample.",
-            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002A\u0000\u0000\u0000\u0003H\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0005asset\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(c9edf6038509da43205e2a110e5055c0d8b6e121\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\u0005assetH\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00012\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0004tags\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00012\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\u0004tags\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(c878a3534180186ac23760852a5604ec1ce8bed5H\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\ncategories\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00013\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00013\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\ncategories\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(5182da827da3989e24bfd16629283c674d6b608b",
+            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002A\u0000\u0000\u0000\u0003H\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0005asset\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(52bbd65eba8acc6118b577fb8a6b4b2658fb9fdd\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\u0005asset\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00011H\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00012\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0004tags\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\u0004tags\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00012\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(0434b8eb93230d4a9ef9aaac6a33ebcf7a035880H\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00013\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\ncategories\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00013\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\ncategories\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(dc92f8e8096f821c66e3a415051ba6c1a09e7d2e",
             1,
             null,
             "__NOW__",
             "child",
-            "571fcd732d57157f183f1de3cbf695d279ec5ecd",
+            "7baf3563a36fbc795d0ab22d6228b68bfb965da2",
             null,
             null
          ],
@@ -960,12 +963,12 @@
             "__NOW__",
             null,
             "This is a sample.",
-            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002A\u0000\u0000\u0000\u0001H\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0003\u0000\u0000\u0000\u0006source-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0005child\u0000\u0000\u0000\bmultiple-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00014\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(9847f4321e99dbf4e7aecf6f5bbf4056ea2782f7\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\fcontent_type",
+            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002A\u0000\u0000\u0000\u0001H\u0000\u0000\u0000\u0005\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(527c257525747d2cb4cb86e9f634e6346ff501cb\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\fcontent_type\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0003\u0000\u0000\u0000\bmultiple-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0006source-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0005child\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00014",
             2,
             null,
             "__NOW__",
             "parent",
-            "fd12f791e9c15a9c7ba9b54400f8f385f3af4abc",
+            "841081516d353b31d87a67e1623b605e67b5ef46",
             null,
             null
          ]
@@ -1325,6 +1328,28 @@
             "__NOW__",
             0,
             1,
+            "changed-password",
+            null,
+            null,
+            null,
+            null,
+            "__NOW__",
+            "Password Is Changed",
+            null,
+            1,
+            "The login password for '<mt:var name=\"account\">' was changed by a system administrator (<mt:var name=\"changed_by\">).\n\nPlease ask the administrator for the new password. If this change is unexpected, please report it to the administrtor.\n\n<mt:include module=\"Mail Footer\">\n",
+            "email"
+         ],
+         [
+            0,
+            0,
+            0,
+            1,
+            null,
+            null,
+            "__NOW__",
+            0,
+            2,
             "footer-email",
             null,
             null,
@@ -1346,7 +1371,7 @@
             null,
             "__NOW__",
             0,
-            2,
+            3,
             "lockout-ip",
             null,
             null,
@@ -1368,7 +1393,7 @@
             null,
             "__NOW__",
             0,
-            3,
+            4,
             "lockout-user",
             null,
             null,
@@ -1390,7 +1415,7 @@
             null,
             "__NOW__",
             0,
-            4,
+            5,
             "notify-entry",
             null,
             null,
@@ -1412,7 +1437,7 @@
             null,
             "__NOW__",
             0,
-            5,
+            6,
             "recover-password",
             null,
             null,
@@ -1443,5 +1468,5 @@
          ]
       ]
    },
-   "schema_version" : "WidgetManager 1.1; blockeditor 1; contenttypecolumn 0.01; core 8.0000; formattedtext 1.00; tinymce5 1; tinymce6 1"
+   "schema_version" : "WidgetManager 1.1; blockeditor 1; core 8.0002; formattedtext 1.00; tinymce5 1; tinymce6 1"
 }

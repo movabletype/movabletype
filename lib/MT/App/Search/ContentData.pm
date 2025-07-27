@@ -59,6 +59,11 @@ sub SearchThrottleSeconds {
     $_[0]->config->ContentDataSearchThrottleSeconds;
 }
 
+sub SearchMaxCharCount {
+    my $app = shift;
+    return $app->config->ContentDataSearchMaxCharCount;
+}
+
 sub core_methods {
     my $app = shift;
     +{ default => \&MT::App::Search::process };
@@ -378,6 +383,25 @@ sub search_terms {
         push @terms, \%def_terms;
     }
 
+    if ($app->id eq 'data_api') {
+        if (!$app->user or !$app->user->is_superuser or $app->config->SuperuserRespectsDataAPIDisableSite) {
+            my @blog_term;
+            for my $term (@terms) {
+                next unless $term->{blog_id};
+                push @blog_term, {id => $term->{blog_id}};
+                last;
+            }
+            push @blog_term, {class => '*'} unless @blog_term;
+            my @sites = $app->model('blog')->load(@blog_term);
+            require MT::CMS::Blog;
+            for my $site (@sites) {
+                if (!MT::CMS::Blog::data_api_is_enabled($app, $site->id, $site)) {
+                    return $app->error('Forbidden', 403);
+                }
+            }
+        }
+    }
+
     my ( $date_start, $date_end );
     if ( $app->param('archive_type') && $app->param('year') ) {
         my $year         = $app->param('year');
@@ -503,7 +527,7 @@ sub _parse_search_content_types {
     return
         unless defined $search_content_types && $search_content_types ne '';
 
-    my $can_search_by_id = $search_content_types =~ /^(?:[0-9]+|AND|OR|NOT|[ \(\)])+$/i ? 1 : 0;
+    my $can_search_by_id = $search_content_types =~ /^(?:[0-9]|AND|OR|NOT|[ \(\)])+$/i ? 1 : 0;
 
     my $lucene_struct
         = eval { Lucene::QueryParser::parse_query($search_content_types) };

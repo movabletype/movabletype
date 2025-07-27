@@ -243,7 +243,7 @@ class MTViewer extends Smarty {
         }
     }
 
-    function error($err, $error_type = E_USER_ERROR) {
+    function error($err, $error_type = E_USER_WARNING) {
         trigger_error($err, $error_type);
         return '';
     }
@@ -1003,6 +1003,7 @@ EOT;
      * @return mixed
      */
     function _eval($code, $params=null) {
+        trigger_error('function _eval is deprecated', E_USER_DEPRECATED);
         return eval($code);
     }
 

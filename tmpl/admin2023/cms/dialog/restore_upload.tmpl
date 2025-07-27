@@ -1,7 +1,7 @@
 <$mt:setvar name="page_title" value="<__trans phrase="Restore: Multiple Files">"$>
 <mt:setvarblock name="js_include" append="1">
-    <script type="text/javascript" src="<mt:var name="static_uri">js/tc/client.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
-    <script type="text/javascript" src="<mt:var name="static_uri">js/dialog.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+    <mtapp:script type="text/javascript" path="js/tc/client.js">
+    <mtapp:script type="text/javascript" path="js/dialog.js">
 
     <script type="text/javascript">
     /* <![CDATA[ */
@@ -62,6 +62,7 @@
     <input type="hidden" name="is_asset" value="<mt:var name="is_asset" escape="html">" />
     <input type="hidden" name="schema_version" value="<mt:var name="schema_version" escape="html">" />
     <input type="hidden" name="overwrite_templates" value="<mt:var name="overwrite_templates" escape="html">" />
+    <input type="hidden" name="skip_fileinfo" value="<mt:var name="skip_fileinfo" escape="html">" />
     <input type="hidden" name="objects_json" value="<mt:var name="objects_json" escape="html">" />
     <input type="hidden" name="deferred_json" value="<mt:var name="deferred_json" escape="html">" />
 </mt:setvarblock>

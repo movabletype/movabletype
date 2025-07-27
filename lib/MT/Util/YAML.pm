@@ -16,7 +16,7 @@ sub _find_module {
     my ($config) = @_;
     if ( !$config ) {
         ## if MT was not yet instantiated, ignore the config directive.
-        eval { $config = MT->app->config('YAMLModule') || '' };
+        eval { $config = MT->app->config('YAMLModule') || '' } if $MT::ConfigMgr::cfg;
     }
     if ($config) {
         $config =~ s/^YAML:://;
@@ -29,13 +29,14 @@ sub _find_module {
         $Module = $config;
     }
     else {
-        eval { require YAML::Syck };
-        $Module
-            = $@
-            ? 'MT::Util::YAML::Tiny'
-            : 'MT::Util::YAML::Syck';
-        eval "require $Module";
-        die $@ if $@;
+        for my $candidate (qw(YAML::XS YAML::Syck YAML::PP YAML::Tiny)) {
+            if (eval "require $candidate; 1") {
+                $Module = "MT::Util::$candidate";
+                last if eval "require $Module; 1";
+                $Module = '';
+            }
+        }
+        die MT->translate( "Cannot load YAML module: [_1]", $@ ) if $@;
     }
     1;
 }

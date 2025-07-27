@@ -7,8 +7,6 @@ use Test::More;
 use MT::Test::Env;
 
 BEGIN {
-    eval 'use Test::Spec; 1'
-        or plan skip_all => 'Test::Spec is not installed';
     eval 'use Imager; 1'
         or plan skip_all => 'Imager is not installed';
     plan skip_all => 'Not for Windows now' if $^O eq 'MSWin32';
@@ -29,6 +27,8 @@ BEGIN {
         # internal package (Image::Magick::Q16 etc), it's
         # more reliable to depend on something else.
         ImageDriver => 'Imager',
+
+        $ENV{MT_TEST_EDIT_CONTENT_TYPE_RIOT} ? (UseRiot => 1) : (),
     );
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
@@ -37,6 +37,7 @@ use MT;
 use MT::Test;
 use MT::Test::Permission;
 use MT::Test::Selenium;
+use MT::Test::Fixture;
 
 my $blog_id = 1;
 
@@ -283,6 +284,7 @@ $test_env->prepare_fixture(sub {
             order   => 12,
             type    => $cf_list->type,
             options => { label => $cf_list->name },
+            unique_id => $cf_list->unique_id,
         },
         {
             id      => $cf_table->id,
@@ -293,6 +295,7 @@ $test_env->prepare_fixture(sub {
                 initial_rows => 3,
                 initial_cols => 3,
             },
+            unique_id => $cf_table->unique_id,
         },
         {
             id      => $cf_tag->id,
@@ -304,6 +307,7 @@ $test_env->prepare_fixture(sub {
                 max      => 5,
                 min      => 1,
             },
+            unique_id => $cf_tag->unique_id,
         },
         {
             id      => $cf_category->id,
@@ -316,6 +320,7 @@ $test_env->prepare_fixture(sub {
                 max          => 5,
                 min          => 1,
             },
+            unique_id => $cf_category->unique_id,
         },
         {
             id      => $cf_image->id,
@@ -327,6 +332,7 @@ $test_env->prepare_fixture(sub {
                 max      => 5,
                 min      => 1,
             },
+            unique_id => $cf_image->unique_id,
         },
         {
             id      => $cf_ct->id,
@@ -337,9 +343,10 @@ $test_env->prepare_fixture(sub {
                 multiple => 1,
                 source   => $child_ct->id,
             },
+            unique_id => $cf_ct->unique_id,
         },
     ];
-    $ct->fields($before_fields);
+    $ct->fields(MT::Test::Fixture::_fix_fields($before_fields));
     $ct->save or die $ct->errstr;
 });
 
@@ -361,7 +368,7 @@ subtest 'On Edit Content type ' => sub {
         my $selenium = MT::Test::Selenium->new($test_env);
         $selenium->visit('/cgi-bin/mt.cgi?__mode=view&blog_id=1&_type=content_type&id=1&username=Melody&password=Nelson');
         $selenium->screenshot_full;
-        $selenium->driver->execute_script('jQuery(".mt-contentfield .duplicate-content-field").each(function(){ jQuery(this).get(0).click() });');
+        $selenium->driver->execute_script('jQuery(".mt-contentfield .duplicate-content-field").each(function(){setTimeout(() => jQuery(this).get(0).click())});');
         $selenium->screenshot_full;
         $selenium->driver->execute_script('jQuery("[data-is=\'content-fields\'] button.btn-primary").trigger("click")');
         $selenium->screenshot_full;

@@ -67,18 +67,22 @@ sub metadata {
 
 sub image_height {
     my $asset = shift;
-    my $height = $asset->meta( 'image_height', @_ );
+    my $height = $asset->height(@_);
     return $height if $height || @_;
 
-    if ( !-e $asset->file_path || !-r $asset->file_path ) {
+    my $file_path = $asset->file_path;
+    if ( !defined $file_path || $file_path eq '' ) {
+        return undef;
+    }
+    if ( !-e $file_path || !-r $file_path ) {
         return undef;
     }
     if (!$asset->{__image_info}) {
         require MT::Image;
-        $asset->{__image_info} = MT::Image->get_image_info( Filename => $asset->file_path ) || {};
+        $asset->{__image_info} = MT::Image->get_image_info( Filename => $file_path ) || {};
     }
     if (my $h = $asset->{__image_info}{height}) {
-        $asset->meta( 'image_height', $h );
+        $asset->height($h);
         if ( $asset->id ) {
             $asset->save;
         }
@@ -89,18 +93,22 @@ sub image_height {
 
 sub image_width {
     my $asset = shift;
-    my $width = $asset->meta( 'image_width', @_ );
+    my $width = $asset->width(@_);
     return $width if $width || @_;
 
-    if ( !-e $asset->file_path || !-r $asset->file_path ) {
+    my $file_path = $asset->file_path;
+    if ( !defined $file_path || $file_path eq '' ) {
+        return undef;
+    }
+    if ( !-e $file_path || !-r $file_path ) {
         return undef;
     }
     if (!$asset->{__image_info}) {
         require MT::Image;
-        $asset->{__image_info} = MT::Image->get_image_info( Filename => $asset->file_path ) || {};
+        $asset->{__image_info} = MT::Image->get_image_info( Filename => $file_path ) || {};
     }
     if (my $w = $asset->{__image_info}{width}) {
-        $asset->meta( 'image_width', $w );
+        $asset->width($w);
         if ( $asset->id ) {
             $asset->save;
         }
@@ -112,7 +120,11 @@ sub image_width {
 sub has_thumbnail {
     my $asset = shift;
 
-    return unless -f $asset->file_path;
+    my $file_path = $asset->file_path;
+    if ( !defined $file_path || $file_path eq '' ) {
+        return undef;
+    }
+    return 0 unless -f $file_path;
 
     my $file_ext = $asset->file_ext || '';
     return 0 if $file_ext =~ /tiff?$/;
@@ -211,6 +223,7 @@ sub thumbnail_file {
     return undef unless $fmgr;
 
     my $file_path = $asset->file_path;
+    return undef unless defined $file_path && $file_path ne '';
     return undef unless $fmgr->file_size($file_path);
 
     return undef if ($asset->file_ext || '') =~ /tiff?$/;
@@ -234,7 +247,7 @@ sub thumbnail_file {
             require MT::Image;
             my ( $t_w, $t_h )
                 = MT::Image->get_image_info( Filename => $thumbnail );
-            if (   ( $param{Square} && $t_h != $t_w )
+            if ( !$t_h || !$t_w || ( $param{Square} && $t_h != $t_w )
                 || ( !$param{Square} && $t_h == $t_w ) )
             {
                 $already_exists = 0;
@@ -268,7 +281,25 @@ sub thumbnail_file {
                 MT->translate( "Error cropping image: [_1]", $img->errstr ) );
         }
 
-        ($data) = $img->scale( Height => $n_h, Width => $n_w )
+        my %scale_arg = (Height => $n_h, Width => $n_w);
+        if ($asset->is_rotated_90_degrees) {
+            if ($param{Type}) {
+                # A new type of the image may not fully support Orientation, so let's normalize it
+                my $orientation = $asset->exif->GetValue('Orientation');
+                if ($orientation =~ /Mirror horizontal/i) {
+                    $img->flipHorizontal();
+                }
+                if ($orientation =~ /Rotate 90 CW/i) {
+                    $img->rotate( Degrees => 90 );
+                }
+                if ($orientation =~ /Rotate 270 CW/i) {
+                    $img->rotate( Degrees => 270 );
+                }
+            } else {
+                ($scale_arg{Height}, $scale_arg{Width}) = ($scale_arg{Width}, $scale_arg{Height});
+            }
+        }
+        ($data) = $img->scale(%scale_arg)
             or return $asset->error(
             MT->translate( "Error scaling image: [_1]", $img->errstr ) );
 
@@ -284,9 +315,20 @@ sub thumbnail_file {
         MT->translate( "Error creating thumbnail file: [_1]", $fmgr->errstr )
         );
 
+    # Copy some of the exif data from the original
+    if ($asset->has_metadata && !$asset->is_metadata_broken) {
+        my $thumb_exif = Image::ExifTool->new;
+        if (!$param{Type}) {
+            $thumb_exif->SetNewValuesFromFile($file_path);
+        }
+        $thumb_exif->WriteInfo($thumbnail)
+            or return $asset->trans_error( 'Writing metadata failed: [_1]',
+            $thumb_exif->GetValue('Error') );
+    }
+
     # Remove metadata from thumbnail file.
     require MT::Image;
-    MT::Image->remove_metadata($thumbnail)
+    MT::Image->remove_metadata($thumbnail, $param{Type})
         or return $asset->error( MT::Image->errstr );
 
     return ( $thumbnail, $n_w, $n_h );
@@ -363,6 +405,18 @@ sub thumbnail_filename {
     $format =~ s/%i/$id/g;
     $format =~ s/%x/$ext/g;
     return $format;
+}
+
+sub is_rotated_90_degrees {
+    my $asset = shift;
+    return $asset->{__is_rotated_90_degrees} if defined $asset->{__is_rotated_90_degrees};
+    if (my $exif = $asset->exif) {
+        my $orientation = $exif->GetValue('Orientation');
+        if ($orientation && $orientation =~ /rotate (?:90|270)/i) {
+            return $asset->{__is_rotated_90_degrees} = 1;
+        }
+    }
+    return $asset->{__is_rotated_90_degrees} = 0;
 }
 
 sub as_html {
@@ -546,6 +600,8 @@ sub on_upload {
         undef $thumb;
     }
     if ( $param->{image_defaults} ) {
+        require MT::Util::Deprecated;
+        MT::Util::Deprecated::warning(since => '8.5.0', name => 'image_defaults');
 
         # Save new defaults if requested.
         $blog->image_default_wrap_text( $param->{wrap_text} ? 1 : 0 );
@@ -1079,9 +1135,11 @@ sub transform {
 }
 
 sub exif {
-    my ($asset) = @_;
+    my ($asset, %options) = @_;
     require Image::ExifTool;
     my $exif = Image::ExifTool->new;
+    %options = (FastScan => 2, Composite => 0, Duplicates => 0, %options);
+    $exif->Options($_ => $options{$_}) for keys %options;
     $exif->ExtractInfo( $asset->file_path )
         or
         return $asset->trans_error( 'Extracting image metadata failed: [_1]',
@@ -1101,10 +1159,8 @@ sub has_gps_metadata {
         : 0;
 }
 
-my @MandatoryExifTags;
-
 sub has_metadata {
-    my ($asset) = @_;
+    my ($asset, $ignore_orientation) = @_;
 
     my $file_ext = lc( $asset->file_ext || '' );
     return 0 if $file_ext !~ /^(jpe?g|tiff?|webp|png)$/;
@@ -1116,7 +1172,8 @@ sub has_metadata {
     my $is_webp = $file_ext eq 'webp';
     my $is_png  = $file_ext eq 'png';
 
-    @MandatoryExifTags = _set_mandatory_exif_tags() unless @MandatoryExifTags;
+    require MT::Image::ExifData;
+    my $writable_tags;
     for my $g ( $exif->GetGroups ) {
         next
             if $g eq 'ExifTool'
@@ -1125,28 +1182,19 @@ sub has_metadata {
             || ( $is_webp && $g =~ /\A(?:RIFF|ICC_Profile)\z/ )
             || ( $is_png  && $g =~ /\A(?:PNG|ICC_Profile)\z/ )
             || ( $is_tiff && $g eq 'EXIF' );
-        my %writable_tags = map {$_ => 1} Image::ExifTool::GetWritableTags($g);
-        delete $writable_tags{$_} for @MandatoryExifTags;
-        delete $writable_tags{Orientation};  # special case
-        next unless %writable_tags;
+
+        return 1 unless $g eq 'EXIF' or $g eq 'XMP';
+
+        next if $ignore_orientation; # Orientation; just to pass tests
+
+        $writable_tags ||= MT::Image::ExifData::writable_tags();
+
         $exif->Options( Group => $g );
-        $exif->ExtractInfo( $asset->file_path );
         for my $t ( $exif->GetTagList ) {
-            return 1 if $writable_tags{$t};
+            return 1 if $writable_tags->{$t};
         }
     }
     return 0;
-}
-
-sub _set_mandatory_exif_tags {
-    require Image::ExifTool::Exif;
-    @MandatoryExifTags = ();
-    for my $value (values %Image::ExifTool::Exif::Main) {
-        if (ref $value eq 'HASH' && $value->{Mandatory}) {
-            push @MandatoryExifTags, $value->{Name};
-        }
-    }
-    @MandatoryExifTags;
 }
 
 sub remove_gps_metadata {
@@ -1171,7 +1219,7 @@ sub remove_broken_png_metadata {
     return 1 if lc( $asset->file_ext || '' ) !~ /^png$/;
     return 1 if $asset->is_metadata_broken;
 
-    my $exif = $asset->exif or return;
+    my $exif = $asset->exif(FastScan => 0) or return;
 
     # libpng 1.6 marks some of the old HP profiles *broken*
     # cf. https://sourceforge.net/p/libpng/code/ci/master/tree/png.c#l2275

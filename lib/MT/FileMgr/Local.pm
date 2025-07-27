@@ -137,9 +137,17 @@ sub _write_file {
     $bytes;
 }
 
-sub exists { -e _local( $_[1] ) }
+sub exists {
+    my $path = _local($_[1]);
+    return undef unless defined $path && $path ne '';
+    return -e $path;
+}
 
-sub can_write { -w _local( $_[1] ) }
+sub can_write {
+    my $path = _local($_[1]);
+    return undef unless defined $path && $path ne '';
+    return -w $path;
+}
 
 sub mkpath {
     my $fmgr = shift;
@@ -183,6 +191,9 @@ sub file_mod_time {
     my $fmgr = shift;
     my ($file) = @_;
     $file = _local($file);
+    if ( !defined $file || $file eq '' ) {
+        return undef;
+    }
     if ( -e $file ) {
         return ( stat($file) )[9];    # modification timestamp
     }
@@ -193,6 +204,9 @@ sub file_size {
     my $fmgr = shift;
     my ($file) = @_;
     $file = _local($file);
+    if ( !defined $file || $file eq '' ) {
+        return undef;
+    }
     if ( -e $file ) {
         return ( stat($file) )[7];    # filesize
     }
@@ -203,6 +217,7 @@ sub content_is_updated {
     my $fmgr = shift;
     my ( $file, $content ) = @_;
     $file = _local($file);
+    return 1 unless defined $file && $file ne '';
     return 1 unless -e $file;
     ## If the system has Digest::MD5, compare MD5 hashes; otherwise
     ## read in the file and compare the strings.
@@ -231,6 +246,7 @@ sub delete {
     my $fmgr = shift;
     my ($file) = @_;
     $file = _local($file);
+    return 1 unless defined $file && $file ne '';
     return 1 unless -e $file or -l $file;
     unlink $file
         or return $fmgr->error(
@@ -242,6 +258,7 @@ sub delete {
 sub rmdir {
     my $fmgr = shift;
     my ($dir) = @_;
+    return 1 unless defined $dir && $dir ne '';
     return 1 unless -d $dir && !-l $dir;
     rmdir $dir
         or return $fmgr->error( "Deleting '[_1]' directory failed: [_2]",

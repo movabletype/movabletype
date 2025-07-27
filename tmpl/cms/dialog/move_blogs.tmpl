@@ -2,10 +2,10 @@
 
 <mt:setvarblock name="js_include" append="1">
 <mt:if name="use_jquery_json">
-<script type="text/javascript" src="<mt:var name="static_uri">jquery/jquery.json.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+<mtapp:script type="text/javascript" path="jquery/jquery.json.js">
 </mt:if>
-<script type="text/javascript" src="<mt:var name="static_uri">js/tc/client.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
-<script type="text/javascript" src="<mt:var name="static_uri">js/dialog.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+<mtapp:script type="text/javascript" path="js/tc/client.js">
+<mtapp:script type="text/javascript" path="js/dialog.js">
 
 <script type="text/javascript">
 /* <![CDATA[ */

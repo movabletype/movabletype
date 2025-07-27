@@ -47,7 +47,8 @@ class Session extends BaseObject
         $ret = parent::Save();
         if ( $ret ) {
             $mt = MT::get_instance();
-            $mt->db()->db()->UpdateBlob( 'mt_session', 'session_data', $val, "session_id='".$this->id."'", 'BLOB' );
+            $db = $mt->db()->db();
+            $db->UpdateBlob('mt_session', 'session_data', $val, "session_id=". $db->Quote($this->id), 'BLOB');
         }
     }
 }

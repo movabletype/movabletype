@@ -464,7 +464,13 @@ Outputs the Site URL field of the website currently in context. An ending
 
 sub _hdlr_website_url {
     my ( $ctx, $args, $cond ) = @_;
-    my $blog = $ctx->stash('blog');
+    my $blog;
+    if ( $args->{id} && ( $args->{id} =~ m/^\d+$/ ) ) {
+        $blog = MT::Blog->load( $args->{id} );
+    }
+    else {
+        $blog = $ctx->stash('blog');
+    }
     return '' unless $blog;
     my $website = $blog->website
         or return $ctx->_no_parent_website_error();
@@ -487,7 +493,13 @@ Outputs the Site Root field of the website currently in context. An ending
 
 sub _hdlr_website_path {
     my ( $ctx, $args, $cond ) = @_;
-    my $blog = $ctx->stash('blog');
+    my $blog;
+    if ( $args->{id} && ( $args->{id} =~ m/^\d+$/ ) ) {
+        $blog = MT::Blog->load( $args->{id} );
+    }
+    else {
+        $blog = $ctx->stash('blog');
+    }
     return '' unless $blog;
     my $website = $blog->website
         or return $ctx->_no_parent_website_error();

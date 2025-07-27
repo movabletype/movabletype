@@ -76,35 +76,35 @@
 </mt:setvarblock>
 
 <mt:setvarblock name="css_include" append="1">
-<link rel="stylesheet" href="<mt:var name="static_uri">css/list_common.css?v=<mt:var name="mt_version_id" escape="url">" />
-<link rel="stylesheet" href="<mt:var name="static_uri">css/msg-balloon.css?v=<mt:var name="mt_version_id" escape="url">" />
+<mtapp:stylesheet path="css/list_common.css">
+<mtapp:stylesheet path="css/msg-balloon.css">
 </mt:setvarblock>
 
 <mt:setvarblock name="js_include" append="1">
-<script type="text/javascript" src="<mt:var name="static_uri">js/listing/list_client.js?v=<mt:var name="mt_version_id" escape="url">"></script>
-<script type="text/javascript" src="<mt:var name="static_uri">js/listing/list_action_client.js?v=<mt:var name="mt_version_id" escape="url">"></script>
-<script type="text/javascript" src="<mt:var name="static_uri">js/listing/list_data.js?v=<mt:var name="mt_version_id" escape="url">"></script>
-<script type="text/javascript" src="<mt:var name="static_uri">js/listing/list_store.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+<mtapp:script type="text/javascript" path="js/listing/list_client.js">
+<mtapp:script type="text/javascript" path="js/listing/list_action_client.js">
+<mtapp:script type="text/javascript" path="js/listing/list_data.js">
+<mtapp:script type="text/javascript" path="js/listing/list_store.js">
 
 <mt:unless name="debug_riot">
-  <script type="text/javascript" src="<mt:var name="static_uri">riot/riot.min.js?v=<mt:var name="mt_version_id" escape="url">" charset="utf-8"></script>
-  <script type="text/javascript" src="<mt:var name="static_uri">js/ss/ss.js?v=<mt:var name="mt_version_id" escape="url">" charset="utf-8"></script>
-  <script type="text/javascript" src="<mt:var name="static_uri">js/listing/listing.js?v=<mt:var name="mt_version_id" escape="url">" charset="utf-8"></script>
+  <mtapp:script type="text/javascript" path="riot/riot.min.js">
+  <mtapp:script type="text/javascript" path="js/ss/ss.js">
+  <mtapp:script type="text/javascript" path="js/listing/listing.js">
 <mt:else>
-  <script type="riot/tag" src="<mt:var name="static_uri">js/ss/tag/ss.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
-  <script type="riot/tag" src="<mt:var name="static_uri">js/listing/tag/raw.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
-  <script type="riot/tag" src="<mt:var name="static_uri">js/listing/tag/list-top.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
-  <script type="riot/tag" src="<mt:var name="static_uri">js/listing/tag/display-options.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
-  <script type="riot/tag" src="<mt:var name="static_uri">js/listing/tag/display-options-for-mobile.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
-  <script type="riot/tag" src="<mt:var name="static_uri">js/listing/tag/list-actions.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
-  <script type="riot/tag" src="<mt:var name="static_uri">js/listing/tag/list-actions-for-pc.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
-  <script type="riot/tag" src="<mt:var name="static_uri">js/listing/tag/list-actions-for-mobile.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
-  <script type="riot/tag" src="<mt:var name="static_uri">js/listing/tag/list-pagination.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
-  <script type="riot/tag" src="<mt:var name="static_uri">js/listing/tag/list-pagination-for-pc.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
-  <script type="riot/tag" src="<mt:var name="static_uri">js/listing/tag/list-pagination-for-mobile.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
-  <script type="riot/tag" src="<mt:var name="static_uri">js/listing/tag/list-filter.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
-  <script type="riot/tag" src="<mt:var name="static_uri">js/listing/tag/list-table.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
-  <script type="text/javascript" src="<mt:var name="static_uri">riot/riot-compiler.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+  <mtapp:script type="riot/tag" path="js/ss/tag/ss.tag">
+  <mtapp:script type="riot/tag" path="js/listing/tag/raw.tag">
+  <mtapp:script type="riot/tag" path="js/listing/tag/list-top.tag">
+  <mtapp:script type="riot/tag" path="js/listing/tag/display-options.tag">
+  <mtapp:script type="riot/tag" path="js/listing/tag/display-options-for-mobile.tag">
+  <mtapp:script type="riot/tag" path="js/listing/tag/list-actions.tag">
+  <mtapp:script type="riot/tag" path="js/listing/tag/list-actions-for-pc.tag">
+  <mtapp:script type="riot/tag" path="js/listing/tag/list-actions-for-mobile.tag">
+  <mtapp:script type="riot/tag" path="js/listing/tag/list-pagination.tag">
+  <mtapp:script type="riot/tag" path="js/listing/tag/list-pagination-for-pc.tag">
+  <mtapp:script type="riot/tag" path="js/listing/tag/list-pagination-for-mobile.tag">
+  <mtapp:script type="riot/tag" path="js/listing/tag/list-filter.tag">
+  <mtapp:script type="riot/tag" path="js/listing/tag/list-table.tag">
+  <mtapp:script type="text/javascript" path="riot/riot-compiler.js">
 </mt:unless>
 
 <mt:loop name="filter_types">

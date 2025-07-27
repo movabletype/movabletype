@@ -179,11 +179,11 @@
         editor.mtProxies = {}
         editor.supportedButtonsCache = {}
         initButtonSettings(editor)
-        editor.on('init', function () {
-            updateButtonVisibility(editor)
-        })
 
-        editor.on('NodeChange', function () {
+        editor.on('NodeChange', function (args) {
+            if (args.initial) {
+                updateButtonVisibility(editor)
+            }
             var s = editor.mtEditorStatus
             if (s.mode == 'source' && s.format != 'none.tinymce_temp') {
                 $(editor.container).find('.tox-toolbar:eq(0)').css('display', 'none')
@@ -194,6 +194,67 @@
             if (!editor.mtProxies['source']) {
                 return
             }
+        })
+
+        editor.on('drop paste', function (e) {
+            var files = []
+            var dataTransfer = e.dataTransfer || e.clipboardData
+            for (var i = 0; i < dataTransfer.items.length; i++) {
+                var item = dataTransfer.items[i]
+                if (item.kind === 'string' && item.type === 'text/plain') {
+                    var plainTextContent = dataTransfer.getData('text/plain')
+                    if (plainTextContent && !plainTextContent.startsWith('file://')) {
+                        return true; // paste as text
+                    }
+                }
+                else if (/text\/(html|plain)/.test(item.type)) {
+                    return true; // paste as text
+                }
+                else if (item.kind === 'file' && /^image\//.test(item.type)) {
+                    files.push(item.getAsFile())
+                }
+            }
+
+            if (files.length === 0) {
+                return true;
+            }
+
+            if (
+              !MT.Editor.TinyMCE.config['plugin_mt_can_upload'] ||
+              editor.options.get('inline')
+            ) {
+                return false;
+            }
+
+            var blogId = $('[name=blog_id]').val() || 0
+
+            editor.execCommand('mtSaveBookmark')
+            openDialog('dialog_asset_modal', '_type=asset&amp;edit_field=' + editor.id + '&amp;blog_id=' + blogId + '&amp;dialog_view=1&amp;filter=class&amp;filter_val=image&amp;can_multi=1&amp;require_type=image')
+
+            var dialogIframe = document.querySelector(
+                "#mt-dialog-iframe"
+            );
+            var intervalId = setInterval(() => {
+                if (!(
+                    dialogIframe.contentWindow &&
+                    // new dialog page has been loaded
+                    dialogIframe.contentWindow.uploadFiles &&
+                    // content has been loaded
+                    dialogIframe.contentWindow.document.readyState !== "loading" &&
+                    // jQuery(initFunc) has been finished
+                    dialogIframe.contentWindow.jQuery
+                )) {
+                    return
+                }
+
+                clearInterval(intervalId)
+                var win = dialogIframe.contentWindow
+                var uploadForm = win.document.querySelector("#upload");
+                win.uploadFiles(files)
+                uploadForm.style.setProperty("display", "none", "important");
+            }, 100)
+
+            return false
         })
     }
 
@@ -299,7 +360,7 @@
             tooltip: 'insert_image',
             onAction: function () {
                 editor.execCommand('mtSaveBookmark')
-                openDialog('dialog_asset_modal', '_type=asset&amp;edit_field=' + id + '&amp;blog_id=' + blogId + '&amp;dialog_view=1&amp;filter=class&amp;filter_val=image&amp;can_multi=1')
+                openDialog('dialog_asset_modal', '_type=asset&amp;edit_field=' + id + '&amp;blog_id=' + blogId + '&amp;dialog_view=1&amp;filter=class&amp;filter_val=image&amp;can_multi=1&amp;require_type=image')
             }
         })
 

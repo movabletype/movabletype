@@ -3,11 +3,13 @@ package URI::ftp;
 use strict;
 use warnings;
 
-our $VERSION = '5.25';
+our $VERSION = '5.32';
 
 use parent qw(URI::_server URI::_userpass);
 
 sub default_port { 21 }
+
+sub encrypt_mode { undef }
 
 sub path { shift->path_query(@_) }  # XXX
 

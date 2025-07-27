@@ -14,9 +14,9 @@
   <title><mt:if name="html_title"><$mt:var name="html_title"$><mt:else><$mt:var name="page_title"$></mt:if><mt:if name="screen_id" ne="dashboard"><mt:if name="blog_name"> - <$mt:var name="blog_name" escape="html"$></mt:if></mt:if> | <$mt:var name="mt_product_name"$></title>
 
   <mt:unless name="optimize_ui">
-  <link rel="stylesheet" href="<mt:var name="static_uri">css/admin2023/mt.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
+  <mtapp:stylesheet path="css/admin2023/mt.css">
   <mt:else>
-  <link rel="stylesheet" href="<mt:var name="static_uri">css/admin2023/mt.min.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
+  <mtapp:stylesheet path="css/admin2023/mt.min.css">
   </mt:unless>
 
   <mt:var name="css_include">
@@ -41,18 +41,14 @@
 
   <mt:var name="html_head">
 
-  <script type="text/javascript" src="<$mt:var name="static_uri"$>js/admin2023/mt.js?v=<mt:var name="mt_version_id" escape="url">"></script>
-  <mt:if name="local_lang_id" eq="en-us">
-  <script type="text/javascript" src="<$mt:var name="static_uri"$>mt_en_us.js?v=<mt:var name="mt_version_id" escape="URL">" charset="utf-8"></script>
-  <mt:else>
-  <script type="text/javascript" src="<$mt:var name="static_uri"$>mt_<$mt:var name="local_lang_id"$>.js?v=<mt:var name="mt_version_id" escape="URL">" charset="utf-8"></script>
-  </mt:if>
+  <mtapp:script type="text/javascript" path="js/admin2023/mt.js">
+  <mtapp:script type="text/javascript" path="mt_%l.js">
   <mt:unless name="optimize_ui">
-  <script type="text/javascript" src="<$mt:var name="static_uri"$>js/admin2023/jquery/jquery.mt.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+  <mtapp:script type="text/javascript" path="js/admin2023/jquery/jquery.mt.js">
   <mt:else>
-  <script type="text/javascript" src="<$mt:var name="static_uri"$>js/admin2023/jquery/jquery.mt.min.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+  <mtapp:script type="text/javascript" path="js/admin2023/jquery/jquery.mt.min.js">
   </mt:unless>
-  <script type="text/javascript" src="<mt:var name="static_uri">js/mt/util.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+  <mtapp:script type="text/javascript" path="js/mt/util.js">
 
   <mt:var name="js_include">
 </head>

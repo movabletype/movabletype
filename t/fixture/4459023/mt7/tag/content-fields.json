@@ -335,7 +335,6 @@
          "cd_label",
          "cd_modified_by",
          "cd_modified_on",
-         "cd_random",
          "cd_status",
          "cd_unique_id",
          "cd_unpublished_on",
@@ -349,17 +348,16 @@
             1,
             null,
             "__NOW__",
-            "4c4866040760ec25b94f222c2fae0ebca5904812",
+            "592f78ff64741c1c9e7e726a09cbac85438e4436",
             0,
-            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u00011-\u0000\u0000\u0000\u0005test1\u0000\u0000\u0000\u00012-\u0000\u0000\u0000\u0005test2",
+            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u00012-\u0000\u0000\u0000\u0005test2\u0000\u0000\u0000\u00011-\u0000\u0000\u0000\u0005test1",
             1,
-            "950ae6b2903161b8c1ccd3e574e434322db56bd3",
+            "f9fc655b76a34575f7e4b565d568a6064f7b37bf",
             null,
             null,
             "__NOW__",
-            1,
             2,
-            "950ae6b2903161b8c1ccd3e574e434322db56bd3",
+            "f9fc655b76a34575f7e4b565d568a6064f7b37bf",
             null,
             201722
          ]
@@ -399,7 +397,7 @@
             null,
             null,
             "single_line_text",
-            "c6c950f67ce40b3227b0a3204184275549311a0f"
+            "89a07eaae211ac870e0e668aebd1d7383b58d535"
          ],
          [
             1,
@@ -416,7 +414,7 @@
             null,
             null,
             "single_line_text",
-            "bd5808254fa0e9b150390f13256967d29bcfb4d7"
+            "eaa2f06287f4f6454187a63c66a469aa5cfd52b4"
          ]
       ]
    },
@@ -482,7 +480,7 @@
       ],
       "rows" : [
          [
-            "DataAPIDisableSite 0\nDefaultSupportedLanguages en_us,ja\nDisableDataAPI 0\nDisableNotificationPings 1\nPluginAlias ContentType Information Widget=ContentInfoWidget\nPluginAlias Markdown=Markdown/Markdown.pl\nPluginAlias SmartyPants=Markdown/SmartyPants.pl\nPluginAlias Textile=Textile/textile2.pl\nPluginAlias WXR Importer=WXRImporter\nPluginAlias Widget Manager Upgrade Assistant=WidgetManager/WidgetManager.pl\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion blockeditor=1\nPluginSchemaVersion contenttypecolumn=0.01\nPluginSchemaVersion formattedtext=1.00\nPluginSchemaVersion tinymce5=1\nPluginSchemaVersion tinymce6=1\nPluginSwitch Awesome=1\nPluginSwitch BlockEditor=0\nPluginSwitch ContentInfoWidget=1\nPluginSwitch ContentTypeColumn=1\nPluginSwitch FormattedText=1\nPluginSwitch FormattedTextForTinyMCE5=0\nPluginSwitch FormattedTextForTinyMCE6=1\nPluginSwitch GoogleAnalyticsV4=1\nPluginSwitch IllegalObjectType=1\nPluginSwitch Markdown/Markdown.pl=1\nPluginSwitch Markdown/SmartyPants.pl=1\nPluginSwitch SortMethod=1\nPluginSwitch Textile/textile2.pl=0\nPluginSwitch TinyMCE5=0\nPluginSwitch TinyMCE6=1\nPluginSwitch WXRImporter=1\nPluginSwitch WidgetManager/WidgetManager.pl=0\nSchemaVersion 8.0000\nTrimFilePath 1\n",
+            "DataAPIDisableSite 0\nDefaultSupportedLanguages en_us,ja\nDisableDataAPI 0\nDisableNotificationPings 1\nHidePrivateRelatedContentData 1\nPluginAlias ContentType Information Widget=ContentInfoWidget\nPluginAlias Markdown=Markdown/Markdown.pl\nPluginAlias SmartyPants=Markdown/SmartyPants.pl\nPluginAlias Textile=Textile/textile2.pl\nPluginAlias WXR Importer=WXRImporter\nPluginAlias Widget Manager Upgrade Assistant=WidgetManager/WidgetManager.pl\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion blockeditor=1\nPluginSchemaVersion formattedtext=1.00\nPluginSchemaVersion tinymce5=1\nPluginSchemaVersion tinymce6=1\nPluginSwitch BlockEditor=0\nPluginSwitch ContentInfoWidget=1\nPluginSwitch FormattedText=1\nPluginSwitch FormattedTextForTinyMCE5=0\nPluginSwitch FormattedTextForTinyMCE6=1\nPluginSwitch GoogleAnalyticsV4=1\nPluginSwitch Markdown/Markdown.pl=1\nPluginSwitch Markdown/SmartyPants.pl=1\nPluginSwitch Textile/textile2.pl=0\nPluginSwitch TinyMCE5=0\nPluginSwitch TinyMCE6=1\nPluginSwitch WXRImporter=1\nPluginSwitch WidgetManager/WidgetManager.pl=0\nSchemaVersion 8.0002\nTrimFilePath 1\n",
             1
          ]
       ]
@@ -510,12 +508,12 @@
             "__NOW__",
             null,
             "This is a sample.",
-            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002A\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0005\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(c6c950f67ce40b3227b0a3204184275549311a0f\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\u0010single_line_text\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0007single1H\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0007single2\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\u0010single_line_text\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(bd5808254fa0e9b150390f13256967d29bcfb4d7\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00012\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u000210",
+            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002A\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\u0010single_line_text\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(89a07eaae211ac870e0e668aebd1d7383b58d535\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0007single1H\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0007single2\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u000210\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(eaa2f06287f4f6454187a63c66a469aa5cfd52b4\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\u0010single_line_text\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00012",
             1,
             null,
             "__NOW__",
             "test content data",
-            "4c4866040760ec25b94f222c2fae0ebca5904812",
+            "592f78ff64741c1c9e7e726a09cbac85438e4436",
             null,
             null
          ]
@@ -731,6 +729,28 @@
             "__NOW__",
             0,
             1,
+            "changed-password",
+            null,
+            null,
+            null,
+            null,
+            "__NOW__",
+            "Password Is Changed",
+            null,
+            1,
+            "The login password for '<mt:var name=\"account\">' was changed by a system administrator (<mt:var name=\"changed_by\">).\n\nPlease ask the administrator for the new password. If this change is unexpected, please report it to the administrtor.\n\n<mt:include module=\"Mail Footer\">\n",
+            "email"
+         ],
+         [
+            0,
+            0,
+            0,
+            1,
+            null,
+            null,
+            "__NOW__",
+            0,
+            2,
             "footer-email",
             null,
             null,
@@ -752,7 +772,7 @@
             null,
             "__NOW__",
             0,
-            2,
+            3,
             "lockout-ip",
             null,
             null,
@@ -774,7 +794,7 @@
             null,
             "__NOW__",
             0,
-            3,
+            4,
             "lockout-user",
             null,
             null,
@@ -796,7 +816,7 @@
             null,
             "__NOW__",
             0,
-            4,
+            5,
             "notify-entry",
             null,
             null,
@@ -818,7 +838,7 @@
             null,
             "__NOW__",
             0,
-            5,
+            6,
             "recover-password",
             null,
             null,
@@ -849,5 +869,5 @@
          ]
       ]
    },
-   "schema_version" : "WidgetManager 1.1; blockeditor 1; contenttypecolumn 0.01; core 8.0000; formattedtext 1.00; tinymce5 1; tinymce6 1"
+   "schema_version" : "WidgetManager 1.1; blockeditor 1; core 8.0002; formattedtext 1.00; tinymce5 1; tinymce6 1"
 }

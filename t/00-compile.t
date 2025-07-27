@@ -123,6 +123,7 @@ use_ok('MT::FileMgr');
 use_ok('MT::FileMgr::Local');
 use_ok('MT::FileMgr::FTP');
 use_ok('MT::ParamValidator');
+use_ok('MT::Util::RequestError');
 
 # MT7
 use_ok('MT::App::Search::ContentData');
@@ -245,6 +246,7 @@ use_ok('MT::Image::NetPBM');
 use_ok('MT::Image::Imager');
 use_ok('MT::Image::ImageMagick');
 use_ok('MT::Image::GraphicsMagick');
+use_ok('MT::Image::ExifData');
 use_ok('MT::ImportExport');
 use_ok('MT::Import');
 use_ok('MT::JunkFilter');
@@ -307,6 +309,22 @@ SKIP: {
     }
     else {
         skip( 'YAML::Syck is not installed', 1 );
+    }
+}
+SKIP: {
+    if ( eval { require YAML::PP } ) {
+        use_ok('MT::Util::YAML::PP');
+    }
+    else {
+        skip( 'YAML::PP is not installed', 1 );
+    }
+}
+SKIP: {
+    if ( eval { require YAML::XS } ) {
+        use_ok('MT::Util::YAML::XS');
+    }
+    else {
+        skip( 'YAML::XS is not installed', 1 );
     }
 }
 use_ok('MT::Util::YAML::Tiny');
@@ -632,6 +650,15 @@ use_ok('MT::DataAPI::Endpoint::v5::TextFilter');
 
 use_ok('MT::DataAPI::Endpoint::v6');
 use_ok('MT::DataAPI::Endpoint::v6::Stats');
+
+use_ok('MT::DataAPI::Endpoint::v7');
+use_ok('MT::DataAPI::Endpoint::v7::Theme');
+use_ok('MT::DataAPI::Endpoint::v7::Stats');
+use_ok('MT::DataAPI::Resource::v7::StatisticsDate');
+use_ok('MT::DataAPI::Resource::v7::StatisticsPath');
+use_ok('MT::DataAPI::Resource::v7::StatisticsYear');
+use_ok('MT::DataAPI::Resource::v7::StatisticsYearWeek');
+use_ok('MT::DataAPI::Resource::v7::StatisticsYearMonth');
 
 use_ok('MT::App::Search::Common');
 

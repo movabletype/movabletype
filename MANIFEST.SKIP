@@ -258,6 +258,7 @@ themes/broken_blog_theme
 
 ^schemas/
 ^scss/
+^src/
 \bknown-issues
 ^t/
 .*/t/
@@ -366,10 +367,14 @@ build-language-stamp
 ^node_modules/
 \.node-version$
 \.php_cs\.dist$
+\.php-cs-fixer\.php
 ^rollup.config.ts
+^vitest.config.ts
 ^tsconfig.json
 \.babelrc
-\.eslintrc.js
+\.eslintrc.json
+\.eslintignore
+^eslint.config.mjs
 
 ^mt-static/plugins/Motion
 ^mt-static/jquery/themes/Motion

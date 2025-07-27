@@ -182,6 +182,7 @@ BEGIN {
         'global:module' => { 'footer-email' => { label => 'Mail Footer', }, },
         'global:email'  => {
             'notify-entry'     => { label => 'Entry Notify', },
+            'changed-password' => { label => 'Password Is Changed', },
             'recover-password' => { label => 'Password Recovery', },
             'lockout-user'     => { label => 'User Lockout', },
             'lockout-ip'       => { label => 'IP Address Lockout', },

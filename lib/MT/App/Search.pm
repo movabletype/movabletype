@@ -10,7 +10,8 @@ use strict;
 use warnings;
 use base qw( MT::App );
 
-use MT::Util qw( encode_html encode_url perl_sha1_digest_hex );
+use MT::Util qw( encode_html encode_url );
+use MT::Util::Digest::SHA qw( sha1_hex );
 use MT::Util::Encode;
 use MT::App::Search::Common;
 
@@ -53,6 +54,11 @@ sub SearchThrottleIPWhitelist {
 
 sub SearchThrottleSeconds {
     _get_config_value( $_[0], 'SearchThrottleSeconds' );
+}
+
+sub SearchMaxCharCount {
+    my $app = shift;
+    return $app->config->SearchMaxCharCount;
 }
 
 sub _get_config_value {
@@ -183,8 +189,15 @@ sub init_request {
     foreach my $param (qw( IncludeBlogs ExcludeBlogs )) {
         my $val = $app->param($param);
         next unless defined $val && ( $val ne '' );
-        return $app->errtrans( 'Invalid [_1] parameter.', $param )
-            if ( $val !~ m/^(\d+,?)+$/ && $val ne 'all' );
+        return $app->errtrans('Invalid [_1] parameter.', $param)
+            if (
+            $val ne 'all'
+
+            # Revise "!~ m/^(\d+,?)+$/" to the following for performance improvement
+            && (   substr($val, 0, 1) !~ /[0-9]/
+                || substr($val, -1, 1) !~ /[0-9]/
+                || $val                =~ /,,/
+                || $val                !~ /^[0-9,]+$/));
     }
 
     # invalid request if they are given Zero as blog_id
@@ -307,8 +320,8 @@ sub generate_cache_keys {
     $key       .= $app_key_param;
     $count_key .= $app_key_param;
 
-    $key       = perl_sha1_digest_hex($key);
-    $count_key = perl_sha1_digest_hex($count_key);
+    $key       = sha1_hex($key);
+    $count_key = sha1_hex($count_key);
 
     $app->{cache_keys} = {
         result       => $key,
@@ -440,6 +453,9 @@ sub process {
     my @messages;
     return $app->throttle_response( \@messages )
         unless $app->throttle_control( \@messages );
+
+    my $search_string = $app->param('searchTerms') || $app->param('search');
+    return unless $app->check_search_max_char_count($search_string);
 
     my ( $count, $out ) = $app->check_cache();
     if ( defined $out ) {
@@ -627,6 +643,25 @@ sub search_terms {
         }
 
         push @terms, \%def_terms;
+    }
+
+    if ($app->id eq 'data_api') {
+        if (!$app->user or !$app->user->is_superuser or $app->config->SuperuserRespectsDataAPIDisableSite) {
+            my @blog_term;
+            for my $term (@terms) {
+                next unless $term->{blog_id};
+                push @blog_term, {id => $term->{blog_id}};
+                last;
+            }
+            push @blog_term, {class => '*'} unless @blog_term;
+            my @sites = $app->model('blog')->load(@blog_term);
+            require MT::CMS::Blog;
+            for my $site (@sites) {
+                if (!MT::CMS::Blog::data_api_is_enabled($app, $site->id, $site)) {
+                    return $app->error('Forbidden', 403);
+                }
+            }
+        }
     }
 
     my $columns = $params->{columns};
@@ -1415,6 +1450,23 @@ sub throttle_response {
         'The search you conducted has timed out.  Please simplify your query and try again.'
         );
     return $app->error($msg);
+}
+
+sub check_search_max_char_count {
+    my $app = shift;
+    my ($search_string) = @_;
+
+    return 1 if ($app->SearchMaxCharCount || 0) <= 0;
+    return 1 if !defined $search_string;
+
+    if (length $search_string > $app->SearchMaxCharCount) {
+        return $app->errtrans(
+            'Too long query. Please simplify your query to [_1] characters or less and try again.',
+            $app->SearchMaxCharCount,
+        );
+    }
+
+    return 1;
 }
 
 sub _default_throttle {

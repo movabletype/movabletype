@@ -1,4 +1,4 @@
-# Copyrights 1999-2022 by [Mark Overmeer <markov@cpan.org>].
+# Copyrights 1999-2025 by [Mark Overmeer <mark@overmeer.net>].
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
 # Pod stripped from pm file by OODoc 2.03.
@@ -6,9 +6,9 @@
 # OODoc into POD and HTML manual-pages.  See README.md
 # Copyright Mark Overmeer.  Licensed under the same terms as Perl itself.
 
-package MojoX::MIME::Types;
-use vars '$VERSION';
-$VERSION = '2.24';
+package MojoX::MIME::Types;{
+our $VERSION = '2.28';
+}
 
 use Mojo::Base -base;
 

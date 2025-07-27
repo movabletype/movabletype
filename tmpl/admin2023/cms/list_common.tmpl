@@ -76,36 +76,40 @@
 </mt:setvarblock>
 
 <mt:setvarblock name="css_include" append="1">
-<link rel="stylesheet" href="<mt:var name="static_uri">css/list_common.css?v=<mt:var name="mt_version_id" escape="url">" />
-<link rel="stylesheet" href="<mt:var name="static_uri">css/msg-balloon.css?v=<mt:var name="mt_version_id" escape="url">" />
+<mtapp:stylesheet path="css/list_common.css">
+<mtapp:stylesheet path="css/msg-balloon.css">
 </mt:setvarblock>
 
 <mt:setvarblock name="js_include" append="1">
-<script type="text/javascript" src="<mt:var name="static_uri">js/listing/list_client.js?v=<mt:var name="mt_version_id" escape="url">"></script>
-<script type="text/javascript" src="<mt:var name="static_uri">js/listing/list_action_client.js?v=<mt:var name="mt_version_id" escape="url">"></script>
-<script type="text/javascript" src="<mt:var name="static_uri">js/listing/list_data.js?v=<mt:var name="mt_version_id" escape="url">"></script>
-<script type="text/javascript" src="<mt:var name="static_uri">js/listing/list_store.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+<mtapp:script type="text/javascript" path="js/listing/list_client.js">
+<mtapp:script type="text/javascript" path="js/listing/list_action_client.js">
+<mtapp:script type="text/javascript" path="js/listing/list_data.js">
+<mtapp:script type="text/javascript" path="js/listing/list_store.js">
 
-<mt:unless name="debug_riot">
-  <script type="text/javascript" src="<mt:var name="static_uri">riot/riot.min.js?v=<mt:var name="mt_version_id" escape="url">" charset="utf-8"></script>
-  <script type="text/javascript" src="<mt:var name="static_uri">js/ss/ss.js?v=<mt:var name="mt_version_id" escape="url">" charset="utf-8"></script>
-  <script type="text/javascript" src="<mt:var name="static_uri">js/admin2023/listing/listing.js?v=<mt:var name="mt_version_id" escape="url">" charset="utf-8"></script>
+<mt:if name="config.useriot">
+  <mt:unless name="debug_riot">
+  <mtapp:script type="text/javascript" path="riot/riot.min.js">
+  <mtapp:script type="text/javascript" path="js/ss/ss.js">
+  <mtapp:script type="text/javascript" path="js/admin2023/listing/listing.js">
+  <mt:else>
+  <mtapp:script type="riot/tag" path="js/ss/tag/ss.tag">
+  <mtapp:script type="riot/tag" path="js/admin2023/listing/tag/raw.tag">
+  <mtapp:script type="riot/tag" path="js/admin2023/listing/tag/list-top.tag">
+  <mtapp:script type="riot/tag" path="js/admin2023/listing/tag/display-options.tag">
+  <mtapp:script type="riot/tag" path="js/admin2023/listing/tag/display-options-for-mobile.tag">
+  <mtapp:script type="riot/tag" path="js/admin2023/listing/tag/list-actions.tag">
+  <mtapp:script type="riot/tag" path="js/admin2023/listing/tag/list-actions-for-pc.tag">
+  <mtapp:script type="riot/tag" path="js/admin2023/listing/tag/list-actions-for-mobile.tag">
+  <mtapp:script type="riot/tag" path="js/admin2023/listing/tag/list-pagination.tag">
+  <mtapp:script type="riot/tag" path="js/admin2023/listing/tag/list-pagination-for-pc.tag">
+  <mtapp:script type="riot/tag" path="js/admin2023/listing/tag/list-pagination-for-mobile.tag">
+  <mtapp:script type="riot/tag" path="js/admin2023/listing/tag/list-filter.tag">
+  <mtapp:script type="riot/tag" path="js/admin2023/listing/tag/list-table.tag">
+  <mtapp:script type="text/javascript" path="riot/riot-compiler.js">
+  </mt:unless>
 <mt:else>
-  <script type="riot/tag" src="<mt:var name="static_uri">js/ss/tag/ss.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
-  <script type="riot/tag" src="<mt:var name="static_uri">js/admin2023/listing/tag/raw.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
-  <script type="riot/tag" src="<mt:var name="static_uri">js/admin2023/listing/tag/list-top.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
-  <script type="riot/tag" src="<mt:var name="static_uri">js/admin2023/listing/tag/display-options.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
-  <script type="riot/tag" src="<mt:var name="static_uri">js/admin2023/listing/tag/display-options-for-mobile.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
-  <script type="riot/tag" src="<mt:var name="static_uri">js/admin2023/listing/tag/list-actions.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
-  <script type="riot/tag" src="<mt:var name="static_uri">js/admin2023/listing/tag/list-actions-for-pc.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
-  <script type="riot/tag" src="<mt:var name="static_uri">js/admin2023/listing/tag/list-actions-for-mobile.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
-  <script type="riot/tag" src="<mt:var name="static_uri">js/admin2023/listing/tag/list-pagination.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
-  <script type="riot/tag" src="<mt:var name="static_uri">js/admin2023/listing/tag/list-pagination-for-pc.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
-  <script type="riot/tag" src="<mt:var name="static_uri">js/admin2023/listing/tag/list-pagination-for-mobile.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
-  <script type="riot/tag" src="<mt:var name="static_uri">js/admin2023/listing/tag/list-filter.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
-  <script type="riot/tag" src="<mt:var name="static_uri">js/admin2023/listing/tag/list-table.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
-  <script type="text/javascript" src="<mt:var name="static_uri">riot/riot-compiler.js?v=<mt:var name="mt_version_id" escape="url">"></script>
-</mt:unless>
+  <mtapp:script type="module" path="js/build/listing.js">
+</mt:if>
 
 <mt:loop name="filter_types">
 <mt:setvarblock name="label"><mt:var name="label" encode_html="1"></mt:setvarblock>
@@ -124,7 +128,7 @@ jQuery.event.special.listReady = {
   }
 };
 
-(function () {
+document.addEventListener('DOMContentLoaded', () => {
   var listColumns = <mt:var name="list_columns_json">;
   var listSortBy = '<mt:var name="sort_by" escape="js">';
   var listSortOrder = '<mt:var name="sort_order" escape="js">';
@@ -296,37 +300,38 @@ jQuery.event.special.listReady = {
     disableUserDispOption: disableUserDispOption
   });
 
-  jQuery(function () {
-    riot.mount('list-top', {
-      listActionClient: listActionClient,
+  const opts = {
+    listActionClient: listActionClient,
 
-      zeroStateLabel: zeroStateLabel,
+    zeroStateLabel: zeroStateLabel,
 
-      buttonActions: buttonActions,
-      hasListActions: hasListActions,
-      hasPulldownActions: hasPulldownActions,
-      hasMobilePulldownActions: hasMobilePulldownActions,
-      listActions: listActions,
-      moreListActions: moreListActions,
-      plural: plural,
-      useActions: useActions,
-      useFilters: useFilters,
-      singular: singular,
-      store: listStore,
+    buttonActions: buttonActions,
+    hasListActions: hasListActions,
+    hasPulldownActions: hasPulldownActions,
+    hasMobilePulldownActions: hasMobilePulldownActions,
+    listActions: listActions,
+    moreListActions: moreListActions,
+    plural: plural,
+    useActions: useActions,
+    useFilters: useFilters,
+    singular: singular,
+    store: listStore,
 
-      allpassFilter: allpassFilter,
-      initialFilter: initialFilter,
-      filterTypes: filterTypes,
+    filterTypes: filterTypes,
 
-      localeCalendarHeader: localeCalendarHeader,
-      objectLabel: objectLabel,
-      objectType: objectType,
-      objectTypeForTableClass: objectTypeForTableClass,
-      disableUserDispOption: disableUserDispOption
-    });
-  });
+    localeCalendarHeader: localeCalendarHeader,
+    objectLabel: objectLabel,
+    objectType: objectType,
+    objectTypeForTableClass: objectTypeForTableClass,
+    disableUserDispOption: disableUserDispOption
+  };
 
-})();
+<mt:if name="config.useriot">
+  riot.mount('list-top', opts);
+<mt:else>
+  svelteMountListTop(opts);
+</mt:if>
+});
 
 var initial_load = true;
 

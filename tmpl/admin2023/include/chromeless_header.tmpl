@@ -10,49 +10,45 @@
 <mt:unless name="cfg_exists">
   <link rel="icon" href="<$mt:var name="static_uri"$>images/favicon.ico" type="image/ico" />
   <mt:unless name="optimize_ui">
-  <link rel="stylesheet" type="text/css" href="<$mt:var name="static_uri"$>css/reset.css?v=<mt:var name="mt_version_id" escape="url">" />
-  <link rel="stylesheet" type="text/css" href="<$mt:var name="static_uri"$>css/chromeless.css?v=<mt:var name="mt_version_id" escape="url">" />
-  <link rel="stylesheet" type="text/css" href="<$mt:var name="static_uri"$>css/form.css?v=<mt:var name="mt_version_id" escape="url">" />
-  <link rel="stylesheet" type="text/css" href="<$mt:var name="static_uri"$>css/messaging.css?v=<mt:var name="mt_version_id" escape="url">" />
-  <link rel="stylesheet" type="text/css" href="<$mt:var name="static_uri"$>css/utilities.css?v=<mt:var name="mt_version_id" escape="url">" />
-  <link rel="stylesheet" type="text/css" href="<$mt:var name="static_uri"$>css/listing.css?v=<mt:var name="mt_version_id" escape="url">" />
+  <mtapp:stylesheet path="css/reset.css">
+  <mtapp:stylesheet path="css/chromeless.css">
+  <mtapp:stylesheet path="css/form.css">
+  <mtapp:stylesheet path="css/messaging.css">
+  <mtapp:stylesheet path="css/utilities.css">
+  <mtapp:stylesheet path="css/listing.css">
   <mt:else>
-  <link rel="stylesheet" href="<$mt:var name="static_uri"$>css/simple.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
+  <mtapp:stylesheet path="css/simple.css">
   </mt:unless>
   <!--[if IE]>
-  <link rel="stylesheet" href="<$mt:var name="static_uri"$>css/hacks/ie.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
+  <mtapp:stylesheet path="css/hacks/ie.css">
   <![endif]-->
-  <script type="text/javascript" src="<$mt:var name="static_uri"$>js/tc.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+  <mtapp:script type="text/javascript" path="js/tc.js">
 </mt:unless>
 <mt:unless name="optimize_ui">
-  <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
-  <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery-migrate.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
-  <script type="text/javascript" src="<$mt:var name="static_uri"$>jqueryui/jquery-ui.js?v=<$mt:var name="mt_version_id" escape="url"$>"></script>
-  <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.validate.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+  <mtapp:script type="text/javascript" path="jquery/jquery.js">
+  <mtapp:script type="text/javascript" path="jquery/jquery-migrate.js">
+  <mtapp:script type="text/javascript" path="jqueryui/jquery-ui.js">
+  <mtapp:script type="text/javascript" path="jquery/jquery.validate.js">
 <mt:else>
-  <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.min.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
-  <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery-migrate.min.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
-  <script type="text/javascript" src="<$mt:var name="static_uri"$>jqueryui/jquery-ui.js?v=<$mt:var name="mt_version_id" escape="url"$>"></script>
-  <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.validate.min.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+  <mtapp:script type="text/javascript" path="jquery/jquery.min.js">
+  <mtapp:script type="text/javascript" path="jquery/jquery-migrate.min.js">
+  <mtapp:script type="text/javascript" path="jqueryui/jquery-ui.js">
+  <mtapp:script type="text/javascript" path="jquery/jquery.validate.min.js">
 </mt:unless>
 <mt:unless name="cfg_exists">
-  <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Core.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+  <mtapp:script type="text/javascript" path="js/common/Core.js">
 </mt:unless>
 </mt:setvarblock>
 
 <$mt:var name="html_head"$>
 
 <mt:unless name="cfg_exists">
-  <script type="text/javascript" src="<$mt:var name="static_uri"$>mt.js?v=<mt:var name="mt_version_id" escape="url">"></script>
-  <mt:if name="local_lang_id" eq="en-us">
-  <script type="text/javascript" src="<$mt:var name="static_uri"$>mt_en_us.js?v=<mt:var name="mt_version_id" escape="URL">" charset="utf-8"></script>
-  <mt:else>
-  <script type="text/javascript" src="<$mt:var name="static_uri"$>mt_<$mt:var name="local_lang_id"$>.js?v=<mt:var name="mt_version_id" escape="URL">" charset="utf-8"></script>
-  </mt:if>
+  <mtapp:script type="text/javascript" path="mt.js">
+  <mtapp:script type="text/javascript" path="mt_%l.js">
   <mt:unless name="optimize_ui">
-    <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.mt.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+    <mtapp:script type="text/javascript" path="jquery/jquery.mt.js">
   <mt:else>
-    <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.mt.min.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+    <mtapp:script type="text/javascript" path="jquery/jquery.mt.min.js">
   </mt:unless>
 </mt:unless>
 

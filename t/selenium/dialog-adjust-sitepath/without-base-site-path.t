@@ -54,14 +54,14 @@ subtest 'selected checkbox' => sub {
     ok $use_absolute->[1]->is_selected, 'selected .use-absolute checkbox (archive path)';
 
     my $relative_site_path_hint = wait_until {
-        $selenium->driver->find_elements('div.relative-site_path-hint')
+        $selenium->driver->find_elements('small.relative-site_path-hint')
     };
     is scalar @{$relative_site_path_hint}, 2, 'exists div.relative-site_path-hint';
     ok $relative_site_path_hint->[0]->is_hidden, 'hidden div.relative-site_path-hint (site path)';
     ok $relative_site_path_hint->[1]->is_hidden, 'hidden div.relative-site_path-hint (archive path)';
 
     my $absolute_site_path_hint = wait_until {
-        $selenium->driver->find_elements('div.absolute-site_path-hint')
+        $selenium->driver->find_elements('small.absolute-site_path-hint')
     };
     is scalar @{$absolute_site_path_hint}, 2, 'exists two div.absolute-site_path-hint';
     ok $absolute_site_path_hint->[0]->is_displayed, 'visible div.absolute-site_path-hint (site path)';
@@ -76,14 +76,14 @@ subtest 'not selected checkbox' => sub {
     ok !$use_absolute->[1]->is_selected, 'not selected .use-absolute checkbox (archive path)';
 
     my $relative_site_path_hint = wait_until {
-        $selenium->driver->find_elements('div.relative-site_path-hint')
+        $selenium->driver->find_elements('small.relative-site_path-hint')
     };
     is scalar @{$relative_site_path_hint}, 2, 'exists div.relative-site_path-hint';
     ok $relative_site_path_hint->[0]->is_displayed, 'visible div.relative-site_path-hint (site path)';
     ok $relative_site_path_hint->[1]->is_displayed, 'visible div.relative-site_path-hint (archive path)';
 
     my $absolute_site_path_hint = wait_until {
-        $selenium->driver->find_elements('div.absolute-site_path-hint')
+        $selenium->driver->find_elements('small.absolute-site_path-hint')
     };
     is scalar @{$absolute_site_path_hint}, 2, 'exists two div.absolute-site_path-hint';
     ok $absolute_site_path_hint->[0]->is_hidden, 'hidden div.absolute-site_path-hint (site path)';

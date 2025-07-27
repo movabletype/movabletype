@@ -279,6 +279,20 @@ our %FixtureSpec = (
                 },
             ],
         },
+        ct_field_label => {
+            name       => 'test content data with field label',
+            data_label => 'cf_single_line_text',
+            fields => [
+                cf_single_line_text => {
+                    type => 'single_line_text',
+                    name => 'single line text',
+                },
+                cf_multi_line_text => {
+                    type => 'multi_line_text',
+                    name => 'multi line text',
+                },
+            ],
+        },
         ## MTC-25873
         ct0 => {
             name   => 'case 0',
@@ -470,6 +484,23 @@ our %FixtureSpec = (
                 cf_categories   => [ 'category3' ],
                 cf_image        => [ 'test2.jpg' ],
                 cf_content_type => [ 'cd2' ],
+            },
+        },
+        cd_field_label => {
+            content_type => 'ct_field_label',
+            author       => 'author',
+            data         => {
+                cf_single_line_text => 'test single line text for label',
+                cf_multi_line_text  => "test multi line text\naaaaa",
+            },
+        },
+        cd_field_label2 => {
+            content_type => 'ct_field_label',
+            author       => 'author',
+            authored_on  => '20170601232323',
+            data         => {
+                cf_single_line_text => 'test single line text for label2',
+                cf_multi_line_text  => "test multi line text2\naaaaa",
             },
         },
         cd0 => {

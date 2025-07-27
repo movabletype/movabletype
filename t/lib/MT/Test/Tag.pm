@@ -14,8 +14,6 @@ use MT::Test 'has_php';
 use MT::I18N;
 use MT::Test::PHP;
 use File::Spec;
-use Socket;
-use Test::TCP;
 use Text::Diff 'diff';
 
 BEGIN {
@@ -68,6 +66,7 @@ sub run_perl_tests {
             $ctx->stash( 'blog',          $blog );
             $ctx->stash( 'blog_id',       $blog->id );
             $ctx->stash( 'local_blog_id', $blog->id );
+            $ctx->stash( 'local_lang_id', lc(MT->current_language) );
             $ctx->stash( 'builder',       MT->builder );
 
             $callback->( $ctx, $block ) if $callback;
@@ -113,6 +112,10 @@ sub run_perl_tests {
 
                 $got =~ s/^(\r\n|\r|\n|\s)+|(\r\n|\r|\n|\s)+\z//g if defined $got;
 
+                if ($ENV{MT_TEST_ENABLE_SSI_PHP_MOCK} && $blog->include_system eq 'php') {
+                    $got = MT::Test::PHP->run($got);
+                }
+
                 local $TODO = "may fail" if $expected_method =~ /^expected_todo/;
 
                 my $expected     = _filter_vars($block->$expected_method);
@@ -147,6 +150,13 @@ SKIP: {
         }
         $archive_type ||= '';
 
+        my $blog = MT::Blog->load($blog_id);
+        if ($blog and $blog->language ne lc MT->config->DefaultLanguage) {
+            $blog->language(MT->config->DefaultLanguage);
+            $blog->date_language(MT->config->DefaultLanguage);
+            $blog->save;
+        }
+
         my $test_name_prefix = $self->_test_name_prefix($archive_type);
 
         run {
@@ -162,20 +172,22 @@ SKIP: {
                 my $text     = $block->text || '';
                 my $extra    = $callback ? ($callback->($block) || '') : '';
 
+                my $log;
                 require MT::Util::UniqueID;
-                my $log = $ENV{MT_TEST_PHP_ERROR_LOG_FILE_PATH} ||
-                          File::Spec->catfile($ENV{MT_TEST_ROOT}, 'php-' . MT::Util::UniqueID::create_session_id() . '.log');
+                local $ENV{MT_TEST_PHP_ERROR_LOG_FILE_PATH} = $ENV{MT_TEST_PHP_ERROR_LOG_FILE_PATH} 
+                    ? $ENV{MT_TEST_PHP_ERROR_LOG_FILE_PATH}
+                    : $log = File::Spec->catfile($ENV{MT_TEST_ROOT}, 'php-' . MT::Util::UniqueID::create_session_id() . '.log');
                 my $block_name = $block->name || $block->seq_num;
                 $ENV{REQUEST_URI} = "$0 [$block_name]";
                 my $got;
-                if ($^O eq 'MSWin32' or $ENV{MT_TEST_NO_PHP_DAEMON}) {
-                    my $php_script = php_test_script( $block_name, $block->blog_id || $blog_id, $template, $text, $log, $extra );
+                if ($^O eq 'MSWin32' or $ENV{MT_TEST_NO_PHP_DAEMON} or lc($ENV{MT_TEST_BACKEND} // '') eq 'sqlite') {
+                    my $php_script = php_test_script( $block_name, $block->blog_id || $blog_id, $template, $text, $extra );
                     $got = Encode::decode_utf8(MT::Test::PHP->run($php_script));
                 } else {
-                    $got = Encode::decode_utf8(_php_daemon($template, $block->blog_id || $blog_id, $extra, $text, $log));
+                    $got = Encode::decode_utf8(MT::Test::PHP->daemon($template, $block->blog_id || $blog_id, $extra, $text));
                 }
 
-                my $php_error = __PACKAGE__->_retrieve_php_logs($log);
+                my $php_error = MT::Test::PHP->retrieve_php_logs($log);
 
                 ( my $method_name = $archive_type ) =~ tr|A-Z-|a-z_|;
 
@@ -215,14 +227,18 @@ SKIP: {
 
                 local $TODO = "may fail" if $expected_method =~ /^expected_(?:php_)?todo/;
 
+                $got = ($php_error =~ /\tstr:([^\t]+)/)[0] if $expected_method =~ /_error/;
+
                 my $expected     = _filter_vars($expected_src);
                 my $name         = $test_name_prefix . $block->name . ' - dynamic';
 
                 if ($expected_ref && $expected_ref eq 'Regexp') {
                     $expected = qr{$expected} if ref($expected) ne 'Regexp';
                     like($got, $expected, $name);
+                    $php_error =~ s/[^\n]+$expected[^\n]+\n//g if $expected_method =~ /_error/;
                 } else {
                     is($got, $expected, $name);
+                    $php_error =~ s/[^\n]+\Q$expected\E[^\n]+\n//g if $expected_method =~ /_error/;
                 }
                 my $ignore_php_warnings = __PACKAGE__->_check_ignore_php_warnings($block) || $ENV{MT_TEST_IGNORE_PHP_WARNINGS};
                 if ($ignore_php_warnings && $php_error) {
@@ -248,7 +264,7 @@ sub MT::Test::Tag::_filter_vars {
 }
 
 sub MT::Test::Tag::php_test_script {    # full qualified to avoid Spiffy magic
-    my ( $block_name, $blog_id, $template, $text, $log, $extra ) = @_;
+    my ( $block_name, $blog_id, $template, $text, $extra ) = @_;
     $text ||= '';
 
     $template =~ s/<\$(mt.+?)\$>/<$1>/gi;
@@ -256,10 +272,9 @@ sub MT::Test::Tag::php_test_script {    # full qualified to avoid Spiffy magic
 
     my $test_script = <<PHP;
 <?php
-\$MT_HOME   = '@{[ $ENV{MT_HOME} ? $ENV{MT_HOME} : '.' ]}';
 \$MT_CONFIG = '@{[ MT->instance->find_config ]}';
 \$blog_id   = '$blog_id';
-\$log = '$log';
+
 \$tmpl = <<<__TMPL__
 $template
 __TMPL__
@@ -270,8 +285,17 @@ __TMPL__
 ;
 PHP
     $test_script .= <<'PHP';
+$MT_HOME = $_ENV['MT_HOME'] ?? '.';
 include_once($MT_HOME . '/php/mt.php');
 include_once($MT_HOME . '/php/lib/MTUtil.php');
+include_once($MT_HOME . '/t/lib/MT/Test/PHP/error_handler.php');
+
+$error_handler = new MT_Test_Error_Handler();
+set_error_handler([$error_handler, 'handler']);
+$log = $_ENV['MT_TEST_PHP_ERROR_LOG_FILE_PATH'];
+$error_handler->log = $log;
+$error_handler->ignore_php_dynamic_properties_warnings = 
+                $_ENV['MT_TEST_IGNORE_PHP_DYNAMIC_PROPERTIES_WARNINGS'] ?? false;
 
 $mt = MT::get_instance($blog_id, $MT_CONFIG);
 $mt->config('PHPErrorLogFilePath', $log);
@@ -296,14 +320,6 @@ PHP
     $test_script .= $extra if $extra;
 
     $test_script .= <<'PHP';
-set_error_handler(function($error_no, $error_msg, $error_file, $error_line, $error_context = null) use ($mt) {
-    if ($error_no & E_USER_ERROR) {
-        print($error_msg."\n");
-    } else {
-        return $mt->error_handler($error_no, $error_msg, $error_file, $error_line);
-    }
-});
-
 if ($ctx->_compile_source('evaluated template', $tmpl, $_var_compiled)) {
     echo $_var_compiled;
 } else {
@@ -312,68 +328,6 @@ if ($ctx->_compile_source('evaluated template', $tmpl, $_var_compiled)) {
 
 ?>
 PHP
-}
-
-my $PHP_DAEMON;
-
-sub MT::Test::Tag::_php_daemon {
-    my ($template, $blog_id, $extra, $text, $log) = @_;
-
-    $PHP_DAEMON ||= Test::TCP->new(
-        code => sub {
-            my $port    = shift;
-            my $command = MT::Test::PHP::_make_php_command();
-            my $config  = MT->instance->find_config;
-            my @opts    = (
-                $ENV{MT_HOME} . '/t/lib/MT/Test/Tag/daemon.php',
-                '--port', $port,
-                '--mt_home', ($ENV{MT_HOME} ? $ENV{MT_HOME} : '.'),
-                '--mt_config', $config,
-                '--init_blog_id', $blog_id,
-                $log ? ('--log', $log) : (),
-            );
-            exec join(' ', @$command, @opts);
-        });
-
-    socket(my $sock, PF_INET, SOCK_STREAM, getprotobyname('tcp')) or die "Cannot create socket: $!";
-    my $port = $PHP_DAEMON->port;
-    my $packed_remote_host = inet_aton('127.0.0.1');
-    my $sock_addr          = sockaddr_in($port, $packed_remote_host);
-    connect($sock, $sock_addr) or die "Cannot connect to 127.0.0.1:$port: $!";
-
-    if ($text) {
-        $extra =<<"PHP" . $extra;
-\$text = <<<__TMPL__
-$text
-__TMPL__
-;
-PHP
-    }
-
-    my $old_handle = select $sock;
-    $| = 1;
-    select $old_handle;
-    require JSON;
-    print $sock JSON::to_json([$blog_id, $template, $extra, $log]);
-    shutdown $sock, 1;
-    my $result = do { local $/; <$sock> };
-    close $sock;
-
-    $result =~ s/^(\r\n|\r|\n|\s)+|(\r\n|\r|\n|\s)+\z//g;
-    Encode::decode_utf8($result);
-
-    return $result;
-}
-
-sub _retrieve_php_logs {
-    my $file = shift;
-    open(my $fh, '<', $file) or return '';
-    my $ret = '';
-    while (<$fh>) {
-        next if $_ =~ /str:Creation of dynamic property Memcache::\$connection is deprecated/;
-        $ret .= $_;
-    }
-    return $ret;
 }
 
 sub _update_config {

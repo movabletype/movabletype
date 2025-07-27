@@ -46,7 +46,7 @@ filters {
     expected_error => [qw( chomp )],
 };
 
-$test_env->prepare_fixture('content_data');
+$test_env->prepare_fixture('content_data/dirty');
 
 my $blog    = MT->model('blog')->load( { name => 'My Site' } );
 my $blog_id = $blog->id;
@@ -305,6 +305,36 @@ category2
 category1
 Footer
 
+=== mt:ContentField content_field="categories" with sort
+--- template
+<mt:Contents content_type="test content data"><mt:ContentField content_field="categories" sort="label"><mt:ContentFieldHeader>Header</mt:ContentFieldHeader>
+<mt:CategoryLabel>
+<mt:ContentFieldFooter>Footer</mt:ContentFieldFooter></mt:ContentField></mt:Contents>
+--- expected
+Header
+category1
+
+category2
+Footer
+
+=== mt:ContentField content_field="categories" with lastn=0
+--- skip_php
+--- template
+<mt:Contents content_type="test content data"><mt:ContentField content_field="categories" lastn="0"><mt:ContentFieldHeader>Header</mt:ContentFieldHeader>
+<mt:CategoryLabel>
+<mt:ContentFieldFooter>Footer</mt:ContentFieldFooter></mt:ContentField></mt:Contents>
+--- expected
+
+=== mt:ContentField content_field="categories" with lastn=1
+--- template
+<mt:Contents content_type="test content data"><mt:ContentField content_field="categories" lastn="1"><mt:ContentFieldHeader>Header</mt:ContentFieldHeader>
+<mt:CategoryLabel>
+<mt:ContentFieldFooter>Footer</mt:ContentFieldFooter></mt:ContentField></mt:Contents>
+--- expected
+Header
+category2
+Footer
+
 === mt:ContentField content_field="asset_image"
 --- template
 <mt:Contents content_type="test content data"><mt:ContentField content_field="asset_image"><mt:ContentFieldHeader>Header</mt:ContentFieldHeader>
@@ -315,6 +345,16 @@ Header
 Sample Image 2
 
 Sample Image 1
+Footer
+
+=== mt:ContentField content_field="asset_image" with single image
+--- template
+<mt:Contents content_type="test content data"><mt:ContentField content_field="asset_image_single"><mt:ContentFieldHeader>Header</mt:ContentFieldHeader>
+<mt:AssetLabel>
+<mt:ContentFieldFooter>Footer</mt:ContentFieldFooter></mt:ContentField></mt:Contents>
+--- expected
+Header
+Sample Image 2
 Footer
 
 === mt:ContentField content_field="content_type"
@@ -361,6 +401,7 @@ tables
 tags
 categories
 asset_image
+asset_image_single
 content type
 
 === mt:ContentFieldType
@@ -384,6 +425,7 @@ list
 tables
 tags
 categories
+asset_image
 asset_image
 content_type
 

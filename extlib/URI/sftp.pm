@@ -3,8 +3,8 @@ package URI::sftp;
 use strict;
 use warnings;
 
-use parent 'URI::ssh';
+our $VERSION = '5.32';
 
-our $VERSION = '5.25';
+use parent 'URI::ssh';
 
 1;

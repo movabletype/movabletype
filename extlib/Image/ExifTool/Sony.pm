@@ -34,7 +34,7 @@ use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::Exif;
 use Image::ExifTool::Minolta;
 
-$VERSION = '3.67';
+$VERSION = '3.73';
 
 sub ProcessSRF($$$);
 sub ProcessSR2($$$);
@@ -76,7 +76,9 @@ sub PrintInvLensSpec($;$$);
     6 => 'Sony LA-EA4 Adapter',
     7 => 'Sony LA-EA5 Adapter', #JR
     13 => 'Samyang AF 35-150mm F2-2.8',
-    # 27 => Venus Optics Laowa 12mm f2.8 Zero-D or 105mm f2 (T3.2) Smooth Trans Focus (ref IB)
+    20 => 'Samyang AF 35mm F1.4 P FE', #JR
+    21 => 'Samyang AF 14-24mm F2.8', #JR
+  # 27 => Venus Optics Laowa 12mm f2.8 Zero-D or 105mm f2 (T3.2) Smooth Trans Focus (ref IB)
     44 => 'Metabones Canon EF Smart Adapter', #JR
     78 => 'Metabones Canon EF Smart Adapter Mark III or Other Adapter', #PH/JR (also Mark IV, Fotodiox and Viltrox)
     184 => 'Metabones Canon EF Speed Booster Ultra', #JR ('Green' mode, LensMount reported as A-mount)
@@ -164,9 +166,16 @@ sub PrintInvLensSpec($;$$);
     32877 => 'Sony E 15mm F1.4 G', #JR
     32878 => 'Sony FE 20-70mm F4 G', #JR
     32879 => 'Sony FE 50mm F1.4 GM', #JR
+    32880 => 'Sony FE 16mm F1.8 G', #JR
+    32881 => 'Sony FE 24-50mm F2.8 G', #JR
+    32882 => 'Sony FE 16-25mm F2.8 G', #JR
     32884 => 'Sony FE 70-200mm F4 Macro G OSS II', #JR
     32885 => 'Sony FE 16-35mm F2.8 GM II', #JR
-    32886 => 'Sony FE 300mm F2.8 OSS', #JR
+    32886 => 'Sony FE 300mm F2.8 GM OSS', #JR
+    32887 => 'Sony E PZ 16-50mm F3.5-5.6 OSS II', #JR
+    32888 => 'Sony FE 85mm F1.4 GM II', #JR
+    32889 => 'Sony FE 28-70mm F2 GM',
+    32890 => 'Sony FE 400-800mm F6.3-8 G OSS', #JR
 
   # (comment this out so LensID will report the LensModel, which is more useful)
   # 32952 => 'Metabones Canon EF Speed Booster Ultra', #JR (corresponds to 184, but 'Advanced' mode, LensMount reported as E-mount)
@@ -187,6 +196,10 @@ sub PrintInvLensSpec($;$$);
     33086 => 'Sony FE 70-200mm F2.8 GM OSS II + 2X Teleconverter', #JR
     33087 => 'Sony FE 70-200mm F4 Macro G OSS II + 1.4X Teleconverter', #JR
     33088 => 'Sony FE 70-200mm F4 Macro G OSS II + 2X Teleconverter', #JR
+    33089 => 'Sony FE 300mm F2.8 GM OSS + 1.4X Teleconverter', #JR (NC)
+    33090 => 'Sony FE 300mm F2.8 GM OSS + 2X Teleconverter', #JR
+    33091 => 'Sony FE 400-800mm F6.3-8 G OSS + 1.4X Teleconverter', #JR
+    33092 => 'Sony FE 400-800mm F6.3-8 G OSS + 2X Teleconverter', #JR
 
     49201 => 'Zeiss Touit 12mm F2.8', #JR (lens firmware Ver.02)
     49202 => 'Zeiss Touit 32mm F1.8', #JR (lens firmware Ver.02)
@@ -234,6 +247,10 @@ sub PrintInvLensSpec($;$$);
     49474.7 => 'Viltrox 35mm F1.8 FE', #JR
     49474.8 => 'Viltrox 50mm F1.8 FE', #JR
     49474.9 => 'Viltrox 75mm F1.2 E', #JR
+   '49474.10' => 'Viltrox 20mm F2.8 FE', #JR
+    49475 => 'Tamron 50-300mm F4.5-6.3 Di III VC VXD', #JR (Model A069)
+    49476 => 'Tamron 28-300mm F4-7.1 Di III VC VXD', #JR (Model A074)
+    49477 => 'Tamron 90mm F2.8 Di III Macro VXD', #JR (Model F072)
 
     49712 => 'Tokina FiRIN 20mm F2 FE AF',       # (firmware Ver.01)
     49713 => 'Tokina FiRIN 100mm F2.8 FE MACRO', # (firmware Ver.01)
@@ -287,13 +304,24 @@ sub PrintInvLensSpec($;$$);
     50540 => 'Sigma 14mm F1.4 DG DN | A', #JR (023)
     50543 => 'Sigma 70-200mm F2.8 DG DN OS | S', #JR (023)
     50544 => 'Sigma 23mm F1.4 DC DN | C', #JR (023)
+    50545 => 'Sigma 24-70mm F2.8 DG DN II | A', #JR (024)
+    50546 => 'Sigma 500mm F5.6 DG DN OS | S', #JR (024)
     50547 => 'Sigma 10-18mm F2.8 DC DN | C', #JR (023)
+    50548 => 'Sigma 15mm F1.4 DG DN DIAGONAL FISHEYE | A', #JR (024)
+    50549 => 'Sigma 50mm F1.2 DG DN | A', #JR (024)
+    50550 => 'Sigma 28-105mm F2.8 DG DN | A', #JR (024)
+    50551 => 'Sigma 28-45mm F1.8 DG DN | A', #JR (024)
+    50553 => 'Sigma 300-600mm F4 DG OS | S', #JR (025)
+
+    # lenses listed in the Sigma MC-11 list, but not yet seen:
+    # 504xx => 'Sigma 18-200mm F3.5-6.3 DC MACRO OS HSM | C + MC-11', # (014)
+    # 504xx => 'Sigma 30mm F1.4 DC HSM | A + MC-11', # (013)
 
     50992 => 'Voigtlander SUPER WIDE-HELIAR 15mm F4.5 III', #JR
     50993 => 'Voigtlander HELIAR-HYPER WIDE 10mm F5.6', #IB
     50994 => 'Voigtlander ULTRA WIDE-HELIAR 12mm F5.6 III', #IB
     50995 => 'Voigtlander MACRO APO-LANTHAR 65mm F2 Aspherical', #JR
-    50996 => 'Voigtlander NOKTON 40mm F1.2 Aspherical', #JR
+    50996 => 'Voigtlander NOKTON 40mm F1.2 Aspherical', #JR (also SE version)
     50997 => 'Voigtlander NOKTON classic 35mm F1.4', #JR
     50998 => 'Voigtlander MACRO APO-LANTHAR 110mm F2.5', #JR
     50999 => 'Voigtlander COLOR-SKOPAR 21mm F3.5 Aspherical', #IB
@@ -302,10 +330,12 @@ sub PrintInvLensSpec($;$$);
     51002 => 'Voigtlander APO-LANTHAR 50mm F2 Aspherical', #JR
     51003 => 'Voigtlander NOKTON 35mm F1.2 Aspherical SE', #JR
     51006 => 'Voigtlander APO-LANTHAR 35mm F2 Aspherical', #JR
+    51007 => 'Voigtlander NOKTON 50mm F1 Aspherical', #JR
+    51008 => 'Voigtlander NOKTON 75mm F1.5 Aspherical', #JR
+    51009 => 'Voigtlander NOKTON 28mm F1.5 Aspherical', #JR
 
-    # lenses listed in the Sigma MC-11 list, but not yet seen:
-    # 504xx => 'Sigma 18-200mm F3.5-6.3 DC MACRO OS HSM | C + MC-11', # (014)
-    # 504xx => 'Sigma 30mm F1.4 DC HSM | A + MC-11', # (013)
+    51072 => 'ZEISS Otus ML 50mm F1.4', #JR
+    51073 => 'ZEISS Otus ML 85mm F1.4', #JR
 
     # Note: For Samyang lenses, the "FE" designation isn't written to
     # EXIF:LensModel, so it isn't included in these strings either - JR/PH
@@ -323,6 +353,10 @@ sub PrintInvLensSpec($;$$);
     51516 => 'Samyang AF 24-70mm F2.8', #JR
     51517 => 'Samyang AF 50mm F1.4 II', #JR
     51518 => 'Samyang AF 135mm F1.8', #JR
+
+    61569 => 'LAOWA FFII 10mm F2.8 C&D Dreamer', #JR
+
+    61761 => 'Viltrox 28mm F4.5 FE', #JR
 );
 
 # ExposureProgram values (ref PH, mainly decoded from A200)
@@ -1206,6 +1240,7 @@ my %hidUnk = ( Hidden => 1, Unknown => 1 );
                 9 => 'Center (LA-EA4)', # seen for ILCE-7RM2 with LA-EA4
                 11 => 'Zone',
                 12 => 'Expanded Flexible Spot',
+                13 => 'Custom AF Area', # NC, new AFArea option for ILCE-9M3, ILCE-1M2
             },
         },{
             Name => 'AFAreaModeSetting',
@@ -1699,14 +1734,14 @@ my %hidUnk = ( Hidden => 1, Unknown => 1 );
         },
     },{
         Name => 'Tag9050c',
-        Condition => '$$self{Model} =~ /^(ILCE-(1|7M4|7RM5|7SM3)|ILME-FX3)/',
+        Condition => '$$self{Model} =~ /^(ILCE-(1\b|7M4|7RM5|7SM3)|ILME-FX3)/',
         SubDirectory => {
             TagTable => 'Image::ExifTool::Sony::Tag9050c',
             ByteOrder => 'LittleEndian',
         },
     },{
         Name => 'Tag9050d',
-        Condition => '$$self{Model} =~ /^(ILCE-(6700|7CM2|7CR)|ZV-E1)\b/',
+        Condition => '$$self{Model} =~ /^(ILCE-(6700|7CM2|7CR)|ZV-(E1|E10M2))\b/ or ($$self{Model} =~ /^(ILCE-1M2)/ and $$valPt =~ /^\x00/)',
         SubDirectory => {
             TagTable => 'Image::ExifTool::Sony::Tag9050d',
             ByteOrder => 'LittleEndian',
@@ -1968,7 +2003,7 @@ my %hidUnk = ( Hidden => 1, Unknown => 1 );
     },
     0x940c => [{
         Name => 'Tag940c',
-        Condition => '$$self{Model} =~ /^(NEX-|ILCE-|ILME-|Lunar|ZV-E10|ZV-E1)\b/',
+        Condition => '$$self{Model} =~ /^(NEX-|ILCE-|ILME-|Lunar|ZV-E10|ZV-E10M2|ZV-E1)\b/',
         SubDirectory => { TagTable => 'Image::ExifTool::Sony::Tag940c' },
     },{
         Name => 'Sony_0x940c',
@@ -2031,6 +2066,7 @@ my %hidUnk = ( Hidden => 1, Unknown => 1 );
             '4 0 0 0' => 'ARW 4.0', # (ILCE-7SM3)
             '4 0 1 0' => 'ARW 4.0.1', #github#195 (ZV-E1)
             '5 0 0 0' => 'ARW 5.0', # (ILCE-9M3)
+            '5 0 1 0' => 'ARW 5.0.1', # (ILCE-1 with FirmWare 2.0)
             # what about cRAW images?
         },
     },
@@ -2143,6 +2179,9 @@ my %hidUnk = ( Hidden => 1, Unknown => 1 );
             395 => 'ZV-1M2', #JR
             396 => 'ILCE-7CR', #JR
             397 => 'ILCE-7CM2', #JR
+            398 => 'ILX-LR1', #JR
+            399 => 'ZV-E10M2', #JR
+            400 => 'ILCE-1M2', #PH
         },
     },
     0xb020 => { #2
@@ -8184,16 +8223,19 @@ my %isoSetting2010 = (
     WRITE_PROC => \&WriteEnciphered,
     CHECK_PROC => \&Image::ExifTool::CheckBinaryData,
     FORMAT => 'int8u',
-    NOTES => 'Valid for ILCE-6700/7CM2/7CR/ZV-E1.',
+    NOTES => q{
+        Valid for ILCE-6700/7CM2/7CR/ZV-E1. Also for ILCE-1M2 when using mechanical
+        shutter.
+    },
     WRITABLE => 1,
     FIRST_ENTRY => 0,
     GROUPS => { 0 => 'MakerNotes', 2 => 'Image' },
     0x000a => {
         Name => 'ShutterCount',
         # number of mechanical shutter actuations, does not increase during electronic shutter / Silent Shooting
-        Condition => '$$self{Model} =~ /^(ILCE-(6700|7CM2|7CR))/',
+        Condition => '$$self{Model} =~ /^(ILCE-(1M2|6700|7CM2|7CR))/',
         Format => 'int32u',
-        Notes => 'total number of image exposures made by the camera',
+        Notes => 'total number of mechanical shutter actuations',
         RawConv => '$val & 0x00ffffff',
         PrintConv => 'sprintf("%6d",$val)',
         PrintConvInv => '$val',
@@ -8220,6 +8262,7 @@ my %isoSetting2010 = (
     },
     0x0038 => {
         Name => 'InternalSerialNumber', #(NC)
+        Condition => '$$self{Model} !~ /^(ZV-E10M2)/',
         Format => 'int8u[6]',
         PrintConv => 'unpack "H*", pack "C*", split " ", $val',
     },
@@ -8426,7 +8469,7 @@ my %isoSetting2010 = (
             200 => 'Continuous - Sweep Panorama',
         },
     },
-    0x001a => { %sequenceFileNumber },
+    0x001a => { %sequenceFileNumber }, # ILCE-9M3/1M2 have sometimes deviating values.
     0x001e => {
         Name => 'SequenceLength',
         PrintConv => {
@@ -8451,7 +8494,7 @@ my %isoSetting2010 = (
     },
     0x002a => [{
         Name => 'Quality2',
-        Condition => '$$self{Model} !~ /^(ILCE-(1|6700|7CM2|7CR|7M4|7RM5|7SM3|9M3)|ILME-(FX3|FX30)|ZV-E1)\b/',
+        Condition => '$$self{Model} !~ /^(ILCE-(1|1M2|6700|7CM2|7CR|7M4|7RM5|7SM3|9M3)|ILME-(FX3|FX30)|ZV-(E1|E10M2))\b/',
         PrintConv => {
             0 => 'JPEG',
             1 => 'RAW',
@@ -8476,7 +8519,7 @@ my %isoSetting2010 = (
 #    },
     0x0053 => {
         Name => 'ModelReleaseYear',
-        Condition => '$$self{Model} !~ /^(ILCE-(1|6700|7CM2|7CR|7M4|7RM5|7SM3|9M3)|ILME-(FX3|FX30)|ZV-E1)\b/',
+        Condition => '$$self{Model} !~ /^(ILCE-(1|6700|7CM2|7CR|7M4|7RM5|7SM3|9M3)|ILME-(FX3|FX30)|ZV-(E1|E10M2))\b/',
         Format => 'int8u',
         PrintConv => 'sprintf("20%.2d", $val)',
     },
@@ -8515,16 +8558,17 @@ my %isoSetting2010 = (
     FIRST_ENTRY => 0,
     GROUPS => { 0 => 'MakerNotes', 2 => 'Image' },
     DATAMEMBER => [ 0 ],
-    IS_SUBDIR => [ 0x03e2, 0x03f4, 0x044e, 0x0498, 0x049d, 0x04a1, 0x04a2, 0x04ba, 0x059d, 0x0634, 0x0636, 0x064c, 0x0653, 0x0678, 0x06b8, 0x06de, 0x06e7 ],
+    IS_SUBDIR => [ 0x03e2, 0x03f4, 0x044e, 0x0498, 0x049d, 0x049e, 0x04a1, 0x04a2, 0x04ba, 0x059d, 0x0634, 0x0636, 0x064c, 0x0653, 0x0678, 0x06b8, 0x06de, 0x06e7 ],
     0x0000 => { Name => 'Ver9401', Hidden => 1, RawConv => '$$self{Ver9401} = $val; $$self{OPTIONS}{Unknown}<2 ? undef : $val' },
 
     0x03e2 => { Name => 'ISOInfo', Condition => '$$self{Ver9401} == 181',          Format => 'int8u[5]', SubDirectory => { TagTable => 'Image::ExifTool::Sony::ISOInfo' } },
-    0x03f4 => { Name => 'ISOInfo', Condition => '$$self{Ver9401} == 185',          Format => 'int8u[5]', SubDirectory => { TagTable => 'Image::ExifTool::Sony::ISOInfo' } },
+    0x03f4 => { Name => 'ISOInfo', Condition => '$$self{Ver9401} =~ /^(185|186)/', Format => 'int8u[5]', SubDirectory => { TagTable => 'Image::ExifTool::Sony::ISOInfo' } },
     0x044e => { Name => 'ISOInfo', Condition => '$$self{Ver9401} == 178',          Format => 'int8u[5]', SubDirectory => { TagTable => 'Image::ExifTool::Sony::ISOInfo' } },
     0x0498 => { Name => 'ISOInfo', Condition => '$$self{Ver9401} == 148',          Format => 'int8u[5]', SubDirectory => { TagTable => 'Image::ExifTool::Sony::ISOInfo' } },
-    0x049d => { Name => 'ISOInfo', Condition => '$$self{Ver9401} == 167',          Format => 'int8u[5]', SubDirectory => { TagTable => 'Image::ExifTool::Sony::ISOInfo' } },
-    0x04a1 => { Name => 'ISOInfo', Condition => '$$self{Ver9401} =~ /^(160|164)/', Format => 'int8u[5]', SubDirectory => { TagTable => 'Image::ExifTool::Sony::ISOInfo' } },
-    0x04a2 => { Name => 'ISOInfo', Condition => '$$self{Ver9401} =~ /^(152|154|155)/ and $$self{Model} !~ /^ZV-1M2/', Format => 'int8u[5]', SubDirectory => { TagTable => 'Image::ExifTool::Sony::ISOInfo' } },
+    0x049d => { Name => 'ISOInfo', Condition => '$$self{Ver9401} == 167 and $$self{Software} !~ /^ILCE-7M4 (v2|v3)/', Format => 'int8u[5]', SubDirectory => { TagTable => 'Image::ExifTool::Sony::ISOInfo' } },
+    0x049e => { Name => 'ISOInfo', Condition => '$$self{Ver9401} == 167 and $$self{Software} =~ /^ILCE-7M4 (v2|v3)/', Format => 'int8u[5]', SubDirectory => { TagTable => 'Image::ExifTool::Sony::ISOInfo' } },
+    0x04a1 => { Name => 'ISOInfo', Condition => '$$self{Ver9401} =~ /^(160|164)/ and $$self{Software} !~ /^ILCE-1 v2/', Format => 'int8u[5]', SubDirectory => { TagTable => 'Image::ExifTool::Sony::ISOInfo' } },
+    0x04a2 => { Name => 'ISOInfo', Condition => '($$self{Ver9401} =~ /^(152|154|155)/ and $$self{Model} !~ /^ZV-1M2/) or ($$self{Ver9401} == 164 and $$self{Software} =~ /^ILCE-1 v2/)', Format => 'int8u[5]', SubDirectory => { TagTable => 'Image::ExifTool::Sony::ISOInfo' } },
     0x04ba => { Name => 'ISOInfo', Condition => '$$self{Ver9401} == 155 and $$self{Model} =~ /^ZV-1M2/', Format => 'int8u[5]', SubDirectory => { TagTable => 'Image::ExifTool::Sony::ISOInfo' } },
     0x059d => { Name => 'ISOInfo', Condition => '$$self{Ver9401} =~ /^(144|146)/', Format => 'int8u[5]', SubDirectory => { TagTable => 'Image::ExifTool::Sony::ISOInfo' } },
     0x0634 => { Name => 'ISOInfo', Condition => '$$self{Ver9401} == 68',           Format => 'int8u[5]', SubDirectory => { TagTable => 'Image::ExifTool::Sony::ISOInfo' } },
@@ -8593,6 +8637,7 @@ my %isoSetting2010 = (
             10 => 'Selective (for Miniature effect)', # seen for DSC-HX30V,TX30,WX60,WX100
             11 => 'Zone', #JR (ILCE-7 series)
             12 => 'Expanded Flexible Spot', #JR (HX90V, ILCE-7 series)
+            13 => 'Custom AF Area', # NC, new AFArea option for ILCE-9M3, ILCE-1M2
             14 => 'Tracking',
             15 => 'Face Tracking',
             20 => 'Animal Eye Tracking',
@@ -9521,7 +9566,6 @@ my %isoSetting2010 = (
         Name => 'FocusMode',
         Condition => '$$self{Model} =~ /^ILCA-/',
         Notes => 'ILCA models only',
-        Writable => 'int8u',
         Priority => 0,
         PrintConv => {
             0 => 'Manual',
@@ -9846,7 +9890,7 @@ my %isoSetting2010 = (
     WRITE_PROC => \&WriteEnciphered,
     CHECK_PROC => \&Image::ExifTool::CheckBinaryData,
     FORMAT => 'int8u',
-    NOTES => 'Valid for the ILCE-1/6700/7CM2/7CR/7M4/7RM5/7SM3/9M3, ILME-FX3/FX30, ZV-E1.',
+    NOTES => 'Valid for the ILCE-1/6700/7CM2/7CR/7M4/7RM5/7SM3/9M3, ILME-FX3/FX30, ZV-E1/E10M2.',
     FIRST_ENTRY => 0,
     GROUPS => { 0 => 'MakerNotes', 2 => 'Image' },
     0x0000 => { Name => 'Tag9416_0000', PrintConv => 'sprintf("%3d",$val)', RawConv => '$$self{TagVersion} = $val' },
@@ -10009,7 +10053,7 @@ my %isoSetting2010 = (
     },
     0x089d => { # Note: 32 values for these newer models, and 32 non-zero values present for new lenses like SEL2470GM2 and SEL2070G
         Name => 'VignettingCorrParams',
-        Condition => '$$self{Model} =~ /^(ILCE-(6700|7CM2|7CR|7RM5)|ILME-FX30|ZV-E1)\b/',
+        Condition => '$$self{Model} =~ /^(ILCE-(1M2|6700|7CM2|7CR|7RM5)|ILME-FX30|ZV-(E1|E10M2))\b/',
         Format => 'int16s[32]',
     },
     0x08b5 => {
@@ -10030,7 +10074,7 @@ my %isoSetting2010 = (
     },
     0x08e5 => {
         Name => 'APS-CSizeCapture',
-        Condition => '$$self{Model} =~ /^(ILCE-(7CM2|7CR|7RM5)|ZV-E1)\b/',
+        Condition => '$$self{Model} =~ /^(ILCE-(1M2|7CM2|7CR|7RM5)|ZV-E1)\b/',
         PrintConv => {
             0 => 'Off',
             1 => 'On',
@@ -10048,7 +10092,7 @@ my %isoSetting2010 = (
     },
     0x0945 => {
         Name => 'ChromaticAberrationCorrParams',
-        Condition => '$$self{Model} =~ /^(ILCE-(6700|7CM2|7CR|7RM5)|ILME-FX30|ZV-E1)\b/',
+        Condition => '$$self{Model} =~ /^(ILCE-(1M2|6700|7CM2|7CR|7RM5)|ILME-FX30|ZV-(E1|E10M2))\b/',
         Format => 'int16s[32]',
     },
 );
@@ -10553,14 +10597,14 @@ my %isoSetting2010 = (
         ValueConv => '2 ** (8-$val/8192)',
         PrintConv => 'Image::ExifTool::Exif::PrintFNumber($val)',
     },
-    0x8001 => { Name => 'Sony_rtmd_0x8001', Format => 'int16u', %hidUnk },
+    0x8001 => { Name => 'Sony_rtmd_0x8001', Format => 'int16u', %hidUnk }, # (perhaps related to focus distance? forum15856)
     0x8004 => { Name => 'Sony_rtmd_0x8004', Format => 'int16u', %hidUnk }, # (FocalLength35efl?, forum14315)
     0x8005 => { Name => 'Sony_rtmd_0x8005', Format => 'int16u', %hidUnk }, # (FocalLength?, forum14315)
     0x800a => { Name => 'Sony_rtmd_0x800a', Format => 'int16u', %hidUnk }, # (FocusRingPosition?, forum14315)
     0x800b => { Name => 'Sony_rtmd_0x800b', Format => 'int16u', %hidUnk }, # (ZoomRingPosition?, forum14315)
   # 0x8100 - 16 bytes starting with 0x060e2b340401
     0x8100 => { Name => 'Sony_rtmd_0x8100', Format => 'int8u',  %hidUnk },
-    0x8101 => { Name => 'Sony_rtmd_0x8101', Format => 'int8u',  %hidUnk }, # seen: 0,1
+    0x8101 => { Name => 'Sony_rtmd_0x8101', Format => 'int8u',  %hidUnk }, # seen: 0,1,2
     0x8104 => { Name => 'Sony_rtmd_0x8104', Format => 'int16u', %hidUnk }, # seen: 35616
     0x8105 => { Name => 'Sony_rtmd_0x8105', Format => 'int16u', %hidUnk }, # seen: 20092
     0x8106 => { Name => 'Sony_rtmd_0x8106', Format => 'int32u', %hidUnk }, # seen: "25 1","24000 1001" frame rate?
@@ -10581,7 +10625,7 @@ my %isoSetting2010 = (
         Format => 'int16u',
     },
     0x810d => { Name => 'Sony_rtmd_0x810d', Format => 'int8u',  %hidUnk }, # seen: 0,1
-    0x8115 => { Name => 'Sony_rtmd_0x8115', Format => 'int16u', %hidUnk }, # seen: 100
+    0x8115 => { Name => 'Sony_rtmd_0x8115', Format => 'int16u', %hidUnk }, # seen: 100 - ISO
   # 0x8300 - container for other tags in this format
     0x8500 => {
         Name => 'GPSVersionID',
@@ -10659,7 +10703,7 @@ my %isoSetting2010 = (
     },
     0xe000 => { Name => 'Sony_rtmd_0xe000', Format => 'int8u',  %hidUnk }, # (16 bytes)
     0xe300 => { Name => 'Sony_rtmd_0xe300', Format => 'int8u',  %hidUnk }, # seen: 0,1
-    0xe301 => { Name => 'Sony_rtmd_0xe301', Format => 'int32u', %hidUnk }, # seen: 100,1600,12800
+    0xe301 => { Name => 'Sony_rtmd_0xe301', Format => 'int32u', %hidUnk }, # seen: 100,1600,12800 - ISO
     0xe302 => { Name => 'Sony_rtmd_0xe302', Format => 'int8u',  %hidUnk }, # seen: 1
     0xe303 => { #forum12218
         Name => 'WhiteBalance',
@@ -10722,6 +10766,11 @@ my %isoSetting2010 = (
             0 => 'Sony:FocusPosition2',
             1 => 'FocalLengthIn35mmFormat',
         },
+        # (NOTE: This calculation may be wrong. "Focus Distance 2 is the result of an erroneous
+        #  user supplied formula to exiftool. It does use data embedded in the raw file,
+        #  but it is not the data. The actual embedded data seems to be proportional to
+        #  magnification not a focus distance. The camera needs to calculate magnification
+        #  for translation stabilization.", ref https://www.fredmiranda.com/forum/topic/1858744/0)
         ValueConv => q{
             return undef unless $val;
             return 'inf' if $val >= 255;
@@ -11352,7 +11401,7 @@ sub ProcessEnciphered($$$)
     Decipher(\$data);
     if ($$et{DoubleCipher}) {
         Decipher(\$data);
-        $et->WarnOnce('Some Sony metadata is double-enciphered. Write any tag to fix',1);
+        $et->Warn('Some Sony metadata is double-enciphered. Write any tag to fix',1);
     }
     if ($et->Options('Verbose') > 2) {
         my $tagInfo = $$dirInfo{TagInfo} || { Name => 'data' };
@@ -11384,7 +11433,7 @@ sub WriteEnciphered($$$)
     if ($$et{DoubleCipher}) {
         Decipher(\$data);
         ++$$et{CHANGED};
-        $et->WarnOnce('Fixed double-enciphered Sony metadata',1);
+        $et->Warn('Fixed double-enciphered Sony metadata',1);
     }
     my %dirInfo = (
         %$dirInfo,
@@ -11734,7 +11783,7 @@ Minolta.
 
 =head1 AUTHOR
 
-Copyright 2003-2024, Phil Harvey (philharvey66 at gmail.com)
+Copyright 2003-2025, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

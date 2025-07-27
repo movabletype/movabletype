@@ -298,6 +298,11 @@ use vars qw( @ISA %Lexicon );
 	'Recently in <em>[_1]</em> Category' => '<em>[_1]</em>の最近の記事',
 	'[_1] Archives' => '[_1]アーカイブ',
 
+## default_templates/changed-password.mtml
+	'Mail Footer' => 'メールフッター',
+	'Please ask the administrator for the new password. If this change is unexpected, please report it to the administrtor.' => '新しいパスワードは管理者にお尋ねください。また、この変更に心当たりがない場合は管理者に報告してください。',
+	q{The login password for '[_1]' was changed by a system administrator ([_2]).} => q{システム管理者([_2])が[_1]のログインパスワードを変更しました。},
+
 ## default_templates/current_author_monthly_archive_list.mtml
 	'[_1]: Monthly Archives' => '[_1]: 月別アーカイブ',
 
@@ -352,7 +357,6 @@ use vars qw( @ISA %Lexicon );
 
 ## default_templates/lockout-ip.mtml
 	'IP Address: [_1]' => 'IPアドレス: [_1]',
-	'Mail Footer' => 'メールフッター',
 	'Recovery: [_1]' => '解除時刻: [_1]',
 	'This email is to notify you that an IP address has been locked out.' => 'これは以下のIPアドレスからのアクセスがロックされたことを通知するメールです。',
 
@@ -527,6 +531,7 @@ use vars qw( @ISA %Lexicon );
 	q{Failed login attempt by locked-out user '[_1]'} => q{ロックされたユーザー「[_1]」がサインインしようとしました。},
 	q{Failed login attempt by pending user '[_1]'} => q{保留中のユーザー「[_1]」がサインインしようとしました。},
 	q{Failed login attempt by unknown user '[_1]'} => q{未登録のユーザー [_1] がサインインしようとしました。},
+	q{Failed login attempt by user '[_1]' (probably session expired)} => q{ユーザー「[_1]」がサインインに失敗しました（おそらくセッションの有効期限が過ぎていました）。},
 	q{Failed login attempt by user '[_1]'} => q{ユーザー「[_1]」がサインインに失敗しました。},
 	q{Failed to open monitoring file that specified by IISFastCGIMonitoringFilePath directive '[_1]': [_2]} => q{IISFastCGIMonitoringFilePath で指定されたモニタリングファイル ([_1]) が開けません: [_2]},
 	q{Invalid login attempt from user '[_1]'} => q{'[_1]'がサインインに失敗しました。},
@@ -591,7 +596,7 @@ use vars qw( @ISA %Lexicon );
 	'Manage Members' => 'メンバーの管理',
 	'Manage' => '一覧',
 	'Movable Type News' => 'Movable Typeニュース',
-	'Move child site(s) ' => 'サイトの移動',
+	'Move Child Site(s) ' => 'サイトの移動',
 	'New' => '新規',
 	'No such blog [_1]' => '[_1]というブログはありません。',
 	'None' => 'なし',
@@ -847,6 +852,9 @@ use vars qw( @ISA %Lexicon );
 	'folder_path/page_basename.html' => 'folder_path/page_basename.html',
 	'folder_path/page_basename/index.html' => 'folder_path/page_basename/index.html',
 
+## lib/MT/ArchiveType/Yearly.pm
+	'YEARLY_ARCHIVE_TITLE' => '[_1]年',
+
 ## lib/MT/Asset.pm
 	'Assets of this website' => 'ウェブサイトのアセット',
 	'Assets with Extant File' => 'ファイルが存在するアセット',
@@ -1081,7 +1089,6 @@ use vars qw( @ISA %Lexicon );
 	'Cannot load asset #[_1]' => 'アセット(ID:[_1])をロードできませんでした',
 	'Cannot load asset #[_1].' => 'アセット(ID:[_1])をロードできませんでした。',
 	'Cannot load file #[_1].' => 'ID:[_1]のファイルをロードできません。',
-	'Cannot overwrite an existing file with a file of a different type. Original: [_1] Uploaded: [_2]' => '違うアセットの種類での上書きはできません。 元のファイル:[_1] アップロードされたファイル[_2]',
 	'Custom...' => 'カスタム...',
 	'Extension changed from [_1] to [_2]' => '拡張子が[_1]から[_2]に変更されました',
 	'Failed to create thumbnail file because [_1] could not handle this image type.' => 'サムネイルの作成ができませんでした。[_1]がサポートしていない画像形式です。',
@@ -1147,6 +1154,7 @@ use vars qw( @ISA %Lexicon );
 	'Selected Child Site' => '選択された子サイト',
 	'Site URL must be an absolute URL.' => 'サイトURLは絶対URLでなければなりません。',
 	'The number of revisions to store must be a positive integer.' => '更新履歴番号は整数でなければなりません。',
+	'The file extension must be shorter than 10 characters.' => 'ファイルの拡張子は10文字までです。',
 	'These setting(s) are overridden by a value in the Movable Type configuration file: [_1]. Remove the value from the configuration file in order to control the value on this page.' => 'MTの設定ファイルによって設定されている値([_1])が優先されます。このページで設定した値を利用するためには、設定ファイルでの設定を削除してください。',
 	'This action can only be run on a single child site at a time.' => 'このアクションは同時に1つの子サイトでしか実行できません。',
 	'This action can only clone a child site.' => 'このアクションで複製できるのは子サイトのみです',
@@ -1305,6 +1313,8 @@ use vars qw( @ISA %Lexicon );
 	q{[_1] '[_2]' (ID:[_3]) edited and its status changed from [_4] to [_5] by user '[_6]'} => q{[_6]が[_1]「[_2]」(ID:[_3])を更新し、公開の状態を[_4]から[_5]に変更しました。},
 	q{[_1] '[_2]' (ID:[_3]) edited by user '[_4]'} => q{[_4]が[_1]「[_2]」(ID:[_3])を更新しました。},
 	q{[_1] '[_2]' (ID:[_3]) status changed from [_4] to [_5]} => q{[_1]「[_2] (ID:[_3])」の公開状態が[_4]から[_5]に変更されました。},
+	q{Failed to remove relationship between [_1] (ID: [_2]) and Asset (ID: [_3]): [_4]} => q{[_1] (ID:[_2])とアセット(ID:[_3])の関連付けを削除できませんでした。: [_4]},
+	q{Failed to save relationship between [_1] (ID: [_2]) and Asset (ID: [_3]): [_4]} => q{[_1] (ID:[_2])とアセット(ID:[_3])の関連付けを設定できませんでした。: [_4]},
 
 ## lib/MT/CMS/Export.pm
 	'Export Site Entries' => '記事のエクスポート',
@@ -1362,6 +1372,9 @@ use vars qw( @ISA %Lexicon );
 	'Publishing' => '公開',
 	q{Activity log for blog '[_1]' (ID:[_2]) reset by '[_3]'} => q{'[_3]'がブログ'[_1]'(ID:[_2])のログをリセットしました。},
 	q{Activity log reset by '[_1]'} => q{'[_1]'がログをリセットしました。},
+	'Specify the period' => '期間を指定する',
+	q{Download site '[_1]' logs} => q{サイト '[_1]' のログをダウンロードします},
+	'Download system-wide logs' => 'システム全体のログをダウンロードします',
 
 ## lib/MT/CMS/Plugin.pm
 	'Error saving plugin settings: [_1]' => 'プラグインの設定を保存できません: [_1]',
@@ -1414,6 +1427,7 @@ use vars qw( @ISA %Lexicon );
 	'Templates' => 'テンプレート',
 	'Text' => '本文',
 	'Title' => 'タイトル',
+	'Too long query. Please simplify your query to [_1] characters or less and try again.' => 'クエリーが長すぎます。お手数ですが、[_1]文字以内で検索をやり直してください。',
 	'replace_handler of [_1] field is invalid' => '[_1]フィールドのreplace_handlerは不正です',
 	'ss_validator of [_1] field is invalid' => '[_1]フィールドのss_validatorは不正です',
 	q{Searched for: '[_1]' Replaced with: '[_2]'} => q{検索ワード「[_1]」を「[_2]」で置換しました},
@@ -1528,6 +1542,7 @@ use vars qw( @ISA %Lexicon );
 	'Image quality(JPEG) is [_1]' => 'JPEG 画像の品質は [_1] です',
 	'Image quality(PNG) is [_1]' => 'PNG 画像の圧縮レベルは [_1] です',
 	'Importing a file failed: ' => 'ファイルからインポートできませんでした。',
+	'Importing sites is finished.' => 'サイトのインポートが終了しました。',
 	'Invalid SitePath.  The SitePath should be valid and absolute, not relative' => 'サイトパス制限には正しい絶対パスを指定してください。',
 	'Invalid author_id' => 'ユーザーのIDが不正です。',
 	'Invalid email address' => 'メールアドレスのフォーマットが正しくありません',
@@ -1545,7 +1560,7 @@ use vars qw( @ISA %Lexicon );
 	'Passwords do not match' => 'パスワードが一致していません。',
 	'Performance log path is [_1]' => 'パフォーマンスログのパスは[_1]です',
 	'Performance log threshold is [_1]' => 'パフォーマンスログの閾値は[_1]です',
-	'Performance logging is off' => 'バフォーマンスログはオフです',
+	'Performance logging is off' => 'パフォーマンスログはオフです',
 	'Performance logging is on' => 'パフォーマンスログはオンです',
 	'Please confirm your new password' => '新しいパスワードを確認してください。',
 	'Please enter a valid email address.' => '正しいメールアドレスを入力してください。',
@@ -1596,12 +1611,13 @@ use vars qw( @ISA %Lexicon );
 	q{Removing Archive Path for the site '[_1]' (ID:[_2])...} => q{'[_1]'(ID:[_2])のアーカイブパスを消去しています...},
 	q{Removing Site Path for the site '[_1]' (ID:[_2])...} => q{'[_1]'(ID:[_2])のサイトパスを消去しています...},
 	q{Site(s) (ID:[_1]) was/were successfully exported by user '[_2]'} => q{'[_2]'がサイト(ID:[_1])をエクスポートしました。},
-	q{Successfully imported objects to Movable Type system by user '[_1]'} => q{'[_1]'がMovable Typeシステムにデータをインポートしました。},
+	q{Successfully imported objects to Movable Type system by user '[_1]'} => q{'[_1]'がMovable Typeシステムにすべてのデータをインポートしました。},
 	q{The password for the user '[_1]' has been recovered.} => q{ユーザー「[_1]」のパスワードが再設定されました。},
 	q{User '[_1]' (user #[_2]) does not have email address} => q{ユーザー'[_1]'(ID:[_2])はメールアドレスがありません},
 
 ## lib/MT/CMS/User.pm
 	'(newly created user)' => '(新規ユーザー)',
+	'[_1] changed' => '[_1]が変更されました',
 	'Another role already exists by that name.' => '同名のロールが既に存在します。',
 	'Cannot load role #[_1].' => 'ロール: [_1]をロードできませんでした。',
 	'Create User' => 'ユーザーの作成',
@@ -1612,6 +1628,7 @@ use vars qw( @ISA %Lexicon );
 	'Invalid ID given for personal blog theme.' => '個人用ブログテーマのIDが不正です。',
 	'Invalid type' => 'typeが不正です。',
 	'Minimum password length must be an integer and greater than zero.' => 'パスワードの最低文字数は0以上の整数でなければなりません。',
+	'Password is changed' => 'パスワードが変更されました',
 	'Role name cannot be blank.' => 'ロールの名前は必須です。',
 	'Roles Selected' => '選択されたロール',
 	'Select Groups And Users' => 'ユーザーとグループを選択',
@@ -1632,6 +1649,9 @@ use vars qw( @ISA %Lexicon );
 	'You cannot delete your own association.' => '自分の関連付けは削除できません。',
 	'You have no permission to delete the user [_1].' => '[_1]を削除する権限がありません。',
 	'represents a user who will be created afterwards' => '今後新しく作成されるユーザー',
+	q{Saved User '[_1]' (ID: [_2]) changes.} => q{ユーザー'[_1]'(ID: [_2])の変更が保存されました},
+	q{User '[_1]' (ID: [_2]) changed the login password for user '[_3]' (ID: [_4]).} => q{ユーザー'[_1]'(ID: [_2])がユーザー'[_3]'(ID: [_4])のログインパスワードを変更しました。},
+	q{User '[_1]' (ID: [_2]) changed their login password.} => q{ユーザー'[_1]'(ID: [_2])がログインパスワードを変更しました。},
 	q{User '[_1]' (ID:[_2]) could not be re-enabled by '[_3]'} => q{'[_3]'がユーザー '[_1]' (ID:[_2])を有効にできませんでした},
 	q{User '[_1]' (ID:[_2]) created by '[_3]'} => q{'[_3]'がユーザー'[_1]'(ID:[_2])を作成しました。},
 	q{User '[_1]' (ID:[_2]) deleted by '[_3]'} => q{'[_3]'がユーザー'[_1]'(ID:[_2])を削除しました。},
@@ -1857,6 +1877,7 @@ use vars qw( @ISA %Lexicon );
 	'Blog URL' => 'ブログURL',
 	'Change Settings' => '設定の変更',
 	'Classic Blog' => 'クラシックブログ',
+	'Connect Options' => '接続オプション',
 	'Contact' => '連絡先',
 	'Convert Line Breaks' => '改行を変換',
 	'Create Child Sites' => '子サイトの作成',
@@ -1974,6 +1995,7 @@ use vars qw( @ISA %Lexicon );
 	'tar.gz' => 'tar.gz',
 	'zip' => 'zip',
 	q{This is often 'localhost'.} => q{通常「localhost」のままで構いません。},
+	q{You may need to pass additional, driver-specific parameters, especially when the server requires a secure connection. Each line should have a NAME=VALUE. See the driver's manual for a list of available names and values.} => q{特にデータベースサーバーがセキュアな接続を要求する場合、データベースドライバーに固有のパラメーターを追加で設定しなければならないことがあります。一行ずつNAME=VALUEの形式で記述してください。利用可能な名前や値の一覧はデータベースドライバーのマニュアルをご覧ください。},
 
 ## lib/MT/DataAPI/Callback/Blog.pm
 	'Cannot apply website theme to blog: [_1]' => 'ウェブサイトテーマをブログに適用する事はできません: [_1]',
@@ -2050,7 +2072,7 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/DataAPI/Endpoint/v2/Entry.pm
 	'A resource "[_1]" is required.' => '"[_1]"リソースを指定する必要があります。',
-	'An error occurred during the import process: [_1]. Please check your import file.' => 'インポートの途中でエラーが発生しました : [_1]。インポートファイルを確認してください。',
+	'An error occurred during the import process: [_1]. Please check your import file.' => 'インポート処理の一部でエラーが発生しました : [_1]。インポートファイルを確認してください。',
 	'Could not found archive template for [_1].' => '[_1]のアーカイブテンプレートが見つかりません。',
 	'Invalid convert_breaks: [_1]' => '不正なテキストフォーマットが指定されました: [_1]',
 	'Invalid default_cat_id: [_1]' => '不正な規定のカテゴリーIDが指定されました: [_1]',
@@ -2162,6 +2184,7 @@ use vars qw( @ISA %Lexicon );
 	'Navigation' => 'ナビゲーション',
 	'OpenID Accepted' => 'OpenID対応',
 	'Page Listing' => 'ページ一覧',
+	'Password Is Changed' => 'パスワードが変更されました',
 	'Popup Image' => 'ポップアップ画像',
 	'Powered By' => 'Powered By',
 	'RSD' => 'RSD',
@@ -2218,7 +2241,6 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/Filter.pm
 	'"editable_terms" and "editable_filters" cannot be specified at the same time.' => '"editable_terms"と"editable_filters"は、同時に指定できません。',
 	'Invalid filter type [_1]:[_2]' => '不正なフィルタタイプです。[_1]:[_2]',
-	'Invalid sort key [_1]:[_2]' => '不正ななソートキーです。[_1]:[_2]',
 
 ## lib/MT/Group.pm
 	'Active Groups' => '有効なグループ',
@@ -2345,10 +2367,11 @@ use vars qw( @ISA %Lexicon );
 	'theme' => 'テーマ',
 
 ## lib/MT/Mail.pm
-	'Authentication failure: [_1]' => '認証に失敗しました: [_1]',
+	'All the supported SMTP authentication mechanisms failed: [_1]' => '対応しているすべての方式でSMTP認証に失敗しました: [_1]',
 	'Error connecting to SMTP server [_1]:[_2]' => 'SMTPサーバに接続できません。[_1]:[_2]',
 	'Exec of sendmail failed: [_1]' => 'sendmailを実行できませんでした: [_1]',
 	'Following required module(s) were not found: ([_1])' => '以下のモジュールが不足しています。([_1])',
+	'SMTP [_1] Authentication failed: [_2]' => 'SMTP認証([_1])に失敗しました: [_2]',
 	'Username and password is required for SMTP authentication.' => 'SMTP認証を利用する場合は、ユーザー名とパスワードは必須入力です。',
 	'You do not have a valid path to sendmail on your machine. Perhaps you should try using SMTP?' => 'sendmailへのパスが正しくありません。SMTPの設定を試してください。',
 	q{Unknown MailTransfer method '[_1]'} => q{MailTransferの設定([_1])が不正です。},
@@ -2611,6 +2634,7 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/Template/Tags/Misc.pm
 	q{Specified WidgetSet '[_1]' not found.} => q{ウィジェットセット「[_1]」が見つかりません。},
+	'path is required.' => 'pathを指定してください。',
 
 ## lib/MT/Template/Tags/Tag.pm
 	'content_type modifier cannot be used with type "[_1]".' => 'content_typeモディファイアは[_1]と同時に利用できません',
@@ -2907,6 +2931,9 @@ use vars qw( @ISA %Lexicon );
 	'add administer_site permission for Blog Administrator...' => 'ブログ管理者にサイトの管理権限を付与しています...',
 	'change [_1] to [_2]' => '[_1]を[_2]に変更しています',
 
+## lib/MT/Upgrade/v8.pm
+	'Migrating image width/height meta data...' => '画像の幅/高さを移行しています...',
+
 ## lib/MT/Util.pm
 	'[quant,_1,day,days] from now' => '[quant,_1,日,日]後',
 	'[quant,_1,day,days]' => '[quant,_1,日,日]',
@@ -2998,7 +3025,6 @@ use vars qw( @ISA %Lexicon );
 	'This module and its dependencies are required to run Movable Type under FastCGI.' => 'FastCGI環境でMovable Typeを実行する場合に必要となります。',
 	'This module and its dependencies are required to run Movable Type under psgi.' => 'PSGI環境下でMovable Typeを実行する場合に必要となります。',
 	'This module is one of the image processors that you can use to create thumbnails of uploaded images.' => 'アップロードした画像のサムネイルを作成するときに使われる画像処理モジュールのひとつです。',
-	'This module is optional. It enhances performance of Authen::SASL.' => 'このモジュールがインストールされていればAuthen::SASLを高速化します。',
 	'This module is optional. It is used to customize the logging behavior.' => 'このモジュールがインストールされていればログの挙動をカスタマイズするのに使われます。',
 	'This module is optional. It is used to download assets from a website.' => 'このモジュールがインストールされていればウェブサイトからアセットをダウンロードするのに使われます。',
 	'This module is optional. It is used to know the encoding of the terminal to log.' => 'このモジュールがインストールされていればログを出力する端末のエンコーディングを調べるのに使われます。',
@@ -3022,8 +3048,10 @@ use vars qw( @ISA %Lexicon );
 	'This module is used to make checksums.' => 'このモジュールはチェックサムの作成に使われます。',
 	'XML::SAX and its dependencies are required to import an exported site and such.' => 'XML::SAXはサイトなどのインポート処理に必要となります。',
 	'XML::Simple is optional. It is used to parse configuration file of the IIS.' => 'XML::SimpleがインストールされていればIISの設定ファイルを解析するのに使われます。',
-	'YAML::Syck is optional; It is a better, fast and lightweight alternative to YAML::Tiny for YAML file handling.' => 'YAML::SyckのインストールがインストールされていればYAML::Tinyよりも軽量で高速に動作します。',
+	'YAML::PP is optional; It is a better alternative to YAML::Tiny for YAML file handling.' => 'YAML::PPはYAML::Tinyよりも優れたYAMLパーサーです。',
+	'YAML::Syck is optional; It is a better, fast and lightweight alternative to YAML::Tiny for YAML file handling.' => 'YAML::SyckがインストールされていればYAML::Tinyよりも軽量で高速に動作します。',
 	'YAML::Tiny is the default YAML parser.' => 'YAML::TinyはデフォルトのYAMLパーサーです。',
+	'YAML::XS is optional; It is a better, fast and lightweight alternative to YAML::Tiny for YAML file handling.' => 'YAML::XSがインストールされていればYAML::Tinyよりも軽量で高速に動作します。',
 	'local::lib is optional. It is used to load modules from different locations.' => 'local::libがインストールされていれば標準とは異なる場所からモジュールを読み込むのに使われます。',
 
 ## lib/MT/Util/Deprecated.pm
@@ -3068,8 +3096,11 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/Worker/Publish.pm
 	'-- set complete ([quant,_1,file,files] in [_2] seconds)' => '-- 完了 ([_1]ファイル - [_2]秒)',
 	'Background Publishing Done' => 'バックグラウンドパブリッシングが完了しました',
+	'Background Publishing Started' => 'バックグラウンドパブリッシングを開始しました',
+	'bytes' => 'バイト',
 	'Error rebuilding file [_1]:[_2]' => '[_1]の再構築中にエラーが発生しました: [_2]',
-	'Published: [_1]' => '公開されたファイル: [_1]',
+	'Published: [_1] ([_2] bytes)' => '公開されたファイル: [_1] ([_2]バイト)',
+	'Published ([_1]):' => '公開されたファイル ([_1]):',
 
 ## lib/MT/Worker/Sync.pm
 	'Done Synchronizing Files' => 'ファイルを同期しました。',
@@ -3097,6 +3128,7 @@ use vars qw( @ISA %Lexicon );
 	'The version of Perl installed on your server ([_1]) is lower than the minimum supported version ([_2]). Please upgrade to at least Perl [_2].' => 'お使いのシステムにインストールされているPerl ([_1])は、Movable Type でサポートされている最低限のバージョン[_2]を満たしていません。Perlを[_2]以上にアップグレードしてください。',
 	'Web server:' => 'ウェブサーバー',
 	'You attempted to use a feature that you do not have permission to access. If you believe you are seeing this message in error contact your system administrator.' => 'アクセス権がありません。システム管理者に連絡してください。',
+	'Movable Type does not work because your Perl does not have some of the core modules. Please ask your system administrator to install perl (or perl-core) properly.' => 'お使いのPerlはコアモジュールが不足しているためMovable Typeを利用できません。システム管理者にperl（またはperl-core）を適切にインストールするよう依頼してください。',
 	'Your server does not have [_1] installed, or [_1] requires another module that is not installed.' => 'サーバーに [_1]か、[_1]の動作に必要な他のモジュールがインストールされていません。',
 	'Your server has [_1] installed (version [_2]).' => 'サーバーに [_1] がインストールされています(バージョン [_2])。',
 	'Your server has all of the required modules installed; you do not need to perform any additional module installations. Continue with the installation instructions.' => 'お使いのサーバーには、Movable Type の動作に必要なすべてのモジュールがインストールされています。モジュールを追加インストール作業は必要はありません。マニュアルに従い、インストールを続けてください。',
@@ -3146,6 +3178,8 @@ use vars qw( @ISA %Lexicon );
 	'Show input field to enter data label' => 'ユーザーが入力する',
 	'Unique ID' => 'ユニークID',
 	'close' => '閉じる',
+	'Edit all' => 'すべて編集',
+	'Close all' => 'すべて閉じる',
 
 ## mt-static/js/admin2023/listing/list_data.js
 	'[_1] - Filter [_2]' => '[_1] - フィルタ [_2]',
@@ -3203,6 +3237,7 @@ use vars qw( @ISA %Lexicon );
 ## mt-static/js/admin2023/mt.js
 	'Are you certain you want to remove these [_1] roles? By doing so you will be taking away the permissions currently assigned to any users and groups associated with these roles.' => 'これら[_1]つのロールをしてもよろしいですか? 削除してしまうと、これらのロールを通じて権限を付与されているすべてのユーザーとグループから権限を剥奪することになります。',
 	'Are you certain you want to remove this role? By doing so you will be taking away the permissions currently assigned to any users and groups associated with this role.' => 'このロールを本当に削除してもよろしいですか? ロールを通じて権限を付与されているすべてのユーザーとグループから権限を剥奪することになります。',
+	'Are you sure you want to remove this asset?' => 'アセットを削除してもよろしいですか？',
 	'Enter URL:' => 'URLを入力:',
 	'Enter email address:' => 'メールアドレスを入力:',
 	'Same name tag already exists.' => '同名のタグがすでに存在します',
@@ -3669,6 +3704,7 @@ use vars qw( @ISA %Lexicon );
 	'Your preferences have been saved.' => '設定を保存しました。',
 	'pixels' => 'ピクセル',
 	'width:' => '幅:',
+	'height:' => '高さ:',
 	q{'Popup image' template does not exist or is empty and cannot be selected.} => q{'ポップアップ画像' テンプレートが存在しない、もしくは空のため選択できません。},
 	q{ASCII equivalents (&quot;, ', ..., -, --)} => q{対応するASCII文字 (&quot;、'、...、-、--)},
 
@@ -3772,6 +3808,8 @@ use vars qw( @ISA %Lexicon );
 	'Advanced Archive Publishing' => '高度な公開の設定',
 	'Allow properly configured template modules to be cached to enhance publishing performance.' => '再構築の速度向上のために、テンプレートモジュール毎のキャッシュ設定を有効にする',
 	'Allow to change at upload' => 'アップロード時に変更を許可する',
+	'Trim spaces before and after path' => 'パスの前後の空白を除去する',
+	'Enable file path trimming' => '前後の空白を除去する',
 	'Apache Server-Side Includes' => 'ApacheのSSI',
 	'Archive Settings' => 'アーカイブ設定',
 	'Archive URL' => 'アーカイブURL',
@@ -3879,6 +3917,7 @@ use vars qw( @ISA %Lexicon );
 	q{The path where your index files will be published. Do not end with '/' or '\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog} => q{インデックスファイルが公開されるパスです。末尾には'/'や'\'を含めません。},
 	q{Used to generate URLs (permalinks) for this child site's archived entries. Choose one of the archive types used in this child site's archive templates.} => q{記事にリンクするときのURLとして使われます。このサイトで使われているアーカイブテンプレートの中から選択してください。},
 	q{Used to generate URLs (permalinks) for this site's archived entries. Choose one of the archive types used in this site's archive templates.} => q{記事にリンクするときのURLとして使われます。このサイトで使われているアーカイブテンプレートの中から選択してください。},
+	q{This field is overriden by a value in the Movable Type configuration file.} => q{MTの設定ファイルによって設定されている値が優先されます。},
 
 ## tmpl/admin2023/cms/cfg_rebuild_trigger.tmpl
 	'Action' => 'アクション',
@@ -3998,11 +4037,13 @@ use vars qw( @ISA %Lexicon );
 	'Data API' => 'Data API',
 	'Disable Data API' => 'Data API を利用しない',
 	'Enable Data API in system scope.' => 'システム領域の設定やデータを Data API の出力結果に含める',
+	'Enable Data API in this site for all users including system administrators.' => 'システム管理者を含むすべてのユーザーにData APIの利用を許可する。',
 	'Enable Data API in this site.' => 'Data API の利用を許可する。',
 	'External Notifications' => '更新通知',
 	'Note: This option is currently ignored because outbound notification pings are disabled system-wide.' => '備考: システム外部ping通知がシステムレベルで無効のため、このオプションは現在無効となっています。',
 	'Notify ping services of [_1] updates' => 'サイト更新pingサービス通知',
 	'Others:' => 'その他:',
+	'System administrators are always allowed to use Data API.' => 'システム管理者は設定によらずData APIを利用できます。',
 	'child site' => '子サイト',
 	'site' => 'サイト',
 
@@ -4292,6 +4333,9 @@ use vars qw( @ISA %Lexicon );
 	'Grant site permission to group' => 'グループにサイトの権限を割り当てる',
 	'Grant site permission to user' => 'ユーザーにサイトの権限を割り当てる',
 
+## tmpl/admin2023/cms/dialog/theme_element_detail.tmpl
+	q{The settings will be saved when you click the 'Next' button.} => '「次へ」ボタンをクリックすると設定が保存されます。',
+
 ## tmpl/admin2023/cms/edit_asset.tmpl
 	'Appears in...' => '利用状況',
 	'Embed Asset' => 'アセットの埋め込み',
@@ -4299,7 +4343,7 @@ use vars qw( @ISA %Lexicon );
 	'Related Assets' => '関連するアセット',
 	'Stats' => '情報',
 	'This asset has been used by other users.' => 'このアセットは、他のユーザーにより利用されています。',
-	'You have unsaved changes to this asset that will be lost. Are you sure you want to edit image?' => '保存されていないアセットへの変更は失われます。画像を編集しますか？',
+	'If you edit image, unsaved changes to this asset that will be lost. Do you want to continue?' => '画像を編集すると、保存されていないアセットへの変更は失われます。続行しますか？',
 	'You have unsaved changes to this asset that will be lost.' => '保存されていないアセットへの変更は失われます。',
 	'You must specify a name for the asset.' => 'アセットに名前を設定してください。',
 	'[_1] - Created by [_2]' => '作成: [_2] - [_1]',
@@ -4340,6 +4384,7 @@ use vars qw( @ISA %Lexicon );
 	'This user was classified as disabled.' => 'このユーザーは無効にされています。',
 	'This user was classified as pending.' => 'このユーザーは保留中にされています。',
 	'This user was locked out.' => 'このユーザーはロックされています。',
+	'Use this name when you sign in.' => '管理画面のサインインに使用します。',
 	'User properties' => 'ユーザー属性',
 	'Web Services Password' => 'Webサービスパスワード',
 	'You must use half-width character for password.' => 'パスワードには全角文字を利用できません。',
@@ -4751,6 +4796,7 @@ use vars qw( @ISA %Lexicon );
 	'_THEME_AUTHOR' => '作者名',
 	q{Cannot install new theme with existing (and protected) theme's basename.} => q{新しいテーマは既存、または保護されたテーマベース名ではインストールできません。},
 	q{Use letters, numbers, dash or underscore only (a-z, A-Z, 0-9, '-' or '_').} => q{次の文字と数字のみ利用できます: アルファベット、数字、ダッシュ(-)、アンダースコア(_)},
+  'Always include all options' => '常に全てのオプションをエクスポート対象にする',
 
 ## tmpl/admin2023/cms/field_html/field_html_asset.tmpl
 	'Assets greater than or equal to [_1] must be selected' => '[_1]以上のアセットを選択してください',
@@ -4893,7 +4939,7 @@ use vars qw( @ISA %Lexicon );
 	'Drag and drop here' => 'ファイルをドロップしてください',
 	'Operation for a file exists' => '既存ファイルの処理',
 	'Upload Options' => 'アップロードオプション',
-	'Upload Settings' => 'アップロードの設定',
+	'Change Upload Settings' => 'アップロードの設定を変更する',
 
 ## tmpl/admin2023/cms/include/author_table.tmpl
 	'Disable selected users (d)' => '選択したユーザーを無効化 (d)',
@@ -4988,13 +5034,11 @@ use vars qw( @ISA %Lexicon );
 	'<a href="[_1]"><mt:var name="mt_product_name"></a> [_2]' => '<a href="[_1]"><mt:var name="mt_product_name"></a> [_2]',
 	'BETA' => 'BETA',
 	'DEVELOPER PREVIEW' => 'DEVELOPER PREVIEW',
-	'Forums' => 'ユーザーコミュニティ',
 	'MovableType.org' => 'MovableType.jp',
-	'Send Us Feedback' => 'フィードバックはこちらへ',
+	'Send Us Feedback' => 'フィードバック',
 	'Support' => 'サポート',
 	'This is a alpha version of Movable Type and is not recommended for production use.' => 'このMovable Typeはアルファ版です。',
 	'This is a beta version of Movable Type and is not recommended for production use.' => 'このMovable Typeはベータ版です。',
-	'https://forums.movabletype.org/' => 'https://communities.movabletype.jp/',
 	'https://plugins.movabletype.org/' => 'https://plugins.movabletype.jp/',
 	'https://www.movabletype.org' => 'https://www.movabletype.jp',
 	'with' => 'with',
@@ -5062,9 +5106,7 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/admin2023/cms/include/old_footer.tmpl
 	'<a href="[_1]"><mt:var name="mt_product_name"></a> version [_2]' => '<a href="[_1]"><mt:var name="mt_product_name"></a> version [_2]',
-	'Wiki' => 'Wiki(英語)',
 	'Your Dashboard' => 'ユーザーダッシュボード',
-	'https://wiki.movabletype.org/' => 'https://wiki.movabletype.org/',
 	q{_LOCALE_CALENDAR_HEADER_} => q{'日', '月', '火', '水', '木', '金', '土'},
 
 ## tmpl/admin2023/cms/include/pagination.tmpl
@@ -5459,6 +5501,9 @@ use vars qw( @ISA %Lexicon );
 	'Import from Exported file' => 'エクスポートファイルからインポートする',
 	'Overwrite global templates.' => 'グローバルテンプレートを上書きする',
 	'Perl module XML::SAX and/or some of its dependencies are missing.  Movable Type cannot restore the system without these modules.' => 'インポートとエクスポートをするために必要なPerlモジュール(XML::SAXおよび依存モジュール)が見つかりません。',
+	'Published file information' => '公開ファイル情報',
+	'Skip importing' => 'インポートを省略',
+	'You should not import published file information if you import data exported from the same server. Otherwise, you may lose the original published files.' => '同一サーバーからエクスポートしてきたデータをインポートする場合、公開ファイル情報はインポートしないでください。元の公開ファイルを失うことがあります。',
 
 ## tmpl/admin2023/cms/restore_end.tmpl
 	'An error occurred during the import process: [_1] Please check activity log for more details.' => 'インポート中にエラーが発生しました。[_1] 詳細についてはログを確認してください。',
@@ -5610,19 +5655,6 @@ use vars qw( @ISA %Lexicon );
 	'_ERROR_CONFIG_FILE' => 'Movable Type の環境設定ファイルが存在しないか、または読み込みに失敗しました。詳細については、Movable Type マニュアルの<a href="javascript:void(0)">インストールと設定</a>の章を確認してください。',
 	'_ERROR_DATABASE_CONNECTION' => '環境設定ファイルのデータベース設定に問題があるか、または設定がありません。詳細については、Movable Type マニュアルの<a href="javascript:void(0)">インストールと設定</a>の章を確認してください。',
 
-## tmpl/admin2023/wizard/base_site_path.tmpl
-	'Base Site Path Configuration' => 'ベースサイトパスの設定',
-	'Base Site Path works as the default site path for each new site. It also ensures that each site path is within the Base Site Path.' => 'ベースサイトパスは新規サイトのサイトパスの既定値となります。各サイトのサイトパスは必ずベースサイトパスの配下になります。',
-	'[_1] does not exist.' => '[_1]が存在しません。',
-	'[_1] must be an absolute path.' => '[_1]は絶対パスで指定する必要があります。',
-	'[_1] must not be a subdirectory of the Movable Type directory.' => '[_1]はMovable Typeディレクトリ配下であってはなりません。',
-	'_BASE_SITE_PATH' => 'ベースサイトパス',
-
-## tmpl/admin2023/wizard/base_user_directory.tmpl
-	'Base User Directory Configuration' => 'ベースユーザーディレクトリの設定',
-	'Base User Directory is where you should put or upload your image/plugin/theme files (in appropriate subdirectories). The directory itself should not be web-accessible. It should not be the Movable Type directory or its subdirectory as well. It is recommended not to include the Movable Type directory, but you can if needed. If you are not sure, or if you want finer control, you can skip.' => 'ベースユーザーディレクトリはユーザーの画像やプラグイン、テーマを（適切なサブディレクトリに）アップロードしたり格納したりする場所です。ベースユーザーディレクトリ自体はWebブラウザからアクセスできる場所にあってはなりません。また、Movable Typeディレクトリやそのサブディレクトリであってはいけません。配下にMovable Typeディレクトリを含まないようにするのがお勧めですが、必要なら含めるようにもできます。よくわからない場合、またご自身で細かく設定したい場合は設定を省略できます。',
-	'Base User Directory' => 'ベースユーザーディレクトリ',
-
 ## tmpl/admin2023/wizard/cfg_dir.tmpl
 	'TempDir is required.' => 'TempDirが必要です。',
 	'TempDir' => 'TempDir',
@@ -5660,13 +5692,6 @@ use vars qw( @ISA %Lexicon );
 	'Your database configuration is complete.' => 'データベースの設定を完了しました。',
 	'https://www.movabletype.org/documentation/[_1]' => 'https://www.movabletype.jp/documentation/[_1]',
 
-## tmpl/admin2023/wizard/content_separation.tmpl
-	'Check this if you prefer to skip extra path configuration.' => '追加のパス設定を省略する場合はチェックしてください。',
-	'Content Separation' => 'コンテンツの分離',
-	'Traditionally, uploaded files go into a directory under the mt-static directory, and user plugins and themes are put under directories where Movable Type system files are present. This traditional setup looks easy to start. However, it may lead to a problem when you upgrade to a new version of Movable Type due to leftovers from the previous version or the removal of the uploaded files.' => '従来アップロードしたファイルはmt-staticディレクトリ配下のディレクトリに入れられましたし、ユーザーのプラグインやテーマはMovable Typeのシステムファイルが存在しているディレクトリにインストールされていました。このやり方は簡単そうですが、Movable Typeを新しいバージョンにアップグレードするときに古いバージョンのファイルが残ったりアップロードしたファイルを消してしまうなどの問題が起こることもありました。',
-	'Use traditional setup' => '従来の設定を利用する',
-	'We recommend extra path configuration to separate your content from the system files.' => '追加のパス設定をして、ユーザーのコンテンツとシステムファイルを分離することをお勧めします。',
-
 ## tmpl/admin2023/wizard/optional.tmpl
 	'Address of your SMTP Server.' => 'SMTPサーバーのアドレスを指定します。',
 	'An error occurred while attempting to send mail: ' => 'メール送信の過程でエラーが発生しました。',
@@ -5698,14 +5723,6 @@ use vars qw( @ISA %Lexicon );
 	'You must set the Sendmail path.' => 'Sendmailのパスは必須入力です。',
 	'You must set the system email address.' => 'システムメールアドレスは必須入力です。',
 	'Your mail configuration is complete.' => 'メール設定を完了しました。',
-
-## tmpl/admin2023/wizard/other_paths.tmpl
-	'Import Directory' => 'インポートディレクトリ',
-	'Other Path Configuration' => 'その他のパス設定',
-	'There are a few more paths you should specify to separate your files from the system files. All of them should not be web-accessible.' => 'ユーザーのファイルとシステムファイルを分離するうえで設定した方がよいパスがいくつかあります。いずれもWebブラウザからアクセスできる場所にあってはなりません。',
-	'User Plugin Directory' => 'ユーザープラグインディレクトリ',
-	'User Template Directory' => 'ユーザーテンプレートディレクトリ',
-	'User Themes Directory' => 'ユーザーテーマディレクトリ',
 
 ## tmpl/admin2023/wizard/packages.tmpl
 	'All required Perl modules were found.' => '必要なPerlモジュールは揃っています。',
@@ -5741,15 +5758,6 @@ use vars qw( @ISA %Lexicon );
 	'To create a new configuration file using the Wizard, remove the current configuration file and then refresh this page' => 'ウィザードで新しく構成ファイルを作るときは、現在の構成ファイルを別の場所に移動してこのページを更新してください。',
 	q{<strong>Error: '[_1]' could not be found.</strong>  Please move your static files to the directory first or correct the setting if it is incorrect.} => q{エラー: '[_1]'が見つかりませんでした。ファイルをmt-staticディレクトリに移動するか、設定を修正してください。},
 	q{The [_1] directory is in the main Movable Type directory which this wizard script resides, but due to your web server's configuration, the [_1] directory is not accessible in this location and must be moved to a web-accessible location (e.g., your web document root directory).} => q{[_1]ディレクトリは、Movable Typeのメインディレクトリ(このウィザード自身も含まれている)以下で見つかりました。しかし現在のサーバーの構成上、[_1]ディレクトリにはWebブラウザからアクセスできません。ウェブサイトのルートディレクトリの下など、Webブラウザからアクセスできる場所に移動してください。},
-
-## tmpl/admin2023/wizard/support_directory.tmpl
-	'Fill both fields (or empty both fields).' => '両方のフィールドに値を入れるか、両方のフィールドを空にしてください。',
-	'Support Directory Configuration' => 'サポートディレクトリの設定',
-	'Support Directory Path is not writable.' => 'サポートディレクトリパスに書き込めません。',
-	'Support Directory Path' => 'サポートディレクトリパス',
-	'Support Directory URL is not web-accessible or points to an incorrect location.' => 'サポートディレクトリURLにWebブラウザからアクセスできません。あるいはサポートディレクトリパスとURLの設定がずれています。',
-	'Support Directory URL' => 'サポートディレクトリURL',
-	'Support Directory is where your asset files are uploaded to. It must be web-accessible. Traditionally it is located under the mt-static directory, but we recommend moving it to a different location.' => 'サポートディレクトリはアップロードしたアセットファイルが入る場所です。Webブラウザからアクセスできる必要があります。従来はmt-staticディレクトリ配下にありましたが、別の場所に移すことをお勧めします。',
 
 ## tmpl/cms/include/content_data_table.tmpl
 	'Unpublish' => '公開取り消し',

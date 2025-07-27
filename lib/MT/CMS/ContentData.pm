@@ -360,7 +360,13 @@ sub edit {
             $field->{value} = $app->param( $field->{content_field_id} );
         }
         elsif ( $content_data_id || $data ) {
-            $field->{value} = $data->{ $field->{content_field_id} };
+            if ( $param->{'recovered_object'} && $field->{type} eq 'tags' ) {
+                my $tag_delim = chr( $app->user->entry_prefs->{tag_delim} );
+                $tag_delim .= ' ' if $tag_delim eq ',';
+                $field->{tags} = join $tag_delim, @{$data->{ $field->{content_field_id} }};
+            } else {
+                $field->{value} = $data->{ $field->{content_field_id} };
+            }
         }
         else {
             if ( $field->{type} =~ /^(?:select_box|radio_button|checkboxes)$/ ) {
@@ -510,6 +516,24 @@ sub edit {
     $app->setup_editor_param($param);
 
     $param->{basename_limit} = ( $blog ? $blog->basename_limit : 0 ) || 30;
+
+    $app->add_breadcrumb(
+        $app->translate($content_type->name),
+        $app->uri(
+            mode => 'list',
+            args => {
+                _type   => 'content_data',
+                type    => 'content_data_' . $content_type->id,
+                blog_id => $blog->id,
+            },
+        ),
+    );
+    if ($content_data && $content_data->id) {
+        $app->add_breadcrumb($content_data->label || $app->translate('(untitled)'));
+    } else {
+        $app->add_breadcrumb($app->translate('Create new [_1]', $content_type->name || '(untitled)'));
+        $param->{nav_new_content_data} = 1;
+    }
 
     $app->build_page( $app->load_tmpl('edit_content_data.tmpl'), $param );
 }

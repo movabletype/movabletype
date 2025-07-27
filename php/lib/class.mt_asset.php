@@ -32,12 +32,18 @@ class Asset extends BaseObject
     public $asset_modified_on;
     public $asset_parent;
     public $asset_url;
+    public $asset_height;
+    public $asset_width;
 
     # asset meta fields generated from perl implementation.
     public $asset_mt_asset_meta;
 
-    public $asset_image_height;
-    public $asset_image_width;
+    public function asset_image_width () {
+        return $this->asset_width;
+    }
+    public function asset_image_height () {
+        return $this->asset_height;
+    }
 }
 
 // Relations

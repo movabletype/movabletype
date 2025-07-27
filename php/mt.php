@@ -10,9 +10,9 @@
  */
 require_once('lib/class.exception.php');
 
-define('VERSION', '8.001000');
-define('PRODUCT_VERSION', '8.1.0');
-define('DATA_API_DEFAULT_VERSION', '6');
+define('VERSION', '8.006000');
+define('PRODUCT_VERSION', '8.6.0');
+define('DATA_API_DEFAULT_VERSION', '7');
 
 $PRODUCT_NAME = '__PRODUCT_NAME__';
 if($PRODUCT_NAME == '__PRODUCT' . '_NAME__')
@@ -49,6 +49,7 @@ class MT {
     protected $blog_id;
     protected $db;
     protected $config;
+    protected $config_env;
     protected $debugging = false;
     protected $caching = false;
     protected $conditional = false;
@@ -63,7 +64,7 @@ class MT {
     private static $_instance = null;
 
     static public $config_type_array = array('pluginpath', 'alttemplate', 'outboundtrackbackdomains', 'memcachedservers', 'userpasswordvalidation');
-    static public $config_type_hash  = array('pluginswitch', 'pluginalias', 'pluginschemaversion', 'commenterregistration');
+    static public $config_type_hash  = array('pluginswitch', 'pluginalias', 'pluginschemaversion', 'commenterregistration', 'dbiconnectoptions');
 
     /***
      * Constructor for MT class.
@@ -96,6 +97,9 @@ class MT {
         return MT::$_instance;
     }
 
+    /**
+     * @TODO Not in use
+     */
     public function caching($val = null) {
         if ( !is_null($val) ) {
             $this->caching = $val;
@@ -104,6 +108,9 @@ class MT {
         return $this->caching;
     }
 
+    /**
+     * @TODO Not in use
+     */
     public function conditional($val = null) {
         if ( !is_null($val) ) {
             $this->conditional = $val;
@@ -112,6 +119,9 @@ class MT {
         return $this->conditional;
     }
 
+    /**
+     * @TODO Not in use
+     */
     public function blog_id() {
         return $this->blog_id;
     }
@@ -127,6 +137,7 @@ class MT {
         }
 
         $this->configure($cfg_file);
+        $this->configure_from_env();
         $this->init_addons();
         $this->configure_from_db();
 
@@ -273,7 +284,9 @@ class MT {
                 $this->config('DBPort'),
                 $this->config('DBSocket'),
                 $this->config('DBMaxRetries'),
-                $this->config('DBRetryInterval'));
+                $this->config('DBRetryInterval'),
+                $this->config('DBIConnectOptions')
+            );
         }
         return $this->db;
     }
@@ -301,6 +314,9 @@ class MT {
 
     public function config($id, $value = null) {
         $id = strtolower($id);
+        if (isset($this->config_env[$id])) {
+            return $this->config_env[$id];
+        }
         if (isset($value))
             $this->config[$id] = $value;
         return isset($this->config[$id]) ? $this->config[$id] : null;
@@ -404,6 +420,23 @@ class MT {
         }
     }
 
+    function configure_from_env() {
+        $cfg =& $this->config_env;
+        foreach(array_keys($_ENV) as $i => $name) {
+            $lc_name = strtolower($name);
+            if (strpos($lc_name, 'mt_config_') === 0) {
+                $lc_name = preg_replace('/^mt_config_/', '', $lc_name);
+                $lc_name = preg_replace('/_/', '', $lc_name);
+                $value = $_ENV[$name];
+                unset($_ENV[$name]);
+                if (isset($value) && $value === "''") {
+                    $value = '';
+                }
+                $cfg[$lc_name] = $value;
+            }
+        }
+    }
+
     function configure_from_db() {
         $cfg =& $this->config;
         $mtdb =& $this->db();
@@ -492,6 +525,8 @@ class MT {
             $cfg['dataapiscript'] = 'mt-data-api.cgi';
         isset($cfg['dynamictemplateallowphp']) or
             $cfg['dynamictemplateallowphp'] = 1;
+        isset($cfg['dynamictemplateallowsmartytags']) or $cfg['dynamictemplateallowsmartytags'] = 1;
+        isset($cfg['allowtestmodifier']) or $cfg['allowtestmodifier'] = 1;
     }
 
     function configure_paths($blog_site_path) {
@@ -536,7 +571,7 @@ class MT {
                 $msg = "<b>Error:</b> ". $e->getMessage() ."<br>\n" .
                        "<pre>".$e->getTraceAsString()."</pre>";
 
-                return trigger_error( $msg, E_USER_ERROR);
+                return trigger_error( $msg, E_USER_WARNING);
             }
             header( "503 Service Unavailable" );
             return false;
@@ -592,7 +627,7 @@ class MT {
             // 404!
             $this->http_error = 404;
             header("HTTP/1.1 404 Not found");
-            return $ctx->error($this->translate("Page not found - [_1]", $path), E_USER_ERROR);
+            return $ctx->error($this->translate("Page not found - [_1]", $path));
         }
         $ctx->stash('_fileinfo', $data);
 
@@ -659,9 +694,9 @@ class MT {
                     $archiver = ArchiverFactory::get_archiver($at);
                 } catch (Exception $e) {
                     // 404
-                    $this->http_errr = 404;
+                    $this->http_error = 404;
                     header("HTTP/1.1 404 Not Found");
-                    return $ctx->error($this->translate("Page not found - [_1]", $at), E_USER_ERROR);
+                    return $ctx->error($this->translate("Page not found - [_1]", $at));
                 }
                 $archiver->template_params($ctx);
             }

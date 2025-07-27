@@ -112,9 +112,6 @@ __PACKAGE__->install_properties(
 MT->add_callback( 'cms_post_save.content_data', 10, MT->component('core'),
     sub { MT->model('rebuild_trigger')->runner( 'post_content_save', @_ ); }
 );
-MT->add_callback( 'api_post_save.content_data', 10, MT->component('core'),
-    sub { MT->model('rebuild_trigger')->runner( 'post_content_save', @_ ); }
-);
 MT->add_callback(
     'cms_post_bulk_save.content_data',
     10,
@@ -169,6 +166,10 @@ sub class_label_plural {
 
 sub to_hash {
     my $self = shift;
+
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::warning(since => '8.6.0');
+
     my $hash = $self->SUPER::to_hash();
 
     $hash->{'content_data.content_html'} = $self->_generate_content_html;
@@ -193,7 +194,11 @@ sub to_hash {
 }
 
 sub _generate_content_html {
-    my $self           = shift;
+    my $self = shift;
+
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::warning(since => '8.6.0');
+
     my $field_registry = MT->registry('content_field_types');
 
     my $html = '';
@@ -375,6 +380,9 @@ sub _update_cf_idx {
             content_field_id => $f->{id},
         );
 
+        if ($cf_idx_data_col eq 'value_varchar' && length($new_value) > 255) {
+            $new_value = substr($new_value, 0, 255);
+        }
         $cf_idx->$cf_idx_data_col($new_value);
 
         # Week Number for Content Field
@@ -867,7 +875,7 @@ sub _nextprev {
     $label .= ':author=' . $terms->{author_id} if exists $terms->{author_id};
     $label .= ':by_' . $by if $by;
     $label
-        .= ":category_field_id=${category_field_id}:category_id=${category_id}"
+        .= ":category_field_id=${category_field_id}:category_id=". ($category_id || '')
         if $category_field_id;
     $label .= ":date_field_id=${date_field_id}" if $date_field_id;
     return $obj->{$label} if $obj->{$label};
@@ -1698,6 +1706,7 @@ sub preview_data {
     for my $f ( @{ $content_type->fields } ) {
         next unless defined $f->{type} && $f->{type} ne '';
         next unless $registry->{ $f->{type} };
+        next unless $f->{id};
 
         my $handler;
         $handler = $registry->{ $f->{type} }{search_result_handler} if !!$self->{__search_term};
