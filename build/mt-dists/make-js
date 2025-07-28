@@ -39,7 +39,6 @@ push @files, find_js(
 );
 
 my $addon_path = File::Spec->catdir('addons');
-local *DH;
 my @addons;
 if ( opendir my $dh, $addon_path ) {
     my @p = readdir $dh;
