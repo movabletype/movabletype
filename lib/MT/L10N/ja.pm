@@ -4180,10 +4180,6 @@ use vars qw( @ISA %Lexicon );
 	'Finish (s)' => '完了 (s)',
 	'Finish' => '完了',
 
-## tmpl/admin2023/cms/dialog/asset_upload.tmpl
-	'You need to configure your blog.' => 'ブログを設定する必要があります。',
-	'Your blog has not been published.' => 'ブログが公開されていません。',
-
 ## tmpl/admin2023/cms/dialog/clone_blog.tmpl
 	'Categories/Folders' => 'カテゴリ/フォルダ',
 	'Child Site Details' => 'サイトの詳細',
@@ -4880,6 +4876,9 @@ use vars qw( @ISA %Lexicon );
 	'End title HTML (optional)' => 'タイトルとなるHTMLの終了地点(任意)',
 	'Select an entry status' => '公開状態',
 	'Start title HTML (optional)' => 'タイトルとなるHTMLの開始地点(任意)',
+
+## tmpl/admin2023/cms/include/alert_asset_upload.tmpl
+	q{Before you can upload a file, you must <a href='[_1]' class='alert-link'>configure your site's publishing paths</a> first.} => q{ファイルをアップロードする前に、まず<a href='[_1]' class='alert-link'>サイトパスを設定</a>してください。},
 
 ## tmpl/admin2023/cms/include/anonymous_comment.tmpl
 	'Allow comments from anonymous or unauthenticated users.' => '認証なしユーザーまたは匿名ユーザーからコメントを受け付ける',
