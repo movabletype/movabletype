@@ -8,7 +8,6 @@ package MT::DataAPI::Endpoint::v7::Publish;
 use warnings;
 use strict;
 
-use MT::Util qw(epoch2ts ts2iso);
 use MT::App::CMS;
 use MT::DataAPI::Endpoint::v1::Publish;
 
