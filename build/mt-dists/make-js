@@ -24,6 +24,11 @@ push @files, find_js(
 );
 
 push @files, find_js(
+    directories => ['src/'],
+    extensions  => ['svelte', 'ts'],
+);
+
+push @files, find_js(
     directories => ['tmpl/'],
     extensions  => ['tmpl'],
 );
