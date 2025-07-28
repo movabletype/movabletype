@@ -654,6 +654,7 @@ use_ok('MT::DataAPI::Endpoint::v6::Stats');
 use_ok('MT::DataAPI::Endpoint::v7');
 use_ok('MT::DataAPI::Endpoint::v7::Theme');
 use_ok('MT::DataAPI::Endpoint::v7::Stats');
+use_ok('MT::DataAPI::Endpoint::v7::Publish');
 use_ok('MT::DataAPI::Resource::v7::StatisticsDate');
 use_ok('MT::DataAPI::Resource::v7::StatisticsPath');
 use_ok('MT::DataAPI::Resource::v7::StatisticsYear');
