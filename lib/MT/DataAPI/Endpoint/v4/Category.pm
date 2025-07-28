@@ -36,6 +36,11 @@ sub list_for_category_set_openapi_spec {
 - 0: The list includes current category.
 DESCRIPTION
             },
+            { '$ref' => '#/components/parameters/category_limit' },
+            { '$ref' => '#/components/parameters/category_offset' },
+            { '$ref' => '#/components/parameters/category_searchFields' },
+            { '$ref' => '#/components/parameters/category_sortBy' },
+            { '$ref' => '#/components/parameters/category_sortOrder' },
         ],
         responses => {
             200 => {

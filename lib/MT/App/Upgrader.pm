@@ -45,12 +45,14 @@ sub core_methods {
         'run_actions'  => \&run_actions,
         'init_user'    => \&init_user,
         'init_website' => \&init_website,
+        'redirect'     => \&redirect_to_mt,
     };
 }
 
 sub needs_upgrade {
     my $app = shift;
 
+    return 1 if $app->param('steps');
     return 1 if MT->schema_version > ( $app->{cfg}->SchemaVersion || 0 );
 
     foreach my $plugin (@MT::Components) {
@@ -203,17 +205,24 @@ sub current_magic {
 sub upgrade {
     my $app = shift;
 
-    return $app->main(@_) unless $app->needs_upgrade;
-
-    my $install_mode;
     my %param;
-
     my $perl_ver_check = '';
     if ( $] < 5.016003 ) {    # our minimal requirement for support
         $param{version_warning} = 1;
         $param{perl_version}    = sprintf('%vd', $^V);
         $param{perl_minimum}    = '5.16.3';
+        $param{has_warning}     = 1;
     }
+
+    require MT::Util::Dependencies;
+    if (MT::Util::Dependencies->lacks_core_modules) {
+        $param{lacks_core_modules} = 1;
+        $param{has_warning}        = 1;
+    }
+
+    return $app->main(\%param) unless $app->needs_upgrade;
+
+    my $install_mode;
 
     my $method = $app->request_method;
 
@@ -227,7 +236,7 @@ sub upgrade {
     }
 
     if ( $method ne 'POST' ) {
-        return $app->main();
+        return $app->main(\%param);
     }
 
     $app->validate_magic or return;
@@ -603,14 +612,47 @@ sub finish {
 
     $app->reboot();
 
-    if ( $app->{author} ) {
+    if ($app->{author}) {
         require MT::Author;
-        my $author     = MT::Author->load( $app->{author}->id );
+        require MT::Session;
+        require MT::Util::UniqueID;
+        my $author = MT::Author->load($app->{author}->id);
+        my $token  = MT::Util::UniqueID::create_magic_token();
+        my $ott    = MT::Session->new(
+            id       => $token,
+            kind     => 'OT',
+            start    => time,
+            duration => time + 5 * 60,
+        );
+        $ott->set(author_id => $author->id);
+        $ott->save;
+
+        my $response = $app->response;
+        # DEPRECATED: only for the older admin template
         my $cookie_obj = $app->start_session($author);
-        my $response   = $app->response;
-        $response->{cookie}
-            = { map { $_ => $cookie_obj->{$_} } ( keys %$cookie_obj ) };
+        $response->{cookie} =
+            { map { $_ => $cookie_obj->{$_} } (keys %$cookie_obj) };
+
+        $response->{redirect} = {
+            token => $token,
+        };
     }
+}
+
+sub redirect_to_mt {
+    my $app   = shift;
+    return $app->errtrans('Invalid request.') unless uc $app->request_method eq 'POST';
+    my $token = $app->param('token');
+    if ($token) {
+        require MT::Author;
+        require MT::Session;
+        my $session   = MT::Session::get_unexpired_value(5 * 60, { id => $token, kind => 'OT' }) or return $app->errtrans('Invalid request.');
+        my $author_id = $session->get('author_id');
+
+        my $author = MT::Author->load($author_id) or return $app->errtrans('Invalid request.');
+        $app->start_session($author);
+    }
+    return $app->redirect(($app->config->AdminCGIPath || $app->config->CGIPath) . $app->config->AdminScript);
 }
 
 sub run_actions {
@@ -780,13 +822,6 @@ sub unserialize_config {
 sub main {
     my $app = shift;
     my ($param) = @_;
-
-    my $perl_ver_check = '';
-    if ( $] < 5.016003 ) {    # our minimal requirement for support
-        $param->{version_warning} = 1;
-        $param->{perl_version}    = sprintf('%vd', $^V);
-        $param->{perl_minimum}    = '5.16.3';
-    }
 
     my $driver       = MT::Object->driver;
     my $author_class = MT->model('author');

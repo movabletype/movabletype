@@ -243,7 +243,7 @@ class MTViewer extends Smarty {
         }
     }
 
-    function error($err, $error_type = E_USER_ERROR) {
+    function error($err, $error_type = E_USER_WARNING) {
         trigger_error($err, $error_type);
         return '';
     }
@@ -358,6 +358,24 @@ class MTViewer extends Smarty {
         if (isset($ctx->__stash['elseif_content']) or !empty($ctx->__stash['conditional'])) {
             $repeat = false;
             return '';
+        }
+        if ((count($args) > 0) && (!isset($args['name']) && !isset($args['var']) && !isset($args['tag']))) {
+            $stash =& $ctx->__stash;
+            if ( array_key_exists('__cond_tag__', $stash) ) {
+                $tag = $stash['__cond_tag__'];
+                if ( isset($tag) && $tag )
+                    $args['tag'] = $tag;
+            }
+            else if ( array_key_exists('__cond_name__', $stash) ) {
+                $name = $stash['__cond_name__'];
+                if ( isset($name) && $name )
+                    $args['name'] = $name;
+            }
+            if ( array_key_exists('__cond_value__', $stash) ) {
+                $value = $stash['__cond_value__'];
+                if ( isset($value) && $value )
+                    $args['value'] = $value;
+            }
         }
         if (count($args) >= 1) { # else-if case
             require_once("block.mtif.php");
@@ -985,6 +1003,7 @@ EOT;
      * @return mixed
      */
     function _eval($code, $params=null) {
+        trigger_error('function _eval is deprecated', E_USER_DEPRECATED);
         return eval($code);
     }
 

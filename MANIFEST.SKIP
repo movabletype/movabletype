@@ -258,10 +258,12 @@ themes/broken_blog_theme
 
 ^schemas/
 ^scss/
+^src/
 \bknown-issues
 ^t/
 .*/t/
 ^xt/
+.*/xt/
 ^phpunit.xml
 ^php/tests
 ^php/extlib/adodb5/tests
@@ -373,6 +375,7 @@ build-language-stamp
 \.babelrc
 \.eslintrc.json
 \.eslintignore
+^eslint.config.mjs
 
 ^mt-static/plugins/Motion
 ^mt-static/jquery/themes/Motion

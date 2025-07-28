@@ -30,7 +30,6 @@ $server_path =~ s|\\|/|g if $^O eq 'MSWin32';
 
 my $blog = MT::Blog->load(1);
 $blog->captcha_provider('mt_default');
-$blog->include_system('php');
 $blog->save;
 
 my $asset = MT::Asset->load(1);
@@ -87,27 +86,6 @@ filters {
     expected     => [qw( var )],
     expected_php => [qw( var )],
 };
-
-sub embed_path {
-    my $in = shift;
-    my $cont = filter_arguments;
-    require File::Temp;
-    my ( $fh, $file ) = File::Temp::tempfile();
-    print $fh $cont;
-    close $fh;
-    $in =~ s{PATH}{$file};
-    $in;
-}
-
-sub embed_path_to_php_test {
-    my $in = shift;
-    require File::Temp;
-    my ( $fh, $file ) = File::Temp::tempfile();
-    print $fh '<?php echo 3+4;';
-    close $fh;
-    $in =~ s{PATH}{$file};
-    $in;
-}
 
 sub fix_path { File::Spec->canonpath(shift) }
 
@@ -3288,6 +3266,12 @@ Foo
 --- expected
 &lt;span&gt;Foo&lt;/span&gt;
 
+=== test 591-2 double escape
+--- template
+<MTSetVarBlock name="foo">&</MTSetVarBlock><MTGetVar name="foo" escape="html" escape="html">
+--- expected
+&amp;amp;
+
 === test 592
 --- SKIP
 --- template
@@ -4121,7 +4105,7 @@ mt-data-api.cgi
 --- template
 <mt:DataAPIVersion>
 --- expected
-6
+7
 
 === test 739
 --- template
@@ -4949,34 +4933,6 @@ Test <a href="/foo/foo.php">FOO:FOO</a>bBar String
 --- expected
 <strong>
 
-=== test 883-1
---- mt_config
-{AllowFileInclude => 1}
---- template embed_path=FILE-CONTENT
-left <mt:Include file="PATH"> right
---- expected
-left FILE-CONTENT right
-
-=== test 883-2
---- mt_config
-{AllowFileInclude => 0}
---- template
-left <mt:Include file="PATH"> right
---- expected_error
-File inclusion is disabled by "AllowFileInclude" config directive.
---- expected_php_error
-left File include is disabled by "AllowFileInclude" config directive. right
-
-=== test 883-3 include php file
---- mt_config
-{AllowFileInclude => 1}
---- template embed_path_to_php_test
-<mt:Include ssi="1" file="PATH">
---- expected
-<?php echo 3+4;
---- expected_php
-7
-
 === test 884
 --- template
 <MTPages no_folder="1"><MTPageID>;</MTPages>
@@ -5155,79 +5111,92 @@ http://narnia.na/
 TEST_ROOT/
 
 === test 910 script (MTC-25985)
+--- skip_php
 --- template
-<MTScript path="foo/bar.js">
+<MTApp:Script path="foo/bar.js">
 --- expected
 <script src="/mt-static/foo/bar.js?v=VERSION_ID" charset="utf-8"></script>
 
 === test 911 script (MTC-25985)
+--- skip_php
 --- template
-<MTScript path="/foo/bar.js">
+<MTApp:Script path="/foo/bar.js">
 --- expected
 <script src="/mt-static/foo/bar.js?v=VERSION_ID" charset="utf-8"></script>
 
 === test 912 script (MTC-25985)
+--- skip_php
 --- template
-<MTScript path="/foo/bar_%l.js">
+<MTApp:Script path="/foo/bar_%l.js">
 --- expected
 <script src="/mt-static/foo/bar_en_us.js?v=VERSION_ID" charset="utf-8"></script>
 
 === test 913 script (MTC-25985)
+--- skip_php
 --- template
-<MTScript>
+<MTApp:Script>
 --- expected_error
 path is required.
 
 === test 914 script (MTC-25985)
+--- skip_php
 --- template
-<MTScript path="/foo/bar.js" async="1">
+<MTApp:Script path="/foo/bar.js" async="1">
 --- expected
 <script src="/mt-static/foo/bar.js?v=VERSION_ID" async charset="utf-8"></script>
 
 === test 915 script (MTC-25985)
+--- skip_php
 --- template
-<MTScript path="/foo/bar.js" defer="1">
+<MTApp:Script path="/foo/bar.js" defer="1">
 --- expected
 <script src="/mt-static/foo/bar.js?v=VERSION_ID" defer charset="utf-8"></script>
 
 === test 916 script (MTC-25985)
+--- skip_php
 --- template
-<MTScript path="/foo/bar.js" type="text/javascript">
+<MTApp:Script path="/foo/bar.js" type="text/javascript">
 --- expected
 <script src="/mt-static/foo/bar.js?v=VERSION_ID" type="text/javascript" charset="utf-8"></script>
 
 === test 917 script (MTC-25985)
+--- skip_php
 --- template
-<MTScript path="/foo/bar.js" charset="euc-jp">
+<MTApp:Script path="/foo/bar.js" charset="euc-jp">
 --- expected
 <script src="/mt-static/foo/bar.js?v=VERSION_ID" charset="euc-jp"></script>
 
 === test 918 script (MTC-25985)
+--- skip_php
 --- template
-<MTScript path="/foo/bar.js" type="text/javascript" async="1" defer="1">
+<MTApp:Script path="/foo/bar.js" type="text/javascript" async="1" defer="1">
 --- expected
 <script src="/mt-static/foo/bar.js?v=VERSION_ID" type="text/javascript" async defer charset="utf-8"></script>
 
 === test 919 stylesheet (MTC-25985)
+--- skip_php
 --- template
-<MTStylesheet path="/foo/bar.css">
+<MTApp:Stylesheet path="/foo/bar.css">
 --- expected
 <link rel="stylesheet" href="/mt-static/foo/bar.css?v=VERSION_ID">
 
 === test 920 stylesheet (MTC-25985)
+--- skip_php
 --- template
-<MTStylesheet path="foo/bar.css">
+<MTApp:Stylesheet path="foo/bar.css">
 --- expected
 <link rel="stylesheet" href="/mt-static/foo/bar.css?v=VERSION_ID">
 
 === test 921 stylesheet (MTC-25985)
+--- skip_php
 --- template
-<MTStylesheet path="foo/bar_%l.css">
+<MTApp:Stylesheet path="foo/bar_%l.css">
 --- expected
 <link rel="stylesheet" href="/mt-static/foo/bar_en_us.css?v=VERSION_ID">
 
 === test 922 stylesheet (MTC-25985)
+--- skip_php
 --- template
-<MTStylesheet>
+<MTApp:Stylesheet>
 --- expected_error
 path is required.

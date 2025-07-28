@@ -7,6 +7,7 @@ use Encode;
 use MT::Test;
 use MT::Test::PHP;
 use MT::Test::Fixture::ArchiveType;
+use MT::Test::Tag;
 
 BEGIN {
     eval qq{ use Test::Base -Base; 1 }
@@ -281,6 +282,12 @@ sub _run_php_test {
 
             my $text = $block->text || '';
 
+            my $log;
+            require MT::Util::UniqueID;
+            local $ENV{MT_TEST_PHP_ERROR_LOG_FILE_PATH} = $ENV{MT_TEST_PHP_ERROR_LOG_FILE_PATH}
+                ? $ENV{MT_TEST_PHP_ERROR_LOG_FILE_PATH}
+                : $log = File::Spec->catfile($ENV{MT_TEST_ROOT}, 'php-' . MT::Util::UniqueID::create_session_id() . '.log');
+
             my $test_script = <<PHP;
 <?php
 \$MT_HOME   = '@{[ $ENV{MT_HOME} ? $ENV{MT_HOME} : '.' ]}';
@@ -298,8 +305,18 @@ PHP
             $test_script .= <<'PHP';
 include_once($MT_HOME . '/php/mt.php');
 include_once($MT_HOME . '/php/lib/MTUtil.php');
+include_once($MT_HOME . '/t/lib/MT/Test/PHP/error_handler.php');
+
+$error_handler = new MT_Test_Error_Handler();
+set_error_handler([$error_handler, 'handler']);
+$log = $_ENV['MT_TEST_PHP_ERROR_LOG_FILE_PATH'];
+$error_handler->log = $log;
+$error_handler->ignore_php_dynamic_properties_warnings = 
+                $_ENV['MT_TEST_IGNORE_PHP_DYNAMIC_PROPERTIES_WARNINGS'] ?? false;
 
 $mt = MT::get_instance($blog_id, $MT_CONFIG);
+$mt->config('PHPErrorLogFilePath', $log);
+
 $mt->init_plugins();
 
 $db = $mt->db();
@@ -407,18 +424,8 @@ PHP
 
             $test_script .= <<'PHP';
 
-$stderr = fopen('php://stderr', 'w');
-set_error_handler(function($error_no, $error_msg, $error_file, $error_line, $error_context = null) use ($stderr) {
-    if ($error_no & E_USER_ERROR) {
-        print($error_msg."\n");
-    } else {
-        fwrite($stderr, "no:$error_no error:$error_msg file:$error_file line:$error_line\n");
-        return true;
-    }
-});
-
 if ($ctx->_compile_source('evaluated template', $tmpl, $_var_compiled)) {
-    $ctx->_eval('?>' . $_var_compiled);
+    print($_var_compiled);
 } else {
     print('Error compiling template module.');
 }
@@ -426,7 +433,8 @@ if ($ctx->_compile_source('evaluated template', $tmpl, $_var_compiled)) {
 ?>
 PHP
 
-            my $result = Encode::decode_utf8(MT::Test::PHP->run($test_script, \my $php_error));
+            my $result = Encode::decode_utf8(MT::Test::PHP->run($test_script));
+            my $php_error = MT::Test::PHP->retrieve_php_logs($log);
 
             # those with $method_name have higher precedence
             # and todo does, too
@@ -462,12 +470,15 @@ PHP
             $result   =~ s/\n//gs;
             $expected =~ s/\n//gs;
 
+            $result = ($php_error =~ /\tstr:([^\t]+)/)[0] if $expected_method =~ /_error/;
+
             my $name = $block->name;
 
             local $TODO = "may fail"
                 if $expected_method =~ /^expected_(?:php_)?todo/
                 or $ENV{MARK_ALL_PHP_TESTS_TODO};
             is( $result, $expected, "$name $test_info" );
+            $php_error =~ s/[^\n]+$expected[^\n]+\n//g if $expected_method =~ /_error/;
 
             if ($ENV{MT_TEST_IGNORE_PHP_WARNINGS} && $php_error) {
                 SKIP: {

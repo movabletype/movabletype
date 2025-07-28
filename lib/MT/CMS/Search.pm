@@ -1095,6 +1095,7 @@ sub do_search_replace {
             } elsif ($blog_id || ( $type eq 'blog' ) || ( $app->mode eq 'dialog_grant_role' ) || $author->is_superuser) {
                 $iter = incremental_iter($class, @terms ? \@terms : \%terms, \%args);
             } else {
+                push @terms, \%terms unless @terms;
                 if ( $class->has_column('blog_id') ) {
 
                     # Get an iter for each accessible blog
@@ -1157,6 +1158,17 @@ sub do_search_replace {
                         $field_registry
                             = $content_field_types->{ $field_data->{type} };
                         $text = $obj->data->{$content_field_id};
+                    }
+                    elsif ($col eq 'label' && $content_type && $obj->isa('MT::ContentData')) {
+                        if (my $data_label = $content_type->data_label) {
+                            my $field = MT->model('content_field')->load({
+                                content_type_id => $content_type->id,
+                                unique_id       => $data_label,
+                            });
+                            $text = $obj->data->{ $field->id } if $field;
+                        } else {
+                            $text = $obj->column($col);
+                        }
                     }
                     else {
                         $text = $obj->column($col);

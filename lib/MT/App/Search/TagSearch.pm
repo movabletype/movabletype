@@ -20,6 +20,9 @@ sub process {
     return $app->errtrans('TagSearch works with MT::App::Search.')
         unless $app->isa('MT::App::Search') || $app->isa('MT::App::DataAPI');
 
+    my $search_string = $app->param('tag') || $app->param('search');
+    return unless $app->check_search_max_char_count($search_string);
+
     my ( $count, $out ) = $app->check_cache();
     if ( defined $out ) {
         $app->run_callbacks( 'search_cache_hit', $count, $out );
@@ -126,9 +129,9 @@ sub search_terms {
     $app->{search_string} = $search_string;
 
     my @or_tag_names;
-    if (   ( $search_string =~ /\s+OR\s+/ )
-        || ( $search_string =~ /\s+AND\s+/ )
-        || ( $search_string =~ /\s*"\s*/ ) )
+    if (   ( $search_string =~ /\sOR\s/ )
+        || ( $search_string =~ /\sAND\s/ )
+        || ( $search_string =~ /"/ ) )
     {
         @or_tag_names = &_process_lucene_query($search_string);
     }

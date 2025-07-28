@@ -171,8 +171,10 @@ sub add_complex_where {
     my $stmt = shift;
     my ($terms) = @_;
     my ($where, $bind) = $stmt->_parse_array_terms($terms);
-    push @{ $stmt->{where} }, $where;
-    push @{ $stmt->{bind} }, @$bind;
+    if ($where) {
+        push @{ $stmt->{where} }, $where;
+        push @{ $stmt->{bind} }, @$bind;
+    }
 }
 
 sub _parse_array_terms {
@@ -195,18 +197,22 @@ sub _parse_array_terms {
             foreach my $t2 ( keys %$t ) {
                 my ($term, $bind, $col) = $stmt->_mk_term($t2, $t->{$t2});
                 $stmt->where_values->{$col} = $t->{$t2};
-                push @out, "($term)";
-                push @bind, @$bind;
+                if ($term) {
+                    push @out, "($term)";
+                    push @bind, @$bind;
+                }
             }
-            $out .= '(' . join(" AND ", @out) . ")";
+            $out .= '(' . join(" AND ", @out) . ")" if @out;
         }
         elsif (ref $t eq 'ARRAY') {
             # another array of terms to process!
             my ($where, $bind) = $stmt->_parse_array_terms( $t );
-            push @bind, @$bind;
-            $out = '(' . $where . ')';
+            if ($where) {
+                push @bind, @$bind;
+                $out = '(' . $where . ')';
+            }
         }
-        push @out, (@out ? ' ' . $logic . ' ' : '') . $out;
+        push @out, (@out ? ' ' . $logic . ' ' : '') . $out if $out;
     }
     return (join("", @out), \@bind);
 }

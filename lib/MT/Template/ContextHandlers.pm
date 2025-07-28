@@ -449,6 +449,9 @@ sub core_tags {
             'App:Link'    => \&MT::Template::Tags::App::_hdlr_app_link,
             'App:SVGIcon' => \&MT::Template::Tags::App::_hdlr_app_svg_icon,
 
+            'App:Script'     => \&MT::Template::Tags::App::_hdlr_app_script,
+            'App:Stylesheet' => \&MT::Template::Tags::App::_hdlr_app_stylesheet,
+
             ## Site
             SiteID   => '$Core::MT::Template::Tags::Blog::_hdlr_blog_id',
             SiteName => '$Core::MT::Template::Tags::Blog::_hdlr_blog_name',
@@ -998,10 +1001,6 @@ sub core_tags {
                 '$Core::MT::Template::Tags::Misc::_hdlr_captcha_fields',
             'StatsSnippet' =>
                 '$Core::MT::Template::Tags::Misc::_hdlr_stats_snippet',
-            Script =>
-                '$Core::MT::Template::Tags::Misc::_hdlr_script',
-            Stylesheet =>
-                '$Core::MT::Template::Tags::Misc::_hdlr_stylesheet',
 
             # Content Type
             AuthorContentCount =>
@@ -1661,7 +1660,6 @@ sub _hdlr_if {
     my $value;
     if ( defined $var ) {
         $ctx->{__stash}{vars}{__cond_tag__} = undef;
-        $ctx->{__stash}{vars}{__cond_name__}  = $var;
 
         # pick off any {...} or [...] from the name.
         my ( $index, $key );
@@ -1708,11 +1706,9 @@ sub _hdlr_if {
         $value = $ctx->tag( $tag, $local_args, $cond );
         $ctx->{__stash}{vars}{__cond_tag__} = $tag;
     }
-    else {
-        $value = $ctx->var('__cond_value__');
-    }
 
     $ctx->{__stash}{vars}{__cond_value__} = $value;
+    $ctx->{__stash}{vars}{__cond_name__}  = $var;
 
     if ( my $op = $args->{op} ) {
         my $rvalue = $args->{'value'};
@@ -1894,6 +1890,16 @@ sub _hdlr_else {
     my ( $ctx, $args, $cond ) = @_;
     local $args->{'@'};
     delete $args->{'@'};
+    if ( ( keys %$args ) >= 1 ) {
+        unless ( $args->{name} || $args->{var} || $args->{tag} ) {
+            if ( my $t = $ctx->var('__cond_tag__') ) {
+                $args->{tag} = $t;
+            }
+            elsif ( my $n = $ctx->var('__cond_name__') ) {
+                $args->{name} = $n;
+            }
+        }
+    }
     if (%$args) {
         defined( my $res = _hdlr_if(@_) ) or return;
         return $res ? $ctx->slurp(@_) : $ctx->else();
@@ -1913,6 +1919,14 @@ An alias for the 'Else' tag.
 
 sub _hdlr_elseif {
     my ( $ctx, $args, $cond ) = @_;
+    unless ( $args->{name} || $args->{var} || $args->{tag} ) {
+        if ( my $t = $ctx->var('__cond_tag__') ) {
+            $args->{tag} = $t;
+        }
+        elsif ( my $n = $ctx->var('__cond_name__') ) {
+            $args->{name} = $n;
+        }
+    }
     return _hdlr_else( $ctx, $args, $cond );
 }
 
@@ -3256,7 +3270,7 @@ sub _hdlr_app_widget {
     my $return_args = $app->make_return_args;
     $return_args = encode_html($return_args);
     my $cgi = $app->uri;
-    if ( $hosted_widget && ( !$insides !~ m/<form\s/i ) ) {
+    if ( $hosted_widget && ( $insides !~ m/<form\s/i ) ) {
         $insides = <<"EOT";
         <form id="$id-form" method="post" action="$cgi">
         <input type="hidden" name="__mode" value="update_widget_prefs" />
@@ -4074,6 +4088,88 @@ sub _hdlr_app_svg_icon {
     my $static_uri = MT->static_path;
 
     qq{<svg role="img" class="mt-icon${color_class_suffix}${size_class}">$title_attr<use xlink:href="${static_uri}images/sprite.svg#$id"></use></svg>};
+}
+
+###########################################################################
+
+=head2 App:Script
+
+Returns a script tag for loading a JavaScript file under the mt-static directory.
+
+B<Attributes:>
+
+=over 4
+
+=item * path (required)
+
+The path to the JavaScript file.
+If the path contains the string '%l', replace '%l' with the corresponding language code.
+
+=item * type (optional)
+
+=item * async (optional)
+
+=item * defer (optional)
+
+=back
+
+=cut
+
+sub _hdlr_app_script {
+    my ($ctx, $args) = @_;
+
+    my $path    = $args->{path} or return $ctx->error(MT->translate("path is required."));
+    my $type    = $args->{type} ? ' type="' . encode_html($args->{type}) . '"' : '';
+    my $charset = ' charset="' . ($args->{charset} ? encode_html($args->{charset}) : 'utf-8') . '"';
+    my $async   = $args->{async} ? ' async' : '';
+    my $defer   = $args->{defer} ? ' defer' : '';
+    my $version = $MT::DebugMode ? time     : ($ctx->{__stash}{vars}{mt_version_id} || MT->version_id);
+
+    if ($path =~ /%l/) {
+        my $lang_id = lc MT->current_language || 'en_us';
+        $lang_id =~ s/-/_/g;
+        $path    =~ s/%l/$lang_id/g;
+    }
+    $path =~ s!^/+!!;
+    my $script_path = ($ctx->{__stash}{vars}{static_uri} || MT->static_path) . encode_html($path);
+
+    return sprintf('<script src="%s?v=%s"%s%s%s%s></script>', $script_path, $version, $type, $async, $defer, $charset);
+}
+
+###########################################################################
+
+=head2 App:Stylesheet
+
+Returns a link tag for loading a CSS file under the mt-static directory.
+
+B<Attributes:>
+
+=over 4
+
+=item * path (required)
+
+The path to the CSS file.
+If the path contains the string '%l', replace '%l' with the corresponding language code.
+
+=back
+
+=cut
+
+sub _hdlr_app_stylesheet {
+    my ($ctx, $args) = @_;
+
+    my $path    = $args->{path} or return $ctx->error(MT->translate("path is required."));
+    my $version = $MT::DebugMode ? time : ($ctx->{__stash}{vars}{mt_version_id} || MT->version_id);
+
+    if ($path =~ /%l/) {
+        my $lang_id = lc MT->current_language || 'en_us';
+        $lang_id =~ s/-/_/g;
+        $path    =~ s/%l/$lang_id/g;
+    }
+    $path =~ s!^/+!!;
+    my $stylesheet_path = ($ctx->{__stash}{vars}{static_uri} || MT->static_path) . encode_html($path);
+
+    return sprintf('<link rel="stylesheet" href="%s?v=%s">', $stylesheet_path, $version);
 }
 
 ###########################################################################

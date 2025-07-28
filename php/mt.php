@@ -10,9 +10,9 @@
  */
 require_once('lib/class.exception.php');
 
-define('VERSION', '8.004001');
-define('PRODUCT_VERSION', '8.4.1');
-define('DATA_API_DEFAULT_VERSION', '6');
+define('VERSION', '8.006000');
+define('PRODUCT_VERSION', '8.6.0');
+define('DATA_API_DEFAULT_VERSION', '7');
 
 $PRODUCT_NAME = '__PRODUCT_NAME__';
 if($PRODUCT_NAME == '__PRODUCT' . '_NAME__')
@@ -428,6 +428,7 @@ class MT {
                 $lc_name = preg_replace('/^mt_config_/', '', $lc_name);
                 $lc_name = preg_replace('/_/', '', $lc_name);
                 $value = $_ENV[$name];
+                unset($_ENV[$name]);
                 if (isset($value) && $value === "''") {
                     $value = '';
                 }
@@ -525,6 +526,7 @@ class MT {
         isset($cfg['dynamictemplateallowphp']) or
             $cfg['dynamictemplateallowphp'] = 1;
         isset($cfg['dynamictemplateallowsmartytags']) or $cfg['dynamictemplateallowsmartytags'] = 1;
+        isset($cfg['allowtestmodifier']) or $cfg['allowtestmodifier'] = 1;
     }
 
     function configure_paths($blog_site_path) {
@@ -569,7 +571,7 @@ class MT {
                 $msg = "<b>Error:</b> ". $e->getMessage() ."<br>\n" .
                        "<pre>".$e->getTraceAsString()."</pre>";
 
-                return trigger_error( $msg, E_USER_ERROR);
+                return trigger_error( $msg, E_USER_WARNING);
             }
             header( "503 Service Unavailable" );
             return false;
@@ -625,7 +627,7 @@ class MT {
             // 404!
             $this->http_error = 404;
             header("HTTP/1.1 404 Not found");
-            return $ctx->error($this->translate("Page not found - [_1]", $path), E_USER_ERROR);
+            return $ctx->error($this->translate("Page not found - [_1]", $path));
         }
         $ctx->stash('_fileinfo', $data);
 
@@ -692,9 +694,9 @@ class MT {
                     $archiver = ArchiverFactory::get_archiver($at);
                 } catch (Exception $e) {
                     // 404
-                    $this->http_errr = 404;
+                    $this->http_error = 404;
                     header("HTTP/1.1 404 Not Found");
-                    return $ctx->error($this->translate("Page not found - [_1]", $at), E_USER_ERROR);
+                    return $ctx->error($this->translate("Page not found - [_1]", $at));
                 }
                 $archiver->template_params($ctx);
             }

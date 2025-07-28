@@ -25,6 +25,7 @@ my $objs    = MT::Test::Fixture::SearchReplace->load_objs;
 my $author  = MT->model('author')->load(1);
 my $blog_id = $objs->{blog_id};
 my $ct_id   = $objs->{content_type}{ct_multi}{content_type}->id;
+my $ct2_id  = $objs->{content_type}{ct_field_label}{content_type}->id;
 
 subtest 'content_data' => sub {
     my $app = MT::Test::App->new('MT::App::CMS');
@@ -122,6 +123,27 @@ subtest 'content_data' => sub {
         };
 
         $cd->remove();
+    };
+
+    subtest 'data label' => sub {
+        # to reset form
+        $app->get_ok({ __mode => 'search_replace', blog_id => $blog_id });
+        $app->change_tab('content_data');
+        $app->change_content_type($ct2_id);
+        $app->search('multi line text', {
+            is_limited => 1,
+            search_cols => ['label'],
+        });
+        is_deeply($app->found_titles, []);
+
+        # search by data_label field
+        $app->search('single line text for label', {
+            is_limited => 1,
+            search_cols => ['label'],
+        });
+        is_deeply($app->found_titles, ['test single line text for label2', 'test single line text for label']);
+
+        $app->change_content_type($ct_id);
     };
 };
 
@@ -322,6 +344,7 @@ subtest 'template' => sub {
                 'tmpl_contenttype_author_yearly_case 0',
                 'tmpl_contenttype_author_yearly_test content data',
                 'tmpl_contenttype_author_yearly_test multiple content data',
+                'tmpl_contenttype_author_yearly_test content data with field label',
                 'tmpl_author_yearly',
             ] }
         ],
@@ -433,36 +456,6 @@ subtest 'content_data replace' => sub {
     };
 
     $_->remove for @cds;
-};
-
-subtest 'dialog_grant_role' => sub {
-    require JSON;
-
-    # XXX move to role
-    my $expected = sub {
-        my ($app, $names, $pager) = @_;
-        my $json = eval { JSON::decode_json($app->content) };
-        ok !$@, 'json is ok';
-        my $wq    = Web::Query::LibXML->new($json->{html});
-        my @links = $wq->find('tr td:nth-of-type(2) .panel-label') || ();
-        my @names = map { my $txt = $_; $txt =~ s{^\s+|\s+$}{}g; $txt } map { $_->text } @links;
-        is_deeply(\@names, $names, 'right authors');
-        for my $key (keys %{$pager}) {
-            is($json->{pager}->{$key}, $pager->{$key}, qq{right value for pager key:$key});
-        }
-        note explain $json;
-    };
-
-    my $app = MT::Test::App->new('MT::App::CMS');
-    $app->login($author);
-
-    $app->get_ok({ __mode => 'dialog_grant_role', blog_id => $blog_id });
-    $app->dialog_grant_role_search('o');
-    $expected->($app, ['author', 'Melody'], { limit => 25, listTotal => 2, offset => 0, rows => 2 });
-
-    $app->get_ok({ __mode => 'dialog_grant_role', blog_id => 0 });
-    $app->dialog_grant_role_search('o');
-    $expected->($app, ['author', 'Melody'], { limit => 25, listTotal => 2, offset => 0, rows => 2 });
 };
 
 done_testing;

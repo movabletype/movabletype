@@ -20,8 +20,9 @@ jobs:
     strategy:
       matrix:
         config:
-          - {image: fedora39} # Perl 5.38 / PHP 8.2 / MySQL 8.0
-          - {image: centos7}  # Perl 5.16 / PHP 7.1 / MariaDB 5.5
+          - {image: fedora42, mt_test_env: 'MT_TEST_RUN_APP_AS_CGI=1'}   # Perl 5.40 / PHP 8.4 / MySQL 9.3
+          - {image: fedora40, mt_test_env: 'MT_TEST_IMAGE_DRIVER=ImageMagick' } # Perl 5.38 / PHP 8.2 / MariaDB 10.11
+          - {image: centos7,  mt_test_env: 'MT_TEST_IMAGE_DRIVER=GD' }  # Perl 5.16 / PHP 7.1 / MariaDB 5.5
         test: 
           - "t/*.t"
           - "t/mt7/[^td]*"
@@ -33,9 +34,14 @@ jobs:
           - "t/tag/"
           - "plugins/*/t"
           - php
+        exclude:
+          - config: {image: centos7, mt_test_env: 'MT_TEST_IMAGE_DRIVER=GD'}
+            test: php
         include:
           - config: {image: chromiumdriver}
             test: selenium
+          - config: {image: fedora40, mt_test_env: 'MT_TEST_IMAGE_DRIVER=ImageMagick' }
+            test: xt
     steps:
       - name: checkout
         uses: actions/checkout@v4.1.0
@@ -69,9 +75,8 @@ jobs:
     strategy:
       matrix:
         config:
-          - {image: cloud7}
+          - {image: cloud7,   mt_test_env: 'MT_TEST_IMAGE_DRIVER=GraphicsMagick' }
           - {image: fedora41, mt_test_env: 'MT_TEST_ADMIN_THEME_ID=0'}   # Perl 5.40 / PHP 8.3 / MySQL 8.4
-          - {image: buster,   mt_test_env: 'MT_TEST_RUN_APP_AS_CGI=1'}   # Perl 5.28.0 / PHP 7.3 / MariaDB 10.3
         test: 
           - "t/*.t"
           - "t/mt7/[^td]*"
@@ -86,8 +91,6 @@ jobs:
         include:
           - config: {image: chromiumdriver}
             test: selenium
-          - config: {image: buster}
-            test: xt
     steps:
       - name: checkout
         uses: actions/checkout@v4.1.0
@@ -98,7 +101,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: test
-        if: ${{ matrix.test != 'php' && matrix.test != 'selenium' && matrix.test != 'xt' }}
+        if: ${{ matrix.test != 'php' && matrix.test != 'selenium' }}
         run: docker run -t -v $PWD:/mt -w /mt ghcr.io/movabletype/movabletype/test:${{ matrix.config.image }} bash -c "${{ matrix.config.mt_test_env }} prove -lr -j4 -PMySQLPool=MT::Test::Env -It/lib ${{ matrix.test }}"
       - name: test php
         if: ${{ matrix.test == 'php' }}
@@ -106,9 +109,6 @@ jobs:
       - name: test selenium
         if: ${{ matrix.test == 'selenium' }}
         run: docker run -t -v $PWD:/mt -w /mt ghcr.io/movabletype/movabletype/test:${{ matrix.config.image }} bash -c "BUILD_RELEASE_NUMBER=1 make && MT_TEST_SELENIUM_MAX_RETRY=5 MT_TEST_CRAWL=1 prove -j1 -PMySQLPool=MT::Test::Env -It/lib t/selenium/crawl.t"
-      - name: test xt
-        if: ${{ matrix.test == 'xt' }}
-        run: docker run -t -v $PWD:/mt -w /mt ghcr.io/movabletype/movabletype/test:${{ matrix.config.image }} bash -c "prove -j4 -PMySQLPool=MT::Test::Env -It/lib xt"
 
   test_job3:
     needs: [test_job1]
@@ -129,7 +129,7 @@ jobs:
         config:
           - {image: bullseye, mt_test_env: 'MT_TEST_DISABLE_OBJECT_CACHE=1'}    # Perl 5.32 / PHP 7.4 / MariaDB 10.5
           - {image: fedora37, mt_test_env: 'MT_TEST_BUILDER=MT::Builder::Fast'} # Perl 5.36 / PHP 8.1 / MySQL 8.0
-          - {image: fedora35, mt_test_env: 'MT_TEST_FORCE_DATAAPI_VERSION=5'}   # Perl 5.34 / PHP 8.0 / MySQL 8.0
+          - {image: fedora35, mt_test_env: 'MT_TEST_IMAGE_DRIVER=Imager MT_TEST_FORCE_DATAAPI_VERSION=6'}   # Perl 5.34 / PHP 8.0 / MySQL 8.0
         test:
           - "t/*.t"
           - "t/mt7/[^td]*"
@@ -141,9 +141,6 @@ jobs:
           - "t/tag/"
           - "plugins/*/t"
           - php
-        exclude:
-          - config: {image: centos7, mt_test_env: 'MT_TEST_DISABLE_OBJECT_CACHE=1'}
-            test: php
     steps:
       - name: checkout
         uses: actions/checkout@v4.1.0
@@ -154,7 +151,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: test
-        if: ${{ matrix.test != 'php' && matrix.test != 'selenium' && matrix.test != 'xt' }}
+        if: ${{ matrix.test != 'php' && matrix.test != 'selenium' }}
         run: docker run -t -v $PWD:/mt -w /mt ghcr.io/movabletype/movabletype/test:${{ matrix.config.image }} bash -c "${{ matrix.config.mt_test_env }} prove -lr -j4 -PMySQLPool=MT::Test::Env -It/lib ${{ matrix.test }}"
       - name: test php
         if: ${{ matrix.test == 'php' }}

@@ -70,12 +70,16 @@ sub image_height {
     my $height = $asset->height(@_);
     return $height if $height || @_;
 
-    if ( !-e $asset->file_path || !-r $asset->file_path ) {
+    my $file_path = $asset->file_path;
+    if ( !defined $file_path || $file_path eq '' ) {
+        return undef;
+    }
+    if ( !-e $file_path || !-r $file_path ) {
         return undef;
     }
     if (!$asset->{__image_info}) {
         require MT::Image;
-        $asset->{__image_info} = MT::Image->get_image_info( Filename => $asset->file_path ) || {};
+        $asset->{__image_info} = MT::Image->get_image_info( Filename => $file_path ) || {};
     }
     if (my $h = $asset->{__image_info}{height}) {
         $asset->height($h);
@@ -92,12 +96,16 @@ sub image_width {
     my $width = $asset->width(@_);
     return $width if $width || @_;
 
-    if ( !-e $asset->file_path || !-r $asset->file_path ) {
+    my $file_path = $asset->file_path;
+    if ( !defined $file_path || $file_path eq '' ) {
+        return undef;
+    }
+    if ( !-e $file_path || !-r $file_path ) {
         return undef;
     }
     if (!$asset->{__image_info}) {
         require MT::Image;
-        $asset->{__image_info} = MT::Image->get_image_info( Filename => $asset->file_path ) || {};
+        $asset->{__image_info} = MT::Image->get_image_info( Filename => $file_path ) || {};
     }
     if (my $w = $asset->{__image_info}{width}) {
         $asset->width($w);
@@ -112,7 +120,11 @@ sub image_width {
 sub has_thumbnail {
     my $asset = shift;
 
-    return unless -f $asset->file_path;
+    my $file_path = $asset->file_path;
+    if ( !defined $file_path || $file_path eq '' ) {
+        return undef;
+    }
+    return 0 unless -f $file_path;
 
     my $file_ext = $asset->file_ext || '';
     return 0 if $file_ext =~ /tiff?$/;
@@ -211,6 +223,7 @@ sub thumbnail_file {
     return undef unless $fmgr;
 
     my $file_path = $asset->file_path;
+    return undef unless defined $file_path && $file_path ne '';
     return undef unless $fmgr->file_size($file_path);
 
     return undef if ($asset->file_ext || '') =~ /tiff?$/;
@@ -234,7 +247,7 @@ sub thumbnail_file {
             require MT::Image;
             my ( $t_w, $t_h )
                 = MT::Image->get_image_info( Filename => $thumbnail );
-            if (   ( $param{Square} && $t_h != $t_w )
+            if ( !$t_h || !$t_w || ( $param{Square} && $t_h != $t_w )
                 || ( !$param{Square} && $t_h == $t_w ) )
             {
                 $already_exists = 0;
@@ -1206,7 +1219,7 @@ sub remove_broken_png_metadata {
     return 1 if lc( $asset->file_ext || '' ) !~ /^png$/;
     return 1 if $asset->is_metadata_broken;
 
-    my $exif = $asset->exif or return;
+    my $exif = $asset->exif(FastScan => 0) or return;
 
     # libpng 1.6 marks some of the old HP profiles *broken*
     # cf. https://sourceforge.net/p/libpng/code/ci/master/tree/png.c#l2275

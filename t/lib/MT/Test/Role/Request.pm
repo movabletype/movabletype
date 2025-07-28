@@ -85,6 +85,62 @@ sub post_form_ok {
     $res;
 }
 
+sub post_list_action_ok {
+    my ( $self, $params, $message ) = @_;
+    my ($object_type) = $self->content =~ /var objectType = '(\w+)'/;
+    my ($list_action_args) = $self->content =~ /ListClient\((\{[^}]+?\})\)/s;
+    if (!$list_action_args) {
+        die "ListClient param not found";
+    }
+    $list_action_args =~ s/(\w+): '([^']*)'/"$1": "$2"/g;
+    $list_action_args =~ s/\n\s+objectType: objectType,\n/\n/s;
+    my $decoded_args = JSON::decode_json($list_action_args);
+    $params->{__mode}      //= 'itemset_action';
+    $params->{_type}       //= $object_type;
+    $params->{blog_id}     //= $decoded_args->{siteId};
+    $params->{magic_token} //= $decoded_args->{magicToken};
+    $params->{return_args} //= $decoded_args->{returnArgs} . '&does_act=1';
+    $params->{type}        //= $decoded_args->{subType} if $decoded_args->{subType};
+
+    my $res = $self->post($params);
+    ok !$res->is_error, $message // "post succeeded";
+    my $header_title = $self->header_title();
+    note $header_title if $header_title;
+    $res;
+}
+
+sub put {
+    my ( $self, $params ) = @_;
+    $params = _convert_params($params);
+    $params->{__request_method} = 'PUT';
+    $self->request($params);
+}
+
+sub put_ok {
+    my ( $self, $params, $message ) = @_;
+    my $res = $self->put($params);
+    ok !$res->is_error, $message // "put succeeded";
+    my $header_title = $self->header_title();
+    note $header_title if $header_title;
+    $res;
+}
+
+sub delete {
+    my ( $self, $params ) = @_;
+    $params = _convert_params($params);
+    $params->{__request_method} = 'DELETE';
+    $self->request($params);
+}
+
+sub delete_ok {
+    my ( $self, $params, $message ) = @_;
+    my $res = $self->delete($params);
+    ok !$res->is_error, $message // "delete succeeded";
+    my $header_title = $self->header_title();
+    note $header_title if $header_title;
+    $res;
+}
+
 sub js_get_ok {
     my ( $self, $params, $message ) = @_;
     local $ENV{HTTP_X_REQUESTED_WITH} = 'XMLHttpRequest';
@@ -176,8 +232,8 @@ sub api_request {
 
 sub api_request_ok {
     my $self = shift;
-    my $res = $self->api_request(@_);
     my $message = (@_ > 2 && !ref $_[-1]) ? pop @_ : undef;
+    my $res = $self->api_request(@_);
     ok $res->is_success, $message // "request succeeded";
     return JSON::decode_json($res->decoded_content);
 }

@@ -32,18 +32,13 @@ our %Requirements = (
         tags  => ["Mail"],
         url   => "https://metacpan.org/pod/Authen::SASL",
     },
-    "Authen::SASL::XS" => {
-        label => "This module is optional. It enhances performance of Authen::SASL.",
-        tags  => ["Mail", "Performance"],
-        url   => "https://metacpan.org/pod/Authen::SASL::XS",
-    },
     "Cache::Memcached" => {
         label => "Cache::Memcached and a memcached server are optional. They are used to cache in-memory objects.",
         tags  => ["Cache"],
         url   => "https://metacpan.org/pod/Cache::Memcached",
     },
     "CGI" => {
-        extlib   => 4.66,
+        extlib   => 4.69,
         label    => "CGI is required for all Movable Type application functionality.",
         required => 1,
         tags     => ["Base"],
@@ -182,7 +177,7 @@ our %Requirements = (
         url    => "https://metacpan.org/pod/HTTP::Request",
     },
     "Image::ExifTool" => {
-        extlib => 12.76,
+        extlib => "13.30",
         label  => "Image::ExifTool is used to manipulate image metadata.",
         tags   => ["Image"],
         url    => "https://metacpan.org/pod/Image::ExifTool",
@@ -291,7 +286,7 @@ our %Requirements = (
         url    => "https://metacpan.org/pod/LWP::Protocol::https",
     },
     "LWP::UserAgent" => {
-        extlib => 6.77,
+        extlib => 6.78,
         label  => "LWP::UserAgent is optional. It is used to fetch information from local and external servers.",
         tags   => ["HTTP"],
         url    => "https://metacpan.org/pod/LWP::UserAgent",
@@ -383,7 +378,7 @@ our %Requirements = (
         url   => "https://metacpan.org/pod/Term::Encoding",
     },
     "TheSchwartz" => {
-        extlib => 1.17,
+        extlib => 1.18,
         label  => "This module is required to run background jobs.",
         tags   => ["System"],
         url    => "https://metacpan.org/pod/TheSchwartz",
@@ -396,10 +391,11 @@ our %Requirements = (
         url        => "https://metacpan.org/pod/Time::HiRes",
     },
     "URI" => {
-        extlib => 5.29,
-        label  => "This module is sometimes used to parse URI.",
-        tags   => ["HTTP", "URI"],
-        url    => "https://metacpan.org/pod/URI",
+        extlib  => 5.32,
+        label   => "This module is sometimes used to parse URI.",
+        tags    => ["HTTP", "URI"],
+        url     => "https://metacpan.org/pod/URI",
+        version => 5.12,
     },
     "XML::LibXML::SAX" => {
         label   => "This module is optional; It is one of the modules required to import an exported site and such.",
@@ -436,16 +432,27 @@ our %Requirements = (
         tags   => ["Win32", "XML"],
         url    => "https://metacpan.org/pod/XML::Simple",
     },
+    "YAML::PP" => {
+        label => "YAML::PP is optional; It is a better alternative to YAML::Tiny for YAML file handling.",
+        tags  => ["YAML"],
+        url   => "https://metacpan.org/pod/YAML::PP",
+    },
     "YAML::Syck" => {
         label => "YAML::Syck is optional; It is a better, fast and lightweight alternative to YAML::Tiny for YAML file handling.",
         tags  => ["YAML", "Performance"],
         url   => "https://metacpan.org/pod/YAML::Syck",
     },
     "YAML::Tiny" => {
-        extlib => 1.74,
+        extlib => 1.76,
         label  => "YAML::Tiny is the default YAML parser.",
         tags   => ["YAML"],
         url    => "https://metacpan.org/pod/YAML::Tiny",
+    },
+    "YAML::XS" => {
+        label   => "YAML::XS is optional; It is a better, fast and lightweight alternative to YAML::Tiny for YAML file handling.",
+        tags    => ["YAML", "Performance"],
+        url     => "https://metacpan.org/pod/YAML::XS",
+        version => "v0.903.0",
     },
 );
 
@@ -478,7 +485,7 @@ our %ExtLibOnly = (
         used_in => ["Data::ObjectDriver"],
     },
     "Class::Data::Inheritable" => {
-        extlib  => 0.09,
+        extlib  => "0.10",
         url     => "https://metacpan.org/pod/Class::Data::Inheritable",
         used_in => ["Data::ObjectDriver::Driver::BaseCache"],
     },
@@ -513,12 +520,12 @@ our %ExtLibOnly = (
         used_in => ["MT"],
     },
     "Crypt::URandom" => {
-        extlib  => "0.40",
+        extlib  => 0.54,
         url     => "https://metacpan.org/pod/Crypt::URandom",
         used_in => ["MT::Util::UniqueID"],
     },
     "Data::ObjectDriver" => {
-        extlib  => 0.23,
+        extlib  => 0.25,
         url     => "https://metacpan.org/pod/Data::ObjectDriver",
         used_in => ["MT::Object"],
     },
@@ -567,7 +574,7 @@ our %ExtLibOnly = (
         used_in => ["LWP::Protocol::ftp"],
     },
     "Hash::Merge::Simple" => {
-        extlib  => 0.051,
+        extlib  => 0.052,
         url     => "https://metacpan.org/pod/Hash::Merge::Simple",
         used_in => ["MT::DataAPI::Callback::ContentField"],
     },
@@ -645,18 +652,18 @@ our %ExtLibOnly = (
         used_in => ["HTTP::Request::Common"],
     },
     "LWP::Protocol::http" => {
-        extlib  => 6.77,
+        extlib  => 6.78,
         url     => "https://metacpan.org/pod/LWP::Protocol::http",
         used_in => ["MT::App::Wizard"],
     },
     "Mail::Address" => {
-        extlib  => 2.21,
+        extlib  => 2.22,
         url     => "https://metacpan.org/pod/Mail::Address",
         used_in => ["MIME::Lite"],
     },
     "Math::BigInt" => {
         dropped_in => ["amazonlinux2023"],
-        extlib     => 2.003003,
+        extlib     => 2.005003,
         perl_core  => 1.998,
         url        => "https://metacpan.org/pod/Math::BigInt",
         used_in    => ["JSON::PP"],
@@ -677,7 +684,7 @@ our %ExtLibOnly = (
         used_in => ["MT::Mail"],
     },
     "MIME::Types" => {
-        extlib  => 2.26,
+        extlib  => 2.28,
         url     => "https://metacpan.org/pod/MIME::Types",
         used_in => ["MT::Mail::MIME"],
     },
@@ -687,7 +694,7 @@ our %ExtLibOnly = (
         used_in => ["MT"],
     },
     "Net::OAuth" => {
-        extlib   => 0.28,
+        extlib   => 0.31,
         not_used => 1,
         url      => "https://metacpan.org/pod/Net::OAuth",
     },
@@ -697,7 +704,7 @@ our %ExtLibOnly = (
         used_in => ["MT::Mail::MIME"],
     },
     "parent" => {
-        extlib    => 0.242,
+        extlib    => 0.244,
         note      => "used in many extlib modules",
         perl_core => 0.225,
         url       => "https://metacpan.org/pod/parent",
@@ -709,7 +716,7 @@ our %ExtLibOnly = (
         used_in => ["constant::override"],
     },
     "Text::CSV" => {
-        extlib  => 2.04,
+        extlib  => 2.06,
         url     => "https://metacpan.org/pod/Text::CSV",
         used_in => ["MT::CMS::Log"],
     },
@@ -1271,12 +1278,18 @@ sub check_extlib {
     _require_module('CPAN::Common::Index::Mirror') or return;
     _require_module('Parse::Distname')             or return;
     _require_module('version')                     or return;
+    if ($args{fetch_changes}) {
+        _require_module('LWP::UserAgent')   or return;
+        _require_module('Mojo::DOM')        or return;
+        _require_module('MT::Util::Encode') or return;
+    }
     my %modules = (%Requirements, %ExtLibOnly, %HiddenCoreDeps);
     my %extlib  = map { $_ => $modules{$_}{extlib} } grep { $modules{$_}{extlib} } keys %modules;
     my $index   = CPAN::Common::Index::Mirror->new({ mirror => 'https://www.cpan.org' });
     open my $fh, '<', $index->cached_package;
     my $seen;
 
+    my $ua = LWP::UserAgent->new;
     while (<$fh>) {
         chomp;
         if ($_ eq '') {
@@ -1286,14 +1299,31 @@ sub check_extlib {
         next unless $seen;
         my ($package, $version, $dist) = split /\s+/;
         my $extlib_version = $extlib{$package} or next;
-        my $distname       = Parse::Distname::parse_distname($dist)->{name_and_version};
+        my $info           = Parse::Distname::parse_distname($dist);
+        my $distname       = $info->{name_and_version};
         next unless version->parse($version) > version->parse($extlib_version);
         my $pinned = $modules{$package}{pinned} ? ' but it is pinned' : '';
+
         unless ($args{debug}) {
             next if $pinned;
             next if $distname =~ /^perl-/;
         }
         print STDERR "$package ($extlib_version) has a new version $version ($distname)$pinned\n";
+        if ($args{fetch_changes}) {
+            my $author = $info->{pause_id};
+            my $url    = "https://metacpan.org/release/$author/$distname/changes";
+            my $res    = $ua->get($url);
+            if ($res->is_success) {
+                my $changes = $res->decoded_content;
+                my $source  = Mojo::DOM->new($changes)->at('#metacpan_source')->all_text;
+                my ($range) = $source =~ /^(.+?)\n[^\n]*?$extlib_version/s;
+                if ($range) {
+                    print STDERR MT::Util::Encode::encode_utf8_if_flagged($range), "\n\n";
+                } else {
+                    print STDERR "Can't fetch changes: try $url\n\n";
+                }
+            }
+        }
     }
 }
 

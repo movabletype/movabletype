@@ -208,12 +208,21 @@ sub list_props {
                     my $can_double_encode = 1;
                     $name
                         = MT::Util::encode_html( $name, $can_double_encode );
-                    return qq{$scope_html <a href="$dashboard_link"> $name</a>};
+                    if ($opts->{no_link}) {
+                        return "$scope_html $name";
+                    } else {
+                        return qq{$scope_html <a href="$dashboard_link">$name</a>};
+                    }
                 }
                 else {
-                    return MT->translate(
-                        qq{[_1] ($scope_html <a href="[_2]">id:[_3]</a>)},
-                        'No Name', $dashboard_link, $obj->id, );
+                    if ($opts->{no_link}) {
+                        return MT->translate(qq{[_1] ($scope_html id:[_3])}, 'No Name', $dashboard_link, $obj->id);
+                    } else {
+                        return MT->translate(
+                            qq{[_1] ($scope_html <a href="[_2]">id:[_3]</a>)},
+                            'No Name', $dashboard_link, $obj->id,
+                        );
+                    }
                 }
             }
         },
@@ -311,9 +320,10 @@ sub list_props {
                 for (@parent_ids) {
                     $parent_names{$_} = '' unless defined $parent_names{$_};
                 }
+                $parent_names{0} = '';  # fallback to suppress uuv
                 my @sorted = sort {
-                    $parent_names{ $a->parent_id }
-                        cmp $parent_names{ $b->parent_id }
+                    $parent_names{ $a->parent_id || 0 }
+                        cmp $parent_names{ $b->parent_id || 0 }
                 } @$objs;
                 return @sorted;
             },

@@ -144,7 +144,7 @@ sub write_config {
     my %connect_info = $self->connect_info;
 
     my $image_driver = $ENV{MT_TEST_IMAGE_DRIVER}
-        || (eval { require Image::Magick } ? 'ImageMagick' : 'Imager');
+        || (eval { require Graphics::Magick } ? 'GraphicsMagick' : eval { require Image::Magick } ? 'ImageMagick' : 'Imager');
 
     my $default_language = $ENV{MT_TEST_LANG} || 'en_US';
 
@@ -186,7 +186,7 @@ sub write_config {
         DebugMode              => $ENV{MT_TEST_DEBUG_MODE} || 0,
         BuilderModule          => $ENV{MT_TEST_BUILDER} || 'MT::Builder',
         DisableObjectCache     => $ENV{MT_TEST_DISABLE_OBJECT_CACHE} || 0,
-        $ENV{MT_TEST_ADMIN_THEME_ID} ? (AdminThemeId => $ENV{MT_TEST_ADMIN_THEME_ID}) : (),
+        exists $ENV{MT_TEST_ADMIN_THEME_ID} ? (AdminThemeId => $ENV{MT_TEST_ADMIN_THEME_ID}) : (),
     );
 
     if ($extra) {
@@ -1330,6 +1330,7 @@ sub save_fixture {
 sub _tweak_schema {
     my $schema = shift;
     $schema =~ s/^\-\- Created on .+$//m;
+    $schema =~ s/utf8mb3/utf8/g;
     $schema =~ s/NULL DEFAULT NULL/NULL/g;    ## mariadb 10.2.1+
     $schema =~ s/\s+COLLATE utf8_\w+_ci//g;   ## for now; better to specify collation explicitly
     $schema;
@@ -1349,11 +1350,11 @@ sub test_schema {
     my $schema_file = "$self->{fixture_dirs}[0]/schema.$driver.sql";
     plan skip_all => 'schema is not found' unless -f $schema_file;
 
-    my $saved_schema = $self->slurp($schema_file);
+    my $saved_schema = _tweak_schema($self->slurp($schema_file));
 
-    my $generated_schema = $self->_generate_schema;
+    my $generated_schema = _tweak_schema($self->_generate_schema);
 
-    if (_tweak_schema($generated_schema) eq _tweak_schema($saved_schema)) {
+    if ($generated_schema eq $saved_schema) {
         pass "schema is up-to-date";
     } else {
         fail "schema is out-of-date";

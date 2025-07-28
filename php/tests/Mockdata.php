@@ -21,7 +21,7 @@ class Mockdata {
 
         require_once('class.mt_blog.php');
         $blog = new Blog();
-        $blog->name = $args['name'];
+        $blog->name = $args['name'] ?? null;
         $blog->class = $args['class'] ?? 'blog';
         $blog->days_on_index = $args['days_on_index'] ?? 0;
         $blog->site_url = $args['site_url'] ?? 'https://example.com/';
@@ -182,8 +182,8 @@ class Mockdata {
         require_once('class.mt_objectscore.php');
         $oscore = new ObjectScore();
         $oscore->blog_id = $args['blog_id'] ?? self::$last_blog_id ?? 1;
-        $oscore->object_ds = $args['object_ds'];
-        $oscore->object_id = $args['object_id'];
+        $oscore->object_ds = $args['object_ds'] ?? null;
+        $oscore->object_id = $args['object_id'] ?? null;
         if (!isset($oscore->object_id)) {
             if ($args['object_ds'] === 'entry') {
                 $oscore->object_id = self::$last_entry_id;
@@ -206,10 +206,10 @@ class Mockdata {
         require_once('class.mt_template.php');
         $template = new Template();
         $template->blog_id = $args['blog_id'] ?? self::$last_blog_id ?? 1;
-        $template->name = $args['name'];
+        $template->name = $args['name'] ?? null;
         $template->identifier = $args['identifier'] ?? '';
-        $template->type = $args['type'];
-        $template->text = $args['text'];
+        $template->type = $args['type'] ?? null;
+        $template->text = $args['text'] ?? null;
         $template->current_revision = 1;
         $template->content_type_id = $args['content_type_id'] ?? self::$last_content_type_id ?? 1;
         self::finalize_and_save($template);
@@ -222,13 +222,13 @@ class Mockdata {
         require_once('class.mt_templatemap.php');
         $map = new TemplateMap();
         $map->blog_id = $args['blog_id'] ?? self::$last_blog_id ?? 1;
-        $map->identifier = $args['identifier'];
-        $map->archive_type = $args['archive_type'];
-        $map->build_interval = $args['build_interval'];
-        $map->build_type = $args['build_type'];
-        $map->cat_field_id = $args['cat_field_id'];
-        $map->dt_field_id = $args['dt_field_id'];
-        $map->file_template = $args['file_template'];
+        $map->identifier = $args['identifier'] ?? null;
+        $map->archive_type = $args['archive_type'] ?? null;
+        $map->build_interval = $args['build_interval'] ?? null;
+        $map->build_type = $args['build_type'] ?? null;
+        $map->cat_field_id = $args['cat_field_id'] ?? null;
+        $map->dt_field_id = $args['dt_field_id'] ?? null;
+        $map->file_template = $args['file_template'] ?? null;
         $map->is_preferred = $args['is_preferred'] ?? 1;
         $map->template_id = $args['template_id'] ?? self::$last_template_id;
         self::finalize_and_save($map);
@@ -239,7 +239,7 @@ class Mockdata {
 
         require_once('class.mt_tag.php');
         $tag = new Tag();
-        $tag->tag_name = $args['name'];
+        $tag->tag_name = $args['name'] ?? null;
         self::finalize_and_save($tag);
         return $tag;
     }
@@ -269,8 +269,8 @@ class Mockdata {
         $oasset->blog_id = $args['blog_id'] ?? self::$last_blog_id ?? 1;
         $oasset->asset_id = $asset_id ?? self::$last_asset_id ??  1;
         $oasset->cf_id = 0;
-        $oasset->object_ds = $args['object_ds'];
-        $oasset->object_id = $args['object_id'];
+        $oasset->object_ds = $args['object_ds'] ?? null;
+        $oasset->object_id = $args['object_id'] ?? null;
         if (!isset($oasset->object_id)) {
             if ($args['object_ds'] === 'entry') {
                 $oasset->object_id = self::$last_entry_id;
@@ -288,7 +288,7 @@ class Mockdata {
         $otag = new ObjectTag();
         $otag->blog_id = $args['blog_id'] ?? self::$last_blog_id ?? 1;
         $otag->object_datasource = $args['object_datasource'];
-        $otag->object_id = $args['object_id'];
+        $otag->object_id = $args['object_id'] ?? null;
         if (!isset($otag->object_id)) {
             if ($args['object_datasource'] === 'entry') {
                 $otag->object_id = self::$last_entry_id;
@@ -299,7 +299,7 @@ class Mockdata {
             }
         }
         $otag->cf_id = 0;
-        $otag->tag_id = $args['tag_id'];
+        $otag->tag_id = $args['tag_id'] ?? null;
         self::finalize_and_save($otag);
         return $otag;
     }
@@ -309,7 +309,7 @@ class Mockdata {
         require_once('class.mt_touch.php');
         $touch = new Touch();
         $touch->blog_id = $args['blog_id'] ?? self::$last_blog_id ?? 1;
-        $touch->object_type = $args['object_type'];
+        $touch->object_type = $args['object_type'] ?? null;
         $touch->modified_on = $args['modified_on'] ?? '20240101122459';
         self::finalize_and_save($touch);
         return $touch;
@@ -334,7 +334,7 @@ class Mockdata {
         $cf->content_type_id = $args['content_type_id'] ?? self::$last_content_type_id ?? 1;
         $cf->related_cat_set_id = $args['related_cat_set_id'] ?? null;
         $cf->name = $args['name'] ?? 'foo';
-        $cf->type = $args['type'];
+        $cf->type = $args['type'] ?? null;
         self::finalize_and_save($cf);
 
         self::$last_content_field_id = $cf->id;
@@ -348,13 +348,13 @@ class Mockdata {
         $cf_idx->content_type_id = $args['content_type_id'] ?? self::$last_content_type_id ?? 1;
         $cf_idx->content_field_id = $args['content_field_id'] ?? self::$last_content_field_id;
         $cf_idx->content_data_id = $args['content_data_id'] ?? self::$last_content_data_id;
-        $cf_idx->value_varchar = $args['value_varchar'];
-        $cf_idx->value_text = $args['value_text'];
-        $cf_idx->value_blob = $args['value_blob'];
-        $cf_idx->value_datetime = $args['value_datetime'];
-        $cf_idx->value_integer = $args['value_integer'];
-        $cf_idx->value_float = $args['value_float'];
-        $cf_idx->value_double = $args['value_double'];
+        $cf_idx->value_varchar = $args['value_varchar'] ?? null;
+        $cf_idx->value_text = $args['value_text'] ?? null;
+        $cf_idx->value_blob = $args['value_blob'] ?? null;
+        $cf_idx->value_datetime = $args['value_datetime'] ?? null;
+        $cf_idx->value_integer = $args['value_integer'] ?? null;
+        $cf_idx->value_float = $args['value_float'] ?? null;
+        $cf_idx->value_double = $args['value_double'] ?? null;
         self::finalize_and_save($cf_idx);
 
         return $cf_idx;
@@ -399,8 +399,8 @@ class Mockdata {
         require_once('class.mt_objectcategory.php');
         $ocat = new ObjectCategory();
         $ocat->blog_id = $args['blog_id'] ?? self::$last_blog_id ?? 1;
-        $ocat->object_ds = $args['object_ds'];
-        $ocat->object_id = $args['object_id'];
+        $ocat->object_ds = $args['object_ds'] ?? null;
+        $ocat->object_id = $args['object_id'] ?? null;
         $ocat->is_primary = 1;
         if (!isset($ocat->object_id)) {
             if ($args['object_ds'] === 'entry') {
@@ -461,8 +461,8 @@ class Mockdata {
         $finfo->author_id = $args['author_id'] ?? self::$last_author_id;
         $finfo->archive_type = $args['archive_type'] ?? 'Individual';
         $finfo->template_id = $args['template_id'] ?? self::$last_template_id;
-        $finfo->templatemap_id = $args['templatemap_id'];
-        $finfo->url = $args['url'];
+        $finfo->templatemap_id = $args['templatemap_id'] ?? null;
+        $finfo->url = $args['url'] ?? null;
         self::finalize_and_save($finfo);
         return $finfo;
     }
