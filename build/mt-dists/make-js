@@ -29,17 +29,11 @@ push @files, find_js(
 );
 
 push @files, find_js(
-    directories => ['tmpl/'],
-    extensions  => ['tmpl'],
-);
-
-push @files, find_js(
-    directories => [glob('plugins/*/tmpl')],
-    extensions  => ['tmpl'],
-);
-
-push @files, find_js(
-    directories => [glob('addons/*/tmpl')],
+    directories => [
+        'tmpl/',
+        glob('plugins/*/tmpl'),
+        glob('addons/*/tmpl'),
+    ],
     extensions  => ['tmpl'],
 );
 
@@ -53,15 +47,9 @@ if ( opendir my $dh, $addon_path ) {
         if ( -d $full_path ) {
             if ( $p =~ m/^(.+)\.(\w+)$/ ) {
                 my $label = $1;
-                my $id    = lc $1;
                 my $type  = $2;
                 next if $type ne 'pack';
-                if ( open my $fh,
-                    '<',
-                    File::Spec->catfile( $full_path, 'make_js_templates' ) )
-                {
-                    push @addons, $label;
-                }
+                push @addons, $label;
             }
         }
     }
