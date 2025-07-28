@@ -95,7 +95,7 @@ sub suite {
                 offset       => 0,
                 total        => 4
             },
-            config => { EntriesPerRebuild => 1, },
+            config         => { EntriesPerRebuild => 1, },
             next_phase_url => qr{/publish/all\?.*siteId=1},
             code           => 200,
             result         => {

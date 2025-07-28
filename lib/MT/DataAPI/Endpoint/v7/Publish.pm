@@ -91,9 +91,9 @@ sub all {
     return $app->permission_denied() unless $perms && $perms->can_do('rebuild');
 
     my $start_time = $app->param('startTime');
-    $start_time    = MT::DataAPI::Endpoint::v1::Publish::_iso2epoch($site_id, $start_time) if $start_time;
-    my $offset     = $app->param('offset') || 0;
-    my $total      = $app->param('total');
+    $start_time = MT::DataAPI::Endpoint::v1::Publish::_iso2epoch($site_id, $start_time) if $start_time;
+    my $offset = $app->param('offset') || 0;
+    my $total  = $app->param('total');
 
     require MT::CMS::Blog;
     my $build_order = {};
@@ -120,8 +120,8 @@ sub all {
     }
 
     if (!$start_time) {
-        $start_time  = MT::DataAPI::Endpoint::v1::Publish::_epoch2iso($site_id, time);
-        my $archiver = $app->publisher->archiver($archive_types[0]);
+        $start_time = MT::DataAPI::Endpoint::v1::Publish::_epoch2iso($site_id, time);
+        my $archiver   = $app->publisher->archiver($archive_types[0]);
         my $rest_types = join ',', @archive_types;
 
         $app->run_callbacks('pre_build');
