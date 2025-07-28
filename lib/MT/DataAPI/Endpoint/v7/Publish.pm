@@ -83,80 +83,175 @@ DESCRIPTION
 sub all {
     my ($app, $endpoint) = @_;
 
-    my $site_id = $app->param('siteId');
-    if (!$site_id) {
-        return $app->error($app->translate('Site ID is required.'), 400);
-    }
-    $app->param('site_id', $site_id);
-
-    if (my $v = $app->param('startTime')) {
-        $app->param('start_time', MT::DataAPI::Endpoint::v1::Publish::_iso2epoch($site_id, $v));
-    }
-    my $start_time = $app->param('start_time');
-
-    require MT::CMS::Blog;
+    my $site_id = $app->param('siteId')
+        or return $app->error($app->translate('Site ID is required.'), 400);
     my $site = MT->model('blog')->load($site_id)
         or return $app->error($app->translate('Site not found.'), 404);
+    my $perms = $app->user->permissions($site->id);
+    return $app->permission_denied() unless $perms && $perms->can_do('rebuild');
+
+    my $start_time = $app->param('startTime');
+    $start_time    = MT::DataAPI::Endpoint::v1::Publish::_iso2epoch($site_id, $start_time) if $start_time;
+    my $offset     = $app->param('offset') || 0;
+    my $total      = $app->param('total');
+
+    require MT::CMS::Blog;
     my $build_order = {};
     MT::CMS::Blog::_create_build_order($app, $site, $build_order);
     my %valid_archive_types = map { $_->{archive_type} => 1 } @{ $build_order->{archive_type_loop} };
-
-    my %archive_types =
+    my %tmp_archive_types =
          !$start_time && !$app->param('archiveTypes')
         ? %valid_archive_types
         : map { $_ => 1 } grep { exists $valid_archive_types{$_} } split ',', ($app->param('archiveTypes') || '');
+    my @archive_types = grep { exists $tmp_archive_types{$_} } split ',', $build_order->{build_order};
 
-    my @ordered_archive_types = grep { exists $archive_types{$_} } split ',', $build_order->{build_order};
+    if (!@archive_types) {
+        $app->publisher->start_time($start_time) if $start_time;
+        $app->run_callbacks('pre_build');
+        $app->rebuild_indexes(Blog => $site) or return $app->publish_error();
+        $app->run_callbacks('rebuild', $site);
+        $app->run_callbacks('post_build');
 
-    my $rebuild_phase_params;
-
-    MT::App::CMS::rebuild_these_site(
-        $app,
-        \@ordered_archive_types,
-        (
-            $start_time
-            ? ()
-            : (how => MT::App::CMS::NEW_PHASE())
-        ),
-        rebuild_phase_handler => sub {
-            my ($app, $params) = @_;
-            $rebuild_phase_params = $params;
-            1;
-        },
-        complete_handler => sub {
-            my ($app, $params) = @_;
-            1;
-        }) or return;
-
-    if ($rebuild_phase_params) {
-        my $site_id    = $rebuild_phase_params->{site_id};
-        my $start_time = MT::DataAPI::Endpoint::v1::Publish::_epoch2iso($site_id, $rebuild_phase_params->{start_time});
-        my $types      = join ',', @{ $rebuild_phase_params->{archive_types} || [] };
-        my $offset     = $rebuild_phase_params->{offset};
-        my $total      = $rebuild_phase_params->{total};
-
-        $app->set_next_phase_url($app->endpoint_url(
-            $endpoint,
-            {
-                siteId       => $site_id,
-                startTime    => $start_time,
-                archiveTypes => $types,
-                offset       => $offset,
-                total        => $total,
-            }));
-
-        +{
-            status           => 'Rebuilding',
-            startTime        => $start_time,
-            restArchiveTypes => $types,
-        };
-    } else {
-        +{
+        return +{
             status           => 'Complete',
             startTime        => MT::DataAPI::Endpoint::v1::Publish::_epoch2iso($site_id, $start_time),
             restArchiveTypes => q(),
         };
     }
+
+    if (!$start_time) {
+        $start_time  = MT::DataAPI::Endpoint::v1::Publish::_epoch2iso($site_id, time);
+        my $archiver = $app->publisher->archiver($archive_types[0]);
+        my $rest_types = join ',', @archive_types;
+
+        $app->run_callbacks('pre_build');
+
+        $app->set_next_phase_url($app->endpoint_url(
+            $endpoint,
+            {
+                siteId       => $site_id,
+                startTime    => time,
+                archiveTypes => $rest_types,
+                offset       => 0,
+                total        => MT::CMS::Blog::_determine_total($archiver, $site_id),
+            }));
+
+        return +{
+            status           => 'Rebuilding',
+            startTime        => $start_time,
+            restArchiveTypes => $rest_types,
+        };
+    }
+
+    $app->publisher->start_time($start_time);
+    my $type     = shift @archive_types;
+    my @rest     = @archive_types;
+    my $archiver = $app->publisher->archiver($type);
+
+    if ($archiver && $archiver->category_based) {
+        if ($offset < $total) {
+            my $start = time;
+            my $count = 0;
+            my $cb    = sub {
+                my $result =
+                    time - $start > $app->config->RebuildOffsetSeconds
+                    ? 0
+                    : 1;
+                $count++ if $result;
+                return $result;
+            };
+            $app->rebuild(
+                Blog           => $site,
+                ArchiveType    => $type,
+                NoIndexes      => 1,
+                Offset         => $offset,
+                Limit          => $app->config->EntriesPerRebuild,
+                FilterCallback => $cb,
+            ) or return $app->publish_error();
+            $offset += $count;
+        }
+
+        if ($offset < $total) {
+            @rest = ($type, @rest);
+        } else {
+            $offset = 0;
+        }
+    } elsif ($type) {
+        my $special = 0;
+        my @options;
+        my $opts = $app->registry("rebuild_options") || {};
+        foreach my $opt (keys %$opts) {
+            $opts->{$opt}{key} ||= $opt;
+            push @options, $opts->{$opt};
+        }
+        $app->run_callbacks('rebuild_options', $app, \@options);
+        for my $opt (@options) {
+            if (($opt->{key} || '') eq $type) {
+                my $code = $opt->{code};
+                unless (ref($code) eq 'CODE') {
+                    $code = MT->handler_to_coderef($code);
+                    $opt->{code} = $code;
+                }
+                $opt->{code}->();
+                $special = 1;
+            }
+        }
+        if (!$special) {
+            if ($offset < $total) {
+                my $start = time;
+                my $count = 0;
+                my $cb    = sub {
+                    my $result =
+                        time - $start > $app->config->RebuildOffsetSeconds
+                        ? 0
+                        : 1;
+                    $count++ if $result;
+                    return $result;
+                };
+                $app->rebuild(
+                    Blog           => $site,
+                    ArchiveType    => $type,
+                    NoIndexes      => 1,
+                    Offset         => $offset,
+                    Limit          => $app->config->EntriesPerRebuild,
+                    FilterCallback => $cb,
+                ) or return $app->publish_error();
+                $offset += $count;
+            }
+
+            if ($offset < $total) {
+                @rest = ($type, @rest);
+            } else {
+                $offset = 0;
+            }
+        }
+    }
+
+    if ($rest[0] && ($rest[0] ne $type)) {
+        my $archiver = $app->publisher->archiver($rest[0]);
+        $total = MT::CMS::Blog::_determine_total($archiver, $site_id);
+    } elsif (!@rest) {
+        $total = 0;
+    }
+
+    $start_time = MT::DataAPI::Endpoint::v1::Publish::_epoch2iso($site_id, $start_time);
+    my $rest_types = join ',', @rest;
+
+    $app->set_next_phase_url($app->endpoint_url(
+        $endpoint,
+        {
+            siteId       => $site_id,
+            startTime    => $start_time,
+            archiveTypes => $rest_types,
+            offset       => $offset,
+            total        => $total,
+        }));
+
+    +{
+        status           => 'Rebuilding',
+        startTime        => $start_time,
+        restArchiveTypes => $rest_types,
+    };
 }
 
 1;

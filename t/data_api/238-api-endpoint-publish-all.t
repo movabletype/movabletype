@@ -60,33 +60,12 @@ sub suite {
                     count => 1,
                 },
             ],
-            setup => sub {
-                my ($data) = @_;
-
-                $data->{rebuild_these_site} = 0;
-
-                $data->{mock} = Test::MockModule->new('MT::App::CMS');
-                $data->{mock}->mock(
-                    'rebuild_these_site',
-                    sub {
-                        $data->{rebuild_these_site}++;
-                        $data->{mock}->original('rebuild_these_site')->(@_);
-                    });
-            },
             next_phase_url => qr{/publish/all\?.*siteId=1},
             code           => 200,
             result         => {
                 status           => 'Rebuilding',
                 startTime        => $start_time,
                 restArchiveTypes => 'Individual,Monthly,Weekly,Daily,Category,Page,Author',
-            },
-            complete => sub {
-                my ($data) = @_;
-                is(
-                    $data->{rebuild_these_site},
-                    1, 'MT::App::rebuild_these_site is called once'
-                );
-                delete $data->{mock};
             },
         },
         {
@@ -97,33 +76,12 @@ sub suite {
                 siteId       => $blog->id,
                 archiveTypes => 'Individual'
             },
-            setup => sub {
-                my ($data) = @_;
-
-                $data->{rebuild_these_site} = 0;
-
-                $data->{mock} = Test::MockModule->new('MT::App::CMS');
-                $data->{mock}->mock(
-                    'rebuild_these_site',
-                    sub {
-                        $data->{rebuild_these_site}++;
-                        $data->{mock}->original('rebuild_these_site')->(@_);
-                    });
-            },
             next_phase_url => qr{/publish/all\?.*siteId=1},
             code           => 200,
             result         => {
                 status           => 'Rebuilding',
                 startTime        => $start_time,
                 restArchiveTypes => 'Individual',
-            },
-            complete => sub {
-                my ($data) = @_;
-                is(
-                    $data->{rebuild_these_site},
-                    1, 'MT::App::rebuild_these_site is called once'
-                );
-                delete $data->{mock};
             },
         },
         {
@@ -138,31 +96,12 @@ sub suite {
                 total        => 4
             },
             config => { EntriesPerRebuild => 1, },
-            setup => sub {
-                my ($data) = @_;
-                $data->{rebuild_indexes} = 0;
-                $data->{mock}            = Test::MockModule->new('MT::App::CMS');
-                $data->{mock}->mock(
-                    'rebuild_these_site',
-                    sub {
-                        $data->{rebuild_these_site}++;
-                        $data->{mock}->original('rebuild_these_site')->(@_);
-                    });
-            },
             next_phase_url => qr{/publish/all\?.*siteId=1},
             code           => 200,
             result         => {
                 status           => 'Rebuilding',
                 startTime        => $start_time,
                 restArchiveTypes => 'Page',
-            },
-            complete => sub {
-                my ($data) = @_;
-                is(
-                    $data->{rebuild_these_site},
-                    1, 'MT::App::rebuild_these_site is called once'
-                );
-                delete $data->{mock};
             },
         },
         {
@@ -176,31 +115,12 @@ sub suite {
                 offset       => 3,
                 total        => 4
             },
-            setup => sub {
-                my ($data) = @_;
-                $data->{rebuild_indexes} = 0;
-                $data->{mock}            = Test::MockModule->new('MT::App::CMS');
-                $data->{mock}->mock(
-                    'rebuild_these_site',
-                    sub {
-                        $data->{rebuild_these_site}++;
-                        $data->{mock}->original('rebuild_these_site')->(@_);
-                    });
-            },
             next_phase_url => qr{/publish/all\?.*siteId=1},
             code           => 200,
             result         => {
                 status           => 'Rebuilding',
                 startTime        => $start_time,
                 restArchiveTypes => '',
-            },
-            complete => sub {
-                my ($data) = @_;
-                is(
-                    $data->{rebuild_these_site},
-                    1, 'MT::App::rebuild_these_site is called once'
-                );
-                delete $data->{mock};
             },
         },
         {
