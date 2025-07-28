@@ -21,6 +21,7 @@ my @files = (
     "mt-static/js/edit.js",
     "mt-static/archetype/js/archetype_editor.js",
     "mt-static/js/cms.js",
+    "mt-static/js/listing/list_data.js",
 
     glob("mt-static/js/admin2023/contenttype/tag/*.tag"),
     glob("src/contenttype/elements/*.svelte"),
