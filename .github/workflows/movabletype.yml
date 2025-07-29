@@ -91,6 +91,9 @@ jobs:
         include:
           - config: {image: chromiumdriver}
             test: selenium
+        exclude:
+          - config: {image: buster, mt_test_env: 'MT_TEST_RUN_APP_AS_CGI=1'}
+            test: php
     steps:
       - name: checkout
         uses: actions/checkout@v4.1.0
