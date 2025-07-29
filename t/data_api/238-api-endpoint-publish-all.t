@@ -20,7 +20,8 @@ my $fmgr = MT::FileMgr->new('Local');
 
 $test_env->prepare_fixture('db_data');
 
-my $blog = MT->model('blog')->load(1);
+my $blog  = MT->model('blog')->load(1);
+my $blog2 = MT->model('blog')->load(2);
 
 sleep 1;
 $test_env->clear_mt_cache;
@@ -46,90 +47,270 @@ sub suite {
         {
             path   => '/v7/publish/all',
             method => 'POST',
-            note   => "Site not found",
-            params => { siteId => 9999 },
-            code   => 404,
+            note   => "siteId is invalid",
+            params => { siteIds => '9999' },
+            code   => 400,
         },
         {
             path      => '/v7/publish/all',
             method    => 'POST',
-            note      => "Success case",
-            params    => { siteId => $blog->id, },
+            note      => "Success case: initial request",
+            params    => { siteIds => join(',', ($blog->id)), },
             callbacks => [{
                     name  => 'MT::App::DataAPI::pre_build',
                     count => 1,
                 },
             ],
-            next_phase_url => qr{/publish/all\?.*siteId=1},
-            code           => 200,
-            result         => {
+            next_phase_url => qr{
+                /publish/all\?
+                (?=.*siteIds=1)
+                (?=.*offset=0)
+                (?=.*total=\d+)
+                (?=.*startTime=[^&]+)
+                (?=.*nextTypeIndex=0)
+                (?=.*nextSiteIndex=0)
+                .*
+            }x,
+            code   => 200,
+            result => {
                 status           => 'Rebuilding',
                 startTime        => $start_time,
                 restArchiveTypes => 'Individual,Monthly,Weekly,Daily,Category,Page,Author',
+                restSiteIds      => '1',
+                siteId           => '',
             },
         },
         {
             path   => '/v7/publish/all',
             method => 'POST',
-            note   => "Success case with archiveType",
+            note   => "Success case: initial request with archiveType",
             params => {
-                siteId       => $blog->id,
+                siteIds      => join(',', ($blog->id)),
                 archiveTypes => 'Individual'
             },
-            next_phase_url => qr{/publish/all\?.*siteId=1},
-            code           => 200,
-            result         => {
+            next_phase_url => qr{
+                /publish/all\?
+                (?=.*siteIds=1)
+                (?=.*archiveTypes=Individual)
+                (?=.*offset=0)
+                (?=.*total=\d+)
+                (?=.*startTime=[^&]+)
+                (?=.*nextTypeIndex=0)
+                (?=.*nextSiteIndex=0)
+                .*
+            }x,
+            code   => 200,
+            result => {
                 status           => 'Rebuilding',
                 startTime        => $start_time,
                 restArchiveTypes => 'Individual',
+                restSiteIds      => '1',
+                siteId           => '',
+            },
+        },
+        {
+            path      => '/v7/publish/all',
+            method    => 'POST',
+            note      => "Success case: initial request with multiple siteIds",
+            params    => { siteIds => join(',', ($blog->id, $blog2->id)), },
+            callbacks => [{
+                    name  => 'MT::App::DataAPI::pre_build',
+                    count => 1,
+                },
+            ],
+            next_phase_url => qr{
+                /publish/all\?
+                (?=.*siteIds=1(?:,|%2C)2)
+                (?=.*offset=\d+)
+                (?=.*total=\d+)
+                (?=.*startTime=[^&]+)
+                (?=.*nextTypeIndex=\d+)
+                (?=.*nextSiteIndex=\d+)
+                .*
+            }x,
+            code   => 200,
+            result => {
+                status           => 'Rebuilding',
+                startTime        => $start_time,
+                restArchiveTypes => 'Individual,Monthly,Weekly,Daily,Category,Page,Author',
+                restSiteIds      => '1,2',
+                siteId           => '',
+            },
+        },
+        {
+            path      => '/v7/publish/all',
+            method    => 'POST',
+            note      => "Success case: initial request with multiple siteIds including invalid",
+            params    => { siteIds => join(',', ($blog->id, $blog2->id, 9999)), },
+            callbacks => [{
+                    name  => 'MT::App::DataAPI::pre_build',
+                    count => 1,
+                },
+            ],
+            next_phase_url => qr{
+                /publish/all\?
+                (?=.*siteIds=1(?:,|%2C)2)
+                (?=.*offset=\d+)
+                (?=.*total=\d+)
+                (?=.*startTime=[^&]+)
+                (?=.*nextTypeIndex=\d+)
+                (?=.*nextSiteIndex=\d+)
+                .*
+            }x,
+            code   => 200,
+            result => {
+                status           => 'Rebuilding',
+                startTime        => $start_time,
+                restArchiveTypes => 'Individual,Monthly,Weekly,Daily,Category,Page,Author',
+                restSiteIds      => '1,2',
+                siteId           => '',
             },
         },
         {
             path   => '/v7/publish/all',
             method => 'POST',
-            note   => "Success case with archiveType, startTime, offset and total",
+            note   => "Success case: initial request with multiple siteIds and archiveTypes",
             params => {
-                siteId       => $blog->id,
-                startTime    => $start_time,
-                archiveTypes => 'Page',
-                offset       => 0,
-                total        => 4
+                siteIds      => join(',', ($blog->id, $blog2->id)),
+                archiveTypes => 'Individual,Page',
+            },
+            callbacks => [{
+                    name  => 'MT::App::DataAPI::pre_build',
+                    count => 1,
+                },
+            ],
+            next_phase_url => qr{
+                /publish/all\?
+                (?=.*siteIds=1(?:,|%2C)2)
+                (?=.*archiveTypes=Individual(?:,|%2C)Page)
+                (?=.*offset=0)
+                (?=.*total=\d+)
+                (?=.*startTime=[^&]+)
+                (?=.*nextTypeIndex=0)
+                (?=.*nextSiteIndex=0)
+                .*
+            }x,
+            code   => 200,
+            result => {
+                status           => 'Rebuilding',
+                startTime        => $start_time,
+                restArchiveTypes => 'Individual,Page',
+                restSiteIds      => '1,2',
+                siteId           => '',
+            },
+        },
+        {
+            path   => '/v7/publish/all',
+            method => 'POST',
+            note   => "Success case: paging with offset and total",
+            params => {
+                siteIds       => join(',', ($blog->id)),
+                startTime     => $start_time,
+                archiveTypes  => 'Individual,Page',
+                offset        => 0,
+                total         => 4,
+                nextSiteIndex => 0,
+                nextTypeIndex => 1,
             },
             config         => { EntriesPerRebuild => 1, },
-            next_phase_url => qr{/publish/all\?.*siteId=1},
-            code           => 200,
-            result         => {
+            next_phase_url => qr{
+                /publish/all\?
+                (?=.*siteIds=1)
+                (?=.*archiveTypes=Individual(?:,|%2C)Page)
+                (?=.*offset=1)
+                (?=.*total=4)
+                (?=.*startTime=[^&]+)
+                (?=.*nextTypeIndex=1)
+                (?=.*nextSiteIndex=0)
+                .*
+            }x,
+            code   => 200,
+            result => {
                 status           => 'Rebuilding',
                 startTime        => $start_time,
                 restArchiveTypes => 'Page',
+                restSiteIds      => '1',
+                siteId           => '1',
             },
         },
         {
             path   => '/v7/publish/all',
             method => 'POST',
-            note   => "Success case with archiveType",
+            note   => "Success case: transition to rebuilding the next site",
             params => {
-                siteId       => $blog->id,
-                startTime    => $start_time,
-                archiveTypes => 'Page',
-                offset       => 3,
-                total        => 4
+                siteIds       => join(',', ($blog->id, $blog2->id)),
+                startTime     => $start_time,
+                archiveTypes  => 'Individual,Page',
+                offset        => 3,
+                total         => 4,
+                nextSiteIndex => 0,
+                nextTypeIndex => 1,
             },
-            next_phase_url => qr{/publish/all\?.*siteId=1},
-            code           => 200,
-            result         => {
+            next_phase_url => qr{
+                /publish/all\?
+                (?=.*siteIds=1(?:,|%2C)2)
+                (?=.*archiveTypes=Individual(?:,|%2C)Page)
+                (?=.*offset=0)
+                (?=.*total=\d+)
+                (?=.*startTime=[^&]+)
+                (?=.*nextTypeIndex=0)
+                (?=.*nextSiteIndex=1)
+                .*
+            }x,
+            code   => 200,
+            result => {
+                status           => 'Rebuilding',
+                startTime        => $start_time,
+                restArchiveTypes => 'Individual,Page',
+                restSiteIds      => '2',
+                siteId           => '1',
+            },
+        },
+        {
+            path   => '/v7/publish/all',
+            method => 'POST',
+            note   => "Success case: rebuilding the last site",
+            params => {
+                siteIds       => join(',', ($blog2->id, $blog->id)),
+                startTime     => $start_time,
+                archiveTypes  => 'Individual,Page',
+                offset        => 3,
+                total         => 4,
+                nextSiteIndex => 1,
+                nextTypeIndex => 1,
+            },
+            next_phase_url => qr{
+                /publish/all\?
+                (?=.*siteIds=2(?:,|%2C)1)
+                (?=.*archiveTypes=Individual(?:,|%2C)Page)
+                (?=.*offset=0)
+                (?=.*total=0)
+                (?=.*startTime=[^&]+)
+                (?=.*nextTypeIndex=0)
+                (?=.*nextSiteIndex=2)
+                .*
+            }x,
+            code   => 200,
+            result => {
                 status           => 'Rebuilding',
                 startTime        => $start_time,
                 restArchiveTypes => '',
+                restSiteIds      => '',
+                siteId           => '1',
             },
         },
         {
             path   => '/v7/publish/all',
             method => 'POST',
-            note   => "Success case (complete)",
+            note   => "Success case: rebuilding all sites completed",
             params => {
-                siteId    => $blog->id,
-                startTime => $start_time
+                siteIds       => join(',', ($blog->id)),
+                startTime     => $start_time,
+                archiveTypes  => 'Individual,Page',
+                offset        => 0,
+                total         => 0,
+                nextSiteIndex => 1,
+                nextTypeIndex => 0,
             },
             setup => sub {
                 my ($data) = @_;
@@ -147,6 +328,8 @@ sub suite {
                 status           => 'Complete',
                 startTime        => $start_time,
                 restArchiveTypes => q(),
+                restSiteIds      => q(),
+                siteId           => '',
             },
             complete => sub {
                 my ($data) = @_;

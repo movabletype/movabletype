@@ -11,20 +11,24 @@ use strict;
 use MT::App::CMS;
 use MT::DataAPI::Endpoint::v1::Publish;
 
+sub _epoch2iso { MT::DataAPI::Endpoint::v1::Publish::_epoch2iso(@_) }
+
+sub _iso2epoch { MT::DataAPI::Endpoint::v1::Publish::_iso2epoch(@_) }
+
 sub all_openapi_spec {
     +{
         tags        => ['Publish'],
         summary     => 'Rebuild the entire site',
         description => <<'DESCRIPTION',
-Rebuild specified site.
+Rebuilds one or more specified sites. Authorization is required.
 
-Authorization is required.
+This operation can be a long-running process. If the process cannot be completed in a single request, it will return a 'Rebuilding' status and an `X-MT-Next-Phase-URL` response header. In this case, the client must make a subsequent request to the URL provided in the header to continue the process. This continues until the process is complete, at which point the status will be 'Complete'.
 DESCRIPTION
         parameters => [{
                 in          => 'query',
-                name        => 'siteId',
-                schema      => { type => 'integer' },
-                description => 'Required. The ID of the site to rebuild.',
+                name        => 'siteIds',
+                schema      => { type => 'string' },
+                description => 'Required. A comma-separated list of site IDs to rebuild.',
             },
             {
                 in          => 'query',
@@ -36,19 +40,31 @@ DESCRIPTION
                 in          => 'query',
                 name        => 'startTime',
                 schema      => { type => 'string' },
-                description => 'Optional. The string of build start time. You should specifiy this parameter to next call if this endpoint returns ‘Rebuilding’ status and you want to continue to publish.',
+                description => 'Internal use for multi-step rebuilding. Specifies the start time of the build process. Clients should use the value from the `X-MT-Next-Phase-URL` for subsequent requests.',
             },
             {
                 in          => 'query',
                 name        => 'offset',
                 schema      => { type => 'string' },
-                description => 'Optional. The offset number of archives belonging to the archive type to be rebuilt. You should specify this parameter in the next call if this endpoint returns a ‘Rebuilding’ status and you want to continue publishing.'
+                description => 'Internal use for multi-step rebuilding. Specifies the offset of the items to process. Clients should use the value from the `X-MT-Next-Phase-URL` for subsequent requests.'
             },
             {
                 in          => 'query',
                 name        => 'total',
                 schema      => { type => 'string' },
-                description => 'Optional. The total number of archives belonging to the archive type to be rebuilt. You should specify this parameter in the next call if this endpoint returns a ‘Rebuilding’ status and you want to continue publishing.'
+                description => 'Internal use for multi-step rebuilding. Specifies the total number of items to process. Clients should use the value from the `X-MT-Next-Phase-URL` for subsequent requests.'
+            },
+            {
+                in          => 'query',
+                name        => 'nextSiteIndex',
+                schema      => { type => 'integer' },
+                description => 'Internal use for multi-step rebuilding. Specifies the index of the site to process next. Clients should use the value from the `X-MT-Next-Phase-URL` for subsequent requests.',
+            },
+            {
+                in          => 'query',
+                name        => 'nextTypeIndex',
+                schema      => { type => 'integer' },
+                description => 'Internal use for multi-step rebuilding. Specifies the index of the archive type to process next. Clients should use the value from the `X-MT-Next-Phase-URL` for subsequent requests.',
             },
         ],
         responses => {
@@ -69,7 +85,15 @@ DESCRIPTION
                                 },
                                 restArchiveTypes => {
                                     type        => 'string',
-                                    description => 'The comma separated archive types list. You should specify this parameter to next call if this endpoint returns "Rebuilding" status and you want to continue to publish.',
+                                    description => 'Comma-separated list of archive types. Indicates the archive types to be rebuilt in the next phase.',
+                                },
+                                restSiteIds => {
+                                    type        => 'string',
+                                    description => 'Comma-separated list of site IDs. Indicates the sites to be rebuilt in the next phase.',
+                                },
+                                siteId => {
+                                    type        => 'string',
+                                    description => 'The site ID that was rebuilt by the request.',
                                 },
                             },
                         },
@@ -83,70 +107,145 @@ DESCRIPTION
 sub all {
     my ($app, $endpoint) = @_;
 
-    my $site_id = $app->param('siteId')
-        or return $app->error($app->translate('Site ID is required.'), 400);
-    my $site = MT->model('blog')->load($site_id)
-        or return $app->error($app->translate('Site not found.'), 404);
-    my $perms = $app->user->permissions($site->id);
-    return $app->permission_denied() unless $perms && $perms->can_do('rebuild');
+    my @site_ids = split ',', ($app->param('siteIds') || '')
+        or return $app->error(
+        $app->translate('A parameter "[_1]" is required.', 'siteIds'),
+        400
+        );
+    my $specify_archive_types = $app->param('archiveTypes');
+    my $start_time            = $app->param('startTime');
+    my $offset                = $app->param('offset') || 0;
+    my $total                 = $app->param('total');
+    my $next_site_index       = $app->param('nextSiteIndex') || 0;
+    my $next_type_index       = $app->param('nextTypeIndex') || 0;
 
-    my $start_time = $app->param('startTime');
-    $start_time = MT::DataAPI::Endpoint::v1::Publish::_iso2epoch($site_id, $start_time) if $start_time;
-    my $offset = $app->param('offset') || 0;
-    my $total  = $app->param('total');
-
-    require MT::CMS::Blog;
-    my $build_order = {};
-    MT::CMS::Blog::_create_build_order($app, $site, $build_order);
-    my %valid_archive_types = map { $_->{archive_type} => 1 } @{ $build_order->{archive_type_loop} };
-    my %tmp_archive_types =
-         !$start_time && !$app->param('archiveTypes')
-        ? %valid_archive_types
-        : map { $_ => 1 } grep { exists $valid_archive_types{$_} } split ',', ($app->param('archiveTypes') || '');
-    my @archive_types = grep { exists $tmp_archive_types{$_} } split ',', $build_order->{build_order};
-
-    if (!@archive_types) {
-        $app->publisher->start_time($start_time) if $start_time;
+    if (!$site_ids[$next_site_index]) {
         $app->run_callbacks('pre_build');
-        $app->rebuild_indexes(Blog => $site) or return $app->publish_error();
-        $app->run_callbacks('rebuild', $site);
-        $app->run_callbacks('post_build');
-
+        for my $site_id (@site_ids) {
+            my $site = MT::Blog->load($site_id) or next;
+            $app->publisher->start_time(_iso2epoch($site_id, $start_time)) if $start_time;
+            $app->rebuild_indexes(Blog => $site) or return $app->publish_error();
+            $app->run_callbacks('rebuild', $site);
+            $app->run_callbacks('post_build');
+        }
         return +{
             status           => 'Complete',
-            startTime        => MT::DataAPI::Endpoint::v1::Publish::_epoch2iso($site_id, $start_time),
+            startTime        => $start_time,
+            siteId           => '',
+            restSiteIds      => q(),
             restArchiveTypes => q(),
         };
     }
 
     if (!$start_time) {
-        $start_time = MT::DataAPI::Endpoint::v1::Publish::_epoch2iso($site_id, time);
-        my $archiver   = $app->publisher->archiver($archive_types[0]);
-        my $rest_types = join ',', @archive_types;
+        my @sites = MT::Blog->load({ id => \@site_ids });
+        if (!@sites) {
+            return $app->error(
+                $app->translate('A parameter "[_1]" is invalid.', 'siteIds'),
+                400
+            );
+        }
+        my $site          = $sites[0];
+        my @archive_types = _ordered_archive_types($app, $site, $specify_archive_types);
 
+        my $archiver = $app->publisher->archiver($archive_types[0]);
         $app->run_callbacks('pre_build');
+        $start_time = _epoch2iso($site->id, time);
+        my $valid_site_ids = join(',', map { $_->id } @sites);
 
         $app->set_next_phase_url($app->endpoint_url(
             $endpoint,
             {
-                siteId       => $site_id,
-                startTime    => time,
-                archiveTypes => $rest_types,
-                offset       => 0,
-                total        => MT::CMS::Blog::_determine_total($archiver, $site_id),
+                siteIds       => $valid_site_ids,
+                startTime     => $start_time,
+                nextSiteIndex => 0,
+                nextTypeIndex => 0,
+                offset        => 0,
+                total         => MT::CMS::Blog::_determine_total($archiver, $site),
+                ($specify_archive_types ? (archiveTypes => (join ',', @archive_types)) : ()),
             }));
 
         return +{
             status           => 'Rebuilding',
             startTime        => $start_time,
-            restArchiveTypes => $rest_types,
+            siteId           => '',
+            restSiteIds      => $valid_site_ids,
+            restArchiveTypes => join(',', @archive_types),
+        };
+    }
+
+    my $site_id = $site_ids[$next_site_index];
+    my $site    = MT::Blog->load($site_id)
+        or return $app->error(
+        $app->translate('A parameter "[_1]" is invalid.', 'siteIds'),
+        400
+        );
+    my $perms = $app->user->permissions($site_id);
+    return $app->permission_denied()
+        unless $perms && $perms->can_do('rebuild');
+    $start_time = _iso2epoch($site_id, $start_time);
+
+    my @archive_types = _ordered_archive_types($app, $site, $specify_archive_types);
+
+    if (!$archive_types[$next_type_index]) {
+        $next_site_index++;
+        my $next_site;
+        for my $id (@site_ids[$next_site_index .. $#site_ids]) {
+            $next_site = MT::Blog->load($id);
+            last if $next_site;
+            $next_site_index++;
+        }
+        if (!$next_site) {
+            $start_time = _epoch2iso($site_ids[0], $start_time);
+            $app->set_next_phase_url($app->endpoint_url(
+                $endpoint,
+                {
+                    siteIds       => join(',', @site_ids),
+                    startTime     => $start_time,
+                    nextSiteIndex => $next_site_index,
+                    nextTypeIndex => 0,
+                    offset        => 0,
+                    total         => 0,
+                    ($specify_archive_types ? (archiveTypes => (join(',', @archive_types))) : ()),
+                }));
+
+            return +{
+                status           => 'Rebuilding',
+                startTime        => $start_time,
+                siteId           => '',
+                restSiteIds      => q(),
+                restArchiveTypes => q(),
+            };
+        }
+
+        @archive_types = _ordered_archive_types($app, $next_site, $specify_archive_types);
+        my $archiver = $app->publisher->archiver($archive_types[0]);
+        $start_time = _epoch2iso($next_site, $start_time);
+        $app->set_next_phase_url($app->endpoint_url(
+            $endpoint,
+            {
+                siteIds       => join(',', @site_ids),
+                startTime     => $start_time,
+                nextSiteIndex => $next_site_index,
+                nextTypeIndex => 0,
+                offset        => 0,
+                total         => MT::CMS::Blog::_determine_total($archiver, $next_site->id),
+                ($specify_archive_types ? (archiveTypes => (join(',', @archive_types))) : ()),
+            }));
+
+        return +{
+            status           => 'Rebuilding',
+            startTime        => $start_time,
+            siteId           => $next_site->id,
+            restSiteIds      => join(',', @site_ids[$next_site_index .. $#site_ids]),
+            restArchiveTypes => join(',', @archive_types),
         };
     }
 
     $app->publisher->start_time($start_time);
-    my $type     = shift @archive_types;
-    my @rest     = @archive_types;
+    my $type     = $archive_types[$next_type_index];
     my $archiver = $app->publisher->archiver($type);
+    $next_type_index++;
 
     if ($archiver && $archiver->category_based) {
         if ($offset < $total) {
@@ -172,7 +271,7 @@ sub all {
         }
 
         if ($offset < $total) {
-            @rest = ($type, @rest);
+            $next_type_index--;
         } else {
             $offset = 0;
         }
@@ -220,38 +319,106 @@ sub all {
             }
 
             if ($offset < $total) {
-                @rest = ($type, @rest);
+                $next_type_index--;
             } else {
                 $offset = 0;
             }
         }
     }
 
-    if ($rest[0] && ($rest[0] ne $type)) {
-        my $archiver = $app->publisher->archiver($rest[0]);
-        $total = MT::CMS::Blog::_determine_total($archiver, $site_id);
-    } elsif (!@rest) {
-        $total = 0;
+    if (!@archive_types[$next_type_index .. $#archive_types]) {
+        $next_site_index++;
+        my $next_site;
+        for my $id (@site_ids[$next_site_index .. $#site_ids]) {
+            $next_site = MT::Blog->load($id);
+            last if $next_site;
+            $next_site_index++;
+        }
+        if (!$next_site) {
+            $start_time = _epoch2iso($site, $start_time);
+            $app->set_next_phase_url($app->endpoint_url(
+                $endpoint,
+                {
+                    siteIds       => join(',', @site_ids),
+                    startTime     => $start_time,
+                    nextSiteIndex => $next_site_index,
+                    nextTypeIndex => 0,
+                    offset        => 0,
+                    total         => 0,
+                    ($specify_archive_types ? (archiveTypes => (join(',', @archive_types))) : ()),
+                }));
+
+            return +{
+                status           => 'Rebuilding',
+                startTime        => $start_time,
+                siteId           => $site_id,
+                restSiteIds      => q(),
+                restArchiveTypes => q(),
+            };
+        }
+
+        @archive_types = _ordered_archive_types($app, $next_site, $specify_archive_types);
+        my $archiver = $app->publisher->archiver($archive_types[0]);
+        $start_time = _epoch2iso($next_site, $start_time);
+        $app->set_next_phase_url($app->endpoint_url(
+            $endpoint,
+            {
+                siteIds       => join(',', @site_ids),
+                startTime     => $start_time,
+                nextSiteIndex => $next_site_index,
+                nextTypeIndex => 0,
+                offset        => 0,
+                total         => MT::CMS::Blog::_determine_total($archiver, $next_site->id),
+                ($specify_archive_types ? (archiveTypes => (join(',', @archive_types))) : ()),
+            }));
+
+        return +{
+            status           => 'Rebuilding',
+            startTime        => $start_time,
+            siteId           => $site_id,
+            restSiteIds      => join(',', @site_ids[$next_site_index .. $#site_ids]),
+            restArchiveTypes => join(',', @archive_types),
+        };
     }
 
-    $start_time = MT::DataAPI::Endpoint::v1::Publish::_epoch2iso($site_id, $start_time);
-    my $rest_types = join ',', @rest;
+    if ($archive_types[$next_type_index] && ($archive_types[$next_type_index] ne $type)) {
+        my $archiver = $app->publisher->archiver($archive_types[$next_type_index]);
+        $total = MT::CMS::Blog::_determine_total($archiver, $site_id);
+    }
 
+    $start_time = _epoch2iso($site_id, $start_time);
     $app->set_next_phase_url($app->endpoint_url(
         $endpoint,
         {
-            siteId       => $site_id,
-            startTime    => $start_time,
-            archiveTypes => $rest_types,
-            offset       => $offset,
-            total        => $total,
+            siteIds       => join(',', @site_ids),
+            startTime     => $start_time,
+            nextSiteIndex => $next_site_index,
+            nextTypeIndex => $next_type_index,
+            offset        => $offset,
+            total         => $total,
+            ($specify_archive_types ? (archiveTypes => (join(',', @archive_types))) : ()),
         }));
 
     +{
         status           => 'Rebuilding',
         startTime        => $start_time,
-        restArchiveTypes => $rest_types,
+        siteId           => $site_id,
+        restSiteIds      => join(',', @site_ids[$next_site_index .. $#site_ids]),
+        restArchiveTypes => join(',', @archive_types[$next_type_index .. $#archive_types]),
     };
+}
+
+sub _ordered_archive_types {
+    my ($app, $site, $specify_archive_types) = @_;
+    my $build_order = {};
+    require MT::CMS::Blog;
+    MT::CMS::Blog::_create_build_order($app, $site, $build_order);
+    my %valid_archive_types = map { $_->{archive_type} => 1 } @{ $build_order->{archive_type_loop} };
+    my %archive_types =
+        $specify_archive_types
+        ? map { $_ => 1 } grep { exists $valid_archive_types{$_} } split ',', ($specify_archive_types || '')
+        : %valid_archive_types;
+    return grep { exists $archive_types{$_} } split ',', $build_order->{build_order};
 }
 
 1;
