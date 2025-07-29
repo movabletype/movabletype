@@ -13231,18 +13231,18 @@ fieldset.form-group {
   font-size: 85%;
 }
 
-.badge-default {
+.badge-default, .badge-default-plugin {
   border-color: #A5A5A5;
   color: #595959;
 }
 
-.badge-primary {
+.badge-primary, .badge-add-plugin {
   border-color: transparent;
   background-color: #399280;
   color: #FFFFFF;
 }
 
-.badge-info {
+.badge-info, .badge-default-modified-plugin {
   border-color: transparent;
   background-color: #595959;
   color: #FFFFFF;

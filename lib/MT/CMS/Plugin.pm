@@ -498,14 +498,14 @@ sub build_plugin_table {
             if (exists $plugin_versions->{ $pd->{plugin_sig} }) {
                 if ($plugin_versions->{ $pd->{plugin_sig} }{version} eq $pd->{plugin_version}) {
                     $pd->{plugin_label_value} = $app->translate('__PLUGIN_LABEL_DEFAULT');
-                    $pd->{plugin_label}       = '<span class="badge badge-default">' . $pd->{plugin_label_value} . '</span>';
+                    $pd->{plugin_label}       = '<span class="badge badge-default-plugin">' . $pd->{plugin_label_value} . '</span>';
                 } else {
                     $pd->{plugin_label_value} = $app->translate('__PLUGIN_LABEL_DEFAULT_BUT_MODIFIED');
-                    $pd->{plugin_label} = '<span class="badge badge-info">' . $pd->{plugin_label_value} . '</span>';
+                    $pd->{plugin_label} = '<span class="badge badge-default-modified-plugin">' . $pd->{plugin_label_value} . '</span>';
                 }
             } else {
                 $pd->{plugin_label_value} = $app->translate('Add');
-                $pd->{plugin_label} = '<span class="badge badge-primary">' . $pd->{plugin_label_value} . '</span>';
+                $pd->{plugin_label} = '<span class="badge badge-add-plugin">' . $pd->{plugin_label_value} . '</span>';
             }
         }
     }

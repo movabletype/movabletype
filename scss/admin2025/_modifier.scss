@@ -2623,16 +2623,16 @@ fieldset.form-group{
   background: $white;
   font-size: 85%;
 }
-.badge-default{
+.badge-default, .badge-default-plugin{
   border-color: $gray;
   color: $gray-darker;
 }
-.badge-primary{
+.badge-primary, .badge-add-plugin{
   border-color: transparent;
   background-color: map-get($theme-colors, "success");
   color: $white;
 }
-.badge-info{
+.badge-info, .badge-default-modified-plugin{
   border-color: transparent;
   background-color: $gray-darker;
   color: $white;
