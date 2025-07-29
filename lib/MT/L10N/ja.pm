@@ -1385,9 +1385,6 @@ use vars qw( @ISA %Lexicon );
 	'Plugin' => 'プラグイン',
 	'Plugins are disabled by [_1]' => '[_1]がプラグインを無効にしました',
 	'Plugins are enabled by [_1]' => '[_1]がプラグインを有効にしました',
-	'This is a plugin bundled with Movable Type.' => 'これはMovable Typeに同梱されているプラグインです。',
-	'This is a plugin bundled with Movable Type, but the version is different. This may be due to a Movable Type update or the plugin being overwritten.' => 'これはMovable Typeに同梱されているプラグインですが、バージョンが異なっています。Movable Typeのアップデートやプラグインの上書きが原因である可能性があります。',
-	'This is a plugin that was added to Movable Type later.' => 'これはMovable Typeに後から追加されたプラグインです。',
 	q{Plugin '[_1]' is disabled by [_2]} => q{[_2]が[_1]プラグインを無効にしました},
 	q{Plugin '[_1]' is enabled by [_2]} => q{[_2]が[_1]プラグインを有効にしました},
 

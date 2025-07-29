@@ -239,9 +239,6 @@ if ( location.hash && location.hash.search(/^#plugin-[0-9a-f]{40}$/) != -1 ) {
 jQuery('.collapse.mt-collapse__content').on('show.bs.collapse', function (e) {
   jQuery('.collapse.mt-collapse__content').collapse('hide');
 });
-
-const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
-const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
 </mt:setvarblock>
 
 <mt:setvarblock name="page_content">
