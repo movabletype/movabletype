@@ -40,7 +40,7 @@ __END__
 --- template
 <mt:SiteThemeID>
 --- expected
-classic-blog
+classic-test-blog
 
 === mt:SiteThemeID - website
 --- blog_id
@@ -48,4 +48,4 @@ classic-blog
 --- template
 <mt:SiteThemeID>
 --- expected
-classic-website
+classic-test-website

@@ -1520,6 +1520,7 @@ use vars qw( @ISA %Lexicon );
 	'Theme not found' => 'テーマがみつかりませんでした。',
 	'Themes Directory [_1] is not writable.' => 'テーマディレクトリ[_1]に書き込めません。',
 	'Themes directory [_1] is not writable.' => 'テーマディレクトリ[_1]に書き込めません。',
+	'This theme has been removed.' => 'このテーマは削除されました。',
 
 ## lib/MT/CMS/Tools.pm
 	'Any site' => '任意のサイト',
@@ -2938,6 +2939,7 @@ use vars qw( @ISA %Lexicon );
 	'Error migrating list field indexes of content data # [_1]: [_2]...' => 'コンテンツデータ(ID:[_1])のリストフィールドインデックスを移行できませんでした: [_2]',
 	'Migrating list field index data...' => 'リストフィールドのインデックスを移行しています',
 	'Migrating site boolean meta data...' => 'サイトのboolean型のメタデータを移行しています...',
+	'Initializing default link target settings...' => 'リンクのターゲットの既定値を初期化しています...',
 
 ## lib/MT/Util.pm
 	'[quant,_1,day,days] from now' => '[quant,_1,日,日]後',
@@ -3652,8 +3654,12 @@ use vars qw( @ISA %Lexicon );
 	'Center' => '中央',
 	'Character entities (&amp#8221;, &amp#8220;, etc.)' => 'エンティティ (&amp#8221;、&amp#8220;など)',
 	'Compose Defaults' => '作成の既定値',
-	'Content CSS will be applied when WYSIWYG editor does support. You can specify CSS file by URL or {{theme_static}} placeholder. Example: {{theme_static}}path/to/cssfile.css' => 'WYSIWYGエディタ内で利用するCSSファイルのURL又は、{{theme_static}}変数を利用したURLを指定する事ができます。WYSIWYGエディタが対応していない場合は適用されません。例: {{theme_static}}path/to/cssfile.css',
+	'Content CSS will be applied if supported by the editor in use. You can specify CSS file by URL or {{theme_static}} placeholder. Example: {{theme_static}}path/to/cssfile.css' => 'エディタ内で利用するCSSファイルのURL又は、{{theme_static}}変数を利用したURLを指定する事ができます。エディタが対応していない場合は適用されません。例: {{theme_static}}path/to/cssfile.css',
 	'Content CSS' => 'コンテンツCSSファイル',
+	'Default Link Target' => 'リンクのターゲットの既定値',
+	'Default value of target attribute when inserting a link.' => 'リンク挿入時のtarget属性の既定値を指定する事ができます。',
+	'LINK_TARGET_SELF' => '同じウィンドウ',
+	'LINK_TARGET_BLANK' => '新規ウィンドウ',
 	'Czech' => 'チェコ語',
 	'Danish' => 'デンマーク語',
 	'Date Language' => '日付の言語',
@@ -3705,7 +3711,7 @@ use vars qw( @ISA %Lexicon );
 	'The range for Basename Length is 15 to 250.' => 'ファイル名の文字数は、15から250の範囲で設定してください。',
 	'Unpublished' => '下書き',
 	'Use thumbnail' => 'サムネイルを利用',
-	'WYSIWYG Editor Setting' => 'WYSIWYGエディタの設定',
+	'Editor Setting' => 'エディタの設定',
 	'You must set valid default thumbnail width.' => '有効なサムネイル画像の幅を指定してください。',
 	'Your preferences have been saved.' => '設定を保存しました。',
 	'pixels' => 'ピクセル',
@@ -4173,10 +4179,6 @@ use vars qw( @ISA %Lexicon );
 	'File Options' => 'ファイルオプション',
 	'Finish (s)' => '完了 (s)',
 	'Finish' => '完了',
-
-## tmpl/admin2023/cms/dialog/asset_upload.tmpl
-	'You need to configure your blog.' => 'ブログを設定する必要があります。',
-	'Your blog has not been published.' => 'ブログが公開されていません。',
 
 ## tmpl/admin2023/cms/dialog/clone_blog.tmpl
 	'Categories/Folders' => 'カテゴリ/フォルダ',
@@ -4875,6 +4877,9 @@ use vars qw( @ISA %Lexicon );
 	'Select an entry status' => '公開状態',
 	'Start title HTML (optional)' => 'タイトルとなるHTMLの開始地点(任意)',
 
+## tmpl/admin2023/cms/include/alert_asset_upload.tmpl
+	q{Before you can upload a file, you must <a href='[_1]' class='alert-link'>configure your site's publishing paths</a> first.} => q{ファイルをアップロードする前に、まず<a href='[_1]' class='alert-link'>サイトパスを設定</a>してください。},
+
 ## tmpl/admin2023/cms/include/anonymous_comment.tmpl
 	'Allow comments from anonymous or unauthenticated users.' => '認証なしユーザーまたは匿名ユーザーからコメントを受け付ける',
 	'If enabled, visitors must provide a valid e-mail address when commenting.' => 'コメント投稿に対して名前とメールアドレスを必須項目にします。',
@@ -5295,6 +5300,7 @@ use vars qw( @ISA %Lexicon );
 	'Themes in Use' => '利用しているテーマ',
 	'This theme cannot be applied to the child site due to [_1] errors' => '次の理由により、テーマを適用できませんでした',
 	'This theme cannot be applied to the site due to [_1] errors' => '次の理由により、テーマを適用できませんでした。',
+	'This theme has been deprecated. You can not reapply it or refresh its templates.' => 'このテーマは廃止されました。再適用やテンプレートの初期化は行えません。',
 	'Uninstall' => 'アンインストール',
 	'Warnings' => '警告',
 	'[quant,_1,warning,warnings]' => '[quant,_1,,,]件の警告',

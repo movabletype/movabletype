@@ -1,0 +1,13 @@
+SchemaVersion 9.0001
+plugins/BlockEditor
+plugins/CommonMark
+plugins/ContentInfoWidget
+plugins/DashboardWidgetTemplate
+plugins/FormattedText
+plugins/FormattedTextForTinyMCE6
+plugins/GoogleAnalyticsV4
+plugins/Markdown
+plugins/Textile
+plugins/TinyMCE6
+plugins/WXRImporter
+plugins/WidgetManager

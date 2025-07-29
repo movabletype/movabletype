@@ -2,7 +2,7 @@
 
 <mt:if name="scope_type" ne="user">
 <div class="mt-primaryNavigation" data-is="primary-navigation">
-  <div class="mt-primaryNavigation__control">
+  <mt:if name="site_menu_actions"><div class="mt-primaryNavigation__control">
     <mt:loop name="site_menu_actions">
         <mt:setvarblock name="escaped_menu_action_label"><mt:var name="label" escape="html"></mt:setvarblock>
         <a
@@ -16,7 +16,7 @@
           <span class="label"><mt:var name="escaped_menu_action_label"></span>
         </a>
     </mt:loop>
-  </div>
+  </div></mt:if>
 
   <div class="mt-primaryNavigationExpansion__control">
     <mt:loop name="menu_actions">

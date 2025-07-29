@@ -125,14 +125,14 @@ sub suite {
             },
         },
         {    # Not logged in.
-            path      => '/v2/themes/classic_website',
+            path      => '/v2/themes/classic_test_website',
             method    => 'GET',
             author_id => 0,
             code      => 401,
             error     => 'Unauthorized',
         },
         {    # No permissions.
-            path         => '/v2/themes/classic_website',
+            path         => '/v2/themes/classic_test_website',
             method       => 'GET',
             restrictions => { 0 => [qw/ open_theme_listing_screen /], },
             code         => 403,
@@ -141,11 +141,11 @@ sub suite {
         },
 
         # get_theme - normal tests
-        {   path   => '/v2/themes/classic_website',
+        {   path   => '/v2/themes/classic_test_website',
             method => 'GET',
             result => sub {
                 require MT::Theme;
-                my $theme = MT::Theme->load('classic_website');
+                my $theme = MT::Theme->load('classic_test_website');
 
                 return $theme->to_resource();
             },
@@ -153,30 +153,30 @@ sub suite {
 
         # get_theme_for_site - normal tests
         {    # Website.
-            path   => '/v2/sites/2/themes/classic_website',
+            path   => '/v2/sites/2/themes/classic_test_website',
             method => 'GET',
             result => sub {
                 require MT::Theme;
-                my $theme = MT::Theme->load('classic_website');
+                my $theme = MT::Theme->load('classic_test_website');
 
                 return $theme->to_resource();
             },
         },
         {    # Blog.
-            path   => '/v2/sites/1/themes/classic_blog',
+            path   => '/v2/sites/1/themes/classic_test_blog',
             method => 'GET',
             result => sub {
                 require MT::Theme;
-                my $theme = MT::Theme->load('classic_blog');
+                my $theme = MT::Theme->load('classic_test_blog');
 
                 return $theme->to_resource();
             },
         },
-        {   path   => '/v2/sites/0/themes/classic_website',
+        {   path   => '/v2/sites/0/themes/classic_test_website',
             method => 'GET',
             result => sub {
                 require MT::Theme;
-                my $theme = MT::Theme->load('classic_website');
+                my $theme = MT::Theme->load('classic_test_website');
 
                 return $theme->to_resource();
             },
@@ -184,7 +184,7 @@ sub suite {
 
         # get_theme_for_site - irregular tests
         {    # Non-existent site.
-            path   => '/v2/sites/10/themes/classic_blog',
+            path   => '/v2/sites/10/themes/classic_test_blog',
             method => 'GET',
             code   => 404,
             result => sub {
@@ -208,7 +208,7 @@ sub suite {
             },
         },
         {    # get website theme via blog.
-            path   => '/v2/sites/1/themes/classic_website',
+            path   => '/v2/sites/1/themes/classic_test_website',
             method => 'GET',
             code   => 404,
             result => sub {
@@ -220,14 +220,14 @@ sub suite {
             },
         },
         {    # Not logged in.
-            path      => '/v2/sites/0/themes/classic_website',
+            path      => '/v2/sites/0/themes/classic_test_website',
             method    => 'GET',
             author_id => 0,
             code      => 401,
             error     => 'Unauthorized',
         },
         {    # No permissions (site).
-            path         => '/v2/sites/2/themes/classic_website',
+            path         => '/v2/sites/2/themes/classic_test_website',
             method       => 'GET',
             restrictions => {
                 0 => [qw/ open_theme_listing_screen /],
@@ -238,7 +238,7 @@ sub suite {
                 'Do not have permission to retrieve the requested site\'s theme.',
         },
         {    # No permissions (system).
-            path         => '/v2/sites/0/themes/classic_website',
+            path         => '/v2/sites/0/themes/classic_test_website',
             method       => 'GET',
             restrictions => { 0 => [qw/ open_theme_listing_screen /], },
             code         => 403,
@@ -322,7 +322,7 @@ sub suite {
             },
         },
         {    # Try to apply website theme to blog.
-            path   => '/v2/sites/1/themes/classic_website/apply',
+            path   => '/v2/sites/1/themes/classic_test_website/apply',
             method => 'POST',
             code   => 400,
             result => sub {
@@ -411,7 +411,7 @@ sub suite {
 
         # uninstall_theme - irregular tests
         {    # Protected.
-            path   => '/v2/themes/classic_website',
+            path   => '/v2/themes/classic_test_website',
             method => 'DELETE',
             code   => 403,
             result => sub {

@@ -1939,8 +1939,7 @@ BEGIN {
                 default =>
                     'a href,b,i,br/,p,strong,em,ul,ol,li,blockquote,pre',
             },
-            'GenerateTrackBackRSS'                   => { default => 0, },
-            'DBIRaiseError'                          => { default => 0, },
+            'DBIRaiseError'                          => { default => 1, },
             'DBIShowErrorStatement'                  => { default => 0, },
             'DBIConnectOptions'                      => { type => 'HASH' },
             'SearchAlwaysAllowTemplateID'            => { default => 0, },
@@ -2110,8 +2109,8 @@ BEGIN {
             'ProcessMemoryCommand' => { default => \&ProcessMemoryCommand },
             'EnableAddressBook'    => { default => 0 },
             'SingleCommunity'      => { default => 1 },
-            'DefaultWebsiteTheme'  => { default => 'mont-blanc' },
-            'DefaultBlogTheme'     => { default => 'mont-blanc' },
+            'DefaultWebsiteTheme'  => { default => 'eigerwand' },
+            'DefaultBlogTheme'     => { default => 'eigerwand' },
             'ThemeStaticFileExtensions' => {
                 default =>
                     'html jpg jpeg gif png js css ico flv swf otf ttf svg webp map json'
@@ -2252,7 +2251,7 @@ BEGIN {
                 type    => 'ARRAY',
                 handler => \&TrustedHosts,
             },
-            'GrantRoleSitesView' => { default => 'tree' }, # DEPRECATED
+            'GrantRoleSitesView' => { default => 'list' }, # DEPRECATED
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {

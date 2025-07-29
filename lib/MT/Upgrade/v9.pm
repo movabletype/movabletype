@@ -23,6 +23,20 @@ sub upgrade_functions {
             priority      => 5,
             code          => \&_v9_list_field_indexes,
         },
+        v9_link_default_target => {
+            version_limit => 9.0001,
+            priority      => 5,
+            updater       => {
+                type  => 'blog',
+                terms => { class => '*' },
+                label => "Initializing default link target settings...",
+                code  => sub {
+                    no warnings 'once';
+                    my $blog = shift;
+                    $blog->link_default_target($MT::Blog::DEFAULT_LINK_DEFAULT_TARGET);
+                },
+            }
+        },
     };
 }
 

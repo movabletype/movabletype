@@ -2664,8 +2664,18 @@ sub _check_thumbnail_dir {
     require MT::FileMgr;
     require File::Spec;
     my $fmgr            = MT::FileMgr->new('Local');
-    my $path            = MT->config('AssetCacheDir');
     my $site_path       = $app->blog->site_path;
+
+    if ( !defined($site_path) ) {
+        $param->{missing_site_path} = 1;
+        return;
+    }
+    elsif ( !$fmgr->exists($site_path) ) {
+        $param->{missing_site_dir} = $site_path;
+        return;
+    }
+
+    my $path            = MT->config('AssetCacheDir');
     my $site_thumb_path = File::Spec->catdir( $site_path, $path );
     my @warnings;
     if ( $fmgr->exists($site_thumb_path)
@@ -3091,6 +3101,9 @@ sub dialog_asset_modal {
 
     return $app->permission_denied()
         if $blog_id && !$app->can_do('access_to_insert_asset_list');
+
+    # Check directory for thumbnail image
+    _check_thumbnail_dir( $app, \%param );
 
     $param{can_multi} = 1
         if ( $app->param('upload_mode') || '' ) ne 'upload_userpic'
