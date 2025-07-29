@@ -155,6 +155,7 @@ sub find_js {
                 push @ret, $rel;
             },
             no_chdir => 1,
+            follow   => 1,
         },
         @dirs
     );
