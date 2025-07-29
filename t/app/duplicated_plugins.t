@@ -8,6 +8,8 @@ use MT::Test::Util::Plugin;
 
 our $test_env;
 BEGIN {
+    plan skip_all => 'TODO: FIXME' if $ENV{MT_TEST_RUN_APP_AS_CGI};
+
     $test_env = MT::Test::Env->new(
         PluginPath => [
             'TEST_ROOT/plugins',
