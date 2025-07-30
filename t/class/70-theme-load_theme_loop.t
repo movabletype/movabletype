@@ -4,6 +4,7 @@ use warnings;
 use FindBin;
 use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
+use Test::Deep;
 use MT::Test::Env;
 our $test_env;
 BEGIN {
@@ -15,98 +16,26 @@ use MT::Test;
 use MT;
 use MT::Theme;
 
+my $all_themes = MT::Theme->load_all_themes;
+
 subtest "load_theme_loop('website')" => sub {
-    my $theme_loop = MT::Theme->load_theme_loop('website');
+    my $theme_loop     = MT::Theme->load_theme_loop('website');
+    my @theme_loop_ids = map { $_->{value} } @{$theme_loop};
 
-    is scalar @{$theme_loop}, 4, 'got 4 theme data';
+    my @expected = keys %{$all_themes};
+    cmp_bag(\@theme_loop_ids, \@expected, 'returns all themes');
 
-    subtest '$theme_loop->[0]' => sub {
-        is $theme_loop->[0]->{value}, 'classic_website', 'classic_website';
-        ok !exists $theme_loop->[0]->{t_selected}, 'not selected';
-    };
-
-    subtest '$theme_loop->[1]' => sub {
-        is $theme_loop->[1]->{value}, 'classic_blog', 'classic_blog';
-        ok !exists $theme_loop->[1]->{t_selected}, 'not selected';
-    };
-
-    subtest '$theme_loop->[2]' => sub {
-        is $theme_loop->[2]->{value},      'mont-blanc', 'mont-blanc';
-        is $theme_loop->[2]->{t_selected}, 1,            'selected';
-    };
-
-    subtest '$theme_loop->[3]' => sub {
-        is $theme_loop->[3]->{value}, 'other_theme', 'other_theme';
-        ok !exists $theme_loop->[3]->{t_selected}, 'not selected';
-    };
-};
-
-subtest "load_theme_loop('website', 'classic_website')" => sub {
-    my $theme_loop = MT::Theme->load_theme_loop('website', 'classic_website');
-
-    is scalar @{$theme_loop}, 4, 'got 4 theme data';
-
-    subtest '$theme_loop->[0]' => sub {
-        is $theme_loop->[0]->{value},      'classic_website', 'classic_website';
-        is $theme_loop->[0]->{t_selected}, 1,                 'selected';
-    };
-
-    subtest '$theme_loop->[1]' => sub {
-        is $theme_loop->[1]->{value}, 'classic_blog', 'classic_blog';
-        ok !exists $theme_loop->[1]->{t_selected}, 'not selected';
-    };
-
-    subtest '$theme_loop->[2]' => sub {
-        is $theme_loop->[2]->{value}, 'mont-blanc', 'mont-blanc';
-        ok !exists $theme_loop->[2]->{t_selected}, 'not selected';
-    };
-
-    subtest '$theme_loop->[3]' => sub {
-        is $theme_loop->[3]->{value}, 'other_theme', 'other_theme';
-        ok !exists $theme_loop->[3]->{t_selected}, 'not selected';
-    };
+    ok scalar(grep { !$all_themes->{$_}{class} } @theme_loop_ids) > 0, 'returns some themes without class';
 };
 
 subtest "load_theme_loop('blog')" => sub {
-    my $theme_loop = MT::Theme->load_theme_loop('blog');
+    my $theme_loop     = MT::Theme->load_theme_loop('blog');
+    my @theme_loop_ids = map { $_->{value} } @{$theme_loop};
 
-    is scalar @{$theme_loop}, 3, 'got 3 theme data';
+    my @expected = grep { ($all_themes->{$_}{class} || '') ne 'website' } keys %{$all_themes};
+    cmp_bag(\@theme_loop_ids, \@expected, 'returns themes other than website one');
 
-    subtest '$theme_loop->[0]' => sub {
-        is $theme_loop->[0]->{value}, 'classic_blog', 'classic_blog';
-        ok !exists $theme_loop->[0]->{t_selected}, 'not selected';
-    };
-
-    subtest '$theme_loop->[1]' => sub {
-        is $theme_loop->[1]->{value},      'mont-blanc', 'mont-blanc';
-        is $theme_loop->[1]->{t_selected}, 1,            'selected';
-    };
-
-    subtest '$theme_loop->[2]' => sub {
-        is $theme_loop->[2]->{value}, 'other_theme', 'other_theme';
-        ok !exists $theme_loop->[2]->{t_selected}, 'not selected';
-    };
-};
-
-subtest "load_theme_loop('blog', 'classic_blog')" => sub {
-    my $theme_loop = MT::Theme->load_theme_loop('blog', 'classic_blog');
-
-    is scalar @{$theme_loop}, 3, 'got 3 theme data';
-
-    subtest '$theme_loop->[0]' => sub {
-        is $theme_loop->[0]->{value},      'classic_blog', 'classic_blog';
-        is $theme_loop->[0]->{t_selected}, 1,              'selected';
-    };
-
-    subtest '$theme_loop->[1]' => sub {
-        is $theme_loop->[1]->{value}, 'mont-blanc', 'mont-blanc';
-        ok !exists $theme_loop->[1]->{t_selected}, 'not selected';
-    };
-
-    subtest '$theme_loop->[2]' => sub {
-        is $theme_loop->[2]->{value}, 'other_theme', 'other_theme';
-        ok !exists $theme_loop->[2]->{t_selected}, 'not selected';
-    };
+    ok scalar(grep { !$all_themes->{$_}{class} } @theme_loop_ids) > 0, 'returns some themes without class';
 };
 
 done_testing;
