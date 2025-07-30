@@ -5,6 +5,7 @@ use warnings;
 use FindBin;
 use lib "$FindBin::Bin/../lib"; # t/lib
 use Test::More;
+use Test::Deep;
 use MT::Test::Env;
 our $test_env;
 BEGIN {
@@ -25,6 +26,9 @@ my $app = MT::App::DataAPI->new;
 my $author = MT->model('author')->load(1);
 $author->email('melody@example.com');
 $author->save;
+
+use MT::Theme;
+my $all_themes = MT::Theme->load_all_themes;
 
 # test.
 my $suite = suite();
@@ -57,10 +61,10 @@ sub suite {
             method => 'GET',
             complete => sub {
                 my ($data, $body) = @_;
-                my $got = $app->current_format->{unserialize}->($body);
-                for my $theme_id (qw/classic_website classic_blog mont-blanc other_theme/) {
-                    ok grep { $_->{id} eq $theme_id } @{ $got->{items} };
-                }
+                my $got           = $app->current_format->{unserialize}->($body);
+                my @got_theme_ids = map { $_->{id} } @{ $got->{items} };
+                my @expected      = keys %{$all_themes};
+                cmp_bag(\@got_theme_ids, \@expected);
             },
         },
 
@@ -110,10 +114,10 @@ sub suite {
             method => 'GET',
             complete => sub {
                 my ($data, $body) = @_;
-                my $got = $app->current_format->{unserialize}->($body);
-                for my $theme_id (qw/classic_website classic_blog mont-blanc other_theme/) {
-                    ok grep { $_->{id} eq $theme_id } @{ $got->{items} };
-                }
+                my $got           = $app->current_format->{unserialize}->($body);
+                my @got_theme_ids = map { $_->{id} } @{ $got->{items} };
+                my @expected      = keys %{$all_themes};
+                cmp_bag(\@got_theme_ids, \@expected);
             },
         },
         {    # Blog.
@@ -121,11 +125,10 @@ sub suite {
             method => 'GET',
             complete => sub {
                 my ($data, $body) = @_;
-                my $got = $app->current_format->{unserialize}->($body);
-                for my $theme_id (qw/classic_blog mont-blanc other_theme/) {
-                    ok grep { $_->{id} eq $theme_id } @{ $got->{items} };
-                }
-                ok !(grep { $_->{id} eq 'classic_website' } @{ $got->{items} });
+                my $got           = $app->current_format->{unserialize}->($body);
+                my @got_theme_ids = map  { $_->{id} } @{ $got->{items} };
+                my @expected      = grep { ($all_themes->{$_}{class} || '') ne 'website' } keys %{$all_themes};
+                cmp_bag(\@got_theme_ids, \@expected);
             },
         },
         {    # System. Same as list_themes endpoint.
@@ -133,10 +136,10 @@ sub suite {
             method => 'GET',
             complete => sub {
                 my ($data, $body) = @_;
-                my $got = $app->current_format->{unserialize}->($body);
-                for my $theme_id (qw/classic_website classic_blog mont-blanc other_theme/) {
-                    ok grep { $_->{id} eq $theme_id } @{ $got->{items} };
-                }
+                my $got           = $app->current_format->{unserialize}->($body);
+                my @got_theme_ids = map { $_->{id} } @{ $got->{items} };
+                my @expected      = keys %{$all_themes};
+                cmp_bag(\@got_theme_ids, \@expected);
             },
         },
 
