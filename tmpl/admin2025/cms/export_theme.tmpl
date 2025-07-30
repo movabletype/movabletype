@@ -89,9 +89,9 @@
         <li>
           <div class="form-inline">
             <div class="form-check mb-0">
-              <input type="checkbox" id="<mt:var name="id">-include" class="form-check-input" name="include" value="<mt:var name="id">" onclick="toggleActive('<mt:var name="id">-detail')" <mt:if name="included">checked="checked"</mt:if>> <mt:if name="include_all">disabled</mt:if>>
+              <input type="checkbox" id="<mt:var name="id">-include" class="form-check-input" name="include" value="<mt:var name="id">" onclick="toggleActive('<mt:var name="id">-detail')" <mt:if name="included">checked="checked"</mt:if> <mt:if name="include_all">disabled</mt:if>>
               <label class="form-check-label" for="<mt:var name="id" escape="html">-include"><mt:var name="label"></label>
-            <input type="hidden" id="<mt:var name="id">-include" name="include" value="<mt:var name="id">" <mt:unless name="included">disabled</mt:unless>>
+              <input type="hidden" id="<mt:var name="id">-include" name="include" value="<mt:var name="id">" <mt:unless name="included">disabled</mt:unless>>
             </div>
         <mt:if name="template">
             <span id="<mt:var name="id">-detail" class="theme-option-detail ms-3 <mt:unless name="include"> active</mt:unless>"<mt:if name="include_all">style="pointer-events: none; opacity: 0.5"</mt:if>>
