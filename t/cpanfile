@@ -77,7 +77,7 @@ requires 'XML::LibXML::SAX';
 requires 'CGI::Compile';
 requires 'YAML::PP';
 requires 'YAML::Syck';
-requires 'YAML::XS';
+requires 'YAML::XS', 'v0.903.0';
 
 requires 'WWW::Form::UrlEncoded';
 requires 'WWW::Form::UrlEncoded::XS';

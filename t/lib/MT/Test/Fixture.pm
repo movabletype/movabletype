@@ -22,6 +22,7 @@ sub prepare {
         $spec,
         sub {
             my ($key, $valueref) = @_;
+            return unless defined $$valueref;
             $$valueref =~ s/TEST_ROOT/$ENV{MT_TEST_ROOT}/g;
             $$valueref =~ s/MT_HOME/$ENV{MT_HOME}/g;
         },

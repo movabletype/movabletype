@@ -266,6 +266,7 @@ DESCRIPTION
                 schema      => { type => 'string' },
                 description => 'The field list to retrieve as part of the Entries resource. That list should be separated by comma. If this parameter is not specified, All fields will be returned. ',
             },
+            { '$ref' => '#/components/parameters/entry_filterKeys' },
         ],
         responses => {
             200 => {
@@ -325,6 +326,9 @@ Create a new entry.
 
 Authorization is required.
 DESCRIPTION
+        parameters => [
+            { '$ref' => '#/components/parameters/entry_saveRevision' },
+        ],
         requestBody => {
             content => {
                 'application/x-www-form-urlencoded' => {
@@ -488,6 +492,9 @@ Update an entry.
 Authorization is required.
 
 DESCRIPTION
+        parameters => [
+            { '$ref' => '#/components/parameters/entry_saveRevision' },
+        ],
         requestBody => {
             content => {
                 'application/x-www-form-urlencoded' => {

@@ -11,7 +11,7 @@ use base qw( MT::Util::YAML );
 use MT::Util::Encode;
 
 BEGIN {
-    eval "require YAML::XS";
+    eval "require YAML::XS; YAML::XS->VERSION(v0.903.0)";
     die $@ if $@;
 }
 
