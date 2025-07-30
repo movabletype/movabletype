@@ -3114,7 +3114,7 @@ li.nav-item {
 }
 
 @include media-breakpoint-up(md) {
-  html:has(.mt-contentWrapper .mt-primaryNavigation) {
+  html:has(.mt-primaryNavigation) {
     .debug-panel {
       margin-left: var(--left-bar-width) !important;
     }

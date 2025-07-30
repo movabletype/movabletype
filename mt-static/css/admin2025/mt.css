@@ -14373,10 +14373,10 @@ li.nav-item, .mt-sharedPreviewNav .mt-sharedPreviewNav__rightNav li.mt-sharedPre
 }
 
 @media (min-width: 768px) {
-  html:has(.mt-contentWrapper .mt-primaryNavigation) .debug-panel {
+  html:has(.mt-primaryNavigation) .debug-panel {
     margin-left: var(--left-bar-width) !important;
   }
-  html:has(.mt-contentWrapper .mt-primaryNavigation).mt-has-primary-navigation-collapsed .debug-panel {
+  html:has(.mt-primaryNavigation).mt-has-primary-navigation-collapsed .debug-panel {
     margin-left: calc(var(--minimal-left-bar-width) + var(--bs-card-cap-padding-x)) !important;
   }
 }
