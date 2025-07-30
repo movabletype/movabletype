@@ -504,8 +504,8 @@ sub build_plugin_table {
                     $pd->{plugin_label} = '<span class="badge badge-default-modified-plugin">' . $pd->{plugin_label_value} . '</span>';
                 }
             } else {
-                $pd->{plugin_label_value} = $app->translate('Add');
-                $pd->{plugin_label} = '<span class="badge badge-add-plugin">' . $pd->{plugin_label_value} . '</span>';
+                $pd->{plugin_label_value} = $app->translate('Added');
+                $pd->{plugin_label} = '<span class="badge badge-added-plugin">' . $pd->{plugin_label_value} . '</span>';
             }
         }
     }
