@@ -92,14 +92,14 @@ sub slurp_logfile {
 
 sub last_sent_mail {
     my $self = shift;
-    my $mail = $self->list_messages->[0];
+    my $mail = $self->list_messages->[0] or return;
     my $id   = $mail->{ID};
-    $self->get_raw_message($id)->decoded_content; 
+    $self->get_raw_message($id);
 }
 
 sub last_sent_recipients {
     my $self = shift;
-    my $mail = $self->list_messages->[0];
+    my $mail = $self->list_messages->[0] or return;
     my @recipients;
     for my $type (qw(To Cc Bcc)) {
         push @recipients, map {$_->{Address}} @{ $mail->{$type} || [] };
@@ -112,6 +112,10 @@ sub list_messages {
     my $ui_port = $self->{ui_port};
     my $ua = LWP::UserAgent->new;
     my $res = $ua->get("http://localhost:$ui_port/api/v1/messages");
+    unless ($res->is_success) {
+        diag $res->status_line;
+        return;
+    }
     decode_json($res->decoded_content)->{messages};
 }
 
@@ -119,19 +123,42 @@ sub delete_messages {
     my $self = shift;
     my $ui_port = $self->{ui_port};
     my $ua = LWP::UserAgent->new;
-    $ua->delete("http://localhost:$ui_port/api/v1/messages");
+    my $res = $ua->delete("http://localhost:$ui_port/api/v1/messages");
+    unless ($res->is_success) {
+        diag $res->status_line;
+        return;
+    }
+    1;
 }
 
 sub get_raw_message {
     my ($self, $id) = @_;
     my $ui_port = $self->{ui_port};
     my $ua = LWP::UserAgent->new;
-    $ua->get("http://localhost:$ui_port/api/v1/message/$id/raw");
+    my $res = $ua->get("http://localhost:$ui_port/api/v1/message/$id/raw");
+    unless ($res->is_success) {
+        diag $res->status_line;
+        return;
+    }
+    $res->decoded_content;
 }
 
 sub stop {
     my $self = shift;
     delete $self->{guard};
+}
+
+sub test_connection {
+    my $self = shift;
+    my $ct = 5;
+    while($ct--) {
+        if (Net::EmptyPort::check_port($self->{ui_port})) {
+            my $res = $self->list_messages;
+            return 1 if ref $res;
+        }
+        sleep 1;
+    }
+    return;
 }
 
 1;
