@@ -3114,12 +3114,14 @@ li.nav-item {
 }
 
 @include media-breakpoint-up(md) {
-  .mt-has-primary-navigation-collapsed .mt-primaryNavigation .mt-contentWrapper .debug-panel {
-    margin-left: calc(var(--minimal-left-bar-width) + var(--bs-card-cap-padding-x)) !important;
-  }
+  html:has(.mt-primaryNavigation) {
+    .debug-panel {
+      margin-left: var(--left-bar-width) !important;
+    }
 
-  html .mt-primaryNavigation .mt-contentWrapper .debug-panel {
-    margin-left: var(--left-bar-width) !important;
+    &.mt-has-primary-navigation-collapsed .debug-panel {
+      margin-left: calc(var(--minimal-left-bar-width) + var(--bs-card-cap-padding-x)) !important;
+    }
   }
 }
 
