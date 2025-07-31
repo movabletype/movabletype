@@ -4119,15 +4119,18 @@ sub base {
 
 sub is_allowed_host {
     my ($app, $host) = @_;
-    my $lc_host = lc $host;
+    my $lc_host            = lc $host;
+    my $lc_host_is_ip_addr = $lc_host !~ /[a-z_\-]/ || $lc_host =~ /:.*:/;
+
     for my $trusted ($app->config->TrustedHosts) {
         my $lc_trusted = lc $trusted;
         return 1 if $lc_trusted eq $lc_host;
         return 1 if $lc_trusted eq '*';
+
+        # processing wildcard subdomain
+        next if $lc_host_is_ip_addr;
         if (my ($domain_suffix) = $lc_trusted =~ /\A\*(\..+)\z/) {
-            return 1
-                if $lc_host =~ /[a-z_\-]/                                # $lc_host is not IP address
-                && $lc_host =~ /\A[a-z0-9_\-]+\Q${domain_suffix}\E\z/;
+            return 1 if $lc_host =~ /\A[a-z0-9_\-]+\Q${domain_suffix}\E\z/;
         }
     }
     return;
