@@ -59,7 +59,7 @@ subtest 'wildcard subdomain' => sub {
     ok $app->is_allowed_host('sub_6.example.com');
 };
 
-subtest 'wildcard subdomain (MTC-30564)' => sub {
+subtest 'wildcard subdomain (not use with IP address)' => sub {
     $app->config->TrustedHosts([]);
     die unless $app->config->TrustedHosts == 0;
     $app->config->TrustedHosts('*.111.111.111');
