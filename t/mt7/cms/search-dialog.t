@@ -105,6 +105,9 @@ subtest 'site dialog in "Site Export"' => sub {
 };
 
 subtest 'content_data' => sub {
+    plan skip_all => 'not for nameless admin theme'
+        if defined($ENV{MT_TEST_ADMIN_THEME_ID}) && $ENV{MT_TEST_ADMIN_THEME_ID} eq '0';
+
     my $ct_id  = $objs->{content_type}{ct}{content_type}->id;
     my $ct_id2 = $objs->{content_type}{ct2}{content_type}->id;
     my $cf_id  = $objs->{content_type}{ct}{content_field}{cf_content_type}->id;

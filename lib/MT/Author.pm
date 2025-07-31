@@ -118,11 +118,16 @@ use vars qw(@EXPORT_OK %EXPORT_TAGS);
 
 sub list_props {
     return {
+        id => {
+            base    => '__virtual.id',
+            order   => 100,
+            display => 'optional',
+        },
         name => {
             auto       => 1,
             label      => 'Username',
             display    => 'force',
-            order      => 100,
+            order      => 200,
             sub_fields => [
                 {   class   => 'userpic',
                     label   => 'Userpic',
@@ -139,14 +144,14 @@ sub list_props {
             auto      => 1,
             label     => 'Display Name',
             display   => 'default',
-            order     => 200,
+            order     => 300,
             bulk_html => \&_nickname_bulk_html,
         },
         entry_count => {
             label        => 'Entries',
             filter_label => '__ENTRY_COUNT',
             display      => 'default',
-            order        => 300,
+            order        => 400,
             base         => '__virtual.object_count',
             col_class    => 'num',
             count_class  => 'entry',
@@ -163,7 +168,7 @@ sub list_props {
             label        => 'Content Data',
             filter_label => 'Content Data Count',
             display      => 'default',
-            order        => 250,
+            order        => 350,
             base         => '__virtual.object_count',
             col_class    => 'num',
             count_class  => 'content_data',
@@ -295,7 +300,6 @@ sub list_props {
                 },
             ],
         },
-        id      => { view => [] },
         content => {
             base    => '__virtual.content',
             fields  => [qw( name nickname email url )],
@@ -336,6 +340,11 @@ sub system_filters {
 
 sub member_list_props {
     return {
+        id => {
+            base    => '__virtual.id',
+            order   => 100,
+            display => 'optional',
+        },
         name => {
             auto       => 1,
             label      => 'Username',
@@ -351,19 +360,19 @@ sub member_list_props {
                     display => 'optional',
                 },
             ],
-            order => 100,
+            order => 200,
         },
         nickname => {
             label     => 'Display Name',
             auto      => 1,
             bulk_html => \&_nickname_bulk_html,
-            order     => 200,
+            order     => 300,
             display   => 'default',
         },
         role => {
             base      => '__virtual.single_select',
             label     => 'Roles',
-            order     => 300,
+            order     => 400,
             display   => 'default',
             view_sort => [],
             html      => sub {
@@ -421,13 +430,13 @@ sub member_list_props {
                 return { blog_id => $opts->{blog_ids} };
             },
             count_args => { unique => 1, },
-            order      => 400,
+            order      => 500,
         },
         content_count => {
             label        => 'Content Data',
             filter_label => 'Content Data Count',
             display      => 'default',
-            order        => 350,
+            order        => 450,
             base         => '__virtual.object_count',
             col_class    => 'num',
             count_class  => 'content_data',

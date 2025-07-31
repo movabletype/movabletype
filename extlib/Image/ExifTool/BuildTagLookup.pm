@@ -35,7 +35,7 @@ use Image::ExifTool::Sony;
 use Image::ExifTool::Validate;
 use Image::ExifTool::MacOS;
 
-$VERSION = '3.54';
+$VERSION = '3.62';
 @ISA = qw(Exporter);
 
 sub NumbersFirst($$);
@@ -74,15 +74,21 @@ my %tweakOrder = (
     DJI     => 'Casio',
     FLIR    => 'DJI',
     FujiFilm => 'FLIR',
+    GoPro   => 'GE',
     Kodak   => 'JVC',
     Leaf    => 'Kodak',
-    Minolta => 'Leaf',
+    Lytro   => 'Leaf',
+    Minolta => 'Lytro',
     Motorola => 'Minolta',
     Nikon   => 'Motorola',
-    NikonCustom => 'Nikon',
-    NikonCapture => 'NikonCustom',
-    Nintendo => 'NikonCapture',
+    NikonCapture => 'Nikon',
+    NikonCustom => 'NikonCapture',
+    NikonSettings => 'NikonCustom',
+    Nintendo => 'NikonSettings',
+    Panasonic => 'Olympus',
     Pentax  => 'Panasonic',
+    Ricoh   => 'Reconyx',
+    Samsung => 'Ricoh',
     SonyIDC => 'Sony',
     Unknown => 'SonyIDC',
     DNG     => 'Unknown',
@@ -91,20 +97,18 @@ my %tweakOrder = (
     ID3     => 'PostScript',
     MinoltaRaw => 'KyoceraRaw',
     KyoceraRaw => 'CanonRaw',
+    MinoltaRaw => 'KyoceraRaw',
+    PanasonicRaw => 'MinoltaRaw',
     SigmaRaw => 'PanasonicRaw',
-    Lytro   => 'SigmaRaw',
     PhotoMechanic => 'FotoStation',
     Microsoft     => 'PhotoMechanic',
-   'Microsoft::MP'=> 'Microsoft::MP1',
     GIMP    => 'Microsoft',
-   'Nikon::CameraSettingsD300' => 'Nikon::ShotInfoD300b',
-   'Pentax::LensData' => 'Pentax::LensInfo2',
-   'Sony::SRF2' => 'Sony::SRF',
     DarwinCore => 'AFCP',
-   'MWG::Regions' => 'MWG::Composite',
-   'MWG::Keywords' => 'MWG::Regions',
-   'MWG::Collections' => 'MWG::Keywords',
-   'GoPro::fdsc' => 'GoPro::KBAT',
+    MWG     => 'Shortcuts',
+    'FujiFilm::RAF' => 'FujiFilm::RAFHeader',
+    'FujiFilm::RAFData' => 'FujiFilm::RAF',
+    'QuickTime::AudioKeys' => 'QuickTime::Keys',
+    'QuickTime::VideoKeys' => 'QuickTime::AudioKeys',
 );
 
 # list of all recognized Format strings
@@ -430,11 +434,11 @@ parameters, as well as proprietary information written by many camera
 models.  Tags with a question mark after their name are not extracted unless
 the L<Unknown|../ExifTool.html#Unknown> option is set.
 
-When writing, ExifTool creates both QuickTime and XMP tags by default, but
-the group may be specified to write one or the other separately.  If no
-location is specified, newly created QuickTime tags are added in the
-L<ItemList|Image::ExifTool::TagNames/QuickTime ItemList Tags> location if
-possible, otherwise in
+When writing video files, ExifTool creates both QuickTime and XMP tags by
+default, but the group may be specified to write one or the other
+separately.  If no location is specified, newly created QuickTime tags are
+added in the L<ItemList|Image::ExifTool::TagNames/QuickTime ItemList Tags>
+location if possible, otherwise in
 L<UserData|Image::ExifTool::TagNames/QuickTime UserData Tags>, and
 finally in L<Keys|Image::ExifTool::TagNames/QuickTime Keys Tags>,
 but this order may be changed by setting the PREFERRED level of the
@@ -442,15 +446,16 @@ appropriate table in the config file (see
 L<example.config|../config.html#PREF> in the full distribution for an
 example).  Note that some tags with the same name but different ID's may
 exist in the same location, but the family 7 group names may be used to
-differentiate these.  ExifTool currently writes only top-level metadata in
-QuickTime-based files; it extracts other track-specific and timed metadata,
-but can not yet edit tags in these locations (with the exception of
-track-level date/time tags).
+differentiate these.
 
-Beware that the Keys tags are actually stored inside the ItemList in the
-file, so deleting the ItemList group as a block (ie. C<-ItemList:all=>) also
-deletes Keys tags.  Instead, to preserve Keys tags the ItemList tags may be
-deleted individually with C<-QuickTime:ItemList:all=>.
+ExifTool currently writes
+L<ItemList|Image::ExifTool::TagNames/QuickTime ItemList Tags> and
+L<UserData|Image::ExifTool::TagNames/QuickTime UserData Tags> only as
+top-level metadata, but select Keys tags are may be written to the audio or
+video track.  See the
+L<AudioKeys|Image::ExifTool::TagNames/QuickTime AudioKeys Tags> and
+L<VideoKeys|Image::ExifTool::TagNames/QuickTime VideoKeys Tags> tags for
+more information.
 
 Alternate language tags may be accessed for
 L<ItemList|Image::ExifTool::TagNames/QuickTime ItemList Tags> and
@@ -462,8 +467,8 @@ L<UserData|Image::ExifTool::TagNames/QuickTime UserData Tags> tags support a
 language code, but without a country code.  If no language code is specified
 when writing, the default language is written and alternate languages for
 the tag are deleted.  Use the "und" language code to write the default
-language without deleting alternate languages.  Note that "eng" is treated
-as a default language when reading, but not when writing.
+language without deleting alternate languages.  Note that when reading,
+"eng" is also treated as the default language if there is no country code.
 
 According to the specification, integer-format QuickTime date/time tags
 should be stored as UTC.  Unfortunately, digital cameras often store local
@@ -485,7 +490,7 @@ the original size by padding with nulls if necessary.
 
 See
 L<https://developer.apple.com/library/archive/documentation/QuickTime/QTFF/>
-for the official specification.
+for the official QuickTime specification.
 },
     Photoshop => q{
 Photoshop tags are found in PSD and PSB files, as well as inside embedded
@@ -607,7 +612,8 @@ running ExifTool the old information may be removed permanently using the
     DNG => q{
 The main DNG tags are found in the EXIF table.  The tables below define only
 information found within structures of these main DNG tag values.  See
-L<http://www.adobe.com/products/dng/> for the official DNG specification.
+L<https://helpx.adobe.com/camera-raw/digital-negative.html> for the official
+DNG specification.
 },
     MPEG => q{
 The MPEG format doesn't specify any file-level meta information.  In lieu of
@@ -672,6 +678,18 @@ Tags in these tables are referred to as "pseudo" tags because their
 information is not stored in the file itself.  As such, B<Writable> tags in
 these tables may be changed without having to rewrite the file.
 },
+    GM => q{
+These tags are extracted from GM/Cosworth PDR (Performance Data Recorder)
+information found in videos from General Motors cars such as Corvette and
+Camero.
+
+Use the API L<PrintCSV|../ExifTool.html#PrintCSV> option to output all timed
+PDR data in CSV format at greatly increased speed and with much lower memory
+usage.  This option prints the numerical values for each channel in CSV
+format, suitable for import into RaceRender.  In this output, the gear
+numbers for Neutral and Reverse are changed to -1 and -100 respectively for
+compatibility with RaceRender.
+},
     PodTrailer => q{
 ~head1 NOTES
 
@@ -680,7 +698,7 @@ L<Image::ExifTool::BuildTagLookup|Image::ExifTool::BuildTagLookup>.
 
 ~head1 AUTHOR
 
-Copyright 2003-2024, Phil Harvey (philharvey66 at gmail.com)
+Copyright 2003-2025, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
@@ -708,7 +726,7 @@ my %shortcutNotes = (
         color space when deleting all other metadata
     },
     CommonIFD0 => q{
-        common metadata tags found in IFD0 of TIFF-format images.  Used to simpify
+        common metadata tags found in IFD0 of TIFF-format images.  Used to simplify
         deletion of all metadata from these images.  See
         L<FAQ number 7|../faq.html#Q7> for details
     },
@@ -852,16 +870,22 @@ sub new
         my ($tagID, $binaryTable, $noID, $hexID, $isIPTC, $isXMP);
         $isIPTC = 1 if $writeProc and $writeProc eq \&Image::ExifTool::IPTC::WriteIPTC;
         # generate flattened tag names for structure fields if this is an XMP table
-        if ($$table{GROUPS} and $$table{GROUPS}{0} eq 'XMP') {
+        if ($$table{GROUPS} and $$table{GROUPS}{0} eq 'XMP' or $$vars{ADD_FLATTENED}) {
             Image::ExifTool::XMP::AddFlattenedTags($table);
             $isXMP = 1;
         }
         $noID = 1 if $isXMP or $short =~ /^(Shortcuts|ASF.*)$/ or $$vars{NO_ID};
         $hexID = $$vars{HEX_ID};
+        if ($$table{WRITE_PROC} and $$table{WRITE_PROC} eq \&Image::ExifTool::WriteBinaryData
+            and not $$table{CHECK_PROC})
+        {
+            warn("Binary table $tableName doesn't have a CHECK_PROC\n");
+        }
         my $processBinaryData = ($$table{PROCESS_PROC} and (
             $$table{PROCESS_PROC} eq \&Image::ExifTool::ProcessBinaryData or
             $$table{PROCESS_PROC} eq \&Image::ExifTool::Nikon::ProcessNikonEncrypted or
-            $$table{PROCESS_PROC} eq \&Image::ExifTool::Sony::ProcessEnciphered));
+            $$table{PROCESS_PROC} eq \&Image::ExifTool::Sony::ProcessEnciphered) or
+            $$table{VARS} and $$table{VARS}{IS_BINARY});
         if ($$vars{ID_LABEL} or $processBinaryData) {
             my $s = $$table{FORMAT} ? Image::ExifTool::FormatSize($$table{FORMAT}) || 1 : 1;
             $binaryTable = 1;
@@ -900,6 +924,9 @@ TagID:  foreach $tagID (@keys) {
                 @infoArray = GetTagInfoList($table,$tagID);
             }
             foreach $tagInfo (@infoArray) {
+                if ($binaryTable and $$tagInfo{Writable} and $$tagInfo{Writable} ne '1') {
+                    warn("$tableName $$tagInfo{Name} Writable should be 1, not $$tagInfo{Writable}\n");
+                }
                 my $name = $$tagInfo{Name};
                 if ($$tagInfo{WritePseudo}) {
                     push @writePseudo, $name;
@@ -968,7 +995,7 @@ TagID:  foreach $tagID (@keys) {
                     if ($format and $format =~ /\$val\{/ and
                         ($$tagInfo{Writable} or not defined $$tagInfo{Writable}))
                     {
-                        warn "Warning: \$var{} used in Format of writable tag - $short $name\n"
+                        warn "Warning: \$val{} used in Format of writable tag - $short $name\n"
                     }
                 }
                 if ($$tagInfo{Hidden}) {
@@ -992,6 +1019,9 @@ TagID:  foreach $tagID (@keys) {
                 if ($writable and not ($$table{WRITE_PROC} or $tableName =~ /Shortcuts/ or $writable eq '2')) {
                     undef $writable;
                 }
+                #if ($writable and $$tagInfo{Unknown} and $$table{GROUPS}{0} ne 'MakerNotes') {
+                #    warn "Warning: Writable Unknown tag - $short $name\n",
+                #}
                 # validate some characteristics of obvious date/time tags
                 my @g = $et->GetGroup($tagInfo);
                 if ($$tagInfo{List} and $g[2] eq 'Time' and $writable and not $$tagInfo{Protected} and
@@ -1237,7 +1267,7 @@ TagID:  foreach $tagID (@keys) {
                                     }
                                 } elsif ($$tagInfo{PrintString} or not /^[+-]?(?=\d|\.\d)\d*(\.\d*)?$/) {
                                     # translate unprintable values
-                                    if ($index =~ s/([\x00-\x1f\x80-\xff])/sprintf("\\x%.2x",ord $1)/eg) {
+                                    if ($index =~ s/([\x00-\x1f\x7f-\xff])/sprintf("\\x%.2x",ord $1)/eg) {
                                         $index = qq{"$index"};
                                     } else {
                                         $index = qq{'${index}'};
@@ -1320,7 +1350,7 @@ TagID:  foreach $tagID (@keys) {
                         $writable = 'yes' if $tw and $writable eq '1' or $writable eq '2';
                         $writable = '-' . ($tw ? $writable : '');
                         $writable .= '!' if $tw and ($$tagInfo{Protected} || 0) & 0x01;
-                        $writable .= '+' if $$tagInfo{List};
+                        $writable .= '+' if $$tagInfo{List} or $$tagInfo{IsList};
                         if (defined $$tagInfo{Permanent}) {
                             $writable .= '^' unless $$tagInfo{Permanent};
                         } elsif (defined $$table{PERMANENT}) {
@@ -1378,7 +1408,7 @@ TagID:  foreach $tagID (@keys) {
                     }
                     $writable = "=struct" if $struct;
                     $writable .= '_' if defined $$tagInfo{Flat};
-                    $writable .= '+' if $$tagInfo{List};
+                    $writable .= '+' if $$tagInfo{List} or $$tagInfo{IsList};
                     $writable .= ':' if $$tagInfo{Mandatory};
                     if (defined $$tagInfo{Permanent}) {
                         $writable .= '^' unless $$tagInfo{Permanent};
@@ -1526,7 +1556,8 @@ TagID:  foreach $tagID (@keys) {
         my $fullName = ($strName =~ / / ? '' : 'XMP ') . "$strName Struct";
         my $info = $tagNameInfo{$fullName} = [ ];
         my $tag;
-        foreach $tag (sort keys %$struct) {
+        my $order = $$struct{SORT_ORDER} || [ sort keys %$struct ];
+        foreach $tag (@$order) {
             my $tagInfo = $$struct{$tag};
             next unless ref $tagInfo eq 'HASH' and $tag ne 'NAMESPACE' and $tag ne 'GROUPS';
             warn "WARNING: $strName Struct containes $tag\n" if $Image::ExifTool::specialTags{$tag};
@@ -1539,16 +1570,18 @@ TagID:  foreach $tagID (@keys) {
                     push @vals, $writable;
                     $structs{$writable} = 1;
                     $writable = "=$writable";
+                } elsif (defined $$tagInfo{Writable}) {
+                    $writable = 'no';
                 } else {
                     $writable = 'string';
                 }
             }
-            $writable .= '+' if $$tagInfo{List};
+            $writable .= '+' if $$tagInfo{List} or $$tagInfo{IsList};
             push @vals, "($$tagInfo{Notes})" if $$tagInfo{Notes};
             # handle PrintConv lookups in Structure elements
             my $printConv = $$tagInfo{PrintConv};
             if (ref $printConv eq 'HASH') {
-                foreach (sort keys %$printConv) {
+                foreach (sort { NumbersFirst($a,$b) } keys %$printConv) {
                     next if /^(OTHER|BITMASK)$/;
                     push @vals, "$_ = $$printConv{$_}";
                 }
@@ -1760,9 +1793,10 @@ sub NumbersFirst($$)
         $rtnVal = $numbersFirst;
     } else {
         my ($a2, $b2) = ($a, $b);
-        # expand numbers to 3 digits (with restrictions to avoid messing up ascii-hex tags)
-        $a2 =~ s/(\d+)/sprintf("%.3d",$1)/eg if $a2 =~ /^(APP|DMC-\w+ )?[.0-9 ]*$/ and length($a2)<16;
-        $b2 =~ s/(\d+)/sprintf("%.3d",$1)/eg if $b2 =~ /^(APP|DMC-\w+ )?[.0-9 ]*$/ and length($b2)<16;
+        # expand numbers to 3 digits (with restrictions to avoid messing up
+        # ascii-hex tags -- Nikon LensID's are 23 characters long)
+        $a2 =~ s/(\d+)/sprintf("%.3d",$1)/eg if $a2 =~ /^(APP|DMC-\w+ |dvtm_.*|(IDB|SHB)-)?[.0-9 ]*$/ and length($a2)<23;
+        $b2 =~ s/(\d+)/sprintf("%.3d",$1)/eg if $b2 =~ /^(APP|DMC-\w+ |dvtm_.*|(IDB|SHB)-)?[.0-9 ]*$/ and length($b2)<23;
         $caseInsensitive and $rtnVal = (lc($a2) cmp lc($b2));
         $rtnVal or $rtnVal = ($a2 cmp $b2);
     }
@@ -1822,24 +1856,7 @@ sub TweakOrder($$)
     local $_;
     my ($sortedTables, $tweakOrder) = @_;
     my @tweak = sort keys %$tweakOrder;
-    my (%addedMain, @sorted);
-    # flag files which have a "Main" table
-    foreach (@$sortedTables) {
-        $addedMain{$1} = 0 if /^Image::ExifTool::(\w+)::(\w+)/ and $2 eq 'Main';
-    }
-    # make sure that the main table always comes first in each file
-    foreach (@$sortedTables) {
-        if (/^Image::ExifTool::(\w+)::(\w+)/) {
-            if ($addedMain{$1}) {
-                next if $2 eq 'Main';   # don't add again
-            } elsif (defined $addedMain{$1}) {
-                push @sorted, "Image::ExifTool::${1}::Main" if $2 ne 'Main';
-                $addedMain{$1} = 1;
-            }
-        }
-        push @sorted, $_;
-    }
-    @$sortedTables = @sorted;
+    my (@sorted, %hasMain, %module, $entry);
     # apply manual tweaks
     while (@tweak) {
         my $table = shift @tweak;
@@ -1857,6 +1874,31 @@ sub TweakOrder($$)
             unshift @after, pop @notMoving;
         }
         @$sortedTables = (@notMoving, @moving, @after);
+    }
+    # flag modules which have a "Main" table, and organize tables by module name
+    foreach (@$sortedTables) {
+        if (not /^Image::ExifTool::(\w+)::(\w+)/) {
+            push @sorted, $_;
+        } else {
+            $hasMain{$1} = 1 if $2 eq 'Main';
+            push @sorted, $module{$1} = [ ] unless $module{$1};
+            push @{$module{$1}}, $_;
+        }
+    }
+    # force MWG::Composite table first
+    my @mwg = ( 'Image::ExifTool::MWG::Composite' );
+    /Composite/ or push @mwg, $_ foreach @{$module{MWG}};
+    @{$module{MWG}} = @mwg;
+    # make sure that the main table always comes first in each file
+    # and that all other tables from this group follow
+    @$sortedTables = ( );
+    foreach $entry (@sorted) {
+        ref $entry or push(@$sortedTables, $entry), next;
+        $$entry[0] =~ /^Image::ExifTool::(\w+)::(\w+)/ or die 'Internal error';
+        my $main = "Image::ExifTool::$1::Main";
+        # main table must come first (even if it doesn't exist)
+        push @$sortedTables, $main if $hasMain{$1};
+        $_ eq $main or push(@$sortedTables, $_) foreach @$entry;
     }
 }
 
@@ -2780,7 +2822,7 @@ Returned list of writable pseudo tags.
 
 =head1 AUTHOR
 
-Copyright 2003-2024, Phil Harvey (philharvey66 at gmail.com)
+Copyright 2003-2025, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

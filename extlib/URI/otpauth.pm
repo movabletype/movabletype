@@ -8,7 +8,7 @@ use URI::Escape();
 
 use parent qw( URI URI::_query );
 
-our $VERSION = '5.29';
+our $VERSION = '5.32';
 
 sub new {
     my ($class, @parameters) = @_;
@@ -127,6 +127,8 @@ sub type {
     my ($self, @parameters) = @_;
     return $self->_field('type', @parameters);
 }
+
+sub authority { return shift->type(@_); }
 
 sub label {
     my ($self, @parameters) = @_;

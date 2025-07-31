@@ -186,7 +186,7 @@ sub write_config {
         DebugMode              => $ENV{MT_TEST_DEBUG_MODE} || 0,
         BuilderModule          => $ENV{MT_TEST_BUILDER} || 'MT::Builder',
         DisableObjectCache     => $ENV{MT_TEST_DISABLE_OBJECT_CACHE} || 0,
-        $ENV{MT_TEST_ADMIN_THEME_ID} ? (AdminThemeId => $ENV{MT_TEST_ADMIN_THEME_ID}) : (),
+        exists $ENV{MT_TEST_ADMIN_THEME_ID} ? (AdminThemeId => $ENV{MT_TEST_ADMIN_THEME_ID}) : (),
     );
 
     if ($extra) {
@@ -1330,9 +1330,9 @@ sub save_fixture {
 sub _tweak_schema {
     my $schema = shift;
     $schema =~ s/^\-\- Created on .+$//m;
+    $schema =~ s/utf8mb3/utf8/g;
     $schema =~ s/NULL DEFAULT NULL/NULL/g;    ## mariadb 10.2.1+
     $schema =~ s/\s+COLLATE utf8_\w+_ci//g;   ## for now; better to specify collation explicitly
-    $schema =~ s/utf8mb3/utf8/g;
     $schema;
 }
 

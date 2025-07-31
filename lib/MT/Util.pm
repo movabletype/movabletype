@@ -12,9 +12,8 @@ use utf8;
 use base 'Exporter';
 use MT::I18N qw( const );
 use Time::Local;
-use List::Util qw( sum );
 
-use MT::Util::Deprecated qw( perl_sha1_digest_hex cc_url cc_rdf cc_name cc_image ); ## no critic
+use MT::Util::Deprecated qw( perl_sha1_digest_hex cc_url cc_rdf cc_name cc_image is_valid_ip ); ## no critic
 use MT::Util::Encode;
 
 our @EXPORT_OK
@@ -33,7 +32,7 @@ our @EXPORT_OK
     sax_parser expat_parser libxml_parser trim ltrim rtrim trim_path asset_cleanup caturl multi_iter
     weaken log_time make_string_csv browser_language sanitize_embed
     extract_url_path break_up_text dir_separator deep_do deep_copy
-    realpath canonicalize_path clear_site_stats_widget_cache check_fast_cgi is_valid_ip
+    realpath canonicalize_path clear_site_stats_widget_cache check_fast_cgi
     encode_json build_upload_destination is_mod_perl1 asset_from_url
     date_for_listing is_within_a_directory );
 
@@ -452,7 +451,7 @@ my %TsFormatCache;
 sub format_ts {
     my ( $format, $ts, $blog, $lang, $is_mail ) = @_;
     return '' unless defined $ts and $ts ne '' and !ref $ts;
-    unless ($lang) {
+    unless ($lang && $Languages{$lang}) {
         $lang
             = $blog && $blog->date_language
             ? $blog->date_language
@@ -2519,35 +2518,6 @@ sub clear_site_stats_widget_cache {
 
         return $is_fast_cgi;
     }
-}
-
-sub is_valid_ip {
-    my ($str) = @_;
-
-    my ( $ip, $cidr ) = split /\//, $str;
-    my @ips = split /\./, $ip;
-
-    # xxx.xxx.xxx.xxx
-    if (@ips) {
-        my $num = @ips;
-        return 0 if $num < 4;
-    }
-
-    # 0-255
-    foreach my $num (@ips) {
-        return 0 unless $num =~ /^\d+$/;
-        return 0 if ( $num < 0 || $num > 255 );
-    }
-
-    # 0.0.0.0 255.255.255.255
-    return 0 if ( sum(@ips) == 0 || sum(@ips) == 1020 );
-
-    # CIDR
-    if ( defined $cidr ) {
-        return 0 if ( $cidr < 1 || $cidr > 32 );
-    }
-
-    return $str;
 }
 
 sub build_upload_destination {

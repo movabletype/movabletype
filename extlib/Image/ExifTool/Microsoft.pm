@@ -245,7 +245,7 @@ my %sRegions = (
     Copyright                   => { Groups => { 2 => 'Author' } },
     Count                       => { },
     CurrentBitrate              => { },
-    Description                 => { },
+    Description                 => { Writable => 'Unicode', Avoid => 1 },
     DisplayArtist               => { },
     DLNAServerUDN               => { },
     DLNASourceURI               => { },
@@ -907,7 +907,7 @@ sub WriteXtraValue($$$)
                 $type = 72;
             }
         } else {
-            $et->WarnOnce("Error converting value for Microsoft:$$tagInfo{Name}");
+            $et->Warn("Error converting value for Microsoft:$$tagInfo{Name}");
         }
         SetByteOrder('MM');
         if (defined $type) {
@@ -1100,7 +1100,7 @@ Xtra tags in videos.
 
 =head1 AUTHOR
 
-Copyright 2003-2024, Phil Harvey (philharvey66 at gmail.com)
+Copyright 2003-2025, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

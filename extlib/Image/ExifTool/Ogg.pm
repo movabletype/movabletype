@@ -17,7 +17,7 @@ use strict;
 use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 
-$VERSION = '1.03';
+$VERSION = '1.04';
 
 my $MAX_PACKETS = 2;    # maximum packets to scan from each stream at start of file
 
@@ -145,6 +145,7 @@ sub ProcessOGG($$)
         # calculate total data length
         my $dataLen = Get8u(\$buff, 27);
         if ($nseg) {
+            last unless $raf;
             $raf->Read($buff, $nseg-1) == $nseg-1 or last;
             my @segs = unpack('C*', $buff);
             # could check that all these (but the last) are 255...
@@ -160,7 +161,7 @@ sub ProcessOGG($$)
             }
         }
         # read page data
-        $raf->Read($buff, $dataLen) == $dataLen or last;
+        last unless $raf and $raf->Read($buff, $dataLen) == $dataLen;
         if ($verbose > 1) {
             printf $out "Page %d, stream 0x%x, flag 0x%x (%d bytes)\n",
                    $pageNum, $stream, $flag, $dataLen;
@@ -214,7 +215,7 @@ information from Ogg bitstream container files.
 
 =head1 AUTHOR
 
-Copyright 2003-2024, Phil Harvey (philharvey66 at gmail.com)
+Copyright 2003-2025, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
