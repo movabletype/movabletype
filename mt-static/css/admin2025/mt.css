@@ -12873,10 +12873,13 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-mainContentWrapper {
   top: 0;
   left: 0;
   margin-top: 68px;
+  box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.25);
+  border: none !important;
 }
 .mt-mobilePrimaryMenu__dropdownMenuButton svg {
   margin: 0;
   fill: #0176BF;
+  margin-left: 8px;
 }
 .mt-mobilePrimaryMenu__dropdownMenuButton .close {
   display: none;
