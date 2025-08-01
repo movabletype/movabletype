@@ -27,8 +27,15 @@ use MT::Test;
 use MT;
 use MT::Theme;
 
+my %available_classes = (
+    ''      => 1,
+    both    => 1,
+    website => 1,
+    blog    => 1,
+);
 my $all_themes           = MT::Theme->load_all_themes;
 my %all_available_themes = map { $_ => $all_themes->{$_} }
+    grep { $available_classes{ $all_themes->{$_}{class} // '' } }
     grep { !$all_themes->{$_}{deprecated} }
     keys %{$all_themes};
 
