@@ -128,7 +128,10 @@ my $website = MT::Website->load({ name => 'my website' });
 my $blog    = MT::Blog->load({ name => 'my blog' });
 my $admin   = MT->model('author')->load(1);
 
-my $all_themes = MT::Theme->load_all_themes;
+my $all_themes           = MT::Theme->load_all_themes;
+my %all_available_themes = map { $_ => $all_themes->{$_} }
+    grep { !$all_themes->{$_}{deprecated} }
+    keys %{$all_themes};
 
 subtest 'Check applying a blog theme' => sub {
     my $app = MT::Test::App->new('MT::App::CMS');
@@ -158,11 +161,11 @@ subtest 'Check All Themes screen' => sub {
         });
         $app->has_no_permission_error;
 
-        my $expected_theme_count = scalar keys %{$all_themes};
+        my $expected_theme_count = scalar keys %all_available_themes;
         my @titles               = $app->content =~ /theme-title/g;
         is scalar @titles, $expected_theme_count, "${expected_theme_count} themes";
 
-        for my $theme (values %{$all_themes}) {
+        for my $theme (values %all_available_themes) {
             my $theme_label = $theme->name || $theme->label->();
             $app->content_like(qr/\Q${theme_label}\E/, $theme_label);
         }
@@ -177,11 +180,11 @@ subtest 'Check All Themes screen' => sub {
         });
         $app->has_no_permission_error;
 
-        my $expected_theme_count = scalar keys %{$all_themes};
+        my $expected_theme_count = scalar keys %all_available_themes;
         my @titles               = $app->content =~ /theme-title/g;
         is scalar @titles, $expected_theme_count, "${expected_theme_count} themes";
 
-        for my $theme (values %{$all_themes}) {
+        for my $theme (values %all_available_themes) {
             my $theme_label = $theme->name || $theme->label->();
             $app->content_like(qr/\Q${theme_label}\E/, $theme_label);
         }
@@ -197,7 +200,7 @@ subtest 'Check All Themes screen' => sub {
         $app->has_no_permission_error;
 
         my (@expected_themes, @unexpected_themes);
-        for my $theme (values %{$all_themes}) {
+        for my $theme (values %all_available_themes) {
             if (($theme->{class} || '') eq 'website') {
                 push @unexpected_themes, $theme;
             } else {
