@@ -1,3 +1,10 @@
+<mt:SetVarBlock name="js_include">
+    <script>
+      var user = <$mt:UserSessionState$>;
+      var is_preview = true;
+    </script>
+</mt:SetVarBlock>
+
 <mt:IncludeBlock module="<__trans phrase="Layout">">
   <div class="content">
     <nav aria-label="<__trans phrase="Breadcrumb">">
