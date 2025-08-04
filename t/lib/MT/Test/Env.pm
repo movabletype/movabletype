@@ -151,6 +151,9 @@ sub write_config {
 
     require MT;
 
+    my $tmpdir = File::Spec->catdir($ENV{MT_TEST_ROOT}, File::Spec->tmpdir);
+    mkpath($tmpdir) unless -d $tmpdir;
+
     # common directives
     my %config = (
         PluginPath => [qw(
@@ -163,7 +166,7 @@ sub write_config {
             MT_HOME/t/themes/
             MT_HOME/themes/
         )],
-        TempDir                => File::Spec->tmpdir,
+        TempDir                => $tmpdir,
         DefaultLanguage        => $default_language,
         StaticWebPath          => '/mt-static/',
         StaticFilePath         => 'TEST_ROOT/mt-static',
