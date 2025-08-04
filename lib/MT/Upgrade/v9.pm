@@ -23,6 +23,13 @@ sub upgrade_functions {
             priority      => 5,
             code          => \&_v9_list_field_indexes,
         },
+        v9_disable_content_field_permission => {
+            version_limit => 9.0000,
+            priority      => 5,
+            code          => sub {
+                MT->config->DisableContentFieldPermission(0, 1);
+            },
+        },
         v9_link_default_target => {
             version_limit => 9.0001,
             priority      => 5,
