@@ -163,7 +163,7 @@ sub write_config {
             MT_HOME/t/themes/
             MT_HOME/themes/
         )],
-        TempDir                => File::Spec->tmpdir,
+        TempDir                => mkpath(File::Spec->catdir($ENV{MT_TEST_ROOT}, File::Spec->tmpdir)),
         DefaultLanguage        => $default_language,
         StaticWebPath          => '/mt-static/',
         StaticFilePath         => 'TEST_ROOT/mt-static',
