@@ -151,7 +151,8 @@ sub write_config {
 
     require MT;
 
-    my $tmpdir = mkpath(File::Spec->catdir($ENV{MT_TEST_ROOT}, File::Spec->tmpdir));
+    my $tmpdir = File::Spec->catdir($ENV{MT_TEST_ROOT}, File::Spec->tmpdir);
+    mkpath($tmpdir) unless -d $tmpdir;
 
     # common directives
     my %config = (
