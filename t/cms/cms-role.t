@@ -9,7 +9,8 @@ our $test_env;
 
 BEGIN {
     $test_env = MT::Test::Env->new(
-        DefaultLanguage => 'en_US',    ## for now
+        DefaultLanguage               => 'en_US',    ## for now
+        DisableContentFieldPermission => 0,
     );
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
