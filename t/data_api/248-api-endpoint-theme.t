@@ -13,6 +13,13 @@ BEGIN {
         DefaultLanguage => 'en_US',  ## for now
     );
     $ENV{MT_CONFIG} = $test_env->config_file;
+
+    $test_env->save_file('themes/invalid_class_theme/theme.yaml', <<'YAML');
+id: invalid_class_theme
+name: Invalid Class Theme
+label: Invalid Class theme
+class: invalid
+YAML
 }
 
 use MT::Test::DataAPI;
@@ -421,6 +428,30 @@ sub suite {
                 +{  error => {
                         code    => 400,
                         message => 'Cannot apply website theme to blog.',
+                    },
+                };
+            },
+        },
+        {    # Apply a theme with invalid class to parent site.
+            path => '/v2/sites/2/themes/invalid_class_theme/apply',
+            method => 'POST',
+            code => 400,
+            result => sub {
+                +{  error => {
+                        code    => 400,
+                        message => 'Cannot apply a theme with invalid class.',
+                    },
+                };
+            },
+        },
+        {    # Apply a theme with invalid class to child site.
+            path => '/v2/sites/1/themes/invalid_class_theme/apply',
+            method => 'POST',
+            code => 400,
+            result => sub {
+                +{  error => {
+                        code    => 400,
+                        message => 'Cannot apply a theme with invalid class.',
                     },
                 };
             },

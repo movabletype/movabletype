@@ -336,7 +336,17 @@ sub apply {
     my $theme    = MT::Theme->load($theme_id)
         or return $app->error( $app->translate('Theme not found'), 404 );
 
-    if ( $site->is_blog && ( $theme->{class} || '' ) eq 'website' ) {
+    $theme->{class} = '' unless defined $theme->{class};
+
+    if (   $theme->{class} ne ''
+        && $theme->{class} ne 'website'
+        && $theme->{class} ne 'blog'
+        && $theme->{class} ne 'both')
+    {
+        return $app->error($app->translate('Cannot apply a theme with invalid class.'), 400);
+    }
+
+    if ( $site->is_blog && $theme->{class} eq 'website' ) {
         return $app->error(
             $app->translate('Cannot apply website theme to blog.'), 400 );
     }
