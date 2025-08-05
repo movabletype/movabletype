@@ -114,7 +114,7 @@ sub save_filter {
     }
 
     # Cannot aplly website theme to blog.
-    if ( $obj->is_blog && $theme->{class} eq 'website' ) {
+    if ( $obj->is_blog && ($theme->{class} || '') eq 'website' ) {
         return $app->errtrans( 'Cannot apply website theme to blog: [_1]',
             $obj->theme_id );
     }
