@@ -259,6 +259,18 @@ sub suite {
                 is( $site->theme_id, 'mont-blanc', 'Changed into mont-blanc.' );
             },
         },
+        {    # Website. (a theme without class)
+            path  => '/v2/sites/2/themes/other_theme/apply',
+            setup => sub {
+                my $site = MT->model('blog')->load(2);
+                die if $site->theme_id eq 'other_theme';
+            },
+            method   => 'POST',
+            complete => sub {
+                my $site = MT->model('blog')->load(2);
+                is($site->theme_id, 'other_theme', 'Changed into other_theme.');
+            },
+        },
         {    # Blog.
             path  => '/v2/sites/1/themes/mont-blanc/apply',
             setup => sub {
@@ -269,6 +281,18 @@ sub suite {
             complete => sub {
                 my $site = MT->model('blog')->load(1);
                 is( $site->theme_id, 'mont-blanc', 'Changed into mont-blanc.' );
+            },
+        },
+        {    # Blog. (a theme without class)
+            path  => '/v2/sites/1/themes/other_theme/apply',
+            setup => sub {
+                my $site = MT->model('blog')->load(1);
+                die if $site->theme_id eq 'other_theme';
+            },
+            method   => 'POST',
+            complete => sub {
+                my $site = MT->model('blog')->load(1);
+                is($site->theme_id, 'other_theme', 'Changed into other_theme.');
             },
         },
 
