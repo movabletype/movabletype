@@ -10,14 +10,32 @@ our $test_env;
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
+
+    $test_env->save_file('themes/invalid_class_theme/theme.yaml', <<'YAML');
+id: invalid_theme
+name: Invalid Class Theme
+label: Invalid Class theme
+class: invalid
+required_components:
+    core: 1.0
+optional_components:
+    commercial: 2.0
+YAML
 }
 
 use MT::Test;
 use MT;
 use MT::Theme;
 
+my %available_classes = (
+    ''      => 1,
+    both    => 1,
+    website => 1,
+    blog    => 1,
+);
 my $all_themes           = MT::Theme->load_all_themes;
 my %all_available_themes = map { $_ => $all_themes->{$_} }
+    grep { $available_classes{ $all_themes->{$_}{class} // '' } }
     grep { !$all_themes->{$_}{deprecated} }
     keys %{$all_themes};
 

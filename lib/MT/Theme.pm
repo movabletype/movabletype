@@ -106,7 +106,7 @@ sub load_theme_loop {
     my $all_themes = load_all_themes($pkg);
     my ( @website_loop, @blog_loop );
     foreach my $theme ( values %$all_themes ) {
-        my $class = $theme->{class} || '';
+        my $class = defined $theme->{class} ? $theme->{class} : '';
         next if $type eq 'blog' && $class eq 'website';
         next if $theme->{deprecated};
 
@@ -122,7 +122,7 @@ sub load_theme_loop {
         if ( $class eq 'website' ) {
             push @website_loop, \%hash;
         }
-        else {
+        elsif ( $class eq 'blog' || $class eq 'both' || $class eq '' ) {
             push @blog_loop, \%hash;
         }
 

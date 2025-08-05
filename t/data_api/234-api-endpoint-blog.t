@@ -13,6 +13,13 @@ BEGIN {
         DefaultLanguage => 'en_US',  ## for now
     );
     $ENV{MT_CONFIG} = $test_env->config_file;
+
+    $test_env->save_file('themes/invalid_class_theme/theme.yaml', <<'YAML');
+id: invalid_class_theme
+name: Invalid Class Theme
+label: Invalid Class theme
+class: invalid
+YAML
 }
 
 use MT::Test::DataAPI;
@@ -297,6 +304,21 @@ sub suite {
             is_superuser => 1,
             code         => 409,
             error        => "Invalid theme_id: dummy\n",
+        },
+        {    # A theme with invalid class.
+            path   => '/v2/sites',
+            method => 'POST',
+            params => {
+                website => {
+                    name     => 'test-api-permission-website',
+                    url      => 'http://narnia2.na/',
+                    sitePath => $test_env->root,
+                    themeId  => 'invalid_class_theme',
+                },
+            },
+            is_superuser => 1,
+            code         => 409,
+            error        => "Cannot apply a theme with invalid class.\n",
         },
         {    # sitePath is not absolute.
             path   => '/v2/sites',
@@ -601,6 +623,21 @@ sub suite {
             code         => 409,
             error        => "Invalid theme_id: invalid_theme\n",
         },
+        {    # A theme with invalid class.
+            path   => '/v2/sites/2',
+            method => 'POST',
+            params => {
+                blog => {
+                    url      => 'blog',
+                    name     => 'blog',
+                    sitePath => 'blog',
+                    themeId  => 'invalid_class_theme',
+                },
+            },
+            is_superuser => 1,
+            code         => 409,
+            error        => "Cannot apply a theme with invalid class.\n",
+        },
         {    # Website theme_id.
             path   => '/v2/sites/2',
             method => 'POST',
@@ -881,6 +918,30 @@ sub suite {
                     },
                 };
             },
+        },
+        {    # A theme with invalid class. (child site)
+            path   => '/v2/sites/1',
+            method => 'PUT',
+            params => {
+                blog => {
+                    themeId => 'invalid_class_theme',
+                },
+            },
+            is_superuser => 1,
+            code         => 409,
+            error        => "Cannot apply a theme with invalid class.\n",
+        },
+        {    # A theme with invalid class. (parent site)
+            path   => '/v2/sites/2',
+            method => 'PUT',
+            params => {
+                website => {
+                    themeId => 'invalid_class_theme',
+                },
+            },
+            is_superuser => 1,
+            code         => 409,
+            error        => "Cannot apply a theme with invalid class.\n",
         },
         {    # Not logged in.
             path      => '/v2/sites/2',
