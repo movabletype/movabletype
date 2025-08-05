@@ -116,6 +116,7 @@ use MT::Test;
 use MT::Test::Permission;
 use MT::Test::Fixture::Cms::Common1;
 use MT::Test::App;
+use MT::Theme;
 
 ### Make test data
 
@@ -126,6 +127,8 @@ $test_env->prepare_fixture('cms/common1');
 my $website = MT::Website->load({ name => 'my website' });
 my $blog    = MT::Blog->load({ name => 'my blog' });
 my $admin   = MT->model('author')->load(1);
+
+my $all_themes = MT::Theme->load_all_themes;
 
 subtest 'Check applying a blog theme' => sub {
     my $app = MT::Test::App->new('MT::App::CMS');
@@ -143,6 +146,79 @@ subtest 'Check applying a blog theme' => sub {
         $website->theme_id, 'MyBlogTheme',
         'Website\'s theme has correct theme_id.'
     );
+};
+
+subtest 'Check All Themes screen' => sub {
+    subtest 'System' => sub {
+        my $app = MT::Test::App->new('MT::App::CMS');
+        $app->login($admin);
+        $app->get_ok({
+            __mode  => 'list_theme',
+            blog_id => 0,
+        });
+        $app->has_no_permission_error;
+
+        my $expected_theme_count = scalar keys %{$all_themes};
+        my @titles               = $app->content =~ /theme-title/g;
+        is scalar @titles, $expected_theme_count, "${expected_theme_count} themes";
+
+        for my $theme (values %{$all_themes}) {
+            my $theme_label = $theme->name || $theme->label->();
+            $app->content_like(qr/\Q${theme_label}\E/, $theme_label);
+        }
+    };
+
+    subtest 'Parente Site' => sub {
+        my $app = MT::Test::App->new('MT::App::CMS');
+        $app->login($admin);
+        $app->get_ok({
+            __mode  => 'list_theme',
+            blog_id => $website->id,
+        });
+        $app->has_no_permission_error;
+
+        my $expected_theme_count = scalar keys %{$all_themes};
+        my @titles               = $app->content =~ /theme-title/g;
+        is scalar @titles, $expected_theme_count, "${expected_theme_count} themes";
+
+        for my $theme (values %{$all_themes}) {
+            my $theme_label = $theme->name || $theme->label->();
+            $app->content_like(qr/\Q${theme_label}\E/, $theme_label);
+        }
+    };
+
+    subtest 'Child Site' => sub {
+        my $app = MT::Test::App->new('MT::App::CMS');
+        $app->login($admin);
+        $app->get_ok({
+            __mode  => 'list_theme',
+            blog_id => $blog->id,
+        });
+        $app->has_no_permission_error;
+
+        my (@expected_themes, @unexpected_themes);
+        for my $theme (values %{$all_themes}) {
+            if (($theme->{class} || '') eq 'website') {
+                push @unexpected_themes, $theme;
+            } else {
+                push @expected_themes, $theme;
+            }
+        }
+
+        my $expected_theme_count = scalar @expected_themes;
+        my @titles               = $app->content =~ /theme-title/g;
+        is scalar @titles, $expected_theme_count, "${expected_theme_count} themes";
+
+        for my $theme (@expected_themes) {
+            my $theme_label = $theme->name || $theme->label->();
+            $app->content_like(qr/\Q${theme_label}\E/, $theme_label);
+        }
+
+        for my $theme (@unexpected_themes) {
+            my $theme_label = $theme->name || $theme->label->();
+            $app->content_unlike(qr/\Q${theme_label}\E/, "no ${theme_label}");
+        }
+    };
 };
 
 done_testing;

@@ -5,6 +5,7 @@ use warnings;
 use FindBin;
 use lib "$FindBin::Bin/../lib"; # t/lib
 use Test::More;
+use Test::Deep;
 use MT::Test::Env;
 our $test_env;
 BEGIN {
@@ -25,6 +26,9 @@ my $app = MT::App::DataAPI->new;
 my $author = MT->model('author')->load(1);
 $author->email('melody@example.com');
 $author->save;
+
+use MT::Theme;
+my $all_themes = MT::Theme->load_all_themes;
 
 # test.
 my $suite = suite();
@@ -55,6 +59,13 @@ sub suite {
         # list_themes - normal tests
         {   path   => '/v2/themes',
             method => 'GET',
+            complete => sub {
+                my ($data, $body) = @_;
+                my $got           = $app->current_format->{unserialize}->($body);
+                my @got_theme_ids = map { $_->{id} } @{ $got->{items} };
+                my @expected      = keys %{$all_themes};
+                cmp_bag(\@got_theme_ids, \@expected);
+            },
         },
 
         # list_themes_for site - irregular tests
@@ -101,14 +112,35 @@ sub suite {
         {    # Website.
             path   => '/v2/sites/2/themes',
             method => 'GET',
+            complete => sub {
+                my ($data, $body) = @_;
+                my $got           = $app->current_format->{unserialize}->($body);
+                my @got_theme_ids = map { $_->{id} } @{ $got->{items} };
+                my @expected      = keys %{$all_themes};
+                cmp_bag(\@got_theme_ids, \@expected);
+            },
         },
         {    # Blog.
             path   => '/v2/sites/1/themes',
             method => 'GET',
+            complete => sub {
+                my ($data, $body) = @_;
+                my $got           = $app->current_format->{unserialize}->($body);
+                my @got_theme_ids = map  { $_->{id} } @{ $got->{items} };
+                my @expected      = grep { ($all_themes->{$_}{class} || '') ne 'website' } keys %{$all_themes};
+                cmp_bag(\@got_theme_ids, \@expected);
+            },
         },
         {    # System. Same as list_themes endpoint.
             path   => '/v2/sites/0/themes',
             method => 'GET',
+            complete => sub {
+                my ($data, $body) = @_;
+                my $got           = $app->current_format->{unserialize}->($body);
+                my @got_theme_ids = map { $_->{id} } @{ $got->{items} };
+                my @expected      = keys %{$all_themes};
+                cmp_bag(\@got_theme_ids, \@expected);
+            },
         },
 
         # get_theme - irregular tests
@@ -141,15 +173,21 @@ sub suite {
         },
 
         # get_theme - normal tests
-        {   path   => '/v2/themes/classic_website',
-            method => 'GET',
-            result => sub {
-                require MT::Theme;
-                my $theme = MT::Theme->load('classic_website');
+        (
+            map {
+                my $theme_id = $_;
+                {
+                    path   => '/v2/themes/' . $theme_id,
+                    method => 'GET',
+                    result => sub {
+                        require MT::Theme;
+                        my $theme = MT::Theme->load($theme_id);
 
-                return $theme->to_resource();
-            },
-        },
+                        return $theme->to_resource();
+                    },
+                };
+            } qw/classic_website classic_blog mont-blanc other_theme/,
+        ),
 
         # get_theme_for_site - normal tests
         {    # Website.
@@ -172,15 +210,21 @@ sub suite {
                 return $theme->to_resource();
             },
         },
-        {   path   => '/v2/sites/0/themes/classic_website',
-            method => 'GET',
-            result => sub {
-                require MT::Theme;
-                my $theme = MT::Theme->load('classic_website');
+        (    # System.
+            map {
+                my $theme_id = $_;
+                {
+                    path   => '/v2/sites/0/themes/' . $theme_id,
+                    method => 'GET',
+                    result => sub {
+                        require MT::Theme;
+                        my $theme = MT::Theme->load($theme_id);
 
-                return $theme->to_resource();
-            },
-        },
+                        return $theme->to_resource();
+                    },
+                };
+            } qw/classic_website classic_blog mont-blanc other_theme/,
+        ),
 
         # get_theme_for_site - irregular tests
         {    # Non-existent site.
@@ -207,18 +251,42 @@ sub suite {
                 };
             },
         },
-        {    # get website theme via blog.
-            path   => '/v2/sites/1/themes/classic_website',
-            method => 'GET',
-            code   => 404,
-            result => sub {
-                +{  error => {
-                        code    => 404,
-                        message => 'Theme not found',
+        (   # themes not applied to the parent site.
+            map {
+                my $theme_id = $_;
+                {
+                    path   => '/v2/sites/2/themes/' . $theme_id,
+                    method => 'GET',
+                    code   => 404,
+                    result => sub {
+                        +{  error => {
+                                code    => 404,
+                                message => 'Theme not found',
+                            },
+                        };
                     },
                 };
-            },
-        },
+            } qw/classic_blog mont-blanc other_theme/,
+        ),
+        (
+            # themes not applied to the child site.
+            map {
+                my $theme_id = $_;
+                {
+                    path   => '/v2/sites/1/themes/' . $theme_id,
+                    method => 'GET',
+                    code   => 404,
+                    result => sub {
+                        +{
+                            error => {
+                                code    => 404,
+                                message => 'Theme not found',
+                            },
+                        };
+                    },
+                };
+            } qw/classic_website mont-blanc other_theme/,
+        ),
         {    # Not logged in.
             path      => '/v2/sites/0/themes/classic_website',
             method    => 'GET',
