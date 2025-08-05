@@ -2252,7 +2252,7 @@ BEGIN {
                 handler => \&TrustedHosts,
             },
             'GrantRoleSitesView' => { default => 'list' }, # DEPRECATED
-            'DisableContentFieldPermission' => { default => 1 },
+            'DisableContentFieldPermission' => { default => undef },
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {
