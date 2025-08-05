@@ -118,7 +118,7 @@ sub _build_theme_table {
             next if $theme->id ne ( $current || '' );
         }
         else {
-            next if !$theme->{class} || !$classes->{ $theme->{class} };
+            next if $theme->{class} && !$classes->{ $theme->{class} };
             next if $theme->id eq ( $current || '' );
         }
         next if $theme->{deprecated};
@@ -157,7 +157,7 @@ sub _build_theme_table {
             $current_theme = \%theme;
         }
         else {
-            if ( $theme->{class} eq 'website' ) {
+            if ( $theme->{class} && $theme->{class} eq 'website' ) {
                 push @website_data, \%theme;
             }
             else {
