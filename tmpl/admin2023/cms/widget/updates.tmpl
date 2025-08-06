@@ -9,7 +9,11 @@
   <mt:else>
     <p>
     <mt:if name="available_version">
-      <__trans phrase="Available updates (Ver. [_1]) found. Please see the <a href="[_2]" target="_blank">news</a> for detail." params="<mt:var name="available_version">%%<mt:var name="news_url">">
+      <mt:if name="is_security">
+        <__trans phrase="An available security update (Ver. [_1]) found. Please see the <a href="[_2]" target="_blank">news</a> for detail." params="<mt:var name="available_version">%%<mt:var name="news_url">">
+      <mt:else>
+        <__trans phrase="Available updates (Ver. [_1]) found. Please see the <a href="[_2]" target="_blank">news</a> for detail." params="<mt:var name="available_version">%%<mt:var name="news_url">">
+      </mt:if>
     <mt:else>
       <__trans phrase="Movable Type is up to date.">
     </mt:if>

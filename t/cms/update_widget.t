@@ -37,11 +37,32 @@ $mock->redefine(
 
         $request_count++;
         return HTTP::Response->new(200, 'success', [], <<'EOF' );
-{
-"version": "8.7.0",
-"release_version": "",
-"news_url": "https://www.sixapart.jp/movabletype/news/8.7.0"
-}
+[
+  {
+    "version": "9.0.4",
+    "release_version": "",
+    "security_update": "",
+    "news_url": "https://www.sixapart.jp/movabletype/news/9.0.4"
+  },
+  {
+    "version": "8.8.0",
+    "release_version": "",
+    "security_update": "",
+    "news_url": "https://www.sixapart.jp/movabletype/news/8.8.0"
+  },
+  {
+    "version": "8.4.4",
+    "release_version": "",
+    "security_update": "8.4.3",
+    "news_url": "https://www.sixapart.jp/movabletype/news/8.4.4"
+  },
+  {
+    "version": "8.0.7",
+    "release_version": "",
+    "security_update": "8.0.7",
+    "news_url": "https://www.sixapart.jp/movabletype/news/8.0.7"
+  }
+]
 EOF
     });
 
@@ -50,14 +71,29 @@ subtest 'unit test for updates_widget method' => sub {
     my $tmpl;
     my $param;
 
-    subtest 'an update available' => sub {
-        $MT::VERSION_ID = '8.6.0';
+    subtest 'minor version without security' => sub {
+        $MT::VERSION_ID = '8.4.4';
 
         for (1, 2) {
             $param = {};
             MT::CMS::Dashboard::updates_widget($mt, $tmpl, $param);
-            is $param->{available_version}, '8.7.0';
-            is $param->{news_url},          'https://www.sixapart.jp/movabletype/news/8.7.0';
+            is $param->{available_version}, '8.8.0';
+            is $param->{news_url},          'https://www.sixapart.jp/movabletype/news/8.8.0';
+            is $param->{is_security},       undef;
+            is $request_count,              1, 'up to 1 because of cache';
+        }
+    };
+
+    teardown();
+
+    subtest 'minor version with security' => sub {
+        $MT::VERSION_ID = '8.4.2';
+        for (1, 2) {
+            $param = {};
+            MT::CMS::Dashboard::updates_widget($mt, $tmpl, $param);
+            is $param->{available_version}, '8.4.4';
+            is $param->{news_url},          'https://www.sixapart.jp/movabletype/news/8.4.4';
+            is $param->{is_security},       1;
             is $request_count,              1, 'up to 1 because of cache';
         }
     };
@@ -72,19 +108,7 @@ subtest 'unit test for updates_widget method' => sub {
             MT::CMS::Dashboard::updates_widget($mt, $tmpl, $param);
             is $param->{available_version}, undef;
             is $param->{news_url},          undef;
-            is $request_count,              1, 'up to 1 because of cache';
-        }
-    };
-
-    teardown();
-
-    subtest 'edge case' => sub {
-        $MT::VERSION_ID = '8.7.0';
-        for (1, 2) {
-            $param = {};
-            MT::CMS::Dashboard::updates_widget($mt, $tmpl, $param);
-            is $param->{available_version}, undef;
-            is $param->{news_url},          undef;
+            is $param->{is_security},       undef;
             is $request_count,              1, 'up to 1 because of cache';
         }
     };

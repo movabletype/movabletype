@@ -1164,7 +1164,7 @@ sub updates_widget {
 
     # Update check
     require MT::Session;
-    my $version_info;
+    my $version_info_array;
     if ( $app->param('reload') ) {
 
         # Force reload, purge cache if exists
@@ -1194,7 +1194,7 @@ sub updates_widget {
         }
     }
 
-    if ( !$version_info ) {
+    if ( !$version_info_array ) {
 
         # Read available version data from site.
         my $ua = MT->new_ua( { timeout => 10 } );
@@ -1212,17 +1212,30 @@ sub updates_widget {
             return;
         }
 
-        $version_info = MT::Util::from_json($result);
+        $version_info_array = MT::Util::from_json($result);
     }
 
-    if ($version_info) {
-        my $mt_version;
-        my $latest_version;
-        eval {
-            $mt_version     = MT::version->parse( MT->version_id );
-            $latest_version = MT::version->parse( $version_info->{version} );
-        };
-        if ( !$@ ) {
+    if ($version_info_array) {
+        my $mt_version = eval { MT::version->parse(MT->version_id) };
+        if ($@) {
+            $param->{update_check_failed} = 1;
+            return;
+        }
+        my ($current_major, $current_minor, $current_patch) = $mt_version->tuple;
+
+        for my $version_info (@$version_info_array) {
+            my $latest_version = eval { MT::version->parse($version_info->{version}) };
+            next if $@;
+
+            my ($major, $minor, $patch) = $latest_version->tuple;
+            next if $major != $current_major;
+
+            if ($minor == $current_minor && $version_info->{security_update}) {
+                my $security_update = eval { MT::version->parse($version_info->{security_update}) };
+                if ( $security_update > $mt_version ) {
+                    $param->{is_security} = 1;
+                }
+            }
             if ( $latest_version > $mt_version ) {
                 $param->{available_version} = $version_info->{version};
                 $param->{news_url} = $version_info->{news_url};
@@ -1238,7 +1251,7 @@ sub updates_widget {
             );
             $cache->set(
                 'check_result',
-                { map { $_ => $param->{$_} } ('available_version', 'news_url') });
+                { map { $_ => $param->{$_} } ('available_version', 'news_url', 'is_security') });
             $cache->save;
         }
     }
