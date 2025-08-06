@@ -86,7 +86,21 @@ subtest 'unit test for updates_widget method' => sub {
 
     teardown();
 
-    subtest 'minor version with security' => sub {
+    subtest 'patch version without security' => sub {
+        $MT::VERSION_ID = '8.4.3';
+        for (1, 2) {
+            $param = {};
+            MT::CMS::Dashboard::updates_widget($mt, $tmpl, $param);
+            is $param->{available_version}, '8.4.4';
+            is $param->{news_url},          'https://www.sixapart.jp/movabletype/news/8.4.4';
+            is $param->{is_security},       undef;
+            is $request_count,              1, 'up to 1 because of cache';
+        }
+    };
+
+    teardown();
+
+    subtest 'patch version with security' => sub {
         $MT::VERSION_ID = '8.4.2';
         for (1, 2) {
             $param = {};
