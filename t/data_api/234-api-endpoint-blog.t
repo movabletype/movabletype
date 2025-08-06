@@ -4,6 +4,7 @@ use strict;
 use warnings;
 use FindBin;
 use lib "$FindBin::Bin/../lib"; # t/lib
+use File::Spec;
 use Test::More;
 use MT::Test::Env;
 our $test_env;
@@ -12,6 +13,13 @@ BEGIN {
         DefaultLanguage => 'en_US',  ## for now
     );
     $ENV{MT_CONFIG} = $test_env->config_file;
+
+    $test_env->save_file('themes/invalid_class_theme/theme.yaml', <<'YAML');
+id: invalid_class_theme
+name: Invalid Class Theme
+label: Invalid Class theme
+class: invalid
+YAML
 }
 
 use MT::Test::DataAPI;
@@ -297,6 +305,21 @@ sub suite {
             code         => 409,
             error        => "Invalid theme_id: dummy\n",
         },
+        {    # A theme with invalid class.
+            path   => '/v2/sites',
+            method => 'POST',
+            params => {
+                website => {
+                    name     => 'test-api-permission-website',
+                    url      => 'http://narnia2.na/',
+                    sitePath => $test_env->root,
+                    themeId  => 'invalid_class_theme',
+                },
+            },
+            is_superuser => 1,
+            code         => 409,
+            error        => "Cannot apply a theme with invalid class.\n",
+        },
         {    # sitePath is not absolute.
             path   => '/v2/sites',
             method => 'POST',
@@ -522,6 +545,29 @@ sub suite {
             },
         },
 
+        # set a theme without class (parent site)
+        {
+            path         => '/v2/sites',
+            method       => 'POST',
+            is_superuser => 1,
+            params       => {
+                website => {
+                    name     => 'test-api-website-4',
+                    url      => 'http://narnia2.na/',
+                    sitePath => $test_env->root . '/',
+                    themeId  => 'other_theme',
+                },
+            },
+            result => sub {
+                $app->model('website')->load({ name => 'test-api-website-4' });
+            },
+            complete => sub {
+                my ($data, $body) = @_;
+                my $got = $app->current_format->{unserialize}->($body);
+                is $got->{themeId}, 'other_theme';
+            },
+        },
+
         # insert_new_blog - irregular tests
         {    # website
             path   => '/v2/sites/1',
@@ -576,6 +622,21 @@ sub suite {
             is_superuser => 1,
             code         => 409,
             error        => "Invalid theme_id: invalid_theme\n",
+        },
+        {    # A theme with invalid class.
+            path   => '/v2/sites/2',
+            method => 'POST',
+            params => {
+                blog => {
+                    url      => 'blog',
+                    name     => 'blog',
+                    sitePath => 'blog',
+                    themeId  => 'invalid_class_theme',
+                },
+            },
+            is_superuser => 1,
+            code         => 409,
+            error        => "Cannot apply a theme with invalid class.\n",
         },
         {    # Website theme_id.
             path   => '/v2/sites/2',
@@ -786,6 +847,29 @@ sub suite {
             },
         },
 
+        # set a theme without class (child site)
+        {
+            path         => '/v2/sites/2',
+            method       => 'POST',
+            is_superuser => 1,
+            params       => {
+                blog => {
+                    name     => 'test-api-blog-4',
+                    url      => 'http://narnia2.na/',
+                    sitePath => $test_env->root . '/',
+                    themeId  => 'other_theme',
+                },
+            },
+            result => sub {
+                $app->model('blog')->load({ name => 'test-api-blog-4' });
+            },
+            complete => sub {
+                my ($data, $body) = @_;
+                my $got = $app->current_format->{unserialize}->($body);
+                is $got->{themeId}, 'other_theme';
+            },
+        },
+
         # update_site - irregular tests
         {    # Non-existent site.
             path   => '/v2/sites/20',
@@ -834,6 +918,30 @@ sub suite {
                     },
                 };
             },
+        },
+        {    # A theme with invalid class. (child site)
+            path   => '/v2/sites/1',
+            method => 'PUT',
+            params => {
+                blog => {
+                    themeId => 'invalid_class_theme',
+                },
+            },
+            is_superuser => 1,
+            code         => 409,
+            error        => "Cannot apply a theme with invalid class.\n",
+        },
+        {    # A theme with invalid class. (parent site)
+            path   => '/v2/sites/2',
+            method => 'PUT',
+            params => {
+                website => {
+                    themeId => 'invalid_class_theme',
+                },
+            },
+            is_superuser => 1,
+            code         => 409,
+            error        => "Cannot apply a theme with invalid class.\n",
         },
         {    # Not logged in.
             path      => '/v2/sites/2',
@@ -1145,6 +1253,46 @@ sub suite {
 
                 # is( $got->{sitePath},     $test_env->root,     'sitePath' );
                 ok( ( $got->{sitePath} !~ m{(/|\\)$} ), 'sitePath' );
+            },
+        },
+
+        # apply a theme without class (parent site)
+        {
+            path         => '/v2/sites/3',
+            method       => 'PUT',
+            is_superuser => 1,
+            params       => {
+                website => {
+                    themeId => 'other_theme',
+                },
+            },
+            result => sub {
+                $app->model('website')->load(3);
+            },
+            complete => sub {
+                my ($data, $body) = @_;
+                my $got = $app->current_format->{unserialize}->($body);
+                is $got->{themeId}, 'other_theme';
+            },
+        },
+
+        # apply a theme without class (child site)
+        {
+            path         => '/v2/sites/1',
+            method       => 'PUT',
+            is_superuser => 1,
+            params       => {
+                blog => {
+                    themeId => 'other_theme',
+                },
+            },
+            result => sub {
+                $app->model('blog')->load(1);
+            },
+            complete => sub {
+                my ($data, $body) = @_;
+                my $got = $app->current_format->{unserialize}->($body);
+                is $got->{themeId}, 'other_theme';
             },
         },
 

@@ -15,11 +15,20 @@ our ($current_wysiwyg_editor, $current_source_editor);
 sub _get_editor {
     my ($app, $editor, $default) = @_;
     if (my $editor_regs = MT::Component->registry('editors')) {
-        my %editors = map { $_ => 1 } map { keys %$_ } @$editor_regs;
+        my %editors = map {
+            my $reg = $_;
+            # exclude extensions
+            map {
+                $reg->{$_}{label}          # provide editor body
+                    || !%{ $reg->{$_} }    # placeholder
+                    ? ($_ => 1) : ()
+            } keys %$reg;
+        } @$editor_regs;
         return
               exists $editors{$editor}  ? $editor
             : exists $editors{$default} ? $default
-            :                             (sort(keys(%editors)))[0];
+            : %editors                  ? (sort(keys(%editors)))[0]
+            :                             '';                         # no editor found
     } else {
         return undef;
     }

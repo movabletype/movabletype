@@ -2132,6 +2132,7 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/DataAPI/Endpoint/v2/Theme.pm
 	'Applying theme failed: [_1]' => 'テーマの適用に失敗しました: [_1]',
+	'Cannot apply a theme with invalid class.' => '不正なclass要素を持つテーマはサイトに適用できません。',
 	'Cannot apply website theme to blog.' => 'ウェブサイトテーマをブログに適用出来ません。',
 	'Cannot uninstall theme because the theme is in use.' => '現在利用中のテーマをアンインストールすることはできません。',
 	'Cannot uninstall this theme.' => 'テーマのアンインストールに失敗しました。',
