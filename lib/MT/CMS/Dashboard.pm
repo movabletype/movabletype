@@ -1165,7 +1165,6 @@ sub updates_widget {
     # Update check
     require MT::Session;
     my $version_info;
-    my $use_cache;
     if ( $app->param('reload') ) {
 
         # Force reload, purge cache if exists
@@ -1187,9 +1186,11 @@ sub updates_widget {
         );
 
         if ($cache) {
-            $version_info->{version}  = $cache->get('version');
-            $version_info->{news_url} = $cache->get('news_url');
-            $use_cache                = 1;
+            my $check_result = $cache->get('check_result');
+            for my $key (keys %$check_result) {
+                $param->{$key} = $check_result->{$key};
+            }
+            return;
         }
     }
 
@@ -1227,20 +1228,18 @@ sub updates_widget {
                 $param->{news_url} = $version_info->{news_url};
             }
 
-            if ( !$use_cache ) {
-
-                # Make a cache
-                my $cache = MT->model('session')->new;
-                $cache->set_values(
-                    {   id    => 'Update Check',
-                        kind  => 'DW',
-                        start => time,
-                    }
-                );
-                $cache->set( 'version', $version_info->{version} );
-                $cache->set( 'news_url', $version_info->{news_url} );
-                $cache->save;
-            }
+            # Make a cache
+            my $cache = MT->model('session')->new;
+            $cache->set_values(
+                {   id    => 'Update Check',
+                    kind  => 'DW',
+                    start => time,
+                }
+            );
+            $cache->set(
+                'check_result',
+                { map { $_ => $param->{$_} } ('available_version', 'news_url') });
+            $cache->save;
         }
     }
 }
