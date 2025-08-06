@@ -1,4 +1,4 @@
-export const modalOverlay = (node: HTMLElement) => {
+export const modalOverlay = (node: HTMLElement): void => {
   const scrollbarWidth =
     window.innerWidth - document.documentElement.clientWidth;
   if (scrollbarWidth > 0) {
