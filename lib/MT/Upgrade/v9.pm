@@ -35,9 +35,32 @@ sub upgrade_functions {
                     my $blog = shift;
                     $blog->link_default_target($MT::Blog::DEFAULT_LINK_DEFAULT_TARGET);
                 },
-            }
+            },
+        },
+        v9_api_password => {
+            version_limit => 9.0002,
+            priority      => 5,
+            updater       => {
+                type  => 'author',
+                label => "Migrating web services passwords...",
+                code  => \&v9_api_password,
+            },
         },
     };
+}
+
+sub v9_api_password {
+    my $user         = shift;
+    my $old_password = $user->api_password;
+    if ($old_password || (defined($old_password) && $old_password eq '0')) {
+        require MT::Author;
+
+        # apply it to only passwords that is shorter than old schema max length
+        return 1 if length($old_password) > 60;
+
+        $user->api_password($old_password);
+    }
+    return 1;
 }
 
 sub _v9_boolean_meta {

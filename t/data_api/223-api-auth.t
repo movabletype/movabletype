@@ -16,6 +16,7 @@ BEGIN {
 
 use MT::Test::DataAPI;
 use Test::Deep qw/re/;
+use MT::Util::UniqueID;
 
 $test_env->prepare_fixture('db_data');
 
@@ -23,8 +24,14 @@ use MT::App::DataAPI;
 my $app    = MT::App::DataAPI->new;
 my $author = MT->model('author')->load(2);
 $author->set_password('bass');
-$author->api_password('seecret');
+my $api_password = MT::Util::UniqueID::create_api_password();
+$author->api_password($api_password);
 $author->save or die $author->errstr;
+
+subtest 'test is_valid_api_password' => sub {
+    note 'API password: '. $api_password;
+    ok $author->is_valid_api_password($api_password);
+};
 
 my $disabled_user = MT->model('author')->new;
 $disabled_user->set_values(
@@ -33,11 +40,12 @@ $disabled_user->set_values(
         email            => 'disabled_user@example.com',
         url              => 'http://disabled_user.com/',
         userpic_asset_id => 3,
-        api_password     => 'seecret',
         auth_type        => 'MT',
         created_on       => '19780131074500',
     }
 );
+my $api_password2 = MT::Util::UniqueID::create_api_password();
+$disabled_user->api_password($api_password2);
 $disabled_user->set_password('disabled');
 $disabled_user->type( MT::Author::AUTHOR() );
 $disabled_user->id(99);
@@ -217,7 +225,7 @@ sub suite {
             params => {
                 clientId => 'test',
                 username => 'disabled',
-                password => 'secret',
+                password => $api_password2,
             },
             code => 401,
         },
@@ -229,7 +237,7 @@ sub suite {
             params => {
                 clientId => 'test',
                 username => 'disabled',
-                password => 'secret',
+                password => $api_password2,
             },
             code => 401,
         },
@@ -252,7 +260,7 @@ sub suite {
             params => {
                 clientId => 'test',
                 username => 'Chuck D',
-                password => 'seecret',
+                password => $api_password,
             },
         },
 
@@ -262,7 +270,7 @@ sub suite {
             params => {
                 clientId => 'test',
                 username => 'disabled',
-                password => 'secret',
+                password => $api_password2,
             },
             code => 401,
         },
@@ -274,7 +282,7 @@ sub suite {
             params => {
                 clientId => 'test',
                 username => 'disabled',
-                password => 'secret',
+                password => $api_password2,
             },
             code => 401,
         },
