@@ -1242,7 +1242,14 @@ html[data-screen-id=dashboard][data-scope-type=user] {
 }
 .mt-mobileGlobalMenu__dropdownMenuButton {
   @extend .p-4;
-  display: inline-block;
+  display: flex;
+  align-items: center;
+
+  svg {
+    height: 19px;
+    display: block;
+    margin-top: 2px;
+  }
 }
 .mt-mobileGlobalMenu__dropdownMenu {
   @extend .mt-0;
@@ -1579,7 +1586,7 @@ html[data-screen-id=dashboard][data-scope-type=user] {
   position: absolute;
   top: 0;
   left: 0;
-  margin-top: 72px;
+  margin-top: 66px;
 
   box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.25);
   border: none !important;

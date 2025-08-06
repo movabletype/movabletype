@@ -12620,7 +12620,13 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-mainContentWrapper {
 }
 
 .mt-mobileGlobalMenu__dropdownMenuButton {
-  display: inline-block;
+  display: flex;
+  align-items: center;
+}
+.mt-mobileGlobalMenu__dropdownMenuButton svg {
+  height: 19px;
+  display: block;
+  margin-top: 2px;
 }
 
 .mt-mobileGlobalMenu__dropdownMenu {
@@ -12904,7 +12910,7 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-mainContentWrapper {
   position: absolute;
   top: 0;
   left: 0;
-  margin-top: 72px;
+  margin-top: 66px;
   box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.25);
   border: none !important;
 }
