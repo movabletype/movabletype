@@ -113,6 +113,16 @@ sub save_filter {
         return $app->errtrans( 'Invalid theme_id: [_1]', $obj->theme_id );
     }
 
+    $theme->{class} = '' unless defined $theme->{class};
+
+    if (   $theme->{class} ne ''
+        && $theme->{class} ne 'website'
+        && $theme->{class} ne 'blog'
+        && $theme->{class} ne 'both')
+    {
+        return $app->errtrans('Cannot apply a theme with invalid class.');
+    }
+
     # Cannot aplly website theme to blog.
     if ( $obj->is_blog && $theme->{class} eq 'website' ) {
         return $app->errtrans( 'Cannot apply website theme to blog: [_1]',

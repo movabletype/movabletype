@@ -425,7 +425,6 @@ sub init_data {
             email            => 'chuckd@example.com',
             url              => 'http://chuckd.com/',
             userpic_asset_id => 3,
-            api_password     => 'seecret',
             auth_type        => 'MT',
             created_on       => '19780131074500',
         }

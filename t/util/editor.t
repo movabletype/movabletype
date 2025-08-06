@@ -19,6 +19,8 @@ version: 0.1
 editors:
   awesome_editor:
     label: Awesome Editor
+  another_editor:
+    extension: extension.tmpl
 YAML
 }
 

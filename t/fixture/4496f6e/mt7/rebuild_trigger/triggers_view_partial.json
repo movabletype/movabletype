@@ -139,6 +139,7 @@
          "blog_junk_folder_expiry",
          "blog_junk_score_threshold",
          "blog_language",
+         "blog_link_default_target",
          "blog_manual_approve_commenters",
          "blog_moderate_pings",
          "blog_moderate_unreg_comments",
@@ -214,6 +215,7 @@
             14,
             0,
             "en_US",
+            "_self",
             null,
             1,
             2,
@@ -288,6 +290,7 @@
             14,
             0,
             "en_us",
+            "_self",
             null,
             1,
             2,
@@ -362,6 +365,7 @@
             14,
             0,
             "en_us",
+            "_self",
             null,
             1,
             2,
@@ -496,16 +500,16 @@
             1,
             null,
             "__NOW__",
-            "71d5fb04db9ffdd361937b3f80210e4c62f07247",
+            "e6684c329b8e08887229b1d1eeadb4213e8a591c",
             0,
             "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u00011-\u0000\u0000\u0000\ttest text",
             1,
-            "1387b1bbfdbae865fb4fa655b86b30885f570ae8",
+            "f8cd8685a30c2314d6d63317d8957ead6033a006",
             null,
             null,
             "__NOW__",
             2,
-            "1387b1bbfdbae865fb4fa655b86b30885f570ae8",
+            "f8cd8685a30c2314d6d63317d8957ead6033a006",
             null,
             201722
          ]
@@ -545,7 +549,7 @@
             null,
             null,
             "single_line_text",
-            "d95c68e0ebcd52aa03af2b7bd76b4d31d9ba31cc"
+            "df15e7eab5cc654a743d50d82c9604bc341181dd"
          ]
       ]
    },
@@ -594,7 +598,7 @@
       ],
       "rows" : [
          [
-            "DataAPIDisableSite 0\nDefaultSupportedLanguages en_us,ja\nDisableDataAPI 0\nDisableNotificationPings 1\nHidePrivateRelatedContentData 1\nPluginAlias ContentType Information Widget=ContentInfoWidget\nPluginAlias Markdown=Markdown/Markdown.pl\nPluginAlias SmartyPants=Markdown/SmartyPants.pl\nPluginAlias Textile=Textile/textile2.pl\nPluginAlias WXR Importer=WXRImporter\nPluginAlias Widget Manager Upgrade Assistant=WidgetManager/WidgetManager.pl\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion blockeditor=1\nPluginSchemaVersion commonmark=1.0\nPluginSchemaVersion formattedtext=1.00\nPluginSchemaVersion tinymce6=1\nPluginSwitch BlockEditor=0\nPluginSwitch CommonMark=1\nPluginSwitch ContentInfoWidget=1\nPluginSwitch DashboardWidgetTemplate=1\nPluginSwitch FormattedText=1\nPluginSwitch FormattedTextForTinyMCE6=1\nPluginSwitch GoogleAnalyticsV4=1\nPluginSwitch Markdown/Markdown.pl=1\nPluginSwitch Markdown/SmartyPants.pl=1\nPluginSwitch Textile/textile2.pl=0\nPluginSwitch TinyMCE6=1\nPluginSwitch WXRImporter=1\nPluginSwitch WidgetManager/WidgetManager.pl=0\nSchemaVersion 9.0000\nTrimFilePath 1\n",
+            "DataAPIDisableSite 0\nDefaultSupportedLanguages en_us,ja\nDisableDataAPI 0\nDisableNotificationPings 1\nHidePrivateRelatedContentData 1\nPluginAlias ContentType Information Widget=ContentInfoWidget\nPluginAlias Markdown=Markdown/Markdown.pl\nPluginAlias SmartyPants=Markdown/SmartyPants.pl\nPluginAlias Textile=Textile/textile2.pl\nPluginAlias WXR Importer=WXRImporter\nPluginAlias Widget Manager Upgrade Assistant=WidgetManager/WidgetManager.pl\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion blockeditor=1\nPluginSchemaVersion commonmark=1.0\nPluginSchemaVersion formattedtext=1.00\nPluginSchemaVersion tinymce6=1\nPluginSwitch BlockEditor=0\nPluginSwitch CommonMark=1\nPluginSwitch ContentInfoWidget=1\nPluginSwitch DashboardWidgetTemplate=1\nPluginSwitch FormattedText=1\nPluginSwitch FormattedTextForTinyMCE6=1\nPluginSwitch GoogleAnalyticsV4=1\nPluginSwitch Markdown/Markdown.pl=1\nPluginSwitch Markdown/SmartyPants.pl=1\nPluginSwitch Textile/textile2.pl=0\nPluginSwitch TinyMCE6=1\nPluginSwitch WXRImporter=1\nPluginSwitch WidgetManager/WidgetManager.pl=0\nSchemaVersion 9.0001\nTrimFilePath 1\n",
             1
          ]
       ]
@@ -622,12 +626,12 @@
             "__NOW__",
             null,
             "This is a sample.",
-            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002A\u0000\u0000\u0000\u0001H\u0000\u0000\u0000\u0006\u0000\u0000\u0000\u0004name-\u0000\u0000\u0000\u000bsingle text\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(d95c68e0ebcd52aa03af2b7bd76b4d31d9ba31cc\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\u0010single_line_text",
+            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002A\u0000\u0000\u0000\u0001H\u0000\u0000\u0000\u0006\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\u0010single_line_text\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(df15e7eab5cc654a743d50d82c9604bc341181dd\u0000\u0000\u0000\u0004name-\u0000\u0000\u0000\u000bsingle text\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00011",
             1,
             null,
             "__NOW__",
             "testct_a",
-            "71d5fb04db9ffdd361937b3f80210e4c62f07247",
+            "e6684c329b8e08887229b1d1eeadb4213e8a591c",
             null,
             null
          ],
@@ -642,7 +646,7 @@
             null,
             "__NOW__",
             "testct_b",
-            "648878f5f006728bead646fd17a7c93379a9ec76",
+            "3a831fb21fcbba6140e87a264aa7bad3917db312",
             null,
             null
          ],
@@ -657,7 +661,7 @@
             null,
             "__NOW__",
             "testct_c",
-            "b193a93120cae7922e8e7d95662f4a1c356e6b14",
+            "60c255bddddfc94278b1af3b8803dd9f446595f6",
             null,
             null
          ]
@@ -3493,5 +3497,5 @@
          ]
       ]
    },
-   "schema_version" : "WidgetManager 1.1; blockeditor 1; commonmark 1.0; core 9.0000; formattedtext 1.00; tinymce6 1"
+   "schema_version" : "WidgetManager 1.1; blockeditor 1; commonmark 1.0; core 9.0001; formattedtext 1.00; tinymce6 1"
 }

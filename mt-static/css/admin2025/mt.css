@@ -13934,18 +13934,18 @@ fieldset.form-group {
   font-size: 85%;
 }
 
-.badge-default {
+.badge-default, .badge-default-plugin {
   border-color: #A5A5A5;
   color: #595959;
 }
 
-.badge-primary {
+.badge-primary, .badge-added-plugin {
   border-color: transparent;
   background-color: #399280;
   color: #FFFFFF;
 }
 
-.badge-info {
+.badge-info, .badge-default-modified-plugin {
   border-color: transparent;
   background-color: #595959;
   color: #FFFFFF;
@@ -14376,11 +14376,11 @@ li.nav-item, .mt-sharedPreviewNav .mt-sharedPreviewNav__rightNav li.mt-sharedPre
 }
 
 @media (min-width: 768px) {
-  .mt-has-primary-navigation-collapsed .mt-primaryNavigation .mt-contentWrapper .debug-panel {
-    margin-left: calc(var(--minimal-left-bar-width) + var(--bs-card-cap-padding-x)) !important;
-  }
-  html .mt-primaryNavigation .mt-contentWrapper .debug-panel {
+  html:has(.mt-primaryNavigation) .debug-panel {
     margin-left: var(--left-bar-width) !important;
+  }
+  html:has(.mt-primaryNavigation).mt-has-primary-navigation-collapsed .debug-panel {
+    margin-left: calc(var(--minimal-left-bar-width) + var(--bs-card-cap-padding-x)) !important;
   }
 }
 /** admin-ui */

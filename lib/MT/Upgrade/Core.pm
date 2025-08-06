@@ -320,6 +320,7 @@ sub seed_database {
     1;
 }
 
+our $INSTALL_TEMPLATE_BATCH_SIZE = 100;
 sub upgrade_templates {
     my $self = shift;
     my (%opt) = @_;
@@ -340,21 +341,6 @@ sub upgrade_templates {
 
     my $installer = sub {
         my ( $val, $blog_id ) = @_;
-
-        my $terms = {};
-        $terms->{type} = $val->{type};
-        $terms->{name} = $val->{name}
-            if $val->{set} ne 'system';
-        $terms->{blog_id} = $blog_id;
-
-        return 1 if MT::Template->exist($terms);
-
-        $self->progress(
-            $self->translate_escape(
-                "Creating new template: '[_1]'.",
-                $val->{name}
-            )
-        );
 
         my $obj = MT::Template->new;
         $obj->build_dynamic(0);
@@ -390,31 +376,80 @@ sub upgrade_templates {
 
     my $Installing = $MT::Upgrade::Installing;
 
+    my $blog_class      = MT->model('blog');
+    my $blog_count      = $blog_class->count({ class => '*' });
+    my $installed_count = 0;
     for my $val (@$tmpl_list) {
-        if ( !$Installing ) {
-            next if $val->{type} eq 'search_results';
-        }
-        if ( !$install ) {
-            if ( !$val->{global} ) {
+        if (!$install) {
+            if (!$val->{global}) {
                 next if $val->{set} ne 'system';
             }
         }
 
+        my %template_terms = (
+            type => $val->{type},
+            ($val->{set} ne 'system' ? (name => $val->{name}) : ()),
+        );
+
         my $p = $val->{plugin} || $mt;
-        if ( $val->{global} ) {
-            $val->{name} = $p->translate( $val->{name} );
-            $val->{text} = $p->translate_templatized( $val->{text} );
-            $installer->( $val, 0 ) or return;
-        }
-        else {
-            my $iter = MT::Blog->load_iter();
-            while ( my $blog = $iter->() ) {
-                my $current_language = MT->current_language;
-                MT->set_language( $blog->language );
-                $val->{name} = $p->translate( $val->{name} );
-                $val->{text} = $p->translate_templatized( $val->{text} );
-                MT->set_language($current_language);
-                $installer->( $val, $blog->id );
+        if ($val->{global}) {
+            $val->{name} = $p->translate($val->{name});
+            $val->{text} = $p->translate_templatized($val->{text});
+
+            if (!MT::Template->exist({
+                blog_id => 0,
+                %template_terms,
+            }))
+            {
+                $self->progress($self->translate_escape(
+                    "Creating new template: '[_1]'.",
+                    MT->translate($val->{name})));
+                $installer->($val, 0) or return;
+            }
+        } else {
+            my @blog_ids_with_template = map { $_->id } $blog_class->load(
+                { class => '*' },
+                {
+                    join => MT::Template->join_on(
+                        'blog_id',
+                        \%template_terms,
+                        { unique => 1 }
+                    ),
+                    fetchonly => { id => 1 },
+                });
+            if (@blog_ids_with_template < $blog_count) {
+                my $progress_key = $opt{step} . '_' . $val->{type};
+                my $msg          = $self->translate_escape(
+                    "Creating new template: '[_1]'.",
+                    MT->translate($val->{name}));
+                $self->progress(
+                    sprintf("$msg (%d%%)", (@blog_ids_with_template / $blog_count * 100)),
+                    $progress_key
+                );
+
+                my $iter = $blog_class->load_iter({
+                    class => '*',
+                    (@blog_ids_with_template ? (id => { not => \@blog_ids_with_template }) : ()),
+                });
+
+                $blog_class->begin_work;
+                while (my $blog = $iter->()) {
+                    last if $installed_count++ == $INSTALL_TEMPLATE_BATCH_SIZE;
+                    my $current_language = MT->current_language;
+                    MT->set_language($blog->language);
+                    local $val->{name} = $p->translate($val->{name});
+                    local $val->{text} = $p->translate_templatized($val->{text});
+                    MT->set_language($current_language);
+                    $installer->($val, $blog->id);
+                }
+                $blog_class->commit;
+
+                if ($installed_count > $INSTALL_TEMPLATE_BATCH_SIZE) {
+                    $self->add_step('core_upgrade_templates');
+                    return;
+                } else {
+                    $self->progress("$msg (100%)", $progress_key);
+                }
             }
         }
     }

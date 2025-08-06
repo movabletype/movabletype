@@ -1378,6 +1378,8 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/CMS/Plugin.pm
 	'__PLUGIN_LABEL_DEFAULT' => '標準',
+	'__PLUGIN_LABEL_DEFAULT_BUT_MODIFIED' => '標準（変更あり）',
+	'Added' => '追加',
 	'Error saving plugin settings: [_1]' => 'プラグインの設定を保存できません: [_1]',
 	'Individual Plugins' => 'プラグイン',
 	'Plugin Set: [_1]' => 'プラグインのセット: [_1]',
@@ -2130,6 +2132,7 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/DataAPI/Endpoint/v2/Theme.pm
 	'Applying theme failed: [_1]' => 'テーマの適用に失敗しました: [_1]',
+	'Cannot apply a theme with invalid class.' => '不正なclass要素を持つテーマはサイトに適用できません。',
 	'Cannot apply website theme to blog.' => 'ウェブサイトテーマをブログに適用出来ません。',
 	'Cannot uninstall theme because the theme is in use.' => '現在利用中のテーマをアンインストールすることはできません。',
 	'Cannot uninstall this theme.' => 'テーマのアンインストールに失敗しました。',
@@ -2938,6 +2941,8 @@ use vars qw( @ISA %Lexicon );
 	'Error migrating list field indexes of content data # [_1]: [_2]...' => 'コンテンツデータ(ID:[_1])のリストフィールドインデックスを移行できませんでした: [_2]',
 	'Migrating list field index data...' => 'リストフィールドのインデックスを移行しています',
 	'Migrating site boolean meta data...' => 'サイトのboolean型のメタデータを移行しています...',
+	'Initializing default link target settings...' => 'リンクのターゲットの既定値を初期化しています...',
+	'Migrating web services passwords...' => 'Webサービスパスワードを移行しています...',
 
 ## lib/MT/Util.pm
 	'[quant,_1,day,days] from now' => '[quant,_1,日,日]後',
@@ -3652,8 +3657,12 @@ use vars qw( @ISA %Lexicon );
 	'Center' => '中央',
 	'Character entities (&amp#8221;, &amp#8220;, etc.)' => 'エンティティ (&amp#8221;、&amp#8220;など)',
 	'Compose Defaults' => '作成の既定値',
-	'Content CSS will be applied when WYSIWYG editor does support. You can specify CSS file by URL or {{theme_static}} placeholder. Example: {{theme_static}}path/to/cssfile.css' => 'WYSIWYGエディタ内で利用するCSSファイルのURL又は、{{theme_static}}変数を利用したURLを指定する事ができます。WYSIWYGエディタが対応していない場合は適用されません。例: {{theme_static}}path/to/cssfile.css',
+	'Content CSS will be applied if supported by the editor in use. You can specify CSS file by URL or {{theme_static}} placeholder. Example: {{theme_static}}path/to/cssfile.css' => 'エディタ内で利用するCSSファイルのURL又は、{{theme_static}}変数を利用したURLを指定する事ができます。エディタが対応していない場合は適用されません。例: {{theme_static}}path/to/cssfile.css',
 	'Content CSS' => 'コンテンツCSSファイル',
+	'Default Link Target' => 'リンクのターゲットの既定値',
+	'Default value of target attribute when inserting a link.' => 'リンク挿入時のtarget属性の既定値を指定する事ができます。',
+	'LINK_TARGET_SELF' => '同じウィンドウ',
+	'LINK_TARGET_BLANK' => '新規ウィンドウ',
 	'Czech' => 'チェコ語',
 	'Danish' => 'デンマーク語',
 	'Date Language' => '日付の言語',
@@ -3705,7 +3714,7 @@ use vars qw( @ISA %Lexicon );
 	'The range for Basename Length is 15 to 250.' => 'ファイル名の文字数は、15から250の範囲で設定してください。',
 	'Unpublished' => '下書き',
 	'Use thumbnail' => 'サムネイルを利用',
-	'WYSIWYG Editor Setting' => 'WYSIWYGエディタの設定',
+	'Editor Setting' => 'エディタの設定',
 	'You must set valid default thumbnail width.' => '有効なサムネイル画像の幅を指定してください。',
 	'Your preferences have been saved.' => '設定を保存しました。',
 	'pixels' => 'ピクセル',
@@ -4174,10 +4183,6 @@ use vars qw( @ISA %Lexicon );
 	'Finish (s)' => '完了 (s)',
 	'Finish' => '完了',
 
-## tmpl/admin2023/cms/dialog/asset_upload.tmpl
-	'You need to configure your blog.' => 'ブログを設定する必要があります。',
-	'Your blog has not been published.' => 'ブログが公開されていません。',
-
 ## tmpl/admin2023/cms/dialog/clone_blog.tmpl
 	'Categories/Folders' => 'カテゴリ/フォルダ',
 	'Child Site Details' => 'サイトの詳細',
@@ -4376,7 +4381,6 @@ use vars qw( @ISA %Lexicon );
 	'Preferred method of separating tags.' => 'タグを区切るときに使う文字を選択します。',
 	'Relative' => '経過',
 	'Remove Userpic' => 'プロフィール画像を削除',
-	'Reveal' => '内容を表示',
 	'Save changes to this author (s)' => 'ユーザーへの変更を保存 (s)',
 	'Select Userpic' => 'プロフィール画像の選択',
 	'System Permissions' => 'システム権限',
@@ -4392,7 +4396,6 @@ use vars qw( @ISA %Lexicon );
 	'User properties' => 'ユーザー属性',
 	'Web Services Password' => 'Webサービスパスワード',
 	'You must use half-width character for password.' => 'パスワードには全角文字を利用できません。',
-	'Your web services password is currently' => 'Webサービスのパスワード',
 	'_USAGE_PASSWORD_RESET' => 'ユーザーのパスワードを再設定できます。パスワードがランダムに生成され、[_1]にメールで送信されます。',
 	'_USER_DISABLED' => '無効',
 	'_USER_ENABLED' => '有効',
@@ -4874,6 +4877,9 @@ use vars qw( @ISA %Lexicon );
 	'End title HTML (optional)' => 'タイトルとなるHTMLの終了地点(任意)',
 	'Select an entry status' => '公開状態',
 	'Start title HTML (optional)' => 'タイトルとなるHTMLの開始地点(任意)',
+
+## tmpl/admin2023/cms/include/alert_asset_upload.tmpl
+	q{Before you can upload a file, you must <a href='[_1]' class='alert-link'>configure your site's publishing paths</a> first.} => q{ファイルをアップロードする前に、まず<a href='[_1]' class='alert-link'>サイトパスを設定</a>してください。},
 
 ## tmpl/admin2023/cms/include/anonymous_comment.tmpl
 	'Allow comments from anonymous or unauthenticated users.' => '認証なしユーザーまたは匿名ユーザーからコメントを受け付ける',
@@ -5792,6 +5798,18 @@ use vars qw( @ISA %Lexicon );
 	'Filter by site name' => 'サイト名で絞り込む',
 	'Add to starred sites' => 'スター付きサイトに追加',
 	'Remove from starred sites' => 'スター付きサイトから削除',
+
+## tmpl/admin2025/cms/dialog/dialog_api_password.tmpl
+	'Web services password is not currently available.' => '現在、Webサービスパスワードは設定されていません。',
+	'You have a Web services password securely stored in the database. If you forgot the password, please delete it and issue the new one.'  => 'Webサービスパスワードはすでにデータベースに安全に保存されています。パスワードを忘れたときは一度削除してから再発行してください。',
+	'Delete password' => 'パスワードを削除',
+	'Issue a new password' => '新しいパスワードを発行',
+	'Web Services password is successfully issued as follows.' => '下記のWEBサービスパスワードが正常に発行されました。',
+	'Please save it in a secure place since the password won\'t be shown again.' => 'パスワードの内容は今後確認できませんので、安全な場所に保管してください。',
+	'Web Services password is successfully deleted.' => 'Webサービスパスワードは正常に削除されました。',
+	'Are you sure you want to delete the existing password?' => '既存のパスワードを削除します。よろしいですか？',
+	'Copy to clipboard' => 'クリップボードにコピー',
+	'Copied' => 'コピーしました',
 );
 
 

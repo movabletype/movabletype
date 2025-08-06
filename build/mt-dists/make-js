@@ -9,67 +9,35 @@ use File::Spec;
 use Encode;
 use MT;
 use MT::Util qw(encode_js);
+use File::Find;
 
-my $admin_theme_id = 'admin2023/';
+my @files = ();
 
-my @files = (
-    "mt-static/mt.js",
-    "mt-static/jquery/jquery.mt.js",
-    "mt-static/js/dialog.js",
-    "mt-static/js/assetdetail.js",
-    "mt-static/js/upload_settings.js",
-    "mt-static/js/edit.js",
-    "mt-static/archetype/js/archetype_editor.js",
-    "mt-static/js/cms.js",
+push @files, find_js(
+    directories => ['mt-static/'],
+    extensions  => ['js', 'tag'],
+    ignore      => [
+        'mt-static/js/common/DOM',
+        'mt-static/mt_ja.js',
+        'mt-static/mt_en_us.js',
+    ],
+);
 
-    glob("mt-static/js/admin2023/contenttype/tag/*.tag"),
-    glob("src/contenttype/elements/*.svelte"),
-    glob("mt-static/js/admin2023/listing/tag/*.tag"),
-    glob("mt-static/js/admin2025/contenttype/tag/*.tag"),
-    glob("mt-static/js/admin2025/listing/tag/*.tag"),
-    glob("src/admin2025/buttons/elements/*.svelte"),
-    glob("src/admin2025/sidebar/elements/*.svelte"),
-    glob("src/admin2025/forms/search/*.svelte"),
-    glob("src/listing/elements/*.svelte"),
-    "mt-static/js/mt/util.js",
-    "mt-static/plugins/BlockEditor/lib/js/blockeditor_field.js",
-    "mt-static/plugins/BlockEditor/lib/js/blockeditor_field_manager.js",
-    "mt-static/plugins/BlockEditor/lib/js/fields/embed.js",
-    "mt-static/plugins/BlockEditor/lib/js/fields/header.js",
-    "mt-static/plugins/BlockEditor/lib/js/fields/horizon.js",
-    "mt-static/plugins/BlockEditor/lib/js/fields/image.js",
-    "mt-static/plugins/BlockEditor/lib/js/fields/text.js",
-    "mt-static/plugins/BlockEditor/lib/js/jquery.blockeditor.js",
-    "mt-static/plugins/BlockEditor/lib/js/modal_window.js",
-    "mt-static/plugins/FormattedTextForTinyMCE6/extension.js",
-    "mt-static/plugins/TinyMCE6/lib/js/tinymce/plugins/mt/plugin.js",
-    "mt-static/plugins/TinyMCE6/lib/js/tinymce/plugins/mt/langs/plugin.js",
-    "mt-static/plugins/TinyMCE6/lib/js/tinymce/plugins/mt_fullscreen/plugin.js",
-    "mt-static/plugins/TinyMCE6/lib/js/tinymce/plugins/mt_fullscreen/langs/plugin.js",
-    "plugins/BlockEditor/tmpl/${admin_theme_id}cms/dialog/asset_modal.tmpl",
-    "plugins/BlockEditor/tmpl/${admin_theme_id}cms/dialog/include/asset_upload_panel.tmpl",
-    "plugins/BlockEditor/tmpl/${admin_theme_id}cms/field_html/field_html_multi_line_text.tmpl",
-    "plugins/FormattedText/tmpl/cms/edit_formatted_text.tmpl",
-    "tmpl/${admin_theme_id}cms/edit_commenter.tmpl",
-    "tmpl/${admin_theme_id}cms/edit_content_data.tmpl",
-    "tmpl/${admin_theme_id}cms/edit_content_type.tmpl",
-    "tmpl/${admin_theme_id}cms/edit_entry.tmpl",
-    "tmpl/${admin_theme_id}cms/edit_template.tmpl",
-    "tmpl/${admin_theme_id}cms/field_html/field_html_asset.tmpl",
-    "tmpl/${admin_theme_id}cms/field_html/field_html_categories.tmpl",
-    "tmpl/${admin_theme_id}cms/field_html/field_html_content_type.tmpl",
-    "tmpl/${admin_theme_id}cms/field_html/field_html_multi_line_text.tmpl",
-    "tmpl/${admin_theme_id}cms/include/asset_upload.tmpl",
-    "tmpl/${admin_theme_id}cms/include/async_asset_list.tmpl",
-    "tmpl/${admin_theme_id}cms/include/async_asset_upload.tmpl",
-    "tmpl/${admin_theme_id}cms/include/category_selector.tmpl",
-    "tmpl/${admin_theme_id}cms/include/content_data_list.tmpl",
-    "tmpl/${admin_theme_id}cms/list_category.tmpl",
-    "tmpl/${admin_theme_id}cms/listing/tag_list_header.tmpl",
+push @files, find_js(
+    directories => ['src/'],
+    extensions  => ['svelte', 'ts'],
+);
+
+push @files, find_js(
+    directories => [
+        'tmpl/',
+        glob('plugins/*/tmpl'),
+        glob('addons/*/tmpl'),
+    ],
+    extensions  => ['tmpl'],
 );
 
 my $addon_path = File::Spec->catdir('addons');
-local *DH;
 my @addons;
 if ( opendir my $dh, $addon_path ) {
     my @p = readdir $dh;
@@ -79,20 +47,9 @@ if ( opendir my $dh, $addon_path ) {
         if ( -d $full_path ) {
             if ( $p =~ m/^(.+)\.(\w+)$/ ) {
                 my $label = $1;
-                my $id    = lc $1;
                 my $type  = $2;
                 next if $type ne 'pack';
-                if ( open my $fh,
-                    '<',
-                    File::Spec->catfile( $full_path, 'make_js_templates' ) )
-                {
-                    while (<$fh>) {
-                        chomp $_;
-                        push @files, $_;
-                    }
-                    close $fh;
-                    push @addons, $label;
-                }
+                push @addons, $label;
             }
         }
     }
@@ -178,4 +135,29 @@ foreach my $lang (qw(en_us ja)) {
         print $FOUT "Lexicon['$text'] = '$lexicon{$text}';\n";
     }
     close $FOUT;
+}
+
+sub find_js {
+    my %args      = @_;
+    my $home      = $ENV{MT_TEST_ROOT} || $ENV{MT_HOME} || '.';
+    my @dirs      = map { File::Spec->catdir($home, $_) } @{ $args{directories} };
+    my $ext_re    = join('|', @{ $args{extensions} });
+    my $ignore_re = join('|', @{ $args{ignore} || [] });
+    my @ret;
+    File::Find::find({
+            wanted => sub {
+                my $file = $File::Find::name;
+                return unless -f $file;
+                return if $file               =~ /\/\./;
+                return unless $file           =~ /\.($ext_re)$/;
+                return if $ignore_re && $file =~ /^$ignore_re/;
+                my $rel = File::Spec->abs2rel($file, $home);
+                push @ret, $rel;
+            },
+            no_chdir => 1,
+            follow   => 1,
+        },
+        @dirs
+    );
+    return @ret;
 }

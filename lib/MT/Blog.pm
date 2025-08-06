@@ -78,6 +78,7 @@ __PACKAGE__->install_properties(
             'archive_url'              => 'string(255)',
             'archive_path'             => 'string(255)',
             'content_css'              => 'string(255)',
+            'link_default_target'      => 'string(6) not null',
             'allow_data_api'           => 'boolean',
             ## Have to keep these around for use in mt-upgrade.cgi.
             'old_style_archive_links' => 'boolean',
@@ -150,6 +151,8 @@ __PACKAGE__->install_properties(
         class_type  => 'blog',
     }
 );
+
+our $DEFAULT_LINK_DEFAULT_TARGET = '_self';
 
 # Image upload defaults.
 sub ALIGN () {'none'}
@@ -470,6 +473,7 @@ sub list_props {
                # something far in the future to force dynamic side to read it.
                 children_modified_on => '20101231120000',
                 use_revision         => 1,
+                link_default_target  => $DEFAULT_LINK_DEFAULT_TARGET,
             }
         );
         return $blog;

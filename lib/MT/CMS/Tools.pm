@@ -58,12 +58,6 @@ sub start_recover {
             or return $app->errtrans("Invalid request.");
     }
 
-    # disable insecure "return_to" for backward compatibility. MTC-30384
-    if ($param->{recovered}
-        && MT::Util::encode_js($param->{return_to}) ne $param->{return_to})
-    {
-        $param->{return_to} = '';
-    }
     $param->{'can_signin'} = ( ref $app eq 'MT::App::CMS' ) ? 1 : 0;
 
     $app->add_breadcrumb( $app->translate('Password Recovery') );

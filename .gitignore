@@ -89,5 +89,6 @@ t/selenium/**/evidence
 mt-static/js/build/*.map
 
 CHECKSUMS
+PLUGIN_VERSIONS
 
 *.bak

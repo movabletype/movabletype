@@ -1,6 +1,6 @@
 --
 -- Created by SQL::Translator::Producer::MySQL
--- Created on Mon Jul 14 18:31:59 2025
+-- Created on Tue Jul 22 08:18:38 2025
 --
 SET foreign_key_checks=0;
 
@@ -107,7 +107,7 @@ DROP TABLE IF EXISTS `mt_author`;
 -- Table: `mt_author`
 --
 CREATE TABLE `mt_author` (
-  `author_api_password` varchar(60) NULL DEFAULT NULL,
+  `author_api_password` varchar(106) NULL DEFAULT NULL,
   `author_auth_type` varchar(50) NULL DEFAULT NULL,
   `author_basename` varchar(255) NULL DEFAULT NULL,
   `author_can_create_blog` tinyint(4) NULL DEFAULT NULL,
@@ -243,6 +243,7 @@ CREATE TABLE `mt_blog` (
   `blog_junk_folder_expiry` integer(11) NULL DEFAULT NULL,
   `blog_junk_score_threshold` float NULL DEFAULT NULL,
   `blog_language` varchar(5) NULL DEFAULT NULL,
+  `blog_link_default_target` varchar(6) NOT NULL,
   `blog_manual_approve_commenters` tinyint(4) NULL DEFAULT NULL,
   `blog_moderate_pings` tinyint(4) NULL DEFAULT NULL,
   `blog_moderate_unreg_comments` tinyint(4) NULL DEFAULT NULL,

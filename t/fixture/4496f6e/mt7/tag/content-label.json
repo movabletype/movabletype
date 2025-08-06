@@ -139,6 +139,7 @@
          "blog_junk_folder_expiry",
          "blog_junk_score_threshold",
          "blog_language",
+         "blog_link_default_target",
          "blog_manual_approve_commenters",
          "blog_moderate_pings",
          "blog_moderate_unreg_comments",
@@ -214,6 +215,7 @@
             14,
             0,
             "en_US",
+            "_self",
             null,
             1,
             2,
@@ -348,16 +350,16 @@
             1,
             null,
             "__NOW__",
-            "fdf72535c346df4c7525925dc8c7c1a4b0c7c30c",
+            "52d0f0002037cae700ab180f1953fa85b50c1918",
             0,
             null,
             1,
-            "152019413fcfd5266dcd7f3f17a3ccb80cb9dc98",
+            "e9e6a2a2990681d09abfd9def732290ae3c2d6f4",
             "test label 1",
             null,
             "__NOW__",
             2,
-            "152019413fcfd5266dcd7f3f17a3ccb80cb9dc98",
+            "e9e6a2a2990681d09abfd9def732290ae3c2d6f4",
             null,
             201722
          ],
@@ -368,16 +370,16 @@
             2,
             null,
             "__NOW__",
-            "5c4fca06af83698d566915a1d582ce68e0684a9f",
+            "a0bbcd264c8d801aa846e1be5528977ad9cdff14",
             0,
             "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u00011-\u0000\u0000\u0000\ftest label 2",
             2,
-            "6461ca3a6062b997845ca898beec89d92e75bb3e",
+            "67afc047fedafe15a0afda0ca84225608c12b1ec",
             "test label 2 (not used)",
             null,
             "__NOW__",
             2,
-            "6461ca3a6062b997845ca898beec89d92e75bb3e",
+            "67afc047fedafe15a0afda0ca84225608c12b1ec",
             null,
             201722
          ],
@@ -388,16 +390,16 @@
             1,
             null,
             "__NOW__",
-            "fdf72535c346df4c7525925dc8c7c1a4b0c7c30c",
+            "52d0f0002037cae700ab180f1953fa85b50c1918",
             0,
             null,
             3,
-            "86bc791c4ab63dc99e1211ab84a4a771b9fccdbe",
+            "c4cd226c53dc3a2a72d0328363341f66304c4ee1",
             null,
             null,
             "__NOW__",
             2,
-            "86bc791c4ab63dc99e1211ab84a4a771b9fccdbe",
+            "c4cd226c53dc3a2a72d0328363341f66304c4ee1",
             null,
             201722
          ],
@@ -408,16 +410,16 @@
             1,
             null,
             "__NOW__",
-            "fdf72535c346df4c7525925dc8c7c1a4b0c7c30c",
+            "52d0f0002037cae700ab180f1953fa85b50c1918",
             0,
             null,
             4,
-            "1737daaa2d84d491b1db5acefdb7ca41e0a28371",
+            "7b67c9d7dff95dec42d78310ee02f45371ac4191",
             "test label 4",
             null,
             "__NOW__",
             2,
-            "1737daaa2d84d491b1db5acefdb7ca41e0a28371",
+            "7b67c9d7dff95dec42d78310ee02f45371ac4191",
             null,
             201722
          ]
@@ -457,7 +459,7 @@
             null,
             null,
             "single_line_text",
-            "069eb415f1adf7e436d47a04735d3b822975c585"
+            "8932d955824f804e25c83135daf06483c4bea123"
          ]
       ]
    },
@@ -506,7 +508,7 @@
       ],
       "rows" : [
          [
-            "DataAPIDisableSite 0\nDefaultSupportedLanguages en_us,ja\nDisableDataAPI 0\nDisableNotificationPings 1\nHidePrivateRelatedContentData 1\nPluginAlias ContentType Information Widget=ContentInfoWidget\nPluginAlias Markdown=Markdown/Markdown.pl\nPluginAlias SmartyPants=Markdown/SmartyPants.pl\nPluginAlias Textile=Textile/textile2.pl\nPluginAlias WXR Importer=WXRImporter\nPluginAlias Widget Manager Upgrade Assistant=WidgetManager/WidgetManager.pl\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion blockeditor=1\nPluginSchemaVersion commonmark=1.0\nPluginSchemaVersion formattedtext=1.00\nPluginSchemaVersion tinymce6=1\nPluginSwitch BlockEditor=0\nPluginSwitch CommonMark=1\nPluginSwitch ContentInfoWidget=1\nPluginSwitch DashboardWidgetTemplate=1\nPluginSwitch FormattedText=1\nPluginSwitch FormattedTextForTinyMCE6=1\nPluginSwitch GoogleAnalyticsV4=1\nPluginSwitch Markdown/Markdown.pl=1\nPluginSwitch Markdown/SmartyPants.pl=1\nPluginSwitch Textile/textile2.pl=0\nPluginSwitch TinyMCE6=1\nPluginSwitch WXRImporter=1\nPluginSwitch WidgetManager/WidgetManager.pl=0\nSchemaVersion 9.0000\nTrimFilePath 1\n",
+            "DataAPIDisableSite 0\nDefaultSupportedLanguages en_us,ja\nDisableDataAPI 0\nDisableNotificationPings 1\nHidePrivateRelatedContentData 1\nPluginAlias ContentType Information Widget=ContentInfoWidget\nPluginAlias Markdown=Markdown/Markdown.pl\nPluginAlias SmartyPants=Markdown/SmartyPants.pl\nPluginAlias Textile=Textile/textile2.pl\nPluginAlias WXR Importer=WXRImporter\nPluginAlias Widget Manager Upgrade Assistant=WidgetManager/WidgetManager.pl\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion blockeditor=1\nPluginSchemaVersion commonmark=1.0\nPluginSchemaVersion formattedtext=1.00\nPluginSchemaVersion tinymce6=1\nPluginSwitch BlockEditor=0\nPluginSwitch CommonMark=1\nPluginSwitch ContentInfoWidget=1\nPluginSwitch DashboardWidgetTemplate=1\nPluginSwitch FormattedText=1\nPluginSwitch FormattedTextForTinyMCE6=1\nPluginSwitch GoogleAnalyticsV4=1\nPluginSwitch Markdown/Markdown.pl=1\nPluginSwitch Markdown/SmartyPants.pl=1\nPluginSwitch Textile/textile2.pl=0\nPluginSwitch TinyMCE6=1\nPluginSwitch WXRImporter=1\nPluginSwitch WidgetManager/WidgetManager.pl=0\nSchemaVersion 9.0001\nTrimFilePath 1\n",
             1
          ]
       ]
@@ -539,7 +541,7 @@
             null,
             "__NOW__",
             "test content type 1",
-            "fdf72535c346df4c7525925dc8c7c1a4b0c7c30c",
+            "52d0f0002037cae700ab180f1953fa85b50c1918",
             null,
             null
          ],
@@ -547,14 +549,14 @@
             1,
             null,
             "__NOW__",
-            "069eb415f1adf7e436d47a04735d3b822975c585",
+            "8932d955824f804e25c83135daf06483c4bea123",
             "This is a sample.",
-            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002A\u0000\u0000\u0000\u0001H\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\u0010single_line_text\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0014Sample Content Field\u0000\u0000\u0000\brequired-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(069eb415f1adf7e436d47a04735d3b822975c585",
+            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002A\u0000\u0000\u0000\u0001H\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\u0010single_line_text\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(8932d955824f804e25c83135daf06483c4bea123\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0002\u0000\u0000\u0000\brequired-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0014Sample Content Field\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00011",
             2,
             null,
             "__NOW__",
             "test content type 2",
-            "5c4fca06af83698d566915a1d582ce68e0684a9f",
+            "a0bbcd264c8d801aa846e1be5528977ad9cdff14",
             null,
             null
          ]
@@ -910,5 +912,5 @@
          ]
       ]
    },
-   "schema_version" : "WidgetManager 1.1; blockeditor 1; commonmark 1.0; core 9.0000; formattedtext 1.00; tinymce6 1"
+   "schema_version" : "WidgetManager 1.1; blockeditor 1; commonmark 1.0; core 9.0001; formattedtext 1.00; tinymce6 1"
 }
