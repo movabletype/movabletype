@@ -288,8 +288,8 @@ sub ascii_only { ( ( ref $_[0] ) || $_[0] ) eq __PACKAGE__ }
 
     'YEARLY_ARCHIVE_TITLE' => '[_1]',
 
-    '__PLUGIN_LABEL_DEFAULT' => 'default',
-    '__PLUGIN_LABEL_DEFAULT_BUT_CHANGED' => 'default (changed)',
+    '__PLUGIN_LABEL_DEFAULT' => 'Default',
+    '__PLUGIN_LABEL_DEFAULT_BUT_MODIFIED' => 'Default (Modified)',
 );
 
 1;

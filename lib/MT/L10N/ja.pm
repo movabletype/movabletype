@@ -1378,7 +1378,8 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/CMS/Plugin.pm
 	'__PLUGIN_LABEL_DEFAULT' => '標準',
-	'__PLUGIN_LABEL_DEFAULT_BUT_CHANGED' => '標準（変更あり）',
+	'__PLUGIN_LABEL_DEFAULT_BUT_MODIFIED' => '標準（変更あり）',
+	'Added' => '追加',
 	'Error saving plugin settings: [_1]' => 'プラグインの設定を保存できません: [_1]',
 	'Individual Plugins' => 'プラグイン',
 	'Plugin Set: [_1]' => 'プラグインのセット: [_1]',
