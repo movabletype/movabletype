@@ -7,7 +7,6 @@ import livereload from "rollup-plugin-livereload";
 import sveltePreprocess from "svelte-preprocess";
 import typescript from "@rollup/plugin-typescript";
 import svelte from "rollup-plugin-svelte";
-import css from "rollup-plugin-css-only";
 
 const production = !process.env.ROLLUP_WATCH;
 const defaultOutputDir = "mt-static/js/build";
