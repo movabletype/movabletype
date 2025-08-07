@@ -13222,6 +13222,9 @@ fieldset.form-group {
 .alert .h1, .alert .h2, .alert .h3, .alert .h4 {
   margin-top: 0;
 }
+.alert .btn-close {
+  padding: 1rem;
+}
 
 /* Badges */
 .badge {
