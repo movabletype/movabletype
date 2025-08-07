@@ -468,6 +468,9 @@
          name="status"
          type="submit"
          title="<mt:var name="button_title">"
+         data-title-publish="<mt:var name="publish_button_title">"
+         data-title-scheduled="<mt:var name="scheduled_button_title">"
+         data-title-draft="<mt:var name="draft_button_title">"
          class="publish action primary button btn__mobile btn-primary mx-1">
         <mt:var name="button_text">
       </button>
@@ -927,13 +930,13 @@ Template.templates.autoSave = '<mt:section encode_js="1">
       var selectedStatus = jQuery('select#status').val();
       if (selectedStatus == 2) {
           jQuery('button.publish').text('<mt:var name="publish_button_text">');
-          jQuery('button.publish').attr('title', '<mt:var name="publish_button_title">');
+          jQuery('button.publish').attr('title', jQuery('button.publish').data("titlePublish"));
       } else if (selectedStatus == 4) {
           jQuery('button.publish').text('<mt:var name="scheduled_button_text">');
-          jQuery('button.publish').attr('title', '<mt:var name="scheduled_button_title">');
+          jQuery('button.publish').attr('title', jQuery('button.publish').data("titleScheduled"));
       } else {
           jQuery('button.publish').text('<mt:var name="draft_button_text">');
-          jQuery('button.publish').attr('title', '<mt:var name="draft_button_title">');
+          jQuery('button.publish').attr('title', jQuery('button.publish').data("titleDraft"));
       }
   }
   function clearUnpublishDate () {
