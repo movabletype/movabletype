@@ -9,29 +9,61 @@
   export let searchTabs: SearchTab[] = [];
   export let objectType: string;
   export let isLoading: boolean = false;
-
+  let searchContentTypeId: string = "";
   let searchTextRef: HTMLInputElement | null = null;
 
   $: {
     if (searchTextRef) {
       searchTextRef.focus();
     }
+    if (!searchContentTypeId && contentTypes.length > 0) {
+      searchContentTypeId = contentTypes[0].id;
+    }
   }
+
+  const submit = (event: Event) => {
+    event.preventDefault();
+
+    const formId = "mt-search-form-body";
+    const existingForm = document.getElementById(formId);
+    if (existingForm) {
+      existingForm.remove();
+    }
+
+    const form = document.createElement("form");
+    form.method = "POST";
+    form.action = window.ScriptURI;
+    form.id = formId;
+
+    const hiddenInput = (name: string, value: string) => {
+      const input = document.createElement("input");
+      input.type = "hidden";
+      input.name = name;
+      input.value = value;
+      return input;
+    };
+
+    const searchText = searchTextRef?.value.trim() || "";
+    form.appendChild(hiddenInput("__mode", "search_replace"));
+    form.appendChild(hiddenInput("blog_id", blogId));
+    form.appendChild(hiddenInput("_type", objectType));
+    form.appendChild(hiddenInput("do_search", "1"));
+    form.appendChild(hiddenInput("magic_token", magicToken));
+    form.appendChild(hiddenInput("search", searchText));
+    form.appendChild(hiddenInput("content_type_id", searchContentTypeId || ""));
+    form.appendChild(hiddenInput("object_type", objectType));
+
+    document.body.appendChild(form);
+    form.submit();
+  };
 </script>
 
-<form class="mt-search-form" method="post" action={window.ScriptURI}>
-  <input type="hidden" name="__mode" value="search_replace" />
-  <input type="hidden" name="blog_id" value={blogId} />
-  <input type="hidden" name="_type" value={objectType} />
-  <input type="hidden" name="do_search" value="1" />
-  <input type="hidden" name="magic_token" value={magicToken} />
-
+<div class="mt-search-form">
   <div class="search-type">
     {#each searchTabs as type}
       <label>
         <input
           type="radio"
-          name="type"
           value={type.key}
           id={type.key}
           checked={objectType === type.key}
@@ -49,8 +81,8 @@
       <select
         class="custom-select form-control form-select"
         class:disabled={objectType !== "content_data"}
-        name="content_type_id"
         disabled={objectType !== "content_data" || contentTypes.length === 0}
+        bind:value={searchContentTypeId}
       >
         {#if contentTypes.length > 0}
           {#each contentTypes as contentType}
@@ -70,13 +102,17 @@
       <input
         type="text"
         placeholder={window.trans("Select target and search text...")}
-        name="search"
         bind:this={searchTextRef}
+        on:keydown={(event) => {
+          if (event.key === "Enter" && !event.isComposing) {
+            submit(event);
+          }
+        }}
       />
     </div>
 
     <div class="submit-button">
-      <button type="submit" class="btn btn-primary">
+      <button type="button" class="btn btn-primary" on:click={submit}>
         <SVG
           title={window.trans("Search")}
           class="mt-icon mt-icon--sm"
@@ -86,4 +122,4 @@
       </button>
     </div>
   </div>
-</form>
+</div>
