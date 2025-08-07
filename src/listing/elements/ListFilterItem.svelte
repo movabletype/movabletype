@@ -20,7 +20,6 @@
   export let localeCalendarHeader: Array<string>;
 
   let fieldParentDivs: Array<HTMLDivElement | undefined> = [];
-  let root: HTMLDivElement;
 
   $: filterTypeHash = filterTypes.reduce((hash, filterType) => {
     hash[filterType.type] = filterType;
@@ -110,7 +109,7 @@
   };
 </script>
 
-<div class="filteritem" bind:this={root}>
+<div class="filteritem">
   <button
     class="close btn-close"
     aria-label="Close"
