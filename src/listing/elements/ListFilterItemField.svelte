@@ -6,9 +6,13 @@
   export let field: string;
   export let parentDiv: HTMLDivElement | undefined;
   export let item: Listing.Item;
+  export let initializeDateOption: () => void;
+  export let initializeOptionWithBlank: () => void;
 
   afterUpdate(() => {
     setValues();
+    initializeDateOption();
+    initializeOptionWithBlank();
   });
 
   const setValues = (): void => {
