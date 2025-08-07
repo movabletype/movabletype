@@ -122,7 +122,7 @@
     };
     jQuery(root)
       .find(".filter-date")
-      .each(function (index, element) {
+      .each(function (_index, element) {
         const $node = jQuery(element);
         dateOption($node);
         $node.on("change", function () {
@@ -164,7 +164,7 @@
     };
     jQuery(root)
       .find(".filter-blank")
-      .each(function (index, element) {
+      .each(function (_index, element) {
         const $node = jQuery(element);
         changeOption($node);
         $node.on("change", function () {
