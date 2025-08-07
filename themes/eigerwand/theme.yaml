@@ -2,8 +2,8 @@ label: 'Eigerwand'
 id: 'eigerwand'
 version: 2.0
 author_link: 'http://www.sixapart.com/'
-author_name: 'Six Apart Ltd'
-class: 'blog'
+author_name: 'Six Apart Ltd.'
+class: 'both'
 description: '<__trans phrase="_THEME_DESCRIPTION">'
 protected: 1
 l10n_lexicon:

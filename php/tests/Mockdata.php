@@ -26,6 +26,7 @@ class Mockdata {
         $blog->days_on_index = $args['days_on_index'] ?? 0;
         $blog->site_url = $args['site_url'] ?? 'https://example.com/';
         $blog->site_path = $args['site_path'] ?? '/path/to/site';
+        $blog->link_default_target = $args['link_default_target'] ?? '_self';
         self::finalize_and_save($blog);
         self::$last_blog_id = $blog->id;
         return $blog;

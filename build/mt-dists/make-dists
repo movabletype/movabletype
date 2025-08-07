@@ -146,6 +146,9 @@ for my $lang (@languages) {
     require MT::Util::Checksums;
     MT::Util::Checksums::update_checksums();
 
+    require MT::Util::PluginVersions;
+    MT::Util::PluginVersions::update_plugin_versions();
+
     # Copy files for non-GPL license since we will be modifying the content
     manicopy( maniread(), $distname, ( $license eq 'GPL' ? 'best' : 'cp' ) );
 

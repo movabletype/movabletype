@@ -350,6 +350,7 @@ sub _to_object {
                 $MT::DebugMode ? ( errors => $p->{compat_errors} ) : (),
                 )
             : (),
+            (defined $p->{plugin_label_value} && $p->{plugin_label_value} ne '') ? (label => $p->{plugin_label_value}) : (),
         );
 
         push @plugins, \%plugin;

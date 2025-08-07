@@ -1546,9 +1546,13 @@ html[data-screen-id=dashboard][data-scope-type=user] {
   left: 0;
   margin-top: 68px;
 
+  box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.25);
+  border: none !important;
+
   svg {
     margin: 0;
     fill: #0176BF;
+    margin-left: 8px;
   }
 
   .close {
@@ -2627,16 +2631,16 @@ fieldset.form-group{
   background: $white;
   font-size: 85%;
 }
-.badge-default{
+.badge-default, .badge-default-plugin{
   border-color: $gray;
   color: $gray-darker;
 }
-.badge-primary{
+.badge-primary, .badge-added-plugin{
   border-color: transparent;
   background-color: map-get($theme-colors, "success");
   color: $white;
 }
-.badge-info{
+.badge-info, .badge-default-modified-plugin{
   border-color: transparent;
   background-color: $gray-darker;
   color: $white;
@@ -3118,12 +3122,14 @@ li.nav-item {
 }
 
 @include media-breakpoint-up(md) {
-  .mt-has-primary-navigation-collapsed .mt-primaryNavigation .mt-contentWrapper .debug-panel {
-    margin-left: calc(var(--minimal-left-bar-width) + var(--bs-card-cap-padding-x)) !important;
-  }
+  html:has(.mt-primaryNavigation) {
+    .debug-panel {
+      margin-left: var(--left-bar-width) !important;
+    }
 
-  html .mt-primaryNavigation .mt-contentWrapper .debug-panel {
-    margin-left: var(--left-bar-width) !important;
+    &.mt-has-primary-navigation-collapsed .debug-panel {
+      margin-left: calc(var(--minimal-left-bar-width) + var(--bs-card-cap-padding-x)) !important;
+    }
   }
 }
 

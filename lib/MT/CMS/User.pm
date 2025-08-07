@@ -2180,4 +2180,79 @@ sub _delete_pseudo_association {
     $app->config->save_config;
 }
 
+sub issue_api_password {
+    my $app = shift;
+    $app->validate_magic() or return;
+
+    $app->validate_param({
+        id => [qw/ID/],
+    }) or return;
+
+    my $user         = $app->user;
+    my $dest_user_id = $app->param('id');
+
+    return $app->permission_denied() unless $user->id == $dest_user_id || $app->can_do('edit_other_profile');
+
+    my $dest_user = $app->model('author')->load($dest_user_id)
+        or return $app->error($app->translate("User load failed: [_1]", $dest_user_id));
+
+    my $new_password = MT::Util::UniqueID::create_api_password();
+    $dest_user->api_password($new_password);
+    $dest_user->save or return $app->error($dest_user->errstr);
+
+    $app->load_tmpl(
+        'dialog/dialog_api_password.tmpl', {
+            dest_author_id   => $dest_user->id,
+            api_password     => $new_password,
+        });
+}
+
+sub delete_api_password {
+    my $app = shift;
+    $app->validate_magic() or return;
+
+    $app->validate_param({
+        id => [qw/ID/],
+    }) or return;
+
+    my $user         = $app->user;
+    my $dest_user_id = $app->param('id');
+
+    return $app->permission_denied() unless $user->id == $dest_user_id || $app->can_do('edit_other_profile');
+
+    my $dest_user = $app->model('author')->load($dest_user_id)
+        or return $app->error($app->translate("User load failed: [_1]", $dest_user_id));
+    $dest_user->api_password('');
+    $dest_user->save or return $app->error($dest_user->errstr);
+
+    $app->redirect($app->uri(
+        mode => 'dialog_api_password',
+        args => {
+            id      => $dest_user->id,
+            deleted => 1,
+        }));
+}
+
+sub dialog_api_password {
+    my $app = shift;
+
+    $app->validate_param({
+        id => [qw/ID/],
+    }) or return;
+
+    my $user         = $app->user;
+    my $dest_user_id = $app->param('id');
+
+    return $app->permission_denied() unless $user->id == $dest_user_id || $app->can_do('edit_other_profile');
+
+    my $dest_user = $app->model('author')->load($dest_user_id)
+        or return $app->error($app->translate("User load failed: [_1]", $dest_user_id));
+
+    $app->load_tmpl(
+        'dialog/dialog_api_password.tmpl', {
+            has_api_password => length($dest_user->api_password),
+            dest_author_id   => $dest_user->id,
+        });
+}
+
 1;

@@ -1,3 +1,4 @@
+<mt:setvarblock name="chevron"><svg width="6" height="9" viewBox="0 0 6 9" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M5.69975 4.54757L1.45711 0.304932L0.75 1.01204L4.28564 4.54768L0.750076 8.08325L1.45718 8.79036L5.69982 4.54772L5.69971 4.54761L5.69975 4.54757Z" fill="#A5A5A5"/></svg></mt:setvarblock>
 
 <div class="mt-breadcrumb">
 
@@ -17,7 +18,7 @@
 
     <mt:if name="scope_type" ne="user">
       </a>
-      <span class="mt-gts">&gt;</span>
+      <span class="mt-gts"><mt:var name="chevron"></span>
     </mt:if>
   </span>
 
@@ -42,7 +43,7 @@
         <mt:else>
           <span title="<mt:var name="curr_website_name" escape="html">"><mt:var name="curr_website_name" escape="html" trim_to="20+..."></span>
         </mt:if>
-        <span class="mt-gts">&gt;</span>
+       <span class="mt-gts"><mt:var name="chevron"></span>
       </mt:if>
 
       <a
@@ -55,7 +56,7 @@
     </mt:if>
 
     <mt:loop name="breadcrumbs">
-      <span class="mt-gts">&gt;</span>
+      <span class="mt-gts"><mt:var name="chevron"></span>
       <mt:if name="bc_uri">
         <a
           href="<mt:var name="bc_uri" escape="html">"
@@ -89,7 +90,7 @@
           <mt:var name="curr_website_name" escape="html" trim_to="20+...">
         </span>
       </mt:if>
-      <span class="mt-gts">&gt;</span>
+      <span class="mt-gts"><mt:var name="chevron"></span>
       <span title="<mt:var name="blog_name" escape="html">">
         <mt:var name="blog_name" escape="html" trim_to="20+...">
       </span>
