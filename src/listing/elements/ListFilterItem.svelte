@@ -1,8 +1,6 @@
 <script lang="ts">
   import type * as Listing from "../../@types/listing";
 
-  import { onMount } from "svelte";
-
   import SVG from "../../svg/elements/SVG.svelte";
 
   import ListFilterItemField from "./ListFilterItemField.svelte";
@@ -28,11 +26,6 @@
     hash[filterType.type] = filterType;
     return hash;
   }, {});
-
-  onMount(() => {
-    initializeDateOption();
-    initializeOptionWithBlank();
-  });
 
   const addFilterItemContent = (e: Event): void => {
     const target = e.target as HTMLElement;
@@ -63,8 +56,6 @@
       itemIndex.toString(),
       contentIndex.toString(),
     );
-    initializeDateOption();
-    initializeOptionWithBlank();
   };
 
   const getListItemIndex = (element: HTMLElement): number => {
@@ -225,11 +216,13 @@
               class="item-content form-inline"
               bind:this={fieldParentDivs[index]}
             >
-              {#key currentFilter}
+              {#key currentFilter || fieldParentDivs[index]}
                 <ListFilterItemField
                   field={filterTypeHash[loopItem.type].field}
                   item={loopItem}
                   parentDiv={fieldParentDivs[index]}
+                  {initializeDateOption}
+                  {initializeOptionWithBlank}
                 />
               {/key}
               {#if !filterTypeHash[loopItem.type].singleton}
@@ -271,11 +264,13 @@
       class={"filtertype type-" + item.type}
     >
       <div class="item-content form-inline" bind:this={fieldParentDivs[0]}>
-        {#key currentFilter}
+        {#key currentFilter || fieldParentDivs[0]}
           <ListFilterItemField
             field={filterTypeHash[item.type].field}
             {item}
             parentDiv={fieldParentDivs[0]}
+            {initializeDateOption}
+            {initializeOptionWithBlank}
           />
         {/key}
         {#if !filterTypeHash[item.type].singleton}
