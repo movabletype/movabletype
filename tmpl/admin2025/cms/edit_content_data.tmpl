@@ -475,9 +475,23 @@
       <button
          name="status"
          type="submit"
-         title="<mt:var name="button_title">"
-         class="publish action primary button btn__mobile btn-primary mx-1">
-        <mt:var name="button_text">
+         title="<mt:var name="publish_button_title">"
+         class="publish status_publish action primary button btn__mobile btn-primary mx-1">
+        <mt:var name="publish_button_text">
+      </button>
+      <button
+         name="status"
+         type="submit"
+         title="<mt:var name="scheduled_button_title">"
+         class="publish status_scheduled action primary button btn__mobile btn-primary mx-1">
+        <mt:var name="scheduled_button_text">
+      </button>
+      <button
+         name="status"
+         type="submit"
+         title="<mt:var name="draft_button_title">"
+         class="publish status_draft action primary button btn__mobile btn-primary mx-1">
+        <mt:var name="draft_button_text">
       </button>
       <button
          name="preview_content_data"
@@ -927,14 +941,17 @@ Template.templates.autoSave = '<mt:section encode_js="1">
   function setSaveButtonText () {
       var selectedStatus = jQuery('select#status').val();
       if (selectedStatus == 2) {
-          jQuery('button.publish').text('<mt:var name="publish_button_text">');
-          jQuery('button.publish').attr('title', '<mt:var name="publish_button_title">');
+          jQuery('button.status_publish').show();
+          jQuery('button.status_scheduled').hide();
+          jQuery('button.status_draft').hide();
       } else if (selectedStatus == 4) {
-          jQuery('button.publish').text('<mt:var name="scheduled_button_text">');
-          jQuery('button.publish').attr('title', '<mt:var name="scheduled_button_title">');
+          jQuery('button.status_publish').hide();
+          jQuery('button.status_scheduled').show();
+          jQuery('button.status_draft').hide();
       } else {
-          jQuery('button.publish').text('<mt:var name="draft_button_text">');
-          jQuery('button.publish').attr('title', '<mt:var name="draft_button_title">');
+          jQuery('button.status_publish').hide();
+          jQuery('button.status_scheduled').hide();
+          jQuery('button.status_draft').show();
       }
   }
   function clearUnpublishDate () {
