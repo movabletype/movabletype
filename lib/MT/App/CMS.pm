@@ -5066,10 +5066,19 @@ sub setup_editor_param {
     $param->{object_type} = $app->param('_type') || '';
 
     if ( my $editor_regs = MT::Component->registry('editors') ) {
+        require MT::Util::Editor;
+        my $wysiwyg_editor = lc(MT::Util::Editor::current_wysiwyg_editor($app));
+        my $source_editor  = lc(MT::Util::Editor::current_source_editor($app));
+
+        my @editor_keys = ($wysiwyg_editor);
+        push @editor_keys, $source_editor if $source_editor ne $wysiwyg_editor;
+
         $param->{editors} = {};
         foreach my $editors (@$editor_regs) {
-            foreach my $editor_key ( keys(%$editors) ) {
-                my $reg    = $editors->{$editor_key};
+            foreach my $editor_key (@editor_keys) {
+                next unless defined $editor_key;
+                my $reg = $editors->{$editor_key}
+                    or next;
                 my $plugin = $reg->{plugin};
                 my $tmpls  = $param->{editors}{$editor_key} ||= {
                     templates  => [],
@@ -5091,7 +5100,7 @@ sub setup_editor_param {
                     {
                         push(
                             @{ $tmpls->{ $k . 's' } },
-                            { %$conf, tmpl => $tmpl }
+                            { %$conf, tmpl => $tmpl, version => $plugin->version }
                         );
                     }
                 }
@@ -5117,12 +5126,9 @@ sub setup_editor_param {
         }
 
         if ( %{ $param->{editors} } ) {
-            my $editor = lc( $app->config('Editor') );
-            $param->{wysiwyg_editor}
-                = lc( $app->config('WYSIWYGEditor') || $editor );
-            $param->{source_editor}
-                = lc( $app->config('SourceEditor') || $editor );
-            $param->{editor_strategy} = lc( $app->config('EditorStrategy') );
+            $param->{wysiwyg_editor}  = $wysiwyg_editor;
+            $param->{source_editor}   = $source_editor;
+            $param->{editor_strategy} = lc($app->config('EditorStrategy'));
         }
         else {
             delete $param->{editors};

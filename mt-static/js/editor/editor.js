@@ -7,9 +7,10 @@
  */
 ;(function($) {
 
-MT.Editor = function(id, manager) {
+MT.Editor = function(id, manager, options) {
     this.id = id;
     this.manager = manager;
+    this.options = options;
     this.initialized = false;
     this.editor = null;
 };
@@ -145,8 +146,8 @@ $.each([
     'getHeight', 'setHeight', 'resetUndo'
 ], function() {
     var method = this;
-    MT.Editor.prototype[method] = function() {
-        return this.editor ? this.editor[method]() : null;
+    MT.Editor.prototype[method] = function(...args) {
+        return this.editor ? this.editor[method](...args) : null;
     };
 });
 
