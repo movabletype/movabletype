@@ -356,6 +356,10 @@ sub apply {
             $app->translate('Cannot apply website theme to blog.'), 400 );
     }
 
+    if ($theme->{deprecated}) {
+        return $app->error($app->translate('Cannot apply a deprecated theme: [_1]', $theme_id), 400);
+    }
+
     $site->theme_id( $theme->id );
     $site->theme_export_settings(undef);
     $site->save

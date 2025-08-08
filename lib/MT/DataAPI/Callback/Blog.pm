@@ -123,10 +123,15 @@ sub save_filter {
         return $app->errtrans('Cannot apply a theme with invalid class.');
     }
 
-    # Cannot aplly website theme to blog.
+    # Cannot apply website theme to blog.
     if ( $obj->is_blog && $theme->{class} eq 'website' ) {
         return $app->errtrans( 'Cannot apply website theme to blog: [_1]',
             $obj->theme_id );
+    }
+
+    # Cannot apply a deprecated theme
+    if ($theme->{deprecated} and (!$original->theme_id or $original->theme_id ne $obj->theme_id)) {
+        return $app->errtrans('Cannot apply a deprecated theme: [_1]', $obj->theme_id);
     }
 
     return 1;
