@@ -689,6 +689,30 @@ sub suite {
                 };
             },
         },
+        {    # Deprecated theme
+            path   => '/v2/sites/2/refresh_templates',
+            method => 'POST',
+            params => { refresh_type => 'refresh', },
+            code   => 400,
+            setup  => sub {
+                my $site = MT::Blog->load(2);
+                $site->theme_id('classic_website');
+                $site->save;
+            },
+            result => sub {
+                +{  error => {
+                        code => 400,
+                        message =>
+                            'Cannot refresh a site that uses a deprecated theme: classic_website',
+                    },
+                };
+            },
+            complete => sub {
+                my $site = MT::Blog->load(2);
+                $site->theme_id('classic_test_website');
+                $site->save;
+            },
+        },
         {    # Not logged in.
             path      => '/v2/sites/2/refresh_templates',
             method    => 'POST',

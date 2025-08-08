@@ -668,6 +668,15 @@ sub refresh_for_site {
         );
     }
 
+    my ($site) = context_objects(@_) or return;
+    if (my $theme_id = $site->theme_id) {
+        require MT::Theme;
+        my $theme = MT::Theme->load($theme_id);
+        if ($theme && $theme->{deprecated}) {
+            return $app->error($app->translate('Cannot refresh a site that uses a deprecated theme: [_1]', $theme_id), 400);
+        }
+    }
+
     local $app->{redirect};
     local $app->{redirect_use_meta};
     local $app->{return_args};
