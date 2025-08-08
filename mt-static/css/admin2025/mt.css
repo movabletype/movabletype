@@ -219,7 +219,7 @@ hr {
   opacity: 0.25;
 }
 
-h6, .h6, h5, .h5, h4, .h4, h3, .h3, .mt-mobilePrimaryMenu__dropdownMenu, .mt-mobilePrimaryMenu__name, .mt-mobileGlobalMenu__name span:not(.separator), .mt-mobileGlobalMenu__name--invert span:not(.separator), h2, .h2, h1, .h1 {
+h6, .h6, h5, .h5, h4, .h4, h3, .h3, .mt-mobilePrimaryMenu__name, .mt-mobileGlobalMenu__name span:not(.separator), .mt-mobileGlobalMenu__name--invert span:not(.separator), h2, .h2, h1, .h1 {
   margin-top: 0;
   margin-bottom: 0.5rem;
   font-family: inherit;
@@ -246,11 +246,11 @@ h2, .h2 {
   }
 }
 
-h3, .h3, .mt-mobilePrimaryMenu__dropdownMenu, .mt-mobilePrimaryMenu__name, .mt-mobileGlobalMenu__name span:not(.separator), .mt-mobileGlobalMenu__name--invert span:not(.separator) {
+h3, .h3, .mt-mobilePrimaryMenu__name, .mt-mobileGlobalMenu__name span:not(.separator), .mt-mobileGlobalMenu__name--invert span:not(.separator) {
   font-size: calc(1.3rem + 0.6vw);
 }
 @media (min-width: 1200px) {
-  h3, .h3, .mt-mobilePrimaryMenu__dropdownMenu, .mt-mobilePrimaryMenu__name, .mt-mobileGlobalMenu__name span:not(.separator), .mt-mobileGlobalMenu__name--invert span:not(.separator) {
+  h3, .h3, .mt-mobilePrimaryMenu__name, .mt-mobileGlobalMenu__name span:not(.separator), .mt-mobileGlobalMenu__name--invert span:not(.separator) {
     font-size: 1.75rem;
   }
 }
@@ -11589,13 +11589,13 @@ body:has(.mt-modal-overlay) .mt-systemHeaderActions {
 }
 /* Typography */
 h1,
-.h1, h2, .h2, h3, .h3, .mt-mobilePrimaryMenu__dropdownMenu, .mt-mobilePrimaryMenu__name, .mt-mobileGlobalMenu__name span:not(.separator), .mt-mobileGlobalMenu__name--invert span:not(.separator), h4, .h4 {
+.h1, h2, .h2, h3, .h3, .mt-mobilePrimaryMenu__name, .mt-mobileGlobalMenu__name span:not(.separator), .mt-mobileGlobalMenu__name--invert span:not(.separator), h4, .h4 {
   margin: 1.414rem 0 0.7rem;
   line-height: 1.2;
   font-weight: 600;
 }
-h1 small, h1 .small, .h1 .small, h2 small, h2 .small, .h2 .small, h3 small, h3 .small, .h3 .small, .mt-mobilePrimaryMenu__dropdownMenu .small, .mt-mobilePrimaryMenu__name .small, .mt-mobileGlobalMenu__name span:not(.separator) .small, .mt-mobileGlobalMenu__name--invert span:not(.separator) .small, h4 small, h4 .small, .h4 .small,
-.h1 small, .h2 small, .h3 small, .mt-mobilePrimaryMenu__dropdownMenu small, .mt-mobilePrimaryMenu__name small, .mt-mobileGlobalMenu__name span:not(.separator) small, .mt-mobileGlobalMenu__name--invert span:not(.separator) small, .h4 small {
+h1 small, h1 .small, .h1 .small, h2 small, h2 .small, .h2 .small, h3 small, h3 .small, .h3 .small, .mt-mobilePrimaryMenu__name .small, .mt-mobileGlobalMenu__name span:not(.separator) .small, .mt-mobileGlobalMenu__name--invert span:not(.separator) .small, h4 small, h4 .small, .h4 .small,
+.h1 small, .h2 small, .h3 small, .mt-mobilePrimaryMenu__name small, .mt-mobileGlobalMenu__name span:not(.separator) small, .mt-mobileGlobalMenu__name--invert span:not(.separator) small, .h4 small {
   display: inline-block;
   margin-left: 0.5rem;
   color: #595959;
@@ -11618,10 +11618,10 @@ h2 small, h2 .small, .h2 .small, .h2 small {
   font-size: 1rem;
 }
 
-h3, .h3, .mt-mobilePrimaryMenu__dropdownMenu, .mt-mobilePrimaryMenu__name, .mt-mobileGlobalMenu__name span:not(.separator), .mt-mobileGlobalMenu__name--invert span:not(.separator) {
+h3, .h3, .mt-mobilePrimaryMenu__name, .mt-mobileGlobalMenu__name span:not(.separator), .mt-mobileGlobalMenu__name--invert span:not(.separator) {
   font-size: 1.414rem;
 }
-h3 small, h3 .small, .h3 .small, .mt-mobilePrimaryMenu__dropdownMenu .small, .mt-mobilePrimaryMenu__name .small, .mt-mobileGlobalMenu__name span:not(.separator) .small, .mt-mobileGlobalMenu__name--invert span:not(.separator) .small, .h3 small, .mt-mobilePrimaryMenu__dropdownMenu small, .mt-mobilePrimaryMenu__name small, .mt-mobileGlobalMenu__name span:not(.separator) small, .mt-mobileGlobalMenu__name--invert span:not(.separator) small {
+h3 small, h3 .small, .h3 .small, .mt-mobilePrimaryMenu__name .small, .mt-mobileGlobalMenu__name span:not(.separator) .small, .mt-mobileGlobalMenu__name--invert span:not(.separator) .small, .h3 small, .mt-mobilePrimaryMenu__name small, .mt-mobileGlobalMenu__name span:not(.separator) small, .mt-mobileGlobalMenu__name--invert span:not(.separator) small {
   font-size: 1rem;
 }
 
@@ -12924,6 +12924,29 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-mainContentWrapper {
   max-height: calc(100dvh - (var(--header-height) + var(--mobile-primary-navigation__control-height)));
   overflow-y: auto;
 }
+.mt-mobilePrimaryMenu__dropdownMenu > ul > li > a:after {
+  display: block;
+  width: 0;
+  height: 0;
+  float: right;
+  margin-top: 0.5rem;
+  content: "";
+  color: #A5A5A5;
+}
+.mt-mobilePrimaryMenu__dropdownMenu > ul > li > a[aria-expanded=false]:after {
+  margin-left: 0.4rem;
+  border-top: 0.4rem solid;
+  border-right: 0.4rem solid transparent;
+  border-left: 0.4rem solid transparent;
+  border-bottom: 0;
+}
+.mt-mobilePrimaryMenu__dropdownMenu > ul > li > a[aria-expanded=true]:after {
+  margin-left: 0.4rem;
+  border-top: 0;
+  border-right: 0.4rem solid transparent;
+  border-left: 0.4rem solid transparent;
+  border-bottom: 0.4rem solid;
+}
 .mt-mobilePrimaryMenu__dropdownMenu ul {
   /* compatibility */
 }
@@ -12938,9 +12961,8 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-mainContentWrapper {
   white-space: nowrap;
   display: block;
   padding: 1rem;
-}
-.mt-mobilePrimaryMenu__dropdownMenu ul li a:hover {
-  background-color: #96DCEB;
+  color: #212529;
+  text-decoration: none;
 }
 .mt-mobilePrimaryMenu__dropdownMenu ul li[data-role=tabpanel] {
   margin: 0;
@@ -13932,7 +13954,7 @@ fieldset.form-group {
 }
 
 /* Alert */
-.alert h1, .alert h2, .alert h3, .alert .mt-mobileGlobalMenu__name span:not(.separator), .mt-mobileGlobalMenu__name .alert span:not(.separator), .alert .mt-mobileGlobalMenu__name--invert span:not(.separator), .mt-mobileGlobalMenu__name--invert .alert span:not(.separator), .alert .mt-mobilePrimaryMenu__name, .alert .mt-mobilePrimaryMenu__dropdownMenu, .alert h4,
+.alert h1, .alert h2, .alert h3, .alert .mt-mobileGlobalMenu__name span:not(.separator), .mt-mobileGlobalMenu__name .alert span:not(.separator), .alert .mt-mobileGlobalMenu__name--invert span:not(.separator), .mt-mobileGlobalMenu__name--invert .alert span:not(.separator), .alert .mt-mobilePrimaryMenu__name, .alert h4,
 .alert .h1, .alert .h2, .alert .h3, .alert .h4 {
   margin-top: 0;
 }
@@ -13998,7 +14020,7 @@ h1 .badge, h2 .badge,
   vertical-align: middle;
 }
 
-h3 .badge, .mt-mobileGlobalMenu__name span:not(.separator) .badge, .mt-mobileGlobalMenu__name--invert span:not(.separator) .badge, .mt-mobilePrimaryMenu__name .badge, .mt-mobilePrimaryMenu__dropdownMenu .badge, .h3 .badge {
+h3 .badge, .mt-mobileGlobalMenu__name span:not(.separator) .badge, .mt-mobileGlobalMenu__name--invert span:not(.separator) .badge, .mt-mobilePrimaryMenu__name .badge, .h3 .badge {
   font-size: 60%;
   vertical-align: middle;
 }
