@@ -32,7 +32,7 @@
 <mt:loop name="top_nav_loop">
   <mt:if name="mobile">
       <li class="mt-mobilePrimaryMenu__menuItem">
-        <a data-bs-toggle="collapse" data-parent="#mobilePrimaryMenu" href="#mobilePrimaryMenu__subMenus<mt:var name="__counter__" escape="html">" aria-expanded="true" aria-controls="mobilePrimaryMenu__subMenus<mt:var name="__counter__" escape="html">">
+        <a data-bs-toggle="collapse" data-parent="#mobilePrimaryMenu" href="#mobilePrimaryMenu__subMenus<mt:var name="__counter__" escape="html">" aria-expanded="false" aria-controls="mobilePrimaryMenu__subMenus<mt:var name="__counter__" escape="html">">
     <mt:setvarblock name="escaped_label"><mt:var name="label" escape="html"></mt:setvarblock>
     <mt:if name="icon">
       <mt:setvarblock name="escaped_icon"><mt:var name="icon" escape="html"></mt:setvarblock>
@@ -43,7 +43,7 @@
           <mt:var name="escaped_label">
         </a>
       </li>
-      <li id="mobilePrimaryMenu__subMenus<mt:var name="__counter__" escape="html">" class="collapse show" data-role="tabpanel"><ul>
+      <li id="mobilePrimaryMenu__subMenus<mt:var name="__counter__" escape="html">" class="collapse" data-role="tabpanel"><ul>
     <mt:loop name="sub_nav_loop">
       <mt:if name="mobile">
         <mt:if name="allowed">
