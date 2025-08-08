@@ -1022,6 +1022,7 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/Blog.pm
 	'*Site/Child Site deleted*' => '*削除されました*',
+	'Cannot apply a deprecated theme: [_1]' => '廃止されたテーマは適用できません: [_1]',
 	'Child Sites' => '子サイト',
 	'Clone of [_1]' => '[_1]の複製',
 	'Cloned child site... new id is [_1].' => 'サイトを複製しました。新しいIDは [_1] です。',
