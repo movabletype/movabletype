@@ -11555,6 +11555,7 @@ Adjustments
   --left-bar-z-index: 1200;
   --header-z-index: 1200;
   --scrollbar-width: 0px;
+  --mobile-primary-navigation__control-height: 60px;
 }
 
 html {
@@ -12681,6 +12682,10 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-mainContentWrapper {
     -webkit-backdrop-filter: blur(3px);
             backdrop-filter: blur(3px);
   }
+  .dropdown-open,
+  .dropdown-open-primary-menu {
+    overflow-y: hidden;
+  }
   .dropdown-open .dropdown-menu.show,
   .dropdown-open-primary-menu .dropdown-menu.show {
     z-index: calc(var(--left-bar-z-index) + 100);
@@ -12912,6 +12917,12 @@ html[data-screen-id=dashboard][data-scope-type=user] .mt-mainContentWrapper {
 .mt-mobilePrimaryMenu__dropdownMenu .mt-primaryNavigation__control, .mt-mobilePrimaryMenu__dropdownMenu .mt-primaryNavigation__control--invert {
   width: 100%;
   justify-content: space-around;
+  position: sticky;
+  background: white;
+}
+.mt-mobilePrimaryMenu__dropdownMenu > ul {
+  max-height: calc(100dvh - (var(--header-height) + var(--mobile-primary-navigation__control-height)));
+  overflow-y: auto;
 }
 .mt-mobilePrimaryMenu__dropdownMenu ul {
   /* compatibility */

@@ -86,14 +86,17 @@ document.addEventListener('DOMContentLoaded', function() {
       body.classList.add('dropdown-open-primary-menu');
       document.addEventListener('click', handleClick);
     }
-  })
-
+  });
+  mobilePrimaryMenu.addEventListener('shown.bs.dropdown', event => {
+    const primaryNavigationControl = document.querySelector('#mobilePrimaryMenu .mt-primaryNavigation__control');
+    document.documentElement.style.setProperty('--mobile-primary-navigation__control-height', primaryNavigationControl.offsetHeight + 'px');
+  });
   mobilePrimaryMenu.addEventListener('hide.bs.dropdown', event => {
     if(event.target.classList.contains('mt-mobilePrimaryMenu__dropdownMenuButton')) {
       body.classList.remove('dropdown-open-primary-menu');
       document.removeEventListener('click', handleClick);
     }
-  })
+  });
 });
 
 </mt:setvarblock>
