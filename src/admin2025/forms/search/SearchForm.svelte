@@ -24,16 +24,9 @@
   const submit = (event: Event) => {
     event.preventDefault();
 
-    const formId = "mt-search-form-body";
-    const existingForm = document.getElementById(formId);
-    if (existingForm) {
-      existingForm.remove();
-    }
-
     const form = document.createElement("form");
     form.method = "POST";
     form.action = window.ScriptURI;
-    form.id = formId;
 
     const hiddenInput = (name: string, value: string) => {
       const input = document.createElement("input");
