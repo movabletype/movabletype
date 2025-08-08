@@ -519,7 +519,7 @@
                         href={`${window.ScriptURI}?__mode=dashboard&blog_id=${site.id}`}
                         class="dashboard-link"
                       >
-                        {@html site.name}
+                        {site.name}
                       </a>
                       {#if site.parentSiteName !== "-"}
                         <span class="d-block d-md-none parent-site"
