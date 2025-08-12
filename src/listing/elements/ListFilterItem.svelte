@@ -1,8 +1,6 @@
 <script lang="ts">
   import type * as Listing from "../../@types/listing";
 
-  import { onMount } from "svelte";
-
   import SVG from "../../svg/elements/SVG.svelte";
 
   import ListFilterItemField from "./ListFilterItemField.svelte";
@@ -22,17 +20,11 @@
   export let localeCalendarHeader: Array<string>;
 
   let fieldParentDivs: Array<HTMLDivElement | undefined> = [];
-  let root: HTMLDivElement;
 
   $: filterTypeHash = filterTypes.reduce((hash, filterType) => {
     hash[filterType.type] = filterType;
     return hash;
   }, {});
-
-  onMount(() => {
-    initializeDateOption();
-    initializeOptionWithBlank();
-  });
 
   const addFilterItemContent = (e: Event): void => {
     const target = e.target as HTMLElement;
@@ -63,8 +55,6 @@
       itemIndex.toString(),
       contentIndex.toString(),
     );
-    initializeDateOption();
-    initializeOptionWithBlank();
   };
 
   const getListItemIndex = (element: HTMLElement): number => {
@@ -96,92 +86,6 @@
     return Number(element.dataset.mtListItemContentIndex);
   };
 
-  const initializeDateOption = (): void => {
-    const dateOption = ($node: JQuery<HTMLElement>): void => {
-      const val = $node.val();
-      let type: string;
-      switch (val) {
-        case "hours":
-          type = "hours";
-          break;
-        case "days":
-          type = "days";
-          break;
-        case "before":
-        case "after":
-          type = "date";
-          break;
-        case "future":
-        case "past":
-        case "blank":
-        case "not_blank":
-          type = "none";
-          break;
-        default:
-          type = "range";
-      }
-      $node
-        .parents(".item-content")
-        .find(".date-options span.date-option")
-        .hide();
-      $node
-        .parents(".item-content")
-        .find(".date-option." + type)
-        .show();
-    };
-    jQuery(root)
-      .find(".filter-date")
-      .each(function (index, element) {
-        const $node = jQuery(element);
-        dateOption($node);
-        $node.on("change", function () {
-          dateOption($node);
-        });
-      });
-    jQuery(root)
-      .find("input.date")
-      .datepicker({
-        dateFormat: "yy-mm-dd",
-        dayNamesMin: localeCalendarHeader,
-        monthNames: [
-          "- 01",
-          "- 02",
-          "- 03",
-          "- 04",
-          "- 05",
-          "- 06",
-          "- 07",
-          "- 08",
-          "- 09",
-          "- 10",
-          "- 11",
-          "- 12",
-        ],
-        showMonthAfterYear: true,
-        prevText: "<",
-        nextText: ">",
-      });
-  };
-
-  const initializeOptionWithBlank = (): void => {
-    const changeOption = ($node: JQuery<HTMLElement>): void => {
-      if ($node.val() === "blank" || $node.val() === "not_blank") {
-        $node.parent().find("input[type=text]").hide();
-      } else {
-        $node.parent().find("input[type=text]").show();
-      }
-    };
-    jQuery(root)
-      .find(".filter-blank")
-      .each(function (index, element) {
-        const $node = jQuery(element);
-        changeOption($node);
-        $node.on("change", function () {
-          changeOption($node);
-        });
-      });
-  };
-
   const removeFilterItem = (e: Event): void => {
     const target = e.target as HTMLElement;
     if (!target) {
@@ -205,7 +109,7 @@
   };
 </script>
 
-<div class="filteritem" bind:this={root}>
+<div class="filteritem">
   <button
     class="close btn-close"
     aria-label="Close"
@@ -225,11 +129,12 @@
               class="item-content form-inline"
               bind:this={fieldParentDivs[index]}
             >
-              {#key currentFilter}
+              {#key currentFilter || fieldParentDivs[index]}
                 <ListFilterItemField
                   field={filterTypeHash[loopItem.type].field}
                   item={loopItem}
                   parentDiv={fieldParentDivs[index]}
+                  {localeCalendarHeader}
                 />
               {/key}
               {#if !filterTypeHash[loopItem.type].singleton}
@@ -271,11 +176,12 @@
       class={"filtertype type-" + item.type}
     >
       <div class="item-content form-inline" bind:this={fieldParentDivs[0]}>
-        {#key currentFilter}
+        {#key currentFilter || fieldParentDivs[0]}
           <ListFilterItemField
             field={filterTypeHash[item.type].field}
             {item}
             parentDiv={fieldParentDivs[0]}
+            {localeCalendarHeader}
           />
         {/key}
         {#if !filterTypeHash[item.type].singleton}
