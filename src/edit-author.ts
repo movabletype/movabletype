@@ -58,7 +58,7 @@ if (apiPasswordDisplay !== null) {
   }
 }
 
-function showTooltip(copyButton, tooltip) {
+function showTooltip(copyButton, tooltip): void {
   copyButton.dataset.bsOriginalTitle = copyButton.dataset.copiedTitle;
   tooltip.update();
   tooltip.show();
