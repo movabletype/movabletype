@@ -43,7 +43,7 @@ sub SUPPORT_URL()  {'https://www.sixapart.jp/movabletype/support/'}
 sub NEWS_URL()     {'https://www.sixapart.jp/movabletype/'}
 sub NEWSBOX_URL()  {'https://www.sixapart.jp/movabletype/news/newsbox.json'}
 sub FEEDBACK_URL() {'https://www.sixapart.jp/movabletype/feedback.html'}
-sub LATEST_VERSION_URL()   {'https://movabletype.jp/latest_version.json'}
+sub LATEST_VERSION_URL()   {'https://movabletype.jp/latest_versions.json'}
 sub LEARNINGNEWS_URL()     {''}
 sub DEFAULT_TIMEZONE()     {9}
 sub LOG_EXPORT_ENCODING()  {'Shift_JIS'}

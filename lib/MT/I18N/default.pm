@@ -32,7 +32,7 @@ sub PORTAL_URL() {''}  # default PORTAL_URL is determined in building packages
 sub SUPPORT_URL()        {'https://www.movabletype.com/support/'}
 sub NEWS_URL()           {'http://www.sixapart.com/movabletype/news/'}
 sub FEEDBACK_URL()       {'https://movabletype.org/feedback.html'}
-sub LATEST_VERSION_URL() {'https://movabletype.org/latest_version.json'}
+sub LATEST_VERSION_URL() {'https://movabletype.org/latest_versions.json'}
 
 sub NEWSBOX_URL() {
     'https://www.movabletype.org/news/newsbox.json';
