@@ -2126,6 +2126,7 @@ use vars qw( @ISA %Lexicon );
 	'Cannot publish [_1] template.' => '指定されたテンプレートは公開できません: [_1]',
 	'Cannot refresh [_1] template.' => '指定されたテンプレートはリフレッシュできません: [_1]',
 	'Cannot refresh a site that uses a deprecated theme: [_1]' => '廃止されたテーマ[_1]を利用しているサイトのテンプレートは初期化できません',
+	'Cannot refresh a template of a deprecated theme: [_1]' => '廃止されたテーマ[_1]のテンプレートは初期化できません',
 	'Cannot update [_1] template.' => '指定されたテンプレートは更新できません: [_1]',
 	'Template not found' => '指定されたテンプレートが見つかりません',
 

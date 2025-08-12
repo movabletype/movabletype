@@ -640,6 +640,29 @@ sub suite {
                 . '/refresh',
             method => 'POST',
         },
+        {    # Deprecated theme
+            path   => '/v2/sites/1/templates/' . $blog_index_tmpl->id . '/refresh',
+            method => 'POST',
+            code   => 400,
+            setup  => sub {
+                my $site = MT::Blog->load(1);
+                $site->theme_id('classic_blog');
+                $site->save;
+            },
+            result => sub {
+                +{  error => {
+                        code => 400,
+                        message =>
+                            'Cannot refresh a template of a deprecated theme: classic_blog',
+                    },
+                };
+            },
+            complete => sub {
+                my $site = MT::Blog->load(1);
+                $site->theme_id('classic_test_blog');
+                $site->save;
+            },
+        },
 
         # refresh_template - normal tests
         {   path => '/v2/sites/1/templates/'
