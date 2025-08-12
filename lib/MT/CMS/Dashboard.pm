@@ -1164,8 +1164,6 @@ sub updates_widget {
 
     # Update check
     require MT::Session;
-    my $version_info;
-    my $use_cache;
     if ( $app->param('reload') ) {
 
         # Force reload, purge cache if exists
@@ -1187,62 +1185,76 @@ sub updates_widget {
         );
 
         if ($cache) {
-            $version_info->{version}  = $cache->get('version');
-            $version_info->{news_url} = $cache->get('news_url');
-            $use_cache                = 1;
-        }
-    }
-
-    if ( !$version_info ) {
-
-        # Read available version data from site.
-        my $ua = MT->new_ua( { timeout => 10 } );
-        if ( !$ua ) {
-            $param->{update_check_failed} = 1;
+            my $versions = $cache->get('versions');
+            $param->{available_versions} = $versions if $versions && @$versions;
             return;
         }
-
-        my $version_url = const('LATEST_VERSION_URL');
-        my $req         = new HTTP::Request( GET => $version_url );
-        my $resp        = $ua->request($req);
-        my $result      = $resp->content();
-        if ( !$resp->is_success() || !$result ) {
-            $param->{update_check_failed} = 1;
-            return;
-        }
-
-        $version_info = MT::Util::from_json($result);
     }
 
-    if ($version_info) {
-        my $mt_version;
-        my $latest_version;
-        eval {
-            $mt_version     = MT::version->parse( MT->version_id );
-            $latest_version = MT::version->parse( $version_info->{version} );
-        };
-        if ( !$@ ) {
-            if ( $latest_version > $mt_version ) {
-                $param->{available_version} = $version_info->{version};
-                $param->{news_url} = $version_info->{news_url};
-            }
-
-            if ( !$use_cache ) {
-
-                # Make a cache
-                my $cache = MT->model('session')->new;
-                $cache->set_values(
-                    {   id    => 'Update Check',
-                        kind  => 'DW',
-                        start => time,
-                    }
-                );
-                $cache->set( 'version', $version_info->{version} );
-                $cache->set( 'news_url', $version_info->{news_url} );
-                $cache->save;
-            }
-        }
+    # Read available version data from site.
+    my $ua = MT->new_ua( { timeout => 10 } );
+    if ( !$ua ) {
+        $param->{update_check_failed} = 1;
+        return;
     }
+
+    my $version_url = const('LATEST_VERSION_URL');
+    my $req         = new HTTP::Request( GET => $version_url );
+    my $resp        = $ua->request($req);
+    my $result      = $resp->content();
+    if ( !$resp->is_success() || !$result ) {
+        $param->{update_check_failed} = 1;
+        return;
+    }
+
+    my $mt_version = eval { MT::version->parse(MT->version_id) };
+    if ($@) {
+        $param->{update_check_failed} = 1;
+        return;
+    }
+    my ($current_major, $current_minor, $current_patch) = $mt_version->tuple;
+    my @versions;
+
+    eval {
+        my $version_info_array = MT::Util::from_json($result);
+        my $minor_version_found;
+
+        $_->{parsed_version} = MT::version->parse($_->{version}) for @$version_info_array;
+        @$version_info_array = sort { $b->{parsed_version} <=> $a->{parsed_version} } @$version_info_array;
+
+        for my $info (@$version_info_array) {
+            next unless $info->{parsed_version} > $mt_version;
+
+            my ($major, $minor, $patch) = $info->{parsed_version}->tuple;
+            next if $major == $current_major && $minor != $current_minor && $minor_version_found++;
+
+            my $is_security_update =
+                   $minor == $current_minor
+                && $info->{security_update}
+                && MT::version->parse($info->{security_update}) > $mt_version;
+            push @versions, {
+                version  => $info->{version},
+                news_url => $info->{news_url},
+                $is_security_update ? (is_security_update => $is_security_update) : (),
+            };
+        }
+    };
+    if ($@) {
+        $param->{update_check_failed} = 1;
+        return;
+    }
+
+    $param->{available_versions} = \@versions if @versions && @versions;
+
+    # Make a cache
+    my $cache = MT->model('session')->new;
+    $cache->set_values({
+        id    => 'Update Check',
+        kind  => 'DW',
+        start => time,
+    });
+    $cache->set('versions', \@versions);
+    $cache->save;
 }
 
 1;

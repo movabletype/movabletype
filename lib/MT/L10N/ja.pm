@@ -5614,7 +5614,8 @@ use vars qw( @ISA %Lexicon );
 	'Active Users' => 'ユーザー',
 
 ## tmpl/admin2023/cms/widget/updates.tmpl
-	'Available updates (Ver. [_1]) found. Please see the <a href="[_2]" target="_blank">news</a> for detail.' => '利用可能なアップデート(Ver. [_1])があります。詳しくは<a href="[_2]" target="_blank">Movable Typeニュース</a>をご覧ください。',
+	'An update (Ver. [_1]) is available. Please see the <a href="[_2]" target="_blank">news</a> for detail.' => 'アップデート(Ver. [_1])が利用可能です。詳しくは<a href="[_2]" target="_blank">Movable Typeニュース</a>をご覧ください。',
+	'A security update (Ver. [_1]) is available. Please see the <a href="[_2]" target="_blank">news</a> for detail.' => 'セキュリティアップデート(Ver. [_1])が利用可能です。詳しくは<a href="[_2]" target="_blank">Movable Typeニュース</a>をご覧ください。',
 	'Movable Type is up to date.' => '最新のMovable Typeです。',
 	'Update check failed. Please check server network settings.' => 'アップデートの確認ができません。ネットワーク設定を見直してください。',
 	'Update check is disabled.' => 'アップデートの確認は無効です。',

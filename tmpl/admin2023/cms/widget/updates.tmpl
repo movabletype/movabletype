@@ -7,12 +7,22 @@
   <mt:elseif name="disable_version_check">
     <p><__trans phrase="Update check is disabled."></p>
   <mt:else>
-    <p>
-    <mt:if name="available_version">
-      <__trans phrase="Available updates (Ver. [_1]) found. Please see the <a href="[_2]" target="_blank">news</a> for detail." params="<mt:var name="available_version">%%<mt:var name="news_url">">
+    <mt:if name="available_versions">
+      <ul class="mt-widget__list">
+        <mt:Loop name="available_versions">
+          <li>
+            <mt:if name="is_security_update">
+              <__trans phrase="A security update (Ver. [_1]) is available. Please see the <a href="[_2]" target="_blank">news</a> for detail." params="<mt:var name="version">%%<mt:var name="news_url">">
+            <mt:else>
+              <__trans phrase="An update (Ver. [_1]) is available. Please see the <a href="[_2]" target="_blank">news</a> for detail." params="<mt:var name="version">%%<mt:var name="news_url">">
+            </mt:if>
+          </li>
+        </mt:Loop>
+      </ul>
     <mt:else>
-      <__trans phrase="Movable Type is up to date.">
+      <p>
+        <__trans phrase="Movable Type is up to date.">
+      </p>
     </mt:if>
-    </p>
   </mt:if>
 </mtapp:widget>
