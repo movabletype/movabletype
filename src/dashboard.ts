@@ -58,6 +58,8 @@ jQuery(widgetContainer).sortable({
   tolerance: "pointer",
   start: () => {
     isSorting = true;
+    // Workarround for irresponsive placeholder issue for a large item at the first position.(MTC-30723)
+    jQuery(widgetContainer).sortable("refreshPositions");
   },
   stop: () => {
     isSorting = false;
