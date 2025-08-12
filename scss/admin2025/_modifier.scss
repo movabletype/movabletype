@@ -71,6 +71,7 @@ Adjustments
   --left-bar-z-index: 1200;
   --header-z-index: 1200;
   --scrollbar-width: 0px;
+  --mobile-primary-navigation__control-height: 60px;
 
   @extend %modal-variables;
 }
@@ -1374,6 +1375,7 @@ html[data-screen-id=dashboard][data-scope-type=user] {
     .dropdown-menu.show {
       z-index: calc(var(--left-bar-z-index) + 100);
     }
+    overflow-y: hidden;
   }
   .dropdown-open-primary-menu {
     position: relative;
@@ -1622,7 +1624,6 @@ html[data-screen-id=dashboard][data-scope-type=user] {
   @extend .align-middle;
 }
 .mt-mobilePrimaryMenu__dropdownMenu {
-  @extend .h3;
   border: 0 !important;
   border-radius: 0 !important;
   transform: none !important;
@@ -1632,10 +1633,49 @@ html[data-screen-id=dashboard][data-scope-type=user] {
   width: 100%;
   max-width: 297px;
 
-
   .mt-primaryNavigation__control {
     width: 100%;
     justify-content: space-around;
+    position: sticky;
+    background: white;
+  }
+
+  & > ul {
+    max-height: calc(100dvh - calc(
+      var(--header-height) +
+      var(--mobile-primary-navigation__control-height) /* Set dynamically in: tmpl/admin2025/cms/include/mobile_primary_menu.tmpl */
+    ));
+    overflow-y: auto;
+
+    & > li > a {
+      &:after{
+        display: block;
+        width: 0;
+        height: 0;
+        float: right;
+        margin-top: .5rem;
+        content: "";
+        color: $gray;
+      }
+      &[aria-expanded="false"]{
+        &:after{
+          margin-left: .4rem;
+          border-top: .4rem solid;
+          border-right: .4rem solid transparent;
+          border-left: .4rem solid transparent;
+          border-bottom: 0;
+        }
+      }
+      &[aria-expanded="true"]{
+        &:after{
+          margin-left: .4rem;
+          border-top: 0;
+          border-right: .4rem solid transparent;
+          border-left: .4rem solid transparent;
+          border-bottom: .4rem solid;
+        }
+      }
+    }
   }
 
   ul {
@@ -1650,9 +1690,8 @@ html[data-screen-id=dashboard][data-scope-type=user] {
         @include text-truncate;
         display: block;
         padding: 1rem;
-      }
-      a:hover {
-        background-color: $lochmara200;
+        color: #212529;
+        text-decoration: none;
       }
     }
     li[data-role="tabpanel"] {
