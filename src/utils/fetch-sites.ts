@@ -48,10 +48,13 @@ export const fetchSites = async (props: FetchSitesProps): Promise<Sites> => {
     };
   }
 
+  const parser = new DOMParser();
   const sites = result.result.objects.map((object) => {
-    const name = object[1]
-      .replace(/<span[^>]*>.*?<\/span>\s*<a[^>]*>([^<]+)<\/a>/, "$1")
-      .trim();
+    const name =
+      parser
+        .parseFromString(object[1], "text/html")
+        .querySelector("a")
+        ?.textContent?.trim() ?? "";
     return {
       id: object[0],
       name: name,
