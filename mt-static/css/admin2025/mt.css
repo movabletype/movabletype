@@ -13467,6 +13467,26 @@ fieldset.form-group {
   flex-wrap: wrap;
   justify-content: space-between;
 }
+.mt-main-widget-container .placeholder {
+  position: relative;
+  display: block;
+  margin-bottom: 2rem;
+  height: 100px;
+}
+.mt-main-widget-container .placeholder:before {
+  content: "";
+  display: block;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background-color: #fbfbfb;
+  border-width: 2px;
+  border-style: dashed;
+  border-radius: 4px;
+  border-color: #aaa;
+}
 
 .mt-widget, .mt-widget--panel {
   margin-bottom: 2rem;
@@ -14928,6 +14948,26 @@ li.nav-item, .mt-sharedPreviewNav .mt-sharedPreviewNav__rightNav li.mt-sharedPre
   text-align: left;
   background: #ffffff;
 }
+.site-list-button-modal .site-list-container table tr.placeholder {
+  position: relative;
+}
+.site-list-button-modal .site-list-container table tr.placeholder:before {
+  content: "";
+  display: block;
+  position: absolute;
+  left: 1rem;
+  right: 1rem;
+  top: 0.5rem;
+  bottom: 0.5rem;
+  background-color: #fbfbfb;
+  border-width: 2px;
+  border-style: dashed;
+  border-radius: 4px;
+  border-color: #aaa;
+}
+.site-list-button-modal .site-list-container table tr.placeholder td:after {
+  display: none;
+}
 .site-list-button-modal .site-list-container table tr.site-list-table-placeholder td {
   padding: 0;
   border: none;
@@ -15137,6 +15177,9 @@ li.nav-item, .mt-sharedPreviewNav .mt-sharedPreviewNav__rightNav li.mt-sharedPre
   }
   .site-list-button-modal .site-list-container .site-list-table-header {
     display: none;
+  }
+  .site-list-button-modal .site-list-container table tr.placeholder {
+    display: block;
   }
   .site-list-button-modal .site-list-container table td {
     display: block;
