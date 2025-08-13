@@ -3289,16 +3289,6 @@ EOT
         $widget_class = "mt-widget--panel";
     }
 
-    my $resize_class = '';
-    my $drag_handle = '';
-    if ( $set eq 'main' && $closable ) {
-        $resize_class = 'mt-widget--resizable';
-        $drag_handle = $ctx->invoke_handler( 'app:svgicon', {
-            id => 'ic_move',
-            title => $app->translate('Draggable'),
-        } );
-    }
-
     my $size_class = '';
     if ( $size eq 'half' ) {
         $size_class = "mt-widget--half";
@@ -3315,19 +3305,20 @@ EOT
         }
     }
 
-    my $widget = <<"EOT";
-<div id="$id" class="$widget_class $class $bootstrap_display_class $resize_class $size_class">
-  <h2 class="mt-widget__title">
-    $drag_handle
-    $widget_header
-    $header_action
-  </h2>
-  <div class="mt-widget__content">
-    $insides
-  </div>
-</div>
-EOT
-    return $widget;
+    my %param = (
+        id             => $id,
+        set            => $set,
+        closable       => $closable,
+        class          => "$widget_class $class $bootstrap_display_class $size_class",
+        widget_handler => $widget_header,
+        header_action  => $header_action,
+        content        => $insides,
+    );
+
+    my $tmpl   = $app->load_core_tmpl('cms/include/widget.tmpl', \%param);
+    my $output = $ctx->build($tmpl->output());
+    chomp $output;
+    return $output;
 }
 
 ###########################################################################
