@@ -431,26 +431,97 @@ https://movabletype.atlassian.net/browse/MTC-28119
 --- expected
 http://example.com/blog/test.jpg
 
-=== MTPageAssets[namespace][scored_by]
+=== MTAssets[namespace][scored_by]
 --- template
 <mt:Assets namespace="foo" scored_by="AUTHOR_NAME">a</mt:Assets>
 --- expected
 a
 
-=== MTPageAssets[namespace=unknown][scored_by]
+=== MTAssets[namespace=unknown][scored_by]
 --- template
 <mt:Assets namespace="bar" scored_by="AUTHOR_NAME">a</mt:Assets>
 --- expected
 
-=== MTPageAssets[namespace][scored_by=unknown]
+=== MTAssets[namespace][scored_by=unknown]
 --- template
 <mt:Assets namespace="foo" scored_by="Nobody">a</mt:Assets>
 --- expected_error
 No such user 'Nobody'
 
-=== MTPageAssets[namespace][scored_by] for score=0
---- skip_php
+=== MTAssets[namespace][scored_by] for score=0
 --- template
 <mt:Assets namespace="baz" scored_by="AUTHOR_NAME">a</mt:Assets>
 --- expected
 a
+
+=== MTAssets[namespace][min_score=0]
+--- template
+<mt:Assets namespace="foo" min_score="0">a</mt:Assets>
+--- expected
+aaaaa
+
+=== MTAssets[namespace][min_score]
+--- template
+<mt:Assets namespace="foo" min_score="3">a</mt:Assets>:<mt:Assets namespace="foo" min_score="4">b</mt:Assets>
+--- expected
+a:
+
+=== MTAssets[namespace][max_score=0]
+--- template
+<mt:Assets namespace="foo" max_score="0">a</mt:Assets>
+--- expected
+aaaaa
+
+=== MTAssets[namespace][max_score]
+--- template
+<mt:Assets namespace="foo" max_score="2">a</mt:Assets>:<mt:Assets namespace="foo" max_score="3">b</mt:Assets>
+--- expected
+:b
+
+=== MTAssets[namespace][min_rate=0]
+--- template
+<mt:Assets namespace="foo" min_rate="0">a</mt:Assets>
+--- expected
+aaaaa
+
+=== MTAssets[namespace][min_rate]
+--- template
+<mt:Assets namespace="foo" min_rate="3">a</mt:Assets>:<mt:Assets namespace="foo" min_rate="4">b</mt:Assets>
+--- expected
+a:
+
+=== MTAssets[namespace][max_rate=0]
+--- template
+<mt:Assets namespace="foo" max_rate="0">a</mt:Assets>
+--- expected
+aaaaa
+
+=== MTAssets[namespace][max_rate]
+--- template
+<mt:Assets namespace="foo" max_rate="2">a</mt:Assets>:<mt:Assets namespace="foo" max_rate="3">b</mt:Assets>
+--- expected
+:b
+
+=== MTAssets[namespace][min_count=0]
+--- template
+<mt:Assets namespace="foo" min_count="0">a</mt:Assets>
+--- expected
+aaaaa
+
+=== MTAssets[namespace][min_count]
+--- template
+<mt:Assets namespace="foo" min_count="1">a</mt:Assets>:<mt:Assets namespace="foo" min_count="2">b</mt:Assets>
+--- expected
+a:
+
+=== MTAssets[namespace][max_count=0]
+--- template
+<mt:Assets namespace="foo" max_count="0">a</mt:Assets>
+--- expected
+aaaaa
+
+=== MTAssets[namespace][max_count]
+--- template
+<mt:Assets namespace="foo" max_count="1">b</mt:Assets>
+--- expected
+b
