@@ -456,6 +456,10 @@ sub end_element {
 
     if ( $self->{skip} ) {
         $self->{skip} -= 1;
+        if (!$self->{skip}) {
+            delete $self->{current};
+            delete $self->{loaded};
+        }
         return;
     }
 

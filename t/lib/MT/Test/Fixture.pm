@@ -1105,7 +1105,7 @@ sub prepare_template {
                 my $tmpl_map = MT::Test::Permission->make_templatemap(%$map);
                 $needs_update = 1;
 
-                push @{ $objs->{templatemap}{ $tmpl->name } ||= [] }, $tmpl_map;
+                push @{ $objs->{templatemap}{$blog_id}{ $tmpl->name } ||= [] }, $tmpl_map;
 
                 $preferred = 0;
             }
