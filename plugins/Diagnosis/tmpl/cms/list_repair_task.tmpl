@@ -1,0 +1,13 @@
+<mt:setvarblock name="css_include" append="1">
+    <link rel="stylesheet" href="<$mt:var name="static_uri"$>plugins/Diagnosis/css/list_repair_task.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css">
+</mt:setvarblock>
+<mt:setvarblock name="system_msg" append="1">
+<__trans_section component="Diagnosis">
+    <mt:if name="saved_task">
+        <mtapp:statusmsg id="saved_task" class="success">
+            <__trans phrase="Repair tasks are added.">
+        </mtapp:statusmsg>
+    </mt:if>
+</__trans_section>
+</mt:setvarblock>
+<mt:include name="list_common.tmpl" />
