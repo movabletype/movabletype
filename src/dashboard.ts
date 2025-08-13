@@ -53,9 +53,13 @@ let isSorting = false;
 jQuery(widgetContainer).sortable({
   items: ".mt-widget--resizable",
   handle: ".mt-widget__title .mt-icon",
+  placeholder: "placeholder",
+  forcePlaceholderSize: true,
   tolerance: "pointer",
   start: () => {
     isSorting = true;
+    // Workarround for irresponsive placeholder issue for a large item at the first position.(MTC-30723)
+    jQuery(widgetContainer).sortable("refreshPositions");
   },
   stop: () => {
     isSorting = false;

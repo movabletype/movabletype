@@ -270,6 +270,7 @@
     }
     jQuery(tableBodyRef).sortable({
       delay: 100,
+      placeholder: "placeholder",
       distance: 3,
       items: "tr[data-is-starred]",
       handle: ".site-list-table-sortable-handle",
