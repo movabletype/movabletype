@@ -484,10 +484,7 @@ abstract class BaseObject extends ADOdb_Active_Record
             foreach($keys as $key) {
                 $table = $key;
                 $cond = $joins[$key]['condition'];
-                $type = '';
-                if (isset($jo[$key]['type']))
-                    $type = $jo[$key]['type'];
-                $join .= ' ' . strtolower($type) . ' JOIN ' . $table . ' ON ' . $cond;
+                $join .= ' ' . 'JOIN ' . $table . ' ON ' . $cond;
             }
         }
 
