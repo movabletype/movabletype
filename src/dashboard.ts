@@ -53,6 +53,8 @@ let isSorting = false;
 jQuery(widgetContainer).sortable({
   items: ".mt-widget--resizable",
   handle: ".mt-widget__title .mt-icon",
+  placeholder: "placeholder",
+  forcePlaceholderSize: true,
   tolerance: "pointer",
   start: () => {
     isSorting = true;
