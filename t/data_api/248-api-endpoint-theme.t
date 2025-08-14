@@ -20,6 +20,14 @@ name: Invalid Class Theme
 label: Invalid Class theme
 class: invalid
 YAML
+
+    $test_env->save_file('themes/deprecated_theme/theme.yaml', <<'YAML');
+id: deprecated_theme
+name: Deprecated Theme
+label: Deprecated theme
+class: both
+deprecated: 1
+YAML
 }
 
 use MT::Test::DataAPI;
@@ -70,7 +78,7 @@ sub suite {
                 my ($data, $body) = @_;
                 my $got           = $app->current_format->{unserialize}->($body);
                 my @got_theme_ids = map { $_->{id} } @{ $got->{items} };
-                my @expected      = keys %{$all_themes};
+                my @expected      = grep { !$all_themes->{$_}{deprecated} } keys %{$all_themes};
                 cmp_bag(\@got_theme_ids, \@expected);
             },
         },
@@ -123,7 +131,7 @@ sub suite {
                 my ($data, $body) = @_;
                 my $got           = $app->current_format->{unserialize}->($body);
                 my @got_theme_ids = map { $_->{id} } @{ $got->{items} };
-                my @expected      = keys %{$all_themes};
+                my @expected      = grep { !$all_themes->{$_}{deprecated} } keys %{$all_themes};
                 cmp_bag(\@got_theme_ids, \@expected);
             },
         },
@@ -134,7 +142,7 @@ sub suite {
                 my ($data, $body) = @_;
                 my $got           = $app->current_format->{unserialize}->($body);
                 my @got_theme_ids = map  { $_->{id} } @{ $got->{items} };
-                my @expected      = grep { ($all_themes->{$_}{class} || '') ne 'website' } keys %{$all_themes};
+                my @expected      = grep { !$all_themes->{$_}{deprecated} && ($all_themes->{$_}{class} || '') ne 'website' } keys %{$all_themes};
                 cmp_bag(\@got_theme_ids, \@expected);
             },
         },
@@ -145,7 +153,7 @@ sub suite {
                 my ($data, $body) = @_;
                 my $got           = $app->current_format->{unserialize}->($body);
                 my @got_theme_ids = map { $_->{id} } @{ $got->{items} };
-                my @expected      = keys %{$all_themes};
+                my @expected      = grep { !$all_themes->{$_}{deprecated} } keys %{$all_themes};
                 cmp_bag(\@got_theme_ids, \@expected);
             },
         },

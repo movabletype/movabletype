@@ -20,6 +20,14 @@ name: Invalid Class Theme
 label: Invalid Class theme
 class: invalid
 YAML
+
+    $test_env->save_file('themes/deprecated_theme/theme.yaml', <<'YAML');
+id: deprecated_theme
+name: Deprecated Theme
+label: Deprecated Theme
+class: both
+deprecated: 1
+YAML
 }
 
 use MT::Test::DataAPI;
@@ -319,6 +327,21 @@ sub suite {
             is_superuser => 1,
             code         => 409,
             error        => "Cannot apply a theme with invalid class.\n",
+        },
+        {    # A deprecated theme
+            path   => '/v2/sites',
+            method => 'POST',
+            params => {
+                website => {
+                    name     => 'test-api-permission-website',
+                    url      => 'http://narnia2.na/',
+                    sitePath => $test_env->root,
+                    themeId  => 'deprecated_theme',
+                },
+            },
+            is_superuser => 1,
+            code         => 409,
+            error        => "Cannot apply a deprecated theme: deprecated_theme\n",
         },
         {    # sitePath is not absolute.
             path   => '/v2/sites',
@@ -638,6 +661,21 @@ sub suite {
             code         => 409,
             error        => "Cannot apply a theme with invalid class.\n",
         },
+        {    # A theme with invalid class.
+            path   => '/v2/sites/2',
+            method => 'POST',
+            params => {
+                blog => {
+                    url      => 'blog',
+                    name     => 'blog',
+                    sitePath => 'blog',
+                    themeId  => 'deprecated_theme',
+                },
+            },
+            is_superuser => 1,
+            code         => 409,
+            error        => "Cannot apply a deprecated theme: deprecated_theme\n",
+        },
         {    # Website theme_id.
             path   => '/v2/sites/2',
             method => 'POST',
@@ -942,6 +980,30 @@ sub suite {
             is_superuser => 1,
             code         => 409,
             error        => "Cannot apply a theme with invalid class.\n",
+        },
+        {    # A deprecated theme (child site)
+            path   => '/v2/sites/1',
+            method => 'PUT',
+            params => {
+                blog => {
+                    themeId => 'deprecated_theme',
+                },
+            },
+            is_superuser => 1,
+            code         => 409,
+            error        => "Cannot apply a deprecated theme: deprecated_theme\n",
+        },
+        {    # A deprecated theme (parent site)
+            path   => '/v2/sites/2',
+            method => 'PUT',
+            params => {
+                website => {
+                    themeId => 'deprecated_theme',
+                },
+            },
+            is_superuser => 1,
+            code         => 409,
+            error        => "Cannot apply a deprecated theme: deprecated_theme\n",
         },
         {    # Not logged in.
             path      => '/v2/sites/2',

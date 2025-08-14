@@ -1717,6 +1717,11 @@ sub apply_theme {
             )
         );
     }
+    if ($theme->{deprecated}) {
+        # if the current theme is deprecated, just ignore it
+        return 1 if ($blog->theme_id || '') eq $theme_id;
+        return $blog->error(MT->translate("Cannot apply a deprecated theme: [_1]", $theme_id));
+    }
     $theme->apply($blog)
         or return $blog->error(
         MT->translate(

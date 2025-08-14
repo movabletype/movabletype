@@ -166,6 +166,14 @@ sub refresh {
         return $app->error( $app->translate('Template not found'), 404 );
     }
 
+    if (my $theme_id = $site->theme_id) {
+        require MT::Theme;
+        my $theme = MT::Theme->load($theme_id);
+        if ($theme && $theme->{deprecated}) {
+            return $app->error($app->translate('Cannot refresh a template of a deprecated theme: [_1]', $theme_id), 400);
+        }
+    }
+
     my @messages;
     local *MT::App::DataAPI::build_page = sub {
         my ( $app, $page, $param ) = @_;

@@ -562,6 +562,14 @@ sub refresh {
             400 );
     }
 
+    if (my $theme_id = $site->theme_id) {
+        require MT::Theme;
+        my $theme = MT::Theme->load($theme_id);
+        if ($theme && $theme->{deprecated}) {
+            return $app->error($app->translate('Cannot refresh a template of a deprecated theme: [_1]', $theme_id), 400);
+        }
+    }
+
     my @messages;
     local *MT::App::DataAPI::build_page = sub {
         my ( $app, $page, $param ) = @_;
@@ -666,6 +674,15 @@ sub refresh_for_site {
             ),
             400
         );
+    }
+
+    my ($site) = context_objects(@_) or return;
+    if (my $theme_id = $site->theme_id) {
+        require MT::Theme;
+        my $theme = MT::Theme->load($theme_id);
+        if ($theme && $theme->{deprecated}) {
+            return $app->error($app->translate('Cannot refresh a site that uses a deprecated theme: [_1]', $theme_id), 400);
+        }
     }
 
     local $app->{redirect};

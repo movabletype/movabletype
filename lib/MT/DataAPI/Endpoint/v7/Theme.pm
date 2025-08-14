@@ -488,7 +488,7 @@ __END__
 
 =head1 NAME
 
-MT::DataAPI::Endpoint::v2::Theme - Movable Type class for endpoint definitions about the MT::Theme.
+MT::DataAPI::Endpoint::v7::Theme - Movable Type class for endpoint definitions about the MT::Theme.
 
 =head1 AUTHOR & COPYRIGHT
 
