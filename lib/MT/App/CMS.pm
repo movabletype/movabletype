@@ -1792,6 +1792,7 @@ sub core_user_actions {
             condition => sub {
                 $app->user ? 1 : 0;
             },
+            href  => sub { $app->uri(mode => 'logout') },
             label => 'Sign out',
             mode  => 'logout',
             order => 300,
