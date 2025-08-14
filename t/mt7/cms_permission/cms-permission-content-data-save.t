@@ -11,7 +11,9 @@ our $test_env;
 use MT::Test::Fixture;
 
 BEGIN {
-    $test_env = MT::Test::Env->new;
+    $test_env = MT::Test::Env->new(
+        DisableContentFieldPermission => 0,
+    );
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 

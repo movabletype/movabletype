@@ -475,6 +475,10 @@ sub field_permissions {
 
     return $obj->{__cached_field_permissions} if $obj->{__cached_field_permissions};
 
+    if (MT->config->DisableContentFieldPermission) {
+        return $obj->{__cached_field_permissions} = {};
+    }
+
     my %permissions;
     my $order = 500;
     for my $f ( @{ $obj->field_objs } ) {
