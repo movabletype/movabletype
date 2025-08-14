@@ -60,82 +60,169 @@ subtest 'without initial_value' => sub {
 
     my $cd;
 
-    test_data_api(
-        {   note   => 'with permission',
-            path   => "/v4/sites/$site_id/contentTypes/$content_type_id/data",
-            method => 'POST',
-            params => {
-                content_data => {
-                    label => 'test',
-                    data  => [
-                        {   id   => $single_field->id,
-                            data => 'abcde',
-                        },
-                    ],
-                },
-            },
-            result => sub {
-                $cd = MT->model('content_data')->load(
-                    { content_type_id => $content_type_id, },
-                    {   sort      => 'id',
-                        direction => 'descend',
-                        limit     => 1,
-                    },
-                );
-            },
-            complete => sub {
-                is( $cd->data->{ $single_field->id }, 'abcde' );
-            },
-        }
-    );
+    subtest 'DisableContentFieldPermission = 0' => sub {
+        $app->config->DisableContentFieldPermission(0);
+        die if $app->config->DisableContentFieldPermission;
 
-    test_data_api(
-        {   note   => 'without permission',
-            path   => "/v4/sites/$site_id/contentTypes/$content_type_id/data",
-            method => 'POST',
-            restrictions => {
-                0        => ['edit_all_content_data'],
-                $site_id => [
-                    'edit_all_content_data',
-                    'edit_all_content_data_' . $content_type->unique_id,
-                    'edit_own_published_content_data_'
-                        . $content_type->unique_id,
-                    'edit_all_published_content_data_'
-                        . $content_type->unique_id,
-                    'edit_own_unpublished_content_data_'
-                        . $content_type->unique_id,
-                    'edit_all_unpublished_content_data_'
-                        . $content_type->unique_id,
-                    'content_type:'
-                        . $content_type->unique_id
-                        . '-content_field:'
-                        . $single_field->unique_id,
-                ],
-            },
-            params => {
-                content_data => {
-                    label => 'test',
-                    data  => [
-                        {   id   => $single_field->id,
-                            data => 'abcde',
+        test_data_api(
+            {   note   => 'with permission',
+                path   => "/v4/sites/$site_id/contentTypes/$content_type_id/data",
+                method => 'POST',
+                params => {
+                    content_data => {
+                        label => 'test',
+                        data  => [
+                            {   id   => $single_field->id,
+                                data => 'abcde',
+                            },
+                        ],
+                    },
+                },
+                result => sub {
+                    $cd = MT->model('content_data')->load(
+                        { content_type_id => $content_type_id, },
+                        {   sort      => 'id',
+                            direction => 'descend',
+                            limit     => 1,
                         },
+                    );
+                },
+                complete => sub {
+                    is( $cd->data->{ $single_field->id }, 'abcde' );
+                },
+            }
+        );
+
+        test_data_api(
+            {   note   => 'without permission',
+                path   => "/v4/sites/$site_id/contentTypes/$content_type_id/data",
+                method => 'POST',
+                restrictions => {
+                    0        => ['edit_all_content_data'],
+                    $site_id => [
+                        'edit_all_content_data',
+                        'edit_all_content_data_' . $content_type->unique_id,
+                        'edit_own_published_content_data_'
+                            . $content_type->unique_id,
+                        'edit_all_published_content_data_'
+                            . $content_type->unique_id,
+                        'edit_own_unpublished_content_data_'
+                            . $content_type->unique_id,
+                        'edit_all_unpublished_content_data_'
+                            . $content_type->unique_id,
+                        'content_type:'
+                            . $content_type->unique_id
+                            . '-content_field:'
+                            . $single_field->unique_id,
                     ],
                 },
-            },
-            result => sub {
-                $cd = MT->model('content_data')->load(
-                    { content_type_id => $content_type_id, },
-                    {   sort      => 'id',
-                        direction => 'descend',
-                        limit     => 1,
+                params => {
+                    content_data => {
+                        label => 'test',
+                        data  => [
+                            {   id   => $single_field->id,
+                                data => 'abcde',
+                            },
+                        ],
                     },
-                );
-            },
-            complete => sub {
-                ok( !$cd->data->{ $single_field->id } );
-            },
-        }
-    );
+                },
+                result => sub {
+                    $cd = MT->model('content_data')->load(
+                        { content_type_id => $content_type_id, },
+                        {   sort      => 'id',
+                            direction => 'descend',
+                            limit     => 1,
+                        },
+                    );
+                },
+                complete => sub {
+                    ok( !$cd->data->{ $single_field->id } );
+                },
+            }
+        );
+    };
+
+    subtest 'DisableContentFieldPermission = 1' => sub {
+        $app->config->DisableContentFieldPermission(1);
+        die unless $app->config->DisableContentFieldPermission;
+
+        test_data_api(
+            {   note   => 'with permission',
+                path   => "/v4/sites/$site_id/contentTypes/$content_type_id/data",
+                method => 'POST',
+                params => {
+                    content_data => {
+                        label => 'test',
+                        data  => [
+                            {   id   => $single_field->id,
+                                data => 'abcde',
+                            },
+                        ],
+                    },
+                },
+                result => sub {
+                    $cd = MT->model('content_data')->load(
+                        { content_type_id => $content_type_id, },
+                        {   sort      => 'id',
+                            direction => 'descend',
+                            limit     => 1,
+                        },
+                    );
+                },
+                complete => sub {
+                    is( $cd->data->{ $single_field->id }, 'abcde' );
+                },
+            }
+        );
+
+        test_data_api(
+            {   note   => 'without permission',
+                path   => "/v4/sites/$site_id/contentTypes/$content_type_id/data",
+                method => 'POST',
+                restrictions => {
+                    0        => ['edit_all_content_data'],
+                    $site_id => [
+                        'edit_all_content_data',
+                        'edit_all_content_data_' . $content_type->unique_id,
+                        'edit_own_published_content_data_'
+                            . $content_type->unique_id,
+                        'edit_all_published_content_data_'
+                            . $content_type->unique_id,
+                        'edit_own_unpublished_content_data_'
+                            . $content_type->unique_id,
+                        'edit_all_unpublished_content_data_'
+                            . $content_type->unique_id,
+                        'content_type:'
+                            . $content_type->unique_id
+                            . '-content_field:'
+                            . $single_field->unique_id,
+                    ],
+                },
+                params => {
+                    content_data => {
+                        label => 'test',
+                        data  => [
+                            {   id   => $single_field->id,
+                                data => 'abcde',
+                            },
+                        ],
+                    },
+                },
+                result => sub {
+                    $cd = MT->model('content_data')->load(
+                        { content_type_id => $content_type_id, },
+                        {   sort      => 'id',
+                            direction => 'descend',
+                            limit     => 1,
+                        },
+                    );
+                },
+                complete => sub {
+                    is( $cd->data->{ $single_field->id }, 'abcde' );
+                },
+            }
+        );
+    };
 };
 
 subtest 'with initial_value' => sub {
@@ -167,82 +254,169 @@ subtest 'with initial_value' => sub {
 
     my $cd;
 
-    test_data_api(
-        {   note   => 'with permission',
-            path   => "/v4/sites/$site_id/contentTypes/$content_type_id/data",
-            method => 'POST',
-            params => {
-                content_data => {
-                    label => 'test',
-                    data  => [
-                        {   id   => $single_field->id,
-                            data => 'abcde',
-                        },
-                    ],
-                },
-            },
-            result => sub {
-                $cd = MT->model('content_data')->load(
-                    { content_type_id => $content_type_id, },
-                    {   sort      => 'id',
-                        direction => 'descend',
-                        limit     => 1,
-                    },
-                );
-            },
-            complete => sub {
-                is( $cd->data->{ $single_field->id }, 'abcde' );
-            },
-        }
-    );
+    subtest 'DisableContentFieldPermission = 0' => sub {
+        $app->config->DisableContentFieldPermission(0);
+        die if $app->config->DisableContentFieldPermission;
 
-    test_data_api(
-        {   note   => 'without permission',
-            path   => "/v4/sites/$site_id/contentTypes/$content_type_id/data",
-            method => 'POST',
-            restrictions => {
-                0        => ['edit_all_content_data'],
-                $site_id => [
-                    'edit_all_content_data',
-                    'edit_all_content_data_' . $content_type->unique_id,
-                    'edit_own_published_content_data_'
-                        . $content_type->unique_id,
-                    'edit_all_published_content_data_'
-                        . $content_type->unique_id,
-                    'edit_own_unpublished_content_data_'
-                        . $content_type->unique_id,
-                    'edit_all_unpublished_content_data_'
-                        . $content_type->unique_id,
-                    'content_type:'
-                        . $content_type->unique_id
-                        . '-content_field:'
-                        . $single_field->unique_id,
-                ],
-            },
-            params => {
-                content_data => {
-                    label => 'test',
-                    data  => [
-                        {   id   => $single_field->id,
-                            data => 'abcde',
+        test_data_api(
+            {   note   => 'with permission',
+                path   => "/v4/sites/$site_id/contentTypes/$content_type_id/data",
+                method => 'POST',
+                params => {
+                    content_data => {
+                        label => 'test',
+                        data  => [
+                            {   id   => $single_field->id,
+                                data => 'abcde',
+                            },
+                        ],
+                    },
+                },
+                result => sub {
+                    $cd = MT->model('content_data')->load(
+                        { content_type_id => $content_type_id, },
+                        {   sort      => 'id',
+                            direction => 'descend',
+                            limit     => 1,
                         },
+                    );
+                },
+                complete => sub {
+                    is( $cd->data->{ $single_field->id }, 'abcde' );
+                },
+            }
+        );
+
+        test_data_api(
+            {   note   => 'without permission',
+                path   => "/v4/sites/$site_id/contentTypes/$content_type_id/data",
+                method => 'POST',
+                restrictions => {
+                    0        => ['edit_all_content_data'],
+                    $site_id => [
+                        'edit_all_content_data',
+                        'edit_all_content_data_' . $content_type->unique_id,
+                        'edit_own_published_content_data_'
+                            . $content_type->unique_id,
+                        'edit_all_published_content_data_'
+                            . $content_type->unique_id,
+                        'edit_own_unpublished_content_data_'
+                            . $content_type->unique_id,
+                        'edit_all_unpublished_content_data_'
+                            . $content_type->unique_id,
+                        'content_type:'
+                            . $content_type->unique_id
+                            . '-content_field:'
+                            . $single_field->unique_id,
                     ],
                 },
-            },
-            result => sub {
-                $cd = MT->model('content_data')->load(
-                    { content_type_id => $content_type_id, },
-                    {   sort      => 'id',
-                        direction => 'descend',
-                        limit     => 1,
+                params => {
+                    content_data => {
+                        label => 'test',
+                        data  => [
+                            {   id   => $single_field->id,
+                                data => 'abcde',
+                            },
+                        ],
                     },
-                );
-            },
-            complete => sub {
-                is( $cd->data->{ $single_field->id }, 12345 );
-            },
-        }
-    );
+                },
+                result => sub {
+                    $cd = MT->model('content_data')->load(
+                        { content_type_id => $content_type_id, },
+                        {   sort      => 'id',
+                            direction => 'descend',
+                            limit     => 1,
+                        },
+                    );
+                },
+                complete => sub {
+                    is( $cd->data->{ $single_field->id }, 12345 );
+                },
+            }
+        );
+    };
+
+    subtest 'DisableContentFieldPermission = 1' => sub {
+        $app->config->DisableContentFieldPermission(1);
+        die unless $app->config->DisableContentFieldPermission;
+
+        test_data_api(
+            {   note   => 'with permission',
+                path   => "/v4/sites/$site_id/contentTypes/$content_type_id/data",
+                method => 'POST',
+                params => {
+                    content_data => {
+                        label => 'test',
+                        data  => [
+                            {   id   => $single_field->id,
+                                data => 'abcde',
+                            },
+                        ],
+                    },
+                },
+                result => sub {
+                    $cd = MT->model('content_data')->load(
+                        { content_type_id => $content_type_id, },
+                        {   sort      => 'id',
+                            direction => 'descend',
+                            limit     => 1,
+                        },
+                    );
+                },
+                complete => sub {
+                    is( $cd->data->{ $single_field->id }, 'abcde' );
+                },
+            }
+        );
+
+        test_data_api(
+            {   note   => 'without permission',
+                path   => "/v4/sites/$site_id/contentTypes/$content_type_id/data",
+                method => 'POST',
+                restrictions => {
+                    0        => ['edit_all_content_data'],
+                    $site_id => [
+                        'edit_all_content_data',
+                        'edit_all_content_data_' . $content_type->unique_id,
+                        'edit_own_published_content_data_'
+                            . $content_type->unique_id,
+                        'edit_all_published_content_data_'
+                            . $content_type->unique_id,
+                        'edit_own_unpublished_content_data_'
+                            . $content_type->unique_id,
+                        'edit_all_unpublished_content_data_'
+                            . $content_type->unique_id,
+                        'content_type:'
+                            . $content_type->unique_id
+                            . '-content_field:'
+                            . $single_field->unique_id,
+                    ],
+                },
+                params => {
+                    content_data => {
+                        label => 'test',
+                        data  => [
+                            {   id   => $single_field->id,
+                                data => 'abcde',
+                            },
+                        ],
+                    },
+                },
+                result => sub {
+                    $cd = MT->model('content_data')->load(
+                        { content_type_id => $content_type_id, },
+                        {   sort      => 'id',
+                            direction => 'descend',
+                            limit     => 1,
+                        },
+                    );
+                },
+                complete => sub {
+                    is( $cd->data->{ $single_field->id }, 'abcde' );
+                },
+            }
+        );
+    };
 };
 
 done_testing;

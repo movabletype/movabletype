@@ -2264,6 +2264,7 @@ BEGIN {
             'TrimFilePath' => { default => 0 },
             'UseRiot' => { default => 1 },
             'GrantRoleSitesView' => { default => 'tree' }, # DEPRECATED
+            'DisableContentFieldPermission' => { default => undef },
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {
