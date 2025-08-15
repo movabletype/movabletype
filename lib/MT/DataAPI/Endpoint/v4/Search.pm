@@ -16,17 +16,6 @@ sub search_openapi_spec {
     my $spec = MT::DataAPI::Endpoint::v2::Search::search_openapi_spec;
     push @{ $spec->{parameters} }, ({
             in          => 'query',
-            name        => 'class',
-            schema      => { type => 'string' },
-            description => <<'DESCRIPTION',
-Class name of the object to be searched. Available values are as follows.
-
-- entry: Search results will only contain entries.
-- page: Search results will only contain pages.
-DESCRIPTION
-        },
-        {
-            in          => 'query',
             name        => 'cdSearch',
             schema      => { type => 'integer' },
             description => 'If 1 specified, searching content data only.',

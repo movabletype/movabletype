@@ -130,6 +130,17 @@ NOTE: By default, "SearchMaxResults" override is disabled.
 **Default**: 20
 DESCRIPTION
             },
+            {
+                in          => 'query',
+                name        => 'class',
+                schema      => { type => 'string' },
+                description => <<'DESCRIPTION',
+Class name of the object to be searched. Available values are as follows.
+
+- entry: Search results will only contain entries.
+- page: Search results will only contain pages.
+DESCRIPTION
+            },
         ],
         responses => {
             200 => {
