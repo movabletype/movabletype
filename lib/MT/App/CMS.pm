@@ -3785,6 +3785,10 @@ sub build_actions {
 
     my $view = $app->view;
     my $blog_id = $app->param('blog_id');
+    my %mode_args =
+        defined $blog_id && $blog_id =~ /\A[0-9]+\z/
+        ? (blog_id => $blog_id)
+        : ();
     my @valid_actions;
     for my $id ( keys %$actions ) {
         my $action = $actions->{$id};
@@ -3809,11 +3813,7 @@ sub build_actions {
         } elsif ($action->{mode}) {
             $href = $app->uri(
                 mode => $action->{mode},
-                args => {
-                    defined $blog_id
-                        ? (blog_id => $blog_id)
-                        : (),
-                },
+                args => \%mode_args,
             );
         } else {
             $href = 'javascript:void(0)';
