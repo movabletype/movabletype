@@ -5,6 +5,7 @@ use warnings;
 use FindBin;
 use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
+use Test::Deep;
 use MT::Test::Env;
 our $test_env;
 BEGIN {
@@ -158,14 +159,19 @@ subtest 'Check All Themes screen' => sub {
         });
         $app->has_no_permission_error;
 
-        my $expected_theme_count = scalar keys %{$all_themes};
-        my @titles               = $app->content =~ /theme-title/g;
-        is scalar @titles, $expected_theme_count, "${expected_theme_count} themes";
-
+        my @expected_theme_titles;
         for my $theme (values %{$all_themes}) {
-            my $theme_label = $theme->name || $theme->label->();
-            $app->content_like(qr/\Q${theme_label}\E/, $theme_label);
+            my $theme_title = $theme->name || $theme->label->();
+            push @expected_theme_titles, $theme_title;
         }
+
+        my $got_theme_titles = $app->wq_find('.theme-title a')->map(sub {
+            my ($i, $elem) = @_;
+            my ($title) = $elem->html =~ /\s+(.+)\s+(?:<span )?/;
+            return $title;
+        });
+
+        cmp_bag(\@expected_theme_titles, $got_theme_titles, scalar(@expected_theme_titles) . ' themes');
     };
 
     subtest 'Parente Site' => sub {
@@ -177,14 +183,19 @@ subtest 'Check All Themes screen' => sub {
         });
         $app->has_no_permission_error;
 
-        my $expected_theme_count = scalar keys %{$all_themes};
-        my @titles               = $app->content =~ /theme-title/g;
-        is scalar @titles, $expected_theme_count, "${expected_theme_count} themes";
-
+        my @expected_theme_titles;
         for my $theme (values %{$all_themes}) {
-            my $theme_label = $theme->name || $theme->label->();
-            $app->content_like(qr/\Q${theme_label}\E/, $theme_label);
+            my $theme_title = $theme->name || $theme->label->();
+            push @expected_theme_titles, $theme_title;
         }
+
+        my $got_theme_titles = $app->wq_find('.theme-title a')->map(sub {
+            my ($i, $elem) = @_;
+            my ($title) = $elem->html =~ /\s+(.+)\s+(?:<span )?/;
+            return $title;
+        });
+
+        cmp_bag(\@expected_theme_titles, $got_theme_titles, scalar(@expected_theme_titles) . ' themes');
     };
 
     subtest 'Child Site' => sub {
@@ -196,28 +207,20 @@ subtest 'Check All Themes screen' => sub {
         });
         $app->has_no_permission_error;
 
-        my (@expected_themes, @unexpected_themes);
+        my @expected_theme_titles;
         for my $theme (values %{$all_themes}) {
-            if (($theme->{class} || '') eq 'website') {
-                push @unexpected_themes, $theme;
-            } else {
-                push @expected_themes, $theme;
-            }
+            next if ($theme->{class} || '') eq 'website';
+            my $theme_title = $theme->name || $theme->label->();
+            push @expected_theme_titles, $theme_title;
         }
 
-        my $expected_theme_count = scalar @expected_themes;
-        my @titles               = $app->content =~ /theme-title/g;
-        is scalar @titles, $expected_theme_count, "${expected_theme_count} themes";
+        my $got_theme_titles = $app->wq_find('.theme-title a')->map(sub {
+            my ($i, $elem) = @_;
+            my ($title) = $elem->html =~ /\s+(.+)\s+(?:<span )?/;
+            return $title;
+        });
 
-        for my $theme (@expected_themes) {
-            my $theme_label = $theme->name || $theme->label->();
-            $app->content_like(qr/\Q${theme_label}\E/, $theme_label);
-        }
-
-        for my $theme (@unexpected_themes) {
-            my $theme_label = $theme->name || $theme->label->();
-            $app->content_unlike(qr/\Q${theme_label}\E/, "no ${theme_label}");
-        }
+        cmp_bag(\@expected_theme_titles, $got_theme_titles, scalar(@expected_theme_titles) . ' themes');
     };
 };
 
