@@ -1792,6 +1792,7 @@ sub core_user_actions {
             condition => sub {
                 $app->user ? 1 : 0;
             },
+            href  => sub { $app->uri(mode => 'logout') },
             label => 'Sign out',
             mode  => 'logout',
             order => 300,
@@ -3783,7 +3784,7 @@ sub build_actions {
     my $actions = $app->registry($registry_key) || {};
 
     my $view = $app->view;
-    my $blog_id = $app->blog ? $app->blog->id : 0;
+    my $blog_id = $app->param('blog_id');
     my @valid_actions;
     for my $id ( keys %$actions ) {
         my $action = $actions->{$id};
@@ -3806,7 +3807,14 @@ sub build_actions {
             $href = MT->handler_to_coderef($href) unless ref $href;
             $href = $href->( $app, $param ) if ref $href eq 'CODE';
         } elsif ($action->{mode}) {
-            $href = $app->uri(mode => $action->{mode}, args => { blog_id => $blog_id });
+            $href = $app->uri(
+                mode => $action->{mode},
+                args => {
+                    defined $blog_id
+                        ? (blog_id => $blog_id)
+                        : (),
+                },
+            );
         } else {
             $href = 'javascript:void(0)';
         }
