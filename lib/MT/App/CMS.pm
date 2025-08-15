@@ -3784,7 +3784,7 @@ sub build_actions {
     my $actions = $app->registry($registry_key) || {};
 
     my $view = $app->view;
-    my $blog_id = $app->blog ? $app->blog->id : defined $app->param('blog_id') ? 0 : undef;
+    my $blog_id = $app->param('blog_id');
     my @valid_actions;
     for my $id ( keys %$actions ) {
         my $action = $actions->{$id};
