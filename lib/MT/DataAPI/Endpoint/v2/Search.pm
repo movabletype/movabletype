@@ -15,7 +15,7 @@ use MT::DataAPI::Endpoint::Common;
 sub search_openapi_spec {
     +{
         tags       => ['Search'],
-        summary    => 'Searching entries',
+        summary    => 'Searching contents',
         parameters => [{
                 required    => JSON::true,
                 in          => 'query',
@@ -56,7 +56,7 @@ DESCRIPTION
                 name        => 'limit',
                 schema      => { type => 'integer' },
                 description => <<'DESCRIPTION',
-Maximum number of entries to retrieve.
+Maximum number of contents to retrieve.
 
 **Default**: 20
 DESCRIPTION
@@ -86,11 +86,11 @@ The sort column for the search results. Available values are as follows.
 
 #### created_on
 
-Will sort the entries by the authored on date.
+Will sort the contents by the authored on date.
 
 #### title
 
-Will sort the entries by title.
+Will sort the contents by title.
 DESCRIPTION
             },
             {
@@ -109,11 +109,11 @@ Defines the sort order search results. Available values are as follows.
 
 #### ascend
 
-will list the entries in chronological order (oldest entry at the top)
+will list the contents in chronological order (oldest content at the top)
 
 #### descend
 
-will list the entries in reverse chronological order (newest entry at the top).
+will list the contents in reverse chronological order (newest content at the top).
 
 **Default**: ascend
 DESCRIPTION
@@ -123,7 +123,7 @@ DESCRIPTION
                 name        => 'SearchMaxResults',
                 schema      => { type => 'integer' },
                 description => <<'DESCRIPTION',
-Maximum number of entries to retrieve.
+Maximum number of contents to retrieve.
 
 NOTE: By default, "SearchMaxResults" override is disabled.
 
@@ -164,7 +164,7 @@ DESCRIPTION
                             properties => {
                                 totalResults => {
                                     type        => 'integer',
-                                    description => ' The total number of entries.',
+                                    description => ' The total number of contents.',
                                 },
                                 items => {
                                     type        => 'array',
