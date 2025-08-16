@@ -212,8 +212,7 @@ function setMultiLineTextData($form) {
     m = this.name.match(/-(\d+)$/);
     if (m) {
       fieldId = m[1];
-      if(jQuery(this).attr('data-full_rich_text'))
-        app.editors['editor-input-content-field-'+fieldId].save();
+      app.editors['editor-input-content-field-'+fieldId].save();
 
       // archetype_editor
       if($('[name="editor-input-content-field-' + fieldId + '"]').length > 0){
