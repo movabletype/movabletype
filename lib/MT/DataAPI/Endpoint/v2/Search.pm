@@ -168,9 +168,12 @@ DESCRIPTION
                                 },
                                 items => {
                                     type        => 'array',
-                                    description => 'An array of Entries resource. ',
+                                    description => 'An array of Contents resource. ',
                                     items       => {
-                                        '$ref' => '#/components/schemas/entry',
+                                        oneOf => [
+                                            { '$ref' => '#/components/schemas/entry' },
+                                            { '$ref' => '#/components/schemas/page' },
+                                        ],
                                     }
                                 },
                             },

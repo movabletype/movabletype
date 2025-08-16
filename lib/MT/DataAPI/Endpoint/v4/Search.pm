@@ -21,6 +21,35 @@ sub search_openapi_spec {
             description => 'If 1 specified, searching content data only.',
         },
     );
+    $spec->{responses} = {
+        200 => {
+            description => 'OK',
+            content     => {
+                'application/json' => {
+                    schema => {
+                        type       => 'object',
+                        properties => {
+                            totalResults => {
+                                type        => 'integer',
+                                description => ' The total number of contents.',
+                            },
+                            items => {
+                                type        => 'array',
+                                description => 'An array of Contents resource. ',
+                                items       => {
+                                    oneOf => [
+                                        { '$ref' => '#/components/schemas/entry' },
+                                        { '$ref' => '#/components/schemas/page' },
+                                        { '$ref' => '#/components/schemas/cd' },
+                                    ],
+                                }
+                            },
+                        },
+                    },
+                },
+            },
+        },
+    };
     return $spec;
 }
 
