@@ -130,10 +130,18 @@ $.extend(MT.EditorManager.prototype, {
         if (format == this.options['format']) {
             return;
         }
+        var lastFormat = this.options['format'];
         this.options['format'] = format;
 
         var editor = this.editorInstance(format);
         if (editor === this.currentEditor) {
+            // XXX: legacy editor implementation
+            if (
+              "reload" in this.currentEditor
+              && (lastFormat == 'richtext' || format == 'richtext')
+            ) {
+              this.currentEditor.reload();
+            }
             this.currentEditor.setFormat(format);
         }
         else {
