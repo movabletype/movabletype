@@ -181,7 +181,7 @@ DESCRIPTION
             {
                 'in'        => 'query',
                 name        => 'limit',
-                schema      => { type => 'integer', limit => 50 },
+                schema      => { type => 'integer', maximum => 50 },
                 description => 'This is an optional parameter. Maximum number of paths to retrieve. Default is 50.',
             },
             {
