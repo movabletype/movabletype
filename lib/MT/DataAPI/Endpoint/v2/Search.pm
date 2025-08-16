@@ -141,6 +141,18 @@ Class name of the object to be searched. Available values are as follows.
 - page: Search results will only contain pages.
 DESCRIPTION
             },
+            {
+                in          => 'query',
+                name        => 'tagSearch',
+                schema      => { type => 'integer' },
+                description => 'If 1 specified, searching contents by tags.',
+            },
+            {
+                in          => 'query',
+                name        => 'tag',
+                schema      => { type => 'string' },
+                description => 'The search term for tag search mode.',
+            },
         ],
         responses => {
             200 => {
