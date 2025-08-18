@@ -27,6 +27,8 @@ use MT::Test;
 use MT;
 use MT::Theme;
 
+MT->instance;
+
 my %available_classes = (
     ''      => 1,
     both    => 1,
