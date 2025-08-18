@@ -105,6 +105,10 @@ my $cd_admin        = MT->model('cd')->load({ label => 'cd1' });
 my $content_field   = MT->model('cf')->load({ name  => 'single line text' });
 my $content_field_2 = MT->model('cf')->load({ name  => 'multi line text' });
 
+# save to DB to test with Cloud.pack
+MT->config->DisableContentFieldPermission(0, 1);
+MT->config->save_config;
+
 subtest 'authorized fields' => sub {
     my $app = MT::Test::App->new('MT::App::CMS');
     $app->login($user);

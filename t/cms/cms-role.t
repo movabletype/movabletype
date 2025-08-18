@@ -24,6 +24,10 @@ $test_env->prepare_fixture('db');
 MT->instance;
 my $admin = MT::Author->load(1);
 
+# save to DB to test with Cloud.pack
+MT->config->DisableContentFieldPermission(0, 1);
+MT->config->save_config;
+
 subtest 'Role name should not be duplicated' => sub {
     my $app = MT::Test::App->new('MT::App::CMS');
 
