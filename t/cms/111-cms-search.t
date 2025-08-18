@@ -144,7 +144,60 @@ subtest 'unit test for incremental_iter' => sub {
             }
             is_deeply(\@got, \@expected);
         };
+
+        subtest 'multiple classes at once' => sub {
+            my @class1  = MT::Entry->load();
+            my @class2  = MT::Author->load();
+            my @expected1 = map { $_->id } @class1;
+            my @expected2 = map { $_->id } @class2;
+            my $iter1 = MT::CMS::Search::incremental_iter('MT::Entry', {}, {});
+            my $iter2 = MT::CMS::Search::incremental_iter('MT::Author', {}, {});
+            my (@got1, @got2);
+            while (my ($obj1, $obj2) = ($iter1->(), $iter2->())) {
+                push @got1, $obj1->id if $obj1;
+                push @got2, $obj2->id if $obj2;
+            }
+            is_deeply(\@got1, \@expected1);
+            is_deeply(\@got2, \@expected2);
+        };
     }
+
+    subtest 'useless last query is prevented' => sub {
+        require Test::MockModule;
+        my $mock = Test::MockModule->new('MT::Object');
+        my $query_count;
+        $mock->redefine('load_iter', sub { $query_count++; $mock->original('load_iter')->(@_) });
+
+        my @entries  = MT::Entry->load();
+        my @expected = map { $_->id } @entries;
+        is scalar(@expected), 9, '9 entries are existing';
+
+        my $iter;
+
+        $query_count = 0;
+        MT->config('CMSSearchLimit', 12);    # records are not divided
+        $iter = MT::CMS::Search::incremental_iter('MT::Entry', {}, {});
+        while ($iter->()) { }
+        is $query_count, 1, 'no useless last query';
+
+        $query_count = 0;
+        MT->config('CMSSearchLimit', 4);    # records are divided into 4, 4, 1
+        $iter = MT::CMS::Search::incremental_iter('MT::Entry', {}, {});
+        while ($iter->()) { }
+        is $query_count, 3, 'no useless last query';
+
+        $query_count = 0;
+        MT->config('CMSSearchLimit', 3);    # records are divided into 3, 3, 3, 0
+        $iter = MT::CMS::Search::incremental_iter('MT::Entry', {}, {});
+        while ($iter->()) { }
+        is $query_count, 4, 'no useless last query';
+
+        $query_count = 0;
+        MT->config('CMSSearchLimit', 12);    # records are not divided
+        $iter = MT::CMS::Search::incremental_iter('MT::Entry', { title => ['NOT EXIST'] }, {});
+        while ($iter->()) { }
+        is $query_count, 1, 'no useless last query';
+    };
 
     subtest 'with do_search_replace mock' => sub {
 
