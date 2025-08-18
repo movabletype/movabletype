@@ -401,7 +401,7 @@ sub save {
     );
     if ($exists) {
         $param{error}
-            = $app->translate( 'Name \'[_1]\' is already used.', $name );
+            = $app->translate( "Name '[_1]' is already used.", MT::Util::encode_html($name) );
         $app->mode('view');
         return $app->forward( "view", \%param );
     }
