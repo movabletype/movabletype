@@ -429,9 +429,13 @@ sub save {
         if ( $seen_field_names{$lc_name} ) {
             my $prev = $seen_field_names{$lc_name};
             if ($prev ne $name) {
-                $param{error} = $app->translate( 'Field \'[_1]\' and \'[_2]\' must not coexist within the same content type.', $prev, $name );
+                $param{error} = $app->translate(
+                    'Field \'[_1]\' and \'[_2]\' must not coexist within the same content type.',
+                    MT::Util::encode_html($prev), MT::Util::encode_html($name) );
             } else {
-                $param{error} = $app->translate( 'Field \'[_1]\' must be unique in this content type.', $name );
+                $param{error} = $app->translate(
+                    'Field \'[_1]\' must be unique in this content type.',
+                    MT::Util::encode_html($name) );
             }
             $app->mode('view');
             return $app->forward( "view", \%param );
