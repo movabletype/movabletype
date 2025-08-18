@@ -1403,7 +1403,10 @@ sub init_plugins {
         $AddedPlugins{$plugin_full_path}{object} = $plugin;
         $AddedPlugins{$plugin_full_path}{sig}    = $plugin_sig;
         $plugin->{full_path}                     = $plugin_full_path;
-        $plugin->path($plugin_full_path);
+        # plugin->path should return a directory
+        my $plugin_dir = $plugin_full_path;
+        $plugin_dir =~ s![^\\/]+\.pl$!!;
+        $plugin->path($plugin_dir);
         unless ($plugin->{registry} && (%{ $plugin->{registry} })) {
             $plugin->{registry} = $plugin_registry;
         }
