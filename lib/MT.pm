@@ -1582,7 +1582,7 @@ sub init_plugins {
             }
         }
 
-        my %is_actually_loaded = map { $_->path => 1 } @loaded_plugins;
+        my %is_actually_loaded = map { $_->{full_path} => 1 } @loaded_plugins;
 
         # Drop conflicting plugins
         my %sig_to_path;
@@ -1602,11 +1602,11 @@ sub init_plugins {
                     $deduped_plugins{$name} = $plugin;
                     $version_to_drop        = $dup->version || '';
                     $sig_to_drop            = $dup->{plugin_sig};
-                    $path_to_drop           = $dup->path;
+                    $path_to_drop           = $dup->{full_path};
                 } else {
                     $version_to_drop = $plugin->version || '';
                     $sig_to_drop     = $plugin->{plugin_sig};
-                    $path_to_drop    = $plugin->path;
+                    $path_to_drop    = $plugin->{full_path};
                 }
                 my $error         = $mt->translate("Conflicted plugin [_1] [_2] is disabled by the system", $path_to_drop, $version_to_drop);
                 my $visible_error = $MT::Debug ? $error : $mt->translate("Conflicted plugin [_1] [_2] is disabled by the system", $name, $version_to_drop);
