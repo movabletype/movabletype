@@ -298,6 +298,11 @@ use vars qw( @ISA %Lexicon );
 	'Recently in <em>[_1]</em> Category' => '<em>[_1]</em>の最近の記事',
 	'[_1] Archives' => '[_1]アーカイブ',
 
+## default_templates/changed-password.mtml
+	'Mail Footer' => 'メールフッター',
+	'Please ask the administrator for the new password. If this change is unexpected, please report it to the administrtor.' => '新しいパスワードは管理者にお尋ねください。また、この変更に心当たりがない場合は管理者に報告してください。',
+	q{The login password for '[_1]' was changed by a system administrator ([_2]).} => q{システム管理者([_2])が[_1]のログインパスワードを変更しました。},
+
 ## default_templates/current_author_monthly_archive_list.mtml
 	'[_1]: Monthly Archives' => '[_1]: 月別アーカイブ',
 
@@ -352,7 +357,6 @@ use vars qw( @ISA %Lexicon );
 
 ## default_templates/lockout-ip.mtml
 	'IP Address: [_1]' => 'IPアドレス: [_1]',
-	'Mail Footer' => 'メールフッター',
 	'Recovery: [_1]' => '解除時刻: [_1]',
 	'This email is to notify you that an IP address has been locked out.' => 'これは以下のIPアドレスからのアクセスがロックされたことを通知するメールです。',
 
@@ -1617,6 +1621,7 @@ use vars qw( @ISA %Lexicon );
 	'Invalid ID given for personal blog theme.' => '個人用ブログテーマのIDが不正です。',
 	'Invalid type' => 'typeが不正です。',
 	'Minimum password length must be an integer and greater than zero.' => 'パスワードの最低文字数は0以上の整数でなければなりません。',
+	'Password is changed' => 'パスワードが変更されました',
 	'Role name cannot be blank.' => 'ロールの名前は必須です。',
 	'Roles Selected' => '選択されたロール',
 	'Select Groups And Users' => 'ユーザーとグループを選択',
@@ -1637,6 +1642,8 @@ use vars qw( @ISA %Lexicon );
 	'You cannot delete your own association.' => '自分の関連付けは削除できません。',
 	'You have no permission to delete the user [_1].' => '[_1]を削除する権限がありません。',
 	'represents a user who will be created afterwards' => '今後新しく作成されるユーザー',
+	q{User '[_1]' (ID: [_2]) changed the login password for user '[_3]' (ID: [_4]).} => q{ユーザー'[_1]'(ID: [_2])がユーザー'[_3]'(ID: [_4])のログインパスワードを変更しました。},
+	q{User '[_1]' (ID: [_2]) changed their login password.} => q{ユーザー'[_1]'(ID: [_2])がログインパスワードを変更しました。},
 	q{User '[_1]' (ID:[_2]) could not be re-enabled by '[_3]'} => q{'[_3]'がユーザー '[_1]' (ID:[_2])を有効にできませんでした},
 	q{User '[_1]' (ID:[_2]) created by '[_3]'} => q{'[_3]'がユーザー'[_1]'(ID:[_2])を作成しました。},
 	q{User '[_1]' (ID:[_2]) deleted by '[_3]'} => q{'[_3]'がユーザー'[_1]'(ID:[_2])を削除しました。},
@@ -2167,6 +2174,7 @@ use vars qw( @ISA %Lexicon );
 	'Navigation' => 'ナビゲーション',
 	'OpenID Accepted' => 'OpenID対応',
 	'Page Listing' => 'ページ一覧',
+	'Password Is Changed' => 'パスワードが変更されました',
 	'Popup Image' => 'ポップアップ画像',
 	'Powered By' => 'Powered By',
 	'RSD' => 'RSD',
