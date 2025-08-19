@@ -264,7 +264,7 @@
     <mt:if name="rev_date">
     <__trans phrase="Revision: <strong>[_1]</strong>" params="<mt:var name="rev_date" escape="html">">
     <br>
-    <a href="<mt:var name="script_url">?__mode=list_revision&_type=<mt:var name="object_type" default="entry">&id=<$mt:var name="id" escape="url"$>&blog_id=<$mt:var name="blog_id"$>&r=<mt:var name="rev_number" escape="html">" class="mt-open-dialog mt-modal-open" data-mt-modal-large title="<__trans phrase="View revisions of this [_1]" params="<mt:var name="object_label">">">
+    <a href="<mt:var name="script_url">?__mode=list_revision&_type=<mt:var name="object_type" default="entry">&id=<$mt:var name="id" escape="url"$>&blog_id=<$mt:var name="blog_id"$>&r=<mt:var name="rev_number" escape="html">" class="mt-open-dialog mt-modal-open" data-mt-modal-large title="<__trans phrase="View revisions of this [_1]" params="<mt:var name="object_label" escape="html">">">
       <__trans phrase="View revisions">
     </a>
     <mt:else>
@@ -402,35 +402,35 @@
   <mt:if name="can_publish_post">
     <mt:if name="status_publish">
       <mt:setvar name="button_text" value="<__trans phrase="Publish">">
-      <mt:setvarblock name="button_title"><__trans phrase="Publish this [_1]" params="<mt:var name="object_label">" escape="html"></mt:setvarblock>
+      <mt:setvarblock name="button_title"><__trans phrase="Publish this [_1]" params="<mt:var name="object_label" escape="html">"></mt:setvarblock>
     <mt:else>
       <mt:setvar name="button_text" value="<__trans phrase="Save">">
-      <mt:setvarblock name="button_title"><__trans phrase="Draft this [_1]" params="<mt:var name="object_label">" escape="html"></mt:setvarblock>
+      <mt:setvarblock name="button_title"><__trans phrase="Draft this [_1]" params="<mt:var name="object_label" escape="html">"></mt:setvarblock>
     </mt:if>
     <mt:setvar name="publish_button_text" value="<__trans phrase="Publish">">
-    <mt:setvarblock name="publish_button_title"><__trans phrase="Publish this [_1]" params="<mt:var name="object_label">" escape="html"></mt:setvarblock>
+    <mt:setvarblock name="publish_button_title"><__trans phrase="Publish this [_1]" params="<mt:var name="object_label" escape="html">"></mt:setvarblock>
     <mt:setvar name="draft_button_text" value="<__trans phrase="Save">">
-    <mt:setvarblock name="draft_button_title"><__trans phrase="Draft this [_1]" params="<mt:var name="object_label">" escape="html"></mt:setvarblock>
+    <mt:setvarblock name="draft_button_title"><__trans phrase="Draft this [_1]" params="<mt:var name="object_label" escape="html">"></mt:setvarblock>
     <mt:setvar name="scheduled_button_text" value="<__trans phrase="Schedule">">
   <mt:else>
     <mt:setvar name="draft_button_text" value="<__trans phrase="Save">">
-    <mt:setvarblock name="draft_button_title"><__trans phrase="Draft this [_1]" params="<mt:var name="object_label">" escape="html"></mt:setvarblock>
+    <mt:setvarblock name="draft_button_title"><__trans phrase="Draft this [_1]" params="<mt:var name="object_label" escape="html">"></mt:setvarblock>
   </mt:if>
 <mt:else>
   <mt:if name="status_publish">
     <mt:setvar name="button_text" value="<__trans phrase="Update">">
-    <mt:setvarblock name="button_title"><__trans phrase="Update this [_1]" params="<mt:var name="object_label">" escape="html"></mt:setvarblock>
+    <mt:setvarblock name="button_title"><__trans phrase="Update this [_1]" params="<mt:var name="object_label" escape="html">"></mt:setvarblock>
     <mt:setvar name="publish_button_text" value="<__trans phrase="Update">">
-    <mt:setvarblock name="publish_button_title"><__trans phrase="Update this [_1]" params="<mt:var name="object_label">" escape="html"></mt:setvarblock>
+    <mt:setvarblock name="publish_button_title"><__trans phrase="Update this [_1]" params="<mt:var name="object_label" escape="html">"></mt:setvarblock>
     <mt:setvar name="draft_button_text" value="<__trans phrase="Save">">
-    <mt:setvarblock name="draft_button_title"><__trans phrase="Unpublish this [_1]" params="<mt:var name="object_label">" escape="html"></mt:setvarblock>
+    <mt:setvarblock name="draft_button_title"><__trans phrase="Unpublish this [_1]" params="<mt:var name="object_label" escape="html">"></mt:setvarblock>
   <mt:else>
     <mt:setvar name="button_text" value="<__trans phrase="Save">">
-    <mt:setvarblock name="button_title"><__trans phrase="Draft this [_1]" params="<mt:var name="object_label">" escape="html"></mt:setvarblock>
+    <mt:setvarblock name="button_title"><__trans phrase="Draft this [_1]" params="<mt:var name="object_label" escape="html">"></mt:setvarblock>
     <mt:setvar name="publish_button_text" value="<__trans phrase="Publish">">
-    <mt:setvarblock name="publish_button_title"><__trans phrase="Publish this [_1]" params="<mt:var name="object_label">" escape="html"></mt:setvarblock>
+    <mt:setvarblock name="publish_button_title"><__trans phrase="Publish this [_1]" params="<mt:var name="object_label" escape="html">"></mt:setvarblock>
     <mt:setvar name="draft_button_text" value="<__trans phrase="Save">">
-    <mt:setvarblock name="draft_button_title"><__trans phrase="Draft this [_1]" params="<mt:var name="object_label">" escape="html"></mt:setvarblock>
+    <mt:setvarblock name="draft_button_title"><__trans phrase="Draft this [_1]" params="<mt:var name="object_label" escape="html">"></mt:setvarblock>
     <mt:if name="status_future">
       <mt:setvar name="scheduled_button_text" value="<__trans phrase="Save">">
     <mt:else>
