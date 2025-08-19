@@ -18,7 +18,7 @@ sub search_openapi_spec {
             in          => 'query',
             name        => 'cdSearch',
             schema      => { type => 'integer' },
-            description => 'If 1 specified, searching content data only.',
+            description => 'If set to 1, searching content data only.',
         },
     );
     $spec->{responses} = {

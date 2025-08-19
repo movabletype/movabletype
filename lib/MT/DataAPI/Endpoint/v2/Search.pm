@@ -145,7 +145,7 @@ DESCRIPTION
                 in          => 'query',
                 name        => 'tagSearch',
                 schema      => { type => 'integer' },
-                description => 'If 1 specified, searching contents by tags.',
+                description => 'If set to 1, searching contents by tags.',
             },
             {
                 in          => 'query',
