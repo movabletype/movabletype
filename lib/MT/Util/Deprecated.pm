@@ -13,7 +13,7 @@ use Cwd;
 use File::Spec;
 use List::Util qw(sum);
 
-our @EXPORT_OK = qw(perl_sha1_digest_hex);
+our @EXPORT_OK = qw(perl_sha1_digest_hex cc_url cc_rdf cc_name cc_image is_valid_ip);
 
 sub warning {
     my (%args) = @_;
@@ -140,6 +140,180 @@ sub perl_sha1_digest_hex {
     # warn "Old Pure Perl implementation of perl_sha1_digest_hex() is deprecated and will be removed in the future.";
 
     sprintf( "%.8x" x 5, unpack( 'N*', &perl_sha1_digest(@_) ) );
+}
+
+my %Data = (
+    'by' => {
+        name     => 'Attribution',
+        abbrev   => 'CC BY 4.0',
+        requires => [qw( Attribution Notice )],
+        permits  => [qw( Reproduction Distribution DerivativeWorks )],
+        url      => 'http://creativecommons.org/licenses/by/4.0/',
+    },
+    'by-nd' => {
+        name     => 'Attribution-NoDerivs',
+        abbrev   => 'CC BY-ND 4.0',
+        requires => [qw( Attribution Notice )],
+        permits  => [qw( Reproduction Distribution )],
+        url      => 'http://creativecommons.org/licenses/by-nd/4.0/',
+    },
+    'by-nc-nd' => {
+        name      => 'Attribution-NoDerivs-NonCommercial',
+        abbrev    => 'CC BY-NC-ND 4.0',
+        requires  => [qw( Attribution Notice )],
+        permits   => [qw( Reproduction Distribution )],
+        prohibits => [qw( CommercialUse)],
+        url       => 'http://creativecommons.org/licenses/by-nc-nd/4.0/',
+    },
+    'by-nd-nc' => {
+        # deprecated; only for 1.0
+        name      => 'Attribution-NoDerivs-NonCommercial',
+        requires  => [qw( Attribution Notice )],
+        permits   => [qw( Reproduction Distribution )],
+        prohibits => [qw( CommercialUse)],
+    },
+    'by-nc' => {
+        name      => 'Attribution-NonCommercial',
+        abbrev    => 'CC BY-NC 4.0',
+        requires  => [qw( Attribution Notice )],
+        permits   => [qw( Reproduction Distribution DerivativeWorks )],
+        prohibits => [qw( CommercialUse )],
+        url       => 'http://creativecommons.org/licenses/by-nc/4.0/',
+    },
+    'by-nc-sa' => {
+        name      => 'Attribution-NonCommercial-ShareAlike',
+        abbrev    => 'CC BY-NC-SA 4.0',
+        requires  => [qw( Attribution Notice ShareAlike )],
+        permits   => [qw( Reproduction Distribution DerivativeWorks )],
+        prohibits => [qw( CommercialUse )],
+        url       => 'http://creativecommons.org/licenses/by-nc-sa/4.0/',
+    },
+    'by-sa' => {
+        name     => 'Attribution-ShareAlike',
+        abbrev   => 'CC BY-SA 4.0',
+        requires => [qw( Attribution Notice ShareAlike )],
+        permits  => [qw( Reproduction Distribution DerivativeWorks )],
+        url      => 'http://creativecommons.org/licenses/by-sa/4.0/',
+    },
+    'nd' => {
+        # only theoretical
+        name     => 'NonDerivative',
+        requires => [qw( Notice )],
+        permits  => [qw( Reproduction Distribution )],
+    },
+    'nd-nc' => {
+        # only theoretical
+        name      => 'NonDerivative-NonCommercial',
+        requires  => [qw( Notice )],
+        permits   => [qw( Reproduction Distribution )],
+        prohibits => [qw( CommercialUse )],
+    },
+    'nc' => {
+        # only theoretical
+        name      => 'NonCommercial',
+        requires  => [qw( Notice )],
+        permits   => [qw( Reproduction Distribution DerivativeWorks )],
+        prohibits => [qw( CommercialUse )],
+    },
+    'nc-sa' => {
+        # only theoretical
+        name      => 'NonCommercial-ShareAlike',
+        requires  => [qw( Notice ShareAlike )],
+        permits   => [qw( Reproduction Distribution DerivativeWorks )],
+        prohibits => [qw( CommercialUse )],
+    },
+    'sa' => {
+        # only theoretical
+        name     => 'ShareAlike',
+        requires => [qw( Notice ShareAlike )],
+        permits  => [qw( Reproduction Distribution DerivativeWorks )],
+    },
+    'pd' => {
+        name    => 'PublicDomain',
+        permits => [qw( Reproduction Distribution DerivativeWorks )],
+    },
+    'pdd' => {
+        name    => 'PublicDomainDedication',
+        permits => [qw( Reproduction Distribution DerivativeWorks )],
+    },
+);
+
+sub cc_url {
+    MT::Util::Deprecated::warning(since => '8.2.0');
+    my ($code) = @_;
+    my $url;
+    my ($real_code, $license_url, $image_url);
+    if (($real_code, $license_url, $image_url) = $code =~ /(\S+) (\S+) (\S+)/) {
+        return $license_url;
+    }
+    $code eq 'pd'
+        ? "http://web.resource.org/cc/PublicDomain"
+        : "http://creativecommons.org/licenses/$code/1.0/";
+}
+
+sub cc_rdf {
+    MT::Util::Deprecated::warning(since => '8.2.0');
+    my ($code) = @_;
+    my $url    = cc_url($code);
+    my $rdf    = <<RDF;
+<License rdf:about="$url">
+RDF
+    for my $type (qw( requires permits prohibits )) {
+        for my $item (@{ $Data{$code}{$type} }) {
+            $rdf .= <<RDF;
+<$type rdf:resource="http://web.resource.org/cc/$item" />
+RDF
+        }
+    }
+    $rdf . "</License>\n";
+}
+
+sub cc_name {
+    MT::Util::Deprecated::warning(since => '8.2.0');
+    my ($code) = ($_[0] =~ /(\S+) \S+ \S+/);
+    $code ||= $_[0];
+    $Data{$code}{name};
+}
+
+sub cc_image {
+    MT::Util::Deprecated::warning(since => '8.2.0');
+    my ($code) = @_;
+    my $url;
+    my ($real_code, $license_url, $image_url);
+    if (($real_code, $license_url, $image_url) = $code =~ /(\S+) (\S+) (\S+)/) {
+        return $image_url;
+    }
+    "http://creativecommons.org/images/public/" . ($code eq 'pd' ? 'norights' : 'somerights');
+}
+
+sub is_valid_ip {
+    MT::Util::Deprecated::warning(since => '8.8.0');
+    my ($str) = @_;
+
+    my ( $ip, $cidr ) = split /\//, $str;
+    my @ips = split /\./, $ip;
+
+    # xxx.xxx.xxx.xxx
+    if (@ips) {
+        my $num = @ips;
+        return 0 if $num < 4;
+    }
+
+    # 0-255
+    foreach my $num (@ips) {
+        return 0 unless $num =~ /^\d+$/;
+        return 0 if ( $num < 0 || $num > 255 );
+    }
+
+    # 0.0.0.0 255.255.255.255
+    return 0 if ( sum(@ips) == 0 || sum(@ips) == 1020 );
+
+    # CIDR
+    if ( defined $cidr ) {
+        return 0 if ( $cidr < 1 || $cidr > 32 );
+    }
+
+    return $str;
 }
 
 1;
