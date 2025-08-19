@@ -1043,6 +1043,33 @@ div.mce-notification-error {
     display: none;
 }
 
+@media (min-width: 992px) {
+  .text-field {
+    position:relative;
+  }
+
+  .convertBreaksContainer {
+    position:absolute;
+    top:0;
+    right:0;
+    margin:0 0 0 0 !important;
+    z-index:2;
+  }
+
+  .convertBreaksContainer label {
+    display:inline-block;
+    font-weight:normal;
+  }
+
+  .convertBreaksContainer label:after {
+    content:':';
+  }
+
+  .convertBreaksContainer select {
+    display:inline-block;
+    width:auto;
+  }
+}
 </style>
 </mt:setvarblock>
 
@@ -1357,7 +1384,7 @@ div.mce-notification-error {
           cmtTableSelect.rowSelect = true;
           <mt:if name="tags_js">initTags();</mt:if>
           <mt:unless name="id">jQuery('#title').trigger('focus');</mt:unless>
-          jQuery('#convert_breaks, #convert_breaks_for_mobile').on('change', changedTextFormat);
+          jQuery('#convert_breaks').on('change', changedTextFormat);
       }
 
       var tagPos = 0;
@@ -1587,7 +1614,7 @@ div.mce-notification-error {
 
   <mt:else eq="text">
     <mt:section id="text">
-    <div id="text-field" class="mod field mb-5">
+    <div id="text-field" class="text-field mod field mb-5">
       <div id="editor">
         <div id="editor-header" class="editor-header" mt:delegate="tab-container">
           <div class="tab selected-tab" mt:command="set-editor-content" mt:tab="content">
@@ -1596,49 +1623,30 @@ div.mce-notification-error {
           <div class="tab" mt:command="set-editor-extended" mt:tab="extended">
             <label class="form-label"><a href="javascript:void(0);" tabindex="-1"><__trans phrase="Extended"></a></label>
           </div>
-          <div id="field-convert_breaks" class="form-inline d-none d-lg-block">
-            <__trans phrase="Format:">
-            <select name="convert_breaks" id="convert_breaks" class="custom-select form-control form-select">
-            <mt:loop name="text_filters">
-              <option value="<$mt:var name="filter_key"$>"<mt:if name="filter_selected"> selected="selected"</mt:if>><$mt:var name="filter_label" escape="html"$></option>
-            </mt:loop>
-            </select>
-            <$mt:setvar name="show_formatting_help" value="1"$>
-          <mt:if name="convert_breaks" eq="richtext">
-            <$mt:setvar name="show_formatting_help" value="0"$>
-          </mt:if>
-          <mt:if name="convert_breaks" eq="0">
-            <$mt:setvar name="show_formatting_help" value="0"$>
-          </mt:if>
-          <mt:if name="convert_breaks" eq="__default__">
-            <$mt:setvar name="show_formatting_help" value="0"$>
-          </mt:if>
-          </div>
         </div>
       </div>
       <mt:include name="include/editor.tmpl">
+      <mtapp:setting
+        id="convert_breaks"
+        label="<__trans phrase="Format">"
+        class="convertBreaksContainer mt-5">
+        <select name="convert_breaks" id="convert_breaks" class="custom-select form-control form-select">
+        <mt:loop name="text_filters">
+          <option value="<$mt:var name="filter_key"$>"<mt:if name="filter_selected"> selected="selected"</mt:if>><$mt:var name="filter_label" escape="html"$></option>
+        </mt:loop>
+        </select>
+        <$mt:setvar name="show_formatting_help" value="1"$>
+        <mt:if name="convert_breaks" eq="richtext">
+        <$mt:setvar name="show_formatting_help" value="0"$>
+        </mt:if>
+        <mt:if name="convert_breaks" eq="0">
+        <$mt:setvar name="show_formatting_help" value="0"$>
+        </mt:if>
+        <mt:if name="convert_breaks" eq="__default__">
+        <$mt:setvar name="show_formatting_help" value="0"$>
+        </mt:if>
+      </mtapp:setting>
     </div>
-
-    <mtapp:setting
-      id="convert_breaks_for_mobile"
-      label="<__trans phrase="Format">"
-      class="d-lg-none">
-      <select name="convert_breaks_for_mobile" id="convert_breaks_for_mobile" class="custom-select form-control form-select">
-      <mt:loop name="text_filters">
-        <option value="<$mt:var name="filter_key"$>"<mt:if name="filter_selected"> selected="selected"</mt:if>><$mt:var name="filter_label" escape="html"$></option>
-      </mt:loop>
-      </select>
-      <$mt:setvar name="show_formatting_help" value="1"$>
-      <mt:if name="convert_breaks" eq="richtext">
-      <$mt:setvar name="show_formatting_help" value="0"$>
-      </mt:if>
-      <mt:if name="convert_breaks" eq="0">
-      <$mt:setvar name="show_formatting_help" value="0"$>
-      </mt:if>
-      <mt:if name="convert_breaks" eq="__default__">
-      <$mt:setvar name="show_formatting_help" value="0"$>
-      </mt:if>
-    </mtapp:setting>
 
     </mt:section>
 
@@ -1817,33 +1825,6 @@ div.mce-notification-error {
         }
         jQuery('#entry_prefs').val('Custom');
         sendEntryPrefs();
-    });
-
-    jQuery(window).on('change_to_mobile_view', function () {
-      var $formats = jQuery('#convert_breaks');
-      var $mobileFormats = jQuery('#convert_breaks_for_mobile');
-      var selectedFormat = $formats.val();
-      if (selectedFormat == 'richtext') {
-        selectedFormat = '_richtext';
-      }
-      if (selectedFormat == $mobileFormats.val()) {
-        return;
-      }
-      $mobileFormats.val(selectedFormat);
-      $mobileFormats.trigger('change', true);
-    });
-    jQuery(window).on('change_to_pc_view', function () {
-      var $formats = jQuery('#convert_breaks');
-      var $mobileFormats = jQuery('#convert_breaks_for_mobile');
-      var selectedFormat = $mobileFormats.val();
-      if (selectedFormat == '_richtext') {
-        selectedFormat = 'richtext';
-      }
-      if (selectedFormat == $formats.val()) {
-        return;
-      }
-      $formats.val(selectedFormat);
-      $formats.trigger('change', true);
     });
 
     jQuery(window).on('resize load', function () {

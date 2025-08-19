@@ -1878,6 +1878,7 @@ use vars qw( @ISA %Lexicon );
 	'Blog URL' => 'ブログURL',
 	'Change Settings' => '設定の変更',
 	'Classic Blog' => 'クラシックブログ',
+	'Connect Options' => '接続オプション',
 	'Contact' => '連絡先',
 	'Convert Line Breaks' => '改行を変換',
 	'Create Child Sites' => '子サイトの作成',
@@ -1995,6 +1996,7 @@ use vars qw( @ISA %Lexicon );
 	'tar.gz' => 'tar.gz',
 	'zip' => 'zip',
 	q{This is often 'localhost'.} => q{通常「localhost」のままで構いません。},
+	q{You may need to pass additional, driver-specific parameters, especially when the server requires a secure connection. Each line should have a NAME=VALUE. See the driver's manual for a list of available names and values.} => q{特にデータベースサーバーがセキュアな接続を要求する場合、データベースドライバーに固有のパラメーターを追加で設定しなければならないことがあります。一行ずつNAME=VALUEの形式で記述してください。利用可能な名前や値の一覧はデータベースドライバーのマニュアルをご覧ください。},
 
 ## lib/MT/DataAPI/Callback/Blog.pm
 	'Cannot apply website theme to blog: [_1]' => 'ウェブサイトテーマをブログに適用する事はできません: [_1]',
@@ -2126,6 +2128,7 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/DataAPI/Endpoint/v2/Theme.pm
 	'Applying theme failed: [_1]' => 'テーマの適用に失敗しました: [_1]',
+	'Cannot apply a theme with invalid class.' => '不正なclass要素を持つテーマはサイトに適用できません。',
 	'Cannot apply website theme to blog.' => 'ウェブサイトテーマをブログに適用出来ません。',
 	'Cannot uninstall theme because the theme is in use.' => '現在利用中のテーマをアンインストールすることはできません。',
 	'Cannot uninstall this theme.' => 'テーマのアンインストールに失敗しました。',
@@ -4383,6 +4386,7 @@ use vars qw( @ISA %Lexicon );
 	'This user was classified as disabled.' => 'このユーザーは無効にされています。',
 	'This user was classified as pending.' => 'このユーザーは保留中にされています。',
 	'This user was locked out.' => 'このユーザーはロックされています。',
+	'Use this name when you sign in.' => '管理画面のサインインに使用します。',
 	'User properties' => 'ユーザー属性',
 	'Web Services Password' => 'Webサービスパスワード',
 	'You must use half-width character for password.' => 'パスワードには全角文字を利用できません。',
@@ -4684,6 +4688,7 @@ use vars qw( @ISA %Lexicon );
 	'Privileges' => '権限',
 	'Role Details' => 'ロールの詳細',
 	'Save changes to this role (s)' => 'ロールへの変更を保存 (s)',
+	'This role has content field permissions. Content field permissions are disabled now, so you cannot confirm/change them. You can change permissions for other than content field or delete roles.' => 'このロールにはコンテンツフィールド権限が設定されています。現在コンテンツフィールド権限は無効化されているため、コンテンツフィールド権限の確認や変更をすることはできません。コンテンツフィールド権限以外の変更やロールの削除をすることは可能です。',
 	'Uncheck All' => 'チェックを外す',
 	'You have changed the privileges for this role. This will alter what it is that the users associated with this role will be able to do. If you prefer, you can save this role with a different name.  Otherwise, be aware of any changes to users with this role.' => 'このロールの権限を変更しました。これによって、このロールに関連付けられているユーザーの権限も変化します。このロールに異なる名前を付けて保存したほうがいいかもしれません。このロールに関連付けられているユーザーの権限が変更されていることに注意してください。',
 

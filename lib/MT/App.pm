@@ -3118,7 +3118,7 @@ sub pre_run {
             $app->set_language( $auth->preferred_language )
                 if $auth->has_column('preferred_language');
         }
-    } else {
+    } elsif (ref $app ne 'MT::App::Wizard') {
         $app->set_language(MT->config->DefaultLanguage);
     }
 

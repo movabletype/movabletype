@@ -860,8 +860,13 @@ our %HiddenCoreDeps = (
         perl_only => 1,
         url       => "https://metacpan.org/pod/IPC::Open3",
     },
-    "Module::Load" => { perl_core => 0.22, url => "https://metacpan.org/pod/Module::Load" },
-    "POSIX"        => {
+    "Module::Load" => {
+        dropped_in => ["amazonlinux2023", "centos7"],
+        extlib     => 0.36,
+        perl_core  => 0.22,
+        url        => "https://metacpan.org/pod/Module::Load",
+    },
+    "POSIX" => {
         perl_core => "1.30",
         perl_only => 1,
         url       => "https://metacpan.org/pod/POSIX",

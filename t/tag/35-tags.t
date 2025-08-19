@@ -3266,6 +3266,12 @@ Foo
 --- expected
 &lt;span&gt;Foo&lt;/span&gt;
 
+=== test 591-2 double escape
+--- template
+<MTSetVarBlock name="foo">&</MTSetVarBlock><MTGetVar name="foo" escape="html" escape="html">
+--- expected
+&amp;amp;
+
 === test 592
 --- SKIP
 --- template

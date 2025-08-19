@@ -35,6 +35,8 @@ use MT::DataAPI::Format;
 use Test::Deep qw/cmp_deeply/;
 use Data::Visitor::Tiny;
 
+use Crypt::URandom;    # not to break GETRANDOM_AVAILABLE (by local SIG{__DIE__})
+
 sub test_data_api {
     my ( $suite, $args ) = @_;
 

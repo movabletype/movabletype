@@ -92,14 +92,16 @@ $.extend(MT.EditorManager.prototype, {
         }, options);
         this.editors = {};
 
+        var format = this.options['format'];
+
         this.parentElement = null;
         if (this.options['wrap']) {
             this.parentElement = $('#' + id)
                 .wrap('<'+opt['wrapTag']+' class="'+opt['wrapClass']+'" />')
                 .parent();
         }
-        this.currentEditor = this.editorInstance(this.options['format']);
-        this.currentEditor.initOrShow(this.options['format']);
+        this.currentEditor = this.editorInstance(format, opt.editorOptions || {});
+        this.currentEditor.initOrShow(format);
 
         $('#' + id).data('mt-editor', this);
 
@@ -108,12 +110,12 @@ $.extend(MT.EditorManager.prototype, {
         });
     },
 
-    editorInstance: function(format) {
+    editorInstance: function(format, editorOptions) {
         var editorClass = this.constructor.editorClass(format);
 
         if (! this.editors[editorClass.id]) {
             this.editors[editorClass.id] =
-                new editorClass.editor(this.id, this);
+                new editorClass.editor(this.id, this, editorOptions);
         }
 
         return this.editors[editorClass.id];
@@ -139,7 +141,7 @@ $.extend(MT.EditorManager.prototype, {
 
             this.currentEditor.hide();
             this.currentEditor = editor;
-            this.currentEditor.initOrShow(format);
+            this.currentEditor.initOrShow(format, content, height);
             this.currentEditor.setContent(content);
             this.currentEditor.setHeight(height);
         }
@@ -163,9 +165,6 @@ $.extend(MT.EditorManager.prototype, {
 
     clearDirty: function() {
         this.currentEditor.clearDirty();
-    },
-    reload: function() {
-        this.currentEditor.reload();
     }
 });
 
