@@ -26,6 +26,28 @@ id: TestPlugin1998
 name: TestPlugin1998
 version: 1.0
 PLUGIN
+
+    $test_env->save_file('plugins/PlPlugin/PlPlugin.pl', <<'PLUGIN' );
+package MT::Plugin::PlPlugin;
+use strict;
+use warnings;
+use MT::Plugin;
+use base qw(MT::Plugin);
+MT->add_plugin(__PACKAGE__->new({
+    id => 'PlPlugin',
+    key => 'PlPlugin',
+    name => 'PlPlugin',
+    version => '0.01',
+    schema_version => '0.01',
+}));
+1;
+PLUGIN
+
+    $test_env->save_file("plugins/PlPlugin/tmpl/config.tmpl", <<"PLUGIN" );
+PLUGIN
+
+    $test_env->save_file("plugins/PlPlugin/tmpl/admin1999/config.tmpl", <<"PLUGIN" );
+PLUGIN
 }
 
 use MT;
@@ -155,6 +177,22 @@ subtest 'Component::template_paths for outdated plugin' => sub {
         catdir($mt_dir,            "tmpl/cms"),
         catdir($mt_dir,            "tmpl/${admin_theme_id}"),
         catdir($mt_dir,            "tmpl"),
+    );
+};
+
+subtest 'Component::template_paths for a pl plugin with tmpl' => sub {
+    my $mt = MT->instance;
+    $mt->{template_dir} = 'cms';
+    my $component = 'PlPlugin';
+    my $c         = $mt->component($component);
+
+    my @cpaths = map { File::Spec->canonpath($_) } $c->template_paths;
+    note explain \@cpaths;
+
+    cmp_deeply \@cpaths, supersetof(
+        catdir($ENV{MT_TEST_ROOT}, "plugins/${component}/tmpl/admin1999"),
+        catdir($ENV{MT_TEST_ROOT}, "plugins/${component}/tmpl"),
+        catdir($ENV{MT_TEST_ROOT}, "plugins/${component}"),
     );
 };
 
