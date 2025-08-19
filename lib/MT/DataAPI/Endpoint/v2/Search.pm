@@ -15,7 +15,7 @@ use MT::DataAPI::Endpoint::Common;
 sub search_openapi_spec {
     +{
         tags       => ['Search'],
-        summary    => 'Searching contents',
+        summary    => 'Searching entries/pages',
         parameters => [{
                 required    => JSON::true,
                 in          => 'query',
@@ -56,7 +56,7 @@ DESCRIPTION
                 name        => 'limit',
                 schema      => { type => 'integer' },
                 description => <<'DESCRIPTION',
-Maximum number of contents to retrieve.
+Maximum number of entries/pages to retrieve.
 
 **Default**: 20
 DESCRIPTION
@@ -86,11 +86,11 @@ The sort column for the search results. Available values are as follows.
 
 #### created_on
 
-Will sort the contents by the authored on date.
+Will sort the entries/pages by the authored on date.
 
 #### title
 
-Will sort the contents by title.
+Will sort the entries/pages by title.
 DESCRIPTION
             },
             {
@@ -109,11 +109,11 @@ Defines the sort order search results. Available values are as follows.
 
 #### ascend
 
-will list the contents in chronological order (oldest content at the top)
+will list the entries/pages in chronological order (oldest entry/page at the top)
 
 #### descend
 
-will list the contents in reverse chronological order (newest content at the top).
+will list the entries/pages in reverse chronological order (newest entry/page at the top).
 
 **Default**: ascend
 DESCRIPTION
@@ -123,7 +123,7 @@ DESCRIPTION
                 name        => 'SearchMaxResults',
                 schema      => { type => 'integer' },
                 description => <<'DESCRIPTION',
-Maximum number of contents to retrieve.
+Maximum number of entries/pages to retrieve.
 
 NOTE: By default, "SearchMaxResults" override is disabled.
 
@@ -145,7 +145,7 @@ DESCRIPTION
                 in          => 'query',
                 name        => 'tagSearch',
                 schema      => { type => 'integer' },
-                description => 'If set to 1, searching contents by tags.',
+                description => 'If set to 1, searching entries/pages by tags.',
             },
             {
                 in          => 'query',
@@ -164,11 +164,11 @@ DESCRIPTION
                             properties => {
                                 totalResults => {
                                     type        => 'integer',
-                                    description => ' The total number of contents.',
+                                    description => ' The total number of entries/pages.',
                                 },
                                 items => {
                                     type        => 'array',
-                                    description => 'An array of Contents resource. ',
+                                    description => 'An array of Entries/Pages resource. ',
                                     items       => {
                                         oneOf => [
                                             { '$ref' => '#/components/schemas/entry' },
