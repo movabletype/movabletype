@@ -226,14 +226,18 @@ SKIP: {
 
                 local $TODO = "may fail" if $expected_method =~ /^expected_(?:php_)?todo/;
 
+                $got = ($php_error =~ /\tstr:([^\t]+)/)[0] if $expected_method =~ /_error/;
+
                 my $expected     = _filter_vars($expected_src);
                 my $name         = $test_name_prefix . $block->name . ' - dynamic';
 
                 if ($expected_ref && $expected_ref eq 'Regexp') {
                     $expected = qr{$expected} if ref($expected) ne 'Regexp';
                     like($got, $expected, $name);
+                    $php_error =~ s/[^\n]+$expected[^\n]+\n//g if $expected_method =~ /_error/;
                 } else {
                     is($got, $expected, $name);
+                    $php_error =~ s/[^\n]+\Q$expected\E[^\n]+\n//g if $expected_method =~ /_error/;
                 }
                 my $ignore_php_warnings = __PACKAGE__->_check_ignore_php_warnings($block) || $ENV{MT_TEST_IGNORE_PHP_WARNINGS};
                 if ($ignore_php_warnings && $php_error) {

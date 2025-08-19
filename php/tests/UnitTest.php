@@ -137,12 +137,12 @@ class UnitTest extends TestCase {
         $this->assertEquals('Entry', get_class($entries[0]));
         $this->assertEquals($entry2->id, $entries[0]->id);
 
-        $entries = $mt->db()->fetch_entries(['blog_id' => $site1->id, 'limit' => 1, 'sort_by' => 'score'], $total_count);
+        $entries = $mt->db()->fetch_entries(['blog_id' => $site1->id, 'limit' => 1, 'sort_by' => 'score', 'namespace' => ''], $total_count);
         $this->assertEquals(1, count($entries));
         $this->assertEquals('Entry', get_class($entries[0]));
         $this->assertEquals($entry1->id, $entries[0]->id);
 
-        $entries = $mt->db()->fetch_entries(['blog_id' => $site1->id, 'limit' => 1, 'sort_by' => 'rate'], $total_count);
+        $entries = $mt->db()->fetch_entries(['blog_id' => $site1->id, 'limit' => 1, 'sort_by' => 'rate', 'namespace' => ''], $total_count);
         $this->assertEquals(1, count($entries));
         $this->assertEquals('Entry', get_class($entries[0]));
         $this->assertEquals($entry1->id, $entries[0]->id);
@@ -223,12 +223,12 @@ class UnitTest extends TestCase {
         $this->assertEquals('CategorySet', get_class($csets[0]));
         $this->assertEquals($cset->id, $csets[0]->id);
 
-        $csets = $mt->db()->fetch_category_sets(['name' => __FUNCTION__]);
+        $csets = $mt->db()->fetch_category_sets(['name' => __FUNCTION__, 'blog_id' => $site->id]);
         $this->assertEquals(1, count($csets));
         $this->assertEquals('CategorySet', get_class($csets[0]));
         $this->assertEquals($cset->id, $csets[0]->id);
 
-        $csets = $mt->db()->fetch_category_sets(['content_type' => $ct1->id]);
+        $csets = $mt->db()->fetch_category_sets(['content_type' => $ct1->id, 'blog_id' => $site->id]);
         $this->assertEquals(1, count($csets));
         $this->assertEquals('CategorySet', get_class($csets[0]));
         $this->assertEquals($cset->id, $csets[0]->id);
@@ -489,7 +489,7 @@ class UnitTest extends TestCase {
         $count = $mt->db()->asset_count(['blog_id' => $site->id, 'type' => 'image']);
         $this->assertEquals(1, $count);
 
-        $assets = $mt->db()->fetch_assets(['blog_id' => $site->id, 'sort_by' => 'rate']);
+        $assets = $mt->db()->fetch_assets(['blog_id' => $site->id, 'sort_by' => 'rate', 'namespace' => 'testAssetCount']);
         $this->assertEquals(1, count($assets));
         $this->assertEquals('Asset', get_class($assets[0]));
         $this->assertEquals($asset->id, $assets[0]->id);

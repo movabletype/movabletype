@@ -3037,7 +3037,6 @@ use vars qw( @ISA %Lexicon );
 	'This module and its dependencies are required to run Movable Type under FastCGI.' => 'FastCGI環境でMovable Typeを実行する場合に必要となります。',
 	'This module and its dependencies are required to run Movable Type under psgi.' => 'PSGI環境下でMovable Typeを実行する場合に必要となります。',
 	'This module is one of the image processors that you can use to create thumbnails of uploaded images.' => 'アップロードした画像のサムネイルを作成するときに使われる画像処理モジュールのひとつです。',
-	'This module is optional. It enhances performance of Authen::SASL.' => 'このモジュールがインストールされていればAuthen::SASLを高速化します。',
 	'This module is optional. It is used to customize the logging behavior.' => 'このモジュールがインストールされていればログの挙動をカスタマイズするのに使われます。',
 	'This module is optional. It is used to download assets from a website.' => 'このモジュールがインストールされていればウェブサイトからアセットをダウンロードするのに使われます。',
 	'This module is optional. It is used to know the encoding of the terminal to log.' => 'このモジュールがインストールされていればログを出力する端末のエンコーディングを調べるのに使われます。',

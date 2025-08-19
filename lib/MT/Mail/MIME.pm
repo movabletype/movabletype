@@ -196,6 +196,7 @@ sub _send_mt_smtp {
 
     if ($smtpauth) {
         require Authen::SASL;
+        Authen::SASL->import('Perl');  # force Authen::SASL::Perl (for now)
         my @mechs = MT->config->SMTPAuthSASLMechanism || do {
             my $m = $smtp->supports('AUTH', 500, ["Command unknown: 'AUTH'"]) || '';
             # XXX: Do we still need to omit DIGEST-MD5?

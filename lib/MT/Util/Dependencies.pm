@@ -32,11 +32,6 @@ our %Requirements = (
         tags  => ["Mail"],
         url   => "https://metacpan.org/pod/Authen::SASL",
     },
-    "Authen::SASL::XS" => {
-        label => "This module is optional. It enhances performance of Authen::SASL.",
-        tags  => ["Mail", "Performance"],
-        url   => "https://metacpan.org/pod/Authen::SASL::XS",
-    },
     "Cache::Memcached" => {
         label => "Cache::Memcached and a memcached server are optional. They are used to cache in-memory objects.",
         tags  => ["Cache"],
@@ -454,9 +449,10 @@ our %Requirements = (
         url    => "https://metacpan.org/pod/YAML::Tiny",
     },
     "YAML::XS" => {
-        label => "YAML::XS is optional; It is a better, fast and lightweight alternative to YAML::Tiny for YAML file handling.",
-        tags  => ["YAML", "Performance"],
-        url   => "https://metacpan.org/pod/YAML::XS",
+        label   => "YAML::XS is optional; It is a better, fast and lightweight alternative to YAML::Tiny for YAML file handling.",
+        tags    => ["YAML", "Performance"],
+        url     => "https://metacpan.org/pod/YAML::XS",
+        version => "v0.903.0",
     },
 );
 
@@ -829,8 +825,13 @@ our %HiddenCoreDeps = (
         perl_only => 1,
         url       => "https://metacpan.org/pod/IPC::Open3",
     },
-    "Module::Load" => { perl_core => 0.22, url => "https://metacpan.org/pod/Module::Load" },
-    "POSIX"        => {
+    "Module::Load" => {
+        dropped_in => ["amazonlinux2023", "centos7"],
+        extlib     => 0.36,
+        perl_core  => 0.22,
+        url        => "https://metacpan.org/pod/Module::Load",
+    },
+    "POSIX" => {
         perl_core => "1.30",
         perl_only => 1,
         url       => "https://metacpan.org/pod/POSIX",

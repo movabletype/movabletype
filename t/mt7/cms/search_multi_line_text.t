@@ -35,6 +35,10 @@ my $objs = MT::Test::Fixture->prepare(
                         type => 'multi_line_text',
                         name => 'multi line text',
                     },
+                    cf_text => {
+                        type => 'single_line_text',
+                        name => 'single line text',
+                    },
                 ],
             },
             ct2 => {
@@ -51,7 +55,7 @@ my $objs = MT::Test::Fixture->prepare(
         content_data => {
             cd => {
                 content_type => 'ct',
-                data         => { cf_multi => 'multi line text', },
+                data         => { cf_multi => 'multi line text', cf_text => undef, },
             },
             cd2 => {
                 content_type => 'ct2',

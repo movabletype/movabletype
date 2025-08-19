@@ -2956,6 +2956,9 @@ sub show_login {
         }
     }
 
+    # Use the default language as user language preference is not known yet
+    $app->set_language($app->config->DefaultLanguage);
+
     my ($param) = @_;
     $param ||= {};
     require MT::Auth;
@@ -2985,6 +2988,8 @@ sub pre_run {
             $app->set_language( $auth->preferred_language )
                 if $auth->has_column('preferred_language');
         }
+    } elsif (ref $app ne 'MT::App::Wizard') {
+        $app->set_language(MT->config->DefaultLanguage);
     }
 
     # allow language override
@@ -3164,6 +3169,7 @@ sub run {
                         $app->param->delete_all();
                     }
 
+                    $app->set_language($app->config->DefaultLanguage) unless $author;
                     $body
                         = ref($author) eq $app->user_class
                         ? $app->show_error( { error => $app->errstr } )
@@ -3182,6 +3188,7 @@ sub run {
             }
 
             if ( !@handlers ) {
+                $app->set_language($app->config->DefaultLanguage) unless $app->user;
                 $app->error(
                     $app->translate( 'Unknown action [_1]', $mode ) );
                 last REQUEST;

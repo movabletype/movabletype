@@ -11,6 +11,7 @@ use utf8;
 use base 'Exporter';
 use Cwd;
 use File::Spec;
+use List::Util qw(sum);
 
 our @EXPORT_OK = qw(perl_sha1_digest_hex);
 

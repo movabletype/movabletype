@@ -208,6 +208,7 @@ use_ok('MT::Util::Dependencies');
 use_ok('MT::Util::Deprecated');
 use_ok('MT::Util::Digest::MD5');
 use_ok('MT::Util::Digest::SHA');
+use_ok('MT::Util::Editor');
 use_ok('MT::Util::Encode');
 use_ok('MT::Util::PluginVersions');
 use_ok('MT::Util::SystemCheck');

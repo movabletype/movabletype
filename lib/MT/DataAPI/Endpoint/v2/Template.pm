@@ -32,6 +32,7 @@ DESCRIPTION
             { '$ref' => '#/components/parameters/template_searchFields' },
             { '$ref' => '#/components/parameters/template_limit' },
             { '$ref' => '#/components/parameters/template_offset' },
+            { '$ref' => '#/components/parameters/template_filterKeys' },
             {
                 in     => 'query',
                 name   => 'sortBy',
@@ -217,6 +218,9 @@ sub create_openapi_spec {
 
 - edit_templates
 DESCRIPTION
+        parameters => [
+            { '$ref' => '#/components/parameters/template_saveRevision' },
+        ],
         requestBody => {
             content => {
                 'application/x-www-form-urlencoded' => {
@@ -287,6 +291,9 @@ sub update_openapi_spec {
 
 - edit_templates
 DESCRIPTION
+        parameters => [
+            { '$ref' => '#/components/parameters/template_saveRevision' },
+        ],
         requestBody => {
             content => {
                 'application/x-www-form-urlencoded' => {
