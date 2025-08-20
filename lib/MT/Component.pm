@@ -775,6 +775,7 @@ sub __deep_localize_labels {
     my ( $c, $hash ) = @_;
     foreach my $k ( keys %$hash ) {
         if ( ref( $hash->{$k} ) eq 'HASH' ) {
+            next if $k eq 'callbacks';
             __deep_localize_labels( $c, $hash->{$k} );
         }
         else {
