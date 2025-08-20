@@ -19,6 +19,10 @@ $test_env->prepare_fixture('db');
 my $test_app = MT::Test::App->new('MT::App::CMS');
 my $app      = $test_app->_app;
 
+if ($app->component('cloud')) {
+    plan skip_all => 'Cloud.pack is installed';
+}
+
 is $app->config->TrustedHosts, 0;
 
 $app->config->ReturnToURL('https://example.com');
