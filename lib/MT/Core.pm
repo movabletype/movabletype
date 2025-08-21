@@ -2263,6 +2263,10 @@ BEGIN {
             'LogEachFilePublishedInTheBackground' => undef,
             'TrimFilePath' => { default => 0 },
             'UseRiot' => { default => 1 },
+            'TrustedHosts' => {
+                type    => 'ARRAY',
+                handler => \&TrustedHosts,
+            },
             'GrantRoleSitesView' => { default => 'tree' }, # DEPRECATED
             'DisableContentFieldPermission' => { default => undef },
         },
@@ -3664,6 +3668,57 @@ sub SearchScript {
     }
 }
 
+sub TrustedHosts {
+    my $mgr = shift;
+
+    return $mgr->set_internal('TrustedHosts', @_) if @_;
+
+    # if TrustedHosts is set, return it
+    if (my @trusted_hosts = grep { defined $_ && $_ ne '' } $mgr->get_internal('TrustedHosts')) {
+        return @trusted_hosts;
+    }
+
+    # if default_trusted_hosts is cached, return it
+    my $default_trusted_hosts = MT->request('default_trusted_hosts');
+    return @{$default_trusted_hosts} if $default_trusted_hosts;
+
+    my @urls;
+    my @sites = eval {
+        MT->model('blog')->load({
+                class    => '*',
+                site_url => { not_like => '/%' },
+            },
+            {
+                fetchonly => ['parent_id', 'site_url'],
+            },
+        );
+    };    # fails before install
+    for my $site (@sites) {
+        push @urls, $site->site_url;
+    }
+    if ($mgr->ReturnToURL) {
+        push @urls, $mgr->ReturnToURL;
+    }
+
+    require URI;
+
+    my %seen;
+    $default_trusted_hosts = [];
+    for my $url (@urls) {
+        my $uri = URI->new($url, 'http')->canonical;
+        next unless $uri->isa('URI::http');
+        my $host = $uri->host or next;
+        if ($uri->port ne $uri->default_port) {
+            $host .= ':' . $uri->port;
+        }
+        next if $seen{$host}++;
+        push @{$default_trusted_hosts}, $host;
+    }
+
+    MT->request('default_trusted_hosts', $default_trusted_hosts);
+    return @{$default_trusted_hosts};
+}
+
 1;
 __END__
 
@@ -3798,6 +3853,12 @@ A L<MT::ConfigMgr> get/set method for the C<CGIMaxUpload>
 configuration setting. If the user sets invalid value for
 this directive, the system will be use a default value.
 
+=head2 TrustedHosts
+
+A L<MT::ConfigMgr> get/set method for the C<TrustedHosts> configuration setting.
+If the user has not specifically assigned this setting, some default values are returned.
+All site hosts are returned as the default values.
+If C<ReturnToURL> is set, host part of the C<ReturnToURL> is also returned as the default values.
 
 =head1 LICENSE
 

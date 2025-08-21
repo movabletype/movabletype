@@ -1647,7 +1647,7 @@ sub preview {
         # If MT is configured to do 'PreviewInNewWindow', MT will open preview
         # screen on the new window/tab.
         if ( $app->config('PreviewInNewWindow') ) {
-            return $app->redirect($preview_url);
+            return $app->redirect($preview_url, NoHostCheck => 1);
         }
     }
     else {

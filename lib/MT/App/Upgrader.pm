@@ -472,7 +472,7 @@ sub init_website {
         my $path = $param{'sitepath_limited'} || $app->document_root();
         $param{website_path} = File::Spec->catdir($path);
 
-        my $url = $app->base . '/';
+        my $url = $app->base(NoHostCheck => 1) . '/';
         $url =~ s!/cgi(?:-bin)?(/.*)?$!/!;
         $url =~ s!/mt/?$!/!i;
         $param{website_url} = $url;
