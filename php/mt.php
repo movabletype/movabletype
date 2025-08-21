@@ -10,8 +10,8 @@
  */
 require_once('lib/class.exception.php');
 
-define('VERSION', '8.004003');
-define('PRODUCT_VERSION', '8.4.3');
+define('VERSION', '8.004004');
+define('PRODUCT_VERSION', '8.4.4');
 define('DATA_API_DEFAULT_VERSION', '6');
 
 $PRODUCT_NAME = '__PRODUCT_NAME__';
