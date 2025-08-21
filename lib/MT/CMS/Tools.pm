@@ -58,8 +58,11 @@ sub start_recover {
             or return $app->errtrans("Invalid request.");
     }
 
-    if ( $param->{recovered} ) {
-        $param->{return_to} = MT::Util::encode_js( $param->{return_to} );
+    # disable insecure "return_to" for backward compatibility. MTC-30384
+    if ($param->{recovered}
+        && MT::Util::encode_js($param->{return_to}) ne $param->{return_to})
+    {
+        $param->{return_to} = '';
     }
     $param->{'can_signin'} = ( ref $app eq 'MT::App::CMS' ) ? 1 : 0;
 
@@ -84,6 +87,11 @@ sub recover_password {
 
     $email = trim($email);
     $username = trim($username) if $username;
+
+    my $base = $app->base;
+    if ($base eq '') {
+        return $app->errtrans('Cannot get host name. Please report it to the administartor.');
+    }
 
     if ( !$email ) {
         return $app->start_recover(
@@ -157,7 +165,7 @@ sub recover_password {
             my $blog_id = $app->param('blog_id');
             my $body    = $app->build_email(
                 'recover-password',
-                {         link_to_login => $app->base
+                {         link_to_login => $base
                         . $app->mt_uri
                         . "?__mode=new_pw&token=$token&email="
                         . encode_url($email)
@@ -278,7 +286,7 @@ sub new_password {
                     ## just in case
                     $app->is_valid_redirect_target($redirect)
                         or return $app->errtrans("Invalid request.");
-                    return $app->redirect( MT::Util::encode_html($redirect) );
+                    return $app->redirect($redirect);
                 }
                 else {
                     return $app->redirect_to_edit_profile();
@@ -1313,7 +1321,7 @@ sub backup {
                 my $xml_name = $asset_files->{$id}->[2];
                 require MT::Util;
                 print $fh "<file type='asset' name='"
-                    . MT::Util::encode_xml( $xml_name, 1, 1 )
+                    . MT::Util::Encode::encode_utf8_if_flagged(MT::Util::encode_html($xml_name))
                     . "' asset_id='"
                     . $id
                     . "' />\n";

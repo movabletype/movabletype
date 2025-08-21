@@ -304,7 +304,7 @@ sub edit {
 
     if ( !$param->{id} ) {
         if ( !$param->{site_url} ) {
-            $param->{suggested_site_url} = $app->base . '/';
+            $param->{suggested_site_url} = $app->base(NoHostCheck => 1) . '/';
             $param->{suggested_site_url} =~ s!/cgi(?:-bin)?(/.*)?$!/!;
             $param->{suggested_site_url} =~ s!/mt/?$!/!i;
             $param->{site_url} = $param->{suggested_site_url};

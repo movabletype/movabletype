@@ -91,7 +91,7 @@ class UnitTest extends TestCase {
         $template = MockData::makeTemplate(['type' => 'widget', 'name' => 'my_widget']);
 
         $mt = MT::get_instance();
-        $widgets = $mt->db()->fetch_widgets_by_name($mt->ctx, 'my_widget', $site1->id);
+        $widgets = $mt->db()->fetch_widgets_by_name($mt->context(), 'my_widget', $site1->id);
         $this->assertEquals('Template', get_class($widgets[0]));
         $this->assertEquals($template->id, $widgets[0]->id);
     }
@@ -187,19 +187,19 @@ class UnitTest extends TestCase {
         $ocat = MockData::makeObjectCategory(['object_ds' => 'content_data', 'category_id' => $category4->id]);
 
         $categories = $mt->db()->fetch_categories([
-            'category_set_id' => $cset->id, 'blog_id' => $site2->id, 'content_id' => $cd->id]);
+            'category_set_id' => $cset->id, 'blog_id' => $site1->id, 'content_id' => $cd->id]);
         $this->assertEquals(2, count($categories));
         $this->assertEquals('Category', get_class($categories[0]));
         $this->assertEquals($category3->id, $categories[0]->id);
 
         $categories = $mt->db()->fetch_categories([
-            'category_set_id' => $cset->id, 'blog_id' => $site2->id, 'content_id' => $cd->id, 'show_empty' => 1]);
+            'category_set_id' => $cset->id, 'blog_id' => $site1->id, 'content_id' => $cd->id, 'show_empty' => 1]);
         $this->assertEquals(2, count($categories));
         $this->assertEquals('Category', get_class($categories[0]));
         $this->assertEquals($category3->id, $categories[0]->id);
 
         $categories = $mt->db()->fetch_categories([
-            'blog_id' => $site2->id, 'entry_id' => $entry1->id, 'show_empty' => 1]);
+            'blog_id' => $site1->id, 'entry_id' => $entry1->id, 'show_empty' => 1]);
         $this->assertEquals(2, count($categories));
         $this->assertEquals('Category', get_class($categories[0]));
         $this->assertEquals($category1->id, $categories[0]->id);

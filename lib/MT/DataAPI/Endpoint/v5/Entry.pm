@@ -32,6 +32,7 @@ DESCRIPTION
             { '$ref' => '#/components/parameters/entry_maxTrackbacks' },
             { '$ref' => '#/components/parameters/entry_fields' },
             { '$ref' => '#/components/parameters/entry_no_text_filter' },
+            { '$ref' => '#/components/parameters/entry_filterKeys' },
         ],
         responses => {
             200 => {

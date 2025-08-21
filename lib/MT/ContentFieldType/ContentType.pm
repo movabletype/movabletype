@@ -380,6 +380,7 @@ sub search_handler {
             next unless _is_searchable($field_registry);
 
             my $value = $data->{$f_id};
+            next unless defined $value;
             if ( my $search_handler = $field_registry->{search_handler} ) {
                 $search_handler = MT->handler_to_coderef($search_handler);
                 return 0 unless $search_handler;

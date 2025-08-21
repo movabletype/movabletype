@@ -1603,6 +1603,13 @@ sub get_commenter_session {
     my $cfg = $app->config;
     require MT::Session;
     my $sess_obj = MT::Session->load( { id => $session_key, kind => 'SI' } );
+
+    my $http_only_cookie_name = $app->commenter_session_cookie_name . '_http_only';
+    if (  !$cookies{$http_only_cookie_name}
+        || $cookies{$http_only_cookie_name}->value() ne $sess_obj->get('http_only_token'))
+    {
+        return (undef, undef);
+    }
     my $timeout = $cfg->CommentSessionTimeout;
     my ( $user_id, $user );
     $user_id = $sess_obj->get('author_id') if $sess_obj;
@@ -1702,6 +1709,7 @@ sub make_commenter_session {
     $sess_obj->start(time);
     $sess_obj->kind("SI");
     $sess_obj->set( 'author_id', $id ) if $id;
+    $sess_obj->set('http_only_token', $app->make_magic_token);
     $sess_obj->save()
         or return $app->error(
         $app->translate(
@@ -1780,11 +1788,20 @@ sub bake_commenter_cookie {
         if $cookie_path =~ m/<\$?mt/i;    # hey, a MT tag! lets evaluate
 
     my %user_session_kookee = (
-        -name  => $app->commenter_session_cookie_name,
-        -value => $app->bake_user_state_cookie($state),
-        -path  => $cookie_path,
-    );
+        -name     => $app->commenter_session_cookie_name,
+        -value    => $app->bake_user_state_cookie($state),
+        -path     => $cookie_path,
+        -httponly => 0,
+        ($timeout ? (-expires => $timeout) : ()));
     $app->bake_cookie(%user_session_kookee);
+
+    my %user_session_http_only_kookee = (
+        -name    => $app->commenter_session_cookie_name . '_http_only',
+        -value   => $sess_obj->get('http_only_token'),
+        -path    => $cookie_path,
+        -expires => '+3650d'
+    );
+    $app->bake_cookie(%user_session_http_only_kookee);
 }
 
 sub commenter_session_cookie_name {
@@ -1883,12 +1900,21 @@ sub _invalidate_commenter_session {
         if $cookie_path =~ m/<\$?mt/i;    # hey, a MT tag! lets evaluate
 
     my %user_session_kookee = (
-        -name    => $app->commenter_session_cookie_name,
+        -name     => $app->commenter_session_cookie_name,
+        -value    => '',
+        -expires  => "+${timeout}s",
+        -httponly => 0,
+        -path     => $cookie_path,
+    );
+    $app->bake_cookie(%user_session_kookee);
+
+    my %user_session_http_only_kookee = (
+        -name    => $app->commenter_session_cookie_name . '_http_only',
         -value   => '',
         -expires => "+${timeout}s",
         -path    => $cookie_path,
     );
-    $app->bake_cookie(%user_session_kookee);
+    $app->bake_cookie(%user_session_http_only_kookee);
 }
 
 sub start_session {
@@ -3060,6 +3086,9 @@ sub show_login {
         }
     }
 
+    # Use the default language as user language preference is not known yet
+    $app->set_language($app->config->DefaultLanguage);
+
     my ($param) = @_;
     $param ||= {};
     require MT::Auth;
@@ -3089,6 +3118,8 @@ sub pre_run {
             $app->set_language( $auth->preferred_language )
                 if $auth->has_column('preferred_language');
         }
+    } else {
+        $app->set_language(MT->config->DefaultLanguage);
     }
 
     # allow language override
@@ -3280,6 +3311,7 @@ sub run {
                         $app->param->delete_all();
                     }
 
+                    $app->set_language($app->config->DefaultLanguage) unless $author;
                     $body
                         = ref($author) eq $app->user_class
                         ? $app->show_error( { error => $app->errstr } )
@@ -3298,6 +3330,7 @@ sub run {
             }
 
             if ( !@handlers ) {
+                $app->set_language($app->config->DefaultLanguage) unless $app->user;
                 $app->error(
                     $app->translate( 'Unknown action [_1]', $mode ) );
                 last REQUEST;
@@ -4159,8 +4192,9 @@ sub add_return_arg {
 }
 
 sub base {
-    my $app = shift;
-    return $app->{__host} if exists $app->{__host};
+    my $app   = shift;
+    my %param = @_;
+    return $app->{__host} if exists $app->{__host} && !$param{NoHostCheck};
     my $cfg = $app->config;
     my $path
         = $app->{is_admin}
@@ -4172,11 +4206,28 @@ sub base {
     }
 
     # determine hostname from environment (supports relative CGI paths)
-    if ( my $host = $ENV{HTTP_HOST} ) {
-        return $app->{__host}
-            = 'http' . ( $app->is_secure ? 's' : '' ) . '://' . $host;
+    if (my $host = $ENV{HTTP_HOST}) {
+        my $origin = 'http' . ($app->is_secure ? 's' : '') . '://' . $host;
+        if ($param{NoHostCheck}) {
+            return $origin;
+        }
+        if ($app->is_allowed_host($host)) {
+            return $app->{__host} = $origin;
+        }
     }
-    '';
+    return $app->{__host} = '';
+}
+
+sub is_allowed_host {
+    my ($app, $host) = @_;
+    my $lc_host = lc $host;
+    for my $trusted ($app->config->TrustedHosts) {
+        my $lc_trusted = lc $trusted;
+        return 1 if $lc_trusted eq $lc_host;
+        return 1 if $lc_trusted eq '*';
+        return 1 if $lc_trusted =~ /\A\*(\..+)\z/ && $lc_host =~ /\A[a-z0-9_\-]+\Q${1}\E\z/;
+    }
+    return;
 }
 
 *path = \&mt_path;
@@ -4332,7 +4383,7 @@ sub redirect {
     $url =~ s/[\r\n].*$//s;
     $app->{redirect_use_meta} = $options{UseMeta};
     unless ( $url =~ m!^https?://!i ) {
-        $url = $app->base . $url;
+        $url = $app->base(NoHostCheck => $options{NoHostCheck}) . $url;
     }
     $app->{redirect} = $url;
     return;
@@ -5363,10 +5414,21 @@ by issuing a text/html entity body that contains a "meta redirect"
 tag. This option can be used to work around clients that won't accept
 cookies as part of a 302 Redirect response.
 
-=head2 $app->base
+If the option C<NoHostCheck =E<gt> 1> is given, this option is passed to C<$app-E<gt>base>.
+
+=head2 $app->base([option1 => option1_val, ...])
 
 The protocol and domain of the application. For example, with the full URI
 F<http://www.foo.com/mt/mt.cgi>, this method will return F<http://www.foo.com>.
+
+When C<$ENV{HTTP_HOST}> is used, this value is checked for allowed host name.
+If the option C<NoHostCheck =E<gt> 1> is given, this method does not check $ENV{HTTP_HOST}> and does not cache return value.
+
+=head2 $app->is_allowed_host($host)
+
+Checks C<$host> has whether allowed host or not.
+If C<$host> has allowed host, this method will return 1.
+If C<$host> does not have allowed host, this method will return falsy.
 
 =head2 $app->path
 

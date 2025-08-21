@@ -19,7 +19,7 @@ use File::Find;
 
 require_ok('MT::Util::YAML');
 
-my @classes = qw( YAML::Tiny YAML::Syck );
+my @classes = qw( YAML::Tiny YAML::Syck YAML::PP YAML::XS );
 my @files = ((glob "plugins/*/*.yaml"), (glob "addons/*/*.yaml"));
 
 for my $class ( @classes ) {

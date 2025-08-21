@@ -22,6 +22,7 @@ sub prepare {
         $spec,
         sub {
             my ($key, $valueref) = @_;
+            return unless defined $$valueref;
             $$valueref =~ s/TEST_ROOT/$ENV{MT_TEST_ROOT}/g;
             $$valueref =~ s/MT_HOME/$ENV{MT_HOME}/g;
         },
@@ -682,6 +683,7 @@ sub prepare_content_type {
                 %ct_arg     = %$item;
                 @field_spec = @{ delete $ct_arg{fields} || [] };
             }
+            my $data_label = delete $ct_arg{data_label};
 
             my $blog_id = _find_blog_id($objs, \%ct_arg)
                 or croak "blog_id is required: content_type: $ct_name";
@@ -767,6 +769,11 @@ sub prepare_content_type {
                     };
             }
             $ct->fields(_fix_fields(\@fields));
+            if ($data_label) {
+                my $cf_for_data_label = $objs->{content_type}{$ct_name}{content_field}{$data_label}
+                    or croak "unknown data_label field: $data_label";
+                $ct->data_label($cf_for_data_label->unique_id);
+            }
             $ct->save;
         }
     }
@@ -885,6 +892,10 @@ sub prepare_content_data {
                 if ($status =~ /\w+/) {
                     require MT::ContentStatus;
                     $arg{status} = MT::ContentStatus::status_int($status);
+                }
+
+                if (ref $spec->{content_type}{$ct_name} eq 'HASH' && $spec->{content_type}{$ct_name}{data_label}) {
+                    delete $arg{label};
                 }
 
                 my $cd = MT::Test::Permission->make_content_data(%arg);

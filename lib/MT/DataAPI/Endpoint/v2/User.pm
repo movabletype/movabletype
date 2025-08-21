@@ -32,6 +32,7 @@ DESCRIPTION
             { '$ref' => '#/components/parameters/user_searchFields' },
             { '$ref' => '#/components/parameters/user_limit' },
             { '$ref' => '#/components/parameters/user_offset' },
+            { '$ref' => '#/components/parameters/user_filterKeys' },
             {
                 in     => 'query',
                 name   => 'sortBy',

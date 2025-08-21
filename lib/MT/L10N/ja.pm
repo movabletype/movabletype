@@ -1154,6 +1154,7 @@ use vars qw( @ISA %Lexicon );
 	'Selected Child Site' => '選択された子サイト',
 	'Site URL must be an absolute URL.' => 'サイトURLは絶対URLでなければなりません。',
 	'The number of revisions to store must be a positive integer.' => '更新履歴番号は整数でなければなりません。',
+	'The file extension must be shorter than 10 characters.' => 'ファイルの拡張子は10文字までです。',
 	'These setting(s) are overridden by a value in the Movable Type configuration file: [_1]. Remove the value from the configuration file in order to control the value on this page.' => 'MTの設定ファイルによって設定されている値([_1])が優先されます。このページで設定した値を利用するためには、設定ファイルでの設定を削除してください。',
 	'This action can only be run on a single child site at a time.' => 'このアクションは同時に1つの子サイトでしか実行できません。',
 	'This action can only clone a child site.' => 'このアクションで複製できるのは子サイトのみです',
@@ -1312,6 +1313,8 @@ use vars qw( @ISA %Lexicon );
 	q{[_1] '[_2]' (ID:[_3]) edited and its status changed from [_4] to [_5] by user '[_6]'} => q{[_6]が[_1]「[_2]」(ID:[_3])を更新し、公開の状態を[_4]から[_5]に変更しました。},
 	q{[_1] '[_2]' (ID:[_3]) edited by user '[_4]'} => q{[_4]が[_1]「[_2]」(ID:[_3])を更新しました。},
 	q{[_1] '[_2]' (ID:[_3]) status changed from [_4] to [_5]} => q{[_1]「[_2] (ID:[_3])」の公開状態が[_4]から[_5]に変更されました。},
+	q{Failed to remove relationship between [_1] (ID: [_2]) and Asset (ID: [_3]): [_4]} => q{[_1] (ID:[_2])とアセット(ID:[_3])の関連付けを削除できませんでした。: [_4]},
+	q{Failed to save relationship between [_1] (ID: [_2]) and Asset (ID: [_3]): [_4]} => q{[_1] (ID:[_2])とアセット(ID:[_3])の関連付けを設定できませんでした。: [_4]},
 
 ## lib/MT/CMS/Export.pm
 	'Export Site Entries' => '記事のエクスポート',
@@ -1424,6 +1427,7 @@ use vars qw( @ISA %Lexicon );
 	'Templates' => 'テンプレート',
 	'Text' => '本文',
 	'Title' => 'タイトル',
+	'Too long query. Please simplify your query to [_1] characters or less and try again.' => 'クエリーが長すぎます。お手数ですが、[_1]文字以内で検索をやり直してください。',
 	'replace_handler of [_1] field is invalid' => '[_1]フィールドのreplace_handlerは不正です',
 	'ss_validator of [_1] field is invalid' => '[_1]フィールドのss_validatorは不正です',
 	q{Searched for: '[_1]' Replaced with: '[_2]'} => q{検索ワード「[_1]」を「[_2]」で置換しました},
@@ -1517,6 +1521,7 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/CMS/Tools.pm
 	'Any site' => '任意のサイト',
+	'Cannot get host name. Please report it to the administartor.' => 'ホスト名を取得できませんでした。管理者に報告してください。',
 	'Cannot recover password in this configuration' => 'この構成ではパスワードの再設定はできません。',
 	'Changing URL for FileInfo record (ID:[_1])...' => 'ファイル情報レコード(ID:[_1])のURLを変更しています...',
 	'Changing file path for FileInfo record (ID:[_1])...' => 'ファイル情報レコード(ID:[_1])のパスを変更しています...',
@@ -2361,10 +2366,11 @@ use vars qw( @ISA %Lexicon );
 	'theme' => 'テーマ',
 
 ## lib/MT/Mail.pm
-	'Authentication failure: [_1]' => '認証に失敗しました: [_1]',
+	'All the supported SMTP authentication mechanisms failed: [_1]' => '対応しているすべての方式でSMTP認証に失敗しました: [_1]',
 	'Error connecting to SMTP server [_1]:[_2]' => 'SMTPサーバに接続できません。[_1]:[_2]',
 	'Exec of sendmail failed: [_1]' => 'sendmailを実行できませんでした: [_1]',
 	'Following required module(s) were not found: ([_1])' => '以下のモジュールが不足しています。([_1])',
+	'SMTP [_1] Authentication failed: [_2]' => 'SMTP認証([_1])に失敗しました: [_2]',
 	'Username and password is required for SMTP authentication.' => 'SMTP認証を利用する場合は、ユーザー名とパスワードは必須入力です。',
 	'You do not have a valid path to sendmail on your machine. Perhaps you should try using SMTP?' => 'sendmailへのパスが正しくありません。SMTPの設定を試してください。',
 	q{Unknown MailTransfer method '[_1]'} => q{MailTransferの設定([_1])が不正です。},
@@ -3018,7 +3024,6 @@ use vars qw( @ISA %Lexicon );
 	'This module and its dependencies are required to run Movable Type under FastCGI.' => 'FastCGI環境でMovable Typeを実行する場合に必要となります。',
 	'This module and its dependencies are required to run Movable Type under psgi.' => 'PSGI環境下でMovable Typeを実行する場合に必要となります。',
 	'This module is one of the image processors that you can use to create thumbnails of uploaded images.' => 'アップロードした画像のサムネイルを作成するときに使われる画像処理モジュールのひとつです。',
-	'This module is optional. It enhances performance of Authen::SASL.' => 'このモジュールがインストールされていればAuthen::SASLを高速化します。',
 	'This module is optional. It is used to customize the logging behavior.' => 'このモジュールがインストールされていればログの挙動をカスタマイズするのに使われます。',
 	'This module is optional. It is used to download assets from a website.' => 'このモジュールがインストールされていればウェブサイトからアセットをダウンロードするのに使われます。',
 	'This module is optional. It is used to know the encoding of the terminal to log.' => 'このモジュールがインストールされていればログを出力する端末のエンコーディングを調べるのに使われます。',
@@ -3042,8 +3047,10 @@ use vars qw( @ISA %Lexicon );
 	'This module is used to make checksums.' => 'このモジュールはチェックサムの作成に使われます。',
 	'XML::SAX and its dependencies are required to import an exported site and such.' => 'XML::SAXはサイトなどのインポート処理に必要となります。',
 	'XML::Simple is optional. It is used to parse configuration file of the IIS.' => 'XML::SimpleがインストールされていればIISの設定ファイルを解析するのに使われます。',
-	'YAML::Syck is optional; It is a better, fast and lightweight alternative to YAML::Tiny for YAML file handling.' => 'YAML::SyckのインストールがインストールされていればYAML::Tinyよりも軽量で高速に動作します。',
+	'YAML::PP is optional; It is a better alternative to YAML::Tiny for YAML file handling.' => 'YAML::PPはYAML::Tinyよりも優れたYAMLパーサーです。',
+	'YAML::Syck is optional; It is a better, fast and lightweight alternative to YAML::Tiny for YAML file handling.' => 'YAML::SyckがインストールされていればYAML::Tinyよりも軽量で高速に動作します。',
 	'YAML::Tiny is the default YAML parser.' => 'YAML::TinyはデフォルトのYAMLパーサーです。',
+	'YAML::XS is optional; It is a better, fast and lightweight alternative to YAML::Tiny for YAML file handling.' => 'YAML::XSがインストールされていればYAML::Tinyよりも軽量で高速に動作します。',
 	'local::lib is optional. It is used to load modules from different locations.' => 'local::libがインストールされていれば標準とは異なる場所からモジュールを読み込むのに使われます。',
 
 ## lib/MT/Util/Deprecated.pm

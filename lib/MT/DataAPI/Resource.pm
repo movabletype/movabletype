@@ -310,6 +310,10 @@ sub core_resources {
                 version => 6,
                 fields  => '$Core::MT::DataAPI::Resource::v6::StatisticsDate::fields',
             },
+            {
+                version => 7,
+                fields  => '$Core::MT::DataAPI::Resource::v7::StatisticsDate::fields',
+            },
         ],
         statisticspath => [{
                 version => 1,
@@ -318,6 +322,25 @@ sub core_resources {
             {
                 version => 6,
                 fields  => '$Core::MT::DataAPI::Resource::v6::StatisticsPath::fields',
+            },
+            {
+                version => 7,
+                fields  => '$Core::MT::DataAPI::Resource::v7::StatisticsPath::fields',
+            },
+        ],
+        statisticsyearweek => [{
+                version => 7,
+                fields  => '$Core::MT::DataAPI::Resource::v7::StatisticsYearWeek::fields',
+            },
+        ],
+        statisticsyearmonth => [{
+                version => 7,
+                fields  => '$Core::MT::DataAPI::Resource::v7::StatisticsYearMonth::fields',
+            },
+        ],
+        statisticsyear => [{
+                version => 7,
+                fields  => '$Core::MT::DataAPI::Resource::v7::StatisticsYear::fields',
             },
         ],
         theme => [{

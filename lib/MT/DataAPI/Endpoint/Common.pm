@@ -29,6 +29,13 @@ sub save_object {
 
     $obj->{__is_stored} ||= $original->{__is_stored};
 
+    # MT::Revisable only recognizes save_revision
+    my $saveRevision  = $app->param('saveRevision');
+    my $save_revision = $app->param('save_revision');
+    if (defined $saveRevision && !defined $save_revision) {
+        $app->param('save_revision', $saveRevision);
+    }
+
     run_permission_filter( $app, 'data_api_save_permission_filter',
         $type, $obj->id, $obj, $original )
         or return;
