@@ -39,14 +39,14 @@ our $plugins_installed;
 BEGIN {
     $plugins_installed = 0;
 
-    ( $VERSION, $SCHEMA_VERSION ) = ( '8.004002', '8.0002' );
+    ( $VERSION, $SCHEMA_VERSION ) = ( '8.004003', '8.0002' );
     (   $PRODUCT_NAME, $PRODUCT_CODE,   $PRODUCT_VERSION,
         $VERSION_ID,   $RELEASE_NUMBER, $PORTAL_URL,
         $RELEASE_VERSION_ID
         )
         = (
         '__PRODUCT_NAME__',   '__PRODUCT_CODE__',
-        '8.4.2',              '__PRODUCT_VERSION_ID__',
+        '8.4.3',              '__PRODUCT_VERSION_ID__',
         '__RELEASE_NUMBER__', '__PORTAL_URL__',
         '__RELEASE_VERSION_ID__',
         );
@@ -2256,7 +2256,12 @@ sub set_default_tmpl_params {
         $param->{script_url}      = $mt->uri;
         $param->{mt_url}          = $mt->mt_uri;
         $param->{script_path}     = $mt->path;
-        $param->{script_full_url} = $mt->base . $mt->uri;
+        $param->{script_full_url} = sub {
+            if (my $cache = $mt->request('script_full_url')) {
+                return $cache;
+            }
+            return $mt->request('script_full_url', $mt->base . $mt->uri);
+        };
         $param->{agent_mozilla} = ( $ENV{HTTP_USER_AGENT} || '' ) =~ /gecko/i;
         $param->{agent_ie} = ( $ENV{HTTP_USER_AGENT} || '' ) =~ /\bMSIE\b/;
     }
