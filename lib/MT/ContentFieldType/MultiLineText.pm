@@ -45,10 +45,14 @@ sub data_load_handler {
     $convert_breaks = '' unless defined $convert_breaks;
     my $full_rich_text = defined $options->{full_rich_text} ? $options->{full_rich_text} : 1;
 
-    if ( $convert_breaks eq 'richtext' && !$full_rich_text ) {
-        return scalar $app->param("editor-input-content-field-$field_id");
-    }
-    else {
+    if (
+        $convert_breaks eq 'richtext'
+        && !$full_rich_text
+        && defined(my $data = $app->param("editor-input-content-field-$field_id"))
+    ) {
+        # XXX: A special form for TinyMCE's inline mode, which remains for backward compatibility. MTC-30739
+        return $data;
+    } else {
         return scalar $app->param("content-field-multi-$field_id");
     }
 }
