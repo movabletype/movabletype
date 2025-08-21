@@ -12,6 +12,7 @@ BEGIN {
     $test_env = MT::Test::Env->new(
         DefaultLanguage => 'en_US',  ## for now
         CGIPath         => '/cgi-bin/',
+        TrustedHosts    => ['*'],
     );
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
