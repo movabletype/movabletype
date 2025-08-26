@@ -61,7 +61,7 @@ my @test_dirs;
 BEGIN {
     my $fmgr      = MT::FileMgr->new('Local');
     my @alt_paths = MT->config('AltTemplatePath');
-    $admin_theme_id = MT->config->default('AdminThemeId');
+    $admin_theme_id = $ENV{MT_TEST_ADMIN_THEME_ID} || MT->config->default('AdminThemeId');
     foreach my $alt_path (@alt_paths) {
         for ('admin1999', 'admin1998', $admin_theme_id) {
             my $dir = catdir($alt_path, $_);
