@@ -76,7 +76,7 @@ jobs:
       matrix:
         config:
           - {image: cloud7,   mt_test_env: 'MT_TEST_IMAGE_DRIVER=GraphicsMagick' }
-          - {image: fedora41, mt_test_env: 'MT_TEST_ADMIN_THEME_ID=0'}   # Perl 5.40 / PHP 8.3 / MySQL 8.4
+          - {image: fedora41, mt_test_env: 'MT_TEST_ADMIN_THEME_ID=admin2023'}   # Perl 5.40 / PHP 8.3 / MySQL 8.4
         test: 
           - "t/*.t"
           - "t/mt7/[^td]*"

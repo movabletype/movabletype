@@ -49,8 +49,7 @@ MT::Test::Tag->run_perl_tests(
         my ( $ctx, $block ) = @_;
 
         my $admin_theme_id = $block->admin_theme_id;
-        $config->AdminThemeId( $admin_theme_id, 1 );
-        $config->save_config;
+        $config->AdminThemeId($admin_theme_id);
         $app->{__template_paths} = undef;
 
     }
