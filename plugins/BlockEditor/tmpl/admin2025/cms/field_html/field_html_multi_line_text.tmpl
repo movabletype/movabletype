@@ -108,11 +108,17 @@ div.group-container.multi_line_text-field-container>.form-group {
     });
     app.editors = {};
     jQuery.each(ids, function() {
-        jQuery('#' + this).show();
+        var $this = jQuery('#' + this);
+        $this.show();
         var format = jQuery('.convert_breaks[data-target='+this+']').val();
         app.editors[this] = new MT.EditorManager(this, {
             format: format,
-            wrap: true
+            wrap: true,
+            editorOptions: {
+                richtext: {
+                    inline: !$this.attr('data-full_rich_text'),
+                },
+            },
         });
 
         var setFormat = app.editors[this]['setFormat'];
@@ -375,8 +381,7 @@ function setMultiLineTextData($form) {
     m = this.name.match(/-(\d+)$/);
     if (m) {
       fieldId = m[1];
-      if(jQuery(this).attr('data-full_rich_text'))
-        app.editors['editor-input-content-field-'+fieldId].save();
+      app.editors['editor-input-content-field-'+fieldId].save();
 
       // archetype_editor
       if($('[name="editor-input-content-field-' + fieldId + '"]').length > 0){
