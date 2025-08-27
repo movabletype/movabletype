@@ -82,6 +82,7 @@ $.extend(MT.EditorManager.prototype, {
 
     init: function(id, options) {
         var manager = this;
+        manager.editorOptions = options.editorOptions || {};
 
         this.id = id;
         var opt = this.options = $.extend({
@@ -100,7 +101,7 @@ $.extend(MT.EditorManager.prototype, {
                 .wrap('<'+opt['wrapTag']+' class="'+opt['wrapClass']+'" />')
                 .parent();
         }
-        this.currentEditor = this.editorInstance(format, opt.editorOptions || {});
+        this.currentEditor = this.editorInstance(format);
         this.currentEditor.initOrShow(format);
 
         $('#' + id).data('mt-editor', this);
@@ -110,12 +111,12 @@ $.extend(MT.EditorManager.prototype, {
         });
     },
 
-    editorInstance: function(format, editorOptions) {
+    editorInstance: function(format) {
         var editorClass = this.constructor.editorClass(format);
 
         if (! this.editors[editorClass.id]) {
             this.editors[editorClass.id] =
-                new editorClass.editor(this.id, this, editorOptions);
+                new editorClass.editor(this.id, this, this.editorOptions);
         }
 
         return this.editors[editorClass.id];
@@ -129,10 +130,18 @@ $.extend(MT.EditorManager.prototype, {
         if (format == this.options['format']) {
             return;
         }
+        var lastFormat = this.options['format'];
         this.options['format'] = format;
 
         var editor = this.editorInstance(format);
         if (editor === this.currentEditor) {
+            // XXX: legacy editor implementation
+            if (
+              "reload" in this.currentEditor
+              && (lastFormat == 'richtext' || format == 'richtext')
+            ) {
+              this.currentEditor.reload();
+            }
             this.currentEditor.setFormat(format);
         }
         else {
