@@ -82,7 +82,7 @@ $.extend(MT.EditorManager.prototype, {
 
     init: function(id, options) {
         var manager = this;
-        manager.editorOptions = options.editorOptions || {};
+        manager.editorOptions = options && options.editorOptions || {};
 
         this.id = id;
         var opt = this.options = $.extend({
