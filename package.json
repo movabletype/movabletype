@@ -68,7 +68,7 @@
     "@rollup/plugin-commonjs": "^25.0.8",
     "@rollup/plugin-json": "^6.1.0",
     "@rollup/plugin-node-resolve": "^16.0.0",
-    "@rollup/plugin-typescript": "^12.1.1",
+    "@rollup/plugin-typescript": "^12.1.4",
     "@tsconfig/svelte": "^5.0.4",
     "@types/jquery": "^3.5.30",
     "@types/jqueryui": "^1.12.22",
