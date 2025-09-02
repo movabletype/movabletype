@@ -21,14 +21,14 @@
     }
   }
 
-  const submit = (event: Event) => {
+  const submit = (event: Event): void => {
     event.preventDefault();
 
     const form = document.createElement("form");
     form.method = "POST";
     form.action = window.ScriptURI;
 
-    const hiddenInput = (name: string, value: string) => {
+    const hiddenInput = (name: string, value: string): HTMLInputElement => {
       const input = document.createElement("input");
       input.type = "hidden";
       input.name = name;
@@ -58,7 +58,6 @@
         <input
           type="radio"
           value={type.key}
-          id={type.key}
           checked={objectType === type.key}
           bind:group={objectType}
         />
