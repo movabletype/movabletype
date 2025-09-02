@@ -58,7 +58,6 @@
         <input
           type="radio"
           value={type.key}
-          id={type.key}
           checked={objectType === type.key}
           bind:group={objectType}
         />
