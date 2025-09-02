@@ -16,7 +16,7 @@
         "test": "phpunit"
     },
     "require-dev": {
-        "phpunit/phpunit": "^9.5.24"
+        "phpunit/phpunit": "^12.3.7"
     },
     "require": {
         "adodb/adodb-php": "5.22.7",
