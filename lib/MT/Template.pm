@@ -801,7 +801,10 @@ sub _sync_to_disk {
             $lfile = File::Spec->catfile( $blog->site_path, $lfile );
         }
         else {
-            my $base_path = MT->config->BaseTemplatePath || MT->instance->server_path;
+            my $base_path =
+                   MT->config->BaseTemplatePath
+                || (MT->config->UserTemplatePath)[0]
+                || MT->instance->server_path;
             $lfile = File::Spec->catfile( $base_path, $lfile );
         }
     }
