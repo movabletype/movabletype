@@ -48,6 +48,8 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v4.1.0
+        with:
+          persist-credentials: false
       - name: docker login
         uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567
         with:
@@ -104,6 +106,8 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v4.1.0
+        with:
+          persist-credentials: false
       - name: docker login
         uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567
         with:
@@ -158,6 +162,8 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v4.1.0
+        with:
+          persist-credentials: false
       - name: docker login
         uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567
         with:
@@ -188,6 +194,8 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v4.1.0
+        with:
+          persist-credentials: false
       - name: check unresolved conflicts in code
         run: bash -c "! grep -EIr '^[<>]{7} \S.*$' ."
       - name: test npm ci
