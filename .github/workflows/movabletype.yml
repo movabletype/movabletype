@@ -215,22 +215,8 @@ jobs:
     - node_lts
     if: ${{ always() }}
     steps:
-    - name: Install jq
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y jq
-    - name: Filters if the "needs" context has "failure"
-      run: |
-        HAS_FAILURE=$(echo '${{ toJSON(needs) }}' | jq '[.[] | select(.result == "failure") | .result] | join(",")' | sed -e 's/"//g')
-        echo "HAS_FAILURE=${HAS_FAILURE}" >> "$GITHUB_ENV"
-    - name: SLACK_COLOR is danger
-      if: ${{ env.HAS_FAILURE }}
-      run: |
-        echo "SLACK_COLOR=danger" >> "$GITHUB_ENV"
-    - name: SLACK_COLOR is good
-      if: ${{ ! env.HAS_FAILURE }}
-      run: |
-        echo "SLACK_COLOR=good" >> "$GITHUB_ENV"
+    - name: Set Slack color
+      run: echo "SLACK_COLOR=${{ contains(needs.*.result, 'failure') && 'danger' || 'good' }}" >> "$GITHUB_ENV"
     - uses: rtCamp/action-slack-notify@b24d75fe0e728a4bf9fc42ee217caa686d141ee8
       env:
         SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
