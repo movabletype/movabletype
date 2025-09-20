@@ -227,7 +227,7 @@ jobs:
       if: ${{ ! env.HAS_FAILURE }}
       run: |
         echo "SLACK_COLOR=good" >> "$GITHUB_ENV"
-    - uses: rtCamp/action-slack-notify@v2.2.1
+    - uses: rtCamp/action-slack-notify@b24d75fe0e728a4bf9fc42ee217caa686d141ee8
       env:
         SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
         SLACK_USERNAME: "GitHub Actions ${{ github.repository }}"
