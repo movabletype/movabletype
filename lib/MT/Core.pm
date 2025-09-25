@@ -2417,7 +2417,11 @@ BEGIN {
             'mt_summary_watcher' => {
                 label => "Adds Summarize workers to queue.",
                 class => 'MT::Worker::SummaryWatcher',
-            }
+            },
+            'mt_backup' => {
+                label => "Backs up sites.",
+                class => 'MT::Worker::Backup',
+            },
         },
         archivers => {
             'zip' => {

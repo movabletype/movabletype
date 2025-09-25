@@ -13,6 +13,15 @@
   </mtapp:statusmsg>
 </mt:if>
 
+<mt:if name="inserted_job">
+  <mtapp:statusmsg
+     id="inserted_job"
+     class="alert"
+     can_close="0">
+    <__trans phrase="Backup job is inserted">
+  </mtapp:statusmsg>
+</mt:if>
+
 <div id="backup-panel">
   <p class="page-desc"><__trans phrase="Not all the tables are exported. If you need to back up everything (including config, session values, logs, and so on), consider using a database utility. You can also download public logs from the <a href="[_1]">Log</a> menu." params="<mt:var name="script_url">?__mode=list&_type=log<mt:if name="blog_id">&blog_id=<mt:var name="blog_id" escape="html"></mt:if>"></p>
   <form method="post" action="<mt:var name="script_url">">
@@ -79,6 +88,16 @@
       </select>
     </mtapp:setting>
 
+    <mtapp:setting
+       id="background"
+       label="<__trans phrase="Background">"
+       label_for="background">
+      <div class="custom-control custom-checkbox">
+        <input type="checkbox" name="background" id="background" class="custom-control-input">
+        <label class="custom-control-label" for="background"><__trans phrase="Background"></label>
+      </div>
+    </mtapp:setting>
+
     <mt:setvarblock name="action_buttons">
       <button
          type="submit"
@@ -87,6 +106,25 @@
          class="action primary button btn btn-primary">
         <__trans phrase="Export">
       </button>
+
+      <mt:if name="files_loop">
+        <p><__trans phrase="_BACKUP_TEMPDIR_WARNING" params="<mt:var name="tempdir">"></p>
+        <h2><__trans phrase="Export Files"></h2>
+        <ul id="backup-files">
+        <mt:loop name="files_loop">
+          <li class="list-item">
+          <mt:if name="url">
+            <a href="<mt:var name="url">" target="<__trans phrase="_external_link_target">" title="<__trans phrase="Download This File">">
+              <__trans phrase="Download: [_1]" params="<mt:var name="filename">">
+            </a>
+          <mt:else>
+            <mt:var name="filename">
+          </mt:if>
+          </li>
+        </mt:loop>
+        </ul>
+      </mt:if>
+
     </mt:setvarblock>
     <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
   </form>
