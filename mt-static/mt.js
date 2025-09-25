@@ -1287,8 +1287,6 @@ Pager = new Class(Object, {
             this.element.innerHTML = html;
         } else if ((this.state.rows != null) && (this.state.rows > 0)) {
             this.element.innerHTML = '';
-            var listStart = (this.state.offset ? this.state.offset : 0) + 1;
-            var listEnd = (this.state.offset ? this.state.offset : 0) + this.state.rows;
 
             if (this.state.listTotal) {
               // now page

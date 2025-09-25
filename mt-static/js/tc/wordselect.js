@@ -53,7 +53,6 @@ TC.WordSelect.prototype.init = function( element )
 	this.element = element;
 	
 	// event handlers
-	var self = this;
 	TC.attachEvent( element, "mousedown", this.mouseDownClosure );
 	TC.attachEvent( element, "mouseup", this.mouseUpClosure );
 	TC.attachEvent( element, "click", this.clickClosure );

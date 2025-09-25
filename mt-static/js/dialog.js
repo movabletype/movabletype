@@ -113,7 +113,6 @@ SelectionList = new Class(Object, {
     },
     add: function(name, data) {
         if (!(name in this.itemHash)) {
-            var display = name;
             var row = TC.elementOrId(name);
             if (!data || (data && !data.label)) {
                 if (!data) data = {};

@@ -119,7 +119,6 @@ TC.Preview.prototype.eventClosure = function()
 	return function( evt )
 	{
 		evt = evt || event;
-		var element = evt.target || evt.srcElement;
 		self.updatePreviewLatent();
 	};
 }
@@ -355,21 +354,7 @@ TC.Preview.prototype.fractureHTML = function()
 			self.fractured.push( two );
 		return '';
 	};
-	
-	var fractureFuncOld = function()
-	{
-		// ie can't use RegExp object, but can use arguments array
-		if( arguments[ 1 ] )
-			self.fractured.push( arguments[ 1 ] );
-		else if( RegExp.$0 && RegExp.$1 )
-			self.fractured.push( RegExp.$1 );
-		
-		if( arguments[ 2 ] )
-			self.fractured.push( arguments[ 2 ] );
-		else if( RegExp.$0 && RegExp.$2 )
-			self.fractured.push( RegExp.$2 );
-	};
-	
+
 	// odd hack
 	this.textarea.value.replace( TC.Preview.fractureHTMLRegExp, fractureFunc );
 	
@@ -435,7 +420,6 @@ TC.Preview.prototype.makeBadWordList = function()
 TC.Preview.prototype.clickWord = function( evt, wordNum )
 {
 	evt = evt || event;
-	var element = evt.target || evt.srcElement;
 	var word = this.clickWords[ wordNum ];
 	if( !word )
 		return M;
