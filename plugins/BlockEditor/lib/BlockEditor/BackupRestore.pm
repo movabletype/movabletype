@@ -8,7 +8,7 @@ sub update_cd_block_editor_data {
     my $class = shift;
     my ( $cd, $all_objects ) = @_;
 
-    my $old_data = eval { MT::Util::from_json( $cd->block_editor_data ) };
+    my $old_data = eval { MT::Util::from_json( $cd->block_editor_data || {} ) };
     return unless $old_data && ref $old_data eq 'HASH' && %$old_data;
 
     my %new_data;
