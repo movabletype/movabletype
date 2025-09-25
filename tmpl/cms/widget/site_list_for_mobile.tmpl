@@ -43,7 +43,7 @@
       </mt:if>
         </td>
         <td class="text-right">
-          <mt:If name="can_create"><a href="<mt:var name="mt_url">?__mode=edit&_type=content_data&content_type_id=<mt:var name="content_type_id">&type=<mt:var name="type_id">&blog_id=<mt:var name="blog_id">" class="d-inline-block"><__trans phrase="Create"></a></mt:if>
+          <mt:If name="can_create"><a href="<mt:var name="mt_url">?__mode=view&_type=content_data&content_type_id=<mt:var name="content_type_id">&type=<mt:var name="type_id">&blog_id=<mt:var name="blog_id">" class="d-inline-block"><__trans phrase="Create"></a></mt:if>
         </td>
       </tr>
       </mt:setvarblock>
@@ -64,13 +64,13 @@
     <mt:If name="permitted_entry">
       <tr>
         <td class="p-4 text-truncate"><mt:If name="can_access_to_entry_list"><svg role="img" class="mt-icon--sm mt-icon--secondary mr-3"><use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_entry"></use></svg><a href="<mt:var name="mt_url">?__mode=list&_type=entry&blog_id=<mt:var name="blog_id">"><__trans phrase="Entry"></a></mt:If></td>
-        <td class="text-right"><mt:If name="can_create_post"><a href="<mt:var name="mt_url">?__mode=edit&_type=entry&blog_id=<mt:var name="blog_id">" class="d-inline-block"><__trans phrase="Create"></a></mt:if></td>
+        <td class="text-right"><mt:If name="can_create_post"><a href="<mt:var name="mt_url">?__mode=view&_type=entry&blog_id=<mt:var name="blog_id">" class="d-inline-block"><__trans phrase="Create"></a></mt:if></td>
       </tr>
     </mt:If>
     <mt:If name="can_manage_pages">
       <tr>
         <td class="p-4 text-truncate"><svg role="img" class="mt-icon--sm mt-icon--secondary mr-3"><use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_page"></use></svg><a href="<mt:var name="mt_url">?__mode=list&_type=page&blog_id=<mt:var name="blog_id">"><__trans phrase="Page"></a></td>
-        <td class="text-right"><a href="<mt:var name="mt_url">?__mode=edit&_type=page&blog_id=<mt:var name="blog_id">" class="d-inline-block"><__trans phrase="Create"></a></td>
+        <td class="text-right"><a href="<mt:var name="mt_url">?__mode=view&_type=page&blog_id=<mt:var name="blog_id">" class="d-inline-block"><__trans phrase="Create"></a></td>
       </tr>
     </mt:If>
     </tbody>

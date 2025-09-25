@@ -1291,7 +1291,8 @@ sub list_actions {
             button     => 1,
             mobile     => 1,
             condition  => sub {
-                return 0 if MT->app->mode eq 'view';
+                my $mode = MT->app->mode;
+                return 0 if $mode eq 'view' || $mode eq 'edit';
                 _check_permission(
                     'publish_all_content_data',
                     'publish_content_data_via_list_',
@@ -1313,7 +1314,8 @@ sub list_actions {
             code      => '$Core::MT::CMS::ContentData::draft_content_data',
             mobile    => 1,
             condition => sub {
-                return 0 if MT->app->mode eq 'view';
+                my $mode = MT->app->mode;
+                return 0 if $mode eq 'view' || $mode eq 'edit';
                 return _check_permission(
                     'set_content_data_draft_via_list',
                     'set_content_data_draft_via_list_',

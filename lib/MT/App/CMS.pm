@@ -896,7 +896,7 @@ sub core_list_actions {
                     include_all   => 1,
                 },
                 condition => sub {
-                    return 0 if $app->mode eq 'view';
+                    return 0 if $app->mode eq 'view' || $app->mode eq 'edit';
                     return 1;
                 },
             },
@@ -913,7 +913,7 @@ sub core_list_actions {
                     include_all   => 1,
                 },
                 condition => sub {
-                    return 0 if $app->mode eq 'view';
+                    return 0 if $app->mode eq 'view' || $app->mode eq 'edit';
                     return 1;
                 },
             },
@@ -928,7 +928,7 @@ sub core_list_actions {
                     include_all   => 1,
                 },
                 condition => sub {
-                    return 0 if $app->mode eq 'view';
+                    return 0 if $app->mode eq 'view' || $app->mode eq 'edit';
                     return 1;
                 }
             },
@@ -942,7 +942,7 @@ sub core_list_actions {
                     include_all   => 1,
                 },
                 condition => sub {
-                    return 0 if $app->mode eq 'view';
+                    return 0 if $app->mode eq 'view' || $app->mode eq 'edit';
                     return 0
                         if $app->param('filter_key')
                         && $app->param('filter_key') eq 'spam_entries';
@@ -964,7 +964,7 @@ sub core_list_actions {
                     include_all => 1,
                 },
                 condition => sub {
-                    return 0 if $app->mode eq 'view';
+                    return 0 if $app->mode eq 'view' || $app->mode eq 'edit';
                     return 1;
                 },
             },
@@ -989,7 +989,7 @@ sub core_list_actions {
                     include_all   => 1,
                 },
                 condition => sub {
-                    return 0 if $app->mode eq 'view';
+                    return 0 if $app->mode eq 'view' || $app->mode eq 'edit';
                     return 1;
                 },
             },
@@ -1004,7 +1004,7 @@ sub core_list_actions {
                     include_all   => 1,
                 },
                 condition => sub {
-                    return 0 if $app->mode eq 'view';
+                    return 0 if $app->mode eq 'view' || $app->mode eq 'edit';
                     return 1;
                 },
             },
@@ -1019,7 +1019,7 @@ sub core_list_actions {
                     include_all   => 1,
                 },
                 condition => sub {
-                    return 0 if $app->mode eq 'view';
+                    return 0 if $app->mode eq 'view' || $app->mode eq 'edit';
                     return 1;
                 },
             },
@@ -1032,7 +1032,7 @@ sub core_list_actions {
                     include_all   => 1,
                 },
                 condition => sub {
-                    return 0 if $app->mode eq 'view';
+                    return 0 if $app->mode eq 'view' || $app->mode eq 'edit';
                     return 0
                         if $app->param('filter_key')
                         && $app->param('filter_key') eq 'spam_entries';
@@ -1053,7 +1053,7 @@ sub core_list_actions {
                     include_all   => 1,
                 },
                 condition => sub {
-                    return 0 if $app->mode eq 'view';
+                    return 0 if $app->mode eq 'view' || $app->mode eq 'edit';
                     return 1;
                 },
             },
@@ -1193,7 +1193,7 @@ sub core_list_actions {
                     system_action => 'refresh_template_via_list',
                 },
                 condition => sub {
-                    return 0 if $app->mode eq 'view';
+                    return 0 if $app->mode eq 'view' || $app->mode eq 'edit';
                     return 1;
                 },
             },
@@ -1204,7 +1204,7 @@ sub core_list_actions {
                 permit_action => 'move_blogs',
                 dialog        => 1,
                 condition     => sub {
-                    return 0 if $app->mode eq 'view';
+                    return 0 if $app->mode eq 'view' || $app->mode eq 'edit';
 
                     my $count = MT->model('website')->count();
                     $count > 1 ? 1 : 0;
@@ -1226,7 +1226,7 @@ sub core_list_actions {
                 js_message => 'delete',
                 button     => 1,
                 condition  => sub {
-                    return 0 if $app->mode eq 'view';
+                    return 0 if $app->mode eq 'view' || $app->mode eq 'edit';
                     return 1 if $app->user->is_superuser;
 
                     my $terms = {
@@ -1293,7 +1293,7 @@ sub core_list_actions {
                     system_action => 'refresh_template_via_list',
                 },
                 condition => sub {
-                    return 0 if $app->mode eq 'view';
+                    return 0 if $app->mode eq 'view' || $app->mode eq 'edit';
                     return 1;
                 },
             },
@@ -1306,7 +1306,7 @@ sub core_list_actions {
                 js_message => 'delete',
                 button     => 1,
                 condition  => sub {
-                    return 0 if $app->mode eq 'view';
+                    return 0 if $app->mode eq 'view' || $app->mode eq 'edit';
                     return 1 if $app->user->is_superuser;
 
                     my $terms = {
@@ -1354,7 +1354,7 @@ sub core_list_actions {
                 permit_action => 'move_blogs',
                 dialog        => 1,
                 condition     => sub {
-                    return 0 if $app->mode eq 'view';
+                    return 0 if $app->mode eq 'view' || $app->mode eq 'edit';
 
                     my $count = MT->model('website')->count();
                     $count > 1 ? 1 : 0;
@@ -3291,7 +3291,7 @@ sub build_menus {
     my $app_param_id   = $app->param('id');
 
     my $is_category_set;
-    if ($app_param_type eq 'category' && $mode eq 'view' && !$app->param('is_category_set')) {
+    if ($app_param_type eq 'category' && ($mode eq 'view' || $mode eq 'edit') && !$app->param('is_category_set')) {
         $is_category_set = $app->model('category')->exist({
             id => $app_param_id || 0,
             category_set_id => { not => 0 }
@@ -3401,7 +3401,7 @@ sub build_menus {
                     }
                 }
                 elsif (( $app_param_type || '' ) eq 'category'
-                    && $mode eq 'view'
+                    && ($mode eq 'view' || $mode eq 'edit')
                     && !$app->param('is_category_set') )
                 {
                     $param->{screen_group}
