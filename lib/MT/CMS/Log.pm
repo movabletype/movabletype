@@ -426,17 +426,10 @@ PERMCHECK: {
         $ts[4] + 1,
         @ts[ 3, 2, 1, 0 ];
     $file .= "log_$ts.csv";
-    $app->{no_print_body} = 1;
-    $app->set_header( "Content-Disposition" => "attachment; filename=$file" );
-    $app->send_http_header(
-        $enc
-        ? "text/csv; charset=$enc"
-        : 'text/csv'
-    );
 
     my %seen;
-    my $csv = "timestamp,ip,weblog,by,message\n";
-    while ( my $log = $iter->() ) {
+    my $log_iter = sub {
+        my $log = $iter->() or return;
 
         # columns:
         # date, ip address, weblog, by, log message
@@ -470,9 +463,8 @@ PERMCHECK: {
         }
         if ($blog) {
             my $name = $blog->name;
-            $name =~ s/"/\\"/gs;
             $name =~ s/[\r\n]+/ /gs;
-            push @col, '"' . $name . '"';
+            push @col,  MT::Util::Encode::encode( $enc, $name );
         }
         else {
             push @col, '';
@@ -489,21 +481,21 @@ PERMCHECK: {
             }
         }
         if (defined $author_name && $author_name ne '') {
-            $author_name =~ s/"/\\"/gs;
             $author_name =~ s/[\r\n]+/ /gs;
-            push @col, '"' . $author_name . '"';
+            push @col, MT::Util::Encode::encode( $enc, $author_name );
         } else {
             push @col, '';
         }
         my $msg = $log->message;
         $msg = '' unless defined $msg;
-        $msg =~ s/"/\\"/gs;
         $msg =~ s/[\r\n]+/ /gs;
-        push @col, '"' . $msg . '"';
-        $csv .= ( join ',', @col ) . "\n";
-        $app->print( MT::Util::Encode::encode( $enc, $csv ) );
-        $csv = '';
-    }
+        push @col, MT::Util::Encode::encode( $enc, $msg );
+
+        return \@col;
+    };
+
+    $app->csv_result( $file, [qw/timestamp ip weblog by message/], $log_iter, $enc );
+
 }
 
 sub apply_log_filter {
