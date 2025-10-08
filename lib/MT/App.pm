@@ -853,7 +853,7 @@ sub csv_result {
     my $row_iterator = shift;
     my ($opt)        = @_;
 
-    if ( !$opt->{filename} ) {
+    if ( !defined $opt->{filename} || $opt->{filename} eq '' ) {
         return $app->error( $app->translate("No filename") );
     }
     if (   !$opt->{headers}
@@ -868,6 +868,7 @@ sub csv_result {
     }
     my $encoding = $opt->{encoding} || 'utf-8';
     my $filename = MT::Util::Encode::encode( $encoding, $opt->{filename} );
+    $filename .= '.csv' unless $filename =~ /\.csv$/i;
 
     $app->{no_print_body} = 1;
     $app->set_header(
@@ -916,8 +917,6 @@ sub csv_result {
 
     close $fh;
 }
-
-
 
 sub response_code {
     my $app = shift;
