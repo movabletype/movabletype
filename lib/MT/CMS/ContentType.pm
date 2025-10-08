@@ -906,7 +906,7 @@ sub dialog_list_content_data {
         blog_id         => $blog->id,
         content_type_id => $content_type_id,
     };
-    
+
     if (my $search_cols = $app->param('search_cols')) {
         my @cols = split(',', $search_cols);
         if (!grep { $_ =~ /^__field:/ } @cols) {
@@ -1100,6 +1100,7 @@ sub _make_content_data_listing_screens {
                     unless $blog_id == $ct->blog_id;
                 1;
             },
+            blog_id => $ct->blog_id,
             permission => sub {
                 return [
                     'access_to_content_data_list_' . $ct->unique_id,
@@ -1336,6 +1337,48 @@ sub build_content_type_table {
     }
 
     \@data;
+}
+
+sub search_action_targets {
+    my ($app) = @_;
+
+    $app->validate_magic()
+        or return $app->error($app->json_error($app->translate("Invalid Request.")));
+
+    my @content_types = search_action_targets_seed($app);
+
+    $app->json_result({ success => 1, content_types => \@content_types });
+}
+
+sub search_action_targets_seed {
+    my ($app)   = @_;
+    my $blog_id = $app->param('blog_id');
+    my $user    = $app->user;
+    my @content_types;
+    my $ls = $app->registry("listing_screens");
+    for my $key (keys %$ls) {
+        next unless $key =~ /content_data.content_data_(\d+)/;
+        my $ct_id      = $1;
+        my $ct_blog_id = $ls->{$key}->{blog_id};
+        next if $blog_id && $ct_blog_id != $blog_id;
+        my $ct_unique_id                     = ($ls->{$key}->{permission}->()[0] =~ /access_to_content_data_list_(.+)/)[0];
+        my $ct_name                          = $ls->{$key}->{object_label};
+        my $perms                            = $user->permissions($ct_blog_id);
+        my $user_can_create_new_content_data = $perms->can_do('create_new_content_data');
+        my $user_can_manage_content_data =
+               $user->is_superuser
+            || $user->permissions(0)->can_do('manage_content_data')
+            || $perms->can_do('manage_content_data');
+
+        push @content_types,
+            +{
+            id         => $ct_id,
+            name       => $ct_name,
+            can_create => ($user_can_create_new_content_data || $perms->can_do("create_new_content_data_" . $ct_unique_id)) ? 1 : 0,
+            can_search => ($user_can_manage_content_data     || $perms->can_do('search_content_data_' . $ct_unique_id))     ? 1 : 0,
+            };
+    }
+    return @content_types;
 }
 
 1;

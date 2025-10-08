@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="<$mt:var name="language_tag"$>">
+<head>
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+  <meta name="robots" content="noindex,nofollow" />
+  <meta charset="<$mt:var name="language_encoding"$>" />
+  <title><mt:loop name="page_titles"><mt:var name="bc_name" escape="html"> | </mt:loop><mt:var name="mt_product_name"></title>
+<mt:unless name="optimize_ui">
+  <mtapp:stylesheet path="styles.css">
+<mt:else>
+  <mtapp:stylesheet path="css/main.css">
+</mt:unless>
+  <!--[if IE]>
+  <mtapp:stylesheet path="css/hacks/ie.css">
+  <![endif]-->
+<mt:unless name="optimize_ui">
+  <mtapp:script path="jquery/jquery.js">
+  <mtapp:script path="jquery/jquery-migrate.js">
+  <mtapp:script path="js/common/Core.js">
+<mt:if name="use_mt_common_json">
+  <mtapp:script path="js/common/JSON.js">
+</mt:if>
+  <mtapp:script path="js/common/Timer.js">
+  <mtapp:script path="js/common/Cookie.js">
+  <mtapp:script path="js/common/DOM.js">
+  <mtapp:script path="js/common/Devel.js">
+  <mtapp:script path="js/common/Observable.js">
+  <mtapp:script path="js/common/Autolayout.js">
+  <mtapp:script path="js/common/Component.js">
+  <mtapp:script path="js/common/List.js">
+  <mtapp:script path="js/common/App.js">
+  <mtapp:script path="js/common/Cache.js">
+  <mtapp:script path="js/common/Client.js">
+  <mtapp:script path="js/common/Template.js">
+  <mtapp:script path="js/tc.js">
+  <mtapp:script path="js/admin2025/tc/tableselect.js">
+  <mtapp:script path="jquery/jquery.validate.js">
+<mt:if name="use_jquery_json">
+  <mtapp:script path="jquery/jquery.json.js">
+</mt:if>
+  <mtapp:script path="jqueryui/jquery-ui.js">
+<mt:else>
+  <mtapp:script path="jquery/jquery.min.js">
+  <mtapp:script path="jquery/jquery-migrate.min.js">
+  <mtapp:script path="js/admin2025/mt_core_compact.js">
+<mt:if name="use_mt_common_json">
+  <mtapp:script path="js/common/JSON.js">
+</mt:if>
+  <mtapp:script path="jquery/jquery.validate.min.js">
+<mt:if name="use_jquery_json">
+  <mtapp:script path="jquery/jquery.json.min.js">
+</mt:if>
+  <mtapp:script path="jqueryui/jquery-ui.min.js">
+</mt:unless>
+
+<mt:var name="html_head">
+
+  <mtapp:script path="mt.js">
+  <mtapp:script path="mt_%l.js">
+
+<mt:unless name="optimize_ui">
+  <mtapp:script path="jquery/jquery.mt.js">
+<mt:else>
+  <mtapp:script path="jquery/jquery.mt.min.js">
+</mt:unless>
+
+  <mt:var name="js_include">
+
+  <script>
+  /* <![CDATA[ */
+    ScriptURI = '<mt:var name="script_url">';
+    ScriptBaseURI = '<mt:var name="script_base_url">';
+    StaticURI = '<mt:var name="static_uri">';
+    __blankURI__ = '<$mt:var name="static_uri">html/blank.html';
+    HelpBaseURI = '<mt:var name="help_url">';
+    window.onkeypress = dialogKeyPress;
+  /* ]]> */
+  </script>
+</head>
+<body id="<$mt:var name="screen_id" escape="html"$>" class="dialog <$mt:var name="screen_type" default="dialog-screen"$>">
+  <div id="container">
+    <div id="content">
+      <div id="content-header">
+        <h1 id="page-title" class="title page"><$mt:var name="page_title"$></h1>
+      <!-- /Content Header --></div>
+      <div id="content-body">

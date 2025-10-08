@@ -924,7 +924,7 @@ sub api {
     # Special handler for get version information.
     if ( $path eq '/version' and (!defined $version or $version) ) {
         my $raw = {
-            endpointVersion => 'v' . $app->DEFAULT_VERSION(),
+            endpointVersion => 'v' . ($version || $app->DEFAULT_VERSION()),
             apiVersion      => $app->API_VERSION(),
         };
         my $format = $app->current_format;

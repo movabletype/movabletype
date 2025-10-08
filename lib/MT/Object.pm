@@ -102,7 +102,7 @@ sub install_properties {
     # Legacy MT::Object types only define 'columns'; we still support that
     # but they aren't handled properly with the upgrade system as a result.
     if ( !exists $props->{column_defs} ) {
-        map { $props->{column_defs}{$_} = () } @{ $props->{columns} };
+        $props->{column_defs}{$_} = () for @{ $props->{columns} };
     }
     $props->{columns} = [ keys %{ $props->{column_defs} } ];
 
@@ -702,12 +702,13 @@ sub install_meta {
             $type =~ s/\s.*//;   # take first keyword, ignoring anything after
             $type .= '_indexed'
                 if $cols->{$col} =~ m/\bindexed\b/;
-            $type = $meta_class->normalize_type($type);
+            my $normalized = $meta_class->normalize_type($type);
 
             push @{ $params->{fields} },
                 {
-                name => $col,
-                type => $type,
+                name     => $col,
+                type     => $normalized,
+                org_type => $type,
                 };
 
             # $props->{fields}{$col} = $type;

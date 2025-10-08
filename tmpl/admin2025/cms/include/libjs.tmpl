@@ -1,0 +1,70 @@
+<mt:unless name="optimize_ui">
+  <mtapp:script path="jquery/jquery.js">
+  <mtapp:script path="jquery/jquery-migrate.js">
+
+  <mtapp:script path="bootstrap5/js/bootstrap.bundle.js">
+
+  <mtapp:script path="js/common/Core.js">
+<mt:if name="use_mt_common_json">
+  <mtapp:script path="js/common/JSON.js">
+</mt:if>
+  <mtapp:script path="js/common/Timer.js">
+  <mtapp:script path="js/common/Cookie.js">
+  <mtapp:script path="js/common/DOM.js">
+  <mtapp:script path="js/common/Devel.js">
+  <mtapp:script path="js/common/Observable.js">
+  <mtapp:script path="js/common/Autolayout.js">
+  <mtapp:script path="js/common/Component.js">
+  <mtapp:script path="js/common/List.js">
+  <mtapp:script path="js/common/App.js">
+  <mtapp:script path="js/common/Cache.js">
+  <mtapp:script path="js/common/Client.js">
+  <mtapp:script path="js/common/Template.js">
+  <mtapp:script path="js/tc.js">
+  <mtapp:script path="js/admin2025/tc/tableselect.js">
+  <mtapp:script path="jquery/jquery.validate.js">
+<mt:if name="use_jquery_json">
+  <mtapp:script path="jquery/jquery.json.js">
+</mt:if>
+  <mtapp:script path="jqueryui/jquery-ui.js">
+  <mtapp:script path="jqueryui/jquery.ui.touch-punch.js">
+<mt:if name="use_svg4everybody">
+  <mtapp:script path="svg4everybody/svg4everybody.js">
+</mt:if>
+<mt:else>
+  <mtapp:script path="jquery/jquery.min.js">
+  <mtapp:script path="jquery/jquery-migrate.min.js">
+
+  <mtapp:script path="bootstrap5/js/bootstrap.bundle.min.js">
+
+  <mtapp:script path="js/admin2025/mt_core_compact.js">
+<mt:if name="use_mt_common_json">
+  <mtapp:script path="js/common/JSON.js">
+</mt:if>
+  <mtapp:script path="jquery/jquery.validate.min.js">
+<mt:if name="use_jquery_json">
+  <mtapp:script path="jquery/jquery.json.min.js">
+</mt:if>
+  <mtapp:script path="jqueryui/jquery-ui.min.js">
+  <mtapp:script path="jqueryui/jquery.ui.touch-punch.min.js">
+<mt:if name="use_svg4everybody">
+  <mtapp:script path="svg4everybody/svg4everybody.min.js">
+</mt:if>
+</mt:unless>
+<mt:if name="use_svg4everybody">
+<script>
+svg4everybody();
+</script>
+</mt:if>
+
+<mtapp:script path="js/build/admin2025/admin-ui-immediate.js">
+
+<script
+  type="module"
+  src="<mt:var name="static_uri">js/build/admin2025/admin-ui.js?v=<mt:var name="mt_version_id" escape="url">"
+  data-script="admin-ui"
+  data-scope-type="<mt:var name="scope_type" escape="html">"
+  data-blog-id="<mt:var name="blog_id" escape="html">"
+  data-magic-token="<mt:var name="magic_token" escape="html">"
+  data-limit="<mt:var name="limit" escape="html">"
+></script>

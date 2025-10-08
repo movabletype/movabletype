@@ -1,6 +1,6 @@
 <mt:if name="formatted_texts">
 <mt:setvarblock name="js_include" append="1">
-<script type="text/javascript">
+<script>
 (function($) {
 
 $.extend(MT.Editor.TinyMCE.config, {
@@ -29,10 +29,10 @@ Lexicon['Select a Boilerplate'] = '<__trans phrase="Select a Boilerplate" encode
 
 })(jQuery);
 </script>
-<mtapp:script type="text/javascript" path="plugins/FormattedTextForTinyMCE6/extension.js">
+<mtapp:script path="plugins/FormattedTextForTinyMCE6/extension.js">
 </mt:setvarblock>
 <mt:setvarblock name="html_head" append="1">
-<style type="text/css">
+<style>
 .mce-ico.mce-i-template,
 .mce-ico.mce-i-mt_source_template {
     background: transparent url('<mt:Var name="static_uri">images/icons/ic_template.svg') no-repeat center/16px;

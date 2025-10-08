@@ -1478,6 +1478,34 @@ sub save_favorite_blogs {
     $app->print_encode("true");
 }
 
+sub save_starred_sites {
+    my $app = shift;
+
+    $app->validate_param({
+        id => [qw/ID MULTI/],
+    }) or return $app->json_error($app->errstr);
+
+    $app->validate_magic()
+        or return $app->json_error($app->translate("Invalid request."));
+
+    my @ids = $app->multi_param('id');
+    if (scalar @ids > $MT::Author::MAX_STARRED_SITES) {
+        return $app->json_error(
+            $app->translate(
+                "You can only register a maximum of [_1] starred sites.",
+                $MT::Author::MAX_STARRED_SITES,
+            ),
+            400
+        );
+    }
+
+    my $user = $app->user;
+    $user->starred_sites(\@ids);
+    $user->save or return $app->json_error($user->errstr);
+
+    $app->json_result({});
+}
+
 sub dialog_select_weblog {
     my $app = shift;
 
@@ -1497,7 +1525,7 @@ sub dialog_select_weblog {
         && !$auth->permissions(0)->can_do('access_to_blog_list')
         && !$auth->permissions(0)->can_do('edit_templates') )
     {
-        use MT::Permission;
+        require MT::Permission;
         $args->{join} = MT::Permission->join_on( 'blog_id',
             { author_id => $auth->id, permissions => { not => "'comment'" } }
         );
@@ -2157,6 +2185,10 @@ sub save_filter {
     return $eh->error( MT->translate("You did not specify a blog name.") )
         if ( !( $screen && $app->can_do('edit_blog_config') )
         && ( defined $name && $name eq '' ) );
+
+    if (defined(my $link_default_target = $app->param('link_default_target'))) {
+        return $eh->error(MT->translate("Invalid value: [_1]", $link_default_target)) unless $link_default_target =~ m{\A_(blank|self)\z};
+    }
 
 #TBD
 #    return $eh->error( MT->translate("Site URL must be an absolute URL.") )
@@ -3455,7 +3487,7 @@ sub _progress {
         require MT::Util;
         my $str_js = MT::Util::encode_js($str);
         $app->print_encode(<<"SCRIPT");
-<script type="text/javascript">
+<script>
 function progress(str, id) {
     var el = getByID(id);
     if (el) el.innerHTML = str;

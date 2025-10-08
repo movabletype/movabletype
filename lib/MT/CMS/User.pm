@@ -326,15 +326,47 @@ sub edit_role {
 
     @perms = sort { ( $a->{order} || 0 ) <=> ( $b->{order} || 0 ) } @perms;
 
-    $param{'loaded_permissions'} = \@perms;
+    $param{'loaded_permissions'} = \@perms;    # DEPRECATED
 
-    my $all_perm_flags = MT::Permission->perms('blog');
+    # Make each permission list
+    my %perms_blog;
+    my %perms_content_data;
+    my @blog_groups    = qw(blog_admin auth_pub blog_design blog_upload blog_comment);
+    my %is_blog_groups = map { $_ => 1 } @blog_groups;
+    for my $perm (@perms) {
+        my $group = $perm->{group} or next;
 
-    for my $ref (@$all_perm_flags) {
-        $param{ 'have_access-' . $ref->[0] }
-            = ( $role && $role->has( $ref->[0] ) ) ? 1 : 0;
-        $param{ 'prompt-' . $ref->[0] } = $ref->[1];
+        if ($is_blog_groups{$group}) {
+            push @{ $perms_blog{$group} ||= [] }, $perm;
+
+        } elsif (my $ct_unique_id = $perm->{content_type_unique_id}) {
+            my $id = $perm->{id};
+
+            my $type;
+            if ($id =~ /^manage_content_data/) {
+                $type = 'all';
+            } elsif ($id =~ /^create|publish|edit_all|_contentdata:/) {
+                $type = 'manage_content_data';
+            } else {
+                $type = 'manage_content_field';
+            }
+            $perm->{type} = $type;
+
+            $perms_content_data{$ct_unique_id} ||= {};
+            $perms_content_data{$ct_unique_id}{$type} ||= [];
+
+            push @{ $perms_content_data{$ct_unique_id}{$type} }, $perm;
+        }
     }
+    for my $group (@blog_groups) {
+        $param{"loaded_permissions_${group}"} = $perms_blog{$group};
+    }
+    for my $perm_group (@{ MT->model('content_type')->permission_groups }) {
+        my $ct_unique_id = $perm_group->{ct_perm_group_unique_id};
+        my $perm_types   = $perms_content_data{$ct_unique_id} or next;
+        push @{ $param{'loaded_permissions_content_data'} }, { %{$perm_types}, %{$perm_group} };
+    }
+
     $param{saved}          = $app->param('saved');
     $param{nav_privileges} = 1;
     $app->add_breadcrumb(
@@ -2148,6 +2180,81 @@ sub _delete_pseudo_association {
         $app->config( 'DefaultAssignments', undef, 1 );
     }
     $app->config->save_config;
+}
+
+sub issue_api_password {
+    my $app = shift;
+    $app->validate_magic() or return;
+
+    $app->validate_param({
+        id => [qw/ID/],
+    }) or return;
+
+    my $user         = $app->user;
+    my $dest_user_id = $app->param('id');
+
+    return $app->permission_denied() unless $user->id == $dest_user_id || $app->can_do('edit_other_profile');
+
+    my $dest_user = $app->model('author')->load($dest_user_id)
+        or return $app->error($app->translate("User load failed: [_1]", $dest_user_id));
+
+    my $new_password = MT::Util::UniqueID::create_api_password();
+    $dest_user->api_password($new_password);
+    $dest_user->save or return $app->error($dest_user->errstr);
+
+    $app->load_tmpl(
+        'dialog/dialog_api_password.tmpl', {
+            dest_author_id   => $dest_user->id,
+            api_password     => $new_password,
+        });
+}
+
+sub delete_api_password {
+    my $app = shift;
+    $app->validate_magic() or return;
+
+    $app->validate_param({
+        id => [qw/ID/],
+    }) or return;
+
+    my $user         = $app->user;
+    my $dest_user_id = $app->param('id');
+
+    return $app->permission_denied() unless $user->id == $dest_user_id || $app->can_do('edit_other_profile');
+
+    my $dest_user = $app->model('author')->load($dest_user_id)
+        or return $app->error($app->translate("User load failed: [_1]", $dest_user_id));
+    $dest_user->api_password('');
+    $dest_user->save or return $app->error($dest_user->errstr);
+
+    $app->redirect($app->uri(
+        mode => 'dialog_api_password',
+        args => {
+            id      => $dest_user->id,
+            deleted => 1,
+        }));
+}
+
+sub dialog_api_password {
+    my $app = shift;
+
+    $app->validate_param({
+        id => [qw/ID/],
+    }) or return;
+
+    my $user         = $app->user;
+    my $dest_user_id = $app->param('id');
+
+    return $app->permission_denied() unless $user->id == $dest_user_id || $app->can_do('edit_other_profile');
+
+    my $dest_user = $app->model('author')->load($dest_user_id)
+        or return $app->error($app->translate("User load failed: [_1]", $dest_user_id));
+
+    $app->load_tmpl(
+        'dialog/dialog_api_password.tmpl', {
+            has_api_password => length($dest_user->api_password),
+            dest_author_id   => $dest_user->id,
+        });
 }
 
 1;

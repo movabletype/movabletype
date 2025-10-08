@@ -75,21 +75,18 @@ sub core_tags {
             'SitesIfLocalSite?' =>
                 '$Core::MT::Template::Tags::Site::_hdlr_sites_if_local_site',
             'SiteIfCommentsOpen?' => sub {''},
-            'SiteIfCCLicense?' =>
-                '$Core::MT::Template::Tags::Blog::_hdlr_blog_if_cc_license',  # deprecated
+            'SiteIfCCLicense?' => sub {''},
 
             ## Blog
             Blogs     => '$Core::MT::Template::Tags::Blog::_hdlr_blogs',
             'IfBlog?' => '$Core::MT::Template::Tags::Blog::_hdlr_if_blog',
-            'BlogIfCCLicense?' =>
-                '$Core::MT::Template::Tags::Blog::_hdlr_blog_if_cc_license',  # deprecated
+            'BlogIfCCLicense?' => sub {''},
 
             ## Website
             Websites => '$Core::MT::Template::Tags::Website::_hdlr_websites',
             'IfWebsite?' =>
                 '$Core::MT::Template::Tags::Website::_hdlr_if_website',
-            'WebsiteIfCCLicense?' =>
-                '$Core::MT::Template::Tags::Website::_hdlr_website_if_cc_license',  # deprecated
+            'WebsiteIfCCLicense?' => sub {''},
             'WebsiteHasBlog?' =>
                 '$Core::MT::Template::Tags::Website::_hdlr_website_has_blog',
             BlogParentWebsite =>
@@ -448,6 +445,7 @@ sub core_tags {
                 \&MT::Template::Tags::App::_hdlr_app_action_bar,
             'App:Link'    => \&MT::Template::Tags::App::_hdlr_app_link,
             'App:SVGIcon' => \&MT::Template::Tags::App::_hdlr_app_svg_icon,
+            'App:EmbedJsonResponse' => \&MT::Template::Tags::App::_hdlr_app_embed_json_response,
 
             'App:Script'     => \&MT::Template::Tags::App::_hdlr_app_script,
             'App:Stylesheet' => \&MT::Template::Tags::App::_hdlr_app_stylesheet,
@@ -471,10 +469,8 @@ sub core_tags {
             SiteHost => '$Core::MT::Template::Tags::Blog::_hdlr_blog_host',
             SiteTimezone =>
                 '$Core::MT::Template::Tags::Blog::_hdlr_blog_timezone',
-            SiteCCLicenseURL =>
-                '$Core::MT::Template::Tags::Blog::_hdlr_blog_cc_license_url',  # deprecated
-            SiteCCLicenseImage =>
-                '$Core::MT::Template::Tags::Blog::_hdlr_blog_cc_license_image',  # deprecated
+            SiteCCLicenseURL   => sub {''},
+            SiteCCLicenseImage => sub {''},
             SiteFileExtension =>
                 '$Core::MT::Template::Tags::Blog::_hdlr_blog_file_extension',
             SiteThemeID =>
@@ -523,12 +519,9 @@ sub core_tags {
             BlogHost => '$Core::MT::Template::Tags::Blog::_hdlr_blog_host',
             BlogTimezone =>
                 '$Core::MT::Template::Tags::Blog::_hdlr_blog_timezone',
-            BlogCCLicenseURL =>
-                '$Core::MT::Template::Tags::Blog::_hdlr_blog_cc_license_url',  # deprecated
-            BlogCCLicenseImage =>
-                '$Core::MT::Template::Tags::Blog::_hdlr_blog_cc_license_image',  # deprecated
-            CCLicenseRDF =>
-                '$Core::MT::Template::Tags::Blog::_hdlr_cc_license_rdf',  # deprecated
+            BlogCCLicenseURL   => sub {''},
+            BlogCCLicenseImage => sub {''},
+            CCLicenseRDF       => sub {''},
             BlogFileExtension =>
                 '$Core::MT::Template::Tags::Blog::_hdlr_blog_file_extension',
             BlogTemplateSetID =>
@@ -553,10 +546,8 @@ sub core_tags {
                 '$Core::MT::Template::Tags::Website::_hdlr_website_path',
             WebsiteTimezone =>
                 '$Core::MT::Template::Tags::Website::_hdlr_website_timezone',
-            WebsiteCCLicenseURL =>
-                '$Core::MT::Template::Tags::Website::_hdlr_website_cc_license_url',  # deprecated
-            WebsiteCCLicenseImage =>
-                '$Core::MT::Template::Tags::Website::_hdlr_website_cc_license_image',  # deprecated
+            WebsiteCCLicenseURL   => sub {''},
+            WebsiteCCLicenseImage => sub {''},
             WebsiteFileExtension =>
                 '$Core::MT::Template::Tags::Website::_hdlr_website_file_extension',
             WebsiteHost =>
@@ -1336,7 +1327,7 @@ sub build_date {
             $mo--;
             my $fds = format_ts( $args->{'format'}, $ts, $blog, $lang );
             my $js = <<EOT;
-<script type="text/javascript">
+<script>
 /* <![CDATA[ */
 document.write(mtRelativeDate(new Date($y,$mo,$d,$h,$m,$s), '$fds'));
 /* ]]> */
@@ -1902,9 +1893,9 @@ sub _hdlr_else {
     }
     if (%$args) {
         defined( my $res = _hdlr_if(@_) ) or return;
-        return $res ? $ctx->slurp(@_) : $ctx->else();
+        return $res ? $ctx->slurp($args, $cond) : $ctx->else();
     }
-    return $ctx->slurp(@_);
+    return $ctx->slurp($args, $cond);
 }
 
 ###########################################################################
@@ -3255,6 +3246,8 @@ sub _hdlr_app_widget {
     my $token    = $ctx->var('magic_token')     || '';
     my $scope    = $ctx->var('widget_scope')    || 'system';
     my $singular = $ctx->var('widget_singular') || '';
+    my $size     = $ctx->var('widget_size')     || '';
+    my $set      = $ctx->var('widget_set')      || '';
 
     my $vars = $ctx->{__stash}{vars};
     local $vars->{widget_id} = $id;
@@ -3270,7 +3263,7 @@ sub _hdlr_app_widget {
     my $return_args = $app->make_return_args;
     $return_args = encode_html($return_args);
     my $cgi = $app->uri;
-    if ( $hosted_widget && ( $insides !~ m/<form\s/i ) ) {
+    if ( $hosted_widget && ( $insides !~ m/<form(?:\s|>)/i ) ) {
         $insides = <<"EOT";
         <form id="$id-form" method="post" action="$cgi">
         <input type="hidden" name="__mode" value="update_widget_prefs" />
@@ -3296,6 +3289,11 @@ EOT
         $widget_class = "mt-widget--panel";
     }
 
+    my $size_class = '';
+    if ( $size eq 'half' ) {
+        $size_class = "mt-widget--half";
+    }
+
     my $bootstrap_display_class = '';
     my $widget_mobile           = $ctx->var('widget_mobile');
     if ( defined $widget_mobile ) {
@@ -3307,18 +3305,20 @@ EOT
         }
     }
 
-    my $widget = <<"EOT";
-<div id="$id" class="$widget_class $class $bootstrap_display_class">
-  <h2 class="mt-widget__title">
-    $widget_header
-    $header_action
-  </h2>
-  <div class="mt-widget__content">
-    $insides
-  </div>
-</div>
-EOT
-    return $widget;
+    my %param = (
+        id             => $id,
+        set            => $set,
+        closable       => $closable,
+        class          => "$widget_class $class $bootstrap_display_class $size_class",
+        widget_handler => $widget_header,
+        header_action  => $header_action,
+        content        => $insides,
+    );
+
+    my $tmpl   = $app->load_core_tmpl('cms/include/widget.tmpl', \%param);
+    my $output = $ctx->build($tmpl->output());
+    chomp $output;
+    return $output;
 }
 
 ###########################################################################
@@ -4085,9 +4085,96 @@ sub _hdlr_app_svg_icon {
         $size_class = " mt-icon--$size";
     }
 
-    my $static_uri = MT->static_path;
+    my $app = MT->app;
+    my %param = (
+        id    => $id,
+        title => $title_attr,
+        color => $color_class_suffix,
+        size  => $size_class,
+    );
 
-    qq{<svg role="img" class="mt-icon${color_class_suffix}${size_class}">$title_attr<use xlink:href="${static_uri}images/sprite.svg#$id"></use></svg>};
+    my $tmpl = $app->load_core_tmpl( 'cms/include/svg_icon.tmpl', \%param );
+    my $output = $ctx->build( $tmpl->output() );
+    chomp $output;
+    return $output;
+}
+
+###########################################################################
+
+=head2 App:EmbedJsonResponse
+
+Returns a json for embedding a response in a template
+
+B<Attributes:>
+
+=over 4
+
+=item * mode (required)
+
+=back
+
+=cut
+
+sub _hdlr_app_embed_json_response {
+    my ($ctx, $args, $cond) = @_;
+
+    require MT::Util;
+    my $mode = $args->{mode} or return MT::Util::to_json( { error => MT->translate('mode is required') } );
+
+    my $app = MT->app;
+    my $handlers = $app->handlers_for_mode($mode);
+    my $handler;
+    if (ref $handlers eq 'ARRAY') {
+        return MT::Util::to_json( { error => MT->translate('mode [_1] is ambiguous', $mode) } ) if @$handlers > 1;
+        $handler = $handlers->[0];
+    } else {
+        $handler = $handlers;
+    }
+
+    my $info = (ref $handler eq 'HASH') ? $handler : {};
+
+    # XXX: or maybe test $info->{embeddable} or something?
+    if (!$info->{app_mode} or $info->{app_mode} ne 'JSON') {
+        return MT::Util::to_json( { error => MT->translate('mode [_1] does not return JSON', $mode) } );
+    }
+
+    my $local_component;
+    $local_component = $info->{component} if $info->{component};
+    my $code = $info->{code} || $info->{handler};
+    if (ref $code ne 'CODE') {
+        $code = $app->handler_to_coderef($code);
+    }
+
+    return MT::Util::to_json( { error => MT->translate('Unknown action [_1]', $mode) } ) unless $code;
+
+    my $error;
+    my $json = do {
+        no warnings 'redefine';
+        local *MT::App::json_result = sub { my $app = shift; return shift };
+        local *MT::App::json_error  = sub { my $app = shift; my ($error, $status) = @_; return {error => $error, status => $status}; };
+        local $app->{component} = $local_component if $local_component;
+        my %forward = %$args;
+        my $filters = MT->registry( 'tags', 'modifier' );
+        exists( $filters->{$_} ) && delete $forward{$_} for keys %forward;
+        delete $forward{'@'};
+        delete $forward{'mode'};
+        my $res = $code->($app, \%forward);
+        if (ref $res) {
+            require MT::Util;
+            $res = eval { MT::Util::to_json($res) };
+            $error = $@ if $@;
+        }
+        $res;
+    };
+
+    if ($error || $app->errstr) {
+        require MT::Util::Log;
+        MT::Util::Log::init();
+        MT::Util::Log->error($error || $app->errstr);
+        return MT::Util::to_json( { error => MT->translate('Invalid response') } );
+    }
+
+    $json;
 }
 
 ###########################################################################
@@ -4171,6 +4258,7 @@ sub _hdlr_app_stylesheet {
 
     return sprintf('<link rel="stylesheet" href="%s?v=%s">', $stylesheet_path, $version);
 }
+
 
 ###########################################################################
 

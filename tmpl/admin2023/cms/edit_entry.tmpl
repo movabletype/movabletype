@@ -195,7 +195,8 @@
   <mtapp:statusmsg
      id="loaded_revision"
      class="info">
-    <__trans phrase="Restored revision (Date:[_1]).  The current status is: [_2]" params="<$mt:var name="rev_date" escape="html"$>%%<span class="icon-left-wide icon-<$mt:var name="current_status_text" lower_case="1">"><$mt:var name="current_status_label"$></span>">
+    <__trans phrase="Restored revision (Date:[_1]).  The current status is: [_2]" params="<$mt:var name="rev_date" escape="html"$>%%
+      <mt:include name="include/status_label.tmpl" $status_text_key="status_text">">
   </mtapp:statusmsg>
   <mt:if name="missing_tags_rev">
   <mtapp:statusmsg
@@ -305,14 +306,14 @@
    id="category"
    label="$container_label"
    label_class="$container_label_class">
-  <script type="text/javascript">
+  <script>
   /* <![CDATA[ */
       MT.App.selectedCategoryList = <$mt:if name="selected_category_loop"><$mt:var name="selected_category_loop" to_json="1"$><mt:else>[]</mt:if>;
       MT.App.objectType = '<mt:var name="object_type" escape="js">';
 
       Template.templates.categoryList = '<mt:section encode_js="1">
           [# if ( !items.length ) { #]
-              <span class="text-muted disabled">[#|h trans("None selected") #]</span>
+              <span class="text-body-secondary disabled">[#|h trans("None selected") #]</span>
               [#* return #]
           [# } #]
           [# if (MT.App.objectType == 'entry') { #]
@@ -1075,11 +1076,11 @@ div.mce-notification-error {
 
 <mt:setvarblock name="js_include" append="1">
   <!--// this MUST loaded after mt.js // -->
-  <mtapp:script type="text/javascript" path="js/edit.js">
+  <mtapp:script path="js/edit.js">
 </mt:setvarblock>
 
 <mt:unless name="editors">
-<mt:if name="rich_editor"><mt:var name="rich_editor_tmpl"><mt:else><mt:include name="include/archetype_editor.tmpl"></mt:if>
+<mt:include name="include/archetype_editor.tmpl">
 <mt:else>
 <mt:include name="include/editor_script.tmpl" id="editor_script_include">
 <mt:setvarblock name="editor_content">
@@ -1089,7 +1090,7 @@ div.mce-notification-error {
 </mt:unless>
 
 <mt:setvarblock name="html_head" append="1">
-<script type="text/javascript">
+<script>
     /* <![CDATA[ */
     if (typeof(Editor) == 'undefined') {
         Editor = {};
@@ -1112,10 +1113,10 @@ div.mce-notification-error {
 
 <mt:setvarblock name="html_head" prepend="1">
   <mtapp:stylesheet path="css/editor/common.css">
-  <mtapp:script type="text/javascript" path="js/tc/focus.js">
-  <mtapp:script type="text/javascript" path="js/tc/tagcomplete.js">
-  <mtapp:script type="text/javascript" path="js/tc/client.js">
-  <script type="text/javascript">
+  <mtapp:script path="js/tc/focus.js">
+  <mtapp:script path="js/tc/tagcomplete.js">
+  <mtapp:script path="js/tc/client.js">
+  <script>
     /* <![CDATA[ */
       var orig_text_format;
       var cur_text_format = '<mt:var name="convert_breaks" escape="js">';
@@ -1469,7 +1470,7 @@ div.mce-notification-error {
 
 <mt:setvarblock name="page_content">
 <mt:if name="dirty">
-  <script type="text/javascript">
+  <script>
     /* <![CDATA[ */
       MT.App.dirty = true;
     /* ]]> */
@@ -1575,7 +1576,7 @@ div.mce-notification-error {
       <div class="mt-draggable__content">
         <mt:var name="field_html">
   <mt:if name="show_hint">
-        <small class="form-text text-muted"><mt:var name="desc_encoded"></small>
+        <small class="form-text text-body-secondary"><mt:var name="desc_encoded"></small>
   </mt:if>
       </div>
     </div>

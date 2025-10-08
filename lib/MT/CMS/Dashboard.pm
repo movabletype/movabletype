@@ -136,6 +136,16 @@ sub get_newsbox_content {
     return q();
 }
 
+sub stats_directory {
+    my ($app, $blog_id) = @_;
+
+    (my $mt_dir = $app->{mt_dir}) =~ s/[^A-Za-z0-9]+//g;
+
+    my $sub_dir = sprintf( "%03d", $blog_id % 1000 );
+    my $top_dir = $blog_id > $sub_dir ? $blog_id - $sub_dir : 0;
+    File::Spec->catdir( $app->config->TempDir, "mt-$mt_dir", 'dashboard', 'stats', $top_dir, $sub_dir );
+}
+
 sub create_stats_directory {
     my $app = shift;
     my ($param) = @_;
@@ -144,43 +154,15 @@ sub create_stats_directory {
         = $app->blog        ? $app->blog->id
         : $param->{blog_id} ? $param->{blog_id}
         :                     0;
-    my $user    = $app->user;
-    my $user_id = $user->id;
 
-    my $static_file_path = $app->static_file_path;
-
-    if ( -f File::Spec->catfile( $static_file_path, "mt.js" ) ) {
-        $param->{static_file_path} = $static_file_path;
-    }
-    else {
-        return;
-    }
-
-    my $low_dir = sprintf( "%03d", $user_id % 1000 );
-    my $sub_dir = sprintf( "%03d", $blog_id % 1000 );
-    my $top_dir = $blog_id > $sub_dir ? $blog_id - $sub_dir : 0;
-    $param->{support_path}
-        = File::Spec->catdir( $app->support_directory_path(),
-        'dashboard', 'stats', $top_dir, $sub_dir, $low_dir );
+    my $tmpdir = stats_directory($app, $blog_id);
 
     require MT::FileMgr;
     my $fmgr = MT::FileMgr->new('Local');
-    unless ( $fmgr->exists( $param->{support_path} ) ) {
-        $fmgr->mkpath( $param->{support_path} );
-        unless ( $fmgr->exists( $param->{support_path} ) ) {
-
-            # the path didn't exist - change the warning a little
-            $param->{support_path} = $app->support_directory_path();
-            return;
-        }
+    unless ( $fmgr->exists($tmpdir) ) {
+        $fmgr->mkpath($tmpdir) or return;
     }
-
-    return
-          $app->support_directory_url()
-        . 'dashboard/stats/'
-        . $top_dir . '/'
-        . $sub_dir . '/'
-        . $low_dir;
+    $tmpdir;
 }
 
 sub site_stats_widget {
@@ -208,17 +190,15 @@ sub generate_site_stats_data {
     my $perms   = $app->user->permissions($blog_id);
 
     my $cache_time = 60 * MT->config('StatsCacheTTL');   # cache for x minutes
-    my $stats_static_path = create_stats_directory( $app, $param ) or return;
+    my $tmpdir = create_stats_directory( $app, $param ) or return;
 
     my $file = "data_" . $blog_id . ".json";
-    $param->{stat_url} = $stats_static_path . '/' . $file;
-    my $path = File::Spec->catfile( $param->{support_path}, $file );
+    my $path = File::Spec->catfile( $tmpdir, $file );
 
     require MT::FileMgr;
     my $fmgr = MT::FileMgr->new('Local');
     my $time;
     $time = $fmgr->file_mod_time($path) if -f $path;
-
 
     # Get readied provider
     require MT::App::DataAPI;
@@ -367,11 +347,6 @@ sub generate_site_stats_data {
         $result->{pv_today}        = $pv_today;
         $result->{pv_yesterday}    = $pv_yesterday;
         $result->{reg_keys}        = \@reg_keys;
-        $result->{can_edit_config} = 1
-            if $perms->can_do('edit_config')
-            || $perms->can_do('set_publish_paths')
-            || $perms->can_do('administer_site')
-            || $perms->can_do('administer');
         $result->{error} = $app->errstr if $app->errstr;
 
         $fmgr->put_data(
@@ -381,27 +356,19 @@ sub generate_site_stats_data {
         );
     }
 
+    my $data = $fmgr->get_data($path, 'output');
+    $data =~ s/^widget_site_stats_draw_graph\((.+)\)/$1/;
+    $param->{site_stat_data_json} = $1;
+    $param->{can_edit_config} = 1
+        if $perms->can_do('edit_config')
+        || $perms->can_do('set_publish_paths')
+        || $perms->can_do('administer_site')
+        || $perms->can_do('administer');
+
     delete $param->{provider};
     $param->{stats_provider} = $provider->id if $provider;
 
     1;
-}
-
-sub regenerate_site_stats_data {
-    my $app = shift;
-
-    require MT::Util::Deprecated;
-    MT::Util::Deprecated::warning(since => '8.5.0');
-
-    $app->validate_magic() or return;
-
-    my $param;
-    $param->{blog_id} = $app->param('blog_id');
-
-    generate_site_stats_data( $app, $param ) or return;
-
-    my $result = { stat_url => $param->{stat_url} };
-    return $app->json_result($result);
 }
 
 sub site_stats_widget_lines {
@@ -548,7 +515,7 @@ sub notification_widget {
         if ( $user && $user->is_superuser ) {
             $message->{detail}
                 = $app->translate(
-                'An image processing toolkit, often specified by the ImageDriver configuration directive, is not present on your server or is configured incorrectly. A toolkit must be installed to ensure proper operation of the userpics feature. Please install Graphics::Magick, Image::Magick, NetPBM, GD, or Imager, then set the ImageDriver configuration directive accordingly.'
+                'An image processing toolkit, often specified by the ImageDriver configuration directive, is not present on your server or is configured incorrectly. A toolkit must be installed to ensure proper operation of the userpics feature. Please install Graphics::Magick, Image::Magick, GD, or Imager, then set the ImageDriver configuration directive accordingly.'
                 );
         }
         else {
@@ -713,10 +680,7 @@ sub system_information_widget {
     $param->{total_content_types} = $ct_class->count();
 
     # Server model
-    if ( $ENV{MOD_PERL} ) {
-        $param->{server_model} = 'mod_perl';
-    }
-    elsif ( $ENV{FAST_CGI} ) {
+    if ( $ENV{FAST_CGI} ) {
         $param->{server_model} = 'FastCGI';
     }
     elsif ( $ENV{'psgi.version'} ) {

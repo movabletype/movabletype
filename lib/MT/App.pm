@@ -910,55 +910,20 @@ sub send_http_header {
     my $app = shift;
     my ($type) = @_;
     $type ||= $app->{response_content_type} || 'text/html';
-    if ( my $charset = $app->charset ) {
+    if (my $charset = $app->charset) {
         $type .= "; charset=$charset"
             if $type =~ m!^text/|\+xml$|/json$!
             && $type !~ /\bcharset\b/;
     }
-    if ( MT::Util::is_mod_perl1() ) {
-        if ( $app->{response_message} ) {
-            $app->{apache}->status_line(
-                ( $app->response_code || 200 )
-                . ( $app->{response_message}
-                    ? ' ' . $app->{response_message}
-                    : ''
-                )
-            );
-        }
-        else {
-            $app->{apache}->status( $app->response_code || 200 );
-        }
-        $app->{apache}->send_http_header($type);
-        if ( $MT::DebugMode & 128 ) {
-            print "Status: "
-                . ( $app->response_code || 200 )
-                . (
-                $app->{response_message}
-                ? ' ' . $app->{response_message}
-                : ''
-                ) . "\n";
-            print "Content-Type: $type\n\n";
-        }
-    }
-    else {
-        $app->{cgi_headers}{-status}
-            = ( $app->response_code || 200 )
-            . (
-            $app->{response_message} ? ' ' . $app->{response_message} : '' );
-        $app->{cgi_headers}{-type} = $type;
-        $app->print( $app->{query}->header( %{ $app->{cgi_headers} } ) );
-    }
+    $app->{cgi_headers}{-status} = ($app->response_code || 200) . ($app->{response_message} ? ' ' . $app->{response_message} : '');
+    $app->{cgi_headers}{-type}   = $type;
+    $app->print($app->{query}->header(%{ $app->{cgi_headers} }));
 }
 
 sub print {
     my $app = shift;
-    if ( MT::Util::is_mod_perl1() ) {
-        $app->{apache}->print(@_);
-    }
-    else {
-        CORE::print(@_);
-    }
-    if ( $MT::DebugMode & 128 ) {
+    CORE::print(@_);
+    if ($MT::DebugMode & 128) {
         CORE::print STDERR @_;
     }
 }
@@ -973,42 +938,9 @@ sub print_encode {
     $app->print( MT::Util::Encode::encode( $enc, $_[0] ) );
 }
 
-sub handler ($$) {
-    my $class = shift;
-    my ($r) = @_;
-    require Apache::Constants;
-    if ( lc( $r->dir_config('Filter') || '' ) eq 'on' ) {
-        $r = $r->filter_register;
-    }
-    my $config_file = $r->dir_config('MTConfig');
-    my $mt_dir      = $r->dir_config('MTHome');
-    my %params      = (
-        Config       => $config_file,
-        ApacheObject => $r,
-        ( $mt_dir ? ( Directory => $mt_dir ) : () )
-    );
-    my $app = $class->new(%params)
-        or die $class->errstr;
-
-    MT->set_instance($app);
-    $app->init_request(%params);
-
-    my $cfg = $app->config;
-    if ( my @extra = $r->dir_config('MTSetVar') ) {
-        for my $d (@extra) {
-            my ( $var, $val ) = $d =~ /^\s*(\S+)\s+(.+)$/;
-            $cfg->set( $var, $val );
-        }
-    }
-
-    $app->run;
-    return Apache::Constants::OK();
-}
-
 sub init {
     my $app   = shift;
     my %param = @_;
-    $app->{apache} = $param{ApacheObject} if exists $param{ApacheObject};
 
     # start tracing even prior to 'init'
     local $SIG{__WARN__} = sub { $app->trace( $_[0] ) };
@@ -1116,37 +1048,28 @@ sub init_request {
         cookies _errstr request_method requires_login __host );
     delete $app->{$_} foreach @req_vars;
     $app->user(undef);
-    if ( MT::Util::is_mod_perl1() ) {
-        require Apache::Request;
-        $app->{apache} = $param{ApacheObject} || Apache->request;
-        $app->{query} = Apache::Request->instance( $app->{apache},
-            POST_MAX => $app->config->CGIMaxUpload );
-    }
-    else {
-        if ( $param{CGIObject} ) {
-            $app->{query} = $param{CGIObject};
-            require CGI;
-            $CGI::POST_MAX = $app->config->CGIMaxUpload;
-        }
-        else {
-            if ( my $path_info = $ENV{PATH_INFO} ) {
-                if ( $path_info =~ m/\.cgi$/ ) {
+    if ($param{CGIObject}) {
+        $app->{query} = $param{CGIObject};
+        require CGI;
+        $CGI::POST_MAX = $app->config->CGIMaxUpload;
+    } else {
+        if (my $path_info = $ENV{PATH_INFO}) {
+            if ($path_info =~ m/\.cgi$/) {
 
-                    # some CGI environments (notably 'sbox') leaves PATH_INFO
-                    # defined which interferes with CGI.pm determining the
-                    # request url.
-                    delete $ENV{PATH_INFO};
-                }
+                # some CGI environments (notably 'sbox') leaves PATH_INFO
+                # defined which interferes with CGI.pm determining the
+                # request url.
+                delete $ENV{PATH_INFO};
             }
-            require CGI;
-            $CGI::POST_MAX = $app->config->CGIMaxUpload;
-            $app->{query} = eval { CGI->new( $app->{no_read_body} ? {} : () ) };
-            if (my $err = $@) {
-                my $res = parse_init_cgi_error($err);
-                $app->{query} = CGI->new( {} );
-                $app->response_code($res->{code});
-                die $res->{message};
-            }
+        }
+        require CGI;
+        $CGI::POST_MAX = $app->config->CGIMaxUpload;
+        $app->{query} = eval { CGI->new($app->{no_read_body} ? {} : ()) };
+        if (my $err = $@) {
+            my $res = parse_init_cgi_error($err);
+            $app->{query} = CGI->new({});
+            $app->response_code($res->{code});
+            die $res->{message};
         }
     }
     $app->init_query();
@@ -1170,14 +1093,12 @@ sub init_query {
 
     # CGI.pm has this terrible flaw in that if a POST is in effect,
     # it totally ignores any query parameters.
-    if ( $app->request_method eq 'POST' ) {
-        if ( !MT::Util::is_mod_perl1() ) {
-            my $query_string = $ENV{'QUERY_STRING'};
-            $query_string ||= $ENV{'REDIRECT_QUERY_STRING'}
-                if defined $ENV{'REDIRECT_QUERY_STRING'};
-            if ( defined($query_string) and $query_string ne '' ) {
-                $q->parse_params($query_string);
-            }
+    if ($app->request_method eq 'POST') {
+        my $query_string = $ENV{'QUERY_STRING'};
+        $query_string ||= $ENV{'REDIRECT_QUERY_STRING'}
+            if defined $ENV{'REDIRECT_QUERY_STRING'};
+        if (defined($query_string) and $query_string ne '') {
+            $q->parse_params($query_string);
         }
     }
 }
@@ -2820,13 +2741,7 @@ sub clear_login_cookie {
 sub request_content {
     my $app = shift;
     unless ( exists $app->{request_content} ) {
-        if ( MT::Util::is_mod_perl1() ) {
-            ## Read from $app->{apache}
-            my $r   = $app->{apache};
-            my $len = $app->get_header('Content-length');
-            $r->read( $app->{request_content}, $len );
-        }
-        elsif ( $ENV{'psgi.input'} ) {
+        if ( $ENV{'psgi.input'} ) {
             ## Read frrom psgi.input
             my $fh = $ENV{'psgi.input'};
             seek $fh, 0, 0;
@@ -2849,32 +2764,21 @@ sub request_content {
 sub get_header {
     my $app = shift;
     my ($key) = @_;
-    if ( MT::Util::is_mod_perl1() ) {
-        return $app->{apache}->header_in($key);
-    }
-    else {
-        ( $key = uc($key) ) =~ tr/-/_/;
-        return $ENV{ 'HTTP_' . $key };
-    }
+    ($key = uc($key)) =~ tr/-/_/;
+    return $ENV{ 'HTTP_' . $key };
 }
 
 sub set_header {
     my $app = shift;
-    my ( $key, $val ) = @_;
-    if ( MT::Util::is_mod_perl1() ) {
-        $app->{apache}->header_out( $key, $val );
+    my ($key, $val) = @_;
+    unless ($key =~ /^-/) {
+        ($key = lc($key)) =~ tr/-/_/;
+        $key = '-' . $key;
     }
-    else {
-        unless ( $key =~ /^-/ ) {
-            ( $key = lc($key) ) =~ tr/-/_/;
-            $key = '-' . $key;
-        }
-        if ( $key eq '-cookie' ) {
-            push @{ $app->{cgi_headers}{$key} }, $val;
-        }
-        else {
-            $app->{cgi_headers}{$key} = $val;
-        }
+    if ($key eq '-cookie') {
+        push @{ $app->{cgi_headers}{$key} }, $val;
+    } else {
+        $app->{cgi_headers}{$key} = $val;
     }
 }
 
@@ -2882,14 +2786,8 @@ sub request_method {
     my $app = shift;
     if (@_) {
         $app->{request_method} = shift;
-    }
-    elsif ( !exists $app->{request_method} ) {
-        if ( MT::Util::is_mod_perl1() ) {
-            $app->{request_method} = Apache->request->method;
-        }
-        else {
-            $app->{request_method} = $ENV{REQUEST_METHOD} || '';
-        }
+    } elsif (!exists $app->{request_method}) {
+        $app->{request_method} = $ENV{REQUEST_METHOD} || '';
     }
     $app->{request_method};
 }
@@ -2899,29 +2797,17 @@ sub upload_info {
     my ($param_name) = @_;
     my $q            = $app->param;
 
-    my ( $fh, $info, $no_upload );
-    if ( MT::Util::is_mod_perl1() ) {
-        if ( my $up = $q->upload($param_name) ) {
-            $fh        = $up->fh;
-            $info      = $up->info;
-            $no_upload = !$up->size;
-        }
-        else {
-            $no_upload = 1;
-        }
+    my ($fh, $info, $no_upload);
+    ## Older versions of CGI.pm didn't have an 'upload' method.
+    eval { $fh = $q->upload($param_name) };
+    if ($@ && $@ =~ /^Undefined subroutine/) {
+        $fh = $q->param($param_name);
     }
-    else {
-        ## Older versions of CGI.pm didn't have an 'upload' method.
-        eval { $fh = $q->upload($param_name) };
-        if ( $@ && $@ =~ /^Undefined subroutine/ ) {
-            $fh = $q->param($param_name);
-        }
-        return unless $fh;
-        $info = $q->uploadInfo($fh);
-    }
+    return unless $fh;
+    $info = $q->uploadInfo($fh);
 
     return if $no_upload;
-    return ( $fh, $info );
+    return ($fh, $info);
 }
 
 sub cookie_val {
@@ -2937,13 +2823,13 @@ sub bake_cookie {
     my $app   = shift;
     my %param = @_;
     my $cfg   = $app->config;
-    if ( ( !exists $param{'-secure'} ) && $app->is_secure ) {
+    if ((!exists $param{'-secure'}) && $app->is_secure) {
         $param{'-secure'} = 1;
     }
-    unless ( $param{-path} ) {
+    unless ($param{-path}) {
         $param{-path} = $cfg->CookiePath || $app->path;
     }
-    if ( !$param{-domain} && $cfg->CookieDomain ) {
+    if (!$param{-domain} && $cfg->CookieDomain) {
         $param{-domain} = $cfg->CookieDomain;
     }
     if ( !defined $param{-httponly} && $cfg->CookieHttpOnly ) {
@@ -2952,37 +2838,21 @@ sub bake_cookie {
     if ( !defined $param{-samesite} && $cfg->CookieSameSite ) {
         $param{-samesite} = $cfg->CookieSameSite;
     }
-    if ( MT::Util::is_mod_perl1() ) {
-        require Apache::Cookie;
-        my $cookie = Apache::Cookie->new( $app->{apache}, %param );
-        if ( $param{-expires} && ( $cookie->expires =~ m/%/ ) ) {
-
-            # Fix for oddball Apache::Cookie error reported on Windows.
-            require CGI::Util;
-            $cookie->expires(
-                CGI::Util::expires( $param{-expires}, 'cookie' ) );
-        }
-        $cookie->bake;
-    }
-    else {
-        require CGI::Cookie;
-        my $cookie = CGI::Cookie->new(%param);
-        $app->set_header( '-cookie', $cookie );
-    }
+    require CGI::Cookie;
+    my $cookie = CGI::Cookie->new(%param);
+    $app->set_header('-cookie', $cookie);
 }
 
 sub cookies {
     my $app = shift;
-    unless ( $app->{cookies} ) {
-        my $class
-            = MT::Util::is_mod_perl1() ? 'Apache::Cookie' : 'CGI::Cookie';
+    unless ($app->{cookies}) {
+        my $class = 'CGI::Cookie';
         eval "use $class;";
         $app->{cookies} = $class->fetch;
     }
-    if ( $app->{cookies} ) {
+    if ($app->{cookies}) {
         return wantarray ? %{ $app->{cookies} } : $app->{cookies};
-    }
-    else {
+    } else {
         return wantarray ? () : undef;
     }
 }
@@ -3276,23 +3146,11 @@ sub run {
         $app->validate_request_params($meth_info) or die;
 
         require MT::Auth;
-        if ( MT::Util::is_mod_perl1() ) {
-            unless ( $app->{no_read_body} ) {
-                my $status = $q->parse;
-                unless ( $status == Apache::Constants::OK() ) {
-                    die $app->translate('The file you uploaded is too large.')
-                        . "\n<!--$status-->";
-                }
-            }
-        }
-        else {
-            my $err;
-            eval { $err = $q->cgi_error };
-            unless ($@) {
-                if ( $err && $err =~ /^413/ ) {
-                    die $app->translate('The file you uploaded is too large.')
-                        . "\n";
-                }
+        my $err;
+        eval { $err = $q->cgi_error };
+        unless ($@) {
+            if ($err && $err =~ /^413/) {
+                die $app->translate('The file you uploaded is too large.') . "\n";
             }
         }
 
@@ -3438,20 +3296,11 @@ sub run {
     }
 
     if ( my $url = $app->{redirect} ) {
-        if ( !MT->config->DisableMetaRefresh and $app->{redirect_use_meta} ) {
+        if (!MT->config->DisableMetaRefresh and $app->{redirect_use_meta}) {
             $app->send_http_header();
-            $app->print( '<meta http-equiv="refresh" content="' . encode_html(MT->config->WaitAfterReboot). ';url=' . encode_html($url) . '">' );
-        }
-        else {
-            if ( MT::Util::is_mod_perl1() ) {
-                $app->{apache}->header_out( Location => $url );
-                $app->response_code( Apache::Constants::REDIRECT() );
-                $app->send_http_header;
-            }
-            else {
-                $app->print(
-                    $q->redirect( -uri => $url, %{ $app->{cgi_headers} } ) );
-            }
+            $app->print('<meta http-equiv="refresh" content="' . encode_html(MT->config->WaitAfterReboot) . ';url=' . encode_html($url) . '">');
+        } else {
+            $app->print($q->redirect(-uri => $url, %{ $app->{cgi_headers} }));
         }
     }
     else {
@@ -3653,18 +3502,24 @@ sub load_widgets {
     my $widget_store = $user->widgets;
     my $widgets;
     $widgets = $widget_store->{$widget_set} if $widget_store;
+    $param->{current_widget_scope} = $widget_set;
 
     unless ($widgets) {
         $resave_widgets = 1;
         $widgets        = $app->default_widgets_for_dashboard($scope_type);
     }
 
+    my @ordered_list;
+    my %orders;
+
     my $reg_widgets = $app->registry("widgets");
     $reg_widgets
         = $app->filter_conditional_list( $reg_widgets, $page, $scope );
     my $all_widgets;
     foreach my $widget ( keys %$reg_widgets ) {
-        if ( my $widget_view = $reg_widgets->{$widget}->{view} ) {
+        my $widget_data = $reg_widgets->{$widget};
+
+        if ( my $widget_view = $widget_data->{view} ) {
             if ( 'ARRAY' eq ref $widget_view ) {
                 next
                     unless ( scalar grep { $_ eq $scope_type }
@@ -3673,15 +3528,25 @@ sub load_widgets {
             else {
                 next if $scope_type ne $widget_view;
             }
-            $all_widgets->{$widget} = $reg_widgets->{$widget};
+            $all_widgets->{$widget} = $widget_data;
         }
         else {
-            $all_widgets->{$widget} = $reg_widgets->{$widget};
+            $all_widgets->{$widget} = $widget_data;
+        }
+
+        if ((ref($widget_data->{pinned}) && $widget_data->{pinned}{$scope}) || $widget_data->{pinned}) {
+            push @ordered_list, $widget;
+            my $order = $widget_data->{order};
+            $order = (
+                  $order && ref $order eq 'HASH'
+                ? $order->{$scope_type}
+                : $order
+                )
+                || 0;
+            $orders{$widget} = $order;
         }
     }
 
-    my @ordered_list;
-    my %orders;
     my $order_num = 0;
     foreach my $widget_id ( keys %$widgets ) {
         next unless defined $all_widgets->{$widget_id};
@@ -3784,6 +3649,8 @@ sub build_widgets {
         local $widget_param->{widget_mobile}   = $widget->{mobile} ? 1 : 0;
         local $widget_param->{widget_scope}    = $widget_set;
         local $widget_param->{widget_singular} = $widget->{singular} || 0;
+        local $widget_param->{widget_size}     = $widget_cfg->{size} || '';
+        local $widget_param->{widget_set}      = $set;
         local $widget_param->{magic_token}     = $app->current_magic;
         local $widget_param->{build_menus}     = 0;
         local $widget_param->{build_blog_selector} = 0;
@@ -3838,8 +3705,13 @@ sub update_widget_prefs {
     my $blog = $app->blog;
     my $blog_id;
     $blog_id = $blog->id if $blog;
+    my $action = $app->param('widget_action');
+
+    if ($action eq 'save_layout') {
+        return $app->_update_widget_prefs_save_layout(@_);
+    }
+
     my $widget_id     = $app->param('widget_id');
-    my $action        = $app->param('widget_action');
     my $widget_scope  = $app->param('widget_scope');
     my $widgets       = $user->widgets || {};
     my $these_widgets = $widgets->{$widget_scope} ||= {};
@@ -3872,6 +3744,7 @@ sub update_widget_prefs {
             # Renumbering widget order
             my $widget_count = keys %$these_widgets;
             foreach my $widget_id ( keys %$these_widgets ) {
+                next if $these_widgets->{$widget_id}{order};
                 if ( my $widget = $all_widgets->{$widget_id} ) {
                     my @widget_scopes = split ':', $widget_scope;
                     my $order = $widget->{order};
@@ -3879,13 +3752,7 @@ sub update_widget_prefs {
                         = $order && ref $order eq 'HASH'
                         ? $widget->{order}{ $widget_scopes[1] }
                         : $order * 100;
-                    if ($order) {
-                        $these_widgets->{$widget_id} = { order => $order };
-                    }
-                    else {
-                        $these_widgets->{$widget_id}
-                            = { order => $widget_count++ * 100 };
-                    }
+                    $these_widgets->{$widget_id}{order} = $order || $widget_count++ * 100;
                 }
             }
         }
@@ -3918,6 +3785,50 @@ sub update_widget_prefs {
         $app->add_return_arg( 'saved' => 1 );
         $app->call_return;
     }
+}
+
+
+sub _update_widget_prefs_save_layout {
+    my $app = shift;
+
+    $app->validate_param({
+        widget_scope  => [qw/STRING/],
+        widget_layout => [qw/STRING/],
+    }) or return $app->json_error($app->translate('Invalid request.'), 400);
+
+    my $scope        = $app->param('widget_scope');
+    my $widgets_json = $app->param('widget_layout');
+
+    return $app->json_error($app->translate('Invalid request.'), 400)
+        unless $scope && $widgets_json;
+
+    my $new_widgets;
+    eval { $new_widgets = MT::Util::from_json($widgets_json) };
+    if ($@ || ref $new_widgets ne 'HASH') {
+        return $app->json_error($app->translate('Invalid request.'), 400);
+    }
+
+    my $user = $app->user;
+    my $widget_store = $user->widgets;
+    if (my $current_widgets = $widget_store->{$scope}) {
+        foreach my $widget_id (keys %$new_widgets) {
+            if (
+                $new_widgets->{$widget_id}{order} !~ /^\d+(?:\.\d+)?$/
+                || $new_widgets->{$widget_id}{size} !~ /^(?:half|full)$/
+            ) {
+                return $app->json_error($app->translate('Invalid request.'), 400);
+            }
+            if ($current_widgets->{$widget_id}) {
+                $current_widgets->{$widget_id}{order} = $new_widgets->{$widget_id}{order};
+                $current_widgets->{$widget_id}{size} = $new_widgets->{$widget_id}{size};
+            }
+        }
+    }
+
+    $user->widgets($widget_store);
+    $user->save or return $app->json_error($user->errstr, 500);
+
+    return $app->json_result({})
 }
 
 sub load_widget_list {
@@ -3953,6 +3864,9 @@ sub load_widget_list {
     # in the user's widget bag
     foreach my $id ( keys %$all_widgets ) {
         my $w = $all_widgets->{$id};
+
+        next if ( ref($w->{pinned}) && $w->{pinned}{$scope} ) || $w->{pinned};
+
         if ( $w->{singular} ) {
 
             # don't allow multiple widgets
@@ -4068,13 +3982,7 @@ sub delete_param {
     my ($key) = @_;
     my $q     = $app->{query};
     return unless $q;
-    if ( MT::Util::is_mod_perl1() ) {
-        my $tab = $q->parms;
-        $tab->unset($key);
-    }
-    else {
-        $q->delete($key);
-    }
+    $q->delete($key);
 }
 
 sub param_hash {
@@ -4119,9 +4027,7 @@ sub validate_param {
 
 sub query_string {
     my $app = shift;
-    MT::Util::is_mod_perl1()
-        ? $app->{apache}->args
-        : $app->{query}->query_string;
+    $app->{query}->query_string;
 }
 
 sub return_uri {
@@ -4264,11 +4170,7 @@ sub app_path {
     return $app->{__path} if exists $app->{__path};
 
     my $path;
-    if ( MT::Util::is_mod_perl1() ) {
-        $path = $app->{apache}->uri;
-        $path =~ s!/[^/]*$!!;
-    }
-    elsif ( $app->{query} ) {
+    if ( $app->{query} ) {
         local $ENV{PATH_INFO} = q()
             if (
             ( exists( $ENV{PERLXS} ) && $ENV{PERLXS} eq "PerlIS" )
@@ -4298,15 +4200,14 @@ sub app_path {
 sub script {
     my $app = shift;
     return $app->{__script} if exists $app->{__script};
-    my $script
-        = MT::Util::is_mod_perl1() ? $app->{apache}->uri : $ENV{SCRIPT_NAME};
-    if ( !$script ) {
+    my $script = $ENV{SCRIPT_NAME};
+    if (!$script) {
         require File::Basename;
         import File::Basename qw(basename);
         $script = basename($0);
     }
     $script =~ s!/$!!;
-    $script = ( split /\//, $script )[-1];
+    $script = (split /\//, $script)[-1];
     $app->{__script} = $script;
 }
 
@@ -4351,37 +4252,21 @@ sub path_info {
     my $app = shift;
     return $app->{__path_info} if exists $app->{__path_info};
     my $path_info;
-    if ( MT::Util::is_mod_perl1() ) {
-        ## mod_perl often leaves part of the script name (Location)
-        ## in the path info, for some reason. This should remove it.
-        $path_info = $app->{apache}->path_info;
-        if ($path_info) {
-            my ($script_last) = $app->{apache}->location =~ m!/([^/]+)$!;
-            $path_info =~ s!^/$script_last!!;
-        }
-    }
-    else {
-        return undef unless $app->{query};
-        $path_info = $app->{query}->path_info;
+    return undef unless $app->{query};
+    $path_info = $app->{query}->path_info;
 
-        my $script_name = $ENV{SCRIPT_NAME};
-        $path_info =~ s!^$script_name!!
-            if $script_name;
-    }
+    my $script_name = $ENV{SCRIPT_NAME};
+    $path_info =~ s!^$script_name!!
+        if $script_name;
     $app->{__path_info} = $path_info;
 }
 
 sub is_secure {
     my $app = shift;
-    if ( MT::Util::is_mod_perl1() ) {
-        return $app->{apache}->subprocess_env('https');
-    }
-    else {
-        return
-              $app->{query}->protocol() eq 'https' ? 1
-            : ( $app->get_header('X-Forwarded-Proto') || '' ) eq 'https' ? 1
-            :                                                              0;
-    }
+    return
+          $app->{query}->protocol() eq 'https'                     ? 1
+        : ($app->get_header('X-Forwarded-Proto') || '') eq 'https' ? 1
+        :                                                            0;
 }
 
 sub redirect {
@@ -4398,9 +4283,7 @@ sub redirect {
 
 sub redirect_to_home {
     my $app = shift;
-    my $uri = MT::Util::is_mod_perl1()
-        ? $app->{apache}->uri
-        : $app->{query}->url( -pathinfo => 1, -query => 0, -full => 1 );
+    my $uri = $app->{query}->url(-pathinfo => 1, -query => 0, -full => 1);
     return $app->redirect($uri);
 }
 
@@ -4618,11 +4501,7 @@ sub remote_ip {
     my $app = shift;
 
     my $trusted = $app->config->TransparentProxyIPs || 0;
-    my $remote_ip = (
-        MT::Util::is_mod_perl1()
-        ? $app->{apache}->connection->remote_ip
-        : $ENV{REMOTE_ADDR}
-    );
+    my $remote_ip = $ENV{REMOTE_ADDR};
     $remote_ip ||= '127.0.0.1';
     my $ip
         = $trusted
@@ -4667,13 +4546,7 @@ sub remote_ip {
 sub document_root {
     my $app = shift;
     my $cwd = '';
-    if ( MT::Util::is_mod_perl1() ) {
-        ## If mod_perl, just use the document root.
-        $cwd = $app->{apache}->document_root;
-    }
-    else {
-        $cwd = $ENV{DOCUMENT_ROOT} || $app->mt_dir;
-    }
+    $cwd = $ENV{DOCUMENT_ROOT} || $app->mt_dir;
     $cwd = File::Spec->canonpath($cwd);
     $cwd =~ s!([\\/])cgi(?:-bin)?([\\/].*)?$!$1!;
     $cwd =~ s!([\\/])mt[\\/]?$!$1!i;
@@ -4711,12 +4584,7 @@ sub set_no_cache {
     }
 
     ## Add the Pragma: no-cache header.
-    if ( MT::Util::is_mod_perl1() ) {
-        $app->{apache}->no_cache(1);
-    }
-    else {
-        $app->param->cache('no');
-    }
+    $app->param->cache('no');
 }
 
 sub verify_password_strength {
@@ -4776,8 +4644,8 @@ MT::App - Movable Type base web application class
 =head1 DESCRIPTION
 
 L<MT::App> is the base class for Movable Type web applications. It provides
-support for an application running using standard CGI, or under
-L<Apache::Registry>, or as a L<mod_perl> handler. L<MT::App> is not meant to
+support for an application running using standard CGI,
+or as a L<PSGI> handler. L<MT::App> is not meant to
 be used directly, but rather as a base class for other web applications using
 the Movable Type framework (for example, L<MT::App::CMS>).
 
@@ -4902,37 +4770,33 @@ Sends the HTTP header to the client; if C<$content_type> is specified, the
 I<Content-Type> header is set to C<$content_type>. Otherwise, C<text/html> is
 used as the default.
 
-In a L<mod_perl> context, this calls the L<Apache::send_http_header> method;
-in a CGI context, the L<CGI::header> method is called.
+In a CGI context, the L<CGI::header> method is called.
 
 =head2 $app->print(@data)
 
 Sends data C<@data> to the client.
 
-In a L<mod_perl> context, this calls the L<Apache::print> method; in a CGI
-context, data is printed directly to STDOUT.
+In a CGI context, data is printed directly to STDOUT.
 
 =head2 $app->bake_cookie(%arg)
 
 Bakes a cookie to be sent to the client.
 
 C<%arg> can contain any valid parameters to the C<new> methods of
-L<CGI::Cookie> (or L<Apache::Cookie>--both take the same parameters). These
+L<CGI::Cookie>. These
 include C<-name>, C<-value>, C<-path>, C<-secure>, and C<-expires>.
 
 If you do not include the C<-path> parameter in C<%arg>, it will be set
 automatically to C<$app-E<gt>path> (below).
 
-In a L<mod_perl> context, this method uses L<Apache::Cookie>; in a CGI context,
-it uses L<CGI::Cookie>.
+In a CGI context, it uses L<CGI::Cookie>.
 
 This method will automatically assign a "secure" flag for the cookie if it the current HTTP request is using the https protocol. To forcibly disable the secure flag, provide a C<-secure> argument with a value of 0.
 
 =head2 $app->cookies
 
 Returns a reference to a hash containing cookie objects, where the objects are
-either of class L<Apache::Cookie> (in a L<mod_perl> context) or L<CGI::Cookie>
-(in a CGI context).
+either of class L<CGI::Cookie>.
 
 =head2 $app->user_cookie
 
@@ -5266,11 +5130,6 @@ assinging the translated text as the error message.
 
 Returns the value of the specified HTTP header.
 
-=head2 MT::App->handler
-
-The mod_perl handler used when the application is run as a native
-mod_perl handler.
-
 =head2 $app->init(@param)
 
 Initializes the application object, setting default values and establishing
@@ -5449,8 +5308,6 @@ In CGI mode, the filename of the active CGI script. For example, with
 the full URL F<http://www.foo.com/mt/mt.cgi>, this method will return
 F<mt.cgi>.
 
-In mod_perl mode, the Request-URI without any query string.
-
 =head2 $app->uri([%params])
 
 The concatenation of C<$app-E<gt>path> and C<$app-E<gt>script>. For example,
@@ -5485,8 +5342,7 @@ enabled. This is useful for debugging.
 
 The IP address of the client.
 
-In a L<mod_perl> context, this calls L<Apache::Connection::remote_ip>; in a
-CGI context, this uses C<$ENV{REMOTE_ADDR}>.
+In a CGI context, this uses C<$ENV{REMOTE_ADDR}>.
 
 =head1 STANDARD APPLICATION TEMPLATE PARAMETERS
 

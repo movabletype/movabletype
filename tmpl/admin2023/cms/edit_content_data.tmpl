@@ -65,6 +65,14 @@
   </mtapp:statusmsg>
 </mt:if>
 
+<mt:if name="loaded_revision">
+  <mtapp:statusmsg
+     id="loaded_revision"
+     class="info">
+    <__trans phrase="Restored revision (Date:[_1])." params="<$mt:var name="rev_date" escape="html"$>">
+  </mtapp:statusmsg>
+</mt:if>
+
 <mt:if name="err_msg">
   <mtapp:statusmsg
      id="err_msg"
@@ -548,12 +556,12 @@ div.mce-notification-error {
 
 <mt:setvarblock name="js_include" append="1">
   <!--// this MUST loaded after mt.js // -->
-  <mtapp:script type="text/javascript" path="js/edit.js">
+  <mtapp:script path="js/edit.js">
 
 <mt:unless name="optimize_ui">
-  <mtapp:script type="text/javascript" path="jqueryui/jquery.ui.touch-punch.js">
+  <mtapp:script path="jqueryui/jquery.ui.touch-punch.js">
 <mt:else>
-  <mtapp:script type="text/javascript" path="jqueryui/jquery.ui.touch-punch.min.js">
+  <mtapp:script path="jqueryui/jquery.ui.touch-punch.min.js">
 </mt:unless>
 
   <script>
@@ -577,7 +585,7 @@ div.mce-notification-error {
 
 <mt:if name="has_multi_line_text_field">
   <mt:unless name="editors">
-    <mt:if name="rich_editor"><mt:var name="rich_editor_tmpl"><mt:else><mt:include name="include/archetype_editor_multi.tmpl"></mt:if>
+    <mt:include name="include/archetype_editor_multi.tmpl">
   <mt:else>
     <mt:include name="include/editor_script.tmpl" id="editor_script_include">
   </mt:unless>
@@ -587,9 +595,9 @@ div.mce-notification-error {
 <mtapp:stylesheet path="css/editor/common.css">
 <mtapp:stylesheet path="css/content-type.css">
 
-<mtapp:script type="text/javascript" path="js/tc/client.js">
+<mtapp:script path="js/tc/client.js">
 
-<script type="text/javascript">
+<script>
 function highlightSwitch(selection) {
     var descriptionObject = getByID('created_on-label');
     var highlightObject = getByID('created_on-date');
@@ -616,7 +624,7 @@ Template.templates.autoSave = '<mt:section encode_js="1">
 </mt:setvarblock>
 
 <mt:setvarblock name="js_include" append="1">
-<mtapp:script type="text/javascript" path="js/cms.js">
+<mtapp:script path="js/cms.js">
 </mt:setvarblock>
 
 <mt:setvarblock name="page_content">
@@ -650,7 +658,7 @@ Template.templates.autoSave = '<mt:section encode_js="1">
       label_class="no-header"
       required="1">
         <input type="text" class="form-control required" id="data_label" name="data_label" value="<mt:var name="data_label" escape="html">" required>
-        <small id="data_label-help" class="form-text text-muted"><__trans phrase="Enter a label to identify this data"></small>
+        <small id="data_label-help" class="form-text text-body-secondary"><__trans phrase="Enter a label to identify this data"></small>
     </mtapp:setting>
   <mt:else>
     <mtapp:setting
@@ -681,7 +689,7 @@ Template.templates.autoSave = '<mt:section encode_js="1">
   <input type="number" step="any" name="content-field-<mt:var name="content_field_id">" class="form-control text short html5-form content-field" value="<mt:var name="value">" mt:watch-change="1" mt:raw-name="1" <mt:if name="options{required}">required</mt:if> <mt:if name="options{max_value}" ne="">max="<mt:var name="options{max_value}" escape="html">"</mt:if> <mt:if name="options{min_value}" ne="">min="<mt:var name="options{min_value}" escape="html">"</mt:if>/>
       </mt:if>
 
-  <small class="form-text text-muted">
+  <small class="form-text text-body-secondary">
       <mt:var name="new_line" value="0">
       <mt:if name="options{min_length}">
         <mt:var name="new_line" value="1">

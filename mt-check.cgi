@@ -114,7 +114,7 @@ my $version = $cgi->param("version");
 my $sess_id = $cgi->param('session_id');
 $version ||= '__PRODUCT_VERSION_ID__';
 if ( $version eq '__PRODUCT_VERSION' . '_ID__' ) {
-    $version = '8.7.0';
+    $version = '9.0.4';
 }
 my ( $mt, $LH );
 my $lang = $cgi->param("language") || $cgi->param("__lang");
@@ -251,7 +251,7 @@ if ( !$view ) {
     <meta http-equiv="content-language" content="$lang" />
     <meta name='robots' content='noindex,nofollow' />
     <title><__trans phrase="Movable Type System Check"> [mt-check.cgi]</title>
-    <style type=\"text/css\">
+    <style>
         <!--
             body {
                 position: relative;
@@ -390,7 +390,7 @@ if ( !$view ) {
             }
         //-->
     </style>
-    <script type="text/javascript">
+    <script>
         function showException(i) {
             var exception = document.getElementById("exception-" + i);
             exception.setAttribute("style", "display: block;");

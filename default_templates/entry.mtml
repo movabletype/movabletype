@@ -7,7 +7,7 @@
     <mt:EntryNext><link rel="next bookmark" href="<$mt:EntryPermalink$>" title="<$mt:EntryTitle encode_html="1"$>" /></mt:EntryNext>
     <$mt:EntryTrackbackData$>
     <mt:If tag="EntryCommentCount" gt="$comments_per_page">
-	    <script type="text/javascript">
+	    <script>
          MT.entryID = <$mt:EntryID$>;
          MT.commentsPerPage = <$mt:Var name="comments_per_page"$>;
          MT.entryCommentCount = <$mt:EntryCommentCount$>;

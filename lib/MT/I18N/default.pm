@@ -38,7 +38,6 @@ sub NEWSBOX_URL() {
     'https://www.movabletype.org/news/newsbox.json';
 }
 sub LEARNINGNEWS_URL()     {''}
-sub CATEGORY_NAME_NODASH() {0}
 sub DEFAULT_TIMEZONE()     {0}
 sub LOG_EXPORT_ENCODING()  {''}
 sub EXPORT_ENCODING()      {''}

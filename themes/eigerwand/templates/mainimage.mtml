@@ -1,0 +1,19 @@
+<div id="mainimage">
+  <mt:Assets type="image" tag="@SITE_MAIN_IMAGE" limit="1">
+    <img
+      src="<$mt:AssetThumbnailURL encode_html="1">"
+      alt="<$mt:AssetProperty property="description"$>"
+      width="<$mt:AssetProperty property="image_width"$>"
+      height="<$mt:AssetProperty property="image_height"$>"
+      decoding="async"
+    >
+  <mt:Else>
+    <img
+      src="<$mt:SupportDirectoryURL encode_html="1"$>theme_static/eigerwand/images/mainimage-sample.png"
+      alt=""
+      width="960"
+      height="300"
+      decoding="async"
+    >
+  </mt:Assets>
+</div>

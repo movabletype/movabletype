@@ -686,7 +686,7 @@ January  1, 1970 12:34 PM
 <mt:ContentField content_field="date and time"><mt:ContentFieldValue relative="js"></mt:ContentField>
 </mt:Contents>
 --- expected
-<script type="text/javascript">
+<script>
 /* <![CDATA[ */
 document.write(mtRelativeDate(new Date(2017,5,03,18,05,00), 'June  3, 2017  6:05 PM'));
 /* ]]> */

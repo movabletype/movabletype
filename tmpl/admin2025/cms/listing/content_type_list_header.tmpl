@@ -1,0 +1,18 @@
+<mt:setvarblock name="system_msg" append="1">
+  <mt:if name="request.saved_deleted">
+    <mtapp:statusmsg
+      id="saved-deleted"
+      class="success"
+      can_close="0">
+      <__trans phrase="The content type has been deleted from the database.">
+    </mtapp:statusmsg>
+  </mt:if>
+  <mt:if name="request.not_deleted">
+    <mtapp:statusmsg
+      id="not-deleted"
+      class="error"
+      can_close="0">
+      <__trans phrase="Some content types were not deleted. You need to delete archive templates or content type fields from the content type first.">
+    </mtapp:statusmsg>
+  </mt:if>
+</mt:setvarblock>

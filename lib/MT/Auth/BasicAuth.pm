@@ -27,10 +27,6 @@ sub new_user {
 sub remote_user {
     my $auth = shift;
     my ($ctx) = @_;
-    if ( MT::Util::is_mod_perl1() ) {
-        my $app = $ctx->{app} or return;
-        return $app->{apache}->connection->user;
-    }
     return $ENV{REMOTE_USER};
 }
 

@@ -11,7 +11,7 @@ use warnings;
 
 use lib 'lib', 'extlib', '../lib', '../extlib';
 
-eval { use PHP::Var; 1 }
+eval { require PHP::Var; 1 }
     or die 'PHP::Var is required';
 
 use File::Spec;

@@ -17,6 +17,43 @@ $test_env->prepare_fixture('db');
 
 my $error_tmpl = 'Too long query. Please simplify your query to %d characters or less and try again.';
 
+subtest 'default value (SearchMaxCharCount = 1000)' => sub {
+    my $search_max_char_count = 1000;
+    my $error = sprintf $error_tmpl, $search_max_char_count;
+
+    {
+        my $app = MT::Test::App->new('MT::App::Search');
+
+        subtest 'new_search' => sub {
+            $app->get_ok({ search => '1' x $search_max_char_count });
+            $app->content_unlike($error, 'limit not exceeded');
+
+            $app->get_ok({ search => '1' x ($search_max_char_count + 1) });
+            $app->content_like($error, 'limit exceeded');
+
+            $app->get_ok;    # test when no search string is set
+        };
+
+        subtest 'new_search (tag)' => sub {
+            $app->get_ok({ tag => '1' x $search_max_char_count });
+            $app->content_unlike($error, 'limit not exceeded');
+
+            $app->get_ok({ tag => '1' x ($search_max_char_count + 1) });
+            $app->content_like($error, 'limit exceeded');
+        };
+    }
+
+    subtest 'cd_search' => sub {
+        my $app = MT::Test::App->new('MT::App::Search::ContentData');
+
+        $app->get_ok({ search => '1' x $search_max_char_count });
+        $app->content_unlike($error, 'limit not exceeded');
+
+        $app->get_ok({ search => '1' x ($search_max_char_count + 1) });
+        $app->content_like($error, 'limit exceeded');
+    };
+};
+
 subtest 'SearchMaxCharCount = 0' => sub {
     MT->config->SearchMaxCharCount(0, 1);
     MT->config->ContentDataSearchMaxCharCount(undef, 1);

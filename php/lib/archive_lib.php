@@ -21,53 +21,6 @@ function _hdlr_archive_prev_next($args, $content, &$ctx, &$repeat, $tag) {
     return $archiver->archive_prev_next($args, $content, $repeat, $tag, $at);
 }
 
-function _get_join_on($ctx, $at, $blog_id, $cat = NULL, $cat_field_id = NULL) {
-
-    trigger_error('function _get_join_on is deprecated', E_USER_DEPRECATED);
-
-    $maps = $ctx->mt->db()->fetch_templatemap(array(
-        'blog_id' => $blog_id,
-        'content_type_id' => $ctx->stash('content_type')->id,
-        'preferred' => 1,
-        'type' => $at
-    ));
-    if (!empty($maps) && is_array($maps)) {
-        $map = $maps[0];
-        $dt_field_id = $map->templatemap_dt_field_id;
-        if ($cat)
-            $cat_field_id = $map->templatemap_cat_field_id;
-    }
-
-    $join_on = '';
-    if (isset($dt_field_id) && $dt_field_id) {
-        $join_on .= "join mt_cf_idx dt_cf_idx";
-        $join_on .= " on cd_id = dt_cf_idx.cf_idx_content_data_id";
-        $join_on .= " and dt_cf_idx.cf_idx_content_field_id = $dt_field_id\n";
-
-        $dt_target_col = 'dt_cf_idx.cf_idx_value_datetime';
-    }
-    $cat_target_col = null;
-    if ($cat) {
-        $cat_id = $cat->category_id;
-
-        $join_on .= "join mt_cf_idx cat_cf_idx";
-        $join_on .= " on cd_id = cat_cf_idx.cf_idx_content_data_id";
-        $join_on .= " and cat_cf_idx.cf_idx_content_field_id = ". $cat_field_id;
-        $join_on .= " and cat_cf_idx.cf_idx_value_integer = $cat_id\n";
-
-        $join_on .= "join mt_category";
-        $join_on .= " on category_id = cat_cf_idx.cf_idx_value_integer";
-        $join_on .= " and category_id = $cat_id";
-
-        $cat_target_col = 'cat_cf_idx.cf_idx_value_integer';
-    }
-
-    if (!isset($dt_target_col))
-        $dt_target_col = 'cd_authored_on';
-
-    return array ($dt_target_col, $cat_target_col, $join_on, isset($dt_field_id) ? $dt_field_id : null);
-}
-
 function _get_content_type_filter($args, &$bind) {
     $mt = MT::get_instance();
     $ctx =& $mt->context();
@@ -194,7 +147,6 @@ class ArchiverFactory {
         'ContentType-Category-Monthly' => 'ContentTypeCategoryMonthlyArchiver',
         'ContentType-Category-Yearly' => 'ContentTypeCategoryYearlyArchiver',
     );
-    private static $_archivers = array();
 
     private function __construct() { }
 
@@ -211,13 +163,12 @@ class ArchiverFactory {
         $class = ArchiverFactory::$_archive_types[$at];
         if (!empty($class)) {
             $instance = new $class;
-            if (!empty($instance) and $instance instanceof ArchiveType)
-                ArchiverFactory::$_archivers[$at] = $instance;
-        } else {
-            ArchiverFactory::$_archivers[$at] = null;
+            if (!empty($instance) and $instance instanceof ArchiveType) {
+                return $instance;
+            }
         }
         
-        return ArchiverFactory::$_archivers[$at]; 
+        return null;
     }
 
     public static function add_archiver($at, $class) {

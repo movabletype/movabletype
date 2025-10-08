@@ -195,31 +195,20 @@ sub found_ids {
 }
 
 my $TitleContainerSelectors = {
-    admin2023 => {
-        content_data => 'td.id a.label',
-        template     => 'td:nth-of-type(2) a',
-        entry        => 'td.title > span.title',
-        asset        => 'td:nth-of-type(3) a',
-        blog         => 'td:nth-of-type(2) a',
-        website      => 'td:nth-of-type(2) a',
-        author       => 'td:nth-of-type(2) a',
-    },
-    mt7 => {
-        content_data => 'td.id strong',
-        template     => 'td:nth-of-type(2) a',
-        entry        => 'td.title strong',
-        asset        => 'td:nth-of-type(3) a',
-        blog         => 'td:nth-of-type(2) a',
-        website      => 'td:nth-of-type(2) a',
-        author       => 'td:nth-of-type(2) a',
-    },
+    content_data => 'td.id a.label',
+    template     => 'td:nth-of-type(2) a',
+    entry        => 'td.title > span.title',
+    asset        => 'td:nth-of-type(3) a',
+    blog         => 'td:nth-of-type(2) a',
+    website      => 'td:nth-of-type(2) a',
+    author       => 'td:nth-of-type(2) a',
 };
 
 sub found_titles {
     my $self = shift;
     my @titles;
     my $type     = $self->current_tab or return [];
-    my $selector = $TitleContainerSelectors->{MT->config('AdminThemeId') || 'mt7'}{$type};
+    my $selector = $TitleContainerSelectors->{$type};
     my $found    = $self->found or return [];
     $found->each(sub {
         my ($i, $row) = @_;

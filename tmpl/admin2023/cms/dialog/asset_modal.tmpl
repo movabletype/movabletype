@@ -18,13 +18,17 @@
 </mt:if>
 
 <mt:setvarblock name="js_include" append="1">
-  <mtapp:script type="text/javascript" path="js/assetdetail.js">
-  <mtapp:script type="text/javascript" path="js/upload_settings.js">
+  <mtapp:script path="js/assetdetail.js">
+  <mtapp:script path="js/upload_settings.js">
 <mt:unless name="optimize_ui">
-  <mtapp:script type="text/javascript" path="jqueryui/jquery.ui.touch-punch.js">
+  <mtapp:script path="jqueryui/jquery.ui.touch-punch.js">
 <mt:else>
-  <mtapp:script type="text/javascript" path="jqueryui/jquery.ui.touch-punch.min.js">
+  <mtapp:script path="jqueryui/jquery.ui.touch-punch.min.js">
 </mt:unless>
+</mt:setvarblock>
+
+<mt:setvarblock name="system_msg" append="1">
+  <mt:include name="include/alert_asset_upload.tmpl">
 </mt:setvarblock>
 
 <mt:setvarblock name="modal_body">
@@ -62,16 +66,12 @@
   </mt:if>
 
   <div id="content-body-right" class="col-12 col-md">
+    <mt:include name="include/system_msg.tmpl">
     <div id="content-body-right-body" class="tab-content">
 
   <mt:if name="can_upload">
       <div id="upload-asset-panel" class="tab-pane active">
-        <mt:setvar name="included_upload_asset" value="1">
-  <mt:if name="compat_upload_template">
-        <mt:include name="include/asset_upload.tmpl" dialog="1">
-  <mtelse>
         <mt:include name="include/async_asset_upload.tmpl" dialog="1">
-  </mt:if>
       </div>
   </mtif>
       <div id="list-asset-panel" class="tab-pane <mt:unless name="can_upload">active </mt:unless>">

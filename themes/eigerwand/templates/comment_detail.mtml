@@ -1,0 +1,10 @@
+<article id="comment-<$mt:CommentID$>" class="comment<mt:IfCommentParent> comment-reply</mt:IfCommentParent><mt:IfCommenterIsEntryAuthor> entry-author-comment</mt:IfCommenterIsEntryAuthor>">
+  <header>
+    <h3><mt:IfCommentParent><__trans phrase="[_1] replied to <a href="[_2]">comment from [_3]</a>" params="<span class="vcard author"><$mt:CommentAuthorLink$></span>%%<mt:CommentParent><$mt:CommentLink$></mt:CommentParent>%%<mt:CommentParent><$mt:CommentAuthor$></mt:CommentParent>"><mt:Else><$mt:CommentAuthorLink$></mt:IfCommentParent></h3>
+    <a href="<$mt:CommentLink$>"><time datetime="<$mt:CommentDate format_name="iso8601"$>"><$mt:CommentDate$></time></a>
+  </header>
+  <$mt:CommentBody$>
+<mt:IfCommentsAccepted>
+  <div class="reply"><$mt:CommentReplyToLink$></div>
+</mt:IfCommentsAccepted>
+</article>
