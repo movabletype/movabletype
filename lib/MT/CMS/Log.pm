@@ -494,7 +494,14 @@ PERMCHECK: {
         return \@col;
     };
 
-    $app->csv_result( $file, [qw/timestamp ip weblog by message/], $log_iter, $enc );
+    $app->csv_result(
+        $log_iter,
+        {
+            filename => $file,
+            headers  => [qw/timestamp ip weblog by message/],
+            encoding => $enc
+        }
+    );
 
 }
 

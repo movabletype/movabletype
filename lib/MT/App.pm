@@ -849,23 +849,28 @@ sub json_error {
 }
 
 sub csv_result {
-    my $app = shift;
-    my ( $filename, $headers, $row_iterator, $encoding ) = @_;
+    my $app          = shift;
+    my $row_iterator = shift;
+    my ($opt)        = @_;
 
-    if ( !$filename ) {
+    if ( !$opt->{filename} ) {
         return $app->error( $app->translate("No filename") );
     }
-    if ( !$headers || ref($headers) ne 'ARRAY' || !@$headers ) {
+    if (   !$opt->{headers}
+        || ref( $opt->{headers} ) ne 'ARRAY'
+        || !@{ $opt->{headers} } )
+    {
         return $app->error( $app->translate("No headers") );
     }
 
     if ( !$row_iterator || ref($row_iterator) ne 'CODE' ) {
         return $app->error( $app->translate("Invalid row iterator") );
     }
+    my $encoding = $opt->{encoding} || 'utf-8';
 
     $app->{no_print_body} = 1;
     $app->set_header(
-        "Content-Disposition" => "attachment; filename=$filename" );
+        "Content-Disposition" => "attachment; filename=$opt->{filename}" );
     $app->send_http_header(
         $encoding
         ? "text/csv; charset=${encoding}"
@@ -895,7 +900,7 @@ sub csv_result {
     }
 
     my $csv = Text::CSV->new($csv_options);
-    $csv->say( $fh, $headers );
+    $csv->say( $fh, $opt->{headers} );
 
     while ( my $row = $row_iterator->() ) {
         $csv->say( $fh, $row );
