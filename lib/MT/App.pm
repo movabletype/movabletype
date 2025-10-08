@@ -879,6 +879,7 @@ sub csv_result {
     );
     require File::Temp;
     my ($fh) = File::Temp->new();
+    binmode $fh, ":encoding($encoding)";
     print {$fh} "\x{FEFF}"
       if MT->config->CSVExportWithBOM && ( $encoding || '' ) =~ /utf-?8/i;
 
@@ -907,6 +908,7 @@ sub csv_result {
         $csv->say( $fh, $row );
     }
 
+    binmode $fh, ":raw";
     seek $fh, 0, 0;
     while ( read $fh, my $chunk, 8192 ) {
         $app->print($chunk);
@@ -914,6 +916,7 @@ sub csv_result {
 
     close $fh;
 }
+
 
 
 sub response_code {

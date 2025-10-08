@@ -10,7 +10,6 @@ use warnings;
 
 use MT::Util
     qw( format_ts epoch2ts ts2epoch relative_date offset_time encode_url dirify encode_url );
-use MT::Util::Encode;
 use MT::I18N qw( const );
 
 sub view {
@@ -464,7 +463,7 @@ PERMCHECK: {
         if ($blog) {
             my $name = $blog->name;
             $name =~ s/[\r\n]+/ /gs;
-            push @col,  MT::Util::Encode::encode( $enc, $name );
+            push @col, $name;
         }
         else {
             push @col, '';
@@ -482,14 +481,14 @@ PERMCHECK: {
         }
         if (defined $author_name && $author_name ne '') {
             $author_name =~ s/[\r\n]+/ /gs;
-            push @col, MT::Util::Encode::encode( $enc, $author_name );
+            push @col, $author_name;
         } else {
             push @col, '';
         }
         my $msg = $log->message;
         $msg = '' unless defined $msg;
         $msg =~ s/[\r\n]+/ /gs;
-        push @col, MT::Util::Encode::encode( $enc, $msg );
+        push @col, $msg;
 
         return \@col;
     };
