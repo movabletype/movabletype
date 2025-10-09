@@ -23,13 +23,12 @@ name: TmplLoadFilePluginYaml
 version: 0.1.0
 author: test
 YAML
-}
 
-$test_env->save_file('plugins/TmplLoadFilePluginYaml/tmpl/test_yaml.tmpl', <<'TMPL');
+    $test_env->save_file('plugins/TmplLoadFilePluginYaml/tmpl/test_yaml.tmpl', <<'TMPL');
 test_yaml.tmpl
 TMPL
 
-$test_env->save_file('plugins/TmplLoadFilePluginPl/plugin.pl', <<'PL');
+    $test_env->save_file('plugins/TmplLoadFilePluginPl/plugin.pl', <<'PL');
 package MT::PluginTmplLoadFilePluginPl;
 use strict;
 use warnings;
@@ -45,9 +44,10 @@ my $plugin = __PACKAGE__->new({
 1;
 PL
 
-$test_env->save_file('plugins/TmplLoadFilePluginPl/tmpl/test_pl.tmpl', <<'TMPL');
+    $test_env->save_file('plugins/TmplLoadFilePluginPl/tmpl/test_pl.tmpl', <<'TMPL');
 test_pl.tmpl
 TMPL
+}
 
 use MT;
 
