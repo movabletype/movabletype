@@ -57,14 +57,14 @@ my $mt = MT->new or die MT->errstr;
 
 subtest 'relative path' => sub {
     subtest 'found in the include_path' => sub {
-        my $file = 'error.tmpl';    # tmpl/error.tmpl
+        my $file = File::Spec->canonpath('error.tmpl');    # tmpl/error.tmpl
         my $tmpl = _get_tmpl();
         ok $tmpl->load_file($file);
         ok !$tmpl->errstr;
     };
 
     subtest 'found in the outside of include_path' => sub {
-        my $file = 'plugins/FormattedText/tmpl/cms/edit_formatted_text.tmpl';
+        my $file = File::Spec->canonpath('plugins/FormattedText/tmpl/cms/edit_formatted_text.tmpl');
         my $tmpl = _get_tmpl();
         throws_ok {
             $tmpl->load_file($file);
@@ -73,7 +73,7 @@ subtest 'relative path' => sub {
     };
 
     subtest 'not found' => sub {
-        my $file = 'not_found.tmpl';
+        my $file = File::Spec->canonpath('not_found.tmpl');
         my $tmpl = _get_tmpl();
         ok !$tmpl->load_file($file);
         is $tmpl->errstr, "File not found: ${file}\n";
@@ -82,35 +82,35 @@ subtest 'relative path' => sub {
 
 subtest 'absolute path' => sub {
     subtest 'found in the include_path (core)' => sub {
-        my $file = $mt->mt_dir . '/tmpl/error.tmpl';
+        my $file = File::Spec->canonpath($mt->mt_dir . '/tmpl/error.tmpl');
         my $tmpl = _get_tmpl();
         ok $tmpl->load_file($file);
         ok !$tmpl->errstr;
     };
 
     subtest 'found in the include_path (core yaml plugin)' => sub {
-        my $file = $mt->mt_dir . '/plugins/FormattedText/tmpl/cms/edit_formatted_text.tmpl';
+        my $file = File::Spec->canonpath($mt->mt_dir . '/plugins/FormattedText/tmpl/cms/edit_formatted_text.tmpl');
         my $tmpl = _get_tmpl();
         ok $tmpl->load_file($file);
         ok !$tmpl->errstr;
     };
 
     subtest 'found in the include_path (not core yaml plugin)' => sub {
-        my $file = $ENV{MT_TEST_ROOT} . '/plugins/TmplLoadFilePluginYaml/tmpl/test_yaml.tmpl';
+        my $file = File::Spec->canonpath($ENV{MT_TEST_ROOT} . '/plugins/TmplLoadFilePluginYaml/tmpl/test_yaml.tmpl');
         my $tmpl = _get_tmpl();
         ok $tmpl->load_file($file);
         ok !$tmpl->errstr;
     };
 
     subtest 'found in the include_path (not core pl plugin)' => sub {
-        my $file = $ENV{MT_TEST_ROOT} . '/plugins/TmplLoadFilePluginPl/tmpl/test_pl.tmpl';
+        my $file = File::Spec->canonpath($ENV{MT_TEST_ROOT} . '/plugins/TmplLoadFilePluginPl/tmpl/test_pl.tmpl');
         my $tmpl = _get_tmpl();
         ok $tmpl->load_file($file);
         ok !$tmpl->errstr;
     };
 
     subtest 'not found in outside of the include_path' => sub {
-        my $file = '/not_found.tmpl';
+        my $file = File::Spec->canonpath('/not_found.tmpl');
         my $tmpl = _get_tmpl();
         throws_ok {
             $tmpl->load_file($file);
@@ -119,14 +119,14 @@ subtest 'absolute path' => sub {
     };
 
     subtest 'not found in the include_path' => sub {
-        my $file = $mt->mt_dir . '/tmpl/not_found.tmpl';
+        my $file = File::Spec->canonpath($mt->mt_dir . '/tmpl/not_found.tmpl');
         my $tmpl = _get_tmpl();
         ok !$tmpl->load_file($file);
         is $tmpl->errstr, "File not found: ${file}\n";
     };
 
     subtest 'found in the outside of include_path' => sub {
-        my $file = $mt->mt_dir . '/search_templates/default.tmpl';
+        my $file = File::Spec->canonpath($mt->mt_dir . '/search_templates/default.tmpl');
         my $tmpl = _get_tmpl();
         throws_ok {
             $tmpl->load_file($file);
