@@ -462,7 +462,6 @@ PERMCHECK: {
         }
         if ($blog) {
             my $name = $blog->name;
-            $name =~ s/[\r\n]+/ /gs;
             push @col, $name;
         }
         else {
@@ -480,14 +479,12 @@ PERMCHECK: {
             }
         }
         if (defined $author_name && $author_name ne '') {
-            $author_name =~ s/[\r\n]+/ /gs;
             push @col, $author_name;
         } else {
             push @col, '';
         }
         my $msg = $log->message;
         $msg = '' unless defined $msg;
-        $msg =~ s/[\r\n]+/ /gs;
         push @col, $msg;
 
         return \@col;
