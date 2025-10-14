@@ -1643,7 +1643,7 @@ MT.App = new Class( App, {
         switch( command ) {
 
             case "openSelectBlog":
-                app.openDialog( '__mode=dialog_select_weblog&amp;select_favorites=1&return_args='
+                app.openDialog( '__mode=dialog_select_weblog&select_favorites=1&return_args='
                     + escape( event.commandElement.getAttribute( "mt:href" ) ) );
                 break;
 
