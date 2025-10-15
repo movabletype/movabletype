@@ -487,7 +487,7 @@ sub edit {
             || ( $content_data_id ? $content_data->label : '' );
     }
 
-    $param->{can_publish_post} = 1
+    $param->{can_publish_content_data} = 1
         if $perm->can_republish_content_data( $content_data, $user, $ct_unique_id );
 
     ## Load text filters if user displays them
