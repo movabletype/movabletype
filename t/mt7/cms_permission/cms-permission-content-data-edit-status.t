@@ -325,23 +325,8 @@ subtest 'mode = view (edit)' => sub {
         },
     );
 
-    note $app->wq_find("select[name='status']")->as_html;
-    @selected = ();
-    $app->wq_find("select[name='status'] option")->each(
-        sub {
-            my ( $i, $elem ) = @_;
-            my $value = $elem->attr('value');
-            $options{$value} = 1;
-            push @selected, $value if $elem->attr('selected');
-        }
-    );
-    is @selected => 1, "selected one option";
-    is $selected[0] => MT::ContentStatus::HOLD(),
-        "and the option has HOLD";
-    is keys %options => 3, "The number of options is 3";
-    ok $options{ MT::ContentStatus::HOLD() },    "existed option HOLD";
-    ok $options{ MT::ContentStatus::RELEASE() }, "existed option RELEASE";
-    ok $options{ MT::ContentStatus::FUTURE() },  "existed option FUTURE";
+    note $app->wq_find("input[name='status']")->as_html;
+    is $app->wq_find("input[name='status']")->attr('value') => 1, "existed hidden input value 1";
 
     note "=== Edit user - Other's published data ===";
     $app->get_ok(
@@ -354,23 +339,8 @@ subtest 'mode = view (edit)' => sub {
         },
     );
 
-    note $app->wq_find("select[name='status']")->as_html;
-    @selected = ();
-    $app->wq_find("select[name='status'] option")->each(
-        sub {
-            my ( $i, $elem ) = @_;
-            my $value = $elem->attr('value');
-            $options{$value} = 1;
-            push @selected, $value if $elem->attr('selected');
-        }
-    );
-    is @selected => 1, "selected one option";
-    is $selected[0] => MT::ContentStatus::RELEASE(),
-        "and the option has RELEASE";
-    is keys %options => 3, "The number of options is 3";
-    ok $options{ MT::ContentStatus::HOLD() },    "existed option HOLD";
-    ok $options{ MT::ContentStatus::RELEASE() }, "existed option RELEASE";
-    ok $options{ MT::ContentStatus::FUTURE() },  "existed option FUTURE";
+    note $app->wq_find("input[name='status']")->as_html;
+    is $app->wq_find("input[name='status']")->attr('value') => 2, "existed hidden input value 2";
 
     note "=== Manage user - Other's draft data ===";
     $app->login($manage_user);
