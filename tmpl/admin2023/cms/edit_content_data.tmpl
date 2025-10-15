@@ -126,7 +126,7 @@
    id="entry-publishing-widget"
    label="<__trans phrase="Publishing">">
 <mt:if name="new_object">
-  <mt:if name="can_publish_post">
+  <mt:if name="can_publish_content_data">
     <mt:if name="status_publish">
       <mt:setvar name="button_text" value="<__trans phrase="Publish">">
       <mt:setvarblock name="button_title"><__trans phrase="Publish this [_1]" params="<mt:var name="object_label">" escape="html"></mt:setvarblock>
@@ -181,7 +181,7 @@
         </a>
     </span>
   <mt:else>
-    <mt:if name="can_publish_post">
+    <mt:if name="can_publish_content_data">
     <select name="status" id="status" class="custom-select form-control full form-select" onchange="highlightSwitch(this)">
       <option value="1"<mt:if name="status_draft"> selected="selected"</mt:if>><__trans phrase="Unpublished (Draft)"></option>
       <option value="2"<mt:if name="status_publish"> selected="selected"</mt:if>><__trans phrase="Published"></option>
@@ -244,7 +244,7 @@
           </span>
         </div>
         <div class="col d-none d-md-block mb-0">
-          <input type="text" id="created-on" class="form-control text date text-date<mt:if name="status_future"><mt:if name="can_publish_post"> highlight</mt:if></mt:if>" name="authored_on_date" value="<$mt:var name="authored_on_date" escape="html"$>" placeholder="YYYY-MM-DD"/>
+          <input type="text" id="created-on" class="form-control text date text-date<mt:if name="status_future"><mt:if name="can_publish_content_data"> highlight</mt:if></mt:if>" name="authored_on_date" value="<$mt:var name="authored_on_date" escape="html"$>" placeholder="YYYY-MM-DD"/>
         </div>
         <div class="form-inline col d-md-none">
           <input type="number" class="form-control html5-form w-25" name="authored_on_year" value="<mt:var name="authored_on_year" escape="html">" maxlength="4">
@@ -284,7 +284,7 @@
           </span>
         </div>
         <div class="col d-none d-md-block mb-0">
-          <input id="created-on-time" type="text" class="form-control text time <mt:if name="status_future"><mt:if name="can_publish_post"> highlight</mt:if></mt:if>" name="authored_on_time" value="<$mt:var name="authored_on_time" escape="html"$>"  placeholder="HH:mm:ss"/>
+          <input id="created-on-time" type="text" class="form-control text time <mt:if name="status_future"><mt:if name="can_publish_content_data"> highlight</mt:if></mt:if>" name="authored_on_time" value="<$mt:var name="authored_on_time" escape="html"$>"  placeholder="HH:mm:ss"/>
         </div>
         <div class="form-inline col d-md-none">
           <select class="custom-control custom-select w-25 form-select" name="authored_on_hour">
