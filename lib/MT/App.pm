@@ -866,13 +866,13 @@ sub csv_result {
     if ( !$row_iterator || ref($row_iterator) ne 'CODE' ) {
         return $app->error( $app->translate("Invalid row iterator") );
     }
-    my $encoding = $opt->{encoding} || 'utf-8';
-    my $filename = MT::Util::Encode::encode( $encoding, $opt->{filename} );
-    $filename .= '.csv' unless $filename =~ /\.csv$/i;
+    my $encoding = $opt->{encoding} || 'UTF-8';
+    my $encoded_filename = MT::Util::Encode::encode('UTF-8', $opt->{filename});
+    $encoded_filename .= '.csv' unless $encoded_filename =~ /\.csv$/i;
 
     $app->{no_print_body} = 1;
     $app->set_header(
-        "Content-Disposition" => "attachment; filename=$filename" );
+        'Content-Disposition' => "attachment; filename*=UTF-8''$encoded_filename" );
     $app->send_http_header(
         $encoding
         ? "text/csv; charset=${encoding}"

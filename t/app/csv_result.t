@@ -53,7 +53,8 @@ subtest 'filename validation' => sub {
             headers  => ['Header1', 'Header2'],
         }
     );
-    like $content_disposition, qr/filename=0\.csv/, 'filename "0" becomes "0.csv"';
+    like $content_disposition, qr/\Aattachment;\s*filename\*=UTF-8''0\.csv\z/,
+      'filename "0" becomes "0.csv" with filename* (UTF-8)';
 
     $app->csv_result(
         sub { return; },
@@ -62,7 +63,9 @@ subtest 'filename validation' => sub {
             headers  => ['Header1', 'Header2'],
         }
     );
-    like $content_disposition, qr/filename=report\.csv/, 'filename "report" becomes "report.csv"';
+    like $content_disposition,
+      qr/\Aattachment;\s*filename\*=UTF-8''report\.csv\z/,
+      'filename "report" becomes "report.csv" with filename* (UTF-8)';
 
     $app->csv_result(
         sub { return; },
@@ -71,7 +74,9 @@ subtest 'filename validation' => sub {
             headers  => ['Header1', 'Header2'],
         }
     );
-    like $content_disposition, qr/filename=data\.csv$/, 'filename "data.csv" stays "data.csv"';
+    like $content_disposition,
+      qr/\Aattachment;\s*filename\*=UTF-8''data\.csv\z/,
+      'filename "data.csv" becomes "data.csv" with filename* (UTF-8)';
 };
 
 subtest 'CSVExportWithBOM' => sub {
