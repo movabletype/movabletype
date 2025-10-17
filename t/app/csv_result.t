@@ -81,6 +81,18 @@ subtest 'filename validation' => sub {
     like $content_disposition,
       qr/\Aattachment;\s*filename\*=UTF-8''data\.csv\z/,
       'filename "data.csv" becomes "data.csv" with filename* (UTF-8)';
+
+    $app->csv_result(
+        sub { return; },
+        {
+            filename => 'my report',
+            headers  => [ 'Header1', 'Header2' ],
+        }
+    );
+    like $content_disposition,
+      qr{\Aattachment;\s*filename\*=UTF-8''my%20report\.csv\z}i,
+      'filename "my report" becomes "my%20report.csv" with filename* (UTF-8)';
+
 };
 
 subtest 'CSVExportWithBOM' => sub {
