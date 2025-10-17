@@ -454,19 +454,15 @@ PERMCHECK: {
                 $app->user ? $app->user->preferred_language : undef
                 );
         }
-        push @col, $log->ip || '';
+        push @col, $log->ip;
+
         my $blog;
         if ( $log->blog_id ) {
             $blog = $seen{blogs}{ $log->blog_id }
                 ||= $blog_class->load( $log->blog_id );
         }
-        if ($blog) {
-            my $name = $blog->name;
-            push @col, $name;
-        }
-        else {
-            push @col, '';
-        }
+        push @col, $blog ? $blog->name : undef;
+
         my $author_name;
         if (my $author_id = $log->author_id) {
             if (defined $seen{authors}{$author_id}) {
@@ -478,14 +474,9 @@ PERMCHECK: {
                 $author_name = MT->translate('*User deleted*');
             }
         }
-        if (defined $author_name && $author_name ne '') {
-            push @col, $author_name;
-        } else {
-            push @col, '';
-        }
-        my $msg = $log->message;
-        $msg = '' unless defined $msg;
-        push @col, $msg;
+        push @col, $author_name;
+
+        push @col, $log->message;
 
         return \@col;
     };
