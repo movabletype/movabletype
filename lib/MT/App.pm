@@ -867,8 +867,9 @@ sub csv_result {
         return $app->error( $app->translate("Invalid row iterator") );
     }
     my $encoding = $opt->{encoding} || 'UTF-8';
-    my $encoded_filename = MT::Util::Encode::encode('UTF-8', $opt->{filename});
-    $encoded_filename .= '.csv' unless $encoded_filename =~ /\.csv$/i;
+    my $filename = $opt->{filename};
+    $filename .= '.csv' unless $filename =~ /\.csv$/i;
+    my $encoded_filename = MT::Util::encode_url($filename, 'UTF-8');
 
     $app->{no_print_body} = 1;
     $app->set_header(
