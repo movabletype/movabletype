@@ -114,7 +114,7 @@ MT.App = new Class( MT.App, {
                 this.editor.setMode( "iframe" );
                 break;
 
-            case "doRemoveItems":
+            case "doRemoveItems": // XXX: Seems no longer in use
                 /* only used for entry edit */
                 var form = DOM.getFirstAncestorByTagName( event.target, "form", true );
                 if ( !form )
