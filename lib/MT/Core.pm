@@ -2269,6 +2269,8 @@ BEGIN {
             },
             'GrantRoleSitesView' => { default => 'tree' }, # DEPRECATED
             'DisableContentFieldPermission' => { default => undef },
+            'CSVExportWithBOM' => { default => 1 },
+            'CSVExportEscapeFormula' => { default => 1 },
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {
