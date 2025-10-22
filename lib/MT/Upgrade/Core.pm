@@ -314,6 +314,7 @@ sub seed_database {
     $cfg->set(DefaultSupportedLanguages => 'en_us,ja', 1);
     $cfg->set(TrimFilePath => 1, 1);
     $cfg->set(HidePrivateRelatedContentData => 1, 1);
+    $cfg->set(DisableContentFieldPermission => 1, 1);
 
     $cfg->save_config;
 
@@ -497,8 +498,8 @@ sub _remove_news_widget_cache {
 sub _uri_unescape_utf8 {
     my ($text) = @_;
     unless ($MT::Upgrade::CLI) {
-        use URI::Escape;
-        $text = uri_unescape($text);
+        require URI::Escape;
+        $text = URI::Escape::uri_unescape($text);
     }
     return MT::Util::Encode::decode_utf8_unless_flagged($text);
 }

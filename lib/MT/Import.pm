@@ -106,7 +106,7 @@ sub _get_stream_iterator {
             my @files_to_import;
             my $dir = $stream;
             $stream = undef;
-            opendir DH,
+            opendir my $dh,
                 $dir
                 or return $class->error(
                 MT->translate(
@@ -114,12 +114,12 @@ sub _get_stream_iterator {
                     $dir, "$!"
                 )
                 );
-            for my $f ( readdir DH ) {
+            for my $f ( readdir $dh ) {
                 next if $f =~ /^\./;
                 my $file = File::Spec->catfile( $dir, $f );
                 push @files_to_import, $file if -r $file;
             }
-            closedir DH;
+            closedir $dh;
             unless (@files_to_import) {
                 return $class->error(
                     MT->translate(
@@ -242,11 +242,6 @@ sub get_options_html {
             if ref $options_param eq 'CODE';
 
         $param->{blog_id} = $blog_id;
-        $param->{missing_paths}
-            = (    ( defined $blog->site_path || defined $blog->archive_path )
-                && ( -d $blog->site_path || -d $blog->archive_path ) )
-            ? 0
-            : 1;
 
         # XXX always true because of autovivification
         $tmpl->param($param) if $param;

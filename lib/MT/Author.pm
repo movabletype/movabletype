@@ -13,6 +13,8 @@ use MT::Util::Encode;
 use MT::Summary;    # Holds MT::Summarizable
 use base qw( MT::Object MT::Scorable MT::Summarizable );
 
+our $MAX_STARRED_SITES = 50;
+
 __PACKAGE__->install_properties(
     {   column_defs => {
             'id'                   => 'integer not null auto_increment',
@@ -24,7 +26,7 @@ __PACKAGE__->install_properties(
             'url'                  => 'string(255)',
             'public_key'           => 'text',
             'preferred_language'   => 'string(50)',
-            'api_password'         => 'string(60)',
+            'api_password'         => 'string(106)',
             'remote_auth_username' => 'string(50)',
             'remote_auth_token'    => 'string(50)',
             'entry_prefs'          => 'string(255)',
@@ -52,6 +54,7 @@ __PACKAGE__->install_properties(
             'favorite_blogs'           => 'array meta',
             'favorite_websites'        => 'array meta',
             'favorite_sites'           => 'array meta',
+            'starred_sites'            => 'array meta',
             'password_reset'           => 'string meta',
             'password_reset_expires'   => 'string meta',
             'password_reset_return_to' => 'string meta',
@@ -703,30 +706,33 @@ sub remove_failedlogin {
 }
 
 sub set_password {
-    my $auth   = shift;
+    my $auth = shift;
     my ($pass) = @_;
-    my @alpha  = ( 'a' .. 'z', 'A' .. 'Z', 0 .. 9 );
-    my $salt   = join '', map $alpha[ rand @alpha ], 1 .. 16;
-    my $crypt_sha;
+    $auth->column('password', crypt_password($pass));
+}
 
-    if ( eval { require MT::Util::Digest::SHA } ) {
-
-        # Can use SHA512
-        $crypt_sha
-            = '$6$'
-            . $salt . '$'
-            . MT::Util::Digest::SHA::sha512_base64( $salt . MT::Util::Encode::encode_utf8($pass) );
+sub api_password {
+    my $self = shift;
+    if (@_) {
+        my ($new_password) = @_;
+        my $crypted = length($new_password) ? crypt_password($new_password) : '';
+        $self->column('api_password', $crypted);
+    } else {
+        return $self->column('api_password');
     }
-    else {
+}
 
-        # Use SHA-1 algorism
-        $crypt_sha
-            = '{SHA}'
-            . $salt . '$'
-            . MT::Util::perl_sha1_digest_hex( $salt . $pass );
-    }
+sub crypt_password {
+    my $pass  = shift;
 
-    $auth->column( 'password', $crypt_sha );
+    require MIME::Base64;
+    require Crypt::URandom;
+    my $salt = MIME::Base64::encode_base64(Crypt::URandom::urandom(12));
+    chomp($salt);
+    $salt =~ s/\+/./g;
+
+    require MT::Util::Digest::SHA;
+    return '$6$' . $salt . '$' . MT::Util::Digest::SHA::sha512_base64($salt . MT::Util::Encode::encode_utf8($pass));
 }
 
 sub is_valid_password {
@@ -736,6 +742,21 @@ sub is_valid_password {
     require MT::Auth;
     return MT::Auth->is_valid_password( $author, $pass, $crypted,
         $error_ref );
+}
+
+sub is_valid_api_password {
+    my ($author, $pass) = @_;
+    $pass = '' unless length($pass);
+
+    my $real_pass = $author->column('api_password');
+    return if !$real_pass;
+
+    if ($real_pass =~ m/^\$6\$(.*)\$(.*)/) {
+        my ($salt, $value) = ($1, $2);
+        require MT::Util::Digest::SHA;
+        return $value eq MT::Util::Digest::SHA::sha512_base64($salt . MT::Util::Encode::encode_utf8($pass));
+    }
+    return;
 }
 
 sub is_email_hidden {
@@ -843,16 +864,6 @@ sub save {
     my $auth = shift;
 
     if ( $auth->type == AUTHOR ) {
-        if ( !$auth->id ) {
-
-            # New author, undefined API password. Generate one.
-            if ( !defined $auth->api_password ) {
-                my @pool = ( 'a' .. 'z', 0 .. 9 );
-                my $pass = '';
-                for ( 1 .. 8 ) { $pass .= $pool[ rand @pool ] }
-                $auth->api_password($pass);
-            }
-        }
 
         # Generate basename
         unless ( $auth->basename() ) {

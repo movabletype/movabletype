@@ -1,4 +1,5 @@
 // rollup.config.js
+import { readdirSync } from "node:fs";
 import resolve from "@rollup/plugin-node-resolve";
 import commonjs from "@rollup/plugin-commonjs";
 import esbuild from "rollup-plugin-esbuild";
@@ -6,24 +7,27 @@ import livereload from "rollup-plugin-livereload";
 import sveltePreprocess from "svelte-preprocess";
 import typescript from "@rollup/plugin-typescript";
 import svelte from "rollup-plugin-svelte";
-import css from "rollup-plugin-css-only";
 
 const production = !process.env.ROLLUP_WATCH;
 const defaultOutputDir = "mt-static/js/build";
 
 const mtStaticOutputDir = "mt-static";
 const mtStaticInputFiles = [
-  "src/mt-static/plugins/TinyMCE5/lib/js/tinymce/plugins/mt_protect/plugin.ts",
   "src/mt-static/plugins/TinyMCE6/lib/js/tinymce/plugins/mt_protect/plugin.ts",
+  ...readdirSync("src/mt-static/plugins/DashboardWidgetTemplate/js")
+    .filter((file) => file.endsWith(".ts"))
+    .map((file) => `src/mt-static/plugins/DashboardWidgetTemplate/js/${file}`),
 ];
 
-const srcConfig = (inputFile) => {
+const srcConfig = (inputFile, output = {}) => {
   return {
     input: [inputFile],
     output: {
       dir: defaultOutputDir,
+      entryFileNames: inputFile.replace(/^src\//, "").replace(/ts$/, "js"),
       format: "esm",
       sourcemap: !production,
+      ...output,
     },
     plugins: [
       resolve({
@@ -35,7 +39,6 @@ const srcConfig = (inputFile) => {
         sourceMap: true,
         minify: production,
       }),
-      css({ output: "bundle.css" }),
       svelte({
         preprocess: sveltePreprocess({ sourceMap: !production }),
         compilerOptions: {
@@ -81,5 +84,11 @@ const mtStaticConfig = (inputfile) => {
 export default [
   srcConfig("src/contenttype.ts"),
   srcConfig("src/listing.ts"),
+  srcConfig("src/dashboard.ts"),
+  srcConfig("src/edit-author.ts"),
+  srcConfig("src/admin2025/admin-ui.ts"),
+  srcConfig("src/admin2025/admin-ui-immediate.ts", {
+    format: "iife",
+  }),
   ...mtStaticInputFiles.map(mtStaticConfig),
 ];

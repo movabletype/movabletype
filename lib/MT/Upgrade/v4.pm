@@ -654,10 +654,10 @@ sub rename_php_plugin_filenames {
     # If PHP plugins directory doesn't exist, return without failing
     return 0 if !-d $plugin_path;
 
-    opendir( DIR, $plugin_path )
+    opendir( my $dir, $plugin_path )
         or return 0;
-    my @files = grep {/^(?:function|block)\.(.*)\.php$/} readdir(DIR);
-    closedir(DIR);
+    my @files = grep {/^(?:function|block)\.(.*)\.php$/} readdir($dir);
+    closedir($dir);
 
     return 0 unless @files;
 
@@ -787,11 +787,11 @@ EOT
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=<$MTPublishCharset$>" />
     <meta name="generator" content="<$MTProductName version="1"$>" />
-    <link rel="stylesheet" href="<$MTBlogURL$>styles-site.css" type="text/css" />
+    <link rel="stylesheet" href="<$MTBlogURL$>styles-site.css" />
     <title>
     <__trans phrase="[_1]: [_2]" params="<$MTBlogName encode_html="1"$>%%<$MTGetVar name="page_title"$>">
     </title>
-    <script type="text/javascript" src="<$MTBlogURL$>mt-site.js"></script>
+    <script src="<$MTBlogURL$>mt-site.js"></script>
 </head>
 <body class="layout-one-column comment-preview" onload="individualArchivesOnLoad(commenter_name)">
     <div id="container">

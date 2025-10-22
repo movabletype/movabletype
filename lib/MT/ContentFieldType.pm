@@ -1171,7 +1171,7 @@ sub _tags_registry {
 
 sub _list_registry {
     {   label                => '__LIST_FIELD_LABEL',
-        data_type            => 'varchar',
+        data_type            => 'text',
         order                => 190,
         icon_class           => 'ic_list',
         can_data_label_field => 0,
@@ -1192,7 +1192,7 @@ sub _list_registry {
         list_props     => {
             list => {
                 base            => '__virtual.string',
-                col             => 'value_varchar',
+                col             => 'value_text',
                 display         => 'none',
                 filter_editable => 0,
                 html            => '$Core::MT::ContentFieldType::List::html',

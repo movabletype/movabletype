@@ -130,7 +130,7 @@ foreach my $key (qw{ UserSessionCookiePath UserSessionCookieName ProcessMemoryCo
         "Config $key returns the same value twice"
     );
     if ($key eq 'SecretToken') {
-        like($value, qr/^[a-zA-Z0-9]{40}$/, 'Secret Token Generated');
+        like($value, qr/^[a-zA-Z0-9_-]{40}$/, 'Secret Token Generated');
     }
     $new_cfg->set($key, 'Avocado');
     is($new_cfg->get($key), 'Avocado', "Config $key is set-able");

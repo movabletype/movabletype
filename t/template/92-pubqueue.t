@@ -12,8 +12,6 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-plan tests => 69;
-
 use MT;
 use MT::Blog;
 use MT::Entry;
@@ -171,3 +169,6 @@ foreach my $blog (@blogs) {
     $job_count = scalar(@jobs);
     ok( $job_count == 0, "There are no new jobs" );
 }
+
+done_testing;
+

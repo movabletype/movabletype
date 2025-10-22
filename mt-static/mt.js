@@ -17,7 +17,7 @@ var itemset_options = {};
 
 if ((!(navigator.appVersion.indexOf('MSIE') != -1) &&
       (parseInt(navigator.appVersion)==4))) {
-    document.write("<style type=\"text/css\">");
+    document.write("<style>");
     document.write("body { margin-top: -8px; margin-left: -8px; }");
     document.write("</style>");
 }
@@ -384,11 +384,11 @@ function openDialogUrl(url) {
     }
     if (frame_d) {
         frame_d.open();
-        frame_d.write("<html><head><style type=\"text/css\">\n"
+        frame_d.write("<html><head><style>\n"
             + "#dialog-indicator {\nposition: relative;\ntop: 200px;\n"
             + "background: url(" + StaticURI + "images/indicator.gif) "
             + "no-repeat;\nwidth: 66px;\nheight: 66px;\nmargin: 0 auto;"
-            + "\n}\n</style><script type=\"text/javascript\">\n"
+            + "\n}\n</style><script>\n"
             + "function init() {\ndocument.location = \"" + url + "\";\n}\n"
             + "if (window.navigator.userAgent.match(/ AppleWebKit\\//))\n"
             + "window.setTimeout(\"init()\", 1500);\n"
@@ -2220,15 +2220,6 @@ MT.App.TabContainer = new Class( Object, {
                 this.selectTab( es[ i ], t );
                 continue;
             }
-
-            if ( t = es[ i ].getAttribute( "mt:persist-tab-cookie" ) ) {
-                log( 'found persisted tab setting: '+t);
-                t = Cookie.fetch( t );
-                if ( t && t.value && t.value != "" ) {
-                    log( 'cookie: '+t.value);
-                    this.selectTab( es[ i ], t.value );
-                }
-            }
         }
     },
 
@@ -2258,12 +2249,6 @@ MT.App.TabContainer = new Class( Object, {
 
                 if ( tab ) {
                     this.selectTab( event.attributeElement, tab );
-                    var cookie = event.attributeElement.getAttribute( "mt:persist-tab-cookie" );
-                    if ( cookie ) {
-                        var d = new Date();
-                        d.setYear( d.getYear() + 1902 ); /* two years */
-                        Cookie.bake( cookie, tab, undefined, undefined, d );
-                    }
                 }
 
                 event.stop();

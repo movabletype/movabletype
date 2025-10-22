@@ -565,7 +565,7 @@ use vars qw( @ISA %Lexicon );
 	'Compose' => '投稿',
 	'Content Data' => 'コンテンツデータ',
 	'Content Types' => 'コンテンツタイプ',
-	'Create Role' => '新しいロールを作成',
+	'Create Role' => '新しいロールの作成',
 	'Delete' => '削除',
 	'Design' => 'デザイン',
 	'Disable' => '無効',
@@ -642,7 +642,6 @@ use vars qw( @ISA %Lexicon );
 	'Upload' => 'アップロード',
 	'Use Publishing Profile' => '公開プロファイルを設定',
 	'User' => 'ユーザー',
-	'View Site' => 'サイトの表示',
 	'Web Services' => 'Webサービス',
 	'Website' => 'ウェブサイト',
 	'_WARNING_DELETE_USER' => 'ユーザーの削除操作は取り消せず、削除したユーザーは復元できません。また、このユーザーが作成した記事やウェブページ、コンテンツデータは作成者不明となります。このユーザーを利用しなくなったり、システムへのアクセスを禁止したい場合は、ユーザーのアカウントを無効にすることをおすすめします。選択したユーザーを削除してよろしいですか?',
@@ -1023,6 +1022,7 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/Blog.pm
 	'*Site/Child Site deleted*' => '*削除されました*',
+	'Cannot apply a deprecated theme: [_1]' => '廃止されたテーマは適用できません: [_1]',
 	'Child Sites' => '子サイト',
 	'Clone of [_1]' => '[_1]の複製',
 	'Cloned child site... new id is [_1].' => 'サイトを複製しました。新しいIDは [_1] です。',
@@ -1147,6 +1147,7 @@ use vars qw( @ISA %Lexicon );
 	'Please choose a preferred archive type.' => '優先アーカイブタイプを指定してください',
 	'Plugin Settings' => 'プラグイン設定',
 	'Publish Site' => 'サイトを再構築',
+	'You can only register a maximum of [_1] starred sites.' => 'スター付きサイトは最大で[_1]件しか登録できません。',
 	'Registration Settings' => '登録/認証の設定',
 	'Saved [_1] Changes' => '[_1]の変更が保存されました',
 	'Saving blog failed: [_1]' => 'ブログを保存できませんでした: [_1]',
@@ -1173,7 +1174,7 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/CMS/Category.pm
 	'Category Set' => 'カテゴリセット',
 	'Create Category Set' => 'カテゴリセットの作成',
-	'Create [_1]' => '新しい[_1]',
+	'Create [_1]' => '[_1]の作成',
 	'Edit [_1]' => '[_1]の編集',
 	'Failed to update [_1]: Some of [_2] were changed after you opened this page.' => 'いくつかの[_2]がすでに更新されていたため、[_1]の更新に失敗しました。',
 	'Invalid category_set_id: [_1]' => '無効なカテゴリセットIDです: [_1]',
@@ -1274,7 +1275,7 @@ use vars qw( @ISA %Lexicon );
 	q{Name '[_1]' is already used.} => q{'[_1]'はすでに存在します},
 
 ## lib/MT/CMS/Dashboard.pm
-	'An image processing toolkit, often specified by the ImageDriver configuration directive, is not present on your server or is configured incorrectly. A toolkit must be installed to ensure proper operation of the userpics feature. Please install Graphics::Magick, Image::Magick, NetPBM, GD, or Imager, then set the ImageDriver configuration directive accordingly.' => 'ImageDriverに設定された画像処理ツールが存在しないかまたは正しく設定されていないため、Movable Typeのユーザー画像機能を利用できません。この機能を利用するには、Graphics::Magick、Image::Magick、NetPBM、GD、Imagerのいずれかをインストールする必要があります。',
+	'An image processing toolkit, often specified by the ImageDriver configuration directive, is not present on your server or is configured incorrectly. A toolkit must be installed to ensure proper operation of the userpics feature. Please install Graphics::Magick, Image::Magick, GD, or Imager, then set the ImageDriver configuration directive accordingly.' => 'ImageDriverに設定された画像処理ツールが存在しないかまたは正しく設定されていないため、Movable Typeのユーザー画像機能を利用できません。この機能を利用するには、Graphics::Magick、Image::Magick、GD、Imagerのいずれかをインストールする必要があります。',
 	'Can verify SSL certificate, but verification is disabled.' => 'SSL 証明書の検証を行う準備ができていますが、環境変数で SSL 証明書の検証が無効に設定されています。',
 	'Cannot verify SSL certificate.' => 'SSL 証明書の検証ができません。',
 	'Error: This child site does not have a parent site.' => '親サイトが存在しません。',
@@ -1317,7 +1318,6 @@ use vars qw( @ISA %Lexicon );
 	q{Failed to save relationship between [_1] (ID: [_2]) and Asset (ID: [_3]): [_4]} => q{[_1] (ID:[_2])とアセット(ID:[_3])の関連付けを設定できませんでした。: [_4]},
 
 ## lib/MT/CMS/Export.pm
-	'Export Site Entries' => '記事のエクスポート',
 	'Please select a site.' => 'サイトを選択してください。',
 	'You do not have export permissions' => 'エクスポートする権限がありません。',
 	q{Loading site '[_1]' failed: [_2]} => q{サイト '[_1]' をロードできません: [_2]},
@@ -1359,11 +1359,12 @@ use vars qw( @ISA %Lexicon );
 	q{User '[_1]' (ID:[_2]) was added to group '[_3]' (ID:[_4]) by '[_5]'} => q{[_5]がユーザー「[_1](ID:[_2])」をグループ「[_3](ID:[_4])」に追加しました。},
 
 ## lib/MT/CMS/Import.pm
-	'Import Site Entries' => '記事のインポート',
 	'Importer type [_1] was not found.' => '[_1]というインポート形式は存在しません。',
 	'You do not have import permission' => 'インポートの権限がありません。',
 	'You do not have permission to create users' => 'ユーザーを作成する権限がありません。',
 	'You need to provide a password if you are going to create new users for each user listed in your site.' => 'サイトにユーザーを追加するためには、パスワードを指定する必要があります。',
+	q{Before you import entries in your site, we recommend that you <a href='[_1]'>configure your site's publishing paths</a> first.} => q{サイトに記事をインポートする前に、まず<a href='[_1]'>サイトパスを設定</a>してください。},
+	q{Site's publishing directory does not exist. [_1]} => 'サイトパスに設定されたディレクトリが存在しません。 [_1]',
 
 ## lib/MT/CMS/Log.pm
 	'(system)' => 'システム',
@@ -1377,6 +1378,9 @@ use vars qw( @ISA %Lexicon );
 	'Download system-wide logs' => 'システム全体のログをダウンロードします',
 
 ## lib/MT/CMS/Plugin.pm
+	'__PLUGIN_LABEL_DEFAULT' => '標準',
+	'__PLUGIN_LABEL_DEFAULT_BUT_MODIFIED' => '標準（変更あり）',
+	'Added' => '追加',
 	'Error saving plugin settings: [_1]' => 'プラグインの設定を保存できません: [_1]',
 	'Individual Plugins' => 'プラグイン',
 	'Plugin Set: [_1]' => 'プラグインのセット: [_1]',
@@ -1518,6 +1522,7 @@ use vars qw( @ISA %Lexicon );
 	'Theme not found' => 'テーマがみつかりませんでした。',
 	'Themes Directory [_1] is not writable.' => 'テーマディレクトリ[_1]に書き込めません。',
 	'Themes directory [_1] is not writable.' => 'テーマディレクトリ[_1]に書き込めません。',
+	'This theme has been removed.' => 'このテーマは削除されました。',
 
 ## lib/MT/CMS/Tools.pm
 	'Any site' => '任意のサイト',
@@ -2120,6 +2125,8 @@ use vars qw( @ISA %Lexicon );
 	'Cannot preview [_1] template.' => '指定されたテンプレートはプレビューできません: [_1]',
 	'Cannot publish [_1] template.' => '指定されたテンプレートは公開できません: [_1]',
 	'Cannot refresh [_1] template.' => '指定されたテンプレートはリフレッシュできません: [_1]',
+	'Cannot refresh a site that uses a deprecated theme: [_1]' => '廃止されたテーマ[_1]を利用しているサイトのテンプレートは初期化できません',
+	'Cannot refresh a template of a deprecated theme: [_1]' => '廃止されたテーマ[_1]のテンプレートは初期化できません',
 	'Cannot update [_1] template.' => '指定されたテンプレートは更新できません: [_1]',
 	'Template not found' => '指定されたテンプレートが見つかりません',
 
@@ -2283,12 +2290,6 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/Image/Imager.pm
 	'Cannot load Imager: [_1]' => 'Imagerをロードできません: [_1]',
-
-## lib/MT/Image/NetPBM.pm
-	'Cannot load IPC::Run: [_1]' => 'IPC::Runをロードできません: [_1]',
-	'Cropping to [_1]x[_2] failed: [_3]' => '[_1]x[_2] にトリミングできませんでした: [_3]',
-	'Reading alpha channel of image failed: [_1]' => 'アルファチャンネルを読み込めませんでした: [_1]',
-	'You do not have a valid path to the NetPBM tools on your machine.' => 'NetPBMツールへのパスが正しく設定されていません。',
 
 ## lib/MT/Import.pm
 	'Another system (Movable Type format)' => '他のシステム(Movable Type形式)',
@@ -2560,6 +2561,7 @@ use vars qw( @ISA %Lexicon );
 	'File inclusion is disabled by "AllowFileInclude" config directive.' => 'File モディファイアは、環境変数(AllowFileInclude)により無効にされています。',
 	'Force' => '必ず表示',
 	'Invalid index.' => '不正なインデックスです。',
+	'Invalid response' => '不正な応答です',
 	'Is this field required?' => 'このフィールドは必須ですか？',
 	'No [_1] could be found.' => '[_1]が見つかりません。',
 	'No template to include was specified' => 'インクルードするテンプレートが見つかりませんでした。',
@@ -2575,6 +2577,9 @@ use vars qw( @ISA %Lexicon );
 	'https://www.movabletype.org/documentation/appendices/tags/%t.html' => 'https://www.movabletype.jp/documentation/appendices/tags/%t.html',
 	'id attribute is required' => 'idモディファイアを指定する必要があります',
 	'minimum length of [_1]' => '[_1]文字以上',
+	'mode [_1] does not return JSON' => 'mode [_1]の返値はJSONではありません',
+	'mode [_1] is ambiguous' => 'mode [_1]は一意に定まりません',
+	'mode is required' => 'modeが必要です',
 	'records' => 'オブジェクト',
 	q{'[_1]' is not a hash.} => q{[_1]はハッシュではありません。},
 	q{'[_1]' is not a valid function for a hash.} => q{[_1]はハッシュで利用できる関数ではありません。},
@@ -2851,7 +2856,6 @@ use vars qw( @ISA %Lexicon );
 	'Generated a website [_1]' => '作成されたウェブサイト: [_1]',
 	'Generic Website' => '標準のウェブサイト',
 	'Granting new role to system administrator...' => 'システム管理者に新しいロールを付与しています...',
-	'Migrating DefaultSiteURL/DefaultSiteRoot to website...' => 'DefaultSiteURL/DefaultSiteRootをウェブサイト用に移行しています...',
 	'Migrating [_1]([_2]).' => '[_1]([_2])を移行しています。',
 	'Migrating existing [quant,_1,blog,blogs] into websites and their children...' => '既存のブログをウェブサイトで管理できるように移行しています。',
 	'Migrating mtview.php to MT5 style...' => 'mtview.phpをMT5で利用できるように移行しています...',
@@ -2936,6 +2940,13 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/Upgrade/v8.pm
 	'Migrating image width/height meta data...' => '画像の幅/高さを移行しています...',
 
+## lib/MT/Upgrade/v9.pm
+	'Error migrating list field indexes of content data # [_1]: [_2]...' => 'コンテンツデータ(ID:[_1])のリストフィールドインデックスを移行できませんでした: [_2]',
+	'Migrating list field index data...' => 'リストフィールドのインデックスを移行しています',
+	'Migrating site boolean meta data...' => 'サイトのboolean型のメタデータを移行しています...',
+	'Initializing default link target settings...' => 'リンクのターゲットの既定値を初期化しています...',
+	'Migrating web services passwords...' => 'Webサービスパスワードを移行しています...',
+
 ## lib/MT/Util.pm
 	'[quant,_1,day,days] from now' => '[quant,_1,日,日]後',
 	'[quant,_1,day,days]' => '[quant,_1,日,日]',
@@ -3008,7 +3019,6 @@ use vars qw( @ISA %Lexicon );
 	'HTML::Entities is required by CGI.pm' => 'HTML::Entitiesは、CGI.pm の動作に必要です。',
 	'IO::Compress::Gzip is required in order to compress files during an export operation.' => 'IO::Compress::Gzipはエクスポート中にファイルを圧縮するのに必要です。',
 	'IO::Uncompress::Gunzip is required in order to decompress files during an import operation.' => 'IO::Uncompress::Gunzipはインポート中にファイルを展開するのに必要です。',
-	'IPC::Run is optional; It is needed if you would like to use NetPBM as the image processor for Movable Type.' => 'IPC::RunのインストールはMTのイメージドライバとしてNetPBMを利用する場合に必要となります。',
 	'Image::ExifTool is used to manipulate image metadata.' => 'Image::ExifToolは画像のメタデータを操作するのに使われます。',
 	'Image::Size is sometimes required to determine the size of images in different formats.' => 'Image::Sizeはさまざまな形式の画像の大きさを調べるのに必要になることがあります。',
 	'JSON is required to use DataAPI, Content Type, and listing framework.' => 'JSONはDataAPIやコンテンツタイプ、リスティングフレームワークの利用に必要です。',
@@ -3040,6 +3050,7 @@ use vars qw( @ISA %Lexicon );
 	'This module is optional. It is used to see if swap memory is enough while processing background jobs.' => 'このモジュールがインストールされていればバックグラウンドジョブの処理中に十分なスワップメモリーがあるか確認するのに使われます。',
 	'This module is optional. It is used to see if the disk is full while backing up.' => 'このモジュールがインストールされていればバックアップ中にディスク容量が残っているかを確認するのに使われます。',
 	'This module is optional; It is one of the modules required to import an exported site and such.' => 'このモジュールはサイトなどのインポート処理に必要となるモジュールのひとつです。',
+	'This module is optional; It parses the query string faster.' => 'このモジュールがインストールされていればクエリ文字列のパースが高速化されます。',
 	'This module is required for Google Analytics site statistics and for verification of SSL certificates.' => 'このモジュールは、Google Analytics などで SSL 証明書の検証に必要です。',
 	'This module is required for profiling.' => 'このモジュールはプロファイリングの際に必要となります。',
 	'This module is required in all of the SSL/TLS connection, such as Google Analytics site statistics or SMTP Auth over SSL/TLS.' => 'このモジュールはGoogle AnalyticsやSSL/TLS経由のSMTP認証など、あらゆるSSL/TLS接続の際に必要となります。',
@@ -3648,8 +3659,12 @@ use vars qw( @ISA %Lexicon );
 	'Center' => '中央',
 	'Character entities (&amp#8221;, &amp#8220;, etc.)' => 'エンティティ (&amp#8221;、&amp#8220;など)',
 	'Compose Defaults' => '作成の既定値',
-	'Content CSS will be applied when WYSIWYG editor does support. You can specify CSS file by URL or {{theme_static}} placeholder. Example: {{theme_static}}path/to/cssfile.css' => 'WYSIWYGエディタ内で利用するCSSファイルのURL又は、{{theme_static}}変数を利用したURLを指定する事ができます。WYSIWYGエディタが対応していない場合は適用されません。例: {{theme_static}}path/to/cssfile.css',
+	'Content CSS will be applied if supported by the editor in use. You can specify CSS file by URL or {{theme_static}} placeholder. Example: {{theme_static}}path/to/cssfile.css' => 'エディタ内で利用するCSSファイルのURL又は、{{theme_static}}変数を利用したURLを指定する事ができます。エディタが対応していない場合は適用されません。例: {{theme_static}}path/to/cssfile.css',
 	'Content CSS' => 'コンテンツCSSファイル',
+	'Default Link Target' => 'リンクのターゲットの既定値',
+	'Default value of target attribute when inserting a link.' => 'リンク挿入時のtarget属性の既定値を指定する事ができます。',
+	'LINK_TARGET_SELF' => '同じウィンドウ',
+	'LINK_TARGET_BLANK' => '新規ウィンドウ',
 	'Czech' => 'チェコ語',
 	'Danish' => 'デンマーク語',
 	'Date Language' => '日付の言語',
@@ -3701,7 +3716,7 @@ use vars qw( @ISA %Lexicon );
 	'The range for Basename Length is 15 to 250.' => 'ファイル名の文字数は、15から250の範囲で設定してください。',
 	'Unpublished' => '下書き',
 	'Use thumbnail' => 'サムネイルを利用',
-	'WYSIWYG Editor Setting' => 'WYSIWYGエディタの設定',
+	'Editor Setting' => 'エディタの設定',
 	'You must set valid default thumbnail width.' => '有効なサムネイル画像の幅を指定してください。',
 	'Your preferences have been saved.' => '設定を保存しました。',
 	'pixels' => 'ピクセル',
@@ -3802,8 +3817,6 @@ use vars qw( @ISA %Lexicon );
 	'Your plugin settings have been saved.' => 'プラグインの設定を保存しました。',
 	'Your plugins have been reconfigured.' => 'プラグインを再設定しました。',
 	'_PLUGIN_DIRECTORY_URL' => 'https://plugins.movabletype.jp/',
-	q{Your plugins have been reconfigured. Since you're running mod_perl, you must restart your web server for these changes to take effect.} => q{プラグインの設定が変更されました。mod_perlを利用している場合は、設定変更を有効にするためにウェブサーバーを再起動する必要があります。},
-	q{Your plugins have been reconfigured. Since you're running mod_perl, you will need to restart your web server for these changes to take effect.} => q{プラグインを再設定しました。mod_perl環境下でお使いの場合は、設定を反映させるためにウェブサーバーを再起動してください。},
 
 ## tmpl/admin2023/cms/cfg_prefs.tmpl
 	'Active Server Page Includes' => 'ASPのインクルード',
@@ -4172,10 +4185,6 @@ use vars qw( @ISA %Lexicon );
 	'Finish (s)' => '完了 (s)',
 	'Finish' => '完了',
 
-## tmpl/admin2023/cms/dialog/asset_upload.tmpl
-	'You need to configure your blog.' => 'ブログを設定する必要があります。',
-	'Your blog has not been published.' => 'ブログが公開されていません。',
-
 ## tmpl/admin2023/cms/dialog/clone_blog.tmpl
 	'Categories/Folders' => 'カテゴリ/フォルダ',
 	'Child Site Details' => 'サイトの詳細',
@@ -4374,7 +4383,6 @@ use vars qw( @ISA %Lexicon );
 	'Preferred method of separating tags.' => 'タグを区切るときに使う文字を選択します。',
 	'Relative' => '経過',
 	'Remove Userpic' => 'プロフィール画像を削除',
-	'Reveal' => '内容を表示',
 	'Save changes to this author (s)' => 'ユーザーへの変更を保存 (s)',
 	'Select Userpic' => 'プロフィール画像の選択',
 	'System Permissions' => 'システム権限',
@@ -4390,7 +4398,6 @@ use vars qw( @ISA %Lexicon );
 	'User properties' => 'ユーザー属性',
 	'Web Services Password' => 'Webサービスパスワード',
 	'You must use half-width character for password.' => 'パスワードには全角文字を利用できません。',
-	'Your web services password is currently' => 'Webサービスのパスワード',
 	'_USAGE_PASSWORD_RESET' => 'ユーザーのパスワードを再設定できます。パスワードがランダムに生成され、[_1]にメールで送信されます。',
 	'_USER_DISABLED' => '無効',
 	'_USER_ENABLED' => '有効',
@@ -4533,6 +4540,8 @@ use vars qw( @ISA %Lexicon );
 	'Unpublished Time' => '公開取り消し時刻',
 	'Update this [_1]' => '[_1]の更新',
 	'Update' => '更新',
+	'Latest' => '最新',
+ 	'Displaying' => '表示中',
 	'View revisions of this [_1]' => '[_1]の更新履歴を表示',
 	'View revisions' => '更新履歴を表示',
 	'Warning: If you set the basename manually, it may conflict with another content data.' => '警告: 出力ファイル名を手動で設定すると、他のコンテンツデータと衝突を起こす可能性があります。',
@@ -4588,7 +4597,8 @@ use vars qw( @ISA %Lexicon );
 	'Preview this entry (v)' => '記事をプレビュー (v)',
 	'Preview this page (v)' => 'ウェブページをプレビュー (v)',
 	'Reset display options to blog defaults' => '表示オプションをブログの既定値にリセット',
-	'Restored revision (Date:[_1]).  The current status is: [_2]' => '更新履歴(日付: [_1])に戻しました。ステータス: [_2]',
+	'Restored revision (Date:[_1]).' => '[_1] に保存した内容を表示しています。必要に応じて更新してください。',
+	'Restored revision (Date:[_1]).  The current status is: [_2]' => '[_1] に保存した内容を表示しています。ステータス: [_2]',
 	'Selected Categories' => '選択されたカテゴリ',
 	'Share' => '共有',
 	'Some [_1] in the revision could not be loaded because they have been removed.' => '履歴データ内に、削除されたために読み込めなかった[_1]があります。',
@@ -4735,7 +4745,6 @@ use vars qw( @ISA %Lexicon );
 	'On a schedule' => 'スケジュール',
 	'Process as <strong>[_1]</strong> include' => '<strong>[_1]</strong>のインクルードとして処理する',
 	'Processing request...' => '処理中...',
-	'Restored revision (Date:[_1]).' => '更新履歴(日付: [_1])に戻しました。',
 	'Save &amp; Publish' => '保存と再構築',
 	'Save Changes (s)' => '変更を保存 (s)',
 	'Save and Publish this template (r)' => 'このテンプレートを保存して再構築 (r)',
@@ -4871,6 +4880,9 @@ use vars qw( @ISA %Lexicon );
 	'End title HTML (optional)' => 'タイトルとなるHTMLの終了地点(任意)',
 	'Select an entry status' => '公開状態',
 	'Start title HTML (optional)' => 'タイトルとなるHTMLの開始地点(任意)',
+
+## tmpl/admin2023/cms/include/alert_asset_upload.tmpl
+	q{Before you can upload a file, you must <a href='[_1]' class='alert-link'>configure your site's publishing paths</a> first.} => q{ファイルをアップロードする前に、まず<a href='[_1]' class='alert-link'>サイトパスを設定</a>してください。},
 
 ## tmpl/admin2023/cms/include/anonymous_comment.tmpl
 	'Allow comments from anonymous or unauthenticated users.' => '認証なしユーザーまたは匿名ユーザーからコメントを受け付ける',
@@ -5292,6 +5304,7 @@ use vars qw( @ISA %Lexicon );
 	'Themes in Use' => '利用しているテーマ',
 	'This theme cannot be applied to the child site due to [_1] errors' => '次の理由により、テーマを適用できませんでした',
 	'This theme cannot be applied to the site due to [_1] errors' => '次の理由により、テーマを適用できませんでした。',
+	'This theme has been deprecated. You can not reapply it or refresh its templates.' => 'このテーマは廃止されました。再適用やテンプレートの初期化は行えません。',
 	'Uninstall' => 'アンインストール',
 	'Warnings' => '警告',
 	'[quant,_1,warning,warnings]' => '[quant,_1,,,]件の警告',
@@ -5619,7 +5632,8 @@ use vars qw( @ISA %Lexicon );
 	'Active Users' => 'ユーザー',
 
 ## tmpl/admin2023/cms/widget/updates.tmpl
-	'Available updates (Ver. [_1]) found. Please see the <a href="[_2]" target="_blank">news</a> for detail.' => '利用可能なアップデート(Ver. [_1])があります。詳しくは<a href="[_2]" target="_blank">Movable Typeニュース</a>をご覧ください。',
+	'An update (Ver. [_1]) is available. Please see the <a href="[_2]" target="_blank">news</a> for detail.' => 'アップデート(Ver. [_1])が利用可能です。詳しくは<a href="[_2]" target="_blank">Movable Typeニュース</a>をご覧ください。',
+	'A security update (Ver. [_1]) is available. Please see the <a href="[_2]" target="_blank">news</a> for detail.' => 'セキュリティアップデート(Ver. [_1])が利用可能です。詳しくは<a href="[_2]" target="_blank">Movable Typeニュース</a>をご覧ください。',
 	'Movable Type is up to date.' => '最新のMovable Typeです。',
 	'Update check failed. Please check server network settings.' => 'アップデートの確認ができません。ネットワーク設定を見直してください。',
 	'Update check is disabled.' => 'アップデートの確認は無効です。',
@@ -5772,6 +5786,35 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/listing/ts_job_list_header.tmpl
 	'The job(s) has been deleted from the database.' => 'ジョブをデータベースから削除しました。',
 	q{You can't delete running job(s). (ID: [_1])} => q{実行中のジョブは削除できません(ID: [_1])},
+
+## tmpl/admin2025/cms/include/content-header.tmpl
+	'New [_1] creation' => '[_1]を新規作成',
+
+## tmpl/admin2025/cms/include/primary_navigation.tmpl
+	'View Site' => 'サイトを見る',
+
+## tmpl/admin2025/cms/include/system-header-actions.tmpl
+	'Select target and search text...' => '対象を選んでテキスト検索...',
+	'[_1]Site' => '[_1]サイト',
+	'Parent Sites' => '親サイト',
+	'Parent and child sites' => '親サイトと子サイト',
+	'Only child sites' => '子サイトのみ',
+	'Filter by site name' => 'サイト名で絞り込む',
+	'Add to starred sites' => 'スター付きサイトに追加',
+	'Remove from starred sites' => 'スター付きサイトから削除',
+
+## tmpl/admin2025/cms/dialog/dialog_api_password.tmpl
+	'Web services password is not currently available.' => '現在、Webサービスパスワードは設定されていません。',
+	'You have a Web services password securely stored in the database. If you forgot the password, please delete it and issue the new one.'  => 'Webサービスパスワードはすでにデータベースに安全に保存されています。パスワードを忘れたときは一度削除してから再発行してください。',
+	'Delete password' => 'パスワードを削除',
+	'Issue a new password' => '新しいパスワードを発行',
+	'Web Services password is successfully issued as follows.' => '下記のWEBサービスパスワードが正常に発行されました。',
+	'Please save it in a secure place since the password won\'t be shown again.' => 'パスワードの内容は今後確認できませんので、安全な場所に保管してください。',
+	'Web Services password is successfully deleted.' => 'Webサービスパスワードは正常に削除されました。',
+	'Are you sure you want to delete the existing password?' => '既存のパスワードを削除します。よろしいですか？',
+	'Copy to clipboard' => 'クリップボードにコピー',
+	'Copied' => 'コピーしました',
 );
+
 
 1;

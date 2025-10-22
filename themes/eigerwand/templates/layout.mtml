@@ -1,0 +1,82 @@
+<$mt:SiteName setvar="theme_meta_title_default"$>
+<$mt:SiteDescription setvar="theme_meta_desc_default"$>
+<$mt:CanonicalURL setvar="theme_meta_url"$>
+<mt:Unless name="theme_meta_url">
+  <$mt:SiteURL setvar="theme_meta_url"$>
+</mt:Unless>
+<mt:Assets type="image" tag="@SITE_ICON" limit="1">
+  <$mt:AssetThumbnailURL width="320" square="1" setvar="theme_ogp_image_url"$>
+<mt:Else>
+  <mt:SetVarBlock name="theme_ogp_image_url"><$mt:SupportDirectoryURL with_domain="1"$>theme_static/eigerwand/images/siteicon-sample.png</mt:SetVarBlock>
+</mt:Assets>
+
+
+<mt:If name="main_index">
+  <mt:SetVarBlock name="theme_meta_title"><__trans phrase="Entries List"> - <$mt:SiteName$></mt:SetVarBlock>
+  <$mt:Var name="theme_meta_desc_default" setvar="theme_meta_desc"$>
+<mt:ElseIf name="entry_archive">
+  <mt:SetVarBlock name="theme_meta_title"><$mt:EntryTitle$> - <$mt:SiteName$></mt:SetVarBlock>
+  <$mt:EntryExcerpt default="$theme_meta_desc_default" setvar="theme_meta_desc"$>
+  <mt:EntryAssets type="image" limit="1"><$mt:AssetThumbnailURL height="320" square="1" setvar="theme_ogp_image_url"$></mt:EntryAssets>
+<mt:ElseIf name="page_archive">
+  <mt:SetVarBlock name="theme_meta_title"><$mt:PageTitle$> - <$mt:SiteName$></mt:SetVarBlock>
+  <$mt:PageExcerpt default="$theme_meta_desc_default" setvar="theme_meta_desc"$>
+<mt:ElseIf name="archive_listing">
+  <mt:SetVarBlock name="theme_meta_title"><__trans phrase="[_1] Archives" params="<$mt:ArchiveTitle$>"> - <$mt:SiteName$></mt:SetVarBlock>
+  <$mt:Var name="theme_meta_desc_default" setvar="theme_meta_desc"$>
+<mt:ElseIf name="search_results">
+  <mt:SetVarBlock name="theme_meta_title"><__trans phrase="Search Results"> - <$mt:SiteName$></mt:SetVarBlock>
+<mt:Else>
+  <$mt:Var name="theme_meta_title_default" setvar="theme_meta_title"$>
+  <$mt:Var name="theme_meta_desc_default" setvar="theme_meta_desc"$>
+</mt:If>
+
+
+<!DOCTYPE html>
+<html lang="<$mt:SiteLanguage$>" itemscope itemtype="http://schema.org/WebPage">
+  <head>
+    <meta charset="<$mt:PublishCharset$>">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="generator" content="<$mt:ProductName version="1"$>">
+    <title><$mt:Var name="theme_meta_title" strip_linefeeds="1" remove_html="1" encode_html="1"$></title>
+    <meta name="description" content="<$mt:Var name="theme_meta_desc" strip_linefeeds="1" remove_html="1" encode_html="1"$>">
+    <$mt:CanonicalLink$>
+    <link rel="alternate" type="application/atom+xml" title="Recent Entries" href="<$mt:Link template="feed_recent"$>">
+    <mt:If name="entry_archive">
+      <mt:EntryPrevious><link rel="prev" href="<$mt:EntryPermalink encode_html="1"$>" title="<$mt:EntryTitle encode_html="1"$>"></mt:EntryPrevious>
+      <mt:EntryNext><link rel="next" href="<$mt:EntryPermalink encode_html="1"$>" title="<$mt:EntryTitle encode_html="1"$>"></mt:EntryNext>
+    <mt:ElseIf name="archive_listing">
+      <mt:ArchivePrevious><link rel="prev" href="<$mt:ArchiveLink$>" title="<$mt:ArchiveTitle encode_html="1"$>"></mt:ArchivePrevious>
+      <mt:ArchiveNext><link rel="next" href="<$mt:ArchiveLink$>" title="<$mt:ArchiveTitle encode_html="1"$>"></mt:ArchiveNext>
+    </mt:If>
+    <mt:Assets tag="@SITE_FAVICON" limit="1">
+      <link rel="shortcut icon" href="<$mt:AssetURL encode_html="1"$>">
+    </mt:Assets>
+    <!-- Open Graph Protocol -->
+    <meta property="og:type" content="article">
+    <meta property="og:locale" content="<$mt:SiteLanguage setvar="site_lang"$><mt:If name="site_lang" eq="ja">ja_JP<mt:else><$mt:Var name="site_lang"$></mt:If>">
+    <meta property="og:title" content="<$mt:Var name="theme_meta_title" strip_linefeeds="1" remove_html="1" encode_html="1"$>">
+    <meta property="og:url" content="<$mt:Var name="theme_meta_url" encode_html="1"$>">
+    <meta property="og:description" content="<$mt:Var name="theme_meta_desc" strip_linefeeds="1" remove_html="1" encode_html="1"$>">
+    <meta property="og:site_name" content="<$mt:SiteName encode_html="1"$>">
+    <meta property="og:image" content="<$mt:Var name="theme_ogp_image_url" encode_html="1"$>">
+    <!-- Microdata -->
+    <meta itemprop="description" content="<$mt:SiteDescription remove_html="1" encode_html="1"$>">
+    <link itemprop="url" href="<$mt:Var name="theme_meta_url" encode_html="1"$>">
+    <link itemprop="image" href="<$mt:Var name="theme_ogp_image_url" encode_html="1"$>">
+    <mt:var name="js_include">
+    <$mt:Include module="<__trans phrase="HTML Head">"$>
+    <mt:IfCommentsActive><script src="<$mt:Link template="javascript"$>"></script></mt:IfCommentsActive>
+  </head>
+  <body>
+    <header class="header">
+      <$mt:Include module="<__trans phrase="Banner Header">"$>
+      <$mt:Include module="<__trans phrase="Navigation">"$>
+    </header>
+     <$mt:Var name="contents"$>
+    <footer class="footer">
+      <$mt:Include module="<__trans phrase="Banner Footer">"$>
+    </footer>
+    <script src="<$mt:Link template="javascript_theme" encode_html="1">"></script>
+  </body>
+</html>

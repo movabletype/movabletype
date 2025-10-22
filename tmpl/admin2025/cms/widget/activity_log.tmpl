@@ -1,0 +1,19 @@
+<mtapp:widget
+  class="activity-log-widget"
+  label="<__trans phrase="Activity Log">"
+  can_close="1">
+  <mt:if name="logs">
+  <ul class="mt-widget__list">
+    <mt:Loop name="logs">
+    <li>
+      <span class="mt-widget__info d-block" title="<mt:var name="created_on_timestamp" escape="html">"><mt:var name="created_on_formatted"></span>
+      <mt:unless name="site_view"><mt:if name="can_view_site_log"><span class="mt-widget__info d-block"><a href="<mt:var name="mt_url">?__mode=list&_type=log&blog_id=<mt:var name="blog_id" escape="html">" title="<mt:var name="site_name" escape="html">"><mt:var name="site_name" escape="html"></a></span><mt:elseif name="can_access_site"><span class="mt-widget__info d-block"><a href="<mt:var name="mt_url">?__mode=dashboard&blog_id=<mt:var name="blog_id" escape="html">" title="<mt:var name="site_name" escape="html">"><mt:var name="site_name" escape="html"></a></span></mt:if></mt:unless>
+      <mt:var name="log_message" escape="html">
+    </li>
+    </mt:Loop>
+  </ul>
+  <mt:Else>
+    <span class="mt-widget__info d-block"><__trans phrase="No [_1] could be found." params="<__trans phrase="Log">"></span>
+  </mt:if>
+</mtapp:widget>
+

@@ -32,6 +32,22 @@ widgets:
             - blog
         order: 1
         default: 1
+    with_a_simple_form:
+        label: With a form
+        template: widget/with_a_simple_form.tmpl
+        handler: |
+            sub {
+                return 1;
+            }
+        singular: 1
+        set: sidebar
+        view:
+            - user
+            - system
+            - website
+            - blog
+        order: 1
+        default: 1
     without_a_form:
         label: With a form
         template: widget/without_a_form.tmpl
@@ -54,6 +70,14 @@ YAML
 <mtapp:widget id="test_widget_with_a_form" label="Test Widget With A Form">
 <form method="post" id="my_form">
 inside of my form
+</form>
+</mtapp:widget>
+TMPL
+
+    $test_env->save_file('plugins/WidgetTest/tmpl/widget/with_a_simple_form.tmpl', <<'TMPL');
+<mtapp:widget id="test_widget_with_a_simple_form" label="Test Widget With A Simple Form">
+<form>
+inside of my simple form
 </form>
 </mtapp:widget>
 TMPL
@@ -83,6 +107,13 @@ subtest 'hosted widget with a form' => sub {
     ok $test_widget->html, "test widget exists";
     ok $test_widget->find('form#my_form')->html, "my form exists";
     ok !$test_widget->find('form#test_widget_with_a_form-form')->html, "generated form does not exist";
+};
+
+subtest 'hosted widget with a simple form' => sub {
+    my $test_widget = $app->wq_find('div#test_widget_with_a_simple_form');
+    ok $test_widget->html, "test widget exists";
+    ok $test_widget->find('form')->html, "my form exists";
+    ok !$test_widget->find('form#test_widget_with_a_simple_form-form')->html, "generated form does not exist";
 };
 
 subtest 'hosted widget without a form' => sub {

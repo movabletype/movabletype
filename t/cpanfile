@@ -43,7 +43,6 @@ requires 'List::Util';
 
 requires 'GD';
 requires 'Imager';
-requires 'IPC::Run';
 requires 'Storable';
 requires 'Crypt::DSA';
 
@@ -79,6 +78,9 @@ requires 'CGI::Compile';
 requires 'YAML::PP';
 requires 'YAML::Syck';
 requires 'YAML::XS', 'v0.903.0';
+
+requires 'WWW::Form::UrlEncoded';
+requires 'WWW::Form::UrlEncoded::XS';
 
 # Cloud.pack
 requires 'Net::CIDR';

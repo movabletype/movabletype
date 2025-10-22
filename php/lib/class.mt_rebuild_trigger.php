@@ -23,7 +23,6 @@ class RebuildTrigger extends BaseObject
     public $rebuild_trigger_created_by;
     public $rebuild_trigger_created_on;
     public $rebuild_trigger_ct_id;
-    public $rebuild_trigger_ct_unique_id;
     public $rebuild_trigger_event;
     public $rebuild_trigger_modified_by;
     public $rebuild_trigger_modified_on;

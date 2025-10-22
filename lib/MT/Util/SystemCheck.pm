@@ -109,7 +109,6 @@ sub check_server_model {
     $param->{server_model} =
           $ENV{'psgi.version'} ? 'PSGI'
         : $ENV{FAST_CGI}       ? 'FastCGI'
-        : $ENV{MOD_PERL}       ? 'mod_perl'
         :                        'CGI';
 
     $param->{web_server} = $ENV{SERVER_SOFTWARE};

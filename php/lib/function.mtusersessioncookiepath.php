@@ -31,13 +31,7 @@ function smarty_function_mtusersessioncookiepath($args, &$ctx) {
                 return $ctx->error("Error in expression for UserSessionCookiePath: '$path'");
             }
 
-            if ($ctx->mt->config('DynamicTemplateAllowPHP')) {
-                ob_start();
-                eval('?>' . $_var_compiled);
-                $path = ob_get_clean();
-            } else {
-                $path = $_var_compiled;
-            }
+            $path = $_var_compiled;
             return $path;
         } else {
             return $path;

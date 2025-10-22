@@ -9,7 +9,6 @@ use strict;
 use warnings;
 
 use MT;
-use MT::Util qw( encode_xml ); ## no critic
 
 ###########################################################################
 
@@ -251,33 +250,6 @@ sub _loop {
         $res .= $out;
     }
     $res;
-}
-
-###########################################################################
-
-=head2 BlogIfCCLicense
-
-A conditional tag that is true when the current blog in context has
-been assigned a Creative Commons License.
-
-=for tags blogs, creativecommons, deprecated
-
-=cut
-
-=head2 SiteIfCCLicense
-
-A conditional tag that is true when the current site in context has
-been assigned a Creative Commons License.
-
-=for tags sites, creativecommons, deprecated
-
-=cut
-
-sub _hdlr_blog_if_cc_license {
-    my ($ctx) = @_;
-    my $blog = $ctx->stash('blog');
-    return 0 unless $blog;
-    return $blog->cc_license ? 1 : 0;
 }
 
 ###########################################################################
@@ -781,152 +753,6 @@ sub _hdlr_blog_timezone {
     sprintf( "%s%02d%s%02d",
         $so < 0   ? '-' : '+', abs($so),
         $no_colon ? ''  : ':', $partial_hour_offset );
-}
-
-###########################################################################
-
-=head2 BlogCCLicenseURL
-
-Publishes the license URL of the Creative Commons logo appropriate
-to the license assigned to the blog in context. If the blog doesn't
-have a Creative Commons license, this tag returns an empty string.
-
-=for tags blogs, creativecommons, deprecated
-
-=cut
-
-=head2 SiteCCLicenseURL
-
-Publishes the license URL of the Creative Commons logo appropriate
-to the license assigned to the site in context. If the site doesn't
-have a Creative Commons license, this tag returns an empty string.
-
-=for tags sites, creativecommons, deprecated
-
-=cut
-
-sub _hdlr_blog_cc_license_url {
-    my ($ctx) = @_;
-    my $blog = $ctx->stash('blog');
-    return '' unless $blog;
-    return $blog->cc_license_url;
-}
-
-###########################################################################
-
-=head2 BlogCCLicenseImage
-
-Publishes the URL of the Creative Commons logo appropriate to the
-license assigned to the blog in context. If the blog doesn't have
-a Creative Commons license, this tag returns an empty string.
-
-B<Example:>
-
-    <MTIf tag="BlogCCLicenseImage">
-    <img src="<$MTBlogCCLicenseImage$>" alt="Creative Commons" />
-    </MTIf>
-
-=for tags blogs, creativecommons, deprecated
-
-=cut
-
-=head2 SiteCCLicenseImage
-
-Publishes the URL of the Creative Commons logo appropriate to the
-license assigned to the site in context. If the site doesn't have
-a Creative Commons license, this tag returns an empty string.
-
-B<Example:>
-
-    <MTIf tag="SiteCCLicenseImage">
-    <img src="<$MTSiteCCLicenseImage$>" alt="Creative Commons" />
-    </MTIf>
-
-=for tags sites, creativecommons, deprecated
-
-=cut
-
-sub _hdlr_blog_cc_license_image {
-    my ($ctx) = @_;
-    my $blog = $ctx->stash('blog');
-    return '' unless $blog;
-    my $cc = $blog->cc_license or return '';
-    require MT::Util::Deprecated;
-    MT::Util::Deprecated::cc_image($cc);
-}
-
-###########################################################################
-
-=head2 CCLicenseRDF
-
-Returns the RDF markup for a Creative Commons License. If the blog
-has not been assigned a license, this returns an empty string.
-
-B<Attributes:>
-
-=over 4
-
-=item * with_index (optional; default "0")
-
-If specified, forces the trailing "index" filename to be left on any
-entry permalink published in the RDF block.
-
-=back
-
-=for tags blogs, creativecommons, deprecated
-
-=cut
-
-sub _hdlr_cc_license_rdf {
-    my $ctx   = shift;
-    my ($arg) = @_;
-    my $blog  = $ctx->stash('blog');
-    return '' unless $blog;
-    my $cc     = $blog->cc_license or return '';
-    my $cc_url = $blog->cc_license_url;
-    my $rdf    = <<RDF;
-<!--
-<rdf:RDF xmlns="http://web.resource.org/cc/"
-         xmlns:dc="http://purl.org/dc/elements/1.1/"
-         xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
-RDF
-    ## SGML comments cannot contain double hyphens, so we convert
-    ## any double hyphens to single hyphens.
-    my $strip_hyphen = sub {
-        ( my $s = $_[0] ) =~ tr/\-//s;
-        $s;
-    };
-    if ( my $entry = $ctx->stash('entry') ) {
-        my $link = $entry->permalink;
-        my $author_name
-            = $entry->author
-            ? $entry->author->nickname || ''
-            : '';
-        $link = MT::Util::strip_index( $entry->permalink, $blog )
-            unless $arg->{with_index};
-        $rdf .= <<RDF;
-<Work rdf:about="$link">
-<dc:title>@{[ MT::Util::encode_xml($strip_hyphen->($entry->title)) ]}</dc:title>
-<dc:description>@{[ MT::Util::encode_xml($strip_hyphen->($ctx->invoke_handler('entryexcerpt', @_))) ]}</dc:description>
-<dc:creator>@{[ MT::Util::encode_xml($strip_hyphen->($author_name)) ]}</dc:creator>
-<dc:date>@{[ $ctx->invoke_handler( 'entrydate', { 'format' => "%Y-%m-%dT%H:%M:%S" }) .
-             $ctx->invoke_handler('blogtimezone', @_) ]}</dc:date>
-<license rdf:resource="$cc_url" />
-</Work>
-RDF
-    }
-    else {
-        $rdf .= <<RDF;
-<Work rdf:about="@{[ $blog->site_url ]}">
-<dc:title>@{[ MT::Util::encode_xml($strip_hyphen->($blog->name)) ]}</dc:title>
-<dc:description>@{[ MT::Util::encode_xml($strip_hyphen->($blog->description)) ]}</dc:description>
-<license rdf:resource="$cc_url" />
-</Work>
-RDF
-    }
-    require MT::Util::Deprecated;
-    $rdf .= MT::Util::Deprecated::cc_rdf($cc) . "</rdf:RDF>\n-->\n";
-    $rdf;
 }
 
 ###########################################################################

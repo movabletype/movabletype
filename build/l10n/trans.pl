@@ -281,25 +281,6 @@ do {
 } while (<>);
 exit;
 
-print "\n\n\t## not used\n";
-foreach my $p (keys %conv) {
-    $p =~ s/([^\\])'/$1\\'/g;
-    unless ($is_used{$p}) {
-        my $trans = '';
-        if ($conv{$p}) {
-             $trans = $conv{$p};
-             $is_used{$p} = 0;
-        }
-        my $q = "'";
-        if ($p =~ /\\[a-z]/) {
-            $q = '"';
-        }
-        $trans =~ s/([^\\])'/$1\\'/g;
-    printf "\t$q%s$q => '%s',\n", $p, '';#$trans;
-    #printf "\nmsgid \"%s\"\nmsgstr \"%s\"\n", $p, $trans;
-    }
-}
-
 sub find_l10n_dir {
     my ($path) = @_;
     return 0 unless -d $path;
@@ -321,5 +302,3 @@ sub find_l10n_dir {
     }
     return 0;
 }
-
-1;

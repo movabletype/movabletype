@@ -254,9 +254,8 @@ sub _create_category {
         my $value      = $hash_array[1];
         $cat->blog_id( $blog->id );
         if ( 'wp_category_nicename' eq $key ) {
-            my $dash = MT->instance->config('CategoryNameNodash') ? '' : '-';
             my $base = MT::Util::dirify( MT::Util::decode_url($value) )
-                || ( "cat" . $dash . $cat->id );
+                || ( "cat" . $cat->id );
             $base = substr( $base, 0, $self->{basename_limit} );
             $base =~ s/_+$//;
             $base = 'cat' if $base eq '';

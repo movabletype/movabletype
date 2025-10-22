@@ -7,8 +7,8 @@ package MT::Util::Editor;
 use strict;
 use warnings;
 
-my $default_wysiwyg_editor = 'tinymce';
-my $default_source_editor  = 'tinymce';
+my $default_wysiwyg_editor = 'mt_rich_text_editor';
+my $default_source_editor  = 'mt_source_editor';
 
 our ($current_wysiwyg_editor, $current_source_editor);
 
@@ -35,11 +35,11 @@ sub _get_editor {
 }
 
 sub current_wysiwyg_editor {
-    $current_wysiwyg_editor ||= _get_editor(shift, MT->config('WYSIWYGEditor') || MT->config('Editor'), $default_wysiwyg_editor);
+    $current_wysiwyg_editor ||= _get_editor(shift, MT->config('Editor'), $default_wysiwyg_editor);
 }
 
 sub current_source_editor {
-    $current_source_editor ||= _get_editor(shift, MT->config('SourceEditor') || MT->config('Editor'), $default_source_editor);
+    $current_source_editor ||= _get_editor(shift, MT->config('Editor'), $default_source_editor);
 }
 
 1;

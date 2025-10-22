@@ -33,7 +33,7 @@ sub php_version {
 }
 
 sub _find_smarty_version {
-    open my $fh, '<', "$ENV{MT_HOME}/php/extlib/smarty/libs/Smarty.class.php";
+    open my $fh, '<', "$ENV{MT_HOME}/php/vendor/smarty/smarty/libs/Smarty.class.php";
     read($fh, my $buf, 8192) or return;
     my ($smarty_version) = $buf =~ /SMARTY_VERSION\s*=\s*'([0-9.]+)';/;
     my ($major, $minor, $patch) = split /\./, $smarty_version;
@@ -102,7 +102,7 @@ INI
 my $PHP_DAEMON;
 
 sub daemon {
-    my ($class, $template, $blog_id, $extra, $text) = @_;
+    my ($class, $template, $blog_id, $extra) = @_;
 
     $PHP_DAEMON ||= Test::TCP->new(
         code => sub {
@@ -122,15 +122,6 @@ sub daemon {
     my $packed_remote_host = inet_aton('127.0.0.1');
     my $sock_addr          = sockaddr_in($port, $packed_remote_host);
     connect($sock, $sock_addr) or die "Cannot connect to 127.0.0.1:$port: $!";
-
-    if ($text) {
-        $extra = <<"PHP" . $extra;
-\$text = <<<__TMPL__
-$text
-__TMPL__
-;
-PHP
-    }
 
     my $old_handle = select $sock;
     $| = 1;

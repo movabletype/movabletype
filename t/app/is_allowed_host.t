@@ -59,4 +59,16 @@ subtest 'wildcard subdomain' => sub {
     ok $app->is_allowed_host('sub_6.example.com');
 };
 
+subtest 'wildcard subdomain (not use with IP address)' => sub {
+    $app->config->TrustedHosts([]);
+    die unless $app->config->TrustedHosts == 0;
+    $app->config->TrustedHosts('*.111.111.111');
+    ok !$app->is_allowed_host('111.111.111.111');
+
+    $app->config->TrustedHosts([]);
+    die unless $app->config->TrustedHosts == 0;
+    $app->config->TrustedHosts('*:db8:3333:4444:5555:6666:7777:8888');
+    ok !$app->is_allowed_host('2001:db8:3333:4444:5555:6666:7777:8888');
+};
+
 done_testing;

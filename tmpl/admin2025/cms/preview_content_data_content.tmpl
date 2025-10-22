@@ -1,0 +1,45 @@
+<mt:if tag="ContentID" gt="0">
+<div class="row my-4">
+  <div class="col preview-id">
+    <b><__trans phrase="ID"></b><br/>
+    <mt:ContentID escape="html">
+  </div>
+</div>
+</mt:if>
+
+<mt:ContentFields>
+<mt:unless name="content_field_type" eq="text_label">
+<div class="row my-4">
+  <div class="col preview-title">
+    <b><mt:var name="content_field_options{label}" escape="html"> (<mt:var name="content_field_type_label" escape="html">)</b><br/>
+  <mt:ContentField>
+    <mt:if name="content_field_type" eq="date_and_time">
+      <mt:ContentFieldValue format="%Y-%m-%d %H:%M:%S">
+    <mt:elseif name="content_field_type" eq="date_only">
+      <mt:ContentFieldValue format="%Y-%m-%d">
+    <mt:elseif name="content_field_type" eq="time_only">
+      <mt:ContentFieldValue format="%H:%M:%S">
+    <mt:elseif name="content_field_type" like="^(select_box|radio_button|checkboxes)$">
+      <mt:var name="__key__" escape="html">(<mt:var name="__value__" escape="html">)
+    <mt:elseif name="content_field_type" like="^(asset|asset_audio|asset_video|asset_image)$">
+      <mt:AssetLabel escape="html"> (ID:<mt:AssetID>)
+    <mt:elseif name="content_field_type" eq="categories">
+      <mt:CategoryLabel escape="html"> (ID:<mt:CategoryID>)
+    <mt:elseif name="content_field_type" eq="tags">
+      <mt:TagLabel escape="html"><mt:if tag="tagid"> (ID:<mt:TagID>)</mt:if>
+    <mt:elseif name="content_field_type" eq="list">
+      <mt:ContentFieldValue escape="html">
+    <mt:elseif name="content_field_type" eq="tables">
+      <mt:ContentFieldValue regex_replace="/table/","table border='1' cellpadding='3'">
+    <mt:elseif name="content_field_type" eq="content_type">
+      (ID:<mt:ContentID>)
+    <mt:else>
+      <mt:var name="__value__" escape="html">
+    </mt:if>
+    <br/>
+  </mt:ContentField>
+  </div>
+</div>
+</mt:unless>
+</mt:ContentFields>
+

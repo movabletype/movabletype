@@ -13,7 +13,7 @@ use base 'Exporter';
 use MT::I18N qw( const );
 use Time::Local;
 
-use MT::Util::Deprecated qw( perl_sha1_digest_hex cc_url cc_rdf cc_name cc_image is_valid_ip ); ## no critic
+use MT::Util::Deprecated qw( perl_sha1_digest_hex );  ## no critic(TooMuchCode::ProhibitUnusedImport)
 use MT::Util::Encode;
 
 our @EXPORT_OK
@@ -33,7 +33,7 @@ our @EXPORT_OK
     weaken log_time make_string_csv browser_language sanitize_embed
     extract_url_path break_up_text dir_separator deep_do deep_copy
     realpath canonicalize_path clear_site_stats_widget_cache check_fast_cgi
-    encode_json build_upload_destination is_mod_perl1 asset_from_url
+    encode_json build_upload_destination is_asset_from_url
     date_for_listing is_within_a_directory );
 
 push @EXPORT_OK, @MT::Util::Deprecated::EXPORT_OK;
@@ -48,13 +48,6 @@ push @EXPORT_OK, @MT::Util::Deprecated::EXPORT_OK;
             && Scalar::Util->can('weaken') ? 1 : 0;
         Scalar::Util::weaken( $_[0] ) if $Has_Weaken;
     }
-}
-
-sub is_mod_perl1 () {
-    return ( $ENV{MOD_PERL}
-            and
-            ( !$ENV{MOD_PERL_API_VERSION} or $ENV{MOD_PERL_API_VERSION} < 2 )
-    );
 }
 
 sub leap_day {
@@ -1538,236 +1531,6 @@ sub mark_odd_rows {
         ],
         [qw( AM PM )],
     ],
-
-    'fr' => [
-        [qw( dimanche lundi mardi mercredi jeudi vendredi samedi )],
-        [   (   'janvier',   "février", 'mars',     'avril',
-                'mai',       'juin',     'juillet',  "août",
-                'septembre', 'octobre',  'novembre', "décembre"
-            )
-        ],
-        [qw( AM PM )],
-        "%e %B %Y %kh%M",
-        "%e %B %Y",
-        "%kh%M",
-    ],
-
-    'es' => [
-        [   (   'Domingo', 'Lunes',   'Martes', "Miércoles",
-                'Jueves',  'Viernes', "Sábado"
-            )
-        ],
-        [   qw( Enero Febrero Marzo Abril Mayo Junio Julio Agosto
-                Septiembre Octubre Noviembre Diciembre )
-        ],
-        [qw( AM PM )],
-        "%e de %B %Y a las %I:%M %p",
-        "%e de %B %Y",
-    ],
-
-    'pt' => [
-        [   (   'domingo',          'segunda-feira',
-                "ter&#xe7;a-feira", 'quarta-feira',
-                'quinta-feira',     'sexta-feira',
-                "s&#xe1;bado"
-            )
-        ],
-        [   (   'janeiro',  'fevereiro', "mar&#xe7;o", 'abril',
-                'maio',     'junho',     'julho',      'agosto',
-                'setembro', 'outubro',   'novembro',   'dezembro'
-            )
-        ],
-        [qw( AM PM )],
-    ],
-
-    'nl' => [
-        [   qw( zondag maandag dinsdag woensdag donderdag vrijdag
-                zaterdag )
-        ],
-        [   qw( januari februari maart april mei juni juli augustus
-                september oktober november december )
-        ],
-        [qw( am pm )],
-        "%e %B %Y %k:%M",
-        "%e %B %Y",
-        "%k:%M",
-    ],
-
-    'dk' => [
-        [   (   "s&#xf8;ndag", 'mandag', 'tirsdag', 'onsdag',
-                'torsdag',     'fredag', "l&#xf8;rdag"
-            )
-        ],
-        [   qw( januar februar marts april maj juni juli august
-                september oktober november december )
-        ],
-        [qw( am pm )],
-        "%d.%m.%Y %H:%M",
-        "%d.%m.%Y",
-        "%H:%M",
-    ],
-
-    'se' => [
-        [   (   "s&#xf6;ndag", "m&#xe5;ndag", 'tisdag', 'onsdag',
-                'torsdag',     'fredag',      "l&#xf6;rdag"
-            )
-        ],
-        [   qw( januari februari mars april maj juni juli augusti
-                september oktober november december )
-        ],
-        [qw( FM EM )],
-    ],
-
-    'no' => [
-        [   (   "S&#xf8;ndag", "Mandag", 'Tirsdag', 'Onsdag',
-                'Torsdag',     'Fredag', "L&#xf8;rdag"
-            )
-        ],
-        [   qw( Januar Februar Mars April Mai Juni Juli August
-                September Oktober November Desember )
-        ],
-        [qw( FM EM )],
-    ],
-
-    'de' => [
-        [   qw( Sonntag Montag Dienstag Mittwoch Donnerstag Freitag
-                Samstag )
-        ],
-        [   (   'Januar',    'Februar', "März",    'April',
-                'Mai',       'Juni',    'Juli',     'August',
-                'September', 'Oktober', 'November', 'Dezember'
-            )
-        ],
-        [qw( FM EM )],
-        "%e.%m.%y %k:%M",
-        "%e.%m.%y",
-        "%k:%M",
-    ],
-
-    'it' => [
-        [   (   'Domenica',     "Luned&#xec;",
-                "Marted&#xec;", "Mercoled&#xec;",
-                "Gioved&#xec;", "Venerd&#xec;",
-                'Sabato'
-            )
-        ],
-        [   qw( Gennaio Febbraio Marzo Aprile Maggio Giugno Luglio
-                Agosto Settembre Ottobre Novembre Dicembre )
-        ],
-        [qw( AM PM )],
-        "%d.%m.%y %H:%M",
-        "%d.%m.%y",
-        "%H:%M",
-    ],
-
-    'pl' => [
-        [   (   'niedziela', "poniedzia&#322;ek",
-                'wtorek',    "&#347;roda",
-                'czwartek',  "pi&#261;tek",
-                'sobota'
-            )
-        ],
-        [   (   'stycznia',      'lutego',
-                'marca',         'kwietnia',
-                'maja',          'czerwca',
-                'lipca',         'sierpnia',
-                "wrze&#347;nia", "pa&#378;dziernika",
-                'listopada',     'grudnia'
-            )
-        ],
-        [qw( AM PM )],
-        "%e %B %Y %k:%M",
-        "%e %B %Y",
-        "%k:%M",
-    ],
-
-    'fi' => [
-        [   qw( sunnuntai maanantai tiistai keskiviikko torstai perjantai
-                lauantai )
-        ],
-        [   (   'tammikuu',      'helmikuu',
-                'maaliskuu',     'huhtikuu',
-                'toukokuu',      "kes&#xe4;kuu",
-                "hein&#xe4;kuu", 'elokuu',
-                'syyskuu',       'lokakuu',
-                'marraskuu',     'joulukuu'
-            )
-        ],
-        [qw( AM PM )],
-        "%d.%m.%y %H:%M",
-    ],
-
-    'is' => [
-        [   (   'Sunnudagur',            "M&#xe1;nudagur",
-                "&#xde;ri&#xf0;judagur", "Mi&#xf0;vikudagur",
-                'Fimmtudagur',           "F&#xf6;studagur",
-                'Laugardagur'
-            )
-        ],
-        [   (   "jan&#xfa;ar",    "febr&#xfa;ar",
-                'mars',           "apr&#xed;l",
-                "ma&#xed;",       "j&#xfa;n&#xed;",
-                "j&#xfa;l&#xed;", "&#xe1;g&#xfa;st",
-                'september',      "okt&#xf3;ber",
-                "n&#xf3;vember",  'desember'
-            )
-        ],
-        [qw( FH EH )],
-        "%d.%m.%y %H:%M",
-    ],
-
-    'si' => [
-        [   (   'nedelja',      'ponedeljek', 'torek', 'sreda',
-                "&#xe3;etrtek", 'petek',      'sobota',
-            )
-        ],
-        [   qw( januar februar marec april maj junij julij avgust
-                september oktober november december )
-        ],
-        [qw( AM PM )],
-        "%d.%m.%y %H:%M",
-    ],
-
-    'cz' => [
-        [   (   'Ned&#283;le',     'Pond&#283;l&#237;',
-                '&#218;ter&#253;', 'St&#345;eda',
-                '&#268;tvrtek',    'P&#225;tek',
-                'Sobota'
-            )
-        ],
-        [   (   'Leden',               '&#218;nor',
-                'B&#345;ezen',         'Duben',
-                'Kv&#283;ten',         '&#268;erven',
-                '&#268;ervenec',       'Srpen',
-                'Z&#225;&#345;&#237;', '&#216;&#237;jen',
-                'Listopad',            'Prosinec'
-            )
-        ],
-        [qw( AM PM )],
-        "%e. %B %Y %k:%M",
-        "%e. %B %Y",
-        "%k:%M",
-    ],
-
-    'sk' => [
-        [   (   'nede&#318;a',  'pondelok', 'utorok', 'streda',
-                '&#353;tvrtok', 'piatok',   'sobota'
-            )
-        ],
-        [   (   'janu&#225;r', 'febru&#225;r',
-                'marec',       'apr&#237;l',
-                'm&#225;j',    'j&#250;n',
-                'j&#250;l',    'august',
-                'september',   'okt&#243;ber',
-                'november',    'december'
-            )
-        ],
-        [qw( AM PM )],
-        "%e. %B %Y %k:%M",
-        "%e. %B %Y",
-        "%k:%M",
-    ],
-
     'jp' => [
         [   '日曜日', '月曜日', '火曜日', '水曜日',
             '木曜日', '金曜日', '土曜日'
@@ -1779,21 +1542,6 @@ sub mark_odd_rows {
         "%H:%M",
         "%Y年%b月",
         "%b月%e日",
-    ],
-
-    'et' => [
-        [   qw( p&uuml;hap&auml;ev esmasp&auml;ev teisip&auml;ev
-                kolmap&auml;ev neljap&auml;ev reede laup&auml;ev )
-        ],
-        [   (   'jaanuar',   'veebruar', 'm&auml;rts', 'aprill',
-                'mai',       'juuni',    'juuli',      'august',
-                'september', 'oktoober', 'november',   'detsember'
-            )
-        ],
-        [qw( AM PM )],
-        "%m.%d.%y %H:%M",
-        "%e. %B %Y",
-        "%H:%M",
     ],
 );
 
@@ -1828,10 +1576,7 @@ sub browser_language {
 }
 
 sub launch_background_tasks {
-    return !( is_mod_perl1()
-        || $ENV{FAST_CGI}
-        || $ENV{'psgi.input'}
-        || !MT->config->LaunchBackgroundTasks );
+    return !($ENV{FAST_CGI} || $ENV{'psgi.input'} || !MT->config->LaunchBackgroundTasks);
 }
 
 sub start_background_task {
@@ -2483,14 +2228,11 @@ sub normalize_language {
 
 sub clear_site_stats_widget_cache {
     my ($site_id) = @_;
-
-    my @parts;
-    if ($site_id) {
-        my $sub_dir = sprintf( "%03d", $site_id % 1000 );
-        my $top_dir = $site_id > $sub_dir ? $site_id - $sub_dir : 0;
-        @parts = ($top_dir, $sub_dir);
+    require MT::CMS::Dashboard;
+    my $dir = MT::CMS::Dashboard::stats_directory(MT->app, $site_id || 0);
+    if (!defined $site_id) {
+        $dir =~ s![0\\/]+$!!;
     }
-    my $dir = File::Spec->catdir( MT->app->support_directory_path, 'dashboard', 'stats', @parts );
     if (-d $dir) {
         require File::Path;
         File::Path::rmtree($dir);

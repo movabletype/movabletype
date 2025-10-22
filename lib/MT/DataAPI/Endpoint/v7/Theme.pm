@@ -289,8 +289,8 @@ sub export {
 
         if ($fmgr->exists($output_path)) {
             if ($app->param('overwrite_yes')) {
-                use File::Path 'rmtree';
-                rmtree($output_path);
+                require File::Path;
+                File::Path::rmtree($output_path);
             } else {
                 return $app->error(
                     $app->translate(
@@ -488,7 +488,7 @@ __END__
 
 =head1 NAME
 
-MT::DataAPI::Endpoint::v2::Theme - Movable Type class for endpoint definitions about the MT::Theme.
+MT::DataAPI::Endpoint::v7::Theme - Movable Type class for endpoint definitions about the MT::Theme.
 
 =head1 AUTHOR & COPYRIGHT
 

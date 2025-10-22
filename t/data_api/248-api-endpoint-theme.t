@@ -20,6 +20,14 @@ name: Invalid Class Theme
 label: Invalid Class theme
 class: invalid
 YAML
+
+    $test_env->save_file('themes/deprecated_theme/theme.yaml', <<'YAML');
+id: deprecated_theme
+name: Deprecated Theme
+label: Deprecated theme
+class: both
+deprecated: 1
+YAML
 }
 
 use MT::Test::DataAPI;
@@ -70,7 +78,7 @@ sub suite {
                 my ($data, $body) = @_;
                 my $got           = $app->current_format->{unserialize}->($body);
                 my @got_theme_ids = map { $_->{id} } @{ $got->{items} };
-                my @expected      = keys %{$all_themes};
+                my @expected      = grep { !$all_themes->{$_}{deprecated} } keys %{$all_themes};
                 cmp_bag(\@got_theme_ids, \@expected);
             },
         },
@@ -123,7 +131,7 @@ sub suite {
                 my ($data, $body) = @_;
                 my $got           = $app->current_format->{unserialize}->($body);
                 my @got_theme_ids = map { $_->{id} } @{ $got->{items} };
-                my @expected      = keys %{$all_themes};
+                my @expected      = grep { !$all_themes->{$_}{deprecated} } keys %{$all_themes};
                 cmp_bag(\@got_theme_ids, \@expected);
             },
         },
@@ -134,7 +142,7 @@ sub suite {
                 my ($data, $body) = @_;
                 my $got           = $app->current_format->{unserialize}->($body);
                 my @got_theme_ids = map  { $_->{id} } @{ $got->{items} };
-                my @expected      = grep { ($all_themes->{$_}{class} || '') ne 'website' } keys %{$all_themes};
+                my @expected      = grep { !$all_themes->{$_}{deprecated} && ($all_themes->{$_}{class} || '') ne 'website' } keys %{$all_themes};
                 cmp_bag(\@got_theme_ids, \@expected);
             },
         },
@@ -145,7 +153,7 @@ sub suite {
                 my ($data, $body) = @_;
                 my $got           = $app->current_format->{unserialize}->($body);
                 my @got_theme_ids = map { $_->{id} } @{ $got->{items} };
-                my @expected      = keys %{$all_themes};
+                my @expected      = grep { !$all_themes->{$_}{deprecated} } keys %{$all_themes};
                 cmp_bag(\@got_theme_ids, \@expected);
             },
         },
@@ -164,14 +172,14 @@ sub suite {
             },
         },
         {    # Not logged in.
-            path      => '/v2/themes/classic_website',
+            path      => '/v2/themes/classic_test_website',
             method    => 'GET',
             author_id => 0,
             code      => 401,
             error     => 'Unauthorized',
         },
         {    # No permissions.
-            path         => '/v2/themes/classic_website',
+            path         => '/v2/themes/classic_test_website',
             method       => 'GET',
             restrictions => { 0 => [qw/ open_theme_listing_screen /], },
             code         => 403,
@@ -193,26 +201,26 @@ sub suite {
                         return $theme->to_resource();
                     },
                 };
-            } qw/classic_website classic_blog mont-blanc other_theme/,
+            } qw/classic_test_website classic_test_blog mont-blanc other_theme/,
         ),
 
         # get_theme_for_site - normal tests
         {    # Website.
-            path   => '/v2/sites/2/themes/classic_website',
+            path   => '/v2/sites/2/themes/classic_test_website',
             method => 'GET',
             result => sub {
                 require MT::Theme;
-                my $theme = MT::Theme->load('classic_website');
+                my $theme = MT::Theme->load('classic_test_website');
 
                 return $theme->to_resource();
             },
         },
         {    # Blog.
-            path   => '/v2/sites/1/themes/classic_blog',
+            path   => '/v2/sites/1/themes/classic_test_blog',
             method => 'GET',
             result => sub {
                 require MT::Theme;
-                my $theme = MT::Theme->load('classic_blog');
+                my $theme = MT::Theme->load('classic_test_blog');
 
                 return $theme->to_resource();
             },
@@ -230,12 +238,12 @@ sub suite {
                         return $theme->to_resource();
                     },
                 };
-            } qw/classic_website classic_blog mont-blanc other_theme/,
+            } qw/classic_test_website classic_test_blog mont-blanc other_theme/,
         ),
 
         # get_theme_for_site - irregular tests
         {    # Non-existent site.
-            path   => '/v2/sites/10/themes/classic_blog',
+            path   => '/v2/sites/10/themes/classic_test_blog',
             method => 'GET',
             code   => 404,
             result => sub {
@@ -273,7 +281,7 @@ sub suite {
                         };
                     },
                 };
-            } qw/classic_blog mont-blanc other_theme/,
+            } qw/classic_test_blog mont-blanc other_theme/,
         ),
         (
             # themes not applied to the child site.
@@ -292,17 +300,17 @@ sub suite {
                         };
                     },
                 };
-            } qw/classic_website mont-blanc other_theme/,
+            } qw/classic_test_website mont-blanc other_theme/,
         ),
         {    # Not logged in.
-            path      => '/v2/sites/0/themes/classic_website',
+            path      => '/v2/sites/0/themes/classic_test_website',
             method    => 'GET',
             author_id => 0,
             code      => 401,
             error     => 'Unauthorized',
         },
         {    # No permissions (site).
-            path         => '/v2/sites/2/themes/classic_website',
+            path         => '/v2/sites/2/themes/classic_test_website',
             method       => 'GET',
             restrictions => {
                 0 => [qw/ open_theme_listing_screen /],
@@ -313,7 +321,7 @@ sub suite {
                 'Do not have permission to retrieve the requested site\'s theme.',
         },
         {    # No permissions (system).
-            path         => '/v2/sites/0/themes/classic_website',
+            path         => '/v2/sites/0/themes/classic_test_website',
             method       => 'GET',
             restrictions => { 0 => [qw/ open_theme_listing_screen /], },
             code         => 403,
@@ -421,7 +429,7 @@ sub suite {
             },
         },
         {    # Try to apply website theme to blog.
-            path   => '/v2/sites/1/themes/classic_website/apply',
+            path   => '/v2/sites/1/themes/classic_test_website/apply',
             method => 'POST',
             code   => 400,
             result => sub {
@@ -534,7 +542,7 @@ sub suite {
 
         # uninstall_theme - irregular tests
         {    # Protected.
-            path   => '/v2/themes/classic_website',
+            path   => '/v2/themes/classic_test_website',
             method => 'DELETE',
             code   => 403,
             result => sub {

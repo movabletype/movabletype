@@ -1,0 +1,13 @@
+<mt:if name="set" eq="main"><mt:if name="closable"><mt:var name="resizable" value="1"/></mt:if></mt:if>
+<div id="<mt:var name="id" escape="html">" class="<mt:var name="class" escape="html"><mt:if name="resizable"> mt-widget--resizable</mt:if>">
+  <h2 class="mt-widget__title">
+    <mt:if name="resizable">
+      <mtapp:svgicon id="ic_move" title="<__trans phrase="Draggable" />"/>
+    </mt:if>
+    <mt:var name="widget_handler">
+    <mt:var name="header_action">
+  </h2>
+  <div class="mt-widget__content">
+    <mt:var name="content">
+  </div>
+</div>

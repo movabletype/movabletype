@@ -14,15 +14,10 @@ use MT::Blog;
 use MT::Website;
 use POSIX qw( floor );
 
-__PACKAGE__->install_properties(
-    {   class_type  => 'image',
-        column_defs => {
-            'image_width'  => 'integer meta',
-            'image_height' => 'integer meta',
-        },
-        child_of => [ 'MT::Blog', 'MT::Website', ],
-    }
-);
+__PACKAGE__->install_properties({
+    class_type => 'image',
+    child_of   => ['MT::Blog', 'MT::Website',],
+});
 
 # List of supported file extensions (to aid the stock 'can_handle' method.)
 sub extensions {
@@ -426,6 +421,7 @@ sub as_html {
 
     my $app = MT->instance;
     $param->{enclose} = 0 unless exists $param->{enclose};
+    my $enclose = $param->{enclose};
 
     if ( $param->{include} ) {
         my $fname = $asset->file_name;
@@ -480,7 +476,7 @@ sub as_html {
                 = $thumb
                 ? sprintf(
                 '<img src="%s" %s alt="%s" %s />',
-                MT::Util::encode_html( $thumb->url ),   $dimensions,
+                MT::Util::encode_html( $enclose ? $thumb->column('url') : $thumb->url ),   $dimensions,
                 MT::Util::encode_html( $asset->label ), $wrap_style
                 )
                 : MT->translate('View image');
@@ -488,8 +484,8 @@ sub as_html {
             if ($param->{image_default_link} == 1) {
                 $text = sprintf(
                     q|<a href="%s" data-test="popup-now" onclick="window.open('%s','popup','width=%d,height=%d,scrollbars=yes,resizable=no,toolbar=no,directories=no,location=no,menubar=no,status=no,left=0,top=0'); return false">%s</a>|,
-                    MT::Util::encode_html( $popup->url ),
-                    MT::Util::encode_html( $popup->url ),
+                    MT::Util::encode_html( $enclose ? $popup->column('url') : $popup->url ),
+                    MT::Util::encode_html( $enclose ? $popup->column('url') : $popup->url ),
                     $asset->image_width,
                     $asset->image_height + 1,
                     $link,
@@ -497,7 +493,7 @@ sub as_html {
             } else {
                 $text = sprintf(
                     q|<a href="%s">%s</a>|,
-                    MT::Util::encode_html( $popup->url ),
+                    MT::Util::encode_html( $enclose ? $popup->column('url') : $popup->url ),
                     $link,
                 );
             }
@@ -506,9 +502,9 @@ sub as_html {
             if ( $param->{thumb} ) {
                 $text = sprintf(
                     '<a href="%s"><img alt="%s" src="%s" %s %s /></a>',
-                    MT::Util::encode_html( $asset->url ),
+                    MT::Util::encode_html( $enclose ? $asset->column('url') : $asset->url ),
                     MT::Util::encode_html( $asset->label ),
-                    MT::Util::encode_html( $thumb->url ),
+                    MT::Util::encode_html( $enclose ? $asset->column('url') : $thumb->url ),
                     $dimensions,
                     $wrap_style,
                 );
@@ -517,7 +513,7 @@ sub as_html {
                 $text = sprintf(
                     '<img alt="%s" src="%s" %s %s />',
                     MT::Util::encode_html( $asset->label ),
-                    MT::Util::encode_html( $asset->url ),
+                    MT::Util::encode_html( $enclose ? $asset->column('url') : $asset->url ),
                     $dimensions, $wrap_style,
                 );
             }
@@ -527,7 +523,7 @@ sub as_html {
         require MT::Util;
         $text = sprintf(
             '<a href="%s">%s</a>',
-            MT::Util::encode_html( $asset->url ),
+            MT::Util::encode_html( $enclose ? $asset->column('url') : $asset->url ),
             MT::Util::encode_html( $asset->display_name )
         );
     }
@@ -598,29 +594,6 @@ sub on_upload {
     }
     if ( $thumb && !$thumb_width ) {
         undef $thumb;
-    }
-    if ( $param->{image_defaults} ) {
-        require MT::Util::Deprecated;
-        MT::Util::Deprecated::warning(since => '8.5.0', name => 'image_defaults');
-
-        # Save new defaults if requested.
-        $blog->image_default_wrap_text( $param->{wrap_text} ? 1 : 0 );
-        $blog->image_default_align( $param->{align} || MT::Blog::ALIGN() );
-        if ($thumb) {
-            $blog->image_default_thumb(1);
-            $blog->image_default_width($thumb_width);
-            $blog->image_default_wunits( $param->{thumb_width_type}
-                    || MT::Blog::UNITS() );
-        }
-        else {
-            $blog->image_default_thumb(0);
-            $blog->image_default_width(0);
-            $blog->image_default_wunits( MT::Blog::UNITS() );
-        }
-
-        #$blog->image_default_constrain($param->{constrain} ? 1 : 0);
-        $blog->image_default_popup( $param->{popup} ? 1 : 0 );
-        $blog->save or die $blog->errstr;
     }
     my $fmgr = $blog->file_mgr;
     require MT::Util;
@@ -974,8 +947,7 @@ sub rotate {
             'Rotating image failed: Invalid parameter.');
     }
 
-    # Normalize angle,
-    # because NetPBM driver cannot use negative angle.
+    # Normalize angle
     $angle %= 360;
 
     $asset->_transform( sub { $_[0]->rotate( Degrees => $angle ) } );

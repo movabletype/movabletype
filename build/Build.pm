@@ -558,8 +558,6 @@ sub stage_distro {
         my $fh = IO::File->new(">$config");
         print $fh <<CONFIG;
 CGIPath $url
-# DefaultSiteURL http://example.com/blogs/
-# DefaultSiteRoot /var/www/html/blogs/
 Database $db
 ObjectDriver DBI::mysql
 DBUser root

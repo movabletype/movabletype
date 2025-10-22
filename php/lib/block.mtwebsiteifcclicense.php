@@ -13,7 +13,7 @@ function smarty_block_mtwebsiteifcclicense($args, $content, &$ctx, &$repeat) {
         if (empty($blog)) return 0;
         $website = $blog->is_blog() ? $blog->website() : $blog;
         if (empty($website)) return '';
-        return $ctx->_hdlr_if($args, $content, $ctx, $repeat, !empty($website->blog_cc_license));
+        return $ctx->_hdlr_if($args, $content, $ctx, $repeat, 0);
     } else {
         return $ctx->_hdlr_if($args, $content, $ctx, $repeat);
     }

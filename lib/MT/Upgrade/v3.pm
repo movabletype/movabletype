@@ -36,11 +36,6 @@ sub upgrade_functions {
                 code      => sub { $_[0]->file_extension('html') },
             },
         },
-        'core_set_enable_archive_paths' => {
-            version_limit => 3.2,
-            code          => \&core_set_enable_archive_paths,
-            priority      => 9.3,
-        },
 
        # whereas init_comment_visible is done for adding new a comment visible
        # to the comment table, this task sets all comments with a visible
@@ -163,19 +158,6 @@ sub upgrade_functions {
                         : 1;
                 },
                 label => 'Assigning entry basenames for old entries...',
-            }
-        },
-        'core_set_api_password' => {
-            version_limit => 3.2,
-            priority      => 9.3,
-            updater       => {
-                type      => 'author',
-                condition => sub {
-                    ( $_[0]->type == 1 )
-                        && ( ( $_[0]->api_password || '' ) eq '' );
-                },
-                code => sub { $_[0]->api_password( $_[0]->password ) },
-                label => 'Updating user web services passwords...',
             }
         },
         'core_create_config_table' => {
@@ -597,14 +579,6 @@ sub core_create_config_table {
             )
             );
     }
-    return 1;
-}
-
-sub core_set_enable_archive_paths {
-    my $self = shift;
-    require MT::Util::Deprecated;
-    MT::Util::Deprecated::warning(since => '8.3.0');
-    MT->config->EnableArchivePaths( 1, 1 );
     return 1;
 }
 
