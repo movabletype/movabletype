@@ -2,21 +2,21 @@
 
 <mt:setvarblock name="js_include" append="1">
 <mt:unless name="optimize_ui">
-<mtapp:script type="text/javascript" path="js/editor/editor_manager.js">
-<mtapp:script type="text/javascript" path="js/editor/editor_command.js">
-<mtapp:script type="text/javascript" path="js/editor/editor_command/wysiwyg.js">
-<mtapp:script type="text/javascript" path="js/editor/editor_command/source.js">
-<mtapp:script type="text/javascript" path="js/editor/app.js">
-<mtapp:script type="text/javascript" path="js/editor/editor.js">
-<mtapp:script type="text/javascript" path="js/editor/app/editor_strategy.js">
-<mtapp:script type="text/javascript" path="js/editor/app/editor_strategy/single.js">
-<mtapp:script type="text/javascript" path="js/editor/app/editor_strategy/multi.js">
-<mtapp:script type="text/javascript" path="js/editor/app/editor_strategy/separator.js">
-<mtapp:script type="text/javascript" path="js/editor/editor/source.js">
+<mtapp:script path="js/editor/editor_manager.js">
+<mtapp:script path="js/editor/editor_command.js">
+<mtapp:script path="js/editor/editor_command/wysiwyg.js">
+<mtapp:script path="js/editor/editor_command/source.js">
+<mtapp:script path="js/editor/app.js">
+<mtapp:script path="js/editor/editor.js">
+<mtapp:script path="js/editor/app/editor_strategy.js">
+<mtapp:script path="js/editor/app/editor_strategy/single.js">
+<mtapp:script path="js/editor/app/editor_strategy/multi.js">
+<mtapp:script path="js/editor/app/editor_strategy/separator.js">
+<mtapp:script path="js/editor/editor/source.js">
 <mt:else>
-<mtapp:script type="text/javascript" path="js/editor.js">
+<mtapp:script path="js/editor.js">
 </mt:unless>
-<script type="text/javascript">
+<script>
 (function() {
 
 MT.EditorManager.updateMap({
@@ -43,10 +43,10 @@ MT.Editor.updateDefaultCommonOptions(opts);
   <mt:var name="__value__" key="config" setvar="config" />
 
   <mt:loop name="templates">
-    <mt:var name="tmpl" config="$config" />
+    <mt:var name="tmpl" config="$config" mt_version_id="$version" />
   </mt:loop>
   <mt:loop name="extensions">
-    <mt:var name="tmpl" config="$config" />
+    <mt:var name="tmpl" config="$config" mt_version_id="$version" />
   </mt:loop>
 </mt:loop>
 

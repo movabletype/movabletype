@@ -11,7 +11,8 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-my $tmpl_path = "cms/layout/common/header.tmpl";
+my $admin_id  = MT->config->AdminThemeId;
+my $tmpl_path = ($admin_id ? "$admin_id/" : "") . "cms/layout/common/header.tmpl";
 my $tmpl      = $test_env->slurp("$ENV{MT_HOME}/tmpl/$tmpl_path");
 my $bom       = "\xef\xbb\xbf";
 $test_env->save_file( "alt-tmpl/$tmpl_path", "$bom$tmpl" );

@@ -248,7 +248,7 @@ sub load_file {
         my $obj = $MT::Plugins{$sig}{object};
         next if !$obj || ( $obj && !$obj->isa('MT::Plugin') );
 
-        my $full_path = $obj->{full_path};
+        my $full_path = $obj->path;
         push @paths, File::Spec->catdir( $full_path, 'tmpl' )
             if -d $full_path;
     }

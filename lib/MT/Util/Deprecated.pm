@@ -11,8 +11,9 @@ use utf8;
 use base 'Exporter';
 use Cwd;
 use File::Spec;
+use List::Util qw(sum);
 
-our @EXPORT_OK = qw(perl_sha1_digest_hex cc_url cc_rdf cc_name cc_image);
+our @EXPORT_OK = qw(perl_sha1_digest_hex cc_url cc_rdf cc_name cc_image is_valid_ip);
 
 sub warning {
     my (%args) = @_;
@@ -283,6 +284,36 @@ sub cc_image {
         return $image_url;
     }
     "http://creativecommons.org/images/public/" . ($code eq 'pd' ? 'norights' : 'somerights');
+}
+
+sub is_valid_ip {
+    MT::Util::Deprecated::warning(since => '8.8.0');
+    my ($str) = @_;
+
+    my ( $ip, $cidr ) = split /\//, $str;
+    my @ips = split /\./, $ip;
+
+    # xxx.xxx.xxx.xxx
+    if (@ips) {
+        my $num = @ips;
+        return 0 if $num < 4;
+    }
+
+    # 0-255
+    foreach my $num (@ips) {
+        return 0 unless $num =~ /^\d+$/;
+        return 0 if ( $num < 0 || $num > 255 );
+    }
+
+    # 0.0.0.0 255.255.255.255
+    return 0 if ( sum(@ips) == 0 || sum(@ips) == 1020 );
+
+    # CIDR
+    if ( defined $cidr ) {
+        return 0 if ( $cidr < 1 || $cidr > 32 );
+    }
+
+    return $str;
 }
 
 1;

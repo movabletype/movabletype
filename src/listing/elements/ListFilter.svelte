@@ -60,6 +60,8 @@
     itemIndex: string,
     contentIndex: string,
   ): void => {
+    getItemValues();
+
     if (currentFilter.items[itemIndex].type !== "pack") {
       const items = [currentFilter.items[itemIndex]];
       currentFilter.items[itemIndex] = {

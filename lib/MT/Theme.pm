@@ -106,8 +106,9 @@ sub load_theme_loop {
     my $all_themes = load_all_themes($pkg);
     my ( @website_loop, @blog_loop );
     foreach my $theme ( values %$all_themes ) {
-        next if !$theme->{class};
-        next if $type eq 'blog' && $theme->{class} eq 'website';
+        my $class = defined $theme->{class} ? $theme->{class} : '';
+        next if $type eq 'blog' && $class eq 'website';
+        next if $theme->{deprecated};
 
         my ( $errors, $warnings ) = $theme->validate_versions;
         next if @$errors;
@@ -118,10 +119,10 @@ sub load_theme_loop {
             @$warnings ? ( warnings => $warnings ) : (),
         );
         $hash{t_selected} = 1 if $curr eq $theme->id;
-        if ( $theme->{class} eq 'website' ) {
+        if ( $class eq 'website' ) {
             push @website_loop, \%hash;
         }
-        else {
+        elsif ( $class eq 'blog' || $class eq 'both' || $class eq '' ) {
             push @blog_loop, \%hash;
         }
 
@@ -168,6 +169,7 @@ sub _load_from_registry {
         class                 => $reg->{class},
         elements              => $reg->{elements},
         base_css              => $reg->{base_css},
+        deprecated            => $reg->{deprecated},
         required_components   => $reg->{required_components},
         optional_components   => $reg->{optional_components},
         menu_modification     => $reg->{menu_modification},
@@ -223,6 +225,7 @@ sub _load_from_themes_directory {
         elements              => $y->{elements},
         base_css              => $y->{base_css},
         protected             => $y->{protected},
+        deprecated            => $y->{deprecated},
         required_components   => $y->{required_components},
         optional_components   => $y->{optional_components},
         menu_modification     => $y->{menu_modification},

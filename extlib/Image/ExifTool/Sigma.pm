@@ -19,7 +19,7 @@ use strict;
 use vars qw($VERSION %sigmaLensTypes);
 use Image::ExifTool::Exif;
 
-$VERSION = '1.34';
+$VERSION = '1.35';
 
 # sigma LensType lookup (ref IB)
 %sigmaLensTypes = (
@@ -412,7 +412,12 @@ $VERSION = '1.34';
         Name => 'Software',
         Priority => 0,
     },
-    0x0019 => 'AutoBracket',
+    0x0019 => {
+        Name => 'AutoBracket',
+        # (some models don't have spaces around "of")
+        PrintConv => '$val =~ s/(\d)of(\d)/$1 of $2/; $val',
+        PrintConvInv => '$val',
+    },
     0x001a => [ #PH
         {
             Name => 'PreviewImageStart',
@@ -641,8 +646,11 @@ $VERSION = '1.34';
     },
     0x0033 => { #PH
         Name => 'ExposureTime2',
-        Condition => '$$self{Model} !~ / (SD1|SD9|SD15|Merrill|Quattro|fp)$/',
-        Notes => 'models other than the SD1, SD9, SD15 and Merrill/Quattro models',
+        Condition => q{
+            $$self{Model} !~ / (SD1|SD9|SD15|Merrill|Quattro|fp)$/ and
+            $$self{MakerNoteSigmaVer} < 4
+        },
+        Notes => 'only valid for some models',
         ValueConv => '$val * 1e-6',
         ValueConvInv => 'int($val * 1e6 + 0.5)',
         PrintConv => 'Image::ExifTool::Exif::PrintExposureTime($val)',
@@ -864,7 +872,7 @@ Sigma and Foveon maker notes in EXIF information.
 
 =head1 AUTHOR
 
-Copyright 2003-2024, Phil Harvey (philharvey66 at gmail.com)
+Copyright 2003-2025, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

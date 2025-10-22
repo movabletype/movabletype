@@ -117,28 +117,6 @@ sub replace {
     $self->post_ok($form->click);
 }
 
-sub dialog_grant_role_search {
-    my ($self, $value, $opts) = @_;
-    my $form   = $self->find_searchform('grant') or return;
-    my $params = { search => $value, _type => 'user' };
-
-    for my $key (keys %$opts) {
-        next unless exists $params->{$key};
-        $params->{$key} = $opts->{$key};
-    }
-
-    $self->post_ok({
-        %$params,
-        __mode      => (scalar $self->{cgi}->param('__mode')),
-        magic_token => (scalar $self->{cgi}->param('magic_token')),
-        return_args => (scalar $self->{cgi}->param('return_args')),
-        blog_id     => (scalar $self->{cgi}->param('blog_id')),
-        type        => (scalar $self->{cgi}->param('type')),
-        dialog      => 1,
-        json        => 1,
-    });
-}
-
 # This should be implemented in HTML::Form?
 sub _change_checkbox {
     my ($checkbox, $on) = @_;
@@ -217,31 +195,20 @@ sub found_ids {
 }
 
 my $TitleContainerSelectors = {
-    admin2023 => {
-        content_data => 'td.id a.label',
-        template     => 'td:nth-of-type(2) a',
-        entry        => 'td.title > span.title',
-        asset        => 'td:nth-of-type(3) a',
-        blog         => 'td:nth-of-type(2) a',
-        website      => 'td:nth-of-type(2) a',
-        author       => 'td:nth-of-type(2) a',
-    },
-    mt7 => {
-        content_data => 'td.id strong',
-        template     => 'td:nth-of-type(2) a',
-        entry        => 'td.title strong',
-        asset        => 'td:nth-of-type(3) a',
-        blog         => 'td:nth-of-type(2) a',
-        website      => 'td:nth-of-type(2) a',
-        author       => 'td:nth-of-type(2) a',
-    },
+    content_data => 'td.id a.label',
+    template     => 'td:nth-of-type(2) a',
+    entry        => 'td.title > span.title',
+    asset        => 'td:nth-of-type(3) a',
+    blog         => 'td:nth-of-type(2) a',
+    website      => 'td:nth-of-type(2) a',
+    author       => 'td:nth-of-type(2) a',
 };
 
 sub found_titles {
     my $self = shift;
     my @titles;
     my $type     = $self->current_tab or return [];
-    my $selector = $TitleContainerSelectors->{MT->config('AdminThemeId') || 'mt7'}{$type};
+    my $selector = $TitleContainerSelectors->{$type};
     my $found    = $self->found or return [];
     $found->each(sub {
         my ($i, $row) = @_;

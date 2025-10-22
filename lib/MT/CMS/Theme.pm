@@ -48,6 +48,44 @@ sub list {
             blog => $blog,
         );
         $param{current_theme_name} = $current_theme->label if $current_theme;
+        if (my $theme_id = $blog->theme_id) {
+            if (!@{ $param{current_theme_loop} || [] }) {
+                my $theme = {
+                    id       => $theme_id,
+                    theme_id => $theme_id,
+                    current  => 1,
+                };
+                if ($current_theme) {
+                    # deprecated (some of the theme files may still exist, but the theme is not recommended to use anymore)
+                    my $label = $current_theme->label;
+                    $label                  = $label->() if ref $label eq 'CODE';
+                    $theme->{name}          = $theme->{label} = $label;
+                    $theme->{author_name}   = $current_theme->{author_name};
+                    $theme->{author_link}   = $current_theme->{author_link};
+                    $theme->{description}   = $current_theme->description;
+                    $theme->{deprecated}    = 1;
+                    $theme->{removed}       = 1;
+                    $theme->{theme_version} = $current_theme->version;
+
+                    @$theme{qw(thumbnail_url thumb_w thumb_h)}       = $current_theme->thumbnail(size => 'small');
+                    @$theme{qw(m_thumbnail_url m_thumb_w m_thumb_h)} = $current_theme->thumbnail(size => 'medium');
+                    @$theme{qw(l_thumbnail_url l_thumb_w l_thumb_h)} = $current_theme->thumbnail(size => 'large');
+                } else {
+                    # removed
+                    my $name = join ' ', map ucfirst, split /_/, $theme_id;
+                    $theme->{name}        = $theme->{label} = $name;
+                    $theme->{author_name} = '';
+                    $theme->{description} = $app->translate('This theme has been removed.');
+                    $theme->{removed}     = 1;
+
+                    @$theme{qw(thumbnail_url thumb_w thumb_h)}       = MT::Theme->default_theme_thumbnail(size => 'small');
+                    @$theme{qw(m_thumbnail_url m_thumb_w m_thumb_h)} = MT::Theme->default_theme_thumbnail(size => 'medium');
+                    @$theme{qw(l_thumbnail_url l_thumb_w l_thumb_h)} = MT::Theme->default_theme_thumbnail(size => 'large');
+                }
+
+                $param{current_theme_loop} = [$theme];
+            }
+        }
     }
     $param{nav_config}   = 1;
     $param{nav_settings} = 1;
@@ -80,12 +118,13 @@ sub _build_theme_table {
             next if $theme->id ne ( $current || '' );
         }
         else {
-            next if !$theme->{class} || !$classes->{ $theme->{class} };
+            next if $theme->{class} && !$classes->{ $theme->{class} };
             next if $theme->id eq ( $current || '' );
         }
+        next if $theme->{deprecated};
         my @keys = qw( id author_name author_link version );
         my %theme;
-        map { $theme{$_} = $theme->{$_} } @keys;
+        $theme{$_} = $theme->{$_} for @keys;
         delete $theme{author_link} if !is_valid_url( $theme{author_link} );
         $theme{theme_id} = $theme->id;
         $theme{current} = $theme->id eq ( $current || '' ) ? 1 : 0;
@@ -105,7 +144,7 @@ sub _build_theme_table {
             = ( $theme->thumbnail( size => 'medium' ) );
         @theme{qw(l_thumbnail_url l_thumb_w l_thumb_h)}
             = ( $theme->thumbnail( size => 'large' ) );
-        $theme{info}        = [ $theme->information_strings ];
+        $theme{info}        = [ $theme->information_strings(MT->app->blog) ];
         $theme{description} = $theme->description;
         $theme{blog_count}
             = MT::Blog->count( { class => '*', theme_id => $theme->id } );
@@ -118,7 +157,7 @@ sub _build_theme_table {
             $current_theme = \%theme;
         }
         else {
-            if ( $theme->{class} eq 'website' ) {
+            if ( $theme->{class} && $theme->{class} eq 'website' ) {
                 push @website_data, \%theme;
             }
             else {
@@ -459,8 +498,8 @@ sub do_export {
 
         if ( $fmgr->exists($output_path) ) {
             if ( $app->param('overwrite_yes') ) {
-                use File::Path 'rmtree';
-                rmtree($output_path);
+                require File::Path;
+                File::Path::rmtree($output_path);
             }
             elsif ( $app->param('overwrite_no') ) {
                 return $app->redirect(

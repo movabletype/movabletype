@@ -272,6 +272,8 @@ sub edit_role {
         my $assoc_class = $app->model('association');
         my $user_count  = $assoc_class->count({ role_id => $role->id });
         $param{members} = $user_count;
+
+        $param{has_content_field_permission} = $role->permissions =~ /'content_type:[a-z0-9]{40}-content_field:[a-z0-9]{40}'/;
     }
     else {
         for my $p ( values %$perms ) {
@@ -324,15 +326,47 @@ sub edit_role {
 
     @perms = sort { ( $a->{order} || 0 ) <=> ( $b->{order} || 0 ) } @perms;
 
-    $param{'loaded_permissions'} = \@perms;
+    $param{'loaded_permissions'} = \@perms;    # DEPRECATED
 
-    my $all_perm_flags = MT::Permission->perms('blog');
+    # Make each permission list
+    my %perms_blog;
+    my %perms_content_data;
+    my @blog_groups    = qw(blog_admin auth_pub blog_design blog_upload blog_comment);
+    my %is_blog_groups = map { $_ => 1 } @blog_groups;
+    for my $perm (@perms) {
+        my $group = $perm->{group} or next;
 
-    for my $ref (@$all_perm_flags) {
-        $param{ 'have_access-' . $ref->[0] }
-            = ( $role && $role->has( $ref->[0] ) ) ? 1 : 0;
-        $param{ 'prompt-' . $ref->[0] } = $ref->[1];
+        if ($is_blog_groups{$group}) {
+            push @{ $perms_blog{$group} ||= [] }, $perm;
+
+        } elsif (my $ct_unique_id = $perm->{content_type_unique_id}) {
+            my $id = $perm->{id};
+
+            my $type;
+            if ($id =~ /^manage_content_data/) {
+                $type = 'all';
+            } elsif ($id =~ /^create|publish|edit_all|_contentdata:/) {
+                $type = 'manage_content_data';
+            } else {
+                $type = 'manage_content_field';
+            }
+            $perm->{type} = $type;
+
+            $perms_content_data{$ct_unique_id} ||= {};
+            $perms_content_data{$ct_unique_id}{$type} ||= [];
+
+            push @{ $perms_content_data{$ct_unique_id}{$type} }, $perm;
+        }
     }
+    for my $group (@blog_groups) {
+        $param{"loaded_permissions_${group}"} = $perms_blog{$group};
+    }
+    for my $perm_group (@{ MT->model('content_type')->permission_groups }) {
+        my $ct_unique_id = $perm_group->{ct_perm_group_unique_id};
+        my $perm_types   = $perms_content_data{$ct_unique_id} or next;
+        push @{ $param{'loaded_permissions_content_data'} }, { %{$perm_types}, %{$perm_group} };
+    }
+
     $param{saved}          = $app->param('saved');
     $param{nav_privileges} = 1;
     $app->add_breadcrumb(
@@ -1196,29 +1230,89 @@ PERMCHECK: {
         $role = MT::Role->load($role_id);
     }
 
+    require MT::ListProperty;
+    my $blog_list_props = MT::ListProperty->list_properties('blog');
+
+    my $type = $app->param('_type') || '';  # user, author, group, site
+
+    my $sites_view = $app->config->GrantRoleSitesView;
+
+    my $pre_build = sub {
+        my ($param) = @_;
+
+        return scalar(@{$param->{object_loop} || []}) unless $param->{panel_type} eq 'site';
+
+        my (%labels, %missing);
+
+        for my $obj (@{ $param->{object_loop} }) {
+            $labels{ $obj->{id} } = $obj->{label};
+            my $id = $obj->{parent_id};
+            $missing{$id} = 1 if $id and $this_user->has_perm($id);
+        }
+
+        for my $id (keys %missing) {
+            delete $missing{$id} if exists $labels{$id};
+        }
+
+        my @parents = $app->model('blog')->load({ id => [keys %missing] }, { fetchonly => { id => 1, name => 1 } });
+
+        $labels{ $_->id } = $_->name for @parents;
+
+        for my $obj (@{ $param->{object_loop} }) {
+            my $id = $obj->{parent_id};
+            $obj->{parent_site_label} = $id && $labels{ $id } ? $labels{ $id } : '-';
+        }
+
+        # for previous admin theme
+        if ($sites_view eq 'tree') {
+            my $loop = $param->{object_loop};
+            my @has_child_sites    = grep { $_->{has_child}; } @$loop;
+            my %has_child_site_ids = map { $_->{id} => 1 } @has_child_sites;
+            my @new_object_loop;
+            my %seen;
+            foreach my $data (@$loop) {
+
+                # If you have has_child, it is created after the search,
+                # so remove the retrieved object
+                if ( !$data->{has_child} && $has_child_site_ids{$data->{id}} ) {
+                    next;
+                }
+                next if $seen{$data->{id}}++;
+                push @new_object_loop, $data;
+            }
+            $param->{object_loop} = \@new_object_loop;
+        }
+        return scalar(@{$param->{object_loop}});
+    };
+
     my $hasher = sub {
         my ( $obj, $row ) = @_;
         $row->{label} = $row->{name};
         $row->{description} = $row->{nickname} if exists $row->{nickname};
-        my $type = $app->param('type') || '';
-        if ( $type && $type eq 'site' ) {
-            if (   !$app->param('search')
-                && UNIVERSAL::isa( $obj, 'MT::Website' )
-                && $obj->has_blog() )
-            {
-                $row->{has_child} = 1;
-                my $child_blogs = $obj->blogs();
-                my $child_sites = [];
-                push @$child_sites,
-                    {
-                    id          => $_->id,
-                    label       => $_->name,
-                    description => $_->description
-                    } foreach @{$child_blogs};
-                $row->{child_obj}       = $child_sites;
-                $row->{child_obj_count} = scalar @{$child_blogs};
+
+        # for previous admin theme
+        if ($sites_view eq 'tree') {
+            my $type = $app->param('type') || '';
+            if ( $type && $type eq 'site' ) {
+                if (   !$app->param('search')
+                    && UNIVERSAL::isa( $obj, 'MT::Website' )
+                    && $obj->has_blog() )
+                {
+                    $row->{has_child} = 1;
+                    my $child_blogs = $obj->blogs();
+                    my $child_sites = [];
+                    push @$child_sites,
+                        {
+                        id          => $_->id,
+                        label       => $_->name,
+                        description => $_->description
+                        } foreach @{$child_blogs};
+                    $row->{child_obj}       = $child_sites;
+                    $row->{child_obj_count} = scalar @{$child_blogs};
+                }
             }
         }
+
         $row->{disabled} = 1
             if UNIVERSAL::isa( $obj, 'MT::Role' )
             && $obj->has('administer_site')
@@ -1237,49 +1331,42 @@ PERMCHECK: {
         if ( UNIVERSAL::isa( $obj, 'MT::Group' ) ) {
             $row->{icon} = MT->static_path . 'images/icons/ic_group.svg';
         }
+        if (UNIVERSAL::isa($obj, 'MT::Blog')) {
+            $row->{label_html} = $blog_list_props->{name}->html($obj, $app, { no_link => 1 });
 
-        if (UNIVERSAL::isa($obj, 'MT::Blog') && $obj->is_blog()) {
-            if (my $parent = $obj->website) {
-                # replace row only if the blog has a valid parent
-                $row->{has_child} = 1;
-                my $child_blogs = [$obj];
-                my $child_sites = [];
-                foreach (@{$child_blogs}) {
-                    push @$child_sites, {
-                        id          => $_->id,
-                        label       => $_->name,
-                        description => $_->description
-                    };
+            # for previous admin theme
+            if ($sites_view eq 'tree' && $obj->is_blog()) {
+                if (my $parent = $obj->website) {
+                    # replace row only if the blog has a valid parent
+                    $row->{has_child} = 1;
+                    my $child_blogs = [$obj];
+                    my $child_sites = [];
+                    foreach (@{$child_blogs}) {
+                        push @$child_sites, {
+                            id          => $_->id,
+                            label       => $_->name,
+                            description => $_->description
+                        };
+                    }
+                    $row->{child_obj}       = $child_sites;
+                    $row->{child_obj_count} = scalar @{$child_blogs};
+                    $row->{id}              = $parent->id;
+                    $row->{label}           = $parent->name;
+                    $row->{description}     = $parent->description;
                 }
-                $row->{child_obj}       = $child_sites;
-                $row->{child_obj_count} = scalar @{$child_blogs};
-                $row->{id}              = $parent->id;
-                $row->{label}           = $parent->name;
-                $row->{description}     = $parent->description;
             }
         }
     };
-    my $pre_build = sub {
-        my ($param) = @_;
-        my $loop = $param->{object_loop};
-        my @has_child_sites    = grep { $_->{has_child}; } @$loop;
-        my %has_child_site_ids = map { $_->{id} => 1 } @has_child_sites;
-        my @new_object_loop;
-        my %seen;
-        foreach my $data (@$loop) {
 
-            # If you have has_child, it is created after the search,
-            # so remove the retrieved object
-            if ( !$data->{has_child} && $has_child_site_ids{$data->{id}} ) {
-                next;
-            }
-            next if $seen{$data->{id}}++;
-            push @new_object_loop, $data;
-        }
-        $param->{object_loop} = \@new_object_loop;
-    };
+    my ($dialog_template, $panel_loop_template);
 
-    my $type = $app->param('_type') || '';  # user, author, group, site
+    if ($sites_view eq 'tree') {
+        $dialog_template     = 'dialog/create_association.tmpl';
+        $panel_loop_template = 'include/listing_panel.tmpl';
+    } elsif ($sites_view eq 'list') {
+        $dialog_template     = 'dialog/create_association_list.tmpl';
+        $panel_loop_template = 'include/grant_role.tmpl';
+    }
 
     if ( $app->param('search') || $app->param('json') ) {
         my $params = {
@@ -1306,13 +1393,15 @@ PERMCHECK: {
                     params       => $params,
                     author_terms => $author_terms,
                     group_terms  => $group_terms,
-                    template     => 'include/listing_panel.tmpl',
+                    template     => $panel_loop_template,
                     $no_limit ? ( no_limit => 1 ) : (),
+                    pre_build => $pre_build,
                 }
             );
         }
         else {
             my $terms = {};
+            my $args = { sort => 'name' };
             if ($type eq 'author') {
                 $terms->{status} = MT::Author::ACTIVE();
                 $terms->{type}   = MT::Author::AUTHOR();
@@ -1323,16 +1412,18 @@ PERMCHECK: {
             }
             if ($type eq 'site') {
                 $terms->{class} = ['website', 'blog'];
+                $args->{sort}      = 'id';
+                $args->{direction} = 'descend';
             }
             $app->listing(
                 {   terms    => $terms,
-                    args     => { sort => 'name' },
+                    args     => $args,
                     type     => $type,
                     code     => $hasher,
                     params   => $params,
-                    template => 'include/listing_panel.tmpl',
-                    $type eq 'site'       ? ( pre_build => $pre_build ) : (),
+                    template => $panel_loop_template,
                     $app->param('search') ? ( no_limit  => 1 )          : (),
+                    pre_build => $pre_build,
                 }
             );
         }
@@ -1451,7 +1542,7 @@ PERMCHECK: {
             }
 
             if ( $source eq 'site' ) {
-                $terms->{class} = 'website';
+                $terms->{class} = ['website', 'blog'];
             }
 
             if ( $source eq 'author' ) {
@@ -1478,11 +1569,13 @@ PERMCHECK: {
                         author_terms => $author_terms,
                         group_terms  => $group_terms,
                         args         => $args,
+                        pre_build    => $pre_build,
                     }
                 );
             }
             else {
-
+                $args->{sort}      = 'id';
+                $args->{direction} = 'descend';
                 $app->listing(
                     {   no_html => 1,
                         code    => $hasher,
@@ -1490,6 +1583,7 @@ PERMCHECK: {
                         params  => $panel_params,
                         terms   => $terms,
                         args    => $args,
+                        pre_build => $pre_build,
                     }
                 );
             }
@@ -1514,7 +1608,7 @@ PERMCHECK: {
         $params->{build_compose_menus} = 0;
         $params->{build_user_menus}    = 0;
 
-        $app->load_tmpl( 'dialog/create_association.tmpl', $params );
+        $app->load_tmpl( $dialog_template, $params );
     }
 }
 
@@ -2086,6 +2180,81 @@ sub _delete_pseudo_association {
         $app->config( 'DefaultAssignments', undef, 1 );
     }
     $app->config->save_config;
+}
+
+sub issue_api_password {
+    my $app = shift;
+    $app->validate_magic() or return;
+
+    $app->validate_param({
+        id => [qw/ID/],
+    }) or return;
+
+    my $user         = $app->user;
+    my $dest_user_id = $app->param('id');
+
+    return $app->permission_denied() unless $user->id == $dest_user_id || $app->can_do('edit_other_profile');
+
+    my $dest_user = $app->model('author')->load($dest_user_id)
+        or return $app->error($app->translate("User load failed: [_1]", $dest_user_id));
+
+    my $new_password = MT::Util::UniqueID::create_api_password();
+    $dest_user->api_password($new_password);
+    $dest_user->save or return $app->error($dest_user->errstr);
+
+    $app->load_tmpl(
+        'dialog/dialog_api_password.tmpl', {
+            dest_author_id   => $dest_user->id,
+            api_password     => $new_password,
+        });
+}
+
+sub delete_api_password {
+    my $app = shift;
+    $app->validate_magic() or return;
+
+    $app->validate_param({
+        id => [qw/ID/],
+    }) or return;
+
+    my $user         = $app->user;
+    my $dest_user_id = $app->param('id');
+
+    return $app->permission_denied() unless $user->id == $dest_user_id || $app->can_do('edit_other_profile');
+
+    my $dest_user = $app->model('author')->load($dest_user_id)
+        or return $app->error($app->translate("User load failed: [_1]", $dest_user_id));
+    $dest_user->api_password('');
+    $dest_user->save or return $app->error($dest_user->errstr);
+
+    $app->redirect($app->uri(
+        mode => 'dialog_api_password',
+        args => {
+            id      => $dest_user->id,
+            deleted => 1,
+        }));
+}
+
+sub dialog_api_password {
+    my $app = shift;
+
+    $app->validate_param({
+        id => [qw/ID/],
+    }) or return;
+
+    my $user         = $app->user;
+    my $dest_user_id = $app->param('id');
+
+    return $app->permission_denied() unless $user->id == $dest_user_id || $app->can_do('edit_other_profile');
+
+    my $dest_user = $app->model('author')->load($dest_user_id)
+        or return $app->error($app->translate("User load failed: [_1]", $dest_user_id));
+
+    $app->load_tmpl(
+        'dialog/dialog_api_password.tmpl', {
+            has_api_password => length($dest_user->api_password),
+            dest_author_id   => $dest_user->id,
+        });
 }
 
 1;

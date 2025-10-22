@@ -11,7 +11,7 @@ use warnings;
 
 use base qw( MT::Meta );
 
-use constant FRESH            => 0; ## no critic
+use constant FRESH            => 0; ## no critic(TooMuchCode::ProhibitUnusedConstant)
 use constant NEEDS_JOB        => 1;
 use constant IN_QUEUE         => 2;
 use constant NO_AUTO_GENERATE => 3;

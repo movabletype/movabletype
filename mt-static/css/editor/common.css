@@ -33,6 +33,7 @@ Some styles for textarea are used in no Rich Text mode (Rich Text mode uses ifra
 */
 .editor-header {
     position: relative;
+    z-index: 1;
 }
 
 .editor-header .tab {
@@ -41,7 +42,7 @@ Some styles for textarea are used in no Rich Text mode (Rich Text mode uses ifra
     padding: 8px 10px 0 10px;
     border: 1px solid #c0c6c9;
     line-height: 24px;
-    background-color: #fff;
+    background-color: #f3f3f3;
     font-size: 90%;
     text-align: center;
     text-transform: uppercase;
@@ -57,8 +58,8 @@ Some styles for textarea are used in no Rich Text mode (Rich Text mode uses ifra
     color: #33789c;
 }
 .editor-header .selected-tab {
-    border-bottom: 1px solid #f3f3f3;
-    background-color: #f3f3f3;
+    border-bottom: 1px solid #fff;
+    background-color: #fff;
     box-shadow: none;
 }
 .editor-header .selected-tab a,

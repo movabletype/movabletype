@@ -2,11 +2,11 @@
 
 <mt:setvarblock name="js_include" append="1">
 <mt:if name="use_jquery_json">
-<mtapp:script type="text/javascript" path="jquery/jquery.json.js">
+<mtapp:script path="jquery/jquery.json.js">
 </mt:if>
-<mtapp:script type="text/javascript" path="js/tc/client.js">
-<mtapp:script type="text/javascript" path="js/dialog.js">
-<script type="text/javascript">
+<mtapp:script path="js/tc/client.js">
+<mtapp:script path="js/dialog.js">
+<script>
 /* <![CDATA[ */
 var dialog;
 
@@ -79,7 +79,7 @@ function init() {
 </mt:setvarblock>
 
 <mt:setvarblock name="js_include" append="1">
-<script type="text/javascript">
+<script>
 /* <![CDATA[ */
 jQuery(function() {
     init();

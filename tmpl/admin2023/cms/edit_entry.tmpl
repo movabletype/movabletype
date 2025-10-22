@@ -195,7 +195,8 @@
   <mtapp:statusmsg
      id="loaded_revision"
      class="info">
-    <__trans phrase="Restored revision (Date:[_1]).  The current status is: [_2]" params="<$mt:var name="rev_date" escape="html"$>%%<span class="icon-left-wide icon-<$mt:var name="current_status_text" lower_case="1">"><$mt:var name="current_status_label"$></span>">
+    <__trans phrase="Restored revision (Date:[_1]).  The current status is: [_2]" params="<$mt:var name="rev_date" escape="html"$>%%
+      <mt:include name="include/status_label.tmpl" $status_text_key="status_text">">
   </mtapp:statusmsg>
   <mt:if name="missing_tags_rev">
   <mtapp:statusmsg
@@ -264,7 +265,7 @@
     <mt:if name="rev_date">
     <__trans phrase="Revision: <strong>[_1]</strong>" params="<mt:var name="rev_date" escape="html">">
     <br>
-    <a href="<mt:var name="script_url">?__mode=list_revision&_type=<mt:var name="object_type" default="entry">&id=<$mt:var name="id" escape="url"$>&blog_id=<$mt:var name="blog_id"$>&r=<mt:var name="rev_number" escape="html">" class="mt-open-dialog mt-modal-open" data-mt-modal-large title="<__trans phrase="View revisions of this [_1]" params="<mt:var name="object_label">">">
+    <a href="<mt:var name="script_url">?__mode=list_revision&_type=<mt:var name="object_type" default="entry">&id=<$mt:var name="id" escape="url"$>&blog_id=<$mt:var name="blog_id"$>&r=<mt:var name="rev_number" escape="html">" class="mt-open-dialog mt-modal-open" data-mt-modal-large title="<__trans phrase="View revisions of this [_1]" params="<mt:var name="object_label" escape="html">">">
       <__trans phrase="View revisions">
     </a>
     <mt:else>
@@ -305,14 +306,14 @@
    id="category"
    label="$container_label"
    label_class="$container_label_class">
-  <script type="text/javascript">
+  <script>
   /* <![CDATA[ */
       MT.App.selectedCategoryList = <$mt:if name="selected_category_loop"><$mt:var name="selected_category_loop" to_json="1"$><mt:else>[]</mt:if>;
       MT.App.objectType = '<mt:var name="object_type" escape="js">';
 
       Template.templates.categoryList = '<mt:section encode_js="1">
           [# if ( !items.length ) { #]
-              <span class="text-muted disabled">[#|h trans("None selected") #]</span>
+              <span class="text-body-secondary disabled">[#|h trans("None selected") #]</span>
               [#* return #]
           [# } #]
           [# if (MT.App.objectType == 'entry') { #]
@@ -402,35 +403,35 @@
   <mt:if name="can_publish_post">
     <mt:if name="status_publish">
       <mt:setvar name="button_text" value="<__trans phrase="Publish">">
-      <mt:setvarblock name="button_title"><__trans phrase="Publish this [_1]" params="<mt:var name="object_label">" escape="html"></mt:setvarblock>
+      <mt:setvarblock name="button_title"><__trans phrase="Publish this [_1]" params="<mt:var name="object_label" escape="html">"></mt:setvarblock>
     <mt:else>
       <mt:setvar name="button_text" value="<__trans phrase="Save">">
-      <mt:setvarblock name="button_title"><__trans phrase="Draft this [_1]" params="<mt:var name="object_label">" escape="html"></mt:setvarblock>
+      <mt:setvarblock name="button_title"><__trans phrase="Draft this [_1]" params="<mt:var name="object_label" escape="html">"></mt:setvarblock>
     </mt:if>
     <mt:setvar name="publish_button_text" value="<__trans phrase="Publish">">
-    <mt:setvarblock name="publish_button_title"><__trans phrase="Publish this [_1]" params="<mt:var name="object_label">" escape="html"></mt:setvarblock>
+    <mt:setvarblock name="publish_button_title"><__trans phrase="Publish this [_1]" params="<mt:var name="object_label" escape="html">"></mt:setvarblock>
     <mt:setvar name="draft_button_text" value="<__trans phrase="Save">">
-    <mt:setvarblock name="draft_button_title"><__trans phrase="Draft this [_1]" params="<mt:var name="object_label">" escape="html"></mt:setvarblock>
+    <mt:setvarblock name="draft_button_title"><__trans phrase="Draft this [_1]" params="<mt:var name="object_label" escape="html">"></mt:setvarblock>
     <mt:setvar name="scheduled_button_text" value="<__trans phrase="Schedule">">
   <mt:else>
     <mt:setvar name="draft_button_text" value="<__trans phrase="Save">">
-    <mt:setvarblock name="draft_button_title"><__trans phrase="Draft this [_1]" params="<mt:var name="object_label">" escape="html"></mt:setvarblock>
+    <mt:setvarblock name="draft_button_title"><__trans phrase="Draft this [_1]" params="<mt:var name="object_label" escape="html">"></mt:setvarblock>
   </mt:if>
 <mt:else>
   <mt:if name="status_publish">
     <mt:setvar name="button_text" value="<__trans phrase="Update">">
-    <mt:setvarblock name="button_title"><__trans phrase="Update this [_1]" params="<mt:var name="object_label">" escape="html"></mt:setvarblock>
+    <mt:setvarblock name="button_title"><__trans phrase="Update this [_1]" params="<mt:var name="object_label" escape="html">"></mt:setvarblock>
     <mt:setvar name="publish_button_text" value="<__trans phrase="Update">">
-    <mt:setvarblock name="publish_button_title"><__trans phrase="Update this [_1]" params="<mt:var name="object_label">" escape="html"></mt:setvarblock>
+    <mt:setvarblock name="publish_button_title"><__trans phrase="Update this [_1]" params="<mt:var name="object_label" escape="html">"></mt:setvarblock>
     <mt:setvar name="draft_button_text" value="<__trans phrase="Save">">
-    <mt:setvarblock name="draft_button_title"><__trans phrase="Unpublish this [_1]" params="<mt:var name="object_label">" escape="html"></mt:setvarblock>
+    <mt:setvarblock name="draft_button_title"><__trans phrase="Unpublish this [_1]" params="<mt:var name="object_label" escape="html">"></mt:setvarblock>
   <mt:else>
     <mt:setvar name="button_text" value="<__trans phrase="Save">">
-    <mt:setvarblock name="button_title"><__trans phrase="Draft this [_1]" params="<mt:var name="object_label">" escape="html"></mt:setvarblock>
+    <mt:setvarblock name="button_title"><__trans phrase="Draft this [_1]" params="<mt:var name="object_label" escape="html">"></mt:setvarblock>
     <mt:setvar name="publish_button_text" value="<__trans phrase="Publish">">
-    <mt:setvarblock name="publish_button_title"><__trans phrase="Publish this [_1]" params="<mt:var name="object_label">" escape="html"></mt:setvarblock>
+    <mt:setvarblock name="publish_button_title"><__trans phrase="Publish this [_1]" params="<mt:var name="object_label" escape="html">"></mt:setvarblock>
     <mt:setvar name="draft_button_text" value="<__trans phrase="Save">">
-    <mt:setvarblock name="draft_button_title"><__trans phrase="Draft this [_1]" params="<mt:var name="object_label">" escape="html"></mt:setvarblock>
+    <mt:setvarblock name="draft_button_title"><__trans phrase="Draft this [_1]" params="<mt:var name="object_label" escape="html">"></mt:setvarblock>
     <mt:if name="status_future">
       <mt:setvar name="scheduled_button_text" value="<__trans phrase="Save">">
     <mt:else>
@@ -1043,16 +1044,43 @@ div.mce-notification-error {
     display: none;
 }
 
+@media (min-width: 992px) {
+  .text-field {
+    position:relative;
+  }
+
+  .convertBreaksContainer {
+    position:absolute;
+    top:0;
+    right:0;
+    margin:0 0 0 0 !important;
+    z-index:2;
+  }
+
+  .convertBreaksContainer label {
+    display:inline-block;
+    font-weight:normal;
+  }
+
+  .convertBreaksContainer label:after {
+    content:':';
+  }
+
+  .convertBreaksContainer select {
+    display:inline-block;
+    width:auto;
+  }
+}
 </style>
 </mt:setvarblock>
 
 <mt:setvarblock name="js_include" append="1">
   <!--// this MUST loaded after mt.js // -->
-  <mtapp:script type="text/javascript" path="js/edit.js">
+  <mtapp:script path="js/edit.js">
 </mt:setvarblock>
 
 <mt:unless name="editors">
-<mt:if name="rich_editor"><mt:var name="rich_editor_tmpl"><mt:else><mt:include name="include/archetype_editor.tmpl"></mt:if>
+<mt:include name="include/archetype_editor.tmpl">
 <mt:else>
 <mt:include name="include/editor_script.tmpl" id="editor_script_include">
 <mt:setvarblock name="editor_content">
@@ -1062,7 +1090,7 @@ div.mce-notification-error {
 </mt:unless>
 
 <mt:setvarblock name="html_head" append="1">
-<script type="text/javascript">
+<script>
     /* <![CDATA[ */
     if (typeof(Editor) == 'undefined') {
         Editor = {};
@@ -1085,10 +1113,10 @@ div.mce-notification-error {
 
 <mt:setvarblock name="html_head" prepend="1">
   <mtapp:stylesheet path="css/editor/common.css">
-  <mtapp:script type="text/javascript" path="js/tc/focus.js">
-  <mtapp:script type="text/javascript" path="js/tc/tagcomplete.js">
-  <mtapp:script type="text/javascript" path="js/tc/client.js">
-  <script type="text/javascript">
+  <mtapp:script path="js/tc/focus.js">
+  <mtapp:script path="js/tc/tagcomplete.js">
+  <mtapp:script path="js/tc/client.js">
+  <script>
     /* <![CDATA[ */
       var orig_text_format;
       var cur_text_format = '<mt:var name="convert_breaks" escape="js">';
@@ -1357,7 +1385,7 @@ div.mce-notification-error {
           cmtTableSelect.rowSelect = true;
           <mt:if name="tags_js">initTags();</mt:if>
           <mt:unless name="id">jQuery('#title').trigger('focus');</mt:unless>
-          jQuery('#convert_breaks, #convert_breaks_for_mobile').on('change', changedTextFormat);
+          jQuery('#convert_breaks').on('change', changedTextFormat);
       }
 
       var tagPos = 0;
@@ -1442,7 +1470,7 @@ div.mce-notification-error {
 
 <mt:setvarblock name="page_content">
 <mt:if name="dirty">
-  <script type="text/javascript">
+  <script>
     /* <![CDATA[ */
       MT.App.dirty = true;
     /* ]]> */
@@ -1548,7 +1576,7 @@ div.mce-notification-error {
       <div class="mt-draggable__content">
         <mt:var name="field_html">
   <mt:if name="show_hint">
-        <small class="form-text text-muted"><mt:var name="desc_encoded"></small>
+        <small class="form-text text-body-secondary"><mt:var name="desc_encoded"></small>
   </mt:if>
       </div>
     </div>
@@ -1587,7 +1615,7 @@ div.mce-notification-error {
 
   <mt:else eq="text">
     <mt:section id="text">
-    <div id="text-field" class="mod field mb-5">
+    <div id="text-field" class="text-field mod field mb-5">
       <div id="editor">
         <div id="editor-header" class="editor-header" mt:delegate="tab-container">
           <div class="tab selected-tab" mt:command="set-editor-content" mt:tab="content">
@@ -1596,49 +1624,30 @@ div.mce-notification-error {
           <div class="tab" mt:command="set-editor-extended" mt:tab="extended">
             <label class="form-label"><a href="javascript:void(0);" tabindex="-1"><__trans phrase="Extended"></a></label>
           </div>
-          <div id="field-convert_breaks" class="form-inline d-none d-lg-block">
-            <__trans phrase="Format:">
-            <select name="convert_breaks" id="convert_breaks" class="custom-select form-control form-select">
-            <mt:loop name="text_filters">
-              <option value="<$mt:var name="filter_key"$>"<mt:if name="filter_selected"> selected="selected"</mt:if>><$mt:var name="filter_label" escape="html"$></option>
-            </mt:loop>
-            </select>
-            <$mt:setvar name="show_formatting_help" value="1"$>
-          <mt:if name="convert_breaks" eq="richtext">
-            <$mt:setvar name="show_formatting_help" value="0"$>
-          </mt:if>
-          <mt:if name="convert_breaks" eq="0">
-            <$mt:setvar name="show_formatting_help" value="0"$>
-          </mt:if>
-          <mt:if name="convert_breaks" eq="__default__">
-            <$mt:setvar name="show_formatting_help" value="0"$>
-          </mt:if>
-          </div>
         </div>
       </div>
       <mt:include name="include/editor.tmpl">
+      <mtapp:setting
+        id="convert_breaks"
+        label="<__trans phrase="Format">"
+        class="convertBreaksContainer mt-5">
+        <select name="convert_breaks" id="convert_breaks" class="custom-select form-control form-select">
+        <mt:loop name="text_filters">
+          <option value="<$mt:var name="filter_key"$>"<mt:if name="filter_selected"> selected="selected"</mt:if>><$mt:var name="filter_label" escape="html"$></option>
+        </mt:loop>
+        </select>
+        <$mt:setvar name="show_formatting_help" value="1"$>
+        <mt:if name="convert_breaks" eq="richtext">
+        <$mt:setvar name="show_formatting_help" value="0"$>
+        </mt:if>
+        <mt:if name="convert_breaks" eq="0">
+        <$mt:setvar name="show_formatting_help" value="0"$>
+        </mt:if>
+        <mt:if name="convert_breaks" eq="__default__">
+        <$mt:setvar name="show_formatting_help" value="0"$>
+        </mt:if>
+      </mtapp:setting>
     </div>
-
-    <mtapp:setting
-      id="convert_breaks_for_mobile"
-      label="<__trans phrase="Format">"
-      class="d-lg-none">
-      <select name="convert_breaks_for_mobile" id="convert_breaks_for_mobile" class="custom-select form-control form-select">
-      <mt:loop name="text_filters">
-        <option value="<$mt:var name="filter_key"$>"<mt:if name="filter_selected"> selected="selected"</mt:if>><$mt:var name="filter_label" escape="html"$></option>
-      </mt:loop>
-      </select>
-      <$mt:setvar name="show_formatting_help" value="1"$>
-      <mt:if name="convert_breaks" eq="richtext">
-      <$mt:setvar name="show_formatting_help" value="0"$>
-      </mt:if>
-      <mt:if name="convert_breaks" eq="0">
-      <$mt:setvar name="show_formatting_help" value="0"$>
-      </mt:if>
-      <mt:if name="convert_breaks" eq="__default__">
-      <$mt:setvar name="show_formatting_help" value="0"$>
-      </mt:if>
-    </mtapp:setting>
 
     </mt:section>
 
@@ -1817,33 +1826,6 @@ div.mce-notification-error {
         }
         jQuery('#entry_prefs').val('Custom');
         sendEntryPrefs();
-    });
-
-    jQuery(window).on('change_to_mobile_view', function () {
-      var $formats = jQuery('#convert_breaks');
-      var $mobileFormats = jQuery('#convert_breaks_for_mobile');
-      var selectedFormat = $formats.val();
-      if (selectedFormat == 'richtext') {
-        selectedFormat = '_richtext';
-      }
-      if (selectedFormat == $mobileFormats.val()) {
-        return;
-      }
-      $mobileFormats.val(selectedFormat);
-      $mobileFormats.trigger('change', true);
-    });
-    jQuery(window).on('change_to_pc_view', function () {
-      var $formats = jQuery('#convert_breaks');
-      var $mobileFormats = jQuery('#convert_breaks_for_mobile');
-      var selectedFormat = $mobileFormats.val();
-      if (selectedFormat == '_richtext') {
-        selectedFormat = 'richtext';
-      }
-      if (selectedFormat == $formats.val()) {
-        return;
-      }
-      $formats.val(selectedFormat);
-      $formats.trigger('change', true);
     });
 
     jQuery(window).on('resize load', function () {

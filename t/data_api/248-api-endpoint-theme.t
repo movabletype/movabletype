@@ -5,6 +5,7 @@ use warnings;
 use FindBin;
 use lib "$FindBin::Bin/../lib"; # t/lib
 use Test::More;
+use Test::Deep;
 use MT::Test::Env;
 our $test_env;
 BEGIN {
@@ -12,6 +13,21 @@ BEGIN {
         DefaultLanguage => 'en_US',  ## for now
     );
     $ENV{MT_CONFIG} = $test_env->config_file;
+
+    $test_env->save_file('themes/invalid_class_theme/theme.yaml', <<'YAML');
+id: invalid_class_theme
+name: Invalid Class Theme
+label: Invalid Class theme
+class: invalid
+YAML
+
+    $test_env->save_file('themes/deprecated_theme/theme.yaml', <<'YAML');
+id: deprecated_theme
+name: Deprecated Theme
+label: Deprecated theme
+class: both
+deprecated: 1
+YAML
 }
 
 use MT::Test::DataAPI;
@@ -25,6 +41,9 @@ my $app = MT::App::DataAPI->new;
 my $author = MT->model('author')->load(1);
 $author->email('melody@example.com');
 $author->save;
+
+use MT::Theme;
+my $all_themes = MT::Theme->load_all_themes;
 
 # test.
 my $suite = suite();
@@ -55,6 +74,13 @@ sub suite {
         # list_themes - normal tests
         {   path   => '/v2/themes',
             method => 'GET',
+            complete => sub {
+                my ($data, $body) = @_;
+                my $got           = $app->current_format->{unserialize}->($body);
+                my @got_theme_ids = map { $_->{id} } @{ $got->{items} };
+                my @expected      = grep { !$all_themes->{$_}{deprecated} } keys %{$all_themes};
+                cmp_bag(\@got_theme_ids, \@expected);
+            },
         },
 
         # list_themes_for site - irregular tests
@@ -101,14 +127,35 @@ sub suite {
         {    # Website.
             path   => '/v2/sites/2/themes',
             method => 'GET',
+            complete => sub {
+                my ($data, $body) = @_;
+                my $got           = $app->current_format->{unserialize}->($body);
+                my @got_theme_ids = map { $_->{id} } @{ $got->{items} };
+                my @expected      = grep { !$all_themes->{$_}{deprecated} } keys %{$all_themes};
+                cmp_bag(\@got_theme_ids, \@expected);
+            },
         },
         {    # Blog.
             path   => '/v2/sites/1/themes',
             method => 'GET',
+            complete => sub {
+                my ($data, $body) = @_;
+                my $got           = $app->current_format->{unserialize}->($body);
+                my @got_theme_ids = map  { $_->{id} } @{ $got->{items} };
+                my @expected      = grep { !$all_themes->{$_}{deprecated} && ($all_themes->{$_}{class} || '') ne 'website' } keys %{$all_themes};
+                cmp_bag(\@got_theme_ids, \@expected);
+            },
         },
         {    # System. Same as list_themes endpoint.
             path   => '/v2/sites/0/themes',
             method => 'GET',
+            complete => sub {
+                my ($data, $body) = @_;
+                my $got           = $app->current_format->{unserialize}->($body);
+                my @got_theme_ids = map { $_->{id} } @{ $got->{items} };
+                my @expected      = grep { !$all_themes->{$_}{deprecated} } keys %{$all_themes};
+                cmp_bag(\@got_theme_ids, \@expected);
+            },
         },
 
         # get_theme - irregular tests
@@ -125,14 +172,14 @@ sub suite {
             },
         },
         {    # Not logged in.
-            path      => '/v2/themes/classic_website',
+            path      => '/v2/themes/classic_test_website',
             method    => 'GET',
             author_id => 0,
             code      => 401,
             error     => 'Unauthorized',
         },
         {    # No permissions.
-            path         => '/v2/themes/classic_website',
+            path         => '/v2/themes/classic_test_website',
             method       => 'GET',
             restrictions => { 0 => [qw/ open_theme_listing_screen /], },
             code         => 403,
@@ -141,50 +188,62 @@ sub suite {
         },
 
         # get_theme - normal tests
-        {   path   => '/v2/themes/classic_website',
-            method => 'GET',
-            result => sub {
-                require MT::Theme;
-                my $theme = MT::Theme->load('classic_website');
+        (
+            map {
+                my $theme_id = $_;
+                {
+                    path   => '/v2/themes/' . $theme_id,
+                    method => 'GET',
+                    result => sub {
+                        require MT::Theme;
+                        my $theme = MT::Theme->load($theme_id);
 
-                return $theme->to_resource();
-            },
-        },
+                        return $theme->to_resource();
+                    },
+                };
+            } qw/classic_test_website classic_test_blog mont-blanc other_theme/,
+        ),
 
         # get_theme_for_site - normal tests
         {    # Website.
-            path   => '/v2/sites/2/themes/classic_website',
+            path   => '/v2/sites/2/themes/classic_test_website',
             method => 'GET',
             result => sub {
                 require MT::Theme;
-                my $theme = MT::Theme->load('classic_website');
+                my $theme = MT::Theme->load('classic_test_website');
 
                 return $theme->to_resource();
             },
         },
         {    # Blog.
-            path   => '/v2/sites/1/themes/classic_blog',
+            path   => '/v2/sites/1/themes/classic_test_blog',
             method => 'GET',
             result => sub {
                 require MT::Theme;
-                my $theme = MT::Theme->load('classic_blog');
+                my $theme = MT::Theme->load('classic_test_blog');
 
                 return $theme->to_resource();
             },
         },
-        {   path   => '/v2/sites/0/themes/classic_website',
-            method => 'GET',
-            result => sub {
-                require MT::Theme;
-                my $theme = MT::Theme->load('classic_website');
+        (    # System.
+            map {
+                my $theme_id = $_;
+                {
+                    path   => '/v2/sites/0/themes/' . $theme_id,
+                    method => 'GET',
+                    result => sub {
+                        require MT::Theme;
+                        my $theme = MT::Theme->load($theme_id);
 
-                return $theme->to_resource();
-            },
-        },
+                        return $theme->to_resource();
+                    },
+                };
+            } qw/classic_test_website classic_test_blog mont-blanc other_theme/,
+        ),
 
         # get_theme_for_site - irregular tests
         {    # Non-existent site.
-            path   => '/v2/sites/10/themes/classic_blog',
+            path   => '/v2/sites/10/themes/classic_test_blog',
             method => 'GET',
             code   => 404,
             result => sub {
@@ -207,27 +266,51 @@ sub suite {
                 };
             },
         },
-        {    # get website theme via blog.
-            path   => '/v2/sites/1/themes/classic_website',
-            method => 'GET',
-            code   => 404,
-            result => sub {
-                +{  error => {
-                        code    => 404,
-                        message => 'Theme not found',
+        (   # themes not applied to the parent site.
+            map {
+                my $theme_id = $_;
+                {
+                    path   => '/v2/sites/2/themes/' . $theme_id,
+                    method => 'GET',
+                    code   => 404,
+                    result => sub {
+                        +{  error => {
+                                code    => 404,
+                                message => 'Theme not found',
+                            },
+                        };
                     },
                 };
-            },
-        },
+            } qw/classic_test_blog mont-blanc other_theme/,
+        ),
+        (
+            # themes not applied to the child site.
+            map {
+                my $theme_id = $_;
+                {
+                    path   => '/v2/sites/1/themes/' . $theme_id,
+                    method => 'GET',
+                    code   => 404,
+                    result => sub {
+                        +{
+                            error => {
+                                code    => 404,
+                                message => 'Theme not found',
+                            },
+                        };
+                    },
+                };
+            } qw/classic_test_website mont-blanc other_theme/,
+        ),
         {    # Not logged in.
-            path      => '/v2/sites/0/themes/classic_website',
+            path      => '/v2/sites/0/themes/classic_test_website',
             method    => 'GET',
             author_id => 0,
             code      => 401,
             error     => 'Unauthorized',
         },
         {    # No permissions (site).
-            path         => '/v2/sites/2/themes/classic_website',
+            path         => '/v2/sites/2/themes/classic_test_website',
             method       => 'GET',
             restrictions => {
                 0 => [qw/ open_theme_listing_screen /],
@@ -238,7 +321,7 @@ sub suite {
                 'Do not have permission to retrieve the requested site\'s theme.',
         },
         {    # No permissions (system).
-            path         => '/v2/sites/0/themes/classic_website',
+            path         => '/v2/sites/0/themes/classic_test_website',
             method       => 'GET',
             restrictions => { 0 => [qw/ open_theme_listing_screen /], },
             code         => 403,
@@ -259,6 +342,18 @@ sub suite {
                 is( $site->theme_id, 'mont-blanc', 'Changed into mont-blanc.' );
             },
         },
+        {    # Website. (a theme without class)
+            path  => '/v2/sites/2/themes/other_theme/apply',
+            setup => sub {
+                my $site = MT->model('blog')->load(2);
+                die if $site->theme_id eq 'other_theme';
+            },
+            method   => 'POST',
+            complete => sub {
+                my $site = MT->model('blog')->load(2);
+                is($site->theme_id, 'other_theme', 'Changed into other_theme.');
+            },
+        },
         {    # Blog.
             path  => '/v2/sites/1/themes/mont-blanc/apply',
             setup => sub {
@@ -269,6 +364,18 @@ sub suite {
             complete => sub {
                 my $site = MT->model('blog')->load(1);
                 is( $site->theme_id, 'mont-blanc', 'Changed into mont-blanc.' );
+            },
+        },
+        {    # Blog. (a theme without class)
+            path  => '/v2/sites/1/themes/other_theme/apply',
+            setup => sub {
+                my $site = MT->model('blog')->load(1);
+                die if $site->theme_id eq 'other_theme';
+            },
+            method   => 'POST',
+            complete => sub {
+                my $site = MT->model('blog')->load(1);
+                is($site->theme_id, 'other_theme', 'Changed into other_theme.');
             },
         },
 
@@ -322,13 +429,37 @@ sub suite {
             },
         },
         {    # Try to apply website theme to blog.
-            path   => '/v2/sites/1/themes/classic_website/apply',
+            path   => '/v2/sites/1/themes/classic_test_website/apply',
             method => 'POST',
             code   => 400,
             result => sub {
                 +{  error => {
                         code    => 400,
                         message => 'Cannot apply website theme to blog.',
+                    },
+                };
+            },
+        },
+        {    # Apply a theme with invalid class to parent site.
+            path => '/v2/sites/2/themes/invalid_class_theme/apply',
+            method => 'POST',
+            code => 400,
+            result => sub {
+                +{  error => {
+                        code    => 400,
+                        message => 'Cannot apply a theme with invalid class.',
+                    },
+                };
+            },
+        },
+        {    # Apply a theme with invalid class to child site.
+            path => '/v2/sites/1/themes/invalid_class_theme/apply',
+            method => 'POST',
+            code => 400,
+            result => sub {
+                +{  error => {
+                        code    => 400,
+                        message => 'Cannot apply a theme with invalid class.',
                     },
                 };
             },
@@ -411,7 +542,7 @@ sub suite {
 
         # uninstall_theme - irregular tests
         {    # Protected.
-            path   => '/v2/themes/classic_website',
+            path   => '/v2/themes/classic_test_website',
             method => 'DELETE',
             code   => 403,
             result => sub {

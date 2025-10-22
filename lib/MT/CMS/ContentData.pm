@@ -177,18 +177,21 @@ sub edit {
 
             my $original_revision = $content_data->revision;
             my $rn                = $app->param('r');
-            if ( defined $rn && $rn != $content_data->current_revision ) {
+            if ( defined($rn) && $rn != $content_data->current_revision ) {
                 my $status_text
                     = MT::ContentStatus::status_text( $content_data->status );
-                $param->{current_status_text} = $status_text;
-                $param->{current_status_label}
-                    = $app->translate($status_text);
-                my $rev
-                    = $content_data->load_revision( { rev_number => $rn } );
+                $param->{current_status_text}  = $status_text;
+                $param->{current_status_label} = $app->translate($status_text);
+                $param->{current_rev_date}     = MT::Util::format_ts( "%Y-%m-%d %H:%M:%S",
+                    $content_data->modified_on,
+                    $blog, $user ? $user->preferred_language : undef );
+                my $rev = $content_data->load_revision( { rev_number => $rn } );
                 if ( $rev && @$rev ) {
                     $content_data = $rev->[0];
+                    my $rev_obj = $rev->[3];
                     my $values = $content_data->get_values;
                     $param->{$_} = $values->{$_} for keys %$values;
+                    $param->{'revision-note'} = $rev_obj->description;
                     $param->{loaded_revision} = 1;
                 }
                 $param->{rev_number}  = $rn;
@@ -197,8 +200,7 @@ sub edit {
             $param->{rev_date} = MT::Util::format_ts(
                 '%Y-%m-%d %H:%M:%S',
                 $content_data->modified_on,
-                $blog, $app->user ? $app->user->preferred_language : undef
-            );
+                $blog, $user ? $user->preferred_language : undef );
         }
 
         if (my $other_user = $app->user_who_is_also_editing_the_same_stuff($content_data)) {
@@ -215,6 +217,7 @@ sub edit {
         my $status = $app->param('status') || $content_data->status;
         $status =~ s/\D//g;
         $param->{status} = $status;
+        $param->{status_text} = MT::Entry::status_text($status);
         $param->{ 'status_' . MT::ContentStatus::status_text($status) } = 1;
 
         $param->{content_data_permalink} =
@@ -343,8 +346,8 @@ sub edit {
     my $content_field_types = $app->registry('content_field_types');
     for my $field (@$fields) {
         my $e_unique_id = $field->{unique_id};
-        my $can_edit_field
-            = $app->permissions->can_do( 'content_type:'
+        my $can_edit_field = $app->config->DisableContentFieldPermission
+            || $app->permissions->can_do( 'content_type:'
                 . $ct_unique_id
                 . '-content_field:'
                 . $e_unique_id );
@@ -531,7 +534,7 @@ sub edit {
     if ($content_data && $content_data->id) {
         $app->add_breadcrumb($content_data->label || $app->translate('(untitled)'));
     } else {
-        $app->add_breadcrumb($app->translate('Create new [_1]', $content_type->name || '(untitled)'));
+        $app->add_breadcrumb($app->translate('Create [_1]', $content_type->name || '(untitled)'));
         $param->{nav_new_content_data} = 1;
     }
 
@@ -629,11 +632,11 @@ sub save {
     my $data_is_updated;
     foreach my $f (@$field_data) {
         my $e_unique_id = $f->{unique_id};
-        my $can_edit_field =
-          $app->permissions->can_do( 'content_type:'
-              . $content_type->unique_id
-              . '-content_field:'
-              . $e_unique_id );
+        my $can_edit_field = $app->config->DisableContentFieldPermission
+            || $app->permissions->can_do( 'content_type:'
+                . $content_type->unique_id
+                . '-content_field:'
+                . $e_unique_id );
         if (   $content_data_id
             && !$can_edit_field
             && !$app->permissions->can_do('edit_all_content_data') )

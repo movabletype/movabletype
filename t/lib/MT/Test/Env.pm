@@ -7,6 +7,7 @@ use Carp::Always;
 use Test::More;
 use File::Spec;
 use Cwd ();
+use Encode ();
 use Fcntl qw/:flock/;
 use File::Find ();
 use File::Path 'mkpath';
@@ -150,6 +151,9 @@ sub write_config {
 
     require MT;
 
+    my $tmpdir = File::Spec->catdir($ENV{MT_TEST_ROOT}, File::Spec->tmpdir);
+    mkpath($tmpdir) unless -d $tmpdir;
+
     # common directives
     my %config = (
         PluginPath => [qw(
@@ -162,7 +166,7 @@ sub write_config {
             MT_HOME/t/themes/
             MT_HOME/themes/
         )],
-        TempDir                => File::Spec->tmpdir,
+        TempDir                => $tmpdir,
         DefaultLanguage        => $default_language,
         StaticWebPath          => '/mt-static/',
         StaticFilePath         => 'TEST_ROOT/mt-static',
@@ -186,7 +190,7 @@ sub write_config {
         DebugMode              => $ENV{MT_TEST_DEBUG_MODE} || 0,
         BuilderModule          => $ENV{MT_TEST_BUILDER} || 'MT::Builder',
         DisableObjectCache     => $ENV{MT_TEST_DISABLE_OBJECT_CACHE} || 0,
-        $ENV{MT_TEST_ADMIN_THEME_ID} ? (AdminThemeId => $ENV{MT_TEST_ADMIN_THEME_ID}) : (),
+        exists $ENV{MT_TEST_ADMIN_THEME_ID} ? (AdminThemeId => $ENV{MT_TEST_ADMIN_THEME_ID}) : (),
     );
 
     if ($extra) {
@@ -284,6 +288,7 @@ sub save_file {
 
     open my $fh, '>', $file or die "$file: $!";
     binmode $fh;
+    $body = Encode::encode('utf8', $body) if Encode::is_utf8($body);
     print $fh $body;
     $file;
 }
@@ -913,9 +918,9 @@ sub prepare_fixture {
     require MT::Theme;
     my $blog = MT::Blog->load(1);
     if ($blog) {
-        MT::Theme->load('classic_blog');
+        MT::Theme->load('classic_test_blog');
     } else {
-        MT::Theme->load('classic_website');
+        MT::Theme->load('classic_test_website');
     }
 
     $ENV{MT_TEST_LOADED_FIXTURE} = 1;
@@ -998,7 +1003,6 @@ sub load_schema_and_fixture {
     my ($s, $m, $h, $d, $mo, $y) = gmtime;
     my $now      = sprintf("%04d%02d%02d%02d%02d%02d", $y + 1900, $mo + 1, $d, $h, $m, $s);
     my @pool     = ('a' .. 'z', 0 .. 9);
-    my $api_pass = join '', map { $pool[rand @pool] } 1 .. 8;
     my $salt     = join '', map { $pool[rand @pool] } 1 .. 16;
 
     # Tentative password; update it later when necessary
@@ -1008,7 +1012,6 @@ sub load_schema_and_fixture {
     $fixture =~ s/\b__MT_HOME__\b/$MT_HOME/g;
     $fixture =~ s/\b__TEST_ROOT__\b/$root/g;
     $fixture =~ s/\b__NOW__\b/$now/g;
-    $fixture =~ s/\b__API_PASS__\b/$api_pass/g;
     $fixture =~ s/\b__AUTHOR_PASS__\b/$author_pass/g;
     require JSON;
     $fixture = eval { JSON::decode_json($fixture) };
@@ -1289,8 +1292,6 @@ sub save_fixture {
                         if ($now - $t < Time::Seconds::ONE_DAY()) {
                             $value = '__NOW__';
                         }
-                    } elsif ($key eq 'author_api_password') {
-                        $value = '__API_PASS__';
                     } elsif ($key eq 'author_password') {
                         $value = '__AUTHOR_PASS__';
                     } elsif ($key =~ /^(?:role|permission)_permissions$/) {
@@ -1330,9 +1331,9 @@ sub save_fixture {
 sub _tweak_schema {
     my $schema = shift;
     $schema =~ s/^\-\- Created on .+$//m;
+    $schema =~ s/utf8mb3/utf8/g;
     $schema =~ s/NULL DEFAULT NULL/NULL/g;    ## mariadb 10.2.1+
     $schema =~ s/\s+COLLATE utf8_\w+_ci//g;   ## for now; better to specify collation explicitly
-    $schema =~ s/utf8mb3/utf8/g;
     $schema;
 }
 

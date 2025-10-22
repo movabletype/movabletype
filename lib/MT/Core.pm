@@ -33,7 +33,7 @@ BEGIN {
                 config_package => 'DBI::mysql',
                 display        => [
                     'dbserver', 'dbname', 'dbuser', 'dbpass',
-                    'dbport',   'dbsocket'
+                    'dbport',   'dbsocket', 'connect_options'
                 ],
                 recommended => 1,
             },
@@ -41,15 +41,15 @@ BEGIN {
                 label          => 'PostgreSQL Database',
                 dbd_package    => 'DBD::Pg',
                 dbd_version    => '1.32',
-                config_package => 'DBI::postgres',
+                config_package => 'DBI::Pg',
                 display =>
-                    [ 'dbserver', 'dbname', 'dbuser', 'dbpass', 'dbport' ],
+                    [ 'dbserver', 'dbname', 'dbuser', 'dbpass', 'dbport', 'connect_options' ],
             },
             'sqlite' => {
                 label          => 'SQLite Database',
                 dbd_package    => 'DBD::SQLite',
                 config_package => 'DBI::sqlite',
-                display        => ['dbpath'],
+                display        => ['dbpath', 'connect_options'],
             },
         },
         db_form_data => {
@@ -107,6 +107,15 @@ BEGIN {
                 type     => 'text',
                 label    => 'Database Socket',
                 order    => 20,
+            },
+            connect_options => {
+                advanced => 1,
+                element  => 'textarea',
+                label    => 'Connect Options',
+                order    => 100,
+                hint     => sub {
+                    MT->translate("You may need to pass additional, driver-specific parameters, especially when the server requires a secure connection. Each line should have a NAME=VALUE. See the driver's manual for a list of available names and values.");
+                },
             },
         },
         object_types => {
@@ -1849,7 +1858,7 @@ BEGIN {
             'HidePerformanceLoggingSettings' => { default => 0, },
             'CookieDomain'          => undef,
             'CookiePath'            => undef,
-            'CookieHttpOnly'        => { default => 0 },
+            'CookieHttpOnly'        => { default => 1 },
             'CookieSameSite'        => { default => 'Lax' },
             'MailModule'            => { default => 'MIME::Lite', },
             'MailEncoding'          => { default => 'UTF-8', },
@@ -1891,10 +1900,7 @@ BEGIN {
             'NoTempFiles'            => { default => 0, },
             'TempDir'                => { default => '/tmp', },
             'ExportTempDir'          => { default => undef },
-            'RichTextEditor'         => { default => 'archetype', },
-            'WYSIWYGEditor'          => undef,
-            'SourceEditor'           => undef,
-            'Editor'                 => { default => 'tinymce', },
+            'Editor'                 => { default => 'mt_rich_text_editor', },
             'EditorStrategy'         => { default => 'Multi', },
             'EntriesPerRebuild'      => { default => 40, },
             'UseNFSSafeLocking'      => { default => 0, },
@@ -1914,7 +1920,6 @@ BEGIN {
             'ImageQualityJpeg'       => { default => 85 },
             'ImageQualityPng'        => { default => 7 },
             'AutoChangeImageQuality' => { default => 1 },
-            'NetPBMPath'             => undef,
             'AdminScript'            => { default => 'mt.cgi', },
             'CommentScript'          => { default => 'mt-comments.cgi', },
             'TrackbackScript'        => { default => 'mt-tb.cgi', },
@@ -1929,13 +1934,12 @@ BEGIN {
             'PublishCharset'          => { default => 'utf-8', },
             'SafeMode'                => { default => 1, },
             'AllowFileInclude'        => { default => 0, },
-            'AllowTestModifier'       => { default => 1 },
+            'AllowTestModifier'       => { default => 0 },
             'GlobalSanitizeSpec'      => {
                 default =>
                     'a href,b,i,br/,p,strong,em,ul,ol,li,blockquote,pre',
             },
-            'GenerateTrackBackRSS'                   => { default => 0, },
-            'DBIRaiseError'                          => { default => 0, },
+            'DBIRaiseError'                          => { default => 1, },
             'DBIShowErrorStatement'                  => { default => 0, },
             'DBIConnectOptions'                      => { type => 'HASH' },
             'SearchAlwaysAllowTemplateID'            => { default => 0, },
@@ -1955,7 +1959,7 @@ BEGIN {
             'ContentDataIncludeBlogs' => {
                 default => sub { $_[0]->IncludeBlogs }
             },
-            'MaxResults'          => { default => '20', },
+            'MaxResults'          => { alias => 'SearchMaxResults' },
             'SearchSortBy'            => undef,
             'ContentDataSearchSortBy' => {
                 default => sub { $_[0]->SearchSortBy }
@@ -1972,7 +1976,7 @@ BEGIN {
             'SearchDefaultTemplate' => { default => 'default.tmpl', },
             'ContentDataSearchDefaultTemplate' =>
                 { default => 'content_data_default.tmpl' },
-            'SearchMaxResults'            => { alias => 'MaxResults', },
+            'SearchMaxResults'            => { default => 20 },
             'ContentDataSearchMaxResults' => {
                 default => sub { $_[0]->SearchMaxResults }
             },
@@ -2003,13 +2007,11 @@ BEGIN {
                 default => sub { $_[0]->SearchThrottleIPWhitelist }
             },
             'SearchContentTypes' => undef,
-            'SearchMaxCharCount' => { default => 0 },
+            'SearchMaxCharCount' => { default => 1000 },
             'ContentDataSearchMaxCharCount' => {
                 default => sub { $_[0]->SearchMaxCharCount },
             },
             'CMSSearchLimit'     => { default => 125 },
-            'OneHourMaxPings'    => { default => 10, },
-            'OneDayMaxPings'     => { default => 50, },
             'SupportURL'         => undef,
             'NewsURL'            => undef,
             'NewsboxURL'         => undef,
@@ -2052,23 +2054,10 @@ BEGIN {
 
             #'UseJcodeModule'  => { default => 0, },
             'DefaultTimezone'    => { default => '0', },
-            'CategoryNameNodash' => { default => '0', },
             'DefaultListPrefs'   => { type    => 'HASH', },
-            'DefaultEntryPrefs'  => {
-                type    => 'HASH',
-                default => {
-                    type   => 'Default',    # Default|All|Custom
-                    button => 'Below',      # Above|Below|Both
-                    height => 162,          # textarea height
-                },
-            },
             'DeleteFilesAfterRebuild'   => { default => 0, },
             'DeleteFilesAtRebuild'      => { default => 1, },
             'RebuildAtDelete'           => { default => 1, },
-            'MaxTagAutoCompletionItems' => { default => 1000, }, ## DEPRECATED
-            'NewUserDefaultWebsiteId' => undef,                  ## DEPRECATED
-            'DefaultSiteURL'          => undef,                  ## DEPRECATED
-            'DefaultSiteRoot'         => undef,                  ## DEPRECATED
             'DefaultUserLanguage'     => undef,
             'DefaultUserTagDelimiter' => {
                 handler => \&DefaultUserTagDelimiter,
@@ -2118,11 +2107,10 @@ BEGIN {
                 { handler => \&PerformanceLoggingPath },
             'PerformanceLoggingThreshold' => { default => 0.1 },
             'ProcessMemoryCommand' => { default => \&ProcessMemoryCommand },
-            'PublishCommenterIcon' => { default => 1 },
             'EnableAddressBook'    => { default => 0 },
             'SingleCommunity'      => { default => 1 },
-            'DefaultWebsiteTheme'  => { default => 'mont-blanc' },
-            'DefaultBlogTheme'     => { default => 'mont-blanc' },
+            'DefaultWebsiteTheme'  => { default => 'eigerwand' },
+            'DefaultBlogTheme'     => { default => 'eigerwand' },
             'ThemeStaticFileExtensions' => {
                 default =>
                     'html jpg jpeg gif png js css ico flv swf otf ttf svg webp map json'
@@ -2246,18 +2234,25 @@ BEGIN {
             'DefaultListLimit' => { default => '50' },
             'WaitAfterReboot' => { default => '1.0' },
             'DisableMetaRefresh' => { default => 1 },
-            'DynamicTemplateAllowPHP' => { default => 1 },
+            'DynamicTemplateAllowPHP' => { default => 0 },
             'HidePrivateRelatedContentData' => { default => 0 },
-            'DynamicTemplateAllowSmartyTags' => { default => 1 },
-            'AdminThemeId' => { default => 'admin2023' },
+            'DynamicTemplateAllowSmartyTags' => { default => 0 },
+            'AdminThemeId' => {
+                default => 'admin2025',
+                handler => \&AdminThemeId,
+            },
+            'FallbackAdminThemeIds' => { type => 'ARRAY', default => 'admin2023' },
             'PHPErrorLogFilePath' => undef,
             'LogEachFilePublishedInTheBackground' => undef,
             'TrimFilePath' => { default => 0 },
-            'UseRiot' => { default => 1 },
+            'UseWWWFormUrlEncoded' => { default => 1 },
+            'UseRiot' => undef,
             'TrustedHosts' => {
                 type    => 'ARRAY',
                 handler => \&TrustedHosts,
             },
+            'GrantRoleSitesView' => { default => 'list' }, # DEPRECATED
+            'DisableContentFieldPermission' => { default => undef },
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {
@@ -2300,6 +2295,8 @@ BEGIN {
                 content_actions => sub { MT->app->core_content_actions(@_) },
                 list_actions    => sub { MT->app->core_list_actions(@_) },
                 menu_actions    => sub { MT->app->core_menu_actions(@_) },
+                system_menu_actions => sub { MT->app->core_system_menu_actions(@_) },
+                site_menu_actions   => sub { MT->app->core_site_menu_actions(@_) },
                 user_actions    => sub { MT->app->core_user_actions(@_) },
                 search_apis     => sub {
                     require MT::CMS::Search;
@@ -2364,12 +2361,6 @@ BEGIN {
                     my ($type) = @_;
                     return 1 if $type && ( $type ne 'comment' );
                 },
-            },
-        },
-        richtext_editors => {
-            'archetype' => {
-                label    => 'Movable Type Default',
-                template => 'archetype_editor.tmpl',
             },
         },
         commenter_authenticators => \&load_core_commenter_auth,
@@ -3266,6 +3257,7 @@ sub load_core_permissions {
                 'open_system_check_screen'   => 1,
                 'use_tools:system_info_menu' => 1,
                 'delete_any_filters'         => 1,
+                'access_to_role_list'        => 1,
             }
         },
         'system.create_blog' => {
@@ -3583,8 +3575,13 @@ sub ProcessMemoryCommand {
 
 sub SecretToken {
     my $cfg    = shift;
-    my @alpha  = ( 'a' .. 'z', 'A' .. 'Z', 0 .. 9 );
-    my $secret = join '', map $alpha[ rand @alpha ], 1 .. 40;
+    require MIME::Base64;
+    require Crypt::URandom;
+    my $secret = eval { MIME::Base64::encode_base64url(Crypt::URandom::urandom(30)) };
+    if (!$secret) {
+        require MT::Util::UniqueID;
+        $secret = MT::Util::UniqueID::create_sha1_id( MT::Util::UniqueID::MT_SITE_SECRET_NS() );
+    }
     $secret = $cfg->set_internal( 'SecretToken', $secret, 1 );
     $cfg->save_config();
     return $secret;
@@ -3655,6 +3652,17 @@ sub SearchScript {
     else {
         return $mgr->get_internal('SearchScript');
     }
+}
+
+sub AdminThemeId {
+    my $mgr = shift;
+
+    return $mgr->set_internal('AdminThemeId', @_) if @_;
+
+    return $mgr->get_internal('AdminThemeId') unless wantarray;
+
+    my %seen;
+    return grep { defined $_ && !$seen{$_}++ } ($mgr->get_internal('AdminThemeId'), $mgr->FallbackAdminThemeIds, '');
 }
 
 sub TrustedHosts {
@@ -3841,6 +3849,12 @@ URL path.
 A L<MT::ConfigMgr> get/set method for the C<CGIMaxUpload>
 configuration setting. If the user sets invalid value for
 this directive, the system will be use a default value.
+
+=head2 AdminThemeId
+
+A L<MT::ConfigMgr> get/set method for the C<AdminThemeId> configuration setting.
+If the context is looking for a scalar, this method returns a value of C<AdminThemeId>.
+If the context is looking for a list value, this method returns unique values among C<AdminThemeId>, C<FallbackAdminThemeIds> and empty string.
 
 =head2 TrustedHosts
 

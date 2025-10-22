@@ -82,6 +82,7 @@ $.extend(MT.EditorManager.prototype, {
 
     init: function(id, options) {
         var manager = this;
+        manager.editorOptions = options && options.editorOptions || {};
 
         this.id = id;
         var opt = this.options = $.extend({
@@ -92,14 +93,16 @@ $.extend(MT.EditorManager.prototype, {
         }, options);
         this.editors = {};
 
+        var format = this.options['format'];
+
         this.parentElement = null;
         if (this.options['wrap']) {
             this.parentElement = $('#' + id)
                 .wrap('<'+opt['wrapTag']+' class="'+opt['wrapClass']+'" />')
                 .parent();
         }
-        this.currentEditor = this.editorInstance(this.options['format']);
-        this.currentEditor.initOrShow(this.options['format']);
+        this.currentEditor = this.editorInstance(format);
+        this.currentEditor.initOrShow(format);
 
         $('#' + id).data('mt-editor', this);
 
@@ -113,7 +116,7 @@ $.extend(MT.EditorManager.prototype, {
 
         if (! this.editors[editorClass.id]) {
             this.editors[editorClass.id] =
-                new editorClass.editor(this.id, this);
+                new editorClass.editor(this.id, this, this.editorOptions);
         }
 
         return this.editors[editorClass.id];
@@ -127,10 +130,18 @@ $.extend(MT.EditorManager.prototype, {
         if (format == this.options['format']) {
             return;
         }
+        var lastFormat = this.options['format'];
         this.options['format'] = format;
 
         var editor = this.editorInstance(format);
         if (editor === this.currentEditor) {
+            // XXX: legacy editor implementation
+            if (
+              "reload" in this.currentEditor
+              && (lastFormat == 'richtext' || format == 'richtext')
+            ) {
+              this.currentEditor.reload();
+            }
             this.currentEditor.setFormat(format);
         }
         else {
@@ -139,7 +150,7 @@ $.extend(MT.EditorManager.prototype, {
 
             this.currentEditor.hide();
             this.currentEditor = editor;
-            this.currentEditor.initOrShow(format);
+            this.currentEditor.initOrShow(format, content, height);
             this.currentEditor.setContent(content);
             this.currentEditor.setHeight(height);
         }
@@ -163,9 +174,6 @@ $.extend(MT.EditorManager.prototype, {
 
     clearDirty: function() {
         this.currentEditor.clearDirty();
-    },
-    reload: function() {
-        this.currentEditor.reload();
     }
 });
 

@@ -628,10 +628,6 @@ sub finish {
         $ott->save;
 
         my $response = $app->response;
-        # DEPRECATED: only for the older admin template
-        my $cookie_obj = $app->start_session($author);
-        $response->{cookie} =
-            { map { $_ => $cookie_obj->{$_} } (keys %$cookie_obj) };
 
         $response->{redirect} = {
             token => $token,

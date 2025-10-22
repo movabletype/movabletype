@@ -1,0 +1,66 @@
+<mtapp:listing>
+<mt:if name="__first__">
+  <mt:setvarblock name="table_header">
+    <tr>
+      <th class="head cb" id="delete-col-head"><input type="checkbox" name="id-head" value="all" class="select" /></th>
+      <th class="head email primary"><span class="col-label"><__trans phrase="Email"></span></th>
+      <th class="head url primary"><span class="col-label"><__trans phrase="URL"></span></th>
+      <th class="head datetime"><span class="col-label"><__trans phrase="Date Added"></span></th>
+    </tr>
+  </mt:setvarblock>
+  <thead>
+    <mt:var name="table_header">
+  </thead>
+  <tbody>
+</mt:if>
+    <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
+      <td class="cb" id="delete-<mt:var name="id">"><input type="checkbox" name="id" value="<mt:var name="id">" class="select" /></td>
+      <td class="email"><a href="javascript:void(0)" title="<__trans phrase="Click to edit contact">" class="edit-link" id="note-email-link-<mt:var name="id">" onclick="edit_note(<mt:var name="id">); return false;"><mt:var name="email" escape="html"></a>
+        <span id="note-email-field-<mt:var name="id">" style="display: none">
+          <input type="text" name="note-email-<mt:var name="id">" id="note-email-<mt:var name="id">" value="<mt:var name="email" escape="html">" />
+        </span>
+      </td>
+      <td class="url">
+        <span id="note-url-link-<mt:var name="id">">
+          <a href="javascript:void(0)" title="<__trans phrase="Click to edit contact">" onclick="edit_note(<mt:var name="id">); return false;"><mt:var name="url" escape="html" default="-"></a>
+        <mt:if name="url">
+          &nbsp;<a href="<mt:var name="url" escape="html">">&raquo;</a>
+        </mt:if>
+        </span>
+        <span id="note-url-field-<mt:var name="id">" style="display: none">
+          <input type="text" name="note-url-<mt:var name="id">" id="note-url-<mt:var name="id">" value="<mt:var name="url" escape="html">" />
+          <span class="buttons">
+            <button
+               type="button"
+               onclick="submit_edit(<mt:var name="id">); return false;"
+               title="<__trans phrase="Save changes">"
+               class="button">
+              <__trans phrase="Save">
+            </button>
+            <button
+               type="button"
+               onclick="cancel_edit(<mt:var name="id">); return false;"
+               class="button">
+              <__trans phrase="Cancel">
+            </button>
+          </span>
+        </span>
+      </td>
+      <td class="datetime">
+        <span title="<mt:var name="created_on_time_formatted">">
+        <mt:if name="created_on_relative">
+          <mt:if name="dates_relative">
+          <mt:var name="created_on_relative">
+          <mt:else>
+          <mt:var name="created_on_formatted">
+          </mt:if>
+        <mt:else>
+          <mt:var name="created_on_formatted">
+        </mt:if>
+        </span>
+      </td>
+    </tr>
+<mt:if name="__last__">
+  </tbody>
+</mt:if>
+</mtapp:listing>

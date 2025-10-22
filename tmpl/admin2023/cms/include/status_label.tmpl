@@ -1,0 +1,38 @@
+<mt:setvartemplate name="status_label_tmpl" mtvar="1" >
+   <mt:if name="$status_text_key">
+     <mt:var name="$status_text_key" lower_case="1" setvar="status_text_var">
+     <mt:if name="status_text_var" eq="draft">
+       <span class="icon-left-wide icon-draft">
+         <mtapp:svgicon id="ic_draft" title="<__trans phrase="Unpublished (Draft)">" size="sm">
+         <__trans phrase="Unpublished (Draft)">
+       </span>
+     <mt:else name="status_text_var" eq="review">
+       <span class="icon-left-wide icon-warning">
+         <mtapp:svgicon id="ic_error" title="<__trans phrase="Unpublished (Review)">" color="warning" size="sm">
+         <__trans phrase="Unpublished (Review)">
+       </span>
+     <mt:else name="status_text_var" eq="future">
+       <span class="icon-left-wide icon-future">
+         <mtapp:svgicon id="ic_clock" title="<__trans phrase="Scheduled">" color="info" size="sm">
+         <__trans phrase="Scheduled">
+       </span>
+     <mt:else name="status_text_var" eq="publish">
+       <span class="icon-left-wide icon-success">
+         <mtapp:svgicon id="ic_checkbox" title="<__trans phrase="Published">" color="success" size="sm">
+         <__trans phrase="Published">
+       </span>
+     <mt:else name="status_text_var" eq="spam">
+       <span class="icon-left-wide icon-spam">
+         <mtapp:svgicon id="ic_error" title="<__trans phrase="Unpublished (Spam)">" color="warning" size="sm">
+         <__trans phrase="Unpublished (Spam)">
+       </span>
+     <mt:else name="status_text_var" eq="unpublish">
+       <span class="icon-left-wide icon-unpublish">
+         <mtapp:svgicon id="ic_stop" title="<__trans phrase="Unpublished (End)">" color="danger" size="sm">
+         <__trans phrase="Unpublished (End)">
+       </span>
+     </mt:if>
+   </mt:if>
+ </mt:setvartemplate>
+
+ <mt:var name="status_label_tmpl">

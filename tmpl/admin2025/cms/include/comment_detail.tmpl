@@ -1,0 +1,23 @@
+<div class="comment" id="comment-<$MTCommentID$>">
+    <div class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+               <span class="byline">
+                            <$mt:CommentAuthorIdentity$>
+        <mt:IfCommentParent>
+                            <__trans phrase="[_1] replied to <a href="[_2]">comment from [_3]</a>" params="<span class="vcard author"><$mt:CommentAuthorLink$></span>%%<mt:CommentParent><$mt:CommentLink$></mt:CommentParent>%%<mt:CommentParent><$mt:CommentAuthor escape="html"$></mt:CommentParent>">
+        <mt:Else>
+                            <span class="vcard author"><$mt:CommentAuthorLink escape="html"$></span>
+        </mt:IfCommentParent>
+                            | <a href="<$mt:CommentLink$>"><abbr class="published" title="<$mt:CommentDate format_name="iso8601"$>"><$mt:CommentDate$></abbr></a>
+        <mt:IfCommentsAccepted>
+                            | <$mt:CommentReplyToLink$>
+        </mt:IfCommentsAccepted>
+               </span>
+            </div>
+        </div>
+        <div class="comment-content">
+            <$MTCommentBody$>
+        </div>
+    </div>
+</div>

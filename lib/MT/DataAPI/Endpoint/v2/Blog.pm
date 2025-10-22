@@ -296,21 +296,20 @@ sub _default_theme {
     my $directive     = 'Default' . ucfirst($type) . 'Theme';
     my $default_theme = $app->config($directive);
 
-    if ( $default_theme && MT::Theme->load($default_theme) ) {
+    if ($default_theme) {
+        my $loaded = MT::Theme->load($default_theme);
 
         # default theme is available.
-        return $default_theme;
+        return $default_theme if $loaded && !$loaded->{deprecated};
     }
-    else {
-        # If default theme is not available,
-        # select the default theme displayed on Create Website/Blog screen.
-        my $loop = MT::Theme->load_theme_loop($type);
-        if ( ref($loop) eq 'ARRAY' && @$loop ) {
-            return $loop->[0]->{value};
-        }
-        else {
-            return;    # No theme.
-        }
+
+    # If default theme is not available (or if it is deprecated),
+    # select the default theme displayed on Create Website/Blog screen.
+    my $loop = MT::Theme->load_theme_loop($type);
+    if (ref($loop) eq 'ARRAY' && @$loop) {
+        return $loop->[0]->{value};
+    } else {
+        return;    # No theme.
     }
 }
 

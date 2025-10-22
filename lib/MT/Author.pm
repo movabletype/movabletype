@@ -13,6 +13,8 @@ use MT::Util::Encode;
 use MT::Summary;    # Holds MT::Summarizable
 use base qw( MT::Object MT::Scorable MT::Summarizable );
 
+our $MAX_STARRED_SITES = 50;
+
 __PACKAGE__->install_properties(
     {   column_defs => {
             'id'                   => 'integer not null auto_increment',
@@ -24,7 +26,7 @@ __PACKAGE__->install_properties(
             'url'                  => 'string(255)',
             'public_key'           => 'text',
             'preferred_language'   => 'string(50)',
-            'api_password'         => 'string(60)',
+            'api_password'         => 'string(106)',
             'remote_auth_username' => 'string(50)',
             'remote_auth_token'    => 'string(50)',
             'entry_prefs'          => 'string(255)',
@@ -52,6 +54,7 @@ __PACKAGE__->install_properties(
             'favorite_blogs'           => 'array meta',
             'favorite_websites'        => 'array meta',
             'favorite_sites'           => 'array meta',
+            'starred_sites'            => 'array meta',
             'password_reset'           => 'string meta',
             'password_reset_expires'   => 'string meta',
             'password_reset_return_to' => 'string meta',
@@ -118,11 +121,16 @@ use vars qw(@EXPORT_OK %EXPORT_TAGS);
 
 sub list_props {
     return {
+        id => {
+            base    => '__virtual.id',
+            order   => 100,
+            display => 'optional',
+        },
         name => {
             auto       => 1,
             label      => 'Username',
             display    => 'force',
-            order      => 100,
+            order      => 200,
             sub_fields => [
                 {   class   => 'userpic',
                     label   => 'Userpic',
@@ -139,14 +147,14 @@ sub list_props {
             auto      => 1,
             label     => 'Display Name',
             display   => 'default',
-            order     => 200,
+            order     => 300,
             bulk_html => \&_nickname_bulk_html,
         },
         entry_count => {
             label        => 'Entries',
             filter_label => '__ENTRY_COUNT',
             display      => 'default',
-            order        => 300,
+            order        => 400,
             base         => '__virtual.object_count',
             col_class    => 'num',
             count_class  => 'entry',
@@ -163,7 +171,7 @@ sub list_props {
             label        => 'Content Data',
             filter_label => 'Content Data Count',
             display      => 'default',
-            order        => 250,
+            order        => 350,
             base         => '__virtual.object_count',
             col_class    => 'num',
             count_class  => 'content_data',
@@ -295,7 +303,6 @@ sub list_props {
                 },
             ],
         },
-        id      => { view => [] },
         content => {
             base    => '__virtual.content',
             fields  => [qw( name nickname email url )],
@@ -336,6 +343,11 @@ sub system_filters {
 
 sub member_list_props {
     return {
+        id => {
+            base    => '__virtual.id',
+            order   => 100,
+            display => 'optional',
+        },
         name => {
             auto       => 1,
             label      => 'Username',
@@ -351,19 +363,19 @@ sub member_list_props {
                     display => 'optional',
                 },
             ],
-            order => 100,
+            order => 200,
         },
         nickname => {
             label     => 'Display Name',
             auto      => 1,
             bulk_html => \&_nickname_bulk_html,
-            order     => 200,
+            order     => 300,
             display   => 'default',
         },
         role => {
             base      => '__virtual.single_select',
             label     => 'Roles',
-            order     => 300,
+            order     => 400,
             display   => 'default',
             view_sort => [],
             html      => sub {
@@ -421,13 +433,13 @@ sub member_list_props {
                 return { blog_id => $opts->{blog_ids} };
             },
             count_args => { unique => 1, },
-            order      => 400,
+            order      => 500,
         },
         content_count => {
             label        => 'Content Data',
             filter_label => 'Content Data Count',
             display      => 'default',
-            order        => 350,
+            order        => 450,
             base         => '__virtual.object_count',
             col_class    => 'num',
             count_class  => 'content_data',
@@ -694,30 +706,33 @@ sub remove_failedlogin {
 }
 
 sub set_password {
-    my $auth   = shift;
+    my $auth = shift;
     my ($pass) = @_;
-    my @alpha  = ( 'a' .. 'z', 'A' .. 'Z', 0 .. 9 );
-    my $salt   = join '', map $alpha[ rand @alpha ], 1 .. 16;
-    my $crypt_sha;
+    $auth->column('password', crypt_password($pass));
+}
 
-    if ( eval { require MT::Util::Digest::SHA } ) {
-
-        # Can use SHA512
-        $crypt_sha
-            = '$6$'
-            . $salt . '$'
-            . MT::Util::Digest::SHA::sha512_base64( $salt . MT::Util::Encode::encode_utf8($pass) );
+sub api_password {
+    my $self = shift;
+    if (@_) {
+        my ($new_password) = @_;
+        my $crypted = length($new_password) ? crypt_password($new_password) : '';
+        $self->column('api_password', $crypted);
+    } else {
+        return $self->column('api_password');
     }
-    else {
+}
 
-        # Use SHA-1 algorism
-        $crypt_sha
-            = '{SHA}'
-            . $salt . '$'
-            . MT::Util::perl_sha1_digest_hex( $salt . $pass );
-    }
+sub crypt_password {
+    my $pass  = shift;
 
-    $auth->column( 'password', $crypt_sha );
+    require MIME::Base64;
+    require Crypt::URandom;
+    my $salt = MIME::Base64::encode_base64(Crypt::URandom::urandom(12));
+    chomp($salt);
+    $salt =~ s/\+/./g;
+
+    require MT::Util::Digest::SHA;
+    return '$6$' . $salt . '$' . MT::Util::Digest::SHA::sha512_base64($salt . MT::Util::Encode::encode_utf8($pass));
 }
 
 sub is_valid_password {
@@ -727,6 +742,21 @@ sub is_valid_password {
     require MT::Auth;
     return MT::Auth->is_valid_password( $author, $pass, $crypted,
         $error_ref );
+}
+
+sub is_valid_api_password {
+    my ($author, $pass) = @_;
+    $pass = '' unless length($pass);
+
+    my $real_pass = $author->column('api_password');
+    return if !$real_pass;
+
+    if ($real_pass =~ m/^\$6\$(.*)\$(.*)/) {
+        my ($salt, $value) = ($1, $2);
+        require MT::Util::Digest::SHA;
+        return $value eq MT::Util::Digest::SHA::sha512_base64($salt . MT::Util::Encode::encode_utf8($pass));
+    }
+    return;
 }
 
 sub is_email_hidden {
@@ -834,16 +864,6 @@ sub save {
     my $auth = shift;
 
     if ( $auth->type == AUTHOR ) {
-        if ( !$auth->id ) {
-
-            # New author, undefined API password. Generate one.
-            if ( !defined $auth->api_password ) {
-                my @pool = ( 'a' .. 'z', 0 .. 9 );
-                my $pass = '';
-                for ( 1 .. 8 ) { $pass .= $pool[ rand @pool ] }
-                $auth->api_password($pass);
-            }
-        }
 
         # Generate basename
         unless ( $auth->basename() ) {

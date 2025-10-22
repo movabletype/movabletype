@@ -102,8 +102,10 @@ sub _load_all_themes {
 sub _list_for_system {
     my ($themes) = @_;
 
+    # Deprecated themes may still be used somewhere and that's ok.
+    # However, they should be removed from the available lists.
     my @themes_in_use    = grep { $_->{blog_count} } @$themes;
-    my @themes_available = grep { !$_->{blog_count} } @$themes;
+    my @themes_available = grep { !$_->{blog_count} && !$_->{deprecated} } @$themes;
 
     my @themes_in_use_website
         = grep { ( $_->{class} || '' ) eq 'website' } @themes_in_use;
@@ -134,6 +136,9 @@ sub _list_for_website {
         {
             $current_theme = $t;
         }
+        elsif ( $t->{deprecated} ) {
+            next;
+        }
         elsif ( ( $t->{class} || '' ) eq 'website' ) {
             push @website_themes, $t;
         }
@@ -159,7 +164,7 @@ sub _list_for_blog {
             $current_theme = $t;
         }
         else {
-            push @blog_themes, $t;
+            push @blog_themes, $t unless $t->{deprecated};
         }
     }
 
@@ -336,9 +341,23 @@ sub apply {
     my $theme    = MT::Theme->load($theme_id)
         or return $app->error( $app->translate('Theme not found'), 404 );
 
-    if ( $site->is_blog && ( $theme->{class} || '' ) eq 'website' ) {
+    $theme->{class} = '' unless defined $theme->{class};
+
+    if (   $theme->{class} ne ''
+        && $theme->{class} ne 'website'
+        && $theme->{class} ne 'blog'
+        && $theme->{class} ne 'both')
+    {
+        return $app->error($app->translate('Cannot apply a theme with invalid class.'), 400);
+    }
+
+    if ( $site->is_blog && $theme->{class} eq 'website' ) {
         return $app->error(
             $app->translate('Cannot apply website theme to blog.'), 400 );
+    }
+
+    if ($theme->{deprecated}) {
+        return $app->error($app->translate('Cannot apply a deprecated theme: [_1]', $theme_id), 400);
     }
 
     $site->theme_id( $theme->id );
@@ -643,8 +662,8 @@ sub export {
 
         if ( $fmgr->exists($output_path) ) {
             if ( $app->param('overwrite_yes') ) {
-                use File::Path 'rmtree';
-                rmtree($output_path);
+                require File::Path;
+                File::Path::rmtree($output_path);
             }
             else {
                 return $app->error(

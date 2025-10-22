@@ -145,6 +145,57 @@ subtest 'content_data' => sub {
 
         $app->change_content_type($ct_id);
     };
+
+    subtest 'limit' => sub {
+        my $cfs = $objs->{content_type}{ct_multi}{content_field};
+        my $cd = MT::Test::Permission->make_content_data(
+            authored_on     => '19810612223059', # oldest
+            blog_id         => $blog_id,
+            content_type_id => $ct_id,
+            identifier      => "oldest",
+            label           => "oldest",
+            data            => {
+                $cfs->{cf_single_line_text}->id => "oldest",
+            },
+        );
+
+        subtest 'default limit' => sub {
+            $app->get_ok({ __mode => 'search_replace', blog_id => $blog_id });
+            $app->change_tab('content_data');
+            $app->change_content_type($ct_id);
+            my $cf_id1 = $objs->{content_type}{ct_multi}{content_field}{cf_single_line_text}->id;
+            $app->search('oldest', { is_limited => 1, search_cols => ['__field:' . $cf_id1] });
+            is_deeply($app->found_titles, ['oldest']);
+            ok !$app->have_more_link_exists;
+        };
+
+        subtest 'CMSSearchLimit is 1' => sub {
+            my $cms_search_limit_org = MT->config('CMSSearchLimit');
+            $test_env->update_config(CMSSearchLimit => 1);
+
+            $app->get_ok({ __mode => 'search_replace', blog_id => $blog_id });
+            $app->change_tab('content_data');
+            $app->change_content_type($ct_id);
+            my $cf_id1 = $objs->{content_type}{ct_multi}{content_field}{cf_single_line_text}->id;
+            $app->search('oldest', { is_limited => 1, search_cols => ['__field:' . $cf_id1] });
+            is_deeply($app->found_titles, ['oldest']);
+            ok !$app->have_more_link_exists;
+
+            subtest 'have more link exists' => sub {
+                $app->get_ok({ __mode => 'search_replace', blog_id => $blog_id });
+                $app->change_tab('content_data');
+                $app->change_content_type($ct_id);
+                my $cf_id1 = $objs->{content_type}{ct_multi}{content_field}{cf_single_line_text}->id;
+                $app->search('text', { is_limited => 1, search_cols => ['__field:' . $cf_id1] });
+                is_deeply($app->found_titles, ['cd_multi2']);
+                ok $app->have_more_link_exists;
+            };
+
+            $test_env->update_config(CMSSearchLimit => $cms_search_limit_org);
+        };
+
+        $cd->remove();
+    };
 };
 
 subtest 'content_data with daterange' => sub {
@@ -456,36 +507,6 @@ subtest 'content_data replace' => sub {
     };
 
     $_->remove for @cds;
-};
-
-subtest 'dialog_grant_role' => sub {
-    require JSON;
-
-    # XXX move to role
-    my $expected = sub {
-        my ($app, $names, $pager) = @_;
-        my $json = eval { JSON::decode_json($app->content) };
-        ok !$@, 'json is ok';
-        my $wq    = Web::Query::LibXML->new($json->{html});
-        my @links = $wq->find('tr td:nth-of-type(2) .panel-label') || ();
-        my @names = map { my $txt = $_; $txt =~ s{^\s+|\s+$}{}g; $txt } map { $_->text } @links;
-        is_deeply(\@names, $names, 'right authors');
-        for my $key (keys %{$pager}) {
-            is($json->{pager}->{$key}, $pager->{$key}, qq{right value for pager key:$key});
-        }
-        # note explain $json;
-    };
-
-    my $app = MT::Test::App->new('MT::App::CMS');
-    $app->login($author);
-
-    $app->get_ok({ __mode => 'dialog_grant_role', blog_id => $blog_id });
-    $app->dialog_grant_role_search('o');
-    $expected->($app, ['author', 'Melody'], { limit => 25, listTotal => 2, offset => 0, rows => 2 });
-
-    $app->get_ok({ __mode => 'dialog_grant_role', blog_id => 0 });
-    $app->dialog_grant_role_search('o');
-    $expected->($app, ['author', 'Melody'], { limit => 25, listTotal => 2, offset => 0, rows => 2 });
 };
 
 done_testing;

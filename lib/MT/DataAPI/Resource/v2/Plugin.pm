@@ -36,6 +36,7 @@ sub fields {
                 },
             },
         },
+        'label',
         'name',
         'pluginLink',
         'pluginSet',

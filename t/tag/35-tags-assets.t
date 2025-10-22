@@ -447,8 +447,6 @@ a
 <mt:Assets namespace="foo" scored_by="Nobody">a</mt:Assets>
 --- expected_error
 No such user 'Nobody'
---- expected_php_error
-Invalid scored by filter: Nobody
 
 === MTPageAssets[namespace][scored_by] for score=0
 --- skip_php

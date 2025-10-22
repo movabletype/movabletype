@@ -4,6 +4,7 @@ use strict;
 use warnings;
 use FindBin;
 use lib "$FindBin::Bin/../lib"; # t/lib
+use File::Spec;
 use Test::More;
 use MT::Test::Env;
 our $test_env;
@@ -12,6 +13,21 @@ BEGIN {
         DefaultLanguage => 'en_US',  ## for now
     );
     $ENV{MT_CONFIG} = $test_env->config_file;
+
+    $test_env->save_file('themes/invalid_class_theme/theme.yaml', <<'YAML');
+id: invalid_class_theme
+name: Invalid Class Theme
+label: Invalid Class theme
+class: invalid
+YAML
+
+    $test_env->save_file('themes/deprecated_theme/theme.yaml', <<'YAML');
+id: deprecated_theme
+name: Deprecated Theme
+label: Deprecated Theme
+class: both
+deprecated: 1
+YAML
 }
 
 use MT::Test::DataAPI;
@@ -297,6 +313,36 @@ sub suite {
             code         => 409,
             error        => "Invalid theme_id: dummy\n",
         },
+        {    # A theme with invalid class.
+            path   => '/v2/sites',
+            method => 'POST',
+            params => {
+                website => {
+                    name     => 'test-api-permission-website',
+                    url      => 'http://narnia2.na/',
+                    sitePath => $test_env->root,
+                    themeId  => 'invalid_class_theme',
+                },
+            },
+            is_superuser => 1,
+            code         => 409,
+            error        => "Cannot apply a theme with invalid class.\n",
+        },
+        {    # A deprecated theme
+            path   => '/v2/sites',
+            method => 'POST',
+            params => {
+                website => {
+                    name     => 'test-api-permission-website',
+                    url      => 'http://narnia2.na/',
+                    sitePath => $test_env->root,
+                    themeId  => 'deprecated_theme',
+                },
+            },
+            is_superuser => 1,
+            code         => 409,
+            error        => "Cannot apply a deprecated theme: deprecated_theme\n",
+        },
         {    # sitePath is not absolute.
             path   => '/v2/sites',
             method => 'POST',
@@ -305,7 +351,7 @@ sub suite {
                     name     => 'test-api-permission-website',
                     url      => 'http://narnia2.na/',
                     sitePath => 'relative/path',
-                    themeId  => 'classic_website',
+                    themeId  => 'classic_test_website',
                 },
             },
             is_superuser => 1,
@@ -459,7 +505,7 @@ sub suite {
                     name         => 'test-api-permission-website-2',
                     url          => 'http://narnia2.na/',
                     sitePath     => $test_env->root,
-                    themeId      => 'classic_website',
+                    themeId      => 'classic_test_website',
                     serverOffset => -5.5,
                     language     => 'de',
                 },
@@ -490,7 +536,7 @@ sub suite {
                 is( $got->{name}, 'test-api-permission-website-2', 'name' ),
                     is( $got->{url}, 'http://narnia2.na/', 'url' );
                 is( $got->{sitePath},     $test_env->root,     'sitePath' );
-                is( $got->{themeId},      'classic_website', 'themeId' );
+                is( $got->{themeId},      'classic_test_website', 'themeId' );
                 is( $got->{serverOffset}, -5.5,              'serverOffset' );
                 is( $got->{language},     'de',              'language' );
             },
@@ -505,7 +551,7 @@ sub suite {
                     name     => 'test-api-website-3',
                     url      => 'http://narnia2.na/',
                     sitePath => $test_env->root . '/',
-                    themeId  => 'classic_website',
+                    themeId  => 'classic_test_website',
                 },
             },
             result => sub {
@@ -519,6 +565,29 @@ sub suite {
 
                 # is( $got->{sitePath},     $test_env->root,     'sitePath' );
                 ok( ( $got->{sitePath} !~ m{(/|\\)$} ), 'sitePath' );
+            },
+        },
+
+        # set a theme without class (parent site)
+        {
+            path         => '/v2/sites',
+            method       => 'POST',
+            is_superuser => 1,
+            params       => {
+                website => {
+                    name     => 'test-api-website-4',
+                    url      => 'http://narnia2.na/',
+                    sitePath => $test_env->root . '/',
+                    themeId  => 'other_theme',
+                },
+            },
+            result => sub {
+                $app->model('website')->load({ name => 'test-api-website-4' });
+            },
+            complete => sub {
+                my ($data, $body) = @_;
+                my $got = $app->current_format->{unserialize}->($body);
+                is $got->{themeId}, 'other_theme';
             },
         },
 
@@ -577,6 +646,36 @@ sub suite {
             code         => 409,
             error        => "Invalid theme_id: invalid_theme\n",
         },
+        {    # A theme with invalid class.
+            path   => '/v2/sites/2',
+            method => 'POST',
+            params => {
+                blog => {
+                    url      => 'blog',
+                    name     => 'blog',
+                    sitePath => 'blog',
+                    themeId  => 'invalid_class_theme',
+                },
+            },
+            is_superuser => 1,
+            code         => 409,
+            error        => "Cannot apply a theme with invalid class.\n",
+        },
+        {    # A theme with invalid class.
+            path   => '/v2/sites/2',
+            method => 'POST',
+            params => {
+                blog => {
+                    url      => 'blog',
+                    name     => 'blog',
+                    sitePath => 'blog',
+                    themeId  => 'deprecated_theme',
+                },
+            },
+            is_superuser => 1,
+            code         => 409,
+            error        => "Cannot apply a deprecated theme: deprecated_theme\n",
+        },
         {    # Website theme_id.
             path   => '/v2/sites/2',
             method => 'POST',
@@ -585,7 +684,7 @@ sub suite {
                     url      => 'blog',
                     name     => 'blog',
                     sitePath => 'blog',
-                    themeId  => 'classic_website',
+                    themeId  => 'classic_test_website',
                 },
             },
             is_superuser => 1,
@@ -594,7 +693,7 @@ sub suite {
                 +{  error => {
                         code => 409,
                         message =>
-                            "Cannot apply website theme to blog: classic_website\n",
+                            "Cannot apply website theme to blog: classic_test_website\n",
                     },
                 };
             },
@@ -607,7 +706,7 @@ sub suite {
                     url      => 'blog',
                     name     => 'blog',
                     sitePath => 'blog',
-                    themeId  => 'classic_blog',
+                    themeId  => 'classic_test_blog',
                 },
             },
             author_id => 0,
@@ -622,7 +721,7 @@ sub suite {
                     url      => 'blog',
                     name     => 'blog',
                     sitePath => 'blog',
-                    themeId  => 'classic_blog',
+                    themeId  => 'classic_test_blog',
                 },
             },
             restrictions => { 0 => [qw/ create_site /], },
@@ -639,7 +738,7 @@ sub suite {
                     url      => 'blog',
                     name     => 'blog',
                     sitePath => 'blog',
-                    themeId  => 'classic_blog',
+                    themeId  => 'classic_test_blog',
                 },
             },
             is_superuser => 1,
@@ -716,7 +815,7 @@ sub suite {
             method => 'POST',
             params => {
                 blog => {
-                    themeId       => 'classic_blog',
+                    themeId       => 'classic_test_blog',
                     name          => 'blog-3 name',
                     url           => 'blog-3',
                     siteSubdomain => 'www',
@@ -752,7 +851,7 @@ sub suite {
 
                 my $got = $app->current_format->{unserialize}->($body);
 
-                is( $got->{themeId}, 'classic_blog', 'themeId' );
+                is( $got->{themeId}, 'classic_test_blog', 'themeId' );
                 is( $got->{name},    'blog-3 name',  'name' ),
                     is( $got->{url}, 'http://www.narnia.na/blog-3/', 'url' );
                 is( $got->{sitePath},     $test_env->root, 'sitePath' );
@@ -770,7 +869,7 @@ sub suite {
                     name     => 'test-api-blog-3',
                     url      => 'http://narnia2.na/',
                     sitePath => $test_env->root . '/',
-                    themeId  => 'classic_blog',
+                    themeId  => 'classic_test_blog',
                 },
             },
             result => sub {
@@ -783,6 +882,29 @@ sub suite {
 
                 # is( $got->{sitePath},     $test_env->root,     'sitePath' );
                 ok( ( $got->{sitePath} !~ m{(/|\\)$} ), 'sitePath' );
+            },
+        },
+
+        # set a theme without class (child site)
+        {
+            path         => '/v2/sites/2',
+            method       => 'POST',
+            is_superuser => 1,
+            params       => {
+                blog => {
+                    name     => 'test-api-blog-4',
+                    url      => 'http://narnia2.na/',
+                    sitePath => $test_env->root . '/',
+                    themeId  => 'other_theme',
+                },
+            },
+            result => sub {
+                $app->model('blog')->load({ name => 'test-api-blog-4' });
+            },
+            complete => sub {
+                my ($data, $body) = @_;
+                my $got = $app->current_format->{unserialize}->($body);
+                is $got->{themeId}, 'other_theme';
             },
         },
 
@@ -834,6 +956,54 @@ sub suite {
                     },
                 };
             },
+        },
+        {    # A theme with invalid class. (child site)
+            path   => '/v2/sites/1',
+            method => 'PUT',
+            params => {
+                blog => {
+                    themeId => 'invalid_class_theme',
+                },
+            },
+            is_superuser => 1,
+            code         => 409,
+            error        => "Cannot apply a theme with invalid class.\n",
+        },
+        {    # A theme with invalid class. (parent site)
+            path   => '/v2/sites/2',
+            method => 'PUT',
+            params => {
+                website => {
+                    themeId => 'invalid_class_theme',
+                },
+            },
+            is_superuser => 1,
+            code         => 409,
+            error        => "Cannot apply a theme with invalid class.\n",
+        },
+        {    # A deprecated theme (child site)
+            path   => '/v2/sites/1',
+            method => 'PUT',
+            params => {
+                blog => {
+                    themeId => 'deprecated_theme',
+                },
+            },
+            is_superuser => 1,
+            code         => 409,
+            error        => "Cannot apply a deprecated theme: deprecated_theme\n",
+        },
+        {    # A deprecated theme (parent site)
+            path   => '/v2/sites/2',
+            method => 'PUT',
+            params => {
+                website => {
+                    themeId => 'deprecated_theme',
+                },
+            },
+            is_superuser => 1,
+            code         => 409,
+            error        => "Cannot apply a deprecated theme: deprecated_theme\n",
         },
         {    # Not logged in.
             path      => '/v2/sites/2',
@@ -1145,6 +1315,46 @@ sub suite {
 
                 # is( $got->{sitePath},     $test_env->root,     'sitePath' );
                 ok( ( $got->{sitePath} !~ m{(/|\\)$} ), 'sitePath' );
+            },
+        },
+
+        # apply a theme without class (parent site)
+        {
+            path         => '/v2/sites/3',
+            method       => 'PUT',
+            is_superuser => 1,
+            params       => {
+                website => {
+                    themeId => 'other_theme',
+                },
+            },
+            result => sub {
+                $app->model('website')->load(3);
+            },
+            complete => sub {
+                my ($data, $body) = @_;
+                my $got = $app->current_format->{unserialize}->($body);
+                is $got->{themeId}, 'other_theme';
+            },
+        },
+
+        # apply a theme without class (child site)
+        {
+            path         => '/v2/sites/1',
+            method       => 'PUT',
+            is_superuser => 1,
+            params       => {
+                blog => {
+                    themeId => 'other_theme',
+                },
+            },
+            result => sub {
+                $app->model('blog')->load(1);
+            },
+            complete => sub {
+                my ($data, $body) = @_;
+                my $got = $app->current_format->{unserialize}->($body);
+                is $got->{themeId}, 'other_theme';
             },
         },
 

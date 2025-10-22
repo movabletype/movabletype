@@ -1,0 +1,28 @@
+<mt:SetVarBlock name="js_include">
+    <script>
+      var user = <$mt:UserSessionState$>;
+      var is_preview = true;
+    </script>
+</mt:SetVarBlock>
+
+<mt:IncludeBlock module="<__trans phrase="Layout">">
+  <div class="content">
+    <nav aria-label="<__trans phrase="Breadcrumb">">
+      <ol class="breadcrumb" itemprop="breadcrumb">
+        <li><a href="<$mt:SiteURL encode_html="1"$>"><__trans phrase="Home"></a></li>
+        <li><a href="<$mt:Link template="main_index" encode_html="1"$>"><__trans phrase="Entries List"></a></li>
+        <li><$mt:EntryTitle$></li>
+      </ol>
+    </nav>
+    <main class="main">
+      <section id="comments" class="entry entry-comment-preview">
+        <h1 itemprop="name" class="title template-title"><__trans phrase="Previewing your Comment"></h1>
+        <$mt:Include module="<__trans phrase="Comment Detail">"$>
+        <$mt:Include module="<__trans phrase="Comment Form">"$>
+      </section>
+    </main>
+    <aside class="related">
+      <$mt:WidgetSet name="<__trans phrase="Related Contents (Entries)">"$>
+    </aside>
+  </div>
+</mt:IncludeBlock>

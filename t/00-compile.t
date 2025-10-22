@@ -208,7 +208,9 @@ use_ok('MT::Util::Dependencies');
 use_ok('MT::Util::Deprecated');
 use_ok('MT::Util::Digest::MD5');
 use_ok('MT::Util::Digest::SHA');
+use_ok('MT::Util::Editor');
 use_ok('MT::Util::Encode');
+use_ok('MT::Util::PluginVersions');
 use_ok('MT::Util::SystemCheck');
 use_ok('MT::Util::UniqueID');
 use_ok('MT::Util::Mail');
@@ -242,7 +244,6 @@ SKIP: {
 }
 use_ok('MT::Image');
 use_ok('MT::Image::GD');
-use_ok('MT::Image::NetPBM');
 use_ok('MT::Image::Imager');
 use_ok('MT::Image::ImageMagick');
 use_ok('MT::Image::GraphicsMagick');
@@ -486,6 +487,7 @@ use_ok('MT::Upgrade::v5');
 use_ok('MT::Upgrade::v6');
 use_ok('MT::Upgrade::v7');
 use_ok('MT::Upgrade::v8');
+use_ok('MT::Upgrade::v9');
 
 # Revision Management Framework
 use_ok('MT::Revisable');

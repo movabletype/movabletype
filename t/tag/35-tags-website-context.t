@@ -23,7 +23,6 @@ use MT;
 use MT::PublishOption;
 use MT::Test;
 use MT::Test::App;
-use MT::Test::Util::CreativeCommons;
 
 my $app    = MT->instance;
 my $config = $app->config;
@@ -52,7 +51,6 @@ $test_env->prepare_fixture(sub {
             remote_auth_token        => 'token',
             allow_unreg_comments     => 1,
             commenter_authenticators => 'MovableType,TypeKey',
-            cc_license               => MT::Test::Util::CreativeCommons->by_nc_sa_20,
         }
     );
     $first_website->save or die $first_website->errstr;
@@ -105,7 +103,6 @@ $test_env->prepare_fixture(sub {
             {   description => 'This is a first website.',
                 site_url    => 'http://localhost/first_website/',
                 site_path   => '/var/www/html/first_website',
-                cc_license  => MT::Test::Util::CreativeCommons->by_30,
             }
         );
         $w->save or die $w->errstr;
@@ -116,7 +113,7 @@ $test_env->prepare_fixture(sub {
         $test_app->post({
             __mode   => 'apply_theme',
             blog_id  => $w->id,
-            theme_id => 'classic_website',
+            theme_id => 'classic_test_website',
         });
 
         # Create categories
@@ -1189,12 +1186,6 @@ sub _mt_websites {
 
 __END__
 
-=== mt:BlogIfCCLicense
---- template _mt_websites
-<mt:BlogIfCCLicense>if<mt:Else>else</mt:BlogIfCCLicense>
---- expected
-if
-
 === mt:BlogID
 --- template _mt_websites
 <mt:BlogID>
@@ -1255,36 +1246,6 @@ localhost
 --- expected
 +00:00
 
-=== mt:BlogCCLicenseURL
---- template _mt_websites
-<mt:BlogCCLicenseURL>
---- expected
-http://creativecommons.org/licenses/by/3.0/
-
-=== mt:BlogCCLicenseImage
---- template _mt_websites
-<mt:BlogCCLicenseImage>
---- expected
-http://i.creativecommons.org/l/by/3.0/88x31.png
-
-=== mt:CCLicenseRDF
---- template _mt_websites
-<mt:CCLicenseRDF>
---- expected
-<!--
-<rdf:RDF xmlns="http://web.resource.org/cc/"
-         xmlns:dc="http://purl.org/dc/elements/1.1/"
-         xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
-<Work rdf:about="http://localhost/first_website/">
-<dc:title>First Website</dc:title>
-<dc:description>This is a first website.</dc:description>
-<license rdf:resource="http://creativecommons.org/licenses/by/3.0/" />
-</Work>
-<License rdf:about="http://creativecommons.org/licenses/by/3.0/">
-</License>
-</rdf:RDF>
--->
-
 === mt:BlogFileExtension
 --- template _mt_websites
 <mt:BlogFileExtension>
@@ -1295,13 +1256,13 @@ http://i.creativecommons.org/l/by/3.0/88x31.png
 --- template _mt_websites
 <mt:BlogTemplateSetID>
 --- expected
-classic-website
+classic-test-website
 
 === mt:BlogThemeID
 --- template _mt_websites
 <mt:BlogThemeID>
 --- expected
-classic-website
+classic-test-website
 
 === mt:EntriesHeader, mt:EntriesFooter
 --- template _mt_websites
