@@ -94,7 +94,7 @@ subtest 'download' => sub {
             },
             args     => {},
             expected => [
-                ['2005-01-31 04:15:00', '127.0.0.1', 'test2', 'Melody', "edit entry", ''],
+                ['2005-01-31 04:15:00', '127.0.0.1', 'test2', 'Melody', "edit\nentry", ''],
             ],
         },
         {
@@ -393,7 +393,9 @@ subtest 'download' => sub {
             };
 
             my $res = $app->post_ok($args);
-            my $io  = IO::String->new($res->content);
+            my $content = $res->content;
+            $content =~ s/^\xEF\xBB\xBF//;
+            my $io  = IO::String->new($content);
             my $csv = Text::CSV->new({ binary => 1 });
 
             is_deeply($csv->getline($io),     [qw/timestamp ip weblog by message metadata/]);
