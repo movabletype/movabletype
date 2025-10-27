@@ -266,8 +266,8 @@ YAML
     $res = $app->js_get_ok({ __mode => 'show_inc' });
     my $json = decode_json($res->decoded_content);
     my $inc = $json->{result} or note explain $json;
-    ok !grep({m!/plugins-A/MyPlugin7/(?:lib|extlib)!} @$inc), "\@INC should not contain lib and extlib under plugins-A";
-    ok grep({m!/plugins-B/MyPlugin7/(?:lib|extlib)!} @$inc), "\@INC contains lib and extlib under plugins-B";
+    ok !grep({m![\\/]plugins-A[\\/]MyPlugin7[\\/](?:lib|extlib)!} @$inc), "\@INC should not contain lib and extlib under plugins-A";
+    ok grep({m![\\/]plugins-B[\\/]MyPlugin7[\\/](?:lib|extlib)!} @$inc), "\@INC contains lib and extlib under plugins-B";
 };
 
 subtest 'Conflicting plugins have callbacks' => sub {
