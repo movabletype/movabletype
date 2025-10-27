@@ -448,6 +448,7 @@ sub run_rpt {
     my $res = `perl -It/lib ./tools/run-periodic-tasks --verbose 2>&1`;
     # reload updated config
     MT->config->read_config_db();
+    $res =~ s!\\!/!g if $^O eq 'MSWin32';
     note $res;
     $res;
 }

@@ -112,6 +112,7 @@ $app->post_form_ok();
 my @files;
 $test_env->ls(sub {
     my $file = shift;
+    $file =~ s!\\!/!g if $^O eq 'MSWin32';
     push @files, $file;
 });
 
