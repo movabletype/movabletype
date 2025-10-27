@@ -10,8 +10,9 @@ declare(strict_types=1);
 namespace Nette\Iterators;
 
 
+
 /**
- * @deprecated use Nette\Utils\Iterables::map()
+ * Applies the callback to the elements of the inner iterator.
  */
 class Mapper extends \IteratorIterator
 {
@@ -26,7 +27,8 @@ class Mapper extends \IteratorIterator
 	}
 
 
-	public function current(): mixed
+	#[\ReturnTypeWillChange]
+	public function current()
 	{
 		return ($this->callback)(parent::current(), parent::key());
 	}

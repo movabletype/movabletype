@@ -93,18 +93,19 @@ class Validators
 
 	/**
 	 * Verifies that the value is of expected types separated by pipe.
+	 * @param  mixed  $value
 	 * @throws AssertionException
 	 */
-	public static function assert(mixed $value, string $expected, string $label = 'variable'): void
+	public static function assert($value, string $expected, string $label = 'variable'): void
 	{
 		if (!static::is($value, $expected)) {
 			$expected = str_replace(['|', ':'], [' or ', ' in range '], $expected);
 			$translate = ['boolean' => 'bool', 'integer' => 'int', 'double' => 'float', 'NULL' => 'null'];
 			$type = $translate[gettype($value)] ?? gettype($value);
 			if (is_int($value) || is_float($value) || (is_string($value) && strlen($value) < 40)) {
-				$type .= ' ' . var_export($value, return: true);
+				$type .= ' ' . var_export($value, true);
 			} elseif (is_object($value)) {
-				$type .= ' ' . $value::class;
+				$type .= ' ' . get_class($value);
 			}
 
 			throw new AssertionException("The $label expects to be $expected, $type given.");
@@ -115,13 +116,14 @@ class Validators
 	/**
 	 * Verifies that element $key in array is of expected types separated by pipe.
 	 * @param  mixed[]  $array
+	 * @param  int|string  $key
 	 * @throws AssertionException
 	 */
 	public static function assertField(
 		array $array,
 		$key,
 		?string $expected = null,
-		string $label = "item '%' in array",
+		string $label = "item '%' in array"
 	): void
 	{
 		if (!array_key_exists($key, $array)) {
@@ -135,17 +137,18 @@ class Validators
 
 	/**
 	 * Verifies that the value is of expected types separated by pipe.
+	 * @param  mixed  $value
 	 */
-	public static function is(mixed $value, string $expected): bool
+	public static function is($value, string $expected): bool
 	{
 		foreach (explode('|', $expected) as $item) {
-			if (str_ends_with($item, '[]')) {
+			if (substr($item, -2) === '[]') {
 				if (is_iterable($value) && self::everyIs($value, substr($item, 0, -2))) {
 					return true;
 				}
 
 				continue;
-			} elseif (str_starts_with($item, '?')) {
+			} elseif (substr($item, 0, 1) === '?') {
 				$item = substr($item, 1);
 				if ($value === null) {
 					return true;
@@ -212,9 +215,9 @@ class Validators
 
 	/**
 	 * Checks if the value is an integer or a float.
-	 * @return ($value is int|float ? true : false)
+	 * @param  mixed  $value
 	 */
-	public static function isNumber(mixed $value): bool
+	public static function isNumber($value): bool
 	{
 		return is_int($value) || is_float($value);
 	}
@@ -222,9 +225,9 @@ class Validators
 
 	/**
 	 * Checks if the value is an integer or a integer written in a string.
-	 * @return ($value is non-empty-string ? bool : ($value is int ? true : false))
+	 * @param  mixed  $value
 	 */
-	public static function isNumericInt(mixed $value): bool
+	public static function isNumericInt($value): bool
 	{
 		return is_int($value) || (is_string($value) && preg_match('#^[+-]?[0-9]+$#D', $value));
 	}
@@ -232,9 +235,9 @@ class Validators
 
 	/**
 	 * Checks if the value is a number or a number written in a string.
-	 * @return ($value is non-empty-string ? bool : ($value is int|float ? true : false))
+	 * @param  mixed  $value
 	 */
-	public static function isNumeric(mixed $value): bool
+	public static function isNumeric($value): bool
 	{
 		return is_float($value) || is_int($value) || (is_string($value) && preg_match('#^[+-]?([0-9]++\.?[0-9]*|\.[0-9]+)$#D', $value));
 	}
@@ -242,17 +245,19 @@ class Validators
 
 	/**
 	 * Checks if the value is a syntactically correct callback.
+	 * @param  mixed  $value
 	 */
-	public static function isCallable(mixed $value): bool
+	public static function isCallable($value): bool
 	{
-		return $value && is_callable($value, syntax_only: true);
+		return $value && is_callable($value, true);
 	}
 
 
 	/**
 	 * Checks if the value is a valid UTF-8 string.
+	 * @param  mixed  $value
 	 */
-	public static function isUnicode(mixed $value): bool
+	public static function isUnicode($value): bool
 	{
 		return is_string($value) && preg_match('##u', $value);
 	}
@@ -260,9 +265,9 @@ class Validators
 
 	/**
 	 * Checks if the value is 0, '', false or null.
-	 * @return ($value is 0|''|false|null ? true : false)
+	 * @param  mixed  $value
 	 */
-	public static function isNone(mixed $value): bool
+	public static function isNone($value): bool
 	{
 		return $value == null; // intentionally ==
 	}
@@ -277,10 +282,11 @@ class Validators
 
 	/**
 	 * Checks if a variable is a zero-based integer indexed array.
+	 * @param  mixed  $value
 	 * @deprecated  use Nette\Utils\Arrays::isList
 	 * @return ($value is list ? true : false)
 	 */
-	public static function isList(mixed $value): bool
+	public static function isList($value): bool
 	{
 		return Arrays::isList($value);
 	}
@@ -289,8 +295,9 @@ class Validators
 	/**
 	 * Checks if the value is in the given range [min, max], where the upper or lower limit can be omitted (null).
 	 * Numbers, strings and DateTime objects can be compared.
+	 * @param  mixed  $value
 	 */
-	public static function isInRange(mixed $value, array $range): bool
+	public static function isInRange($value, array $range): bool
 	{
 		if ($value === null || !(isset($range[0]) || isset($range[1]))) {
 			return false;
@@ -321,13 +328,14 @@ class Validators
 		$atom = "[-a-z0-9!#$%&'*+/=?^_`{|}~]"; // RFC 5322 unquoted characters in local-part
 		$alpha = "a-z\x80-\xFF"; // superset of IDN
 		return (bool) preg_match(<<<XX
-			(^(?n)
-				("([ !#-[\\]-~]*|\\\\[ -~])+"|$atom+(\\.$atom+)*)  # quoted or unquoted
-				@
-				([0-9$alpha]([-0-9$alpha]{0,61}[0-9$alpha])?\\.)+  # domain - RFC 1034
-				[$alpha]([-0-9$alpha]{0,17}[$alpha])?              # top domain
-			$)Dix
-			XX, $value);
+		(^
+			("([ !#-[\\]-~]*|\\\\[ -~])+"|$atom+(\\.$atom+)*)  # quoted or unquoted
+			@
+			([0-9$alpha]([-0-9$alpha]{0,61}[0-9$alpha])?\\.)+  # domain - RFC 1034
+			[$alpha]([-0-9$alpha]{0,17}[$alpha])?              # top domain
+		$)Dix
+XX
+			, $value);
 	}
 
 
@@ -338,19 +346,20 @@ class Validators
 	{
 		$alpha = "a-z\x80-\xFF";
 		return (bool) preg_match(<<<XX
-			(^(?n)
-				https?://(
-					(([-_0-9$alpha]+\\.)*                       # subdomain
-						[0-9$alpha]([-0-9$alpha]{0,61}[0-9$alpha])?\\.)?  # domain
-						[$alpha]([-0-9$alpha]{0,17}[$alpha])?   # top domain
-					|\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}  # IPv4
-					|\\[[0-9a-f:]{3,39}\\]                      # IPv6
-				)(:\\d{1,5})?                                   # port
-				(/\\S*)?                                        # path
-				(\\?\\S*)?                                      # query
-				(\\#\\S*)?                                      # fragment
-			$)Dix
-			XX, $value);
+		(^
+			https?://(
+				(([-_0-9$alpha]+\\.)*                       # subdomain
+					[0-9$alpha]([-0-9$alpha]{0,61}[0-9$alpha])?\\.)?  # domain
+					[$alpha]([-0-9$alpha]{0,17}[$alpha])?   # top domain
+				|\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}  # IPv4
+				|\\[[0-9a-f:]{3,39}\\]                      # IPv6
+			)(:\\d{1,5})?                                   # port
+			(/\\S*)?                                        # path
+			(\\?\\S*)?                                      # query
+			(\\#\\S*)?                                      # fragment
+		$)Dix
+XX
+			, $value);
 	}
 
 
@@ -365,7 +374,6 @@ class Validators
 
 	/**
 	 * Checks whether the input is a class, interface or trait.
-	 * @deprecated
 	 */
 	public static function isType(string $type): bool
 	{
@@ -406,11 +414,12 @@ class Validators
 	public static function isTypeDeclaration(string $type): bool
 	{
 		return (bool) preg_match(<<<'XX'
-			~((?n)
-				\?? (?<type> \\? (?<name> [a-zA-Z_\x7f-\xff][\w\x7f-\xff]*) (\\ (?&name))* ) |
-				(?<intersection> (?&type) (& (?&type))+ ) |
-				(?<upart> (?&type) | \( (?&intersection) \) )  (\| (?&upart))+
-			)$~xAD
-			XX, $type);
+		~(
+			\?? (?<type> \\? (?<name> [a-zA-Z_\x7f-\xff][\w\x7f-\xff]*) (\\ (?&name))* ) |
+			(?<intersection> (?&type) (& (?&type))+ ) |
+			(?<upart> (?&type) | \( (?&intersection) \) )  (\| (?&upart))+
+		)$~xAD
+XX
+			, $type);
 	}
 }

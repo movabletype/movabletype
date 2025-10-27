@@ -19,18 +19,23 @@ use Nette\Schema\Helpers;
  */
 trait Base
 {
-	private bool $required = false;
-	private mixed $default = null;
+	/** @var bool */
+	private $required = false;
 
-	/** @var ?callable */
+	/** @var mixed */
+	private $default;
+
+	/** @var callable|null */
 	private $before;
 
 	/** @var callable[] */
-	private array $transforms = [];
-	private ?string $deprecated = null;
+	private $transforms = [];
+
+	/** @var string|null */
+	private $deprecated;
 
 
-	public function default(mixed $value): self
+	public function default($value): self
 	{
 		$this->default = $value;
 		return $this;
@@ -74,7 +79,7 @@ trait Base
 			$context->addError(
 				'Failed assertion ' . ($description ? "'%assertion%'" : '%assertion%') . ' for %label% %path% with value %value%.',
 				Nette\Schema\Message::FailedAssertion,
-				['value' => $value, 'assertion' => $expected],
+				['value' => $value, 'assertion' => $expected]
 			);
 		});
 	}
@@ -88,12 +93,12 @@ trait Base
 	}
 
 
-	public function completeDefault(Context $context): mixed
+	public function completeDefault(Context $context)
 	{
 		if ($this->required) {
 			$context->addError(
 				'The mandatory item %path% is missing.',
-				Nette\Schema\Message::MissingItem,
+				Nette\Schema\Message::MissingItem
 			);
 			return null;
 		}
@@ -102,7 +107,7 @@ trait Base
 	}
 
 
-	public function doNormalize(mixed $value, Context $context): mixed
+	public function doNormalize($value, Context $context)
 	{
 		if ($this->before) {
 			$value = ($this->before)($value);
@@ -117,13 +122,13 @@ trait Base
 		if ($this->deprecated !== null) {
 			$context->addWarning(
 				$this->deprecated,
-				Nette\Schema\Message::Deprecated,
+				Nette\Schema\Message::Deprecated
 			);
 		}
 	}
 
 
-	private function doTransform(mixed $value, Context $context): mixed
+	private function doTransform($value, Context $context)
 	{
 		$isOk = $context->createChecker();
 		foreach ($this->transforms as $handler) {
@@ -137,7 +142,7 @@ trait Base
 
 
 	/** @deprecated use Nette\Schema\Validators::validateType() */
-	private function doValidate(mixed $value, string $expected, Context $context): bool
+	private function doValidate($value, string $expected, Context $context): bool
 	{
 		$isOk = $context->createChecker();
 		Helpers::validateType($value, $expected, $context);
@@ -146,7 +151,7 @@ trait Base
 
 
 	/** @deprecated use Nette\Schema\Validators::validateRange() */
-	private static function doValidateRange(mixed $value, array $range, Context $context, string $types = ''): bool
+	private static function doValidateRange($value, array $range, Context $context, string $types = ''): bool
 	{
 		$isOk = $context->createChecker();
 		Helpers::validateRange($value, $range, $context, $types);
@@ -155,7 +160,7 @@ trait Base
 
 
 	/** @deprecated use doTransform() */
-	private function doFinalize(mixed $value, Context $context): mixed
+	private function doFinalize($value, Context $context)
 	{
 		return $this->doTransform($value, $context);
 	}

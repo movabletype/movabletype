@@ -18,7 +18,7 @@ use Nette;
 class ValidationException extends Nette\InvalidStateException
 {
 	/** @var Message[] */
-	private array $messages;
+	private $messages;
 
 
 	/**

@@ -21,7 +21,7 @@ Installation:
 composer require nette/schema
 ```
 
-It requires PHP version 8.1 and supports PHP up to 8.4.
+It requires PHP version 7.1 and supports PHP up to 8.3.
 
 
 [Support Me](https://github.com/sponsors/dg)
@@ -439,7 +439,7 @@ Expect::structure([
 // creates '$obj = new Info' and writes to $obj->processRefund and $obj->refundAmount
 ```
 
-If the class has a constructor, the elements of the structure are passed as named parameters to the constructor:
+If the class has a constructor, the elements of the structure are passed as named parameters to the constructor (requires PHP 8):
 
 ```php
 class Info
