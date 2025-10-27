@@ -1,5 +1,11 @@
 {
+    "config": {
+        "platform": {
+            "php": "7.4.0"
+        }
+    },
     "require": {
-        "league/commonmark": "^2.6"
+        "league/commonmark": "^2.6",
+        "php": ">=7.4.0"
     }
 }
