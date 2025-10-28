@@ -369,7 +369,31 @@ sub connect_info {
         }
         # TODO: $self->{dsn} = "dbi:$driver:...";
     }
+    if (!$self->{database_is_ready}) {
+        $self->_drop_existing_tables(\%connect_info);
+    }
     %connect_info;
+}
+
+sub _drop_existing_tables {
+    my ($self, $info) = @_;
+    return unless $ENV{MT_TEST_DROP_EXISTING_TABLES};
+
+    my $dsn = $self->{dsn} or return;
+    my $dbh = do {
+        local $SIG{__WARN__};
+        DBI->connect($dsn, $info->{DBUser}, $info->{DBPassword}, { PrintError => 0 });
+    } or return;
+    my $rows = $dbh->table_info->fetchall_arryref;
+    for my $row (@$rows) {
+        my ($catalog, $schema, $table, $type) = @$row;
+        next unless $type  =~ /table/i;    # ignore indices/sequences
+        next unless $table =~ /\bmt_/i;
+        $table =~ s/^.*\.//g;
+        $table =~ s/"//g;
+        $dbh->do("DROP TABLE $table") or die $dbh->errstr;
+    }
+    $self->{database_is_ready} = 1;
 }
 
 sub _connect_info_mysql {
@@ -415,6 +439,7 @@ sub _connect_info_mysql {
         if ($ENV{TEST_VERBOSE}) {
             $self->show_mysql_db_variables;
         }
+        $self->{database_is_ready} = 1;
     } else {
         $self->{dsn} = "dbi:mysql:host=$info{DBHost};dbname=$info{Database};user=$info{DBUser}";
         my $dbh = do { local $SIG{__WARN__}; DBI->connect($self->{dsn}, undef, undef, { PrintError => 0 }) };
@@ -476,6 +501,7 @@ sub _connect_info_pg {
             $info{DBPassword} = $opts{password};
         }
         $self->{dsn} = "dbi:Pg:" . (join ";", map { "$_=$opts{$_}" } keys %opts);
+        $self->{database_is_ready} = 1;
     } else {
         $self->{dsn} = "dbi:Pg:host=$info{DBHost};dbname=$info{Database};user=$info{DBUser}";
         my $dbh = DBI->connect($self->{dsn});
@@ -494,6 +520,7 @@ sub _connect_info_sqlite {
 
     my $database = $self->path("mt.db");
     $self->{dsn} = "dbi:SQLite:$database";
+    $self->{database_is_ready} = 1 unless -f $database;
 
     return (
         ObjectDriver => "DBI::sqlite",
