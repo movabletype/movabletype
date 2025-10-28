@@ -267,6 +267,18 @@ sub test_data_api {
                         });
                 }
 
+                if (lc($ENV{MT_TEST_BACKEND} // '') =~ /mssql/) {
+                    visit(
+                        $expected_result,
+                        sub {
+                            my ($key, $valueref) = @_;
+                            if (defined $$valueref && $$valueref =~ /^(?:0|[1-9][0-9]*)(?:\.[0-9]+)?$/) {
+                                $$valueref = Test::Deep::num($$valueref, 0);
+                            }
+                        },
+                    );
+                }
++
                 cmp_deeply( $result, $expected_result, 'result' ) || note explain $result;
             }
 
