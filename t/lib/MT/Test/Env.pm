@@ -110,7 +110,7 @@ sub _load_envfile {
             next if /^(?:#|\s*$)/;
             s/(?:^\s*|\s*$)//g;
             my ($key, $value) = split /\s*=\s*/, $_, 2;
-            $ENV{ uc $key } = $value;
+            $ENV{ uc $key } //= $value;
         }
     }
 }
