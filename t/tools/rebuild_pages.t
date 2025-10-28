@@ -8,6 +8,8 @@ use utf8;
 our $test_env;
 
 BEGIN {
+    plan skip_all => 'Takes too long on Win32' if $^O eq 'MSWin32';
+
     $test_env = MT::Test::Env->new(
         DeleteFilesAtRebuild => 1,
         RebuildAtDelete      => 1,
