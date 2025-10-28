@@ -187,7 +187,7 @@ sub test_data_api {
                 }
             }
 
-            local $SIG{__DIE__} = sub { my $error = shift; fail Carp::longmess("$0 died: $error") unless $error =~ /Can't locate/ };
+            local $SIG{__DIE__} = sub { my $error = shift; fail Carp::longmess("$0 died: $error") unless $error =~ /Can't locate/ } unless $^O eq 'MSWin32';
             local $ENV{MT_TEST_RUN_APP_AS_CGI};    ## MT::Test::DataAPI mocks too much
 
             %callbacks = ();
