@@ -36,7 +36,7 @@ docker_stop:
 docker_clean:
 	docker run --rm -v $$PWD:/var/www/mt -w /var/www/mt $(DOCKER_IMAGE) bash -c "make clean"
 
-PHP_DOCKER_IMAGE ?= php:5.3
+PHP_DOCKER_IMAGE ?= php:7.4
 
 docker-test-php-lint:
 	docker run --rm -it -v $$PWD:/php -w /php $(PHP_DOCKER_IMAGE) bash -c "PHP_LINT_DIR=\"$(PHP_LINT_DIR)\" make test-php-lint"
