@@ -24,7 +24,7 @@ use MT;
 use MT::ConfigMgr;
 
 my $db_dir = $test_env->path('db');
-my ($fh, $cfg_file) = tempfile();
+my ($fh, $cfg_file) = tempfile(DIR => $test_env->root);
 print $fh <<CFG;
 Database $db_dir/mt.db
 ObjectDriver DBI::SQLite 

@@ -284,6 +284,7 @@ sub init_upgrade {
             my $website
                 = MT::Website->create_default_website('First Website');
             $website->allow_data_api(1);
+            $website->site_path($ENV{MT_TEST_ROOT});
             $website->save;
             my $author = MT::Author->load;
             my ($website_admin_role)

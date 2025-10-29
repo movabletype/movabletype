@@ -1559,15 +1559,15 @@ http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-480x360-1.j
 
 === test 290
 --- template
-[<MTEntries lastn="10"><MTIfNonZero tag="MTEntryScoreCount" namespace="unit test"><MTEntryID> <MTEntryScoreHigh namespace="unit test">; </MTIfNonZero></MTEntries>]
+[<MTEntries lastn="10"><MTIfNonZero tag="MTEntryScoreCount" namespace="unit test"><MTEntryID> <MTEntryScoreHigh string_format="%.1f" namespace="unit test">; </MTIfNonZero></MTEntries>]
 --- expected
-[6 1; 5 5; 4 3; ]
+[6 1.0; 5 5.0; 4 3.0; ]
 
 === test 291
 --- template
-[<MTEntries lastn="10"><MTIfNonZero tag="MTEntryScoreCount" namespace="unit test"><MTEntryID> <MTEntryScoreLow namespace="unit test">; </MTIfNonZero></MTEntries>]
+[<MTEntries lastn="10"><MTIfNonZero tag="MTEntryScoreCount" namespace="unit test"><MTEntryID> <MTEntryScoreLow string_format="%.1f" namespace="unit test">; </MTIfNonZero></MTEntries>]
 --- expected
-[6 1; 5 3; 4 2; ]
+[6 1.0; 5 3.0; 4 2.0; ]
 
 === test 292
 --- template
@@ -1607,15 +1607,15 @@ http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-480x360-1.j
 
 === test 298
 --- template
-[<MTAssets lastn="10"><MTIfNonZero tag="MTAssetScoreCount" namespace="unit test"><MTAssetID> <MTAssetScoreHigh namespace="unit test">; </MTIfNonZero></MTAssets>]
+[<MTAssets lastn="10"><MTIfNonZero tag="MTAssetScoreCount" namespace="unit test"><MTAssetID> <MTAssetScoreHigh string_format="%.1f" namespace="unit test">; </MTIfNonZero></MTAssets>]
 --- expected
-[1 5; 7 7; 6 9; 5 8; 2 3; ]
+[1 5.0; 7 7.0; 6 9.0; 5 8.0; 2 3.0; ]
 
 === test 299
 --- template
-[<MTAssets lastn="10"><MTIfNonZero tag="MTAssetScoreCount" namespace="unit test"><MTAssetID> <MTAssetScoreLow namespace="unit test">; </MTIfNonZero></MTAssets>]
+[<MTAssets lastn="10"><MTIfNonZero tag="MTAssetScoreCount" namespace="unit test"><MTAssetID> <MTAssetScoreLow string_format="%.1f" namespace="unit test">; </MTIfNonZero></MTAssets>]
 --- expected
-[1 3; 7 7; 6 9; 5 8; 2 2; ]
+[1 3.0; 7 7.0; 6 9.0; 5 8.0; 2 2.0; ]
 
 === test 300
 --- template
