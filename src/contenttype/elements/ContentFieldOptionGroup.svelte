@@ -14,6 +14,8 @@
   export let options: ContentType.Options;
   export let type: string;
 
+  let normalizedType: string;
+
   if (!type) {
     console.error('ContentFieldOptionGroup: "type" attribute is required.');
   }
@@ -23,6 +25,8 @@
     if (!options.display) {
       options.display = "default";
     }
+
+    normalizedType = type.replace(/_/g, "-");
   }
 
   onMount(() => {
@@ -81,13 +85,13 @@
   type="hidden"
   {...{ ref: "id" }}
   name="id"
-  id="{type}-id"
+  id="{normalizedType}-id"
   class="form-control"
   value={field.isNew ? `id:${field.id}` : field.id}
 />
 
 <ContentFieldOption
-  id="{type}-label"
+  id="{normalizedType}-label"
   label={window.trans("Label")}
   required={1}
 >
@@ -96,7 +100,7 @@
     type="text"
     {...{ ref: "label" }}
     name="label"
-    id="{type}-label"
+    id="{normalizedType}-label"
     class="form-control html5-form"
     bind:value={field.label}
     required
@@ -105,7 +109,7 @@
 </ContentFieldOption>
 
 <ContentFieldOption
-  id="{type}-description"
+  id="{normalizedType}-description"
   label={window.trans("Description")}
   showHint={1}
   hint={window.trans("The entered message is displayed as a input field hint.")}
@@ -114,15 +118,15 @@
     type="text"
     {...{ ref: "description" }}
     name="description"
-    id="{type}-description"
+    id="{normalizedType}-description"
     class="form-control"
-    aria-describedby="{type}-description-field-help"
+    aria-describedby="{normalizedType}-description-field-help"
     bind:value={options.description}
   />
 </ContentFieldOption>
 
 <ContentFieldOption
-  id="{type}-required"
+  id="{normalizedType}-required"
   label={window.trans("Is this field required?")}
 >
   <!-- onclick was removed and bind is used -->
@@ -130,17 +134,17 @@
     {...{ ref: "required" }}
     type="checkbox"
     class="mt-switch form-control"
-    id="{type}-required"
+    id="{normalizedType}-required"
     name="required"
     bind:checked={options.required}
   />
-  <label for="{type}-required">
+  <label for="{normalizedType}-required">
     {window.trans("Is this field required?")}
   </label>
 </ContentFieldOption>
 
 <ContentFieldOption
-  id="{type}-display"
+  id="{normalizedType}-display"
   label={window.trans("Display Options")}
   required={1}
   showHint={1}
@@ -152,7 +156,7 @@
   <select
     {...{ ref: "display" }}
     name="display"
-    id="{type}-display"
+    id="{normalizedType}-display"
     class="custom-select form-control form-select"
     bind:value={options.display}
   >
