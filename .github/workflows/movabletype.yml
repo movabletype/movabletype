@@ -18,6 +18,9 @@ env:
 jobs:
   # Perl 5.38 / PHP 8.2 / MySQL 8.0
   fedora39:
+    permissions:
+      contents: read
+      packages: read
     env:
       TEST_IMAGE_NAME: fedora39
     if: ${{ ( (github.event_name != 'schedule') || ( (github.repository == 'movabletype/movabletype' ) && (github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-')) ) ) }}
@@ -52,6 +55,9 @@ jobs:
 
   # Perl 5.38 / PHP 8.3 / MySQL 8.0
   fedora40:
+    permissions:
+      contents: read
+      packages: read
     needs: [fedora39]
     if: ${{ ( ( (github.repository == 'movabletype/movabletype' ) && (github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-')) ) || contains(github.head_ref, 'cron') ) }}
     runs-on: ubuntu-latest
@@ -83,6 +89,9 @@ jobs:
 
   # Perl 5.34 / PHP 8.0 / MySQL 8.0
   fedora35:
+    permissions:
+      contents: read
+      packages: read
     needs: [fedora39]
     if: ${{ ( ( (github.repository == 'movabletype/movabletype' ) && (github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-')) ) || contains(github.head_ref, 'cron') ) }}
     runs-on: ubuntu-latest
@@ -114,6 +123,9 @@ jobs:
 
   # Perl 5.36 / PHP 8.1 / MySQL 8.0
   fedora37:
+    permissions:
+      contents: read
+      packages: read
     needs: [fedora39]
     if: ${{ ( ( (github.repository == 'movabletype/movabletype' ) && (github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-')) ) || contains(github.head_ref, 'cron') ) }}
     runs-on: ubuntu-latest
@@ -146,6 +158,9 @@ jobs:
 
   # Perl 5.10 / PHP 5.5 / MySQL 5.1
   centos6:
+    permissions:
+      contents: read
+      packages: read
     needs: [fedora39]
     if: ${{ ( ( (github.repository == 'movabletype/movabletype' ) && (github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-')) ) || contains(github.head_ref, 'cron') ) }}
     runs-on: ubuntu-latest
@@ -172,6 +187,9 @@ jobs:
 
   # Perl 5.32 / PHP 7.4 / MariaDB 10.5
   bullseye:
+    permissions:
+      contents: read
+      packages: read
     needs: [fedora39]
     if: ${{ ( ( (github.repository == 'movabletype/movabletype' ) && (github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-')) ) || contains(github.head_ref, 'cron') ) }}
     runs-on: ubuntu-latest
@@ -203,6 +221,9 @@ jobs:
 
   # Perl 5.28.0 / PHP 7.3 / MariaDB 10.3
   buster:
+    permissions:
+      contents: read
+      packages: read
     needs: [fedora39]
     if: ${{ ( ( (github.repository == 'movabletype/movabletype' ) && (github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-')) ) || contains(github.head_ref, 'cron') ) }}
     runs-on: ubuntu-latest
@@ -233,6 +254,9 @@ jobs:
         run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "phpunit && make test-php-lint"
 
   cloud7:
+    permissions:
+      contents: read
+      packages: read
     needs: [fedora39]
     env:
       TEST_IMAGE_NAME: cloud7
@@ -262,6 +286,9 @@ jobs:
         run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "phpunit && make test-php-lint"
 
   extra:
+    permissions:
+      contents: read
+      packages: read
     needs: [fedora39]
     if: ${{ ( ( (github.repository == 'movabletype/movabletype' ) && (github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-')) ) || contains(github.head_ref, 'cron') ) }}
     runs-on: ubuntu-latest
@@ -283,6 +310,8 @@ jobs:
         run: docker run -t -v $PWD:/mt -w /mt movabletype/test:buster bash -c "prove -j4 -PMySQLPool=MT::Test::Env -It/lib xt"
 
   node_lts:
+    permissions:
+      contents: read
     needs: [fedora39]
     if: >-
       ${{
@@ -306,6 +335,7 @@ jobs:
         run: docker run -t -v $PWD:/mt -w /mt node:20 bash -c 'yarn && yarn build-riot && yarn build-riot-admin2023 && yarn build-ss && git config --global --add safe.directory /mt && test "$(git diff)" = ""'
 
   notify_slack:
+    permissions: {}
     runs-on: ubuntu-latest
     needs:
     - fedora39
