@@ -44,7 +44,7 @@ $test_env->prepare_fixture(
             nickname => 'Saburo Ukawa',
         );
 
-        my $sys_manage_content_data_user = MT::Test::Permission->make_author(
+        my $site_manage_content_data_user = MT::Test::Permission->make_author(
             name     => 'sagawa',
             nickname => 'IChiro Sagawa',
         );
@@ -58,7 +58,7 @@ my $site2 = MT::Website->load( { name => 'my second website' } );
 my $create_user = MT::Author->load( { name => 'aikawa' } );
 my $edit_user   = MT::Author->load( { name => 'ichikawa' } );
 my $manage_user = MT::Author->load( { name => 'ukawa' } );
-my $sys_manage_content_data_user = MT::Author->load( { name => 'sagawa' } );
+my $site_manage_content_data_user = MT::Author->load( { name => 'sagawa' } );
 
 ### Make test data
 # Content Type & Content Field & Content Data
@@ -125,7 +125,7 @@ my $manage_role = MT::Test::Permission->make_role(
         "'${manage_priv}','${create_priv}','${publish_priv}','${edit_priv}','${field_priv}'",
 );
 
-my $sys_manage_content_data_role = MT::Test::Permission->make_role(
+my $site_manage_content_data_role = MT::Test::Permission->make_role(
     name => 'manage_content_data',
     permissions =>
         "manage_content_data",
@@ -136,7 +136,7 @@ require MT::Association;
 MT::Association->link( $create_user => $create_role => $site );
 MT::Association->link( $edit_user   => $edit_role   => $site );
 MT::Association->link( $manage_user => $manage_role => $site );
-MT::Association->link( $sys_manage_content_data_user => $sys_manage_content_data_role => $site );
+MT::Association->link( $site_manage_content_data_user => $site_manage_content_data_role => $site );
 
 my $admin = MT::Author->load(1);
 
@@ -220,8 +220,8 @@ subtest 'mode = view (new)' => sub {
     ok $options{ MT::ContentStatus::RELEASE() }, "existed option RELEASE";
     ok $options{ MT::ContentStatus::FUTURE() },  "existed option FUTURE";
 
-    note "=== System manage user ===";
-    $app->login($sys_manage_content_data_user);
+    note "=== Site manage user ===";
+    $app->login($site_manage_content_data_user);
     $app->get_ok(
         {   __mode          => 'view',
             blog_id         => $site->id,
@@ -401,8 +401,8 @@ subtest 'mode = view (edit)' => sub {
     ok $options{ MT::ContentStatus::RELEASE() }, "existed option RELEASE";
     ok $options{ MT::ContentStatus::FUTURE() },  "existed option FUTURE";
 
-    note "=== System manage user - Other's draft data ===";
-    $app->login($sys_manage_content_data_user);
+    note "=== Site manage user - Other's draft data ===";
+    $app->login($site_manage_content_data_user);
     $app->get_ok(
         {   __mode          => 'view',
             blog_id         => $site->id,
@@ -431,7 +431,7 @@ subtest 'mode = view (edit)' => sub {
     ok $options{ MT::ContentStatus::RELEASE() }, "existed option RELEASE";
     ok $options{ MT::ContentStatus::FUTURE() },  "existed option FUTURE";
 
-    note "=== Manage user - Other's published data ===";
+    note "=== Site manage user - Other's published data ===";
     $app->get_ok(
         {   __mode          => 'view',
             blog_id         => $site->id,
