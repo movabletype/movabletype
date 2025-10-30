@@ -761,8 +761,8 @@ sub _sync_from_disk {
     return unless -e $lfile && -w _;
     my ( $size, $mtime ) = ( stat _ )[ 7, 9 ];
     return
-        if $size == $tmpl->linked_file_size
-        && $mtime == $tmpl->linked_file_mtime;
+        if $size == ($tmpl->linked_file_size || 0)
+        && $mtime == ($tmpl->linked_file_mtime || 0);
 
 # Use rw handle due to avoid that anyone do open unwritable file.
 # ( -w file test operator can't detect windows ACL condition, so just try to open. )
