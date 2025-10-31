@@ -48,6 +48,11 @@ $test_env->prepare_fixture(
             name     => 'sagawa',
             nickname => 'IChiro Sagawa',
         );
+
+        my $system_manage_content_data_user = MT::Test::Permission->make_author(
+            name     => 'sumikawa',
+            nickname => 'Shiro Sumikawa',
+        );
     }
 );
 
@@ -59,6 +64,7 @@ my $create_user = MT::Author->load( { name => 'aikawa' } );
 my $edit_user   = MT::Author->load( { name => 'ichikawa' } );
 my $manage_user = MT::Author->load( { name => 'ukawa' } );
 my $site_manage_content_data_user = MT::Author->load( { name => 'sagawa' } );
+my $system_manage_content_data_user = MT::Author->load( { name => 'sumikawa' } );
 
 ### Make test data
 # Content Type & Content Field & Content Data
@@ -137,6 +143,9 @@ MT::Association->link( $create_user => $create_role => $site );
 MT::Association->link( $edit_user   => $edit_role   => $site );
 MT::Association->link( $manage_user => $manage_role => $site );
 MT::Association->link( $site_manage_content_data_user => $site_manage_content_data_role => $site );
+
+$system_manage_content_data_user->can_manage_content_data(1);
+$system_manage_content_data_user->save or die;
 
 my $admin = MT::Author->load(1);
 
@@ -231,6 +240,34 @@ subtest 'mode = view (new)' => sub {
         },
     );
 
+    note $app->wq_find("select[name='status']")->as_html;
+    @selected = ();
+    $app->wq_find("select[name='status'] option")->each(
+        sub {
+            my ( $i, $elem ) = @_;
+            my $value = $elem->attr('value');
+            $options{$value} = 1;
+            push @selected, $value if $elem->attr('selected');
+        }
+    );
+    is @selected => 1, "selected one option";
+    is $selected[0] => MT::ContentStatus::RELEASE(),
+        "and the option has RELEASE";
+    is keys %options => 3, "The number of options is 3";
+    ok $options{ MT::ContentStatus::HOLD() },    "existed option HOLD";
+    ok $options{ MT::ContentStatus::RELEASE() }, "existed option RELEASE";
+    ok $options{ MT::ContentStatus::FUTURE() },  "existed option FUTURE";
+
+    note "=== System manage user ===";
+    $app->login($system_manage_content_data_user);
+    $app->get_ok(
+        {   __mode          => 'view',
+            blog_id         => $site->id,
+            content_type_id => $content_type->id,
+            _type           => 'content_data',
+            type            => 'content_data_' . $content_type->id,
+        },
+    );
     note $app->wq_find("select[name='status']")->as_html;
     @selected = ();
     $app->wq_find("select[name='status'] option")->each(
@@ -432,6 +469,65 @@ subtest 'mode = view (edit)' => sub {
     ok $options{ MT::ContentStatus::FUTURE() },  "existed option FUTURE";
 
     note "=== Site manage user - Other's published data ===";
+    $app->get_ok(
+        {   __mode          => 'view',
+            blog_id         => $site->id,
+            content_type_id => $content_type->id,
+            _type           => 'content_data',
+            type            => 'content_data_' . $content_type->id,
+            id              => $cd->id,
+        },
+    );
+
+    note $app->wq_find("select[name='status']")->as_html;
+    @selected = ();
+    $app->wq_find("select[name='status'] option")->each(
+        sub {
+            my ( $i, $elem ) = @_;
+            my $value = $elem->attr('value');
+            $options{$value} = 1;
+            push @selected, $value if $elem->attr('selected');
+        }
+    );
+    is @selected => 1, "selected one option";
+    is $selected[0] => MT::ContentStatus::RELEASE(),
+        "and the option has RELEASE";
+    is keys %options => 3, "The number of options is 3";
+    ok $options{ MT::ContentStatus::HOLD() },    "existed option HOLD";
+    ok $options{ MT::ContentStatus::RELEASE() }, "existed option RELEASE";
+    ok $options{ MT::ContentStatus::FUTURE() },  "existed option FUTURE";
+
+    note "=== System manage user - Other's draft data ===";
+    $app->login($system_manage_content_data_user);
+    $app->get_ok(
+        {   __mode          => 'view',
+            blog_id         => $site->id,
+            content_type_id => $content_type->id,
+            _type           => 'content_data',
+            type            => 'content_data_' . $content_type->id,
+            id              => $cd_cuser->id,
+        },
+    );
+
+    note $app->wq_find("select[name='status']")->as_html;
+    @selected = ();
+    $app->wq_find("select[name='status'] option")->each(
+        sub {
+            my ( $i, $elem ) = @_;
+            my $value = $elem->attr('value');
+            $options{$value} = 1;
+            push @selected, $value if $elem->attr('selected');
+        }
+    );
+    is @selected => 1, "selected one option";
+    is $selected[0] => MT::ContentStatus::HOLD(),
+        "and the option has HOLD";
+    is keys %options => 3, "The number of options is 3";
+    ok $options{ MT::ContentStatus::HOLD() },    "existed option HOLD";
+    ok $options{ MT::ContentStatus::RELEASE() }, "existed option RELEASE";
+    ok $options{ MT::ContentStatus::FUTURE() },  "existed option FUTURE";
+
+    note "=== System manage user - Other's published data ===";
     $app->get_ok(
         {   __mode          => 'view',
             blog_id         => $site->id,
