@@ -1124,14 +1124,14 @@ sub make_list_props {
                             or die MT->translate(
                             'Cannot load content field #[_1]',
                             $ct->data_label );
-                        
+
                         my $data_type = $cf->data_type;
 
                         $db_args->{joins} ||= [];
                         push @{ $db_args->{joins} },
                             MT->model('content_field_index')->join_on(
                             undef,
-                            [   
+                            [
                                 { content_data_id => \'= cd_id' },
                                 { "value_$data_type" => $query },
                             ],

@@ -260,7 +260,7 @@ sub export {
         if (grep $_ eq $default_dir, @dir_list) {
             @dir_list = ($default_dir, grep($_ ne $default_dir, @dir_list));
         }
-        unshift @dir_list, $cfg->UserThemesDirectory if $cfg->UserTHemesDirectory;
+        unshift @dir_list, $cfg->UserThemesDirectory if $cfg->UserThemesDirectory;
 
         foreach my $dir (@dir_list) {
             my $path = File::Spec->catdir($dir, $theme_id);
@@ -289,8 +289,8 @@ sub export {
 
         if ($fmgr->exists($output_path)) {
             if ($app->param('overwrite_yes')) {
-                use File::Path 'rmtree';
-                rmtree($output_path);
+                require File::Path;
+                File::Path::rmtree($output_path);
             } else {
                 return $app->error(
                     $app->translate(
@@ -488,7 +488,7 @@ __END__
 
 =head1 NAME
 
-MT::DataAPI::Endpoint::v2::Theme - Movable Type class for endpoint definitions about the MT::Theme.
+MT::DataAPI::Endpoint::v7::Theme - Movable Type class for endpoint definitions about the MT::Theme.
 
 =head1 AUTHOR & COPYRIGHT
 

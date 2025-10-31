@@ -139,6 +139,7 @@ $.extend(MT.EditorManager.prototype, {
             if (
               "reload" in this.currentEditor
               && (lastFormat == 'richtext' || format == 'richtext')
+              && (this.editorOptions && this.editorOptions['richtext'] && this.editorOptions['richtext']['inline'])
             ) {
               this.currentEditor.reload();
             }

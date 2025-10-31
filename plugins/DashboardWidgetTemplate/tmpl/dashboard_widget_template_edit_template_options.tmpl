@@ -1,0 +1,19 @@
+<mt:SetVarBlock name="hint">
+<__trans phrase="The widget will be displayed to all users, and the button to delete it from the dashboard will be hidden.">
+<mt:If name="blog_id">
+<br /><__trans phrase="If enabled, it will only appear on the site's dashboard. This widget will not be able to be added to user dashboards.">
+</mt:If>
+</mt:SetVarBlock>
+<mtapp:setting
+    id="dashboard_widget_pinned"
+    label="<__trans phrase="Always Show">"
+    hint="$hint"
+    hint_id="dashboard_widget_pinned_hint"
+    show_hint="1">
+    <div class="mb-3">
+        <div class="form-check">
+          <input type="checkbox" name="dashboard_widget_pinned" id="dashboard_widget_pinned" class="form-check-input" <mt:if name="dashboard_widget_pinned" eq="1">checked="checked"</mt:if> aria-describedby="dashboard_widget_pinned" value="1" />
+          <label class="form-check-label" for="dashboard_widget_pinned"><__trans phrase="On"></label>
+        </div>
+    </div>
+</mtapp:setting>

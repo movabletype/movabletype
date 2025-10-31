@@ -12,6 +12,7 @@ BEGIN {
 
 use MT;
 use MT::Test;
+use Feature::Compat::Try;
 
 use MT::ContentField;
 
@@ -56,13 +57,21 @@ subtest 'forbid creating content_field with not unique unique_id' => sub {
     );
     $cf1->save or die $cf1->errstr;
 
-    my $cf2 = MT::ContentField->new(
-        blog_id         => 1,
-        content_type_id => 1,
-        name            => 'test3-2',
-    );
-    $cf2->unique_id( $cf1->unique_id );
-    $cf2->save;
+    # wrap this test with a transaction to restore everything (cursor, etc.) to the correct state
+    my $cf2;
+    try {
+        MT::ContentField->begin_work;
+        $cf2 = MT::ContentField->new(
+            blog_id         => 1,
+            content_type_id => 1,
+            name            => 'test3-2',
+        );
+        $cf2->unique_id( $cf1->unique_id );
+        $cf2->save;
+        MT::ContentField->commit;
+    } catch ($e) {
+        MT::ContentField->rollback;
+    }
     ok( $cf2->errstr, 'unique_id column must be unique' );
 };
 

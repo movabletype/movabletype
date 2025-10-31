@@ -110,7 +110,7 @@ sub _load_envfile {
             next if /^(?:#|\s*$)/;
             s/(?:^\s*|\s*$)//g;
             my ($key, $value) = split /\s*=\s*/, $_, 2;
-            $ENV{ uc $key } = $value;
+            $ENV{ uc $key } //= $value;
         }
     }
 }
@@ -151,6 +151,9 @@ sub write_config {
 
     require MT;
 
+    my $tmpdir = File::Spec->catdir($ENV{MT_TEST_ROOT}, 'tmpdir');
+    mkpath($tmpdir) unless -d $tmpdir;
+
     # common directives
     my %config = (
         PluginPath => [qw(
@@ -163,7 +166,7 @@ sub write_config {
             MT_HOME/t/themes/
             MT_HOME/themes/
         )],
-        TempDir                => File::Spec->tmpdir,
+        TempDir                => $tmpdir,
         DefaultLanguage        => $default_language,
         StaticWebPath          => '/mt-static/',
         StaticFilePath         => 'TEST_ROOT/mt-static',
@@ -366,7 +369,31 @@ sub connect_info {
         }
         # TODO: $self->{dsn} = "dbi:$driver:...";
     }
+    if (!$self->{database_is_ready}) {
+        $self->_drop_existing_tables(\%connect_info);
+    }
     %connect_info;
+}
+
+sub _drop_existing_tables {
+    my ($self, $info) = @_;
+    return unless $ENV{MT_TEST_DROP_EXISTING_TABLES};
+
+    my $dsn = $self->{dsn} or return;
+    my $dbh = do {
+        local $SIG{__WARN__};
+        DBI->connect($dsn, $info->{DBUser}, $info->{DBPassword}, { PrintError => 0 });
+    } or return;
+    my $rows = $dbh->table_info->fetchall_arryref;
+    for my $row (@$rows) {
+        my ($catalog, $schema, $table, $type) = @$row;
+        next unless $type  =~ /table/i;    # ignore indices/sequences
+        next unless $table =~ /\bmt_/i;
+        $table =~ s/^.*\.//g;
+        $table =~ s/"//g;
+        $dbh->do("DROP TABLE $table") or die $dbh->errstr;
+    }
+    $self->{database_is_ready} = 1;
 }
 
 sub _connect_info_mysql {
@@ -412,6 +439,7 @@ sub _connect_info_mysql {
         if ($ENV{TEST_VERBOSE}) {
             $self->show_mysql_db_variables;
         }
+        $self->{database_is_ready} = 1;
     } else {
         $self->{dsn} = "dbi:mysql:host=$info{DBHost};dbname=$info{Database};user=$info{DBUser}";
         my $dbh = do { local $SIG{__WARN__}; DBI->connect($self->{dsn}, undef, undef, { PrintError => 0 }) };
@@ -473,6 +501,7 @@ sub _connect_info_pg {
             $info{DBPassword} = $opts{password};
         }
         $self->{dsn} = "dbi:Pg:" . (join ";", map { "$_=$opts{$_}" } keys %opts);
+        $self->{database_is_ready} = 1;
     } else {
         $self->{dsn} = "dbi:Pg:host=$info{DBHost};dbname=$info{Database};user=$info{DBUser}";
         my $dbh = DBI->connect($self->{dsn});
@@ -491,6 +520,7 @@ sub _connect_info_sqlite {
 
     my $database = $self->path("mt.db");
     $self->{dsn} = "dbi:SQLite:$database";
+    $self->{database_is_ready} = 1 unless -f $database;
 
     return (
         ObjectDriver => "DBI::sqlite",
@@ -915,9 +945,9 @@ sub prepare_fixture {
     require MT::Theme;
     my $blog = MT::Blog->load(1);
     if ($blog) {
-        MT::Theme->load('classic_blog');
+        MT::Theme->load('classic_test_blog');
     } else {
-        MT::Theme->load('classic_website');
+        MT::Theme->load('classic_test_website');
     }
 
     $ENV{MT_TEST_LOADED_FIXTURE} = 1;
@@ -1000,7 +1030,6 @@ sub load_schema_and_fixture {
     my ($s, $m, $h, $d, $mo, $y) = gmtime;
     my $now      = sprintf("%04d%02d%02d%02d%02d%02d", $y + 1900, $mo + 1, $d, $h, $m, $s);
     my @pool     = ('a' .. 'z', 0 .. 9);
-    my $api_pass = join '', map { $pool[rand @pool] } 1 .. 8;
     my $salt     = join '', map { $pool[rand @pool] } 1 .. 16;
 
     # Tentative password; update it later when necessary
@@ -1010,7 +1039,6 @@ sub load_schema_and_fixture {
     $fixture =~ s/\b__MT_HOME__\b/$MT_HOME/g;
     $fixture =~ s/\b__TEST_ROOT__\b/$root/g;
     $fixture =~ s/\b__NOW__\b/$now/g;
-    $fixture =~ s/\b__API_PASS__\b/$api_pass/g;
     $fixture =~ s/\b__AUTHOR_PASS__\b/$author_pass/g;
     require JSON;
     $fixture = eval { JSON::decode_json($fixture) };
@@ -1291,8 +1319,6 @@ sub save_fixture {
                         if ($now - $t < Time::Seconds::ONE_DAY()) {
                             $value = '__NOW__';
                         }
-                    } elsif ($key eq 'author_api_password') {
-                        $value = '__API_PASS__';
                     } elsif ($key eq 'author_password') {
                         $value = '__AUTHOR_PASS__';
                     } elsif ($key =~ /^(?:role|permission)_permissions$/) {

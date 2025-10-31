@@ -81,16 +81,16 @@
 </mt:setvarblock>
 
 <mt:setvarblock name="js_include" append="1">
-<mtapp:script type="text/javascript" path="js/listing/list_client.js">
-<mtapp:script type="text/javascript" path="js/listing/list_action_client.js">
-<mtapp:script type="text/javascript" path="js/listing/list_data.js">
-<mtapp:script type="text/javascript" path="js/listing/list_store.js">
+<mtapp:script path="js/listing/list_client.js">
+<mtapp:script path="js/listing/list_action_client.js">
+<mtapp:script path="js/listing/list_data.js">
+<mtapp:script path="js/listing/list_store.js">
 
 <mt:if name="config.useriot">
   <mt:unless name="debug_riot">
-  <mtapp:script type="text/javascript" path="riot/riot.min.js">
-  <mtapp:script type="text/javascript" path="js/ss/ss.js">
-  <mtapp:script type="text/javascript" path="js/admin2023/listing/listing.js">
+  <mtapp:script path="riot/riot.min.js">
+  <mtapp:script path="js/ss/ss.js">
+  <mtapp:script path="js/admin2023/listing/listing.js">
   <mt:else>
   <mtapp:script type="riot/tag" path="js/ss/tag/ss.tag">
   <mtapp:script type="riot/tag" path="js/admin2023/listing/tag/raw.tag">
@@ -105,7 +105,7 @@
   <mtapp:script type="riot/tag" path="js/admin2023/listing/tag/list-pagination-for-mobile.tag">
   <mtapp:script type="riot/tag" path="js/admin2023/listing/tag/list-filter.tag">
   <mtapp:script type="riot/tag" path="js/admin2023/listing/tag/list-table.tag">
-  <mtapp:script type="text/javascript" path="riot/riot-compiler.js">
+  <mtapp:script path="riot/riot-compiler.js">
   </mt:unless>
 <mt:else>
   <mtapp:script type="module" path="js/build/listing.js">

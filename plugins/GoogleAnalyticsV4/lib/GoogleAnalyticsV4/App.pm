@@ -134,6 +134,7 @@ sub config_tmpl {
         }
     }
 
+    ## no critic(TooMuchCode::ProhibitUnusedInclude)
     my $missing = undef;
     $missing = $app->translate(
         'A Perl module required for using Google Analytics API is missing: [_1].',

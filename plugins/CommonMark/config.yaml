@@ -1,0 +1,24 @@
+id: CommonMark
+name: CommonMark
+version: 1.0
+author_name: "Six Apart Ltd."
+description: <MT_TRANS phrase="CommonMark is a standard, unambiguous syntax specification for Markdown.">
+schema_version: 1.0
+l10n_class: CommonMark::L10N
+text_filters:
+    commonmark:
+        label: CommonMark
+        code: $CommonMark::CommonMark::common_mark
+    gfm:
+        label: GitHub Flavored Markdown
+        code: $CommonMark::CommonMark::gfm
+callbacks:
+    MT::Upgrade::upgrade_end: |
+        sub {
+            if ($] < 5.026) {
+                my $cfg = MT->config;
+                $cfg->PluginSwitch( 'CommonMark=0', 1 );
+                $cfg->save_config;
+            }
+            return 1;
+        }

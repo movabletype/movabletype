@@ -1,0 +1,86 @@
+<mt:setvarblock name="user_screen_name"><mt:if name="author_display_name"><mt:var name="author_display_name" escape="html"><mt:else><mt:var name="author_name" escape="html"></mt:if></mt:setvarblock>
+
+<mt:if name="scope_type" ne="user">
+<div class="mt-primaryNavigation" data-is="primary-navigation">
+  <mt:if name="site_menu_actions"><div class="mt-primaryNavigation__control">
+    <mt:loop name="site_menu_actions">
+        <mt:setvarblock name="escaped_menu_action_label"><mt:var name="label" escape="html"></mt:setvarblock>
+        <a
+          class="site_menu_actions__button <mt:var name="class" escape="html" _default="">"
+          href="<mt:var name="href" escape="html">"
+          <mt:if name="target">target="<mt:var name="target" escape="html">"</mt:if>
+          <mt:if name="id" eq="create_new">data-is="create-button"</mt:if>
+          title="<mt:var name="escaped_menu_action_label">"
+        >
+          <mtapp:svgicon id="$icon" title="<mt:var name="escaped_menu_action_label">">
+          <span class="label"><mt:var name="escaped_menu_action_label"></span>
+        </a>
+    </mt:loop>
+  </div></mt:if>
+
+  <div class="mt-primaryNavigationExpansion__control">
+    <mt:loop name="menu_actions">
+      <mt:unless name="plugin" eq="core">
+        <mt:setvarblock name="escaped_menu_action_label"><mt:var name="label" escape="html"></mt:setvarblock>
+        <a
+          id="menu-<mt:var name="id" escape="html">"
+          href="<mt:var name="href" escape="html">"
+          class="btn btn-default <mt:var name="class" escape="html">"
+          <mt:if name="target"> target="<mt:var name="target" escape="html">"</mt:if>
+        >
+          <mtapp:svgicon id="$icon" title="$escaped_menu_action_label">
+          <mt:var name="escaped_menu_action_label">
+        </a>
+      </mt:unless>
+    </mt:loop>
+  </div>
+
+  <div class="mt-primaryNavigation__content">
+    <ul id="primaryNavigation" class="mt-primaryNavigation__list" data-children=".item">
+      <mt:loop name="top_nav_loop">
+        <li id="menu-<mt:var name="id" escape="html">" class="item mt-primaryNavigation__item">
+          <a data-bs-toggle="collapse" data-parent="#primaryNavigation" href="#primaryNavigation-item<mt:var name="__counter__">" aria-expanded="<mt:if name="screen_group" eq="$id">true<mt:else>false</mt:if>" aria-controls="primaryNavigation-item<mt:var name="__counter__">">
+            <mt:setvarblock name="escaped_label"><mt:var name="label" escape="html"></mt:setvarblock>
+            <mt:if name="icon">
+              <mt:setvarblock name="escaped_icon"><mt:var name="icon" escape="html"></mt:setvarblock>
+              <mtapp:svgicon id="$escaped_icon" title="$escaped_label" size="sm">
+            <mt:else>
+              <mtapp:svgicon id="ic_box" title="$escaped_label" size="sm">
+            </mt:if>
+            <mt:var name="escaped_label">
+          </a>
+          <div id="primaryNavigation-item<mt:var name="__counter__">" class="collapse<mt:if name="screen_group" eq="$id"> show</mt:if>" data-role="tabpanel">
+            <ul class="mt-primaryNavigation__child">
+              <mt:loop name="sub_nav_loop">
+                <mt:if name="allowed">
+                  <li id="menu-<mt:var name="id" escape="html" replace=":","_">">
+                    <a href="<mt:var name="link" escape="html">"<mt:if name="current"> class="selected"<mt:elseif name="dialog"> class="mt-modal-open" data-mt-modal-large</mt:if>>
+                      <mt:var name="label" escape="html">
+                    </a>
+                  </li>
+                </mt:if>
+              </mt:loop>
+            </ul>
+          </div>
+        </li>
+      </mt:loop>
+    </ul>
+  </div>
+
+<div
+  class="mt-primaryNavigation__toggle_bar"
+  data-is="primary-navigation-toggle"
+>
+  <button
+    type="button"
+    class="mt-primaryNavigation__toggle_icon_wrapper"
+  >
+    <div class="mt-primaryNavigation__toggle_icon_border">
+      <div class="mt-primaryNavigation__toggle_icon mt-icon"></div>
+    </div>
+  </button>
+</div>
+
+
+</div>
+</mt:if>

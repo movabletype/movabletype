@@ -51,7 +51,9 @@ EOF
 };
 
 subtest 'php only tag tests' => sub {
-    MT::Test::Tag->run_php_tests(1);
+    MT::Test::Tag->run_php_tests(1, sub {
+        return "\$ctx->__stash['vars']['php_code'] = '<?php echo 1+2; ?>';";
+    });
 };
 
 done_testing;
@@ -68,7 +70,7 @@ left:123:right
 
 === raw smarty php allowed
 --- mt_config
-{DynamicTemplateAllowPHP => 1}
+{DynamicTemplateAllowPHP => 1, DynamicTemplateAllowSmartyTags => 1}
 --- template
 left:{{php}} echo 'a'. 'b'{{/php}}:right
 --- expected
@@ -149,3 +151,11 @@ left:ab:right
 {{}}<mt:SetVar name="foo" value="{{foo}}"><mt:Var name="foo">
 --- expected
 {{}}{{foo}}
+
+=== php in filetemplate format
+--- mt_config
+{DynamicTemplateAllowPHP => 1}
+--- template
+<mt:FileTemplate format="<mt:var name='php_code' />" />
+--- expected
+<?php echo 1+2; ?>

@@ -63,7 +63,7 @@ $test_env->prepare_fixture(sub {
     );
 
     my $publish_user2 = MT::Test::Permission->make_author(
-        name     => 'Kemikawa',
+        name     => 'kemikawa',
         nickname => 'Shiro Kemikawa',
     );
 

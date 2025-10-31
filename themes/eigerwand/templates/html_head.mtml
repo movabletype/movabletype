@@ -1,0 +1,58 @@
+<link rel="stylesheet" href="<$mt:Link template="styles" encode_html="1"$>">
+
+<mt:If name="search_results">
+  <script>
+    <mt:IfMoreResults>
+      function getResults(page) {
+        page = parseInt(page);
+        if (timer) window.clearTimeout(timer);
+        var xh = mtGetXmlHttp();
+        if (!xh) return false;
+        var res = results[page];
+        if (!res) return;
+        var url = res['next_url'];
+        if (!url) return;
+
+        xh.open('GET', url + '&format=js', true);
+        xh.onreadystatechange = function() {
+          if ( xh.readyState == 4 ) {
+            if ( xh.status && ( xh.status != 200 ) ) {
+              // error - ignore
+            } else {
+              try {
+                var page_results = eval("(" + xh.responseText + ")");
+                if ( page_results['error'] == null )
+                  results[page + 1] = page_results['result'];
+              } catch (e) {
+              }
+            }
+          }
+        };
+        xh.send(null);
+      }
+
+      function swapContent(direction) {
+        if ( direction == undefined ) direction = 1;
+        var page_span = document.getElementById('current-page');
+        if (!page_span) return true;
+        var next_page = direction + parseInt(page_span.innerHTML);
+        var res = results[next_page];
+        if (!res) return true;
+        var content = res['content'];
+        if (!content) return true;
+        var div = document.getElementById('search-results');
+        if (!div) return true;
+        div.innerHTML = content;
+        timer = window.setTimeout("getResults(" + next_page + ")", 1*1000);
+        window.scroll(0, 0);
+        return false;
+      }
+    <mt:Else>
+      <mt:IfPreviousResults>
+        function swapContent(direction) {
+          return true;
+        }
+      </mt:IfPreviousResults>
+    </mt:IfMoreResults>
+  </script>
+</mt:If>

@@ -75,7 +75,7 @@ abstract class BaseObject extends ADOdb_Active_Record
             'category_order' => 'vchar',
             'folder_order' => 'vchar',
             'publish_empty_archive' => 'vinteger',
-            'upload_destination' => 'vinteger',
+            'upload_destination' => 'vclob',
             'extra_path' => 'vchar',
             'operation_if_exists' => 'vinteger',
             'normalize_orientation' => 'vinteger',

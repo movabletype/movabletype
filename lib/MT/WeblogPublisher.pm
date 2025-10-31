@@ -27,9 +27,6 @@ sub new {
     if ( !exists $this->{NoTempFiles} ) {
         $this->{NoTempFiles} = $cfg->NoTempFiles;
     }
-    if ( !exists $this->{PublishCommenterIcon} ) {
-        $this->{PublishCommenterIcon} = $cfg->PublishCommenterIcon;
-    }
     bless $this, $class;
     $this->init();
     $this;
@@ -2783,8 +2780,8 @@ MT::WeblogPublisher - Express weblog templates and content into a specific URL s
 =head2 MT::WeblogPublisher->new()
 
 Return a new C<MT::WeblogPublisher>. Additionally, call
-L<MT::ConfigMgr/instance> and set the I<NoTempFiles> and
-I<PublishCommenterIcon> attributes, if not already set.
+L<MT::ConfigMgr/instance> and set the I<NoTempFiles>
+attribute, if not already set.
 
 =head2 $mt->rebuild( %args )
 

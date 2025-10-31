@@ -1,0 +1,15 @@
+{
+    "name": "movabletype/movabletype",
+    "scripts": {
+        "post-update-cmd": [
+            "git status --short | grep -q 'vendor/adodb/' && git apply patches/adodb5.diff || echo \"adodb5 patch wasnt applied\""
+        ]
+    },
+    "require": {
+        "adodb/adodb-php": "5.22.7",
+        "smarty/smarty": "4.5.5"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.5.24"
+    }
+}

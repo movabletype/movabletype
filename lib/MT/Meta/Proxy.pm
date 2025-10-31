@@ -85,6 +85,13 @@ sub get {
             Carp::croak(
                 "something is wrong: $type not in column_values of metadata");
         }
+        # special case
+        if ($field->{org_type} && $field->{org_type} eq 'boolean') {
+            my $value = $meta->$type;
+            return $value if defined $value;
+            unserialize_blob($meta);
+            return $meta->vblob;
+        }
         return $meta->$type;
     }
     else {

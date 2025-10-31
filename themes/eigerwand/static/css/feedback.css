@@ -1,0 +1,98 @@
+.feedback {
+  margin: 3.236em 0 4.854em;
+  border-top: 1px solid #c0c6c9; }
+  .feedback h2 {
+    margin-top: 1em; }
+    .feedback h2 + .comment {
+      border: 0; }
+
+.comment {
+  margin-bottom: 1.618em;
+  padding-top: 1.618em;
+  border-top: 1px dotted #c0c6c9; }
+  .comment header {
+    zoom: 1; }
+    .comment header:before, .comment header:after {
+      display: block;
+      height: 0;
+      visibility: hidden;
+      content: "\0020"; }
+    .comment header:after {
+      clear: both; }
+    .comment header a {
+      color: #c0c6c9;
+      text-decoration: none; }
+      .comment header a:hover {
+        text-decoration: underline; }
+    .comment header h3 {
+      display: inline;
+      margin: 0;
+      font-size: 110%; }
+      .comment header h3 a {
+        color: #2b2b2b;
+        text-decoration: none; }
+        .comment header h3 a:hover {
+          color: #3a6eb2; }
+  .comment time {
+    margin-left: 0.809em;
+    font-size: 90%; }
+    .comment time a {
+      color: #c0c6c9;
+      text-decoration: none; }
+      .comment time a:hover {
+        text-decoration: underline; }
+  .comment p {
+    margin: 0.809em 0; }
+
+.message {
+  padding: 0.809em;
+  background-color: #f3f3f3; }
+
+#comment-greeting {
+  margin-top: 3.236em; }
+  #comment-greeting + #comments-form {
+    margin-top: 1.618em; }
+
+#comments-form {
+  margin-top: 3.236em; }
+  #comments-form fieldset {
+    margin: 0;
+    padding: 0;
+    border: 0; }
+    #comments-form fieldset legend {
+      display: none; }
+
+#comments-open-text textarea {
+  width: 100%;
+  height: 12.944em; }
+
+#comments-open-data ul {
+  margin: 1.618em 0;
+  padding: 0; }
+#comments-open-data li {
+  list-style-type: none;
+  margin-bottom: 0.809em; }
+  #comments-open-data li label {
+    display: block;
+    text-align: left; }
+  #comments-open-data li input[type="text"] {
+    width: 100%; }
+    @media (min-width: 700px) {
+      #comments-open-data li input[type="text"] {
+        width: 75%; } }
+
+#comments-open-footer {
+  margin-top: 1.618em;
+  text-align: center; }
+  @media (min-width: 930px) {
+    #comments-open-footer {
+      text-align: left; } }
+  #comments-open-footer input[type="submit"],
+  #comments-open-footer input[type="button"] {
+    width: 100%;
+    margin-bottom: 0.809em; }
+    @media (min-width: 700px) {
+      #comments-open-footer input[type="submit"],
+      #comments-open-footer input[type="button"] {
+        width: auto;
+        margin-right: 0.809em; } }

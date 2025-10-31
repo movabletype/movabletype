@@ -1,7 +1,7 @@
 #!/usr/bin/env perl -w
 
 use strict;
-
+use warnings;
 use lib 'lib';
 use lib 'extlib';
 use open qw(:utf8);
@@ -9,100 +9,73 @@ use File::Spec;
 use Encode;
 use MT;
 use MT::Util qw(encode_js);
+use File::Find;
 
-my $js = `cat mt-static/mt.js`;
-$js .= `cat mt-static/jquery/jquery.mt.js`;
-$js .= `cat mt-static/js/dialog.js`;
-$js .= `cat mt-static/js/assetdetail.js`;
-$js .= `cat mt-static/js/upload_settings.js`;
-$js .= `cat mt-static/js/edit.js`;
-$js .= `cat mt-static/js/archetype_editor.js`;
-$js .= `cat mt-static/js/cms.js`;
+my @files = ();
 
-$js .= `cat mt-static/js/contenttype/tag/*.tag`;
-$js .= `cat mt-static/js/admin2023/contenttype/tag/*.tag`;
-$js .= `cat src/contenttype/elements/*.svelte`;
-$js .= `cat mt-static/js/listing/tag/*.tag`;
-$js .= `cat mt-static/js/admin2023/listing/tag/*.tag`;
-$js .= `cat src/listing/elements/*.svelte`;
-$js .= `cat mt-static/js/mt/util.js`;
-$js .= `cat mt-static/js/tc/mixer/display.js`;
-$js .= `cat mt-static/plugins/BlockEditor/lib/js/blockeditor_field.js`;
-$js
-    .= `cat mt-static/plugins/BlockEditor/lib/js/blockeditor_field_manager.js`;
-$js .= `cat mt-static/plugins/BlockEditor/lib/js/fields/embed.js`;
-$js .= `cat mt-static/plugins/BlockEditor/lib/js/fields/header.js`;
-$js .= `cat mt-static/plugins/BlockEditor/lib/js/fields/horizon.js`;
-$js .= `cat mt-static/plugins/BlockEditor/lib/js/fields/image.js`;
-$js .= `cat mt-static/plugins/BlockEditor/lib/js/fields/text.js`;
-$js .= `cat mt-static/plugins/BlockEditor/lib/js/jquery.blockeditor.js`;
-$js .= `cat mt-static/plugins/BlockEditor/lib/js/modal_window.js`;
-$js .= `cat mt-static/plugins/FormattedTextForTinyMCE5/extension.js`;
-$js .= `cat mt-static/plugins/TinyMCE5/lib/js/tinymce/plugins/mt/plugin.js`;
-$js .= `cat mt-static/plugins/TinyMCE5/lib/js/tinymce/plugins/mt/langs/plugin.js`;
-$js .= `cat mt-static/plugins/TinyMCE5/lib/js/tinymce/plugins/mt_fullscreen/plugin.js`;
-$js .= `cat mt-static/plugins/TinyMCE5/lib/js/tinymce/plugins/mt_fullscreen/langs/plugin.js`;
-$js .= `cat mt-static/plugins/FormattedTextForTinyMCE6/extension.js`;
-$js .= `cat mt-static/plugins/TinyMCE6/lib/js/tinymce/plugins/mt/plugin.js`;
-$js .= `cat mt-static/plugins/TinyMCE6/lib/js/tinymce/plugins/mt/langs/plugin.js`;
-$js .= `cat mt-static/plugins/TinyMCE6/lib/js/tinymce/plugins/mt_fullscreen/plugin.js`;
-$js .= `cat mt-static/plugins/TinyMCE6/lib/js/tinymce/plugins/mt_fullscreen/langs/plugin.js`;
-$js .= `cat plugins/BlockEditor/tmpl/cms/dialog/asset_modal.tmpl`;
-$js
-    .= `cat plugins/BlockEditor/tmpl/cms/dialog/include/asset_upload_panel.tmpl`;
-$js
-    .= `cat plugins/BlockEditor/tmpl/cms/field_html/field_html_multi_line_text.tmpl`;
-$js .= `cat plugins/FormattedText/tmpl/cms/edit_formatted_text.tmpl`;
-$js .= `cat tmpl/cms/edit_commenter.tmpl`;
-$js .= `cat tmpl/cms/edit_content_data.tmpl`;
-$js .= `cat tmpl/cms/edit_content_type.tmpl`;
-$js .= `cat tmpl/cms/edit_entry.tmpl`;
-$js .= `cat tmpl/cms/edit_template.tmpl`;
-$js .= `cat tmpl/cms/field_html/field_html_asset.tmpl`;
-$js .= `cat tmpl/cms/field_html/field_html_categories.tmpl`;
-$js .= `cat tmpl/cms/field_html/field_html_content_type.tmpl`;
-$js .= `cat tmpl/cms/field_html/field_html_multi_line_text.tmpl`;
-$js .= `cat tmpl/cms/include/asset_upload.tmpl`;
-$js .= `cat tmpl/cms/include/async_asset_list.tmpl`;
-$js .= `cat tmpl/cms/include/async_asset_upload.tmpl`;
-$js .= `cat tmpl/cms/include/category_selector.tmpl`;
-$js .= `cat tmpl/cms/include/content_data_list.tmpl`;
-$js .= `cat tmpl/cms/list_category.tmpl`;
-$js .= `cat tmpl/cms/listing/tag_list_header.tmpl`;
+push @files, find_js(
+    directories => ['mt-static/'],
+    extensions  => ['js', 'tag'],
+    ignore      => [
+        'mt-static/js/common/DOM',
+        'mt-static/mt_ja.js',
+        'mt-static/mt_en_us.js',
+    ],
+);
+
+push @files, find_js(
+    directories => ['src/'],
+    extensions  => ['svelte', 'ts'],
+);
+
+push @files, find_js(
+    directories => [
+        'tmpl/',
+        glob('plugins/*/tmpl'),
+        glob('addons/*/tmpl'),
+    ],
+    extensions  => ['tmpl'],
+);
 
 my $addon_path = File::Spec->catdir('addons');
-local *DH;
-my @files;
 my @addons;
-if ( opendir DH, $addon_path ) {
-    my @p = readdir DH;
+if ( opendir my $dh, $addon_path ) {
+    my @p = readdir $dh;
     foreach my $p (@p) {
         next if $p eq '.' || $p eq '..';
         my $full_path = File::Spec->catdir( $addon_path, $p );
         if ( -d $full_path ) {
             if ( $p =~ m/^(.+)\.(\w+)$/ ) {
                 my $label = $1;
-                my $id    = lc $1;
                 my $type  = $2;
                 next if $type ne 'pack';
-                if ( open my $fh,
-                    '<',
-                    File::Spec->catfile( $full_path, 'make_js_templates' ) )
-                {
-                    while (<$fh>) {
-                        chomp $_;
-                        push @files, $_;
-                    }
-                    close $fh;
-                    push @addons, $label;
-                }
+                push @addons, $label;
             }
         }
     }
-    closedir DH;
+    closedir $dh;
 }
 
-$js .= `cat $_` foreach @files;
+my $plugin_path = File::Spec->catdir('plugins');
+my @plugins;
+if ( opendir my $dh, $plugin_path ) {
+    my @p = readdir $dh;
+    foreach my $p (@p) {
+        next if $p eq '.' || $p eq '..';
+        my $full_path = File::Spec->catdir( $plugin_path, $p );
+        if ( -d $full_path ) {
+            push @plugins, $p;
+        }
+    }
+    closedir $dh;
+}
+
+my $js = '';
+for my $file (@files) {
+    open my $fh, '<', $file or die "$file: $!";
+    local $/;
+    $js .= <$fh>;
+}
 
 foreach my $lang (qw(en_us ja)) {
     eval 'require MT::L10N::' . $lang
@@ -118,6 +91,19 @@ foreach my $lang (qw(en_us ja)) {
         next if $@;
         my $conv;
         $conv = eval '\%{MT::' . $addon . '::L10N::' . $lang . '::Lexicon}';
+        if (%$conv) {
+            $lex = { %$lex, %$conv, };
+        }
+    }
+
+    foreach my $plugin (@plugins) {
+        eval {
+            unshift @INC, "plugins/$plugin/lib";
+            require "./plugins/$plugin/lib/MT/$plugin/L10N/$lang.pm";
+        };
+        next if $@;
+        my $conv;
+        $conv = eval '\%{MT::' . $plugin . '::L10N::' . $lang . '::Lexicon}';
         if (%$conv) {
             $lex = { %$lex, %$conv, };
         }
@@ -149,4 +135,29 @@ foreach my $lang (qw(en_us ja)) {
         print $FOUT "Lexicon['$text'] = '$lexicon{$text}';\n";
     }
     close $FOUT;
+}
+
+sub find_js {
+    my %args      = @_;
+    my $home      = $ENV{MT_TEST_ROOT} || $ENV{MT_HOME} || '.';
+    my @dirs      = map { File::Spec->catdir($home, $_) } @{ $args{directories} };
+    my $ext_re    = join('|', @{ $args{extensions} });
+    my $ignore_re = join('|', @{ $args{ignore} || [] });
+    my @ret;
+    File::Find::find({
+            wanted => sub {
+                my $file = $File::Find::name;
+                return unless -f $file;
+                return if $file               =~ /\/\./;
+                return unless $file           =~ /\.($ext_re)$/;
+                return if $ignore_re && $file =~ /^$ignore_re/;
+                my $rel = File::Spec->abs2rel($file, $home);
+                push @ret, $rel;
+            },
+            no_chdir => 1,
+            follow   => 1,
+        },
+        @dirs
+    );
+    return @ret;
 }

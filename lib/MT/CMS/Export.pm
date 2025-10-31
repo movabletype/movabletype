@@ -22,7 +22,7 @@ sub start_export {
         if !$blog;
 
     $param{blog_id} = $blog_id;
-    $app->add_breadcrumb( $app->translate('Export Site Entries') );
+    $app->add_breadcrumb( $app->translate('Export [_1] Entries', $blog->class_label) );
     $app->load_tmpl( 'export.tmpl', \%param );
 }
 

@@ -52,6 +52,7 @@ BEGIN {
     # some other aliases
     $TypesByName{string}           = TYPE_VCHAR;
     $TypesByName{integer}          = TYPE_VINTEGER;
+    $TypesByName{boolean}          = TYPE_VINTEGER;
     $TypesByName{datetime}         = TYPE_VDATETIME;
     $TypesByName{float}            = TYPE_VFLOAT;
     $TypesByName{string_indexed}   = TYPE_VCHAR_INDEXED;
@@ -146,6 +147,7 @@ sub register {
 
     foreach my $field ( @{$fields} ) {
         my $name = $field->{name};
+        my $org  = $field->{org_type};
         my $type = $field->{type};
         my $zip  = $field->{zip};
 
@@ -167,7 +169,8 @@ sub register {
             type    => $Types{$type_id},
             pkg     => $pkg,
         };
-        $value->{zip} = $zip if defined $zip;
+        $value->{zip}      = $zip if defined $zip;
+        $value->{org_type} = $org if $org;
 
         $Registry->{$key}{$pkg}{$name} = $value;
     }

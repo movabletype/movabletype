@@ -920,9 +920,6 @@ extend( DOM, {
         var parentNode = n.parentNode;
         var nextSibling = n.nextSibling;
         parentNode.replaceChild( e.removeChild( e.firstChild ), n );
-        return;
-        while( e.firstChild )
-            parentNode.insertBefore( e.removeChild( e.firstChild ), nextSibling );
     },
     
     

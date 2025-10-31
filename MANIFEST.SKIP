@@ -266,7 +266,6 @@ themes/broken_blog_theme
 .*/xt/
 ^phpunit.xml
 ^php/tests
-^php/extlib/adodb5/tests
 ^db
 ^ToDo$
 ^README
@@ -430,3 +429,6 @@ yarn.lock
 # Composer
 ^composer.json
 ^composer.lock
+^php/composer.json
+^php/composer.lock
+^php/patches/

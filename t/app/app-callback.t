@@ -65,7 +65,7 @@ $test_env->prepare_fixture('db');
 
 my $admin = MT->model('author')->load(1);
 my $site  = MT->model('blog')->load(1);
-MT::Theme->load('classic_blog')->apply($site);
+MT::Theme->load('classic_test_blog')->apply($site);
 my $index_template = MT->model('template')->load({
     blog_id => 1,
     type    => 'index',

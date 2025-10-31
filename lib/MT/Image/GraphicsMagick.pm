@@ -9,7 +9,7 @@ use strict;
 use warnings;
 
 use base qw( MT::Image::ImageMagick );
-use constant MagickClass => 'Graphics::Magick'; ## no critic
+use constant MagickClass => 'Graphics::Magick';  ## no critic(TooMuchCode::ProhibitUnusedConstant)
 
 $ENV{MAGICK_THREAD_LIMIT} ||= 1;
 

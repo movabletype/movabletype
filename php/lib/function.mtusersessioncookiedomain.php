@@ -23,13 +23,7 @@ function smarty_function_mtusersessioncookiedomain($args, &$ctx) {
                 return $ctx->error("Error in expression for UserSessionCookieDomain: '$domain'");
             }
 
-            if ($ctx->mt->config('DynamicTemplateAllowPHP')) {
-                ob_start();
-                eval('?>' . $_var_compiled);
-                $domain = ob_get_clean();
-            } else {
-                $domain = $_var_compiled;
-            }
+            $domain = $_var_compiled;
         } else {
             # no further modifications for an explictly
             # configured value

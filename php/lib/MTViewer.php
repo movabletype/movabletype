@@ -5,7 +5,6 @@
 #
 # $Id$
 
-include_once("Smarty.class.php");
 class MTViewer extends Smarty {
     var $varstack = array();
     var $stash_var_stack = array();
@@ -623,7 +622,7 @@ class MTViewer extends Smarty {
                 list($xx, $y, $mo, $d, $h, $m, $s) = $match;
                 $mo--;
                 $js = <<<EOT
-<script type="text/javascript">
+<script>
 /* <![CDATA[ */
 document.write(mtRelativeDate(new Date($y,$mo,$d,$h,$m,$s), '$fds'));
 /* ]]> */
@@ -997,15 +996,5 @@ EOT;
         }
         return false;
     }
-
-    /**
-     * wrapper for eval() retaining $this
-     * @return mixed
-     */
-    function _eval($code, $params=null) {
-        trigger_error('function _eval is deprecated', E_USER_DEPRECATED);
-        return eval($code);
-    }
-
 }
 ?>

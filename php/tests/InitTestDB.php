@@ -5,9 +5,10 @@ $cfgs = [
     'oracle' => 'oracle-test.cfg',
     'pg' => 'postgresql-test.cfg',
 ];
-$driver = getenv('MT_TEST_BACKEND');
-$driver = $driver && $cfgs[$driver] ? $driver : 'mysql';
-$MT_CONFIG = $cfgs[$driver];
+$MT_CONFIG = $cfgs[strtolower(getenv('MT_TEST_BACKEND') ?? 'mysql')];
+if (empty($MT_CONFIG)) {
+    $MT_CONFIG = $cfgs['mysql'];
+}
 
 system("MT_CONFIG=$MT_CONFIG". ' perl -It/lib -Ilib -Iextlib -MMT::Test=:db -E "say \"Initialized test DB.\""');
 

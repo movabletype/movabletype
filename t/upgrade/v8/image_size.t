@@ -33,9 +33,10 @@ sub create_image {
         label       => 'Userpic A',
         description => 'Userpic A',
     );
-    $asset->meta('image_width',  640);
-    $asset->meta('image_height', 480);
     $asset->save;
+    my $meta_class = $asset->meta_pkg;
+    $meta_class->new(asset_id => $asset->id, type => 'image_width', vinteger => 640)->save;
+    $meta_class->new(asset_id => $asset->id, type => 'image_height', vinteger => 480)->save;
     return $asset;
 }
 
@@ -132,7 +133,7 @@ subtest 'upgrade' => sub {
         MT::Test::Upgrade->upgrade(from => 8.0000);
 
         is $commit_count, 5;
-        is_deeply [grep { /^Migrating/ } @progress_messages], [
+        is_deeply [grep { /^Migrating image width/ } @progress_messages], [
             'Migrating image width/height meta data...',
             'Migrating image width/height meta data... (22%)',
             'Migrating image width/height meta data... (44%)',

@@ -431,7 +431,7 @@ the value in Javascript.
 
 B<Example:>
 
-    <script type="text/javascript">
+    <script>
     <!-- /* <![CDATA[ */
     var the_title = '<$MTEntryTitle encode_js="1"$>';
     /* ]]> */ -->

@@ -7,6 +7,7 @@
 # $Id$
 
 use strict;
+use warnings;
 use lib 'extlib', 'lib';
 use ExtUtils::Manifest qw( maniread manicopy mkmanifest );
 use File::Copy;
@@ -144,6 +145,9 @@ for my $lang (@languages) {
 
     require MT::Util::Checksums;
     MT::Util::Checksums::update_checksums();
+
+    require MT::Util::PluginVersions;
+    MT::Util::PluginVersions::update_plugin_versions();
 
     # Copy files for non-GPL license since we will be modifying the content
     manicopy( maniread(), $distname, ( $license eq 'GPL' ? 'best' : 'cp' ) );

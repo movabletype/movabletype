@@ -908,7 +908,7 @@ sub _hdlr_tag_search_link {
         $param .= '&amp;';
     }
     $param .= 'tag=' . encode_url( $tag->name );
-    $param .= '&amp;limit=' . $ctx->{config}->MaxResults;
+    $param .= '&amp;limit=' . $ctx->{config}->SearchMaxResults;
     $param .= '&amp;blog_id=' . $template_blog_id if $template_blog_id;
     my $path = $ctx->cgi_path;
     $path . $ctx->{config}->SearchScript . '?' . $param;

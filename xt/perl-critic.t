@@ -4,7 +4,7 @@ use FindBin;
 
 use File::Find;
 use Test::More;
-use Test::Perl::Critic (-profile => "$FindBin::Bin/../.perlcriticrc", -verbose => 6 );
+use Test::Perl::Critic (-profile => "$FindBin::Bin/../.perlcriticrc", -verbose => '[%p] %f %l:%c (%s)' );
 
 my @files;
 for my $dir (qw( lib tools t xt build addons plugins )) {
@@ -25,6 +25,10 @@ sub _find {
     return if $File::Find::name =~ m!/(?:extlib|local|blib)/!;
     if ( $File::Find::name =~ /\.(?:cgi|pl|pm)\z/ ) {
         push @files, $File::Find::name;
+    }
+    if ( $File::Find::name =~ /\b(?:build|tools)\b/ ) {
+        my $script = do { open my $fh, '<', $File::Find::name; local $/; <$fh> };
+        push @files, $File::Find::name if $script && $script =~ /^#!.*perl/m;
     }
 }
 

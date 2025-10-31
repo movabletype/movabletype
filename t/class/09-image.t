@@ -153,7 +153,7 @@ for my $rec (@Img) {
             ( my $type = $img_file ) =~ s/.*\.//;
             for my $to (qw( JPG PNG GIF BMP )) {
                 next if lc $to eq lc $type;
-                if ($to eq 'BMP' && $driver =~ /GD|NetPBM/) {
+                if ($to eq 'BMP' && $driver =~ /GD/) {
                     skip "$driver does not fully support BMP", 1;
                     next;
                 }

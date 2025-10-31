@@ -43,7 +43,6 @@ requires 'List::Util';
 
 requires 'GD';
 requires 'Imager';
-requires 'IPC::Run';
 requires 'Storable';
 requires 'Crypt::DSA';
 
@@ -80,6 +79,9 @@ requires 'YAML::PP';
 requires 'YAML::Syck';
 requires 'YAML::XS', 'v0.903.0';
 
+requires 'WWW::Form::UrlEncoded';
+requires 'WWW::Form::UrlEncoded::XS';
+
 # Cloud.pack
 requires 'Net::CIDR';
 requires 'Net::IP';
@@ -91,6 +93,7 @@ on 'test' => sub {
     requires 'Array::Diff';
     requires 'Carp::Always';
     requires 'Class::Unload';
+    requires 'Data::Section::Simple';
     requires 'Data::Visitor::Tiny';
     requires 'Date::Parse';
     requires 'DateTime';
@@ -98,6 +101,8 @@ on 'test' => sub {
     requires 'Devel::GlobalDestruction';
     requires 'DBD::SQLite';
     requires 'DBI', '1.633';
+    requires 'DBIx::QueryLog';
+    requires 'Feature::Compat::Try';
     requires 'File::pushd';
     requires 'File::Temp', '0.23';
     requires 'File::Which';
