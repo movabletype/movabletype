@@ -119,8 +119,7 @@ sub save_revision {
     $revision->set_values(
         {   $obj_id     => $obj->id,
             $datasource => MT::Serialize->serialize( \$packed_obj ),
-            changed     => join ',',
-            @$changed_cols,
+            changed     => (join ',', @$changed_cols) || ',',  # to save oracle
         }
     );
     $revision->rev_number( ++$current_revision );
@@ -152,7 +151,7 @@ sub object_from_revision {
     $rev_obj->modified_by( $rev->created_by );
     $rev_obj->modified_on( $rev->modified_on );
 
-    my @changed = split ',', $rev->changed;
+    my @changed = grep defined, split ',', $rev->changed;
 
     return [ $rev_obj, \@changed, $rev->rev_number, $rev ];
 }
