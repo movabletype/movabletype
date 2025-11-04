@@ -2859,10 +2859,10 @@ sub is_authorized {
         { author_id => $user->id },
         '-and',
         { blog_id => \@blog_ids },
-        '-and',
-        [   { permissions => \'IS NOT NULL' },
+        '-and_not',
+        [   { permissions => \'IS NULL' },
             '-or',
-            { permissions => { not => '' } },
+            { permissions => '' },
         ]
     ];
     my @perms = MT->model('permission')->load($terms);
