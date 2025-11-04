@@ -2882,10 +2882,10 @@ sub is_authorized {
                 return 1;
             }
         }
-        return $app->permission_denied();
+        return $app->errtrans('Permission denied');
     }
     else {
-        return $app->permission_denied();
+        return $app->errtrans('Permission denied');
     }
 
 }
