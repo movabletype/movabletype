@@ -95,14 +95,15 @@ sub archive_group_iter {
     my $order = ( $sort_order eq 'ascend' ) ? 'asc' : 'desc';
 
     require MT::Entry;
+    my $sql_class = MT::Entry->driver->dbd->sql_class;
     $iter = MT::Entry->count_group_by(
         {   blog_id => $blog->id,
             status  => MT::Entry::RELEASE()
         },
-        {   group => ["extract(year from authored_on) AS year"],
+        {   group => [$sql_class->extract('year', 'authored_on') . " AS year"],
             $args->{lastn} ? ( limit => $args->{lastn} ) : (),
             sort => [
-                {   column => "extract(year from authored_on)",
+                {   column => $sql_class->extract('year', 'authored_on'),
                     desc   => $order
                 }
             ],

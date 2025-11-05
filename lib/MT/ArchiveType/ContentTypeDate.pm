@@ -297,15 +297,16 @@ sub make_archive_group_args {
     $args->{range_incl} = { authored_on => 1 }
         if !$dt_field_id && $ts && $tsend;
 
+    my $sql_class = MT::ContentData->driver->dbd->sql_class;
     if (   $date_type eq 'daily'
         || $date_type eq 'monthly'
         || $date_type eq 'yearly' )
     {
-        $args->{group} = ["extract(year from $target_column) AS year"];
+        $args->{group} = [$sql_class->extract('year', $target_column) . " AS year"];
         push @{ $args->{group} },
-            "extract(month from $target_column) AS month"
+            $sql_class->extract('month', $target_column) . " AS month"
             if $date_type eq 'daily' || $date_type eq 'monthly';
-        push @{ $args->{group} }, "extract(day from $target_column) AS day"
+        push @{ $args->{group} }, $sql_class->extract('day', $target_column) . " AS day"
             if $date_type eq 'daily';
     }
     elsif ( $date_type eq 'weekly' ) {
@@ -313,13 +314,13 @@ sub make_archive_group_args {
     }
     if ( $date_type eq 'daily' ) {
         $args->{sort} = [
-            {   column => "extract(year from $target_column)",
+            {   column => $sql_class->extract('year', $target_column),
                 desc   => $order
             },
-            {   column => "extract(month from $target_column)",
+            {   column => $sql_class->extract('month', $target_column),
                 desc   => $order
             },
-            {   column => "extract(day from $target_column)",
+            {   column => $sql_class->extract('day', $target_column),
                 desc   => $order
             },
         ];
@@ -333,17 +334,17 @@ sub make_archive_group_args {
     }
     elsif ( $date_type eq 'monthly' ) {
         $args->{sort} = [
-            {   column => "extract(year from $target_column)",
+            {   column => $sql_class->extract('year', $target_column),
                 desc   => $order
             },
-            {   column => "extract(month from $target_column)",
+            {   column => $sql_class->extract('month', $target_column),
                 desc   => $order
             }
         ];
     }
     elsif ( $date_type eq 'yearly' ) {
         $args->{sort} = [
-            {   column => "extract(year from $target_column)",
+            {   column => $sql_class->extract('year', $target_column),
                 desc   => $order
             }
         ];
