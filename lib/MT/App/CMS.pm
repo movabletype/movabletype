@@ -2860,10 +2860,7 @@ sub is_authorized {
         '-and',
         { blog_id => \@blog_ids },
         '-and_not',
-        [   { permissions => \'IS NULL' },
-            '-or',
-            { permissions => '' },
-        ]
+        { permissions => [\'IS NULL', ''] },
     ];
     my @perms = MT->model('permission')->load($terms);
     if (@perms) {
