@@ -16,6 +16,7 @@ use MT;
 use MT::Association;
 use MT::Author;
 use MT::Blog;
+use MT::ContentStatus;
 use MT::Role;
 use MT::Website;
 use MT::Test;
@@ -26,6 +27,53 @@ $test_env->prepare_fixture('db');
 
 my $admin   = MT::Author->load(1);
 my $website = MT::Website->load(1);
+
+subtest 'Unpublish all content data with author_name filter and all_selected = 1.' => sub {
+    my $user1 = MT::Test::Permission->make_author;
+    $user1->is_superuser(1);
+    $user1->save or die $user1->errstr;
+
+    my $user2 = MT::Test::Permission->make_author;
+    $user2->is_superuser(1);
+    $user2->save or die $user2->errstr;
+
+    my $content_type = MT::Test::Permission->make_content_type(blog_id => $website->id);
+    $content_type->fields([]);
+    $content_type->save or die $content_type->errstr;
+
+    my $content_data_1 = MT::Test::Permission->make_content_data(
+        author_id       => $user1->id,
+        blog_id         => $website->id,
+        content_type_id => $content_type->id,
+        status          => MT::ContentStatus::RELEASE(),
+    );
+
+    my $content_data_2 = MT::Test::Permission->make_content_data(
+        author_id       => $user2->id,
+        blog_id         => $website->id,
+        content_type_id => $content_type->id,
+        status          => MT::ContentStatus::RELEASE(),
+    );
+
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->login($user1);
+    my $user1_name = $user1->name;
+    $app->post_ok({
+        __mode       => 'itemset_action',
+        _type        => 'content_data',
+        action_name  => 'set_draft',
+        blog_id      => $website->id,
+        type         => 'content_data_' . $content_type->id,
+        all_selected => 1,
+        items        => qq/[{"args":{"option":"contains","string":"${user1_name}"},"type":"author_name"}]/,
+    });
+
+    $content_data_1->refresh;
+    is $content_data_1->status, MT::ContentStatus::HOLD();
+
+    $content_data_2->refresh;
+    is $content_data_2->status, MT::ContentStatus::RELEASE();
+};
 
 subtest 'Remove all members with all_selected = 1.' => sub {
     my $role = MT::Role->load({ name => MT->translate('Site Administrator') });
