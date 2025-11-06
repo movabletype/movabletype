@@ -5064,7 +5064,10 @@ sub setup_filtered_ids {
     else {
         $filteritems = [];
     }
-    my $ds     = $app->param('_type');
+    my $ds = $app->param('_type');
+    if ($ds eq 'content_data') {
+        $ds .= '.' . $app->param('type');
+    }
     my $filter = MT->model('filter')->new;
     $filter->set_values(
         {   object_ds => $ds,
