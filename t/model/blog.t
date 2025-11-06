@@ -70,4 +70,47 @@ subtest 'create_default_templates' => sub {
     is($template->custom_template_name, 'custom template name');
 };
 
+subtest 'clone_children' => sub {
+    my $child_site   = MT::Test::Permission->make_blog(parent_id => $website->id);
+    my $content_type = MT::Test::Permission->make_content_type(blog_id => $child_site->id);
+    $content_type->fields([]);
+    $content_type->save or die $content_type->errstr;
+    my $tmpl_ct = MT::Test::Permission->make_template(
+        blog_id         => $child_site->id,
+        content_type_id => $content_type->id,
+        type            => 'ct',
+    );
+    my $tmpl_ct_archive = MT::Test::Permission->make_template(
+        blog_id         => $child_site->id,
+        content_type_id => $content_type->id,
+        type            => 'ct_archive',
+    );
+    my $clone_site = $child_site->clone_with_children({
+        classes => {
+            'MT::Template' => 1,
+        } });
+
+    ok $clone_site, 'source child site has been cloned';
+    ok(
+        MT->model('template')->count({ blog_id => $clone_site->id }) > 0,
+        'templates have been cloned from source child site',
+    );
+    is(
+        MT->model('template')->count({
+            blog_id => $child_site->id,
+            type    => ['ct', 'ct_archive'],
+        }),
+        2,
+        'source child site has templates related content type',
+    );
+    is(
+        MT->model('template')->count({
+            blog_id => $clone_site->id,
+            type    => ['ct', 'ct_archive'],
+        }),
+        0,
+        'cloned child site does not have templates related content type',
+    );
+};
+
 done_testing;
