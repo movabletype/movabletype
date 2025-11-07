@@ -85,12 +85,28 @@ subtest 'clone_children' => sub {
         content_type_id => $content_type->id,
         type            => 'ct_archive',
     );
+    my $map_ct = MT::Test::Permission->make_templatemap(
+        archive_type  => 'ContentType',
+        blog_id       => $child_site->id,
+        file_template => 'author/%-a/%-f',
+        is_preferred  => 1,
+        template_id   => $tmpl_ct->id,
+    );
+    my $map_ct_archive = MT::Test::Permission->make_templatemap(
+        archive_type  => 'ContentType-Daily',
+        blog_id       => $child_site->id,
+        file_template => '%y/%m/%d/%f',
+        is_preferred  => 1,
+        template_id   => $tmpl_ct_archive->id,
+    );
+
     my $clone_site = $child_site->clone_with_children({
         classes => {
             'MT::Template' => 1,
         } });
 
     ok $clone_site, 'source child site has been cloned';
+
     ok(
         MT->model('template')->count({ blog_id => $clone_site->id }) > 0,
         'templates have been cloned from source child site',
@@ -110,6 +126,27 @@ subtest 'clone_children' => sub {
         }),
         0,
         'cloned child site does not have templates related content type',
+    );
+
+    ok(
+        MT->model('templatemap')->count({ blog_id => $clone_site->id }) > 0,
+        'template maps have been cloned from source child site',
+    );
+    is(
+        MT->model('templatemap')->count({
+            blog_id      => $child_site->id,
+            archive_type => { like => '%ContentType%' },
+        }),
+        2,
+        'source child site has template maps related content type',
+    );
+    is(
+        MT->model('templatemap')->count({
+            blog_id      => $clone_site->id,
+            archive_type => { like => '%ContentType%' },
+        }),
+        0,
+        'cloned child site does not have template maps related content type',
     );
 };
 
