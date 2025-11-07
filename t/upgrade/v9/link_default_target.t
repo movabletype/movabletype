@@ -19,10 +19,10 @@ $test_env->prepare_fixture('db');
 
 # create test data
 my $website = MT::Test::Permission->make_website(
-    link_default_target => '',
+    link_default_target => '_dummy',
 );
 my $blog = MT::Test::Permission->make_blog(
-    link_default_target => '',
+    link_default_target => '_dummy',
 );
 
 subtest 'Initialize link_default_target' => sub {

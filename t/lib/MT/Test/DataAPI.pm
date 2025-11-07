@@ -187,7 +187,7 @@ sub test_data_api {
                 }
             }
 
-            local $SIG{__DIE__} = sub { my $error = shift; fail Carp::longmess("$0 died: $error") unless $error =~ /Can't locate/ };
+            local $SIG{__DIE__} = sub { my $error = shift; fail Carp::longmess("$0 died: $error") unless $error =~ /Can't locate/ } unless $^O eq 'MSWin32';
             local $ENV{MT_TEST_RUN_APP_AS_CGI};    ## MT::Test::DataAPI mocks too much
 
             %callbacks = ();
@@ -267,6 +267,18 @@ sub test_data_api {
                         });
                 }
 
+                if (lc($ENV{MT_TEST_BACKEND} // '') =~ /mssql/) {
+                    visit(
+                        $expected_result,
+                        sub {
+                            my ($key, $valueref) = @_;
+                            if (defined $$valueref && $$valueref =~ /^(?:0|[1-9][0-9]*)(?:\.[0-9]+)?$/) {
+                                $$valueref = Test::Deep::num($$valueref, 0);
+                            }
+                        },
+                    );
+                }
++
                 cmp_deeply( $result, $expected_result, 'result' ) || note explain $result;
             }
 

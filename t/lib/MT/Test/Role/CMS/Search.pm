@@ -134,6 +134,7 @@ sub apply_opts {
     my ($self, $form, $opts) = @_;
     for my $key (%$opts) {
         my @input = $form->find_input($key) or next;
+        $input[0]->readonly(0);
         if ($input[0]->type eq 'checkbox') {
             if (ref($opts->{$key}) eq 'ARRAY') {
                 my %flags = map { $_ => 1 } @{ $opts->{$key} };
