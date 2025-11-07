@@ -42,20 +42,20 @@
 <mt:setvarblock name="js_include" append="1">
 <script type="text/javascript">
 /* <![CDATA[ */
-function togglePerms(c, a) {
+function togglePerms(clickedPerm, childPermsSelector) {
     permsChanged = "yes";
-    if (a == '') {
+    if (childPermsSelector == '') {
         return;
     }
 
-    if (c.checked) {
-        jQuery(a).each(function(){
+    if (clickedPerm.checked) {
+        jQuery(childPermsSelector).each(function(){
             this.checked = true;
             this.disabled = true;
             this.onclick();
         });
     } else {
-        jQuery(a).each(function(){
+        jQuery(childPermsSelector).each(function(){
             this.checked = false;
             this.disabled = false;
             this.onclick();
