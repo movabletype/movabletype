@@ -7,6 +7,7 @@ use FindBin;
 use lib "$FindBin::Bin/../lib"; # t/lib
 use Test::More;
 use MT::Test::Env;
+use Mock::MonkeyPatch;
 our $test_env;
 BEGIN {
     $test_env = MT::Test::Env->new(
@@ -193,20 +194,41 @@ is( remove_html(
     "remove html prevents abuse, saves plain text, escapes inner < characters"
 );
 
-is( MT::Util::to_json( { 'foo' => 2 } ),       '{"foo":2}' );
-is( MT::Util::to_json( { 'foo' => 1 } ),       '{"foo":1}' );
-is( MT::Util::to_json( { 'foo' => 0 } ),       '{"foo":0}' );
-is( MT::Util::to_json( { 'foo' => 'hoge' } ),  '{"foo":"hoge"}' );
-is( MT::Util::to_json( { 'foo' => 'ho1ge' } ), '{"foo":"ho1ge"}' );
-is( MT::Util::to_json( [ 'foo', 'bar', 'baz' ] ), '["foo","bar","baz"]' );
-is( MT::Util::to_json( [ 'foo', 1, 'bar', 2, 3, 4 ] ),
-    '["foo",1,"bar",2,3,4]' );
-is( MT::Util::to_json(
-        [ 'foo', 1, 'bar', { hoge => 1, moge => 'a' } ],
-        { canonical => 1 }
-    ),
-    '["foo",1,"bar",{"hoge":1,"moge":"a"}]'
-);
+subtest 'to_json' => sub {
+    is( MT::Util::to_json( { 'foo' => 2 } ),       '{"foo":2}' );
+    is( MT::Util::to_json( { 'foo' => 1 } ),       '{"foo":1}' );
+    is( MT::Util::to_json( { 'foo' => 0 } ),       '{"foo":0}' );
+    is( MT::Util::to_json( { 'foo' => 'hoge' } ),  '{"foo":"hoge"}' );
+    is( MT::Util::to_json( { 'foo' => 'ho1ge' } ), '{"foo":"ho1ge"}' );
+    is( MT::Util::to_json( [ 'foo', 'bar', 'baz' ] ), '["foo","bar","baz"]' );
+    is( MT::Util::to_json( [ 'foo', 1, 'bar', 2, 3, 4 ] ),
+        '["foo",1,"bar",2,3,4]' );
+    is( MT::Util::to_json(
+            [ 'foo', 1, 'bar', { hoge => 1, moge => 'a' } ],
+            { canonical => 1 }
+        ),
+        '["foo",1,"bar",{"hoge":1,"moge":"a"}]'
+    );
+
+    subtest 'allow_nonref' => sub {
+        my ($last_value, $last_args);
+        my $guard = Mock::MonkeyPatch->patch(
+            'JSON::to_json' => sub {
+                ($last_value, $last_args) = @_;
+                Mock::MonkeyPatch::ORIGINAL(@_);
+            },
+        );
+
+        is( MT::Util::to_json(1), '1' );
+        is( $last_args->{allow_nonref}, 1, 'allow_nonref is enabled by default' );
+
+        is ( MT::Util::to_json({}, { allow_nonref => 0 }), '{}' );
+        is( $last_args->{allow_nonref}, 0, 'allow_nonref is passed correctly' );
+
+        is ( MT::Util::to_json({}, { allow_nonref => undef }), '{}' );
+        is( $last_args->{allow_nonref}, undef, 'allow_nonref is passed correctly' );
+    };
+};
 
 ### start_end_*
 is( start_end_day('19770908153005'),
