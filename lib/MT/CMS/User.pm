@@ -311,9 +311,13 @@ sub edit_role {
                 foreach (@$inherit_from) {
                     my $child = $_;
                     $child =~ s/^blog\.//;
-                    push @child, '#' . $child;
+                    push @child, $child;
                 }
-                $perm->{children} = join ',', @child;
+                $perm->{children} = join ',', map { '#' . $_ } @child;
+                if ($perm->{id} ne 'administer_site') {
+                    my @children_data_attrs = map { 'data-mt-perm-inherit-from-' . $_ } @child;
+                    $perm->{children_data_attrs} = join ' ', @children_data_attrs;
+                }
             }
         }
 
