@@ -162,7 +162,7 @@ subtest 'unit test for incremental_iter' => sub {
         };
     }
 
-    subtest 'useless last query is prevented' => sub {
+    subtest 'iter shuts down after right number of excutions' => sub {
         require Test::MockModule;
         my $mock = Test::MockModule->new('MT::Object');
         my $query_count;
@@ -175,28 +175,29 @@ subtest 'unit test for incremental_iter' => sub {
         my $iter;
 
         $query_count = 0;
-        MT->config('CMSSearchLimit', 12);    # records are not divided
+        MT->config('CMSSearchLimit', 12);
         $iter = MT::CMS::Search::incremental_iter('MT::Entry', {}, {});
         while ($iter->()) { }
-        is $query_count, 1, 'no useless last query';
+        is $query_count, 1, 'right number of occurance';
 
         $query_count = 0;
-        MT->config('CMSSearchLimit', 4);    # records are divided into 4, 4, 1
+        MT->config('CMSSearchLimit', 4);
         $iter = MT::CMS::Search::incremental_iter('MT::Entry', {}, {});
         while ($iter->()) { }
-        is $query_count, 3, 'no useless last query';
+        is $query_count, 3, 'right number of occurance';
 
         $query_count = 0;
-        MT->config('CMSSearchLimit', 3);    # records are divided into 3, 3, 3, 0
+        MT->config('CMSSearchLimit', 3);
         $iter = MT::CMS::Search::incremental_iter('MT::Entry', {}, {});
         while ($iter->()) { }
-        is $query_count, 4, 'no useless last query';
+        # last query returns 0 results and iter considers it as the end of search
+        is $query_count, 4, 'right number of occurance';
 
         $query_count = 0;
-        MT->config('CMSSearchLimit', 12);    # records are not divided
+        MT->config('CMSSearchLimit', 12);
         $iter = MT::CMS::Search::incremental_iter('MT::Entry', { title => ['NOT EXIST'] }, {});
         while ($iter->()) { }
-        is $query_count, 1, 'no useless last query';
+        is $query_count, 1, 'right number of occurance';
     };
 
     subtest 'with do_search_replace mock' => sub {
