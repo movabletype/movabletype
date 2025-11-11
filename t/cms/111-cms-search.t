@@ -145,7 +145,7 @@ subtest 'unit test for incremental_iter' => sub {
             is_deeply(\@got, \@expected);
         };
 
-        subtest 'multiple classes at once' => sub {
+        subtest 'multiple iters called alternately' => sub {
             my @class1  = MT::Entry->load();
             my @class2  = MT::Author->load();
             my @expected1 = map { $_->id } @class1;
@@ -153,8 +153,12 @@ subtest 'unit test for incremental_iter' => sub {
             my $iter1 = MT::CMS::Search::incremental_iter('MT::Entry', {}, {});
             my $iter2 = MT::CMS::Search::incremental_iter('MT::Author', {}, {});
             my (@got1, @got2);
-            while (my ($obj1, $obj2) = ($iter1->(), $iter2->())) {
+            push @got1, $iter1->()->id;
+            push @got2, $iter2->()->id;
+            while (my $obj1 = $iter1->()) {
                 push @got1, $obj1->id if $obj1;
+            }
+            while (my $obj2 = $iter2->()) {
                 push @got2, $obj2->id if $obj2;
             }
             is_deeply(\@got1, \@expected1);
