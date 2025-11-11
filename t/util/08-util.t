@@ -230,6 +230,39 @@ subtest 'to_json' => sub {
     };
 };
 
+subtest 'from_json' => sub {
+    # add tests like the above
+    is_deeply( MT::Util::from_json('{"foo":2}'),       { 'foo' => 2 } );
+    is_deeply( MT::Util::from_json('{"foo":1}'),       { 'foo' => 1 } );
+    is_deeply( MT::Util::from_json('{"foo":0}'),       { 'foo' => 0 } );
+    is_deeply( MT::Util::from_json('{"foo":"hoge"}'),  { 'foo' => 'hoge' } );
+    is_deeply( MT::Util::from_json('{"foo":"ho1ge"}'), { 'foo' => 'ho1ge' } );
+    is_deeply( MT::Util::from_json('["foo","bar","baz"]'), [ 'foo', 'bar', 'baz' ] );
+    is_deeply( MT::Util::from_json('["foo",1,"bar",2,3,4]'),
+        [ 'foo', 1, 'bar', 2, 3, 4 ] );
+    is_deeply( MT::Util::from_json('["foo",1,"bar",{"hoge":1,"moge":"a"}]'),
+        [ 'foo', 1, 'bar', { hoge => 1, moge => 'a' } ] );
+    
+    subtest 'allow_nonref' => sub {
+        my ($last_value, $last_args);
+        my $guard = Mock::MonkeyPatch->patch(
+            'JSON::from_json' => sub {
+                ($last_value, $last_args) = @_;
+                Mock::MonkeyPatch::ORIGINAL(@_);
+            },
+        );
+
+        is( MT::Util::from_json('1'), 1 );
+        is( $last_args->{allow_nonref}, 1, 'allow_nonref is enabled by default' );
+
+        is_deeply ( MT::Util::from_json('{}', { allow_nonref => 0 }), {} );
+        is( $last_args->{allow_nonref}, 0, 'allow_nonref is passed correctly' );
+
+        is_deeply ( MT::Util::from_json('{}', { allow_nonref => undef }), {} );
+        is( $last_args->{allow_nonref}, undef, 'allow_nonref is passed correctly' );
+    };
+};
+
 ### start_end_*
 is( start_end_day('19770908153005'),
     '19770908000000', 'Want to get a scalar value from start_end_day()' );
