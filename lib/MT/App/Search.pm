@@ -896,7 +896,7 @@ sub prepare_context {
         my $archiver = MT->publisher->archiver($at);
         if ($archiver) {
             my $params = $archiver->template_params;
-            map { $ctx->var( $_, $params->{$_} ) } keys %$params;
+            $ctx->var( $_, $params->{$_} ) for keys %$params;
         }
     }
     $ctx->{current_timestamp} = $app->param('context_date_start')

@@ -74,9 +74,6 @@ __PACKAGE__->install_properties(
 PM
 }
 
-use Data::Dumper;
-plan tests => 29;
-
 use MT;
 use MT::Object;
 
@@ -161,9 +158,7 @@ is( $image_3_hash->{mime_type}, 'image/jpeg',
     'metadata value as retrieved with the "get_hash" method is correct on inflated image object'
 );
 
-ok( MT::Asset::Image->has_meta('image_width'),
-    'MT::Asset::Image has an image_width meta column.'
-);
 ok( MT::Entry->has_meta, 'MT::Entry has a meta support.' );
 ok( MT::Page->has_meta,  'MT::Page has a meta support.' );
 
+done_testing;

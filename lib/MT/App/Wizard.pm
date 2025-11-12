@@ -183,10 +183,6 @@ sub init_core_registry {
                 order  => 400,
                 driver => 'Imager',
             },
-            netpbm => {
-                order  => 500,
-                driver => 'NetPBM',
-            },
         },
     };
 }
@@ -256,7 +252,7 @@ sub pre_start {
         }
     }
 
-    eval { use File::Spec; };
+    require File::Spec;
     my ($static_file_path);
     if ( !$@ ) {
         $static_file_path = File::Spec->catfile( $app->static_file_path );
@@ -853,6 +849,7 @@ sub optional {
         };
     }
 
+    ## no critic(TooMuchCode::ProhibitUnusedInclude)
     $param{has_auth_modules} = eval { require Authen::SASL; require MIME::Base64; 1 } ? 1 : 0;
     $param{has_ssl_modules}  = eval { require IO::Socket::SSL; require Net::SSLeay; 1 } ? 1 : 0;
 
@@ -947,25 +944,17 @@ sub seed {
     my $drivers = $app->object_drivers;
 
     my $r_uri = $ENV{REQUEST_URI} || $ENV{SCRIPT_NAME};
-    if ( MT::Util::is_mod_perl1()
-        || ( ( $r_uri =~ m/\/mt-wizard\.(\w+)(\?.*)?$/ ) && ( $1 ne 'cgi' ) )
-        )
-    {
+    if ((($r_uri =~ m/\/mt-wizard\.(\w+)(\?.*)?$/) && ($1 ne 'cgi'))) {
         my $new = '';
-        if ( MT::Util::is_mod_perl1() ) {
-            $param{mod_perl} = 1;
-        }
-        else {
-            $new = '.' . $1;
-        }
+        $new = '.' . $1;
         my @scripts;
         my $cfg      = $app->config;
-        my @cfg_keys = grep {/Script$/} keys %{ $cfg->{__settings} };
+        my @cfg_keys = grep { /Script$/ } keys %{ $cfg->{__settings} };
         $param{mt_script} = $app->config->AdminScript;
         foreach my $key (@cfg_keys) {
             my $path = $cfg->get($key);
             $path =~ s/\.cgi$/$new/;
-            if ( -e File::Spec->catfile( $app->{mt_dir}, $path ) ) {
+            if (-e File::Spec->catfile($app->{mt_dir}, $path)) {
                 $param{mt_script} = $path if $key eq 'AdminScript';
                 push @scripts, { name => $key, path => $path };
             }
@@ -974,8 +963,7 @@ sub seed {
             $param{script_loop}    = \@scripts if @scripts;
             $param{non_cgi_suffix} = 1;
         }
-    }
-    else {
+    } else {
         $param{mt_script} = $app->config->AdminScript;
     }
 
@@ -1275,7 +1263,7 @@ sub is_valid_static_path {
 sub is_config_exists {
     my $app = shift;
 
-    eval { use File::Spec; };
+    require File::Spec;
     my ( $cfg, $cfg_exists, $static_file_path );
     if ( !$@ ) {
         $cfg = File::Spec->catfile( $app->{mt_dir}, 'mt-config.cgi' );

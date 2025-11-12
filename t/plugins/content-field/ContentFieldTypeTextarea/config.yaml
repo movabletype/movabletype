@@ -1,0 +1,28 @@
+name: ContentFieldTypeTextarea
+version: 0.0.1
+author: Six Apart Ltd.
+author_link: https://www.movabletype.org/
+
+content_field_types:
+  textarea_field:
+    label: Textarea
+    data_type: text
+    order: 100
+    can_data_label_field: 1
+    field_html: field_html.tmpl
+    field_html_params: $Core::MT::ContentFieldType::SingleLineText::field_html_params
+    replaceable: 1
+    ss_validator: $Core::MT::ContentFieldType::SingleLineText::ss_validator
+    list_props:
+      textarea_field:
+        base: __virtual.string
+        col: value_text
+        terms: $Core::MT::ContentFieldType::Common::terms_text
+        use_blank: 1
+    options_validation_handler: $Core::MT::ContentFieldType::SingleLineText::options_validation_handler
+    options_html: options_html.tmpl
+    options:
+      - label
+      - description
+      - required
+      - display

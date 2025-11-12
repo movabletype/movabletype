@@ -244,10 +244,14 @@ sub core_methods {
         'save_entry_prefs'     => "${pkg}Entry::save_entry_prefs",
         'save_template_prefs'  => "${pkg}Template::save_template_prefs",
         'save_favorite_blogs'  => "${pkg}Blog::save_favorite_blogs",
-        'itemset_action'       => "${pkg}Tools::do_list_action",
-        'page_action'          => "${pkg}Tools::do_page_action",
-        'cfg_system_general'   => "${pkg}Tools::cfg_system_general",
-        'test_system_mail'     => {
+        'save_starred_sites'   => {
+            code     => "${pkg}Blog::save_starred_sites",
+            app_mode => 'JSON',
+        },
+        'itemset_action'     => "${pkg}Tools::do_list_action",
+        'page_action'        => "${pkg}Tools::do_page_action",
+        'cfg_system_general' => "${pkg}Tools::cfg_system_general",
+        'test_system_mail'   => {
             code     => "${pkg}Tools::test_system_mail",
             app_mode => 'JSON',
         },
@@ -300,10 +304,14 @@ sub core_methods {
         'dialog_grant_role'          => "${pkg}User::dialog_grant_role",
         'dialog_select_assoc_type'   => "${pkg}User::dialog_select_assoc_type",
         'dialog_select_author'       => "${pkg}User::dialog_select_author",
+        'dialog_api_password'        => "${pkg}User::dialog_api_password",
         'dialog_list_asset'          => "${pkg}Asset::dialog_list_asset",
         'dialog_edit_image'          => "${pkg}Asset::dialog_edit_image",
         'dialog_list_deprecated_log' => "${pkg}Log::dialog_list_deprecated_log",
         'dialog_export_log'          => "${pkg}Log::dialog_export_log",
+
+        'issue_api_password'         => "${pkg}User::issue_api_password",
+        'delete_api_password'        => "${pkg}User::delete_api_password",
 
         'thumbnail_image' =>
             "${pkg}Asset::thumbnail_image",    # Used in Edit Image dialog.
@@ -318,12 +326,6 @@ sub core_methods {
         'remove_userpic'  => "${pkg}User::remove_userpic",
         'login_json'      => {
             code     => "${pkg}Tools::login_json",
-            app_mode => 'JSON',
-        },
-
-        ## DEPRECATED since 8.5.0
-        'regenerate_site_stats_data' => {
-            code     => "${pkg}Dashboard::regenerate_site_stats_data",
             app_mode => 'JSON',
         },
 
@@ -393,6 +395,16 @@ sub core_methods {
             code     => "${pkg}Mobile::change_to_pc_view",
             app_mode => 'JSON',
         },
+
+        'content_types_for_search_action' => {
+            code     => "${pkg}ContentType::search_action_targets",
+            app_mode => 'JSON',
+        },
+
+        'search_tabs_json' => {
+            code => "${pkg}Search::search_tabs_json",
+            app_mode => 'JSON',
+        }
     };
 }
 
@@ -499,7 +511,9 @@ sub core_page_actions {
                 condition => sub {
                     my $blog = MT->app->blog;
                     return 0 unless $blog;
-                    return $blog->theme_id || $blog->template_set;
+                    my $theme = $blog->theme;
+                    return 0 if $theme && $theme->{deprecated};
+                    return $theme || $blog->template_set;
                 },
                 order  => 1000,
                 dialog => 1
@@ -1377,7 +1391,9 @@ sub core_list_actions {
                     return 0 if $tmpl_type eq 'backup_templates';
                     my $blog = $app->blog;
                     return 1 unless $blog;
-                    return $blog->theme_id || $blog->template_set;
+                    my $theme = $blog->theme;
+                    return 0 if $theme && $theme->{deprecated};
+                    return $theme || $blog->template_set;
                 },
             },
 
@@ -1574,6 +1590,82 @@ sub core_list_actions {
     };
 }
 
+sub core_system_menu_actions {
+    my $app = shift;
+    return {
+        search => {
+            icon   => 'ic_search',
+            label  => 'Search',
+            mobile => 0,
+            order  => 100,
+        },
+        site => {
+            icon   => 'ic_sites',
+            label  => 'Site',
+            mobile => 0,
+            order  => 200,
+            data   => {
+                'starred-sites' => sub {
+                    join ',', @{ MT->instance->user->starred_sites || [] };
+                },
+            },
+        },
+        system => {
+            condition => sub {
+                if (my $user = $app->user) {
+                    return $user->can_do('access_to_system_dashboard');
+                }
+            },
+            icon   => 'ic_system_setting',
+            label  => 'System',
+            mobile => 0,
+            order  => 300,
+            href   => sub { $app->uri(mode => 'dashboard', args => { blog_id => 0 }); },
+        },
+    };
+}
+
+sub core_site_menu_actions {
+    my $app = shift;
+    return {
+        create_new => {
+            view      => ['blog', 'website'],
+            class     => 'create',
+            condition => sub {
+                my $blog_id = $app->param('blog_id');
+                my $user    = $app->user;
+                my $perms   = $app->permissions or return 0;
+                return 1 if $perms->can_do('create_new_entry');
+                require MT::CMS::ContentType;
+                my @content_types = grep { $_->{can_create} } MT::CMS::ContentType::search_action_targets_seed($app);
+                return scalar(@content_types) > 0;
+            },
+            label => 'Create',
+            icon  => 'ic_create',
+            order => 100,
+        },
+        rebuild => {
+            view      => ['blog', 'website'],
+            class     => 'mt-rebuild',
+            condition => sub { return ($app->blog && $app->can_do('rebuild')); },
+            label     => 'Rebuild',
+            icon      => 'ic_rebuild',
+            mode      => 'rebuild_confirm',
+            order     => 200,
+        },
+        view_site => {
+            view      => ['blog', 'website'],
+            class     => 'view_site',
+            condition => sub { $app->blog ? 1 : 0; },
+            label     => 'View Site',
+            icon      => 'ic_view',
+            href      => sub { $app->blog->site_url; },
+            order     => 300,
+            target    => '_blank',
+        },
+    };
+}
+
 sub core_menu_actions {
     my $app = shift;
     return {
@@ -1700,6 +1792,7 @@ sub core_user_actions {
             condition => sub {
                 $app->user ? 1 : 0;
             },
+            href  => sub { $app->uri(mode => 'logout') },
             label => 'Sign out',
             mode  => 'logout',
             order => 300,
@@ -2602,6 +2695,21 @@ sub core_user_menus {
                     : $app->can_do('manage_groups');
             }
         },
+        'web_api_password' => {
+            label      => 'Web Services Password',
+            order      => 1100,
+            mode       => 'view',
+            args       => { _type => 'author' },
+            view       => "system",
+            condition  => sub {
+                my ( $app, $param ) = @_;
+                $param->{is_me} || $app->can_do('edit_other_profile') ? 1 : 0;
+            },
+            link  => sub {
+                my ($app, $param) = @_;
+                return $app->uri(mode => 'dialog_api_password', args => { id => $param->{id} });
+            },
+        },
     };
 }
 
@@ -2688,20 +2796,6 @@ sub user_can_admin_commenters {
     $app->user->is_superuser()
         || ( $perms
         && ( $perms->can_administer_site || $perms->can_manage_feedback ) );
-}
-
-sub validate_magic {
-    my $app = shift;
-    if ( my $feed_token = $app->param('feed_token') ) {
-        return unless $app->user;
-        my $pw = $app->user->api_password;
-        return undef if ( $pw || '' ) eq '';
-        my $auth_token = perl_sha1_digest_hex( 'feed:' . $pw );
-        return $feed_token eq $auth_token;
-    }
-    else {
-        return $app->SUPER::validate_magic(@_);
-    }
 }
 
 sub can_sign_in {
@@ -2979,6 +3073,8 @@ sub build_page {
         $app->build_menus($param);
         $app->build_actions( 'menu_actions', $param );
         $app->build_actions( 'user_actions', $param );
+        $app->build_actions('system_menu_actions', $param);
+        $app->build_actions('site_menu_actions', $param);
     }
     if ( !ref($page)
         || ( $page->isa('MT::Template') && !$page->param('page_actions') ) )
@@ -3687,6 +3783,8 @@ sub build_actions {
 
     my $actions = $app->registry($registry_key) || {};
 
+    my $view = $app->view;
+    my $blog_id = $app->param('blog_id');
     my @valid_actions;
     for my $id ( keys %$actions ) {
         my $action = $actions->{$id};
@@ -3696,14 +3794,33 @@ sub build_actions {
             $cond = MT->handler_to_coderef($cond) unless ref $cond;
             next if ref $cond eq 'CODE' && !$cond->( $app, $param );
         }
+        if ($action->{view}) {
+            if (ref $action->{view} eq 'ARRAY') {
+                next unless (scalar grep { $_ eq $view } @{ $action->{view} });
+            } else {
+                next if $action->{view} ne $view;
+            }
+        }
 
         my $href = $action->{href};
         if (defined $href) {
             $href = MT->handler_to_coderef($href) unless ref $href;
             $href = $href->( $app, $param ) if ref $href eq 'CODE';
+        } elsif ($action->{mode}) {
+            $href = $app->uri(
+                mode => $action->{mode},
+                args => {
+                    defined $blog_id
+                        ? (blog_id => $blog_id)
+                        : (),
+                },
+            );
+        } else {
+            $href = 'javascript:void(0)';
         }
         $action->{id} = $id;
         $action->{order} ||= 0;
+        $action->{plugin} = $actions->{$id}->{plugin}->{id};
 
         push @valid_actions, { %$action, href => $href };
     }
@@ -3977,8 +4094,6 @@ sub load_default_entry_prefs {
     $blog_id = $app->blog->id if $app->blog;
     my $perm
         = MT::Permission->load( { blog_id => $blog_id, author_id => 0 } );
-    my %default = %{ $app->config->DefaultEntryPrefs };
-    %default = map { lc $_ => $default{$_} } keys %default;
 
     if ( $perm && $perm->entry_prefs ) {
         $prefs = $perm->entry_prefs;
@@ -3990,32 +4105,6 @@ sub load_default_entry_prefs {
                 $prefs =~ s/\btitle\b/title,text/;
             }
         }
-    }
-    else {
-        if ( lc( $default{type} ) eq 'custom' ) {
-            my %map = (
-                Category   => 'category',
-                Excerpt    => 'excerpt',
-                Keywords   => 'keywords',
-                Tags       => 'tags',
-                Publishing => 'publishing',
-                Feedback   => 'feedback',
-                Assets     => 'assets',
-            );
-            my @p;
-            foreach my $p ( keys %map ) {
-                push @p, $map{$p} . ':' . $default{ lc $p }
-                    if $default{ lc $p };
-            }
-            $prefs = join ',', @p;
-            $prefs ||= 'Custom';
-        }
-        elsif ( lc( $default{type} ) ne 'default' ) {
-            $prefs = 'Advanced';
-        }
-        $default{button} = 'Bottom' if lc( $default{button} ) eq 'below';
-        $default{button} = 'Top'    if lc( $default{button} ) eq 'above';
-        $prefs .= '|' . $default{button} if $prefs;
     }
     $prefs ||= 'Default|Bottom';
     return $prefs;
@@ -4029,8 +4118,6 @@ sub load_default_page_prefs {
     $blog_id = $app->blog->id if $app->blog;
     my $perm
         = MT::Permission->load( { blog_id => $blog_id, author_id => 0 } );
-    my %default = %{ $app->config->DefaultEntryPrefs };
-    %default = map { lc $_ => $default{$_} } keys %default;
 
     if ( $perm && $perm->page_prefs ) {
         $prefs = $perm->page_prefs;
@@ -4042,32 +4129,6 @@ sub load_default_page_prefs {
                 $prefs =~ s/\btitle\b/title,text/;
             }
         }
-    }
-    else {
-        if ( lc( $default{type} ) eq 'custom' ) {
-            my %map = (
-                Category   => 'category',
-                Excerpt    => 'excerpt',
-                Keywords   => 'keywords',
-                Tags       => 'tags',
-                Publishing => 'publishing',
-                Feedback   => 'feedback',
-                Assets     => 'assets',
-            );
-            my @p;
-            foreach my $p ( keys %map ) {
-                push @p, $map{$p} . ':' . $default{ lc $p }
-                    if $default{ lc $p };
-            }
-            $prefs = join ',', @p;
-            $prefs ||= 'Custom';
-        }
-        elsif ( lc( $default{type} ) ne 'default' ) {
-            $prefs = 'Advanced';
-        }
-        $default{button} = 'Bottom' if lc( $default{button} ) eq 'below';
-        $default{button} = 'Top'    if lc( $default{button} ) eq 'above';
-        $prefs .= '|' . $default{button} if $prefs;
     }
     $prefs ||= 'Default|Bottom';
     return $prefs;
@@ -5003,7 +5064,10 @@ sub setup_filtered_ids {
     else {
         $filteritems = [];
     }
-    my $ds     = $app->param('_type');
+    my $ds = $app->param('_type');
+    if ($ds eq 'content_data') {
+        $ds .= '.' . $app->param('type');
+    }
     my $filter = MT->model('filter')->new;
     $filter->set_values(
         {   object_ds => $ds,
@@ -5061,6 +5125,8 @@ sub setup_editor_param {
             }
             $param->{content_css} = $css;
         }
+
+        $param->{link_default_target} = $blog->link_default_target;
     }
 
     $param->{object_type} = $app->param('_type') || '';
@@ -5100,8 +5166,12 @@ sub setup_editor_param {
                     {
                         push(
                             @{ $tmpls->{ $k . 's' } },
-                            { %$conf, tmpl => $tmpl, version => $plugin->version }
-                        );
+                            {
+                                %$conf,
+                                tmpl          => $tmpl,
+                                version       => $plugin->version,
+                                mt_version_id => $plugin->version,
+                            });
                     }
                 }
 
@@ -5134,41 +5204,17 @@ sub setup_editor_param {
             delete $param->{editors};
         }
     }
-
-    if ( !$param->{editors} ) {
-        my $rte;
-        if ( defined $param->{convert_breaks}
-            && $param->{convert_breaks} =~ m/richtext/ )
-        {
-            ## Rich Text editor
-            $rte = lc( $app->config('RichTextEditor') );
-        }
-        else {
-            $rte = 'archetype';
-        }
-        my $editors = $app->registry("richtext_editors");
-        my $edit_reg = $editors->{$rte} || $editors->{archetype};
-
-        my $rich_editor_tmpl;
-        if ( $rich_editor_tmpl
-            = $edit_reg->{plugin}->load_tmpl( $edit_reg->{template} ) )
-        {
-            $param->{rich_editor}      = $rte;
-            $param->{rich_editor_tmpl} = $rich_editor_tmpl;
-        }
-    }
 }
 
 sub archetype_editor_is_enabled {
     my ( $app, $param ) = @_;
 
-    if ( !( $param->{editors} || $param->{rich_editor} ) ) {
+    if ( !$param->{editors} ) {
         $param = {};
         $app->setup_editor_param($param);
     }
 
-    return !$param->{editors}
-        && lc( $app->config('RichTextEditor') ) eq 'archetype';
+    return !$param->{editors};
 }
 
 sub sanitize_tainted_param {
@@ -5218,12 +5264,13 @@ sub default_widgets_for_dashboard {
 
     my %default_widgets;
     foreach my $key ( keys %$widgets ) {
-        my ( $view, $order, $set, $param, $default )
-            = map { $widgets->{$key}{$_} } qw( view order set param default );
+        my ( $view, $order, $set, $param, $default, $pinned )
+            = map { $widgets->{$key}{$_} } qw( view order set param default pinned );
 
         my @views = ref($view) ? @$view : ($view);
         next unless grep { $scope eq $_ } @views;
         next unless ( ref($default) && $default->{$scope} ) || $default;
+        next if ( ref($pinned) && $pinned->{$scope} ) || $pinned;
 
         $default_widgets{$key} = {
             order => ref($order) ? $order->{$scope} : $order,

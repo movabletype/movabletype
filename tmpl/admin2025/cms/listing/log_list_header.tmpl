@@ -1,0 +1,19 @@
+<mt:setvarblock name="content_header" prepend="1">
+<mt:if name="time_offset">
+  <__trans phrase="All times are displayed in GMT[_1]." params="<mt:var name="time_offset">">
+<mt:else>
+  <__trans phrase="All times are displayed in GMT.">
+</mt:if>
+</mt:setvarblock>
+
+<mt:setvarblock name="css_include" append="1">
+<style>
+td.message {
+  max-width: 200px;
+}
+div.log-message>a.dropdown-toggle {
+  white-space: normal;
+}
+</style>
+</mt:setvarblock>
+

@@ -147,17 +147,10 @@ sub get_param {
         or return;
 
     my $param = { blog_id => $blog_id };
-    my $label_path;
     if ( $blog->column('archive_path') ) {
         $param->{enable_archive_paths} = 1;
-        $label_path = MT->translate('Archive Root');
     }
-    else {
-        $label_path = MT->translate('Site Root');
-    }
-    $param->{missing_paths}
-        = (    ( defined $blog->site_path || defined $blog->archive_path )
-            && ( -d $blog->site_path || -d $blog->archive_path ) ) ? 0 : 1;
+
     $param;
 }
 

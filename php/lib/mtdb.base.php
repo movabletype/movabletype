@@ -61,11 +61,12 @@ abstract class MTDatabase {
                     $this->connect($user, $password, $dbname, $host, $port, $sock);
                 }
             } catch (Exception $e ) {
+                trigger_error('DB connection failed: '. $e->getMessage(), E_USER_WARNING);
                 sleep( $retry_int );
             }
         }
-        if ( empty($this->conn) || ( !empty($this->conn) && !$this->conn->IsConnected() ) ) {
-            throw new MTDBException( $this->conn->ErrorMsg() , 0);
+        if (empty($this->conn) || !$this->conn->IsConnected()) {
+            throw new MTDBException('DB connection failed', 0);
         }
 
         ADOdb_Active_Record::SetDatabaseAdapter($this->conn);
@@ -173,139 +174,6 @@ abstract class MTDatabase {
                  array_push( $ret, $blog_ids);
         }
         return $ret;
-    }
-
-    public function include_exclude_blogs(&$args) {
-
-        trigger_error('function include_exclude_blogs is deprecated', E_USER_DEPRECATED);
-
-        if ( empty( $args['include_parent_site'] ) && empty( $args['include_with_website'] ) )
-            $include_with_website = false;
-        else
-            $include_with_website = true;
-
-        $incl = null;
-        $excl = null;
-        if ( isset($args['include_sites'])
-          || isset($args['blog_ids'])
-          || isset($args['include_blogs'])
-          || isset($args['site_ids'])
-          || isset($args['include_websites']) )
-        {
-            // The following are aliased
-            if (!empty($args['include_sites']))
-                $incl = $args['include_sites'];
-            elseif (!empty($args['blog_ids']))
-                $incl = $args['blog_ids'];
-            elseif (!empty($args['include_blogs']))
-                $incl = $args['include_blogs'];
-            elseif (!empty($args['site_ids']))
-                $incl = $args['site_ids'];
-            elseif (!empty($args['include_websites']))
-                $incl = $args['include_websites'];
-            $args['include_blogs'] = $incl;
-            unset($args['include_sites']);
-            unset($args['blog_ids']);
-            unset($args['site_ids']);
-            unset($args['include_websites']);
-        }
-        else if (isset($args['site_id'])) {
-            $incl = $args['site_id'];
-        }
-        else if (isset($args['blog_id'])) {
-            $incl = $args['blog_id'];
-        }
-
-        if (isset($args['exclude_sites']) || isset($args['exclude_blogs']) || isset($args['exclude_websites'])) {
-            $excl = isset($args['exclude_sites']) ? $args['exclude_sites'] : null;
-            $excl or $excl = (isset($args['exclude_blogs']) ? $args['exclude_blogs'] : null);
-            $excl or $excl = (isset($args['exclude_websites']) ? $args['exclude_websites'] : null);
-
-            if ( !isset( $args['include_blogs'] ) ) {
-                # If only exclude_blogs supplied, set include_blogs as all
-                $incl = 'all';
-                $args['include_blogs'] = 'all';
-            }
-        }
-
-        // Compute include_blogs
-        if ( !empty($incl) )
-            $incl = $this->parse_blog_ids( $incl, $include_with_website );
-        if ( isset( $args['allows'] ) ) {
-            if ( empty( $incl ) )
-                $incl = $args['allows'];
-            else
-                $incl = array_intersect($incl, $args['allows']);
-        }
-
-        // Compute exclude_blogs
-        if ( !empty($excl) )
-            $excl = $this->parse_blog_ids( $excl );
-
-        if ( isset( $args['denies'] ) ) {
-            foreach ( $args['denies'] as $val )
-                $denies[$val] = 1;
-            if ( !empty($excl) ) {
-                foreach ( $excl as $e ) {
-                    if ( !array_key_exists( $e, $denies ) )
-                        $denies[$e] = 1;
-                }
-            }
-            $excl = array_keys( $denies );
-        }
-
-        if ( !empty($incl) && !empty($excl) ) {
-            $incl = array_diff($incl, $excl);
-            if ( empty( $incl ) ) {
-                $mt = MT::get_instance();
-                trigger_error( $mt->translate(
-                        "When the exclude_blogs and include_blogs attributes are used together, the same blog IDs should not be listed as parameters to both of them."
-                ) );
-            } else {
-                $incl = array_values( $incl );
-                $excl = null; // remove all exclude pattern.
-            }
-        }
-
-        if ( !empty($incl) ) {
-            if ( count($incl) > 1 )
-                return " in (" . implode(',', $incl) . ' )';
-            else
-                return " = " . array_shift($incl);
-        } elseif ( !empty($excl) ) {
-            return " not in (" . implode(',', $excl) . ' )';
-        } else {
-            if ( isset($args['include_blogs']) && strtolower($args['include_blogs']) == 'all') {
-                return " >= 0";
-            } elseif (isset($args['blog_id']) && is_numeric($args['blog_id'])) {
-                return " = " . $args['blog_id'];
-            } elseif (isset($args['include_blogs'])) {
-                return " = 0";
-            } else {
-                $mt = MT::get_instance();
-                $ctx = $mt->context();
-                $blog = $ctx->stash('blog');
-                if ( !empty( $blog ) ) {
-                    $tag = is_array($ctx->_tag_stack) ? $ctx->_tag_stack[count($ctx->_tag_stack)-1][0] : null;
-                    if ( !empty($tag)
-                      && ( $tag === 'mtwebsitepingcount'
-                        || $tag === 'mtwebsiteentrycount'
-                        || $tag === 'mtwebsitepagecount'
-                        || $tag === 'mtwebsitecommentcount' ) )
-                    {
-                        $website = $blog->is_blog() ? $blog->website() : $blog;
-                        if (empty($website))
-                            return " = -1";
-                        else
-                            return " = " . $website->id;
-                    } else {
-                        return " = " . $blog->id;
-                    }
-                }
-                else
-                    return " > 0";
-            }
-        }
     }
 
     private function _include_exclude_blogs($name, &$bind, &$args) {
@@ -3146,27 +3014,6 @@ abstract class MTDatabase {
         $cat = new Category;
         $result = $cat->count(['where' => $where, 'bind' => $bind]);
         return $result;
-    }
-
-    public function tags_entry_count($tag_id, $class = 'entry') {
-        $tag_id = intval($tag_id);
-
-        $where = "objecttag_tag_id = $tag_id";
-
-        if ($class == 'entry' or $class == 'page') {
-            $where .= " and entry_status = 2 and entry_class = '$class'";
-        }
-
-        $ds = $class == 'page' ? 'entry' : $ds;
-        $join['mt_objecttag'] = 
-            array(
-                "condition" => "{$ds}_id = objecttag_object_id and objecttag_object_datasource='$ds'"
-                );
-
-        require_once("class.mt_$class.php");
-        $entry = new $class();
-        $count = $entry->count(array('where' => $where, 'join' => $join));
-        return $count;
     }
 
     public function entry_comment_count($entry_id) {

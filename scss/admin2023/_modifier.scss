@@ -34,6 +34,36 @@ Progress Bar
 Adjustments
 */
 
+%modal-variables {
+  // copy from bootstrap5
+  // node_modules/bootstrap5/scss/_modal.scss
+  --#{$prefix}modal-zindex: #{$zindex-modal};
+  --#{$prefix}modal-width: #{$modal-md};
+  --#{$prefix}modal-padding: #{$modal-inner-padding};
+  --#{$prefix}modal-margin: #{$modal-dialog-margin};
+  --#{$prefix}modal-color: #{$modal-content-color};
+  --#{$prefix}modal-bg: #{$modal-content-bg};
+  --#{$prefix}modal-border-color: #{$modal-content-border-color};
+  --#{$prefix}modal-border-width: #{$modal-content-border-width};
+  --#{$prefix}modal-border-radius: #{$modal-content-border-radius};
+  --#{$prefix}modal-box-shadow: #{$modal-content-box-shadow-xs};
+  --#{$prefix}modal-inner-border-radius: #{$modal-content-inner-border-radius};
+  --#{$prefix}modal-header-padding-x: #{$modal-header-padding-x};
+  --#{$prefix}modal-header-padding-y: #{$modal-header-padding-y};
+  --#{$prefix}modal-header-padding: #{$modal-header-padding}; // Todo in v6: Split this padding into x and y
+  --#{$prefix}modal-header-border-color: #{$modal-header-border-color};
+  --#{$prefix}modal-header-border-width: #{$modal-header-border-width};
+  --#{$prefix}modal-title-line-height: #{$modal-title-line-height};
+  --#{$prefix}modal-footer-gap: #{$modal-footer-margin-between};
+  --#{$prefix}modal-footer-bg: #{$modal-footer-bg};
+  --#{$prefix}modal-footer-border-color: #{$modal-footer-border-color};
+  --#{$prefix}modal-footer-border-width: #{$modal-footer-border-width};
+}
+
+:root {
+  @extend %modal-variables;
+}
+
 html{
   font-size: 16px;
 }
@@ -426,7 +456,7 @@ li{
   & > a{
     border-bottom: 1px solid $gray-lighter;
     &:after{
-          display: inline-block;
+          display: block;
           width: 0;
           height: 0;
           float: right;
@@ -866,7 +896,7 @@ li{
   padding-top: 0;
 
   .mt-sharedPreviewNav__logo {
-    @extend .ms-2;
+    @extend .me-2;
     @include media-breakpoint-down(sm) {
       margin-left: 14px;
     }
@@ -879,8 +909,7 @@ li{
 
   .mt-sharedPreviewNav__leftNav {
     @extend .nav;
-    @extend .float-start;
-    @extend .ms-auto;
+    @extend .me-auto;
 
     height: 40px;
     overflow: hidden;
@@ -1297,6 +1326,12 @@ fieldset.form-group{
   *:last-child{
     margin-bottom: 0;
   }
+  &:has(div.loaded_revision){
+    background-color: #FFFDE5;
+  }
+  div.status {
+    margin-bottom: 1rem;
+  }
 }
 .mt-widget__list{
   padding: 0;
@@ -1366,7 +1401,6 @@ fieldset.form-group{
     margin-bottom: 0;
   }
   &:last-child{
-    margin-bttom: 0;
     padding-bottom: 1rem;
     border-bottom: 0;
   }
@@ -1389,7 +1423,7 @@ fieldset.form-group{
   strong{
     font-size: 1.25rem;
     &.number{
-      font-famly: $font-family-numbers;
+      font-family: $font-family-numbers;
       font-size: 2rem;
       letter-spacing: -0.05rem;
     }
@@ -1693,6 +1727,7 @@ fieldset.form-group{
     color: $white;
   }
   padding: $modal-header-padding;
+  justify-content: space-between;
 }
 .modal-title{
   margin-top: 0;
@@ -1772,6 +1807,9 @@ fieldset.form-group{
     .h1, .h2, .h3, .h4{
         margin-top: 0;
     }
+    .btn-close {
+      padding: 1rem;
+    }
 }
 
 /* Badges */
@@ -1781,16 +1819,16 @@ fieldset.form-group{
   background: $white;
   font-size: 85%;
 }
-.badge-default{
+.badge-default, .badge-default-plugin{
   border-color: $gray;
   color: $gray-darker;
 }
-.badge-primary{
+.badge-primary, .badge-added-plugin{
   border-color: transparent;
   background-color: map-get($theme-colors, "success");
   color: $white;
 }
-.badge-info{
+.badge-info, .badge-default-modified-plugin{
   border-color: transparent;
   background-color: $gray-darker;
   color: $white;
@@ -1908,7 +1946,7 @@ a:hover .mt-icon--secondary{
 .mt-thumbnail--border{
   @extend .mt-thumbnail;
   border: 1px solid $gray-light;
-  border-radius: $border-radius/2;
+  border-radius: calc($border-radius/2);
 }
 
 /* User Badge */
@@ -2242,4 +2280,18 @@ li.nav-item {
 
 .app-setting {
   margin-bottom: 2rem;
+}
+
+/* List Theme */
+.theme-thumbnail {
+  flex: 0 1 160px;
+}
+.theme-meta {
+  flex: 1 1;
+}
+
+@include media-breakpoint-up(md) {
+  .theme-thumbnail {
+    flex: 0 1 180px;
+  }
 }

@@ -1,0 +1,32 @@
+<mt:If name="comment_confirmation">
+  <$mt:Var name="page_title" value="<__trans phrase="Confirmation...">"$>
+  <$mt:Var name="message" value="<p class="message success"><__trans phrase="Your comment has been submitted!"></p>"$>
+<mt:Else name="comment_pending">
+  <$mt:Var name="page_title" value="<__trans phrase="Thank you for commenting.">"$>
+  <$mt:Var name="message" value="<p class="message success"><__trans phrase="Your comment has been received and held for approval by the site owner."></p>"$>
+<mt:Else name="comment_error">
+  <$mt:Var name="page_title" value="<__trans phrase="Comment Submission Error">"$>
+  <mt:SetVarBlock name="message"><p class="message error"><__trans phrase="Your comment submission failed for the following reasons: [_1]" params="<$mt:ErrorMessage encode_html="1"$>"></p></mt:SetVarBlock>
+</mt:If>
+
+<mt:IncludeBlock module="<__trans phrase="Layout">">
+  <div class="content">
+    <nav aria-label="<__trans phrase="Breadcrumb">">
+      <ol class="breadcrumb" itemprop="breadcrumb">
+        <li><a href="<$mt:SiteURL encode_html="1"$>"><__trans phrase="Home"></a></li>
+        <li><a href="<$mt:Link template="main_index" encode_html="1"$>"><__trans phrase="Entries List"></a></li>
+        <li><$mt:EntryTitle$></li>
+      </ol>
+    </nav>
+    <main class="main">
+      <section>
+        <h1 class="title"><$mt:Var name="page_title"$></h1>
+        <$mt:Var name="message"$>
+        <p><__trans phrase="Return to the <a href="[_1]">original entry</a>." params="<mt:If name="comment_error">javascript:history.back()<mt:Else><$mt:EntryLink$></mt:If>"></p>
+      </section>
+    </main>
+    <aside class="related">
+      <$mt:WidgetSet name="<__trans phrase="Related Contents (Entries)">"$>
+    </aside>
+  </div>
+</mt:IncludeBlock>

@@ -7,6 +7,7 @@ use FindBin;
 use lib "$FindBin::Bin/../lib"; # t/lib
 use Test::More;
 use MT::Test::Env;
+use Mock::MonkeyPatch;
 our $test_env;
 BEGIN {
     $test_env = MT::Test::Env->new(
@@ -36,7 +37,7 @@ use MT::Util qw( start_end_day start_end_week start_end_month start_end_year
     sax_parser trim ltrim rtrim asset_cleanup caturl
     weaken log_time make_string_csv browser_language sanitize_embed
     extract_url_path break_up_text dir_separator deep_do
-    deep_copy canonicalize_path is_valid_ip clear_site_stats_widget_cache);
+    deep_copy canonicalize_path clear_site_stats_widget_cache);
 
 $test_env->prepare_fixture('db_data');
 
@@ -193,20 +194,74 @@ is( remove_html(
     "remove html prevents abuse, saves plain text, escapes inner < characters"
 );
 
-is( MT::Util::to_json( { 'foo' => 2 } ),       '{"foo":2}' );
-is( MT::Util::to_json( { 'foo' => 1 } ),       '{"foo":1}' );
-is( MT::Util::to_json( { 'foo' => 0 } ),       '{"foo":0}' );
-is( MT::Util::to_json( { 'foo' => 'hoge' } ),  '{"foo":"hoge"}' );
-is( MT::Util::to_json( { 'foo' => 'ho1ge' } ), '{"foo":"ho1ge"}' );
-is( MT::Util::to_json( [ 'foo', 'bar', 'baz' ] ), '["foo","bar","baz"]' );
-is( MT::Util::to_json( [ 'foo', 1, 'bar', 2, 3, 4 ] ),
-    '["foo",1,"bar",2,3,4]' );
-is( MT::Util::to_json(
-        [ 'foo', 1, 'bar', { hoge => 1, moge => 'a' } ],
-        { canonical => 1 }
-    ),
-    '["foo",1,"bar",{"hoge":1,"moge":"a"}]'
-);
+subtest 'to_json' => sub {
+    is( MT::Util::to_json( { 'foo' => 2 } ),       '{"foo":2}' );
+    is( MT::Util::to_json( { 'foo' => 1 } ),       '{"foo":1}' );
+    is( MT::Util::to_json( { 'foo' => 0 } ),       '{"foo":0}' );
+    is( MT::Util::to_json( { 'foo' => 'hoge' } ),  '{"foo":"hoge"}' );
+    is( MT::Util::to_json( { 'foo' => 'ho1ge' } ), '{"foo":"ho1ge"}' );
+    is( MT::Util::to_json( [ 'foo', 'bar', 'baz' ] ), '["foo","bar","baz"]' );
+    is( MT::Util::to_json( [ 'foo', 1, 'bar', 2, 3, 4 ] ),
+        '["foo",1,"bar",2,3,4]' );
+    is( MT::Util::to_json(
+            [ 'foo', 1, 'bar', { hoge => 1, moge => 'a' } ],
+            { canonical => 1 }
+        ),
+        '["foo",1,"bar",{"hoge":1,"moge":"a"}]'
+    );
+
+    subtest 'allow_nonref' => sub {
+        my ($last_value, $last_args);
+        my $guard = Mock::MonkeyPatch->patch(
+            'JSON::to_json' => sub {
+                ($last_value, $last_args) = @_;
+                Mock::MonkeyPatch::ORIGINAL(@_);
+            },
+        );
+
+        is( MT::Util::to_json(1), '1' );
+        is( $last_args->{allow_nonref}, 1, 'allow_nonref is enabled by default' );
+
+        is ( MT::Util::to_json({}, { allow_nonref => 0 }), '{}' );
+        is( $last_args->{allow_nonref}, 0, 'allow_nonref is passed correctly' );
+
+        is ( MT::Util::to_json({}, { allow_nonref => undef }), '{}' );
+        is( $last_args->{allow_nonref}, undef, 'allow_nonref is passed correctly' );
+    };
+};
+
+subtest 'from_json' => sub {
+    # add tests like the above
+    is_deeply( MT::Util::from_json('{"foo":2}'),       { 'foo' => 2 } );
+    is_deeply( MT::Util::from_json('{"foo":1}'),       { 'foo' => 1 } );
+    is_deeply( MT::Util::from_json('{"foo":0}'),       { 'foo' => 0 } );
+    is_deeply( MT::Util::from_json('{"foo":"hoge"}'),  { 'foo' => 'hoge' } );
+    is_deeply( MT::Util::from_json('{"foo":"ho1ge"}'), { 'foo' => 'ho1ge' } );
+    is_deeply( MT::Util::from_json('["foo","bar","baz"]'), [ 'foo', 'bar', 'baz' ] );
+    is_deeply( MT::Util::from_json('["foo",1,"bar",2,3,4]'),
+        [ 'foo', 1, 'bar', 2, 3, 4 ] );
+    is_deeply( MT::Util::from_json('["foo",1,"bar",{"hoge":1,"moge":"a"}]'),
+        [ 'foo', 1, 'bar', { hoge => 1, moge => 'a' } ] );
+    
+    subtest 'allow_nonref' => sub {
+        my ($last_value, $last_args);
+        my $guard = Mock::MonkeyPatch->patch(
+            'JSON::from_json' => sub {
+                ($last_value, $last_args) = @_;
+                Mock::MonkeyPatch::ORIGINAL(@_);
+            },
+        );
+
+        is( MT::Util::from_json('1'), 1 );
+        is( $last_args->{allow_nonref}, 1, 'allow_nonref is enabled by default' );
+
+        is_deeply ( MT::Util::from_json('{}', { allow_nonref => 0 }), {} );
+        is( $last_args->{allow_nonref}, 0, 'allow_nonref is passed correctly' );
+
+        is_deeply ( MT::Util::from_json('{}', { allow_nonref => undef }), {} );
+        is( $last_args->{allow_nonref}, undef, 'allow_nonref is passed correctly' );
+    };
+};
 
 ### start_end_*
 is( start_end_day('19770908153005'),
@@ -490,20 +545,6 @@ ok( is_url('https://www.example.com/?foo=bar&baz=10%'),     'is_url() ssl' );
 ok( is_url('http://www.example.com:8080/?foo=bar&baz=10%'), 'is_url() port' );
 ok( !is_url('not a url'),    'is_url() not a url' );
 ok( !is_url('not http://_'), 'is_url() invalid url' );
-## is_valid_ip
-is( is_valid_ip('0.0.0.1'), '0.0.0.1', 'is_valid_ip() valid ip' );
-is( is_valid_ip('255.255.255.244'),
-    '255.255.255.244', 'is_valid_ip() valid ip' );
-is( is_valid_ip('123.123.123.123/1'),
-    '123.123.123.123/1', 'is_valid_ip() valid ip' );
-is( is_valid_ip('123.123.123.123/32'),
-    '123.123.123.123/32', 'is_valid_ip() valid ip' );
-is( is_valid_ip('0.0.0.0'),            '0', 'is_valid_ip() invalid ip' );
-is( is_valid_ip('255.255.255.255'),    '0', 'is_valid_ip() invalid ip' );
-is( is_valid_ip('0.0.0.0/1'),          '0', 'is_valid_ip() invalid ip' );
-is( is_valid_ip('255.255.255.255/32'), '0', 'is_valid_ip() invalid ip' );
-is( is_valid_ip('123.123.123.123/0'),  '0', 'is_valid_ip() invalid ip' );
-is( is_valid_ip('123.123.123.123/33'), '0', 'is_valid_ip() invalid ip' );
 
 ### other utilities
 
@@ -621,14 +662,14 @@ MT->config( 'EmbedDomainWhitelist', 'example.com' );
 my $taint_embed = <<__HTML__;
 Content
 <a href="http://example.com/foo.html" onclick="alert('test');">Foo</a>
-<script type="text/javascript">
+<script>
 alert('test');
 </script>
 __HTML__
 my $sanitized_embed = <<__HTML__;
 Content
 <a href="http://example.com/foo.html">Foo</a>
-<script type="text/javascript"></script>
+<script></script>
 __HTML__
 is( sanitize_embed($taint_embed), $sanitized_embed, 'sanitize_embed()' );
 
@@ -810,8 +851,8 @@ for my $clear_cache ( 0, 1 ) {
 
 my $fmgr = MT::FileMgr->new('Local');
 {
-    my $dir = File::Spec->catfile( MT->app->support_directory_path,
-        'dashboard', 'stats', 0, '001', '001' );
+    require MT::CMS::Dashboard;
+    my $dir = MT::CMS::Dashboard::stats_directory(MT->app, 1);
     if ( !$fmgr->exists($dir) ) {
         $fmgr->mkpath($dir);
     }
@@ -825,8 +866,9 @@ my $fmgr = MT::FileMgr->new('Local');
 }
 
 {
-    my $dir = File::Spec->catdir( MT->app->support_directory_path,
-        'dashboard', 'stats' );
+    require MT::CMS::Dashboard;
+    my $dir = MT::CMS::Dashboard::stats_directory(MT->app, 0);
+    $dir =~ s![0\\/]+$!!;
     if ( !$fmgr->exists($dir) ) {
         $fmgr->mkpath($dir);
     }

@@ -58,9 +58,6 @@ sub start_recover {
             or return $app->errtrans("Invalid request.");
     }
 
-    if ( $param->{recovered} ) {
-        $param->{return_to} = MT::Util::encode_js( $param->{return_to} );
-    }
     $param->{'can_signin'} = ( ref $app eq 'MT::App::CMS' ) ? 1 : 0;
 
     $app->add_breadcrumb( $app->translate('Password Recovery') );
@@ -84,6 +81,11 @@ sub recover_password {
 
     $email = trim($email);
     $username = trim($username) if $username;
+
+    my $base = $app->base;
+    if ($base eq '') {
+        return $app->errtrans('Cannot get host name. Please report it to the administartor.');
+    }
 
     if ( !$email ) {
         return $app->start_recover(
@@ -157,7 +159,7 @@ sub recover_password {
             my $blog_id = $app->param('blog_id');
             my $body    = $app->build_email(
                 'recover-password',
-                {         link_to_login => $app->base
+                {         link_to_login => $base
                         . $app->mt_uri
                         . "?__mode=new_pw&token=$token&email="
                         . encode_url($email)
@@ -278,7 +280,7 @@ sub new_password {
                     ## just in case
                     $app->is_valid_redirect_target($redirect)
                         or return $app->errtrans("Invalid request.");
-                    return $app->redirect( MT::Util::encode_html($redirect) );
+                    return $app->redirect($redirect);
                 }
                 else {
                     return $app->redirect_to_edit_profile();
@@ -3143,7 +3145,7 @@ sub _progress {
     if ( $id && $ids->{$id} ) {
         my $str_js = encode_js($str);
         $app->print_encode(
-            qq{<script type="text/javascript">progress('$str_js', '$id');</script>}
+            qq{<script>progress('$str_js', '$id');</script>}
         );
     }
     elsif ($id) {

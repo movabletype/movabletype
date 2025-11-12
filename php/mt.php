@@ -5,13 +5,15 @@
 #
 # $Id$
 
+require_once 'vendor/autoload.php';
+
 /***
  * Loading exception classes
  */
 require_once('lib/class.exception.php');
 
-define('VERSION', '8.006000');
-define('PRODUCT_VERSION', '8.6.0');
+define('VERSION', '9.000005');
+define('PRODUCT_VERSION', '9.0.5');
 define('DATA_API_DEFAULT_VERSION', '7');
 
 $PRODUCT_NAME = '__PRODUCT_NAME__';
@@ -401,10 +403,7 @@ class MT {
         }
         ini_set('include_path',
             $cfg['phpdir'] . DIRECTORY_SEPARATOR . "lib" . $path_sep .
-            $cfg['phpdir'] . DIRECTORY_SEPARATOR . "extlib" . $path_sep .
-            $cfg['phpdir'] . DIRECTORY_SEPARATOR . "extlib" . DIRECTORY_SEPARATOR . "smarty" . DIRECTORY_SEPARATOR . "libs" . $path_sep .
-            $cfg['phpdir'] . DIRECTORY_SEPARATOR . "extlib" . DIRECTORY_SEPARATOR . "adodb5" . $path_sep .
-            $cfg['phpdir'] . DIRECTORY_SEPARATOR . "extlib" . DIRECTORY_SEPARATOR . "FirePHPCore" . $path_sep .
+            $cfg['phpdir'] . DIRECTORY_SEPARATOR . "vendor" . DIRECTORY_SEPARATOR . 'adodb'. DIRECTORY_SEPARATOR. 'adodb-php' . $path_sep .
             ini_get('include_path')
         );
 
@@ -479,8 +478,6 @@ class MT {
             $cfg['signonurl'] = 'https://www.typekey.com/t/typekey/login?';
         isset($cfg['signoffurl']) or
             $cfg['signoffurl'] = 'https://www.typekey.com/t/typekey/logout?';
-        isset($cfg['publishcommentericon']) or
-            $cfg['publishcommentericon'] = '1';
         isset($cfg['allowcomments']) or
             $cfg['allowcomments'] = '1';
         isset($cfg['allowpings']) or
@@ -524,9 +521,9 @@ class MT {
         isset($cfg['dataapiscript']) or
             $cfg['dataapiscript'] = 'mt-data-api.cgi';
         isset($cfg['dynamictemplateallowphp']) or
-            $cfg['dynamictemplateallowphp'] = 1;
-        isset($cfg['dynamictemplateallowsmartytags']) or $cfg['dynamictemplateallowsmartytags'] = 1;
-        isset($cfg['allowtestmodifier']) or $cfg['allowtestmodifier'] = 1;
+            $cfg['dynamictemplateallowphp'] = 0;
+        isset($cfg['dynamictemplateallowsmartytags']) or $cfg['dynamictemplateallowsmartytags'] = 0;
+        isset($cfg['allowtestmodifier']) or $cfg['allowtestmodifier'] = 0;
     }
 
     function configure_paths($blog_site_path) {
@@ -959,11 +956,6 @@ class MT {
                     }
                 }
 
-                $http_error = $this->http_error;
-                if (!$http_error) {
-                    $http_error = 500;
-                }
-                $ctx->stash('http_error', $http_error);
                 $ctx->stash('error_file', $errfile);
                 $ctx->stash('error_line', $errline);
                 $ctx->setTemplateDir($mtphpdir . DIRECTORY_SEPARATOR . 'tmpl');

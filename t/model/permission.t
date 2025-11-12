@@ -12,8 +12,29 @@ BEGIN {
 
 use MT;
 use MT::Permission;
+use MT::Test::Permission;
 
 $test_env->prepare_fixture('db');
+
+subtest 'MTC-30082' => sub {
+    my $author      = MT::Test::Permission->make_author;
+    my $parent_site = MT::Test::Permission->make_website;
+    my $child_site  = MT::Test::Permission->make_blog(parent_id => $parent_site->id);
+
+    my ($role_administer_site) = MT->model('role')->load_by_permission('administer_site');
+    die unless $role_administer_site;
+
+    MT->model('association')->link($author => $role_administer_site => $parent_site);
+    MT->model('association')->link($author => $role_administer_site => $child_site);
+
+    my $perm_parent_site = $author->permissions($parent_site->id) or die;
+    $perm_parent_site->set_these_restrictions('edit_tags');
+    ok $perm_parent_site->can_edit_tags, 'When a permission has administer_site in parent site, dynamic permission method does not check restrictions';
+
+    my $perm_child_site = $author->permissions($child_site->id) or die;
+    $perm_child_site->set_these_restrictions('create_site');
+    ok $perm_child_site->can_create_site, 'When a permission has administer_site in child site, dynamic permission method does not check restrictions';
+};
 
 subtest 'can_upload' => sub {
     my $perm = MT::Permission->new(author_id => 1, blog_id => 1);

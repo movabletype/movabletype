@@ -36,50 +36,23 @@ sub set_config {
     $MT::Util::Editor::current_wysiwyg_editor = undef;
     $MT::Util::Editor::current_source_editor  = undef;
 
-    $app->config($_, undef)         for qw(Editor WYSIWYGEditor SourceEditor);
+    $app->config($_, undef)         for qw(Editor);
     $app->config($_, $config->{$_}) for keys %$config;
 }
 
 subtest 'When the Editor environment variable is defined' => sub {
     set_config({
-        Editor => 'awesome_editor',
+        Editor => 'tinymce',
     });
 
-    is MT::Util::Editor::current_wysiwyg_editor($app), 'awesome_editor';
-    is MT::Util::Editor::current_source_editor($app),  'awesome_editor';
+    is MT::Util::Editor::current_wysiwyg_editor($app), 'tinymce';
+    is MT::Util::Editor::current_source_editor($app),  'tinymce';
 };
 
 subtest 'When the Editor environment variable is not defined' => sub {
     set_config({});
 
-    is MT::Util::Editor::current_wysiwyg_editor($app), 'tinymce';
-    is MT::Util::Editor::current_source_editor($app),  'tinymce';
-};
-
-subtest 'When the Editor environment variable is specified as unavailable editor' => sub {
-    set_config({
-        Editor => 'non_existent_editor',
-    });
-
-    is MT::Util::Editor::current_wysiwyg_editor($app), 'tinymce';
-    is MT::Util::Editor::current_source_editor($app),  'tinymce';
-};
-
-subtest 'When the WYSIWYGEditor environment variable is defined' => sub {
-    set_config({
-        WYSIWYGEditor => 'awesome_editor',
-    });
-
     is MT::Util::Editor::current_wysiwyg_editor($app), 'awesome_editor';
-    is MT::Util::Editor::current_source_editor($app),  'tinymce';
-};
-
-subtest 'When the SourceEditor environment variable is defined' => sub {
-    set_config({
-        SourceEditor => 'awesome_editor',
-    });
-
-    is MT::Util::Editor::current_wysiwyg_editor($app), 'tinymce';
     is MT::Util::Editor::current_source_editor($app),  'awesome_editor';
 };
 

@@ -54,6 +54,8 @@ sub test_wizard {
     my %param = @_;
     my $guard = MT::Test::Wizard::ConfigGuard->new;
 
+    plan skip_all => 'Not for Win32' if $^O eq 'MSWin32';
+
     local $ENV{MT_TEST_RUN_APP_AS_CGI} = 0;
 
     my $static_server = start_server();

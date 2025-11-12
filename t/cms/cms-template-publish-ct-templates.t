@@ -33,7 +33,7 @@ $admin->save or die;
 my $website = MT->model('website')->load(1) or die;
 my $website_archive_path = join '/', $test_env->root, 'site', 'archive';
 $website->archive_path($website_archive_path);
-$website->theme_id('classic_website');
+$website->theme_id('classic_test_website');
 $website->save or die;
 
 my $ct1 = MT::Test::Permission->make_content_type(blog_id => $website->id);

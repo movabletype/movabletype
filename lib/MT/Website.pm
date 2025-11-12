@@ -116,6 +116,7 @@ sub list_props {
         },
         created_on  => { base => 'blog.created_on' },
         modified_on => { base => 'blog.modified_on' },
+        site_url => { base => 'blog.site_url', },
     };
 }
 

@@ -40,13 +40,13 @@ GetOptions(
 );
 
 if ($usage || !$username || !$password) {
-    use Pod::Usage;
-    pod2usage(1);
+    require Pod::Usage;
+    Pod::Usage::pod2usage(1);
     exit;
 }
 
 if ($elapse) {
-    use Time::HiRes;
+    require Time::HiRes;
 }
 
 ### Creates MT object.
@@ -103,7 +103,7 @@ sub run_rebuild {
         my $archiver = $mt->publisher->archiver($at);
         next if ( !$archiver ) && ( $at ne 'index' );
 
-        my $start = Time::HiRes::time() if $elapse;
+        my $start = $elapse ? Time::HiRes::time() : 0;
         my $total = 0;
         if ($archiver) {
             if ( ( $archiver->entry_based || $archiver->date_based ) )

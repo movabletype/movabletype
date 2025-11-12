@@ -307,16 +307,17 @@ sub _hdlr_authors {
             }
             else {
                 push @filters, sub {
+                    return 1 if $_[0]->is_superuser;
                     my $blog_id;
                     if ( $blog_terms{blog_id} ) {
                         $blog_id
                             = ref $blog_terms{blog_id} eq 'ARRAY'
-                            ? [ 0, @{ $blog_terms{blog_id} } ]
-                            : [ 0, $blog_terms{blog_id} ];
+                            ? [ @{ $blog_terms{blog_id} } ]
+                            : [ $blog_terms{blog_id} ];
                     }
                     my $count = MT::Permission->count(
                         {   author_id => $_[0]->id,
-                            $blog_id ? ( blog_id => $blog_id ) : (),
+                            blog_id   => $blog_id || { not => 0 },
                         },
                         \%blog_args
                     );

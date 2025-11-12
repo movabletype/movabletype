@@ -61,7 +61,7 @@ subtest 'without initial_value' => sub {
     my $cd;
 
     subtest 'DisableContentFieldPermission = 0' => sub {
-        $app->config->DisableContentFieldPermission(0);
+        $app->config->DisableContentFieldPermission(0, 1);
         die if $app->config->DisableContentFieldPermission;
 
         test_data_api(
@@ -143,7 +143,7 @@ subtest 'without initial_value' => sub {
     };
 
     subtest 'DisableContentFieldPermission = 1' => sub {
-        $app->config->DisableContentFieldPermission(1);
+        $app->config->DisableContentFieldPermission(1, 1);
         die unless $app->config->DisableContentFieldPermission;
 
         test_data_api(
@@ -255,7 +255,7 @@ subtest 'with initial_value' => sub {
     my $cd;
 
     subtest 'DisableContentFieldPermission = 0' => sub {
-        $app->config->DisableContentFieldPermission(0);
+        $app->config->DisableContentFieldPermission(0, 1);
         die if $app->config->DisableContentFieldPermission;
 
         test_data_api(
@@ -337,7 +337,7 @@ subtest 'with initial_value' => sub {
     };
 
     subtest 'DisableContentFieldPermission = 1' => sub {
-        $app->config->DisableContentFieldPermission(1);
+        $app->config->DisableContentFieldPermission(1, 1);
         die unless $app->config->DisableContentFieldPermission;
 
         test_data_api(

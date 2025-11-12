@@ -1,0 +1,25 @@
+  <mt:if name="thumb_dir_warnings">
+    <mt:setvar name="paths" value="<mt:loop name="thumb_dir_warnings"><mt:var name="path"><mt:unless name='__last__'>, </mt:unless></mt:loop>">
+    <mtapp:statusmsg
+        id="warning-<mt:var name="key">-thumb-path"
+        class="warning"
+        can_close="0">
+      <__trans phrase="Cannot write to '[_1]'. Thumbnail of items may not be displayed.", params="<mt:var name="paths">" escape="html">
+    </mtapp:statusmsg>
+  </mt:if>
+  <mt:if name="missing_site_dir">
+      <mtapp:statusmsg
+          id="missing-site-dir"
+          class="warning"
+          can_close="0">
+          <__trans phrase="Site's publishing directory does not exist. [_1]" params="<mt:var name="missing_site_dir">">
+      </mtapp:statusmsg>
+  </mt:if>
+  <mt:if name="missing_site_path">
+    <mtapp:statusmsg
+        id="missing-site-path"
+        class="danger"
+        can_close="0">
+      <__trans phrase="Before you can upload a file, you must <a href='[_1]' class='alert-link'>configure your site's publishing paths</a> first." params="<mt:var name="script_url">?__mode=cfg_prefs&amp;blog_id=<mt:var name="blog_id">">
+    </mtapp:statusmsg>
+  </mt:if>

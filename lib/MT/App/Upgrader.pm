@@ -472,7 +472,7 @@ sub init_website {
         my $path = $param{'sitepath_limited'} || $app->document_root();
         $param{website_path} = File::Spec->catdir($path);
 
-        my $url = $app->base . '/';
+        my $url = $app->base(NoHostCheck => 1) . '/';
         $url =~ s!/cgi(?:-bin)?(/.*)?$!/!;
         $url =~ s!/mt/?$!/!i;
         $param{website_url} = $url;
@@ -628,10 +628,6 @@ sub finish {
         $ott->save;
 
         my $response = $app->response;
-        # DEPRECATED: only for the older admin template
-        my $cookie_obj = $app->start_session($author);
-        $response->{cookie} =
-            { map { $_ => $cookie_obj->{$_} } (keys %$cookie_obj) };
 
         $response->{redirect} = {
             token => $token,

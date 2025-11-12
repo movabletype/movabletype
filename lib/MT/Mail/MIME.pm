@@ -30,7 +30,7 @@ sub send {
             next;
         }
         if (ref($hdrs{$h}) eq 'ARRAY') {
-            map { y/\n\r/  / } @{ $hdrs{$h} };
+            y/\n\r/  / for @{ $hdrs{$h} };
         } elsif (!ref($hdrs{$h})) {
             $hdrs{$h} =~ y/\n\r/  /;
         }

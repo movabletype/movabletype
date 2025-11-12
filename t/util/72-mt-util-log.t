@@ -29,9 +29,10 @@ for my $module (qw/ Log4perl Minimal /) {
             my $path = $test_env->path("log/$module/$level");
             mkpath $path;
 
-            $mt->config( 'LoggerLevel',  $level );
-            $mt->config( 'LoggerPath',   $path );
-            $mt->config( 'LoggerModule', $module );
+            $mt->config( 'LoggerLevel',   $level );
+            $mt->config( 'LoggerPath',    $path );
+            $mt->config( 'LoggerModule',  $module );
+            $mt->config( 'LoggerFileName', undef );
 
             no warnings 'once';
             $MT::Util::Log::Initialized = 0;

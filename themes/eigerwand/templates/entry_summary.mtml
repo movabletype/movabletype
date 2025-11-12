@@ -1,0 +1,25 @@
+<article id="entry-<$mt:EntryID$>" class="entry entry-summary" aria-labelledby="entry-title-<$mt:EntryID$>">
+  <mt:EntryAssets type="image" limit="1">
+    <figure>
+      <img src="<$mt:AssetThumbnailURL width="150"$>" class="thumb" alt="<$mt:AssetProperty property="description"$>">
+    </figure>
+  </mt:EntryAssets>
+  <h2 class="title entry-title" id="entry-title-<$mt:EntryID$>"><a href="<$mt:EntryPermalink$>"><$mt:EntryTitle$></a></h2>
+  <p><$mt:EntryExcerpt$></p>
+  <footer class="entry-footer">
+    <p class="entry-time">
+      <__trans phrase="Posted on">
+      <time datetime="<$mt:EntryDate format_name="iso8601"$>" itemprop="datePublished"><$mt:EntryDate format="%x"$></time>
+    </p>
+    <mt:IfArchiveTypeEnabled archive_type="Category">
+      <mt:If tag="EntryPrimaryCategory">
+        <mt:EntryPrimaryCategory>
+          <p class="entry-category">
+            <span class="visually-hidden"><__trans phrase="in"></span>
+            <a href="<$mt:CategoryArchiveLink$>" rel="tag" class="label category <$mt:CategoryBasename$>"><$mt:CategoryLabel$></a>
+          </p>
+        </mt:EntryPrimaryCategory>
+      </mt:If>
+    </mt:IfArchiveTypeEnabled>
+  </footer>
+</article>

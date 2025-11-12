@@ -24,6 +24,13 @@ sub start_import {
 
     my %param;
 
+    if ( !defined($blog->site_path) ) {
+        $param{missing_site_path} = 1;
+    }
+    elsif ( !(-d $blog->site_path) ) {
+        $param{missing_site_dir} = $blog->site_path;
+    }
+
     # FIXME: This should build a category hierarchy!
     my $cat_class = $app->model('category');
     my $iter      = $cat_class->load_iter(
@@ -92,7 +99,7 @@ sub start_import {
             = $app->load_text_filters( $blog->convert_paras, 'entry' );
     }
 
-    $app->add_breadcrumb( $app->translate('Import Site Entries') );
+    $app->add_breadcrumb( $app->translate('Import [_1] Entries', $blog->class_label) );
     $app->load_tmpl( 'import.tmpl', \%param );
 }
 
@@ -153,7 +160,7 @@ sub do_import {
     $app->validate_magic() or return;
 
     $app->add_breadcrumb(
-        $app->translate('Import Site Entries'),
+        $app->translate('Import [_1] Entries', $blog->class_label),
         $app->uri(
             mode => 'start_import',
             args => { blog_id => $blog_id },

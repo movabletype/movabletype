@@ -78,6 +78,7 @@ __PACKAGE__->install_properties(
             'archive_url'              => 'string(255)',
             'archive_path'             => 'string(255)',
             'content_css'              => 'string(255)',
+            'link_default_target'      => 'string(6) not null',
             'allow_data_api'           => 'boolean',
             ## Have to keep these around for use in mt-upgrade.cgi.
             'old_style_archive_links' => 'boolean',
@@ -117,8 +118,7 @@ __PACKAGE__->install_properties(
             'category_order'           => 'text meta',
             'folder_order'             => 'text meta',
             'publish_empty_archive'    => 'boolean meta',
-            'upload_destination' =>
-                'boolean meta',   # not really boolean but blob field is good.
+            'upload_destination'        => 'text meta',
             'extra_path'                => 'string meta',
             'allow_to_change_at_upload' => 'boolean meta',
             'operation_if_exists'       => 'integer meta',
@@ -151,6 +151,8 @@ __PACKAGE__->install_properties(
         class_type  => 'blog',
     }
 );
+
+our $DEFAULT_LINK_DEFAULT_TARGET = '_self';
 
 # Image upload defaults.
 sub ALIGN () {'none'}
@@ -297,17 +299,27 @@ sub list_props {
             order           => 800,
             display         => 'default',
             filter_editable => 0,
-            raw             => sub {
-                my ( $prop, $obj ) = @_;
-                if ( $obj->is_blog ) {
-                    my $parent = $obj->website;
+            html => sub {
+                my $prop = shift;
+                my ( $obj, $app, $opts ) = @_;
+                return '-' unless $obj->is_blog;
+
+                my $parent = $obj->website;
+                my $name =
                     $parent
-                        ? $parent->name
-                        : ( MT->translate('*Site/Child Site deleted*') );
-                }
-                else {
-                    '-';
-                }
+                  ? $parent->name
+                  : MT->translate('*Site/Child Site deleted*');
+                return $name if !defined $parent;
+
+                my $dashboard_link = MT::Util::encode_html(
+                    $app->uri(
+                        mode => 'dashboard',
+                        args => { blog_id => $parent->id, },
+                    )
+                );
+                my $can_double_encode = 1;
+                $name = MT::Util::encode_html( $name, $can_double_encode );
+                return qq{<a href="$dashboard_link"> $name</a>};
             },
             bulk_sort => sub {
                 my $prop       = shift;
@@ -379,6 +391,12 @@ sub list_props {
             base    => '__virtual.content',
             fields  => [qw( name archivePath )],
             display => 'none',
+        },
+        site_url => {
+            auto            => 1,
+            display         => 'none',
+            filter_editable => 0,
+            label           => 'Site URL',
         },
     };
 }
@@ -456,6 +474,7 @@ sub list_props {
                # something far in the future to force dynamic side to read it.
                 children_modified_on => '20101231120000',
                 use_revision         => 1,
+                link_default_target  => $DEFAULT_LINK_DEFAULT_TARGET,
             }
         );
         return $blog;
@@ -528,8 +547,13 @@ sub create_default_templates {
         $val->{text} = $p->translate_templatized($text) if defined $text;
         $obj->build_dynamic(0);
 
-        foreach my $v ( keys %$val ) {
-            $obj->column( $v, $val->{$v} ) if $obj->has_column($v);
+        foreach my $v (keys %$val) {
+            next unless $obj->has_column($v);
+            if ($obj->is_meta_column($v)) {
+                $obj->meta($v, $val->{$v});
+            } else {
+                $obj->column($v, $val->{$v});
+            }
         }
         $obj->blog_id( $blog->id );
         if ( my $pub_opts = $val->{publishing} ) {
@@ -926,12 +950,6 @@ sub comment_text_filters {
     else {
         return [ split /\s*,\s*/, $filters ];
     }
-}
-
-sub cc_license_url {
-    my $cc = $_[0]->cc_license or return '';
-    require MT::Util::Deprecated;
-    MT::Util::Deprecated::cc_url($cc);
 }
 
 sub email_all_comments {
@@ -1700,6 +1718,11 @@ sub apply_theme {
             )
         );
     }
+    if ($theme->{deprecated}) {
+        # if the current theme is deprecated, just ignore it
+        return 1 if ($blog->theme_id || '') eq $theme_id;
+        return $blog->error(MT->translate("Cannot apply a deprecated theme: [_1]", $theme_id));
+    }
     $theme->apply($blog)
         or return $blog->error(
         MT->translate(
@@ -1792,7 +1815,7 @@ sub can_popup_image {
         type    => 'popup_image'
     );
     my $tmpl = MT->model('template')->load(\%tmpl_param);
-    
+
     if ($tmpl && $tmpl->text ne '') {
         return 1;
     }
@@ -2306,11 +2329,6 @@ with '/' on Unix, etc)
 
 Returns an arrayref containing the names of the text filters to be
 applied to comments
-
-=head2 $blog->cc_license_url
-
-Returns a URL to a website explaining about the Creative Commons license
-that was chosen for this blog
 
 =head2 $blog->email_all_comments
 

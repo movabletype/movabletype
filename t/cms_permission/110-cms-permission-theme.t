@@ -86,7 +86,7 @@ subtest 'mode = apply_theme' => sub {
     $app->post_ok({
         __mode   => 'apply_theme',
         blog_id  => $blog->id,
-        theme_id => 'classic_blog',
+        theme_id => 'classic_test_blog',
     });
     $app->has_no_permission_error("apply_theme by admin");
 
@@ -94,7 +94,7 @@ subtest 'mode = apply_theme' => sub {
     $app->post_ok({
         __mode   => 'apply_theme',
         blog_id  => $blog->id,
-        theme_id => 'classic_blog',
+        theme_id => 'classic_test_blog',
     });
     $app->has_no_permission_error("apply_theme by permitted user");
 
@@ -102,7 +102,7 @@ subtest 'mode = apply_theme' => sub {
     $app->post_ok({
         __mode   => 'apply_theme',
         blog_id  => $blog->id,
-        theme_id => 'classic_blog',
+        theme_id => 'classic_test_blog',
     });
     $app->has_permission_error("apply_theme by other blog");
 
@@ -110,7 +110,7 @@ subtest 'mode = apply_theme' => sub {
     $app->post_ok({
         __mode   => 'apply_theme',
         blog_id  => $blog->id,
-        theme_id => 'classic_blog',
+        theme_id => 'classic_test_blog',
     });
     $app->has_permission_error("apply_theme by other permission");
 };
@@ -121,7 +121,7 @@ subtest 'mode = do_export_theme' => sub {
     $app->post_ok({
         __mode   => 'do_export_theme',
         blog_id  => $blog->id,
-        theme_id => 'classic_blog',
+        theme_id => 'classic_test_blog',
     });
     $app->has_no_permission_error("do_export_theme by admin");
 
@@ -129,7 +129,7 @@ subtest 'mode = do_export_theme' => sub {
     $app->post_ok({
         __mode   => 'do_export_theme',
         blog_id  => $blog->id,
-        theme_id => 'classic_blog',
+        theme_id => 'classic_test_blog',
     });
     $app->has_no_permission_error("do_export_theme by permitted user");
 
@@ -137,7 +137,7 @@ subtest 'mode = do_export_theme' => sub {
     $app->post_ok({
         __mode   => 'do_export_theme',
         blog_id  => $blog->id,
-        theme_id => 'classic_blog',
+        theme_id => 'classic_test_blog',
     });
     $app->has_permission_error("do_export_theme by other blog");
 
@@ -145,7 +145,7 @@ subtest 'mode = do_export_theme' => sub {
     $app->post_ok({
         __mode   => 'do_export_theme',
         blog_id  => $blog->id,
-        theme_id => 'classic_blog',
+        theme_id => 'classic_test_blog',
     });
     $app->has_permission_error("do_export_theme by other permission");
 };
@@ -287,14 +287,14 @@ subtest 'mode = uninstall_theme' => sub {
     $app->post_ok({
         __mode   => 'uninstall_theme',
         blog_id  => $blog->id,
-        theme_id => 'classic_blog',
+        theme_id => 'classic_test_blog',
     });
     $app->has_no_permission_error("uninstall_theme by admin");    #TODO: should use 'Permission=1' instead
 
     $app->login($aikawa);
     $app->post_ok({
         __mode   => 'uninstall_theme',
-        theme_id => 'classic_blog',
+        theme_id => 'classic_test_blog',
     });
     $app->has_permission_error("uninstall_theme by non permitted user");    #TODO: should use 'Permission=1' instead
 };

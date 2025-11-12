@@ -13,7 +13,6 @@ $GLOBALS['i18n_default_settings'] = array(
     'defaulttimezone'=>'0',
     'mailencoding'=>'ISO-8859-1',
     'logexportencoding'=>'',
-    'categorynamenodash'=>'0',
     'exportencoding'=>'',
     'supporturl'=>'https://www.sixapart.com/movabletype/support/',
     'feedbackurl'=>'https://www.movabletype.org/feedback.html',

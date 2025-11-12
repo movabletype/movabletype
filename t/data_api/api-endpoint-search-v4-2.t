@@ -254,7 +254,7 @@ subtest 'content_field => field:needle do not return duplication for 1 and 1000 
             'items' => [
                 superhashof({
                     label => 'content_field4_2',
-                    data  => [superhashof({ data => [1, 1000] }), superhashof({ data => undef })]
+                    data  => [superhashof({ data => [1, 1000] }), superhashof({ data => any(undef, '') })]
                 }),
                 superhashof({
                     label => 'content_field4',

@@ -1001,7 +1001,6 @@ sub build_asset_hasher {
     ) = @param{qw( ThumbWidth ThumbHeight PreviewWidth PreviewHeight NoTags )};
 
     require File::Basename;
-    require JSON;
     my %blogs;
     return sub {
         my ( $obj, $row, %param ) = @_;
@@ -1809,7 +1808,6 @@ sub _upload_file_compat {
         Fmgr   => $fmgr,
         Local  => $local_file,
         Max    => $upload_param{max_size},
-        MaxDim => $upload_param{max_image_dimension},
         Info   => $image_info,
     );
 
@@ -2051,6 +2049,12 @@ sub _upload_file {
     my $image_info = MT::Image->get_image_info(Fh => $fh) || {};
     if (my $ext_new = $image_info->{ext}) {
         my $asset_class = MT::Asset->handler_for_file("test.$ext_new");
+        if (my $type = $app->param('require_type')) {
+            if ($asset_class->class_type ne $type) {
+                $eh->($app, %param, error => $app->translate("[_1] is not a valid [_2] file.", $basename, $app->translate($type eq 'file' ? 'asset' : $type)));
+                return;
+            }
+        }
         if ($asset_class eq 'MT::Asset::Image' && !MT->config->DisableFileExtensionConversion) {
             require MT::Asset::Image;
             my $ext = MT::Asset::Image->extensions;
@@ -2372,7 +2376,6 @@ sub _upload_file {
         Fmgr   => $fmgr,
         Local  => $local_file,
         Max    => $upload_param{max_size},
-        MaxDim => $upload_param{max_image_dimension},
         Info   => $image_info,
     );
 
@@ -2661,8 +2664,18 @@ sub _check_thumbnail_dir {
     require MT::FileMgr;
     require File::Spec;
     my $fmgr            = MT::FileMgr->new('Local');
-    my $path            = MT->config('AssetCacheDir');
     my $site_path       = $app->blog->site_path;
+
+    if ( !defined($site_path) ) {
+        $param->{missing_site_path} = 1;
+        return;
+    }
+    elsif ( !$fmgr->exists($site_path) ) {
+        $param->{missing_site_dir} = $site_path;
+        return;
+    }
+
+    my $path            = MT->config('AssetCacheDir');
     my $site_thumb_path = File::Spec->catdir( $site_path, $path );
     my @warnings;
     if ( $fmgr->exists($site_thumb_path)
@@ -3088,6 +3101,9 @@ sub dialog_asset_modal {
 
     return $app->permission_denied()
         if $blog_id && !$app->can_do('access_to_insert_asset_list');
+
+    # Check directory for thumbnail image
+    _check_thumbnail_dir( $app, \%param );
 
     $param{can_multi} = 1
         if ( $app->param('upload_mode') || '' ) ne 'upload_userpic'

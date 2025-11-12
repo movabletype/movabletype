@@ -5,6 +5,7 @@ use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
+use utf8;
 
 BEGIN {
     $test_env = MT::Test::Env->new;
@@ -14,7 +15,6 @@ BEGIN {
 use MT::Test::Tag;
 use MT::Test::PHP;
 use MT::Test::Permission;
-use MT::Test::Util::CreativeCommons;
 use MT::Util qw(ts2epoch epoch2ts);
 use MT::Util::Captcha;
 
@@ -91,8 +91,6 @@ sub fix_path { File::Spec->canonpath(shift) }
 
 my $blog_id = 1;
 
-MT::Test::Util::CreativeCommons->set_cc_license('by_nc_sa_20');
-
 MT::Test::Tag->run_perl_tests($blog_id);
 MT::Test::Tag->run_php_tests($blog_id);
 
@@ -166,11 +164,11 @@ January 31, 1978  7:45 AM
 --- expected
 1978-01-31T07:45:00
 
-=== test 13
+=== test 13 (unknown lang)
 --- template
 <MTEntries lastn='1'><MTEntryDate language="pl"></MTEntries>
 --- expected
-31 stycznia 1978  7:45
+January 31, 1978  7:45 AM
 
 === test 14
 --- template
@@ -268,30 +266,6 @@ narnia.na
 --- expected
 6
 
-=== test 34
---- SKIP
---- template
-<MTBlogs><MTBlogIfCCLicense><MTBlogCCLicenseURL>
-<MTBlogCCLicenseImage>
-<MTCCLicenseRDF></MTBlogIfCCLicense></MTBlogs>
---- expected
-http://creativecommons.org/licenses/by-nc-sa/2.0/
-http://creativecommons.org/images/public/somerights20.gif
-<!--
-<rdf:RDF xmlns="http://web.resource.org/cc/"
-         xmlns:dc="http://purl.org/dc/elements/1.1/"
-         xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"><
-Work rdf:about="http://narnia.na/nana/">
-<dc:title>none</dc:title>
-<dc:description>Narnia None Test Blog</dc:description>
-<license rdf:resource="http://creativecommons.org/licenses/by-nc-sa/2.0/" />
-</Work>
-<License rdf:about="http://creativecommons.org/licenses/by-nc-sa/2.0/">
-</License>
-</rdf:RDF>
--->
-
-
 === test 35
 --- template
 <MTArchiveList archive_type="Monthly"><MTArchiveListHeader>(Header)</MTArchiveListHeader><MTArchiveListFooter>(Footer)</MTArchiveListFooter><MTArchiveTitle>|</MTArchiveList>
@@ -371,45 +345,6 @@ x-var
 <MTBlogLanguage>
 --- expected
 en_us
-
-=== test 47
---- template
-<MTBlogCCLicenseURL>
---- expected
-http://creativecommons.org/licenses/by-nc-sa/2.0/
-
-=== test 48
---- template
-<MTBlogCCLicenseImage>
---- expected
-http://creativecommons.org/images/public/somerights20.gif
-
-=== test 49
---- template
-<MTEntries lastn="1" offset="1"><MTCCLicenseRDF></MTEntries>
---- expected
-<!--
-<rdf:RDF xmlns="http://web.resource.org/cc/"
-         xmlns:dc="http://purl.org/dc/elements/1.1/"
-         xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
-<Work rdf:about="http://narnia.na/nana/archives/1965/01/verse-5.html">
-<dc:title>Verse 5</dc:title>
-<dc:description></dc:description>
-<dc:creator>Chucky Dee</dc:creator>
-<dc:date>1965-01-31T07:45:01-03:30</dc:date>
-<license rdf:resource="http://creativecommons.org/licenses/by-nc-sa/2.0/" />
-</Work>
-<License rdf:about="http://creativecommons.org/licenses/by-nc-sa/2.0/">
-</License>
-</rdf:RDF>
--->
-
-
-=== test 50
---- template
-<MTBlogIfCCLicense>1</MTBlogIfCCLicense>
---- expected
-1
 
 === test 51
 --- template
@@ -1624,15 +1559,15 @@ http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-480x360-1.j
 
 === test 290
 --- template
-[<MTEntries lastn="10"><MTIfNonZero tag="MTEntryScoreCount" namespace="unit test"><MTEntryID> <MTEntryScoreHigh namespace="unit test">; </MTIfNonZero></MTEntries>]
+[<MTEntries lastn="10"><MTIfNonZero tag="MTEntryScoreCount" namespace="unit test"><MTEntryID> <MTEntryScoreHigh string_format="%.1f" namespace="unit test">; </MTIfNonZero></MTEntries>]
 --- expected
-[6 1; 5 5; 4 3; ]
+[6 1.0; 5 5.0; 4 3.0; ]
 
 === test 291
 --- template
-[<MTEntries lastn="10"><MTIfNonZero tag="MTEntryScoreCount" namespace="unit test"><MTEntryID> <MTEntryScoreLow namespace="unit test">; </MTIfNonZero></MTEntries>]
+[<MTEntries lastn="10"><MTIfNonZero tag="MTEntryScoreCount" namespace="unit test"><MTEntryID> <MTEntryScoreLow string_format="%.1f" namespace="unit test">; </MTIfNonZero></MTEntries>]
 --- expected
-[6 1; 5 3; 4 2; ]
+[6 1.0; 5 3.0; 4 2.0; ]
 
 === test 292
 --- template
@@ -1672,15 +1607,15 @@ http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-480x360-1.j
 
 === test 298
 --- template
-[<MTAssets lastn="10"><MTIfNonZero tag="MTAssetScoreCount" namespace="unit test"><MTAssetID> <MTAssetScoreHigh namespace="unit test">; </MTIfNonZero></MTAssets>]
+[<MTAssets lastn="10"><MTIfNonZero tag="MTAssetScoreCount" namespace="unit test"><MTAssetID> <MTAssetScoreHigh string_format="%.1f" namespace="unit test">; </MTIfNonZero></MTAssets>]
 --- expected
-[1 5; 7 7; 6 9; 5 8; 2 3; ]
+[1 5.0; 7 7.0; 6 9.0; 5 8.0; 2 3.0; ]
 
 === test 299
 --- template
-[<MTAssets lastn="10"><MTIfNonZero tag="MTAssetScoreCount" namespace="unit test"><MTAssetID> <MTAssetScoreLow namespace="unit test">; </MTIfNonZero></MTAssets>]
+[<MTAssets lastn="10"><MTIfNonZero tag="MTAssetScoreCount" namespace="unit test"><MTAssetID> <MTAssetScoreLow string_format="%.1f" namespace="unit test">; </MTIfNonZero></MTAssets>]
 --- expected
-[1 3; 7 7; 6 9; 5 8; 2 2; ]
+[1 3.0; 7 7.0; 6 9.0; 5 8.0; 2 2.0; ]
 
 === test 300
 --- template
@@ -2509,24 +2444,6 @@ en_US
 --- expected
 1
 
-=== test 440
---- template
-<mt:Websites><MTWebsiteCCLicenseURL></mt:Websites>
---- expected
-http://creativecommons.org/licenses/by-nc-sa/2.0/
-
-=== test 441
---- template
-<mt:Websites><MTWebsiteCCLicenseImage></mt:Websites>
---- expected
-http://creativecommons.org/images/public/somerights20.gif
-
-=== test 442
---- template
-<mt:Websites><MTWebsiteIfCCLicense>1</MTWebsiteIfCCLicense></mt:Websites>
---- expected
-1
-
 === test 443
 --- template
 <mt:Websites><mt:WebsiteFileExtension></mt:Websites>
@@ -2612,13 +2529,13 @@ foo-subfoo
 --- template
 <MTBlogs><MTBlogTemplatesetID></MTBlogs>
 --- expected
-classic-blog
+classic-test-blog
 
 === test 479
 --- template
 <MTBlogs><MTBlogThemeID></MTBlogs>
 --- expected
-classic-blog
+classic-test-blog
 
 === test 480
 --- template
@@ -2789,7 +2706,7 @@ narnia.na
 --- template
 <MTWebsiteThemeID>
 --- expected
-classic-website
+classic-test-website
 
 === test 510
 --- SKIP
@@ -3734,24 +3651,6 @@ TEST_ROOT/
 --- expected
 -0330
 
-=== test 669
---- template
-<MTWebsiteIfCCLicense>1</MTWebsiteIfCCLicense>
---- expected
-1
-
-=== test 670
---- template
-<MTWebsiteCCLicenseURL>
---- expected
-http://creativecommons.org/licenses/by-nc-sa/2.0/
-
-=== test 671
---- template
-<MTWebsiteCCLicenseImage>
---- expected
-http://creativecommons.org/images/public/somerights20.gif
-
 === test 672
 --- template
 <MTWebsiteFileExtension>
@@ -4117,13 +4016,13 @@ About
 --- template
 <MTBlogs><MTBlogThemeID raw='1'></MTBlogs>
 --- expected
-classic_blog
+classic_test_blog
 
 === test 741
 --- template
 <MTWebsiteThemeID raw='1'>
 --- expected
-classic_website
+classic_test_website
 
 === test 742
 --- template

@@ -288,7 +288,7 @@ App = new Class( Component, Component.Delegator, {
             var iframe = this.document.getElementById( "__location" );
             iframe.contentWindow.document.open( "text/html" );
             iframe.contentWindow.document.write(
-                "<script type='text/javascript'>" +
+                "<script>" +
                 "if( window.parent && window.parent.app )" +
                 "window.parent.app.replaceLocation( '" + this.location + "' );" +
                 "</script>" +

@@ -8,6 +8,7 @@ package MT::CMS::Plugin;
 use strict;
 use warnings;
 use MT::Util qw( remove_html );
+use MT::Util::PluginVersions;
 
 sub cfg_plugins {
     my $app = shift;
@@ -39,7 +40,6 @@ sub cfg_plugins {
         $param{switched}     = 1 if $app->param('switched');
         $param{'reset'}  = 1 if $app->param('reset');
         $param{saved}    = 1 if $app->param('saved');
-        $param{mod_perl} = 1 if MT::Util::is_mod_perl1();
         $app->add_breadcrumb( $app->translate("Plugin Settings") );
         $param{screen_id}    = "list-plugins";
         $param{screen_class} = "plugin-settings";
@@ -147,6 +147,24 @@ sub plugin_control {
             $cfg->PluginSwitch(
                 $plugin_sig . '=' . ( $state eq 'on' ? '1' : '0' ), 1 );
 
+            require File::Spec;
+            if ($state eq 'on' && File::Spec->file_name_is_absolute($plugin_sig)) {
+                # Disable other plugin(s) that have the same signature
+                my $real_sig = $MT::Plugins{$plugin_sig}{sig};
+                my @full_paths;
+                for my $sig (keys %MT::Plugins) {
+                    next if $sig eq $plugin_sig;
+                    if ($real_sig eq ($MT::Plugins{$sig}{sig} || '')) {
+                        push @full_paths, $MT::Plugins{$sig}{full_path};
+                    }
+                }
+                my $switch = $cfg->PluginSwitch;
+                $switch->{$real_sig} = 1;
+                $switch->{$_}        = 0 for @full_paths;
+                delete $switch->{$plugin_sig};
+                $cfg->PluginSwitch($switch, 1);
+            }
+
             ## trans("Plugin '[_1]' is enabled by [_2]")
             ## trans("Plugin '[_1]' is disabled by [_2]")
             my $message
@@ -199,8 +217,8 @@ sub build_plugin_table {
     #     (plugins folders with multiple .pl files)
     my %list;
     my %folder_counts;
+    require File::Spec;
     for my $sig ( keys %MT::Plugins ) {
-        my $sub = $sig =~ m!/! ? 1 : 0;
         my $obj = $MT::Plugins{$sig}{object};
 
         # Prevents display of component objects
@@ -208,42 +226,44 @@ sub build_plugin_table {
 
         my $err = $MT::Plugins{$sig}{error}   ? 0 : 1;
         my $on  = $MT::Plugins{$sig}{enabled} ? 0 : 1;
-        my ( $fld, $plg );
-        ( $fld, $plg ) = $sig =~ m!(.*)/(.*)!;
-        $fld = '' unless $fld;
-        $folder_counts{$fld}++ if $fld;
-        $plg ||= $sig;
-        $list{    $sub
-                . sprintf( "%-100s", $fld )
-                . ( $obj ? '1' : '0' )
-                . $plg } = $sig;
+        if (File::Spec->file_name_is_absolute($sig)) {
+            $list{$sig} = {
+                sub  => 0,
+                fld  => '',
+                obj  => $obj ? 1 : 0,
+                plg  => $sig,
+                name => $obj ? $obj->name : $MT::Plugins{$sig} || $sig,
+            };
+        } else {
+            my $sub = $sig =~ m!/! ? 1 : 0;
+            my ($fld, $plg) = $sig =~ m!(.*)/(.*)!;
+            $fld = '' unless $fld;
+            $folder_counts{$fld}++ if $fld;
+            $plg ||= $sig;
+            $list{$sig} = {
+                sub  => $sub,
+                fld  => $fld,
+                obj  => $obj ? 1 : 0,
+                plg  => $plg,
+                name => $obj ? $obj->name : $sig,
+            };
+        }
     }
     my @keys = keys %list;
     foreach my $key (@keys) {
-        my $fld = substr( $key, 1, 100 );
-        $fld =~ s/\s+$//;
-        if ( !$fld || ( $folder_counts{$fld} == 1 ) ) {
-            my $sig = $list{$key};
-            delete $list{$key};
-            my $plugin = $MT::Plugins{$sig};
-            my $name   = $plugin
-                && $plugin->{object} ? $plugin->{object}->name : $sig;
-            $list{ '0' . ( ' ' x 100 ) . sprintf( "%-102s", $name ) } = $sig;
+        my $fld = $list{$key}{fld} or next;
+        if ($folder_counts{$fld} == 1) {
+            $list{$key}{fld} = '';
         }
     }
 
     my $last_fld = '*';
     my $next_is_first;
     ( my $cgi_path = $cfg->AdminCGIPath || $cfg->CGIPath ) =~ s|/$||;
-    for my $list_key ( sort keys %list ) {
-        my $plugin_sig = $list{$list_key};
-        next if $plugin_sig =~ m/^[^A-Za-z0-9]/;
+    for my $plugin_sig ( sort {$list{$a}{fld} cmp $list{$b}{fld} or $list{$a}{name} cmp $list{$b}{name}} keys %list ) {
         my $id      = MT::Util::perl_sha1_digest_hex($plugin_sig);
         my $profile = $MT::Plugins{$plugin_sig};
-        my ($plg);
-        ($plg) = $plugin_sig =~ m!(?:.*)/(.*)!;
-        my $fld = substr( $list_key, 1, 100 );
-        $fld =~ s/\s+$//;
+        my $fld     = $list{$plugin_sig}{fld};
         my $folder
             = $fld
             ? $app->translate( "Plugin Set: [_1]", $fld )
@@ -323,10 +343,11 @@ sub build_plugin_table {
 
             if ( $last_fld ne $fld ) {
                 $row = {
-                    plugin_sig    => $plugin_sig,
-                    plugin_folder => $folder,
-                    plugin_set    => $fld ? $folder_counts{$fld} > 1 : 0,
-                    plugin_error  => $profile->{error},
+                    plugin_sig       => $plugin_sig,
+                    plugin_folder    => $folder,
+                    plugin_set       => $fld ? $folder_counts{$fld} > 1 : 0,
+                    plugin_error     => $profile->{error},
+                    plugin_full_path => $plugin->{full_path},
                 };
                 push @$data, $row;
                 $last_fld      = $fld;
@@ -435,10 +456,11 @@ sub build_plugin_table {
 
             if ( $last_fld ne $fld ) {
                 $row = {
-                    plugin_sig    => $plugin_sig,
-                    plugin_folder => $folder,
-                    plugin_set    => $fld ? $folder_counts{$fld} > 1 : 0,
-                    plugin_error  => $profile->{error},
+                    plugin_sig       => $plugin_sig,
+                    plugin_folder    => $folder,
+                    plugin_set       => $fld ? $folder_counts{$fld} > 1 : 0,
+                    plugin_error     => $profile->{error},
+                    plugin_full_path => $profile->{full_path},
                 };
                 push @$data, $row;
                 $last_fld      = $fld;
@@ -456,11 +478,40 @@ sub build_plugin_table {
                 plugin_system_error => $profile->{system_error},
                 plugin_disabled     => $profile->{enabled} ? 0 : 1,
                 plugin_id           => $id,
+                plugin_full_path    => $profile->{full_path},
             };
             push @$data, $row;
         }
         $next_is_first = 0;
     }
+
+    # set plugin_label parameter
+    if (-e MT::Util::PluginVersions::plugin_versions_file()) {
+        my $plugin_versions   = MT::Util::PluginVersions::load_plugin_versions;
+        my $individual_plugin = 1;
+        for my $pd (@{$data}[1 .. scalar(@{$data}) - 1]) {    # skip first individual folder data
+            if ($pd->{plugin_folder}) {
+                $individual_plugin = 0;
+            }
+            next unless $individual_plugin || !$pd->{plugin_folder};    # skip other than plugins
+            next if $pd->{plugin_disabled};
+            if (exists $plugin_versions->{ $pd->{plugin_sig} }) {
+                if ($plugin_versions->{ $pd->{plugin_sig} }{version} eq $pd->{plugin_version}) {
+                    $pd->{plugin_label_value} = $app->translate('__PLUGIN_LABEL_DEFAULT');
+                    $pd->{plugin_label}       = '<span class="badge badge-default-plugin">' . $pd->{plugin_label_value} . '</span>';
+                } else {
+                    $pd->{plugin_label_value} = $app->translate('__PLUGIN_LABEL_DEFAULT_BUT_MODIFIED');
+                    $pd->{plugin_label} = '<span class="badge badge-default-modified-plugin">' . $pd->{plugin_label_value} . '</span>';
+                }
+            } else {
+                $pd->{plugin_label_value} = $app->translate('Added');
+                $pd->{plugin_label} = '<span class="badge badge-added-plugin">' . $pd->{plugin_label_value} . '</span>';
+            }
+        }
+    }
+
+    $app->run_callbacks('build_plugin_table', $app, \%opt, $data);
+
     $param->{plugin_loop} = $data;
 }
 

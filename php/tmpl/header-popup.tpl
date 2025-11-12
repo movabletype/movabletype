@@ -4,9 +4,9 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>{{#mtpp#}}</title>
-<link rel="stylesheet" href="<$MTStaticWebPath$>styles.css" type="text/css" />
-<script type="text/javascript" src="<$MTStaticWebPath$>mt.js"></script>
-<script type="text/javascript">
+<link rel="stylesheet" href="<$MTStaticWebPath$>styles.css" />
+<script src="<$MTStaticWebPath$>mt.js"></script>
+<script>
 //ScriptURI = '$script_url';
 //ScriptBaseURI = '$script_base_url';
 StaticURI = '<$MTStaticWebPath>';

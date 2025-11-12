@@ -1,0 +1,17 @@
+<div class="widget-search widget">
+  <form method="get" id="search" action="<$mt:CGIPath$><$mt:SearchScript$>" role="search">
+    <h3 class="visually-hidden"><__trans phrase="Search"></h3>
+    <div>
+      <input type="search" name="search" value="<MTIfStatic><mt:IfStraightSearch><$mt:SearchString$></mt:IfStraightSearch></MTIfStatic>" placeholder="<__trans phrase="Search">...">
+<mt:If name="search_results">
+      <input type="hidden" name="IncludeBlogs" value="<$mt:SearchIncludeBlogs$>">
+<mt:Else>
+      <input type="hidden" name="IncludeBlogs" value="<$mt:SiteID$>">
+</mt:If>
+      <input type="hidden" name="limit" value="<$mt:SearchMaxResults$>">
+      <button type="submit" name="button">
+        <img alt="<__trans phrase="Search">" src="<$mt:SupportDirectoryURL encode_html="1"$>theme_static/eigerwand/images/search-icon.png">
+      </button>
+    </div>
+  </form>
+</div>

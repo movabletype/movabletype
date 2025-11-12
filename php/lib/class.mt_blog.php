@@ -43,6 +43,7 @@ class Blog extends BaseObject
     public $blog_children_modified_on;
     public $blog_class;
     public $blog_content_css;
+    public $blog_link_default_target;
     public $blog_convert_paras;
     public $blog_convert_paras_comments;
     public $blog_created_by;

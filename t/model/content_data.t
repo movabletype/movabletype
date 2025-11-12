@@ -56,7 +56,7 @@ subtest 'MTC-30176' => sub {
             content_field_id => $cf_list->id,
         });
         ok $cf_idx;
-        is $cf_idx->value_varchar, 'a' x 255, 'index data was not truncated';
+        is $cf_idx->value_text, 'a' x 255, 'index data was not truncated';
     };
 
     subtest 'save 256 charcter string to list field' => sub {
@@ -73,7 +73,7 @@ subtest 'MTC-30176' => sub {
             content_field_id => $cf_list->id,
         });
         ok $cf_idx;
-        is $cf_idx->value_varchar, 'b' x 255, 'index data was truncated';
+        is $cf_idx->value_text, 'b' x 256, 'index data was not truncated';
     };
 };
 

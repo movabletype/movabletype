@@ -1670,9 +1670,11 @@ sub iter_for_replace {
 
 sub incremental_iter {
     my ($class, $terms, $args) = @_;
+    my $count;
     my $limit    = MT->config->CMSSearchLimit;
     my $offset   = 0;
     my $get_iter = sub {
+        $count = 0;
         local $args->{limit}  = $limit;
         local $args->{offset} = $offset;
         my $iter = $class->load_iter($terms, $args) or die $class->errstr;
@@ -1683,10 +1685,11 @@ sub incremental_iter {
         $iter ||= $get_iter->();
         my $obj = $iter->();
         if (!$obj) {
+            return if $count < $limit;
             $iter = $get_iter->();
             $obj  = $iter->();
         }
-        $offset++ if $obj;
+        $count++, $offset++ if $obj;
         return $obj;
     };
 }
@@ -1741,6 +1744,31 @@ sub _load_template {
     }
     return $tmpl;
 }
+
+
+sub search_tabs_json {
+    my ($app) = @_;
+
+    return $app->json_error( $app->translate('Permission denied') )
+      unless can_search_replace($app);
+
+    my $blog_id     = $app->param('blog_id');
+    my $search_apis = $app->search_apis( $blog_id ? 'blog' : 'system' );
+    my @search_tabs;
+    foreach my $api (@$search_apis) {
+        my $label = $api->{label};
+        if ( ref $label eq 'CODE' ) {
+            $label = $label->();
+        }
+        push @search_tabs,
+          +{
+            key   => $api->{key},
+            label => $label,
+          };
+    }
+    $app->json_result( { success => 1, data => \@search_tabs } );
+}
+
 
 1;
 __END__

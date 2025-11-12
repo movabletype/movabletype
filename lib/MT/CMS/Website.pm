@@ -304,7 +304,7 @@ sub edit {
 
     if ( !$param->{id} ) {
         if ( !$param->{site_url} ) {
-            $param->{suggested_site_url} = $app->base . '/';
+            $param->{suggested_site_url} = $app->base(NoHostCheck => 1) . '/';
             $param->{suggested_site_url} =~ s!/cgi(?:-bin)?(/.*)?$!/!;
             $param->{suggested_site_url} =~ s!/mt/?$!/!i;
             $param->{site_url} = $param->{suggested_site_url};
@@ -478,7 +478,7 @@ sub dialog_select_website {
     if (   !$user->is_superuser
         && !$user->permissions(0)->can_do('edit_templates') )
     {
-        use MT::Permission;
+        require MT::Permission;
         $args->{join} = MT::Permission->join_on( 'blog_id',
             { author_id => $user->id } );
     }

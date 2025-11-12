@@ -1405,7 +1405,7 @@ sub _hdlr_entries_count {
         my ( %terms, %args );
         my $blog_id = $ctx->stash('blog_id');
 
-        use MT::Entry;
+        require MT::Entry;
         $terms{blog_id} = $blog_id;
         $terms{status}  = MT::Entry::RELEASE();
         my ( $days, $limit );

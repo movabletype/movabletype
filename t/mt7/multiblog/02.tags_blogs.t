@@ -78,7 +78,7 @@ sub register_3rd_blog {
             children_modified_on => '20000101000000',
             language             => 'en_us',
             file_extension       => 'html',
-            theme_id             => 'classic_blog',
+            theme_id             => 'classic_test_blog',
         }
     );
     $blog->id(3);
@@ -86,9 +86,9 @@ sub register_3rd_blog {
     $blog->parent_id(2);
     $blog->save() or die "Couldn't save blog 1: " . $blog->errstr;
 
-    my $classic_blog = MT::Theme->load('classic_blog')
+    my $classic_test_blog = MT::Theme->load('classic_test_blog')
         or die MT::Theme->errstr;
-    $classic_blog->apply($blog);
+    $classic_test_blog->apply($blog);
     $blog->save() or die "Couldn't save blog 3: " . $blog->errstr;
 
     my $entry = MT::Entry->new();

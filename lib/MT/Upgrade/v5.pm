@@ -32,11 +32,6 @@ sub upgrade_functions {
             priority      => 3.1,
             code          => \&_v5_migrate_mtview,
         },
-        'v5_migrate_default_site' => {
-            version_limit => 5.0008,
-            priority      => 3.3,
-            code          => \&_v5_migrate_default_site
-        },
         'v5_migrate_theme_privilege' => {
             version_limit => 5.0014,
             priority      => 3.1,
@@ -472,63 +467,6 @@ sub _v5_migrate_mtview {
                 $fmgr->put_data( $data, $mtview );
             }
         }
-    }
-}
-
-sub _v5_migrate_default_site {
-    my $self = shift;
-
-    my $site_url   = MT->config('DefaultSiteURL');
-    my $site_path  = MT->config('DefaultSiteRoot');
-    my $default_id = MT->config('NewUserDefaultWebsiteId');
-
-    if ( $site_url && $site_path && !$default_id ) {
-        $self->progress(
-            $self->translate_escape(
-                'Migrating DefaultSiteURL/DefaultSiteRoot to website...')
-        );
-
-        my $class = MT->model('website');
-        return $self->error(
-            $self->translate_escape(
-                "Error loading class: [_1].", 'Website'
-            )
-        ) unless $class;
-
-        my $website = $class->create_default_website(
-            MT->translate("New user's website"),
-            site_url  => $site_url,
-            site_path => $site_path,
-        );
-        $website->save
-            or return $self->error(
-            $self->translate_escape(
-                "Error saving record: [_1].",
-                $website->errstr
-            )
-            );
-
-        MT->config( 'NewUserDefaultWebsiteId', $website->id, 1 );
-        MT->config( 'DefaultSiteURL',          undef,        1 );
-        MT->config( 'DefaultSiteRoot',         undef,        1 );
-
-        # Grant new role to system administrator
-        my $app     = $MT::Upgrade::App;
-        my $user_id = ref $app ? $app->{author}->id : $MT::Upgrade::SuperUser;
-        my $user    = MT::Author->load($user_id);
-        my $assoc_class = MT->model('association');
-        return $self->error(
-            $self->translate_escape(
-                "Error loading class: [_1].",
-                'Association'
-            )
-        ) unless $assoc_class;
-        my $role_class = MT->model('role');
-        return $self->error(
-            $self->translate_escape( "Error loading class: [_1].", 'Role' ) )
-            unless $role_class;
-        my $role = MT::Role->load_by_permission('administer_website');
-        $assoc_class->link( $user => $role => $website );
     }
 }
 

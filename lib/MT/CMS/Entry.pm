@@ -32,7 +32,6 @@ sub edit {
         category_id               => [qw/ID/],
         category_ids              => [qw/MAYBE_IDS/],    # may contain -1?
         convert_breaks            => [qw/MAYBE_STRING/],
-        convert_breaks_for_mobile => [qw/MAYBE_STRING/],
         dirty                     => [qw/MAYBE_STRING/],
         id                        => [qw/ID/],
         include_asset_ids         => [qw/IDS/],
@@ -87,14 +86,17 @@ sub edit {
             my $rn = $app->param('r');
             if ( defined($rn) && $rn != $obj->current_revision ) {
                 my $status_text = MT::Entry::status_text( $obj->status );
-                $param->{current_status_text} = $status_text;
-                $param->{current_status_label}
-                    = $app->translate($status_text);
+                $param->{current_status_text}  = $status_text;
+                $param->{current_status_label} = $app->translate($status_text);
+                $param->{current_rev_date}     = format_ts( "%Y-%m-%d %H:%M:%S",
+                    $obj->modified_on, $blog, $preferred_language );
                 my $rev = $obj->load_revision( { rev_number => $rn } );
                 if ( $rev && @$rev ) {
                     $obj = $rev->[0];
+                    my $rev_obj = $rev->[3];
                     my $values = $obj->get_values;
                     $param->{$_} = $values->{$_} foreach keys %$values;
+                    $param->{'revision-note'} = $rev_obj->description;
                     $param->{loaded_revision} = 1;
                 }
                 $param->{rev_number}       = $rn;
@@ -151,6 +153,7 @@ sub edit {
         my $status = $app->param('status') || $obj->status;
         $status =~ s/\D//g;
         $param->{status} = $status;
+        $param->{status_text} = MT::Entry::status_text($status);
         $param->{ "status_" . MT::Entry::status_text($status) } = 1;
         if ((      $obj->status == MT::Entry::JUNK()
                 || $obj->status == MT::Entry::REVIEW()
@@ -256,7 +259,7 @@ sub edit {
                         }
                     )
                 );
-                $app->add_breadcrumb( $app->translate('New Entry') );
+                $app->add_breadcrumb( $app->translate('Create Entry') );
                 $param->{nav_new_entry} = 1;
             }
             elsif ( $type eq 'page' ) {
@@ -270,7 +273,7 @@ sub edit {
                         }
                     )
                 );
-                $app->add_breadcrumb( $app->translate('New Page') );
+                $app->add_breadcrumb( $app->translate('Create Page') );
                 $param->{nav_new_page} = 1;
             }
         }
@@ -594,7 +597,7 @@ sub edit {
 
     ## Load text filters if user displays them
     my %entry_filters;
-    my $filter = $app->param('convert_breaks_for_mobile') || $app->param('convert_breaks'); # convert_breaks_for_mobile is deprecated
+    my $filter = $app->param('convert_breaks');
     if ( defined $filter ) {
         my @filters = split /\s*,\s*/, $filter;
         $entry_filters{$_} = 1 for @filters;
@@ -644,7 +647,7 @@ sub edit {
     }
 
     $app->setup_editor_param($param);
-    if ( $app->archetype_editor_is_enabled ) {
+    if ( $app->archetype_editor_is_enabled($param) ) {
         $app->sanitize_tainted_param( $param, [qw(text text_more)] );
     }
 
@@ -918,7 +921,7 @@ sub _build_entry_preview {
     # translates naughty words when PublishCharset is NOT UTF-8
     MT::Util::translate_naughty_words($entry);
 
-    my $convert_breaks = $app->param('convert_breaks_for_mobile') || $app->param('convert_breaks'); # convert_breaks_for_mobile is deprecated
+    my $convert_breaks = $app->param('convert_breaks');
     $entry->convert_breaks(
         ( $convert_breaks || '' ) eq '_richtext'
         ? 'richtext'
@@ -1063,7 +1066,7 @@ sub _build_entry_preview {
         # If MT is configured to do 'PreviewInNewWindow', MT will open preview
         # screen on the new window/tab.
             if ( $app->config('PreviewInNewWindow') ) {
-                return $app->redirect($preview_url);
+                return $app->redirect($preview_url, NoHostCheck => 1);
             }
         }
         else {
@@ -1226,7 +1229,6 @@ sub save {
         blog_id                   => [qw/ID/],
         category_ids              => [qw/MAYBE_IDS/],    # may contain -1?
         class                     => [qw/MAYBE_STRING/],
-        convert_breaks_for_mobile => [qw/MAYBE_STRING/],
         id                        => [qw/ID/],
         include_asset_ids         => [qw/IDS/],
         is_power_edit             => [qw/MAYBE_STRING/],
@@ -1361,9 +1363,6 @@ sub save {
         unless $perms->can_do("edit_${type}_basename");
     require MT::Entry;
     $values{status} = MT::Entry::FUTURE() if $app->param('scheduled');
-    if ( $app->param('mobile_view') && $app->param('convert_breaks_for_mobile')) {
-        $values{convert_breaks} = $app->param('convert_breaks_for_mobile'); # convert_breaks_for_mobile is deprecated
-    }
     $values{convert_breaks} = 'richtext'
         if ( $values{convert_breaks} || '' ) eq '_richtext';
     $obj->set_values( \%values );
