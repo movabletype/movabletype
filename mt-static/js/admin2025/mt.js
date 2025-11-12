@@ -1029,7 +1029,7 @@ Datasource = new Class(Object, {
         var args = doc.location.search;
         args = args.replace(/^\?/, '');
         args = args.replace(/&?offset=\d+/, '');
-        args = 'search=' + escape(str) + (args ? '&' + args : '') + '&json=1';
+        args = 'search=' + encodeURIComponent(str) + (args ? '&' + args : '') + '&json=1';
         if (this.type) {
             args = args.replace(/&_type=\w+/, '');
             args += '&_type=' + this.type;
