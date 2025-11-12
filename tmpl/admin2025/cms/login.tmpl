@@ -94,7 +94,7 @@ if (window.top && (window.top.location != window.location)) {
       if (ep == -1) {
         ep = document.cookie.length;
       }
-      cookie = unescape(document.cookie.substring(sp, ep));
+      cookie = decodeURIComponent(document.cookie.substring(sp, ep));
       ep = cookie.indexOf("::");
       if ( ep != -1 ) {
         username = cookie.substring(0, ep);
