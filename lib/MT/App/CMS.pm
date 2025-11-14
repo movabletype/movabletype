@@ -5168,9 +5168,8 @@ sub setup_editor_param {
                             @{ $tmpls->{ $k . 's' } },
                             {
                                 %$conf,
-                                tmpl          => $tmpl,
-                                version       => $plugin->version,
-                                mt_version_id => $plugin->version,
+                                tmpl    => $tmpl,
+                                version => $plugin->version,
                             });
                     }
                 }
