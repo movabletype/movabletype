@@ -4123,7 +4123,7 @@ sub _hdlr_app_script {
     my $charset = ' charset="' . ($args->{charset} ? encode_html($args->{charset}) : 'utf-8') . '"';
     my $async   = $args->{async} ? ' async' : '';
     my $defer   = $args->{defer} ? ' defer' : '';
-    my $version = $MT::DebugMode ? time     : ($ctx->{__stash}{vars}{mt_version_id} || MT->version_id);
+    my $version = $MT::DebugMode ? time     : ($args->{version} || $ctx->{__stash}{vars}{mt_version_id} || MT->version_id);
 
     if ($path =~ /%l/) {
         my $lang_id = lc MT->current_language || 'en_us';
@@ -4159,7 +4159,7 @@ sub _hdlr_app_stylesheet {
     my ($ctx, $args) = @_;
 
     my $path    = $args->{path} or return $ctx->error(MT->translate("path is required."));
-    my $version = $MT::DebugMode ? time : ($ctx->{__stash}{vars}{mt_version_id} || MT->version_id);
+    my $version = $MT::DebugMode ? time : ($args->{version} || $ctx->{__stash}{vars}{mt_version_id} || MT->version_id);
 
     if ($path =~ /%l/) {
         my $lang_id = lc MT->current_language || 'en_us';
