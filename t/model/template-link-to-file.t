@@ -46,6 +46,7 @@ subtest '_sync_to_disk' => sub {
     };
 
     subtest 'use first UserTemplatePath' => sub {
+        plan skip_all => 'Not for Cloud' if $test_env->addon_exists('Cloud.pack');
         my $user_template_path = $test_env->path('user');
         MT->config->BaseTemplatePath(undef);
         MT->config->UserTemplatePath($user_template_path);
@@ -69,6 +70,7 @@ subtest '_sync_to_disk' => sub {
 
     # load from tmpl/error.tmpl　by empty $tmpl->text because modifying files within server_path could potentially affect other tests
     subtest 'use server_path' => sub {
+        plan skip_all => 'Not for Cloud' if $test_env->addon_exists('Cloud.pack');
         MT->config->BaseTemplatePath(undef);
         MT->config->UserTemplatePath([]);
         my $linked_file      = File::Spec->catfile('tmpl',                    'error.tmpl');
@@ -114,6 +116,7 @@ subtest '_sync_from_disk' => sub {
     };
 
     subtest 'use first UserTemplatePath' => sub {
+        plan skip_all => 'Not for Cloud' if $test_env->addon_exists('Cloud.pack');
         my $user_template_path = $test_env->path('user');
         MT->config->BaseTemplatePath(undef);
         MT->config->UserTemplatePath($user_template_path);
@@ -136,6 +139,7 @@ subtest '_sync_from_disk' => sub {
     };
 
     subtest 'use server_path' => sub {
+        plan skip_all => 'Not for Cloud' if $test_env->addon_exists('Cloud.pack');
         MT->config->BaseTemplatePath(undef);
         MT->config->UserTemplatePath([]);
         my $linked_file      = File::Spec->catfile('tmpl',                    'error.tmpl');
