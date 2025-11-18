@@ -67,7 +67,7 @@ function togglePerms(clickedPerm, childPermsSelector) {
 
         jQuery(childPermsSelector).each(function(){
             // do not uncheck when any permissions that have same inherit_from is checked.
-            const selector = '[data-mt-perm-inherit-from*="' + this.id + '"]:checked';
+            const selector = '[data-mt-perm-inherit-from*="' + this.id.replace(/"/g, '\\"') + '"]:checked';
             const isAnyPermsChecked = jQuery(selector)
                 .filter((_, el) => el.dataset.mtPermInheritFrom.split(',').includes('#' + this.id))
                 .length > 0;
