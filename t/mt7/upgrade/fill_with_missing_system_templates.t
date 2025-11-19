@@ -76,7 +76,6 @@ use MT::Test;
 use MT::Test::Permission;
 use MT::Test::Upgrade;
 use MT::Template;
-use Test::Differences;
 
 $test_env->prepare_fixture('db');
 

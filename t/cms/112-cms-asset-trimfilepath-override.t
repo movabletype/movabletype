@@ -13,8 +13,6 @@ BEGIN {
 }
 
 use File::Spec;
-use File::Path;
-
 use MT::Test;
 use MT::Test::Image;
 use MT::Test::App;

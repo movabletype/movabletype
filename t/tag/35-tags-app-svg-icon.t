@@ -20,7 +20,6 @@ BEGIN {
 
 use MT;
 use MT::Test;
-use MT::Util qw(ltrim);
 
 $test_env->prepare_fixture(
     sub {
