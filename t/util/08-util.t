@@ -242,7 +242,7 @@ subtest 'from_json' => sub {
         [ 'foo', 1, 'bar', 2, 3, 4 ] );
     is_deeply( MT::Util::from_json('["foo",1,"bar",{"hoge":1,"moge":"a"}]'),
         [ 'foo', 1, 'bar', { hoge => 1, moge => 'a' } ] );
-    
+
     subtest 'allow_nonref' => sub {
         my ($last_value, $last_args);
         my $guard = Mock::MonkeyPatch->patch(
