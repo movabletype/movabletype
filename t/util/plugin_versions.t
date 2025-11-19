@@ -16,7 +16,7 @@ BEGIN {
 use MT::Util::PluginVersions;
 use ExtUtils::Manifest;
 use File::Copy qw(copy);
-use Path::Tiny;
+use Path::Tiny qw(path);
 use File::pushd;
 use File::Spec;
 
