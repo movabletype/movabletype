@@ -532,6 +532,9 @@ use vars qw( @ISA %Lexicon );
 	q{New Comment Added to '[_1]'} => q{'[_1]'にコメントがありました},
 	q{User '[_1]' (ID:[_2]) logged in successfully} => q{ユーザー'[_1]'(ID[_2])がサインインしました。},
 	q{User '[_1]' (ID:[_2]) logged out} => q{ユーザー'[_1]'(ID[_2])がサインアウトしました。},
+	'No filename' => 'ファイル名がありません。',
+	'No headers' => 'ヘッダーがありません。',
+	'Invalid row iterator' => '不正な行イテレータです。',
 
 ## lib/MT/App/CMS.pm
 	'Activity Log' => 'ログ',
