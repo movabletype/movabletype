@@ -49,16 +49,13 @@ sub compile {
     }
 
     return [] unless defined $text;
-    if ( $depth <= 0 && $text && MT::Util::Encode::is_utf8($text) ) {
-        MT::Util::Encode::_utf8_off($text);
-    }
 
     my $mods;
 
     # Translate any HTML::Template markup into native MT syntax.
     if (   $depth <= 0
         && $text
-        =~ m/<(?:MT_TRANS\b|MT_ACTION\b|(?:tmpl_(?:if|loop|unless|else|var|include)))/i
+        =~ m/<(?:MT_TRANS\b|MT_ACTION\b|(?:tmpl_(?:if|loop|unless|else|var|include)))/ia
         )
     {
         translate_html_tmpl($text);
@@ -87,7 +84,10 @@ sub compile {
         )
     {
         my ( $whole_tag, $prefix, $tag, $space_eater ) = ( $1, $2, $3, $4 );
-        ( $tag, my ($args) ) = split /\s+/, $tag, 2;
+        # use Data::Dumper;
+        # warn Dumper([$tag]);
+        ( $tag, my ($args) ) = split /\s+/a, $tag, 2;
+        # warn Dumper([$tag]);
         my $sec_start = pos $text;
         my $tag_start = $sec_start - length $whole_tag;
         _text_block( $state, $pos, $tag_start ) if $pos < $tag_start;
@@ -125,7 +125,7 @@ sub compile {
                 )
             ) |
             (\w+)                                   #7
-            /gsx
+            /gsxa
             )
         {
             if ( defined $7 ) {
@@ -306,20 +306,13 @@ sub compile {
         }
     }
 
-    if ( $depth <= 0 ) {
-        for my $t ( @{ $state->{tokens} } ) {
-            $t->upgrade;
-        }
-        MT::Util::Encode::_utf8_on($text)
-            if !MT::Util::Encode::is_utf8($text);
-    }
     return $state->{tokens};
 }
 
 sub translate_html_tmpl {
-    $_[0] =~ s!<(/?)tmpl_(if|loop|unless|else|var|include)\b!<$1mt:$2!ig;
-    $_[0] =~ s!<MT_TRANS\b!<__trans!ig;
-    $_[0] =~ s!<MT_ACTION\b!<__action!ig;
+    $_[0] =~ s!<(/?)tmpl_(if|loop|unless|else|var|include)\b!<$1mt:$2!igaa;
+    $_[0] =~ s!<MT_TRANS\b!<__trans!igaa;
+    $_[0] =~ s!<MT_ACTION\b!<__action!igaa;
 }
 
 sub _consume_up_to {
@@ -331,7 +324,7 @@ sub _consume_up_to {
 
     ( pos $$text ) = $start;
     while ( $$text
-        =~ m!(<([\$/]?)MT:?($tag_regex)(?:(?:<[^>]+?>|"(?:<[^>]+?>|.)*?"|'(?:<[^>]+?>|.)*?'|.)*?)[\$/]?>)!gis
+        =~ m!(<([\$/]?)MT:?($tag_regex)(?:(?:<[^>]+?>|"(?:<[^>]+?>|.)*?"|'(?:<[^>]+?>|.)*?'|.)*?)[\$/]?>)!gisaa
         )
     {
         $whole_tag = $1;
@@ -375,8 +368,8 @@ sub _consume_up_to {
 sub _text_block {
     my $text = substr ${ $_[0]->{text} }, $_[1], $_[2] - $_[1];
     if ( ( defined $text ) && ( $text ne '' ) ) {
-        return if $_[0]->{space_eater} && ( $text =~ m/^\s+$/s );
-        $text =~ s/^\s+//s if $_[0]->{space_eater};
+        return if $_[0]->{space_eater} && ( $text =~ m/^\s+$/sa );
+        $text =~ s/^\s+//sa if $_[0]->{space_eater};
         my $rec = NODE->new(
             tag        => 'TEXT',
             nodeValue  => $text,
@@ -500,14 +493,14 @@ sub build {
                     if ( ref $args{$v} eq 'ARRAY' ) {
                         my @array = @{ $args{$v} };
                         foreach (@array) {
-                            if (m/^\$([A-Za-z_](\w|\.)*)$/) {
+                            if (m/^\$([A-Za-z_](\w|\.)*)$/a) {
                                 $_ = $ctx->var($1);
                             }
                         }
                         $args{$v} = \@array;
                     }
                     else {
-                        if ( $args{$v} =~ m/^\$([A-Za-z_](\w|\.)*)$/ ) {
+                        if ( $args{$v} =~ m/^\$([A-Za-z_](\w|\.)*)$/a ) {
                             $args{$v} = $ctx->var($1);
                         }
                     }
@@ -518,13 +511,13 @@ sub build {
                     if ( ref $arg->[1] eq 'ARRAY' ) {
                         $arg->[1] = [ @{ $arg->[1] } ];
                         foreach ( @{ $arg->[1] } ) {
-                            if (m/^\$([A-Za-z_](\w|\.)*)$/) {
+                            if (m/^\$([A-Za-z_](\w|\.)*)$/a) {
                                 $_ = $ctx->var($1);
                             }
                         }
                     }
                     else {
-                        if ( $arg->[1] =~ m/^\$([A-Za-z_](\w|\.)*)$/ ) {
+                        if ( $arg->[1] =~ m/^\$([A-Za-z_](\w|\.)*)$/a ) {
                             $arg->[1] = $ctx->var($1);
                         }
                     }
