@@ -84,10 +84,7 @@ sub compile {
         )
     {
         my ( $whole_tag, $prefix, $tag, $space_eater ) = ( $1, $2, $3, $4 );
-        # use Data::Dumper;
-        # warn Dumper([$tag]);
         ( $tag, my ($args) ) = split /\s+/a, $tag, 2;
-        # warn Dumper([$tag]);
         my $sec_start = pos $text;
         my $tag_start = $sec_start - length $whole_tag;
         _text_block( $state, $pos, $tag_start ) if $pos < $tag_start;
