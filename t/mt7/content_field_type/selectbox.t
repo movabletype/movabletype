@@ -197,14 +197,14 @@ subtest 'options_validation_handler' => sub {
         },
         { values => [],
           multiple => 1,
-          min => 5, 
-          max => 10, 
+          min => 5,
+          max => 10,
           error => undef
         },
         { values => [],
           multiple => 1,
-          min => 0, 
-          max => 1, 
+          min => 0,
+          max => 1,
           error => undef
         },
         { values => [],
@@ -215,15 +215,15 @@ subtest 'options_validation_handler' => sub {
         },
         { values => [],
           multiple => 1,
-          min => 0, 
-          max => 0, 
+          min => 0,
+          max => 0,
           error => $err_format22
         },
         { values => [],
           multiple => 1,
           min => 5,
           max => 4,
-          error => $err_format23 
+          error => $err_format23
         },
     );
 
