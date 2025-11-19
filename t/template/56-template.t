@@ -272,6 +272,7 @@ subtest 'stray non-ascii in tags' => sub {
     subtest 'wide space for delimiter' => sub {
         require version;
         plan skip_all => 'Need to support array type of config directives in config.yaml' if version->parse($^V) > version->parse(5.32.1);
+        plan skip_all => 'Not for MT::Builder::Fast' if $MT::Builder eq 'MT::Builder::Fast';
         my $tmpl_str = qq!<MTVar\x{3000}name="foo" value="xxx">a<MTVar name="foo">b!;
         my $tmpl = MT::Template->new_string(\$tmpl_str);
         my $ret  = $tmpl->build;
