@@ -63,7 +63,7 @@ $test_env->prepare_fixture(sub {
     );
 
     my $publish_user2 = MT::Test::Permission->make_author(
-        name     => 'Kemikawa',
+        name     => 'kemikawa',
         nickname => 'Shiro Kemikawa',
     );
 
@@ -80,6 +80,11 @@ $test_env->prepare_fixture(sub {
     my $sys_manage_content_data_user = MT::Test::Permission->make_author(
         name     => 'sagawa',
         nickname => 'IChiro Sagawa',
+    );
+
+    my $entry_permissions_user = MT::Test::Permission->make_author(
+        name     => 'sumikawa',
+        nickname => 'Shiro Sumikawa',
     );
 });
 
@@ -98,6 +103,7 @@ my $publish_user2                = MT::Author->load({ name => 'kemikawa' });
 my $manage_content_data_user     = MT::Author->load({ name => 'ogawa' });
 my $manage_content_data_user2    = MT::Author->load({ name => 'koishikawa' });
 my $sys_manage_content_data_user = MT::Author->load({ name => 'sagawa' });
+my $entry_permissions_user       = MT::Author->load({ name => 'sumikawa' });
 
 ### Make test data
 # Content Type & Content Field & Content Data
@@ -219,6 +225,11 @@ my $manage_content_data_role = MT::Test::Permission->make_role(
     permissions => "'manage_content_data'",
 );
 
+my $entry_permissions_role = MT::Test::Permission->make_role(
+    name        => 'entry_permissions',
+    permissions => "'create_post','publish_post','edit_all_posts'",
+);
+
 require MT::Association;
 MT::Association->link($create_user               => $create_role              => $site);
 MT::Association->link($create_user2              => $create_role2             => $site2);
@@ -230,6 +241,7 @@ MT::Association->link($publish_user              => $publish_role             =>
 MT::Association->link($publish_user2             => $publish_role2            => $site2);
 MT::Association->link($manage_content_data_user  => $manage_content_data_role => $site);
 MT::Association->link($manage_content_data_user2 => $manage_content_data_role => $site2);
+MT::Association->link($entry_permissions_user    => $entry_permissions_role   => $site);
 
 $sys_manage_content_data_user->can_manage_content_data(1);
 $sys_manage_content_data_user->save;
@@ -359,6 +371,17 @@ subtest 'mode = view (new)' => sub {
     });
 
     $app->has_permission_error('create by not permitted user (edit)');
+
+    $app->login($entry_permissions_user);
+    $app->get_ok({
+        __mode          => 'view',
+        blog_id         => $site->id,
+        content_type_id => $content_type->id,
+        _type           => 'content_data',
+        type            => 'content_data_' . $content_type->id,
+    });
+
+    $app->has_permission_error('create by not permitted user (entry_permissions) MTC-30908');
 };
 
 # Save new

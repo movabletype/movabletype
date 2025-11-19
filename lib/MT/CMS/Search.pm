@@ -1670,9 +1670,11 @@ sub iter_for_replace {
 
 sub incremental_iter {
     my ($class, $terms, $args) = @_;
+    my $count;
     my $limit    = MT->config->CMSSearchLimit;
     my $offset   = 0;
     my $get_iter = sub {
+        $count = 0;
         local $args->{limit}  = $limit;
         local $args->{offset} = $offset;
         my $iter = $class->load_iter($terms, $args) or die $class->errstr;
@@ -1683,10 +1685,11 @@ sub incremental_iter {
         $iter ||= $get_iter->();
         my $obj = $iter->();
         if (!$obj) {
+            return if $count < $limit;
             $iter = $get_iter->();
             $obj  = $iter->();
         }
-        $offset++ if $obj;
+        $count++, $offset++ if $obj;
         return $obj;
     };
 }

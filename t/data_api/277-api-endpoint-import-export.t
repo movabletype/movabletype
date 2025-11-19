@@ -27,6 +27,21 @@ test_data_api($suite);
 
 done_testing;
 
+sub _test_file {
+    my $filename = shift;
+    my $file = File::Spec->catfile(
+        $ENV{MT_HOME}, "t",
+        'data_api',    '277-api-endpoint-import-export.d',
+        $filename
+    );
+    return $file unless $^O eq 'MSWin32';
+
+    # normalize eof because the importer explicitly set $/ to "\n$SEP\n";
+    my $body = do { local $/; open my $fh, '<', $file; <$fh> };
+    $body =~ s!\r\n!\n!gs;
+    $test_env->save_file($filename, $body);
+}
+
 sub suite {
     return +[
 
@@ -121,11 +136,7 @@ sub suite {
             params => { import_as_me => 0 },
             upload => [
                 'file',
-                File::Spec->catfile(
-                    $ENV{MT_HOME}, "t",
-                    'data_api',    '277-api-endpoint-import-export.d',
-                    'first_entry.txt'
-                ),
+                _test_file('first_entry.txt'),
             ],
             code   => 400,
             result => sub {
@@ -152,11 +163,7 @@ sub suite {
             },
             upload => [
                 'file',
-                File::Spec->catfile(
-                    $ENV{MT_HOME}, "t",
-                    'data_api',    '277-api-endpoint-import-export.d',
-                    'first_entry.txt'
-                ),
+                _test_file('first_entry.txt'),
             ],
             code   => 400,
             result => sub {
@@ -180,11 +187,7 @@ sub suite {
             params => { import_type => 'invalid', },
             upload => [
                 'file',
-                File::Spec->catfile(
-                    $ENV{MT_HOME}, "t",
-                    'data_api',    '277-api-endpoint-import-export.d',
-                    'first_entry.txt'
-                ),
+                _test_file('first_entry.txt'),
             ],
             code   => 400,
             result => sub {
@@ -207,11 +210,7 @@ sub suite {
             params => { encoding => 'invalid', },
             upload => [
                 'file',
-                File::Spec->catfile(
-                    $ENV{MT_HOME}, "t",
-                    'data_api',    '277-api-endpoint-import-export.d',
-                    'first_entry.txt'
-                ),
+                _test_file('first_entry.txt'),
             ],
             code   => 400,
             result => sub {
@@ -234,11 +233,7 @@ sub suite {
             params => { convert_breaks => 'invalid', },
             upload => [
                 'file',
-                File::Spec->catfile(
-                    $ENV{MT_HOME}, "t",
-                    'data_api',    '277-api-endpoint-import-export.d',
-                    'first_entry.txt'
-                ),
+                _test_file('first_entry.txt'),
             ],
             code   => 400,
             result => sub {
@@ -261,11 +256,7 @@ sub suite {
             params => { default_cat_id => 100, },
             upload => [
                 'file',
-                File::Spec->catfile(
-                    $ENV{MT_HOME}, "t",
-                    'data_api',    '277-api-endpoint-import-export.d',
-                    'first_entry.txt'
-                ),
+                _test_file('first_entry.txt'),
             ],
             code   => 400,
             result => sub {
@@ -303,11 +294,7 @@ sub suite {
             method => 'POST',
             upload => [
                 'file',
-                File::Spec->catfile(
-                    $ENV{MT_HOME}, "t",
-                    'data_api',    '277-api-endpoint-import-export.d',
-                    'first_entry.txt'
-                ),
+                _test_file('first_entry.txt'),
             ],
             result => sub {
                 return +{ status => 'success', };
@@ -323,11 +310,7 @@ sub suite {
             method => 'POST',
             upload => [
                 'file',
-                File::Spec->catfile(
-                    $ENV{MT_HOME}, "t",
-                    'data_api',    '277-api-endpoint-import-export.d',
-                    'second_entry.txt'
-                ),
+                _test_file('second_entry.txt'),
             ],
             result => sub {
                 return +{ status => 'success', };
@@ -347,11 +330,7 @@ sub suite {
             },
             upload => [
                 'file',
-                File::Spec->catfile(
-                    $ENV{MT_HOME}, "t",
-                    'data_api',    '277-api-endpoint-import-export.d',
-                    'third_entry.txt'
-                ),
+                _test_file('third_entry.txt'),
             ],
             result => sub {
                 return +{ status => 'success', };
@@ -368,11 +347,7 @@ sub suite {
             params => { import_type => 'import_mt_format', },
             upload => [
                 'file',
-                File::Spec->catfile(
-                    $ENV{MT_HOME}, "t",
-                    'data_api',    '277-api-endpoint-import-export.d',
-                    'fourth_entry.txt'
-                ),
+                _test_file('fourth_entry.txt'),
             ],
             result => sub {
                 return +{ status => 'success', };

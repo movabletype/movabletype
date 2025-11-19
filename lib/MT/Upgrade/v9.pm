@@ -90,7 +90,7 @@ sub _v9_boolean_meta {
         next unless defined $value;
 
         if ($boolean_meta_columns{$type} eq 'vinteger') {
-            $row->vinteger($value);
+            $row->vinteger($value || 0);
         } elsif ($boolean_meta_columns{$type} eq 'vclob') {
             $row->vclob($value);
         }

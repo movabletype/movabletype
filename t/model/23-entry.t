@@ -208,6 +208,9 @@ is( $entry->get_excerpt, $entry->text . '...', 'get_excerpt' );
 $blog->words_in_excerpt(3);
 $entry->cache_property( 'blog', undef, $blog );
 is( $entry->get_excerpt, 'On a drizzly...', 'get_excerpt' );
-$entry->convert_breaks('textile_2');
-$entry->text("Foo _bar_ baz");
-is( $entry->get_excerpt, 'Foo bar baz...', 'get_excerpt' );
+SKIP: {
+    skip 'Needs Textile', 1 unless MT->has_plugin('Textile/textile2.pl');
+    $entry->convert_breaks('textile_2');
+    $entry->text("Foo _bar_ baz");
+    is( $entry->get_excerpt, 'Foo bar baz...', 'get_excerpt' );
+}
