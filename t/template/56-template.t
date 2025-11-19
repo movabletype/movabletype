@@ -273,7 +273,7 @@ subtest 'stray non-ascii in tags' => sub {
         my $tmpl_str = qq!<MTVar\x{3000}name="foo" value="xxx">a<MTVar name="foo">b!;
         my $tmpl = MT::Template->new_string(\$tmpl_str);
         my $ret  = $tmpl->build;
-        is $ret, 'axxxb';
+        is $ret, undef;
     };
     subtest 'wide character in attribute value' => sub {
         my $tmpl_str = qq!<MTVar name="foo" value=\x{3042}>a<MTVar name="foo">b!;
