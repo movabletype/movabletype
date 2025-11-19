@@ -50,13 +50,8 @@ sub compile {
     }
 
     return [] unless defined $text;
-    my $turn_utf8_back = 0;
-    if (MT::Util::Encode::is_utf8($text)) {
-        MT::Util::Encode::_utf8_off($text);
-        $turn_utf8_back = 1;
-    }
 
-    if ($text =~ m/<(?:MT_TRANS\b|MT_ACTION\b|(?:tmpl_(?:if|loop|unless|else|var|include)))/i) {
+    if ($text =~ m/<(?:MT_TRANS\b|MT_ACTION\b|(?:tmpl_(?:if|loop|unless|else|var|include)))/iaa) {
         MT::Builder::translate_html_tmpl($text);
     }
 
@@ -64,8 +59,6 @@ sub compile {
     my $modifiers = $ctx->{__filters};
 
     my $tokens = _compile($handlers, $modifiers, $ids, $classes, $error, $text, $tmpl);
-
-    MT::Util::Encode::_utf8_on($text) if $turn_utf8_back;
 
     if (@$error) {
         my ($error_pos, $msg) = @$error;
@@ -75,6 +68,7 @@ sub compile {
         $msg =~ s/#/$line/;
         if ($tmpl) {
             $tmpl->errors([{ message => $msg, line => $line }]);
+            warn 23456;
             $msg = MT->translate(
                 "Publish error in template '[_1]': [_2]",
                 $tmpl->name || $tmpl->{__file},
@@ -102,14 +96,13 @@ sub _compile {
 
     while ($text =~ m!(<\$?(MT:?)((?:<[^>]+?>|"(?:<[^>]+?>|.)*?"|'(?:<[^>]+?>|.)*?'|.)+?)([-]?)[\$/]?>)!gis) {
         my ($whole_tag, $prefix, $tag, $space_eater) = ($1, $2, $3, $4);
-        ($tag, my ($args)) = split /\s+/, $tag, 2;
+        ($tag, my ($args)) = split /\s+/a, $tag, 2;
         my $sec_start = pos $text;
         my $tag_start = $sec_start - length $whole_tag;
         if ($pos < $tag_start) {
             my $t_part = substr $text, $pos, $tag_start - $pos;
-            $t_part =~ s/^\s+//s if $current_space_eater;
+            $t_part =~ s/^\s+//sa if $current_space_eater;
             if (length $t_part) {
-                MT::Util::Encode::_utf8_on($t_part);
                 my $t_rec = [
                     'TEXT',     # name
                     undef,      # attr (or text?)
@@ -156,24 +149,21 @@ sub _compile {
                 )
             ) |
             (\w+)                                   #7
-            /gsx
+            /gsxa
             )
         {
             if (defined $7) {
                 # An unnamed attribute gets stored in the 'name' argument.
                 my $name = $7;
-                MT::Util::Encode::_utf8_on($name);
                 $args{'name'} = $name;
             } else {
                 my $attr  = lc $1;
                 my $value = defined $6 ? $6 : $3;
                 my $extra = $4;
-                MT::Util::Encode::_utf8_on($value);
                 if (defined $extra) {
                     my @extra;
                     while ($extra =~ m/[,:](["'])((?:<[^>]+?>|.)*?)\1/gs) {
                         my $extra_value = $2;
-                        MT::Util::Encode::_utf8_on($extra_value);
                         push @extra, $extra_value;
                     }
                     $value = [$value, @extra];
@@ -203,7 +193,7 @@ sub _compile {
         }
 
         if (!$h) {
-            push @$error, $pos, MT->translate("<[_1]> at line # is unrecognized.", MT::Util::Encode::decode_utf8($prefix . $tag));
+            push @$error, $pos, MT->translate("<[_1]> at line # is unrecognized.", $prefix . $tag);
         }
         if ($is_container) {
             if ($whole_tag !~ m|/>$|) {
@@ -212,7 +202,6 @@ sub _compile {
                     my $sec = $tag =~ m/ignore/i
                         ? ''    # ignore MTIgnore blocks
                         : substr $text, $sec_start, $sec_end - $sec_start;
-                    MT::Util::Encode::_utf8_on($sec);
                     if ($sec !~ m/<\$?MT/i) {
                         if ($sec ne '') {
                             my $t_rec = [
@@ -250,9 +239,8 @@ sub _compile {
     }
     if ($pos < $len) {
         my $t_part = substr $text, $pos, $len - $pos;
-        $t_part =~ s/^\s+//s if $current_space_eater;
+        $t_part =~ s/^\s+//sa if $current_space_eater;
         if (length $t_part) {
-            MT::Util::Encode::_utf8_on($t_part);
             my $t_rec = [
                 'TEXT',     # name
                 undef,      # attr (or text)
@@ -278,7 +266,7 @@ sub _consume_up_to {
     my $tag_regex = $stoptag eq 'ignore' ? 'Ignore' : '[^\s\$>]+';
 
     (pos $$text) = $start;
-    while ($$text =~ m!(<([\$/]?)MT:?($tag_regex)(?:(?:<[^>]+?>|"(?:<[^>]+?>|.)*?"|'(?:<[^>]+?>|.)*?'|.)*?)[\$/]?>)!gis) {
+    while ($$text =~ m!(<([\$/]?)MT:?($tag_regex)(?:(?:<[^>]+?>|"(?:<[^>]+?>|.)*?"|'(?:<[^>]+?>|.)*?'|.)*?)[\$/]?>)!gisaa) {
         $whole_tag = $1;
         my ($prefix, $tag) = ($2, lc($3));
         next
@@ -408,13 +396,13 @@ sub build {
                     if (ref $args{$v} eq 'ARRAY') {
                         my @array = @{ $args{$v} };
                         foreach (@array) {
-                            if (m/^\$([A-Za-z_](?:\w|\.)*)$/) {
+                            if (m/^\$([A-Za-z_](?:\w|\.)*)$/a) {
                                 $_ = $ctx->var($1);
                             }
                         }
                         $args{$v} = \@array;
                     } else {
-                        if ($args{$v} =~ m/^\$([A-Za-z_](?:\w|\.)*)$/) {
+                        if ($args{$v} =~ m/^\$([A-Za-z_](?:\w|\.)*)$/a) {
                             $args{$v} = $ctx->var($1);
                         }
                     }
@@ -425,12 +413,12 @@ sub build {
                     if (ref $arg->[1] eq 'ARRAY') {
                         $arg->[1] = [@{ $arg->[1] }];
                         foreach (@{ $arg->[1] }) {
-                            if (m/^\$([A-Za-z_](?:\w|\.)*)$/) {
+                            if (m/^\$([A-Za-z_](?:\w|\.)*)$/a) {
                                 $_ = $ctx->var($1);
                             }
                         }
                     } else {
-                        if ($arg->[1] =~ m/^\$([A-Za-z_](?:\w|\.)*)$/) {
+                        if ($arg->[1] =~ m/^\$([A-Za-z_](?:\w|\.)*)$/a) {
                             $arg->[1] = $ctx->var($1);
                         }
                     }
