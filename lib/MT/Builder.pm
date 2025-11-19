@@ -196,7 +196,7 @@ sub compile {
                 {
                 message => MT->translate(
                     "<[_1]> at line [_2] is unrecognized.",
-                    MT::Util::Encode::decode_utf8( $prefix . $tag ),
+                    $prefix . $tag,
                     $opt->{line}
                 ),
                 line => $opt->{line}
