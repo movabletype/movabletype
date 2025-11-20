@@ -287,7 +287,6 @@ sub _upgrade {
         }
     }
     elsif ( $ref eq 'REF' ) {
-        die 'Never suppose to reach here'; # TODO remove this line
         _upgrade( ${ $_[0] } );
     }
 }
