@@ -50,11 +50,6 @@ sub compile {
     }
 
     return [] unless defined $text;
-    my $turn_utf8_back = 0;
-    if (MT::Util::Encode::is_utf8($text)) {
-        MT::Util::Encode::_utf8_off($text);
-        $turn_utf8_back = 1;
-    }
 
     if ($text =~ m/<(?:MT_TRANS\b|MT_ACTION\b|(?:tmpl_(?:if|loop|unless|else|var|include)))/i) {
         MT::Builder::translate_html_tmpl($text);
@@ -64,8 +59,6 @@ sub compile {
     my $modifiers = $ctx->{__filters};
 
     my $tokens = _compile($handlers, $modifiers, $ids, $classes, $error, $text, $tmpl);
-
-    MT::Util::Encode::_utf8_on($text) if $turn_utf8_back;
 
     if (@$error) {
         my ($error_pos, $msg) = @$error;
@@ -109,7 +102,6 @@ sub _compile {
             my $t_part = substr $text, $pos, $tag_start - $pos;
             $t_part =~ s/^\s+//s if $current_space_eater;
             if (length $t_part) {
-                MT::Util::Encode::_utf8_on($t_part);
                 my $t_rec = [
                     'TEXT',     # name
                     undef,      # attr (or text?)
@@ -162,18 +154,15 @@ sub _compile {
             if (defined $7) {
                 # An unnamed attribute gets stored in the 'name' argument.
                 my $name = $7;
-                MT::Util::Encode::_utf8_on($name);
                 $args{'name'} = $name;
             } else {
                 my $attr  = lc $1;
                 my $value = defined $6 ? $6 : $3;
                 my $extra = $4;
-                MT::Util::Encode::_utf8_on($value);
                 if (defined $extra) {
                     my @extra;
                     while ($extra =~ m/[,:](["'])((?:<[^>]+?>|.)*?)\1/gs) {
                         my $extra_value = $2;
-                        MT::Util::Encode::_utf8_on($extra_value);
                         push @extra, $extra_value;
                     }
                     $value = [$value, @extra];
@@ -203,7 +192,7 @@ sub _compile {
         }
 
         if (!$h) {
-            push @$error, $pos, MT->translate("<[_1]> at line # is unrecognized.", MT::Util::Encode::decode_utf8($prefix . $tag));
+            push @$error, $pos, MT->translate("<[_1]> at line # is unrecognized.", $prefix . $tag);
         }
         if ($is_container) {
             if ($whole_tag !~ m|/>$|) {
@@ -212,7 +201,6 @@ sub _compile {
                     my $sec = $tag =~ m/ignore/i
                         ? ''    # ignore MTIgnore blocks
                         : substr $text, $sec_start, $sec_end - $sec_start;
-                    MT::Util::Encode::_utf8_on($sec);
                     if ($sec !~ m/<\$?MT/i) {
                         if ($sec ne '') {
                             my $t_rec = [
@@ -252,7 +240,6 @@ sub _compile {
         my $t_part = substr $text, $pos, $len - $pos;
         $t_part =~ s/^\s+//s if $current_space_eater;
         if (length $t_part) {
-            MT::Util::Encode::_utf8_on($t_part);
             my $t_rec = [
                 'TEXT',     # name
                 undef,      # attr (or text)

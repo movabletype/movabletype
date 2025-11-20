@@ -49,9 +49,6 @@ sub compile {
     }
 
     return [] unless defined $text;
-    if ( $depth <= 0 && $text && MT::Util::Encode::is_utf8($text) ) {
-        MT::Util::Encode::_utf8_off($text);
-    }
 
     my $mods;
 
@@ -196,7 +193,7 @@ sub compile {
                 {
                 message => MT->translate(
                     "<[_1]> at line [_2] is unrecognized.",
-                    MT::Util::Encode::decode_utf8( $prefix . $tag ),
+                    $prefix . $tag,
                     $opt->{line}
                 ),
                 line => $opt->{line}
@@ -306,13 +303,6 @@ sub compile {
         }
     }
 
-    if ( $depth <= 0 ) {
-        for my $t ( @{ $state->{tokens} } ) {
-            $t->upgrade;
-        }
-        MT::Util::Encode::_utf8_on($text)
-            if !MT::Util::Encode::is_utf8($text);
-    }
     return $state->{tokens};
 }
 
