@@ -14,8 +14,6 @@ BEGIN {
 }
 
 use MT::Test;
-use File::Spec;
-
 use MT::Image;
 use MT::ConfigMgr;
 use MT;

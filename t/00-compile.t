@@ -341,7 +341,7 @@ SKIP: {
     }
 }
 SKIP: {
-    if ( eval { require Log::Minimal } ) {
+    if ( eval { require Log::Minimal } ) {    ## no critic(TooMuchCode::ProhibitUnusedInclude)
         use_ok('MT::Util::Log::Minimal');
     }
     else {

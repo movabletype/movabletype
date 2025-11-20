@@ -16,7 +16,7 @@ use MT;
 use MT::Test;
 use MT::Test::Fixture;
 use MT::Test::App qw(MT::Test::Role::CMS::GrantRole);
-use Test::Deep    qw'cmp_bag cmp_deeply superhashof';
+use Test::Deep    qw(cmp_deeply superhashof);
 
 $test_env->prepare_fixture('db');
 

@@ -72,7 +72,6 @@ subtest 'Check disable image popup' => sub {
         note $app->wq_find($elm_id)->as_html;
         is($app->wq_find($elm_id)->size, 0, 'image popup check is hide');
         $test_env->update_config(DisableImagePopup => 0);
-        
     };
 
     subtest 'empty popup_image template' => sub {

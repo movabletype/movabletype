@@ -436,7 +436,7 @@ for my $s (@suite) {
         print {$fh} "test";
         close $fh;
     }
-    
+
     # file must not meet the condition mod_time >= start_time
     sleep 1;
     $publisher->start_time(time());

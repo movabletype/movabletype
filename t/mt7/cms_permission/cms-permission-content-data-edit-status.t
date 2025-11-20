@@ -149,9 +149,6 @@ $system_manage_content_data_user->save or die;
 
 my $admin = MT::Author->load(1);
 
-### Run
-my ( $app, $out );
-
 subtest 'mode = view (new)' => sub {
     my $app = MT::Test::App->new;
     my @selected;

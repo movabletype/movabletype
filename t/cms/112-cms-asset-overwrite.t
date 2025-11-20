@@ -88,7 +88,7 @@ sub prepare_file {
     $file = Encode::encode($^O eq 'MSWin32' ? 'cp932' : 'utf-8' => $file);
 
     my $test_file = $test_env->path($file);
-    
+
     if ($file_type eq 'image') {
         MT::Test::Image->write(file => $test_file);
     } elsif ($file_type eq 'document') {

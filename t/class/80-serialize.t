@@ -87,17 +87,17 @@ for my $label (sort keys %sers) {
   is($thawed->[0], 1, 'Returns correct value in the array');
   ok(!defined $thawed->[-1], 'Last element is undef');
   is(ref $thawed->[1], 'HASH', 'Returns correct type HASHREF');
-  is($thawed->[1]{a}, 'value-a', 'Returns correct value for HASH{a}'); 
-  is(ref $thawed->[1]{b}, 'ARRAY', 'Returns correct value for HASH{b} 1/3'); 
-  is($thawed->[1]{b}[0], 1, 'Returns correct value for HASH{b} 2/3'); 
-  is(@{$thawed->[1]{b}}, 1, 'Returns correct value for HASH{b} 3/3'); 
-  is(ref $thawed->[1]{c}, 'ARRAY', 'Returns correct value for HASH{c} 1/3'); 
-  is(@{$thawed->[1]{c}}, 4, 'Returns correct value for HASH{c} 2/3'); 
-  is($thawed->[1]{d}, 1, 'Returns correct value for HASH{d}'); 
+  is($thawed->[1]{a}, 'value-a', 'Returns correct value for HASH{a}');
+  is(ref $thawed->[1]{b}, 'ARRAY', 'Returns correct value for HASH{b} 1/3');
+  is($thawed->[1]{b}[0], 1, 'Returns correct value for HASH{b} 2/3');
+  is(@{$thawed->[1]{b}}, 1, 'Returns correct value for HASH{b} 3/3');
+  is(ref $thawed->[1]{c}, 'ARRAY', 'Returns correct value for HASH{c} 1/3');
+  is(@{$thawed->[1]{c}}, 4, 'Returns correct value for HASH{c} 2/3');
+  is($thawed->[1]{d}, 1, 'Returns correct value for HASH{d}');
   SKIP: {
     skip "JSON format doesn't support scalar and circular references" => 3 if $label eq 'MTJ' || $label eq 'JSON';
-    is(${$thawed->[1]{c}[2]}, 3, 'Returns correct value for HASH{c} 3/3'); 
-    is($thawed->[1]{z}, $thawed, 'Returns correct value for HASH{z} (circular ref)'); 
+    is(${$thawed->[1]{c}[2]}, 3, 'Returns correct value for HASH{c} 3/3');
+    is($thawed->[1]{z}, $thawed, 'Returns correct value for HASH{z} (circular ref)');
     is($thawed->[1]{b}, $thawed->[1]{c}[1], 'Returns correct value for HASH{b} == HASH{c}[1] (double ref)');
   }
 

@@ -16,7 +16,6 @@ BEGIN {
 use MT::Test::Fixture::DataApiSearch;
 use MT::Test::DataAPI;
 use Test::Deep;
-use JSON;
 
 $test_env->prepare_fixture('data_api_search');
 

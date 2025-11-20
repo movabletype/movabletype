@@ -320,7 +320,7 @@ sub _set_handler_perl {
 
     require MT::Template::Context::Search;
     my $mt = MT->instance;
-    $mt->{__tag_handlers}->{'searchresults'}->[0] = 
+    $mt->{__tag_handlers}->{'searchresults'}->[0] =
         \&MT::Template::Context::Search::_hdlr_results;
 
     my @elist = $mt->model('entry')->load({ blog_id => $blog_id });
