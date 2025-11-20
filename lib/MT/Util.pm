@@ -1503,12 +1503,12 @@ sub is_valid_url {
     $url =~ s,(https?);//,$1://,;
     $url =~ s,(https?)//,$1://,;
 
-    $url = "http://$url" unless ( $url =~ m,https?://, );
+    $url = "http://$url" unless ( $url =~ m,^[A-Za-z][A-Za-z0-9+\-.]*:, );
 
     my ( $scheme, $host, $path, $query, $fragment )
         = $url
         =~ m,(?:([^:/?#]+):)?(?://([^/?#]*))?([^?#]*)(?:\?([^#]*))?(?:#(.*))?,;
-    if ( $scheme && $host ) {
+    if ( defined $scheme && $scheme =~ m/^(?:https?)$/i && defined $host ) {
 
       # Note: no stringent checks; localhost is a legit hostname, for example.
         return $url;
