@@ -51,7 +51,7 @@ sub compile {
 
     return [] unless defined $text;
 
-    if ($text =~ m/<(?:MT_TRANS\b|MT_ACTION\b|(?:tmpl_(?:if|loop|unless|else|var|include)))/i) {
+    if ($text =~ m/<(?:MT_TRANS\b|MT_ACTION\b|(?:tmpl_(?:if|loop|unless|else|var|include)))/iaa) {
         MT::Builder::translate_html_tmpl($text);
     }
 
@@ -95,12 +95,12 @@ sub _compile {
 
     while ($text =~ m!(<\$?(MT:?)((?:<[^>]+?>|"(?:<[^>]+?>|.)*?"|'(?:<[^>]+?>|.)*?'|.)+?)([-]?)[\$/]?>)!gis) {
         my ($whole_tag, $prefix, $tag, $space_eater) = ($1, $2, $3, $4);
-        ($tag, my ($args)) = split /\s+/, $tag, 2;
+        ($tag, my ($args)) = split /\s+/a, $tag, 2;
         my $sec_start = pos $text;
         my $tag_start = $sec_start - length $whole_tag;
         if ($pos < $tag_start) {
             my $t_part = substr $text, $pos, $tag_start - $pos;
-            $t_part =~ s/^\s+//s if $current_space_eater;
+            $t_part =~ s/^\s+//sa if $current_space_eater;
             if (length $t_part) {
                 my $t_rec = [
                     'TEXT',     # name
@@ -148,7 +148,7 @@ sub _compile {
                 )
             ) |
             (\w+)                                   #7
-            /gsx
+            /gsxa
             )
         {
             if (defined $7) {
@@ -238,7 +238,7 @@ sub _compile {
     }
     if ($pos < $len) {
         my $t_part = substr $text, $pos, $len - $pos;
-        $t_part =~ s/^\s+//s if $current_space_eater;
+        $t_part =~ s/^\s+//sa if $current_space_eater;
         if (length $t_part) {
             my $t_rec = [
                 'TEXT',     # name
@@ -265,7 +265,7 @@ sub _consume_up_to {
     my $tag_regex = $stoptag eq 'ignore' ? 'Ignore' : '[^\s\$>]+';
 
     (pos $$text) = $start;
-    while ($$text =~ m!(<([\$/]?)MT:?($tag_regex)(?:(?:<[^>]+?>|"(?:<[^>]+?>|.)*?"|'(?:<[^>]+?>|.)*?'|.)*?)[\$/]?>)!gis) {
+    while ($$text =~ m!(<([\$/]?)MT:?($tag_regex)(?:(?:<[^>]+?>|"(?:<[^>]+?>|.)*?"|'(?:<[^>]+?>|.)*?'|.)*?)[\$/]?>)!gisaa) {
         $whole_tag = $1;
         my ($prefix, $tag) = ($2, lc($3));
         next
@@ -395,13 +395,13 @@ sub build {
                     if (ref $args{$v} eq 'ARRAY') {
                         my @array = @{ $args{$v} };
                         foreach (@array) {
-                            if (m/^\$([A-Za-z_](?:\w|\.)*)$/) {
+                            if (m/^\$([A-Za-z_](?:\w|\.)*)$/a) {
                                 $_ = $ctx->var($1);
                             }
                         }
                         $args{$v} = \@array;
                     } else {
-                        if ($args{$v} =~ m/^\$([A-Za-z_](?:\w|\.)*)$/) {
+                        if ($args{$v} =~ m/^\$([A-Za-z_](?:\w|\.)*)$/a) {
                             $args{$v} = $ctx->var($1);
                         }
                     }
@@ -412,12 +412,12 @@ sub build {
                     if (ref $arg->[1] eq 'ARRAY') {
                         $arg->[1] = [@{ $arg->[1] }];
                         foreach (@{ $arg->[1] }) {
-                            if (m/^\$([A-Za-z_](?:\w|\.)*)$/) {
+                            if (m/^\$([A-Za-z_](?:\w|\.)*)$/a) {
                                 $_ = $ctx->var($1);
                             }
                         }
                     } else {
-                        if ($arg->[1] =~ m/^\$([A-Za-z_](?:\w|\.)*)$/) {
+                        if ($arg->[1] =~ m/^\$([A-Za-z_](?:\w|\.)*)$/a) {
                             $arg->[1] = $ctx->var($1);
                         }
                     }
