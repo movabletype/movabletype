@@ -42,20 +42,39 @@
 <mt:setvarblock name="js_include" append="1">
 <script type="text/javascript">
 /* <![CDATA[ */
-function togglePerms(c, a) {
+function togglePerms(clickedPerm, childPermsSelector) {
     permsChanged = "yes";
-    if (a == '') {
+    if (childPermsSelector == '') {
         return;
     }
 
-    if (c.checked) {
-        jQuery(a).each(function(){
+    if (clickedPerm.checked) {
+        jQuery(childPermsSelector).each(function(){
             this.checked = true;
             this.disabled = true;
             this.onclick();
         });
     } else {
-        jQuery(a).each(function(){
+        if (clickedPerm.id === 'administer_site') {
+            jQuery(childPermsSelector).each(function(){
+                this.checked = false;
+                this.disabled = false;
+                this.onclick();
+            });
+
+            return;
+        }
+
+        jQuery(childPermsSelector).each(function(){
+            // do not uncheck when any permissions that have same inherit_from is checked.
+            const selector = '[data-mt-perm-inherit-from*="' + this.id.replace(/"/g, '\\"') + '"]:checked';
+            const isAnyPermsChecked = jQuery(selector)
+                .filter((_, el) => el.dataset.mtPermInheritFrom.split(',').includes('#' + this.id))
+                .length > 0;
+            if (isAnyPermsChecked) {
+                return;
+            }
+
             this.checked = false;
             this.disabled = false;
             this.onclick();
@@ -109,35 +128,35 @@ function init() {
   <mt:if name="group" eq="blog_admin">
     <mt:setvarblock name="loaded_permissions_blog_admin" append="1">
       <div class="form-check form-check-inline">
-        <input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children" replace=":","\\:">')" class="<mt:var name="id"> cb form-check-input" name="permission" value="<mt:var name="id">"<mt:if name="can_do"> checked="checked"</mt:if>>
+        <input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children" replace=":","\\:">')" <mt:if name="children"><mt:if name="id" ne="administer_site">data-mt-perm-inherit-from="<mt:var name="children" escape="html">"</mt:if></mt:if> class="<mt:var name="id"> cb form-check-input" name="permission" value="<mt:var name="id">"<mt:if name="can_do"> checked="checked"</mt:if>>
         <label class="form-check-label" for="<mt:var name="id" escape="html">"><mt:var name="label" escape="html"></label>
       </div>
     </mt:setvarblock>
   <mt:elseif name="group" eq="auth_pub">
     <mt:setvarblock name="loaded_permissions_auth_pub" append="1">
       <div class="form-check form-check-inline">
-        <input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children">')" class="<mt:var name="id"> cb form-check-input" name="permission" value="<mt:var name="id">"<mt:if name="can_do"> checked="checked"</mt:if>>
+        <input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children">')" <mt:if name="children">data-mt-perm-inherit-from="<mt:var name="children" escape="html">"</mt:if> class="<mt:var name="id"> cb form-check-input" name="permission" value="<mt:var name="id">"<mt:if name="can_do"> checked="checked"</mt:if>>
         <label class="form-check-label" for="<mt:var name="id" escape="html">"><mt:var name="label" escape="html"></label>
       </div>
     </mt:setvarblock>
   <mt:elseif name="group" eq="blog_design">
     <mt:setvarblock name="loaded_permissions_blog_design" append="1">
       <div class="form-check form-check-inline">
-        <input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children">')" class="<mt:var name="id"> cb form-check-input" name="permission" value="<mt:var name="id">"<mt:if name="can_do"> checked="checked"</mt:if>>
+        <input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children">')" <mt:if name="children">data-mt-perm-inherit-from="<mt:var name="children" escape="html">"</mt:if> class="<mt:var name="id"> cb form-check-input" name="permission" value="<mt:var name="id">"<mt:if name="can_do"> checked="checked"</mt:if>>
         <label class="form-check-label" for="<mt:var name="id" escape="html">"><mt:var name="label" escape="html"></label>
       </div>
     </mt:setvarblock>
   <mt:elseif name="group" eq="blog_upload">
     <mt:setvarblock name="loaded_permissions_blog_upload" append="1">
       <div class="form-check form-check-inline">
-        <input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children">')" class="<mt:var name="id"> cb form-check-input" name="permission" value="<mt:var name="id">"<mt:if name="can_do"> checked="checked"</mt:if>>
+        <input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children">')" <mt:if name="children">data-mt-perm-inherit-from="<mt:var name="children" escape="html">"</mt:if> class="<mt:var name="id"> cb form-check-input" name="permission" value="<mt:var name="id">"<mt:if name="can_do"> checked="checked"</mt:if>>
         <label class="form-check-label" for="<mt:var name="id" escape="html">"><mt:var name="label" escape="html"></label>
       </div>
     </mt:setvarblock>
   <mt:elseif name="group" eq="blog_comment">
     <mt:setvarblock name="loaded_permissions_blog_comment" append="1">
       <div class="form-check form-check-inline">
-        <input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children">')" class="<mt:var name="id"> cb form-check-input" name="permission" value="<mt:var name="id">"<mt:if name="can_do"> checked="checked"</mt:if>>
+        <input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children">')" <mt:if name="children">data-mt-perm-inherit-from="<mt:var name="children" escape="html">"</mt:if> class="<mt:var name="id"> cb form-check-input" name="permission" value="<mt:var name="id">"<mt:if name="can_do"> checked="checked"</mt:if>>
         <label class="form-check-label" for="<mt:var name="id" escape="html">"><mt:var name="label" escape="html"></label>
       </div>
     </mt:setvarblock>
@@ -145,21 +164,21 @@ function init() {
     <mt:if name="id" like="/^manage_content_data/">
       <mt:setvarblock name="all" key="$content_type_unique_id">
         <div class="form-check col-auto">
-          <input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children" replace=":","\\:">')" class="<mt:var name="id"> cb form-check-input" name="permission" value="<mt:var name="id">"<mt:if name="can_do">  checked="checked"</mt:if>>
+          <input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children" replace=":","\\:">')" <mt:if name="children">data-mt-perm-inherit-from="<mt:var name="children" escape="html">"</mt:if> class="<mt:var name="id"> cb form-check-input" name="permission" value="<mt:var name="id">"<mt:if name="can_do">  checked="checked"</mt:if>>
           <label class="form-check-label" for="<mt:var name="id" escape="html">"><span class="h4"><mt:var name="label" escape="html"></span></label>
         </div>
       </mt:setvarblock>
     <mt:elseif name="id" like="/^create|publish|edit_all|_contentdata:/">
       <mt:setvarblock name="manage_content_data" append="1" key="$content_type_unique_id">
         <div class="form-check col-auto">
-          <input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children" replace=":","\\:">')" class="<mt:var name="id"> cb form-check-input" name="permission" value="<mt:var name="id">"<mt:if name="can_do">  checked="checked"</mt:if>>
+          <input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children" replace=":","\\:">')" <mt:if name="children">data-mt-perm-inherit-from="<mt:var name="children" escape="html">"</mt:if> class="<mt:var name="id"> cb form-check-input" name="permission" value="<mt:var name="id">"<mt:if name="can_do">  checked="checked"</mt:if>>
           <label class="form-check-label" for="<mt:var name="id" escape="html">"><mt:var name="label" escape="html"></label>
         </div>
       </mt:setvarblock>
     <mt:else>
       <mt:setvarblock name="manage_content_field" append="1" key="$content_type_unique_id">
         <div class="form-check mb-3 col-auto" style="">
-          <input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children" replace=":","\\:">')" class="<mt:var name="id"> cb form-check-input" name="permission" value="<mt:var name="id">"<mt:if name="can_do">  checked="checked"</mt:if>>
+          <input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children" replace=":","\\:">')" <mt:if name="children">data-mt-perm-inherit-from="<mt:var name="children" escape="html">"</mt:if> class="<mt:var name="id"> cb form-check-input" name="permission" value="<mt:var name="id">"<mt:if name="can_do">  checked="checked"</mt:if>>
           <label class="form-check-label" for="<mt:var name="id" escape="html">"><mt:var name="label" escape="html"></label>
         </div>
       </mt:setvarblock>
