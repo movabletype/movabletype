@@ -322,7 +322,7 @@ SKIP: {
     }
 }
 SKIP: {
-    if ( eval { require YAML::XS } ) {
+    if ( eval { require YAML::XS; YAML::XS->VERSION(v0.903.0) } ) {
         use_ok('MT::Util::YAML::XS');
     }
     else {
