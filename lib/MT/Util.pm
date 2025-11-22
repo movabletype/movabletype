@@ -1482,6 +1482,9 @@ sub is_valid_url {
     use bytes;
     my ( $url, $stringent ) = @_;
 
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::warning(name => 'is_valid_url', since => '9.1.0');
+
     $url ||= "";
 
     # strip spaces
