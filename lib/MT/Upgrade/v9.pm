@@ -46,6 +46,24 @@ sub upgrade_functions {
                 code  => \&v9_api_password,
             },
         },
+        v9_comment_url => {
+            version_limit => 9.0003,
+            priority      => 5,
+            updater       => {
+                type      => 'comment',
+                terms     => { url => { op => '<>', value => '' } },
+                label     => "Migrating the URL field in comment data...",
+                condition => sub {
+                    require MT::Util;
+                    my $comment = shift;
+                    return $comment->url ne '' && !MT::Util::is_url($comment->url);
+                },
+                code => sub {
+                    my $comment = shift;
+                    $comment->url('');
+                },
+            },
+        },
     };
 }
 
