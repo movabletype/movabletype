@@ -1519,7 +1519,7 @@ sub is_valid_url {
 sub is_url {
     my ($url) = @_;
 
-    return $url =~ /^s?https?:\/\/[-_.!~*'()a-zA-Z0-9;\/?:\@&=+\$,%#]+$/;
+    return $url && $url =~ /^s?https?:\/\/[-_.!~*'()a-zA-Z0-9;\/?:\@&=+\$,%#]+$/;
 }
 
 sub mark_odd_rows {
