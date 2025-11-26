@@ -8,7 +8,7 @@ import ContentFields from "./elements/ContentFields.svelte";
 
 import ContentTypeCustomType from "./elements/ContentTypeCustomType.svelte";
 
-class CustomType extends HTMLElement {
+class CustomElementFieldBase extends HTMLElement {
   options: ContentType.Options = {};
   connectedCallback(): void {
     this.options = JSON.parse(this.getAttribute("data-options") || "{}");
@@ -95,17 +95,20 @@ export default class ContentTypeEditor {
   static accessor optionsHtmlParams: ContentType.OptionsHtmlParams = {};
   static accessor opts: ContentType.ContentFieldsOpts;
   static readonly types = ContentFieldTypes;
-  static readonly CustomType = CustomType;
+  static readonly CustomElementFieldBase = CustomElementFieldBase;
 
   static registerCustomType(
     type: string,
     mountFunction:
       | ContentType.CustomContentFieldMountFunction
-      | typeof CustomType,
+      | typeof CustomElementFieldBase,
   ): void {
-    if (mountFunction.prototype instanceof CustomType) {
+    if (mountFunction.prototype instanceof CustomElementFieldBase) {
       const customElement = `mt-content-type-custom-type-${type}`;
-      customElements.define(customElement, mountFunction as typeof CustomType);
+      customElements.define(
+        customElement,
+        mountFunction as typeof CustomElementFieldBase,
+      );
       mountFunction = (props, target) => {
         let options: ContentType.Options;
         const customType = new ContentTypeCustomType({
