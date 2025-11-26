@@ -9,11 +9,13 @@
   // svelte-ignore unused-export-let
   export let optionsHtmlParams: ContentType.OptionsHtmlParams;
 
-  const id = `field-options-${$fieldsStore[fieldIndex].id}`;
-
   export let type: string;
   export let customElement: string;
   export let updateOptions: (options: ContentType.Options) => void;
+
+  $: field = $fieldsStore[fieldIndex];
+  $: options = field.options || {};
+  $: id = `field-options-${field.id}`;
 
   const initElement = (
     el: HTMLElement & { options: ContentType.Options },
@@ -32,15 +34,10 @@
   };
 </script>
 
-<ContentFieldOptionGroup
-  {type}
-  bind:field={$fieldsStore[fieldIndex]}
-  {id}
-  bind:options={$fieldsStore[fieldIndex].options}
->
+<ContentFieldOptionGroup {type} bind:field {id} bind:options>
   <svelte:element
     this={customElement}
-    data-options={JSON.stringify($fieldsStore[fieldIndex].options)}
+    data-options={JSON.stringify(options)}
     use:initElement
   />
 </ContentFieldOptionGroup>
