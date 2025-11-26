@@ -6,7 +6,7 @@ import ContentFieldTypes from "./ContentFieldTypes";
 
 import ContentFields from "./elements/ContentFields.svelte";
 
-import ContentTypeCustomType from "./elements/ContentTypeCustomType.svelte";
+import CustomElementField from "./elements/CustomElementField.svelte";
 
 class CustomElementFieldBase extends HTMLElement {
   options: ContentType.Options = {};
@@ -111,7 +111,7 @@ export default class ContentTypeEditor {
       );
       mountFunction = (props, target) => {
         let options: ContentType.Options;
-        const customType = new ContentTypeCustomType({
+        const customElementField = new CustomElementField({
           props: {
             ...props,
             type,
@@ -123,12 +123,12 @@ export default class ContentTypeEditor {
           target: target,
         });
         return {
-          component: customType,
+          component: customElementField,
           gather: () => {
             return options;
           },
           destroy: () => {
-            customType.$destroy();
+            customElementField.$destroy();
           },
         };
       };
