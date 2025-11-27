@@ -2949,7 +2949,6 @@ use vars qw( @ISA %Lexicon );
 	'Migrating site boolean meta data...' => 'サイトのboolean型のメタデータを移行しています...',
 	'Initializing default link target settings...' => 'リンクのターゲットの既定値を初期化しています...',
 	'Migrating web services passwords...' => 'Webサービスパスワードを移行しています...',
-	'Migrating the URL field in comment data...' => 'コメントデータのURLフィールドを移行しています...',
 
 ## lib/MT/Util.pm
 	'[quant,_1,day,days] from now' => '[quant,_1,日,日]後',
