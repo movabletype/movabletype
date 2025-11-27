@@ -20,12 +20,12 @@ sub upgrade {
     my $component = $args->{component} || 'core';
     my $cfg       = MT->config;
 
-    if ( !$from ) {
-        die
-            '"from" parameter is needed. This is "schema_version" before upgrading.';
-    }
-
     if ( lc($component) eq 'core' ) {
+        if ( !$from ) {
+            die
+                '"from" parameter is needed. This is "schema_version" before upgrading.';
+        }
+
         $cfg->SchemaVersion( $from, 1 );
     }
     else {
@@ -36,7 +36,12 @@ sub upgrade {
                 "component: $component does not exist in PluginSchemaVersion.";
         }
 
-        $plugin_schema_version->{$component} = $from;
+        if ( $from ) {
+            $plugin_schema_version->{$component} = $from;
+        }
+        else {
+            delete $plugin_schema_version->{$component};
+        }
         $cfg->PluginSchemaVersion( $plugin_schema_version, 1 );
     }
     $cfg->save_config;
