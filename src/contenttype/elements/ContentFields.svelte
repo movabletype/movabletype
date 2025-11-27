@@ -428,7 +428,6 @@
       jQuery(".mt-contentfield").each(function (_i, fld) {
         const jqFld = jQuery(fld);
         if (jqFld.find(".form-control.is-invalid").length > 0) {
-          /* @ts-expect-error : collapse is not defined */
           jqFld.find(".collapse").collapse("show");
         }
       });
