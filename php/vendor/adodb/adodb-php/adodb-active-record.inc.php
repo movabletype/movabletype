@@ -1210,19 +1210,7 @@ global $_ADODB_ACTIVE_DBS;
 	foreach($rows as $row) {
 
 		$obj = new $class($table,$primkeyArr,$db);
-
-		$has_error = false;
-		if ($db->databaseType == 'mssqlnative') {
-			if ($obj->ErrorMsg()) {
-				if ($obj->ErrorNo())
-					$has_error = true;
-			}
-		}
-		else {
-			if ($obj->ErrorNo())
-				$has_error = true;
-		}
-		if ($has_error){
+		if ($obj->ErrorNo()){
 			$db->_errorMsg = $obj->ErrorMsg();
 			return $false;
 		}
