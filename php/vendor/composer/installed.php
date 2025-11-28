@@ -3,7 +3,7 @@
         'name' => 'movabletype/movabletype',
         'pretty_version' => 'dev-develop',
         'version' => 'dev-develop',
-        'reference' => '69c99b79853763aa12bbc29d0ddce56c03dfd67c',
+        'reference' => '6fd664ce499d494c29edb8101b091ffd20a77e02',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -22,7 +22,7 @@
         'movabletype/movabletype' => array(
             'pretty_version' => 'dev-develop',
             'version' => 'dev-develop',
-            'reference' => '69c99b79853763aa12bbc29d0ddce56c03dfd67c',
+            'reference' => '6fd664ce499d494c29edb8101b091ffd20a77e02',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
