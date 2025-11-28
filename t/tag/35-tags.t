@@ -3064,6 +3064,31 @@ FooBar
 --- expected
 BarBar
 
+=== test 575-2
+--- template
+<MTSetVar name="foo" value="aあb"><MTVar name="foo" regex_replace="/あ/","い">
+--- expected
+aいb
+
+=== test 575-3
+--- template
+<MTSetVar name="foo" value="a b"><MTVar name="foo" regex_replace="/\s/","-">
+--- expected
+a-b
+
+=== test 575-4(wide space)
+--- skip_php
+--- template
+<MTSetVar name="foo" value="a　b"><MTVar name="foo" regex_replace="/\s/","-">
+--- expected
+a-b
+
+=== test 575-5(wide space with u option)
+--- template
+<MTSetVar name="foo" value="a　b"><MTVar name="foo" regex_replace="/\s/u","-">
+--- expected
+a-b
+
 === test 576
 --- template
 <MTSetVarBlock name="foo">Foo Bar Baz</MTSetVarBlock><MTGetVar name="foo" count_words="1">
