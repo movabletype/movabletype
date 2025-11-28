@@ -3,7 +3,6 @@ package MT::Test::ArchiveType;
 use strict;
 use warnings;
 use Test::More;
-use Encode;
 use MT::Test;
 use MT::Test::PHP;
 use MT::Test::Fixture::ArchiveType;
