@@ -490,6 +490,7 @@ ok( is_url('https://www.example.com/?foo=bar&baz=10%'),     'is_url() ssl' );
 ok( is_url('http://www.example.com:8080/?foo=bar&baz=10%'), 'is_url() port' );
 ok( !is_url('not a url'),    'is_url() not a url' );
 ok( !is_url('not http://_'), 'is_url() invalid url' );
+ok( !is_url(undef), 'is_url() for undef' );
 
 ### other utilities
 
