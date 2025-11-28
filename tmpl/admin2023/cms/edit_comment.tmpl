@@ -324,7 +324,7 @@
   <mt:if name="commenter_id">
     <div class="mb-3">
     <mt:if name="url">
-      <a href="<mt:var name="url" escape="html">"><$mt:Var name="url" escape="html"$></a>
+      <a href="<mt:var name="url" escape="html">" target="_blank" rel="noopener noreferrer"><mt:var name="url" escape="html"></a>
     <mt:else>
       <__trans phrase="No url in profile">
     </mt:if>
@@ -336,7 +336,9 @@
       <div class="col-1">
   </mt:if>
   <mt:if name="url">
-        <a href="<mt:var name="url" escape="html">" title="<mt:var name="url" escape="html">" class="d-inline-block"><mtapp:svgicon id="ic_link" title="<__trans phrase="Link">" size="sm"></a>
+        <a href="<mt:var name="url" escape="html">" title="<mt:var name="url" escape="html">" class="d-inline-block" target="_blank" rel="noopener noreferrer">
+          <mtapp:svgicon id="ic_permalink" title="<__trans phrase="View">" size="sm">
+        </a>
     <mt:unless name="commenter_id">
         <a title="<__trans phrase="View all comments with this URL">" href="<mt:var name="script_url">?__mode=list&amp;blog_id=<mt:var name="blog_id" escape="url">&amp;_type=comment&amp;filter=url&amp;filter_val=<mt:var name="url" escape="url">" class="d-none d-md-inline-block"><mtapp:svgicon id="ic_search" title="<__trans phrase="Search">" size="sm"></a>
     </mt:unless>
