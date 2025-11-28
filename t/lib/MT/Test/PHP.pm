@@ -45,7 +45,7 @@ sub run {
     my $command = _make_php_command();
     IPC::Run3::run3 $command, \$script, \my $result, $stderr, { binmode_stdin => 1 } or die $?;
     $result =~ s/^(\r\n|\r|\n|\s)+|(\r\n|\r|\n|\s)+\z//g;
-    Encode::decode_utf8($result);
+    $result = Encode::decode_utf8($result);
 
     return $result;
 }
@@ -134,7 +134,7 @@ sub daemon {
     close $sock;
 
     $result =~ s/^(\r\n|\r|\n|\s)+|(\r\n|\r|\n|\s)+\z//g;
-    Encode::decode_utf8($result);
+    $result = Encode::decode_utf8($result);
 
     return $result;
 }
