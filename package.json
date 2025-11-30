@@ -48,10 +48,7 @@
     "src-eslint": "eslint --max-warnings 0 --fix src",
     "src-format": "prettier --plugin prettier-plugin-svelte --write 'src/**/*.{ts,svelte}' '*.ts'",
     "src-tsc": "tsc",
-    "src-svelte-check": "svelte-check",
-    "build-svelte:app": "npm run src-build",
-    "build-svelte": "npm run build-svelte:app",
-    "svelte-dev": "npm run src-dev"
+    "src-svelte-check": "svelte-check"
   },
   "repository": {
     "type": "git",
