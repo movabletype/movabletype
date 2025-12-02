@@ -19,7 +19,8 @@
       "vitest/globals",
       "@types/jquery",
       "@types/jqueryui",
-      "@types/bootstrap"
+      "@types/bootstrap",
+      "@testing-library/jest-dom"
     ],
     "noImplicitAny": false,
     "jsx": "preserve",
