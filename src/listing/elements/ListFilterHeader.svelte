@@ -58,6 +58,7 @@
       data-bs-target="#list-filter-collapse"
       aria-expanded="false"
       aria-controls="list-filter-collapse"
-    />
+      aria-label="filter toggle"
+    ></button>
   </div>
 </div>

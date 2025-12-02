@@ -212,7 +212,7 @@
             <th scope="col">{window.trans("Selected")}</th>
             <th scope="col">{window.trans("Label")}</th>
             <th scope="col">{window.trans("Value")}</th>
-            <th scope="col" />
+            <th scope="col"></th>
           </tr>
         </thead>
         <tbody>

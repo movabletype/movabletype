@@ -683,7 +683,6 @@
         on:click={toggleAll}
         href=""
         aria-expanded={isExpanded ? "true" : "false"}
-        aria-controls=""
         class="d-inline-block"
       >
         {isExpanded ? window.trans("Close all") : window.trans("Edit all")}
@@ -748,7 +747,6 @@
         on:click={toggleAll}
         href=".mt-collapse__content"
         aria-expanded={isExpanded ? "true" : "false"}
-        aria-controls=""
         class="d-inline-block"
       >
         {isExpanded ? window.trans("Close all") : window.trans("Edit all")}

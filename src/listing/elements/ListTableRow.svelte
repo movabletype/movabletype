@@ -48,7 +48,7 @@
           value={object[0]}
           {checked}
         />
-        <span class="custom-control-indicator" />
+        <span class="custom-control-indicator"></span>
         <label class="form-check-label" for={"select_" + object[0]}
           ><span class="visually-hidden">{window.trans("Select")}</span></label
         >
