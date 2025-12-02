@@ -24,7 +24,8 @@
     "noImplicitAny": false,
     "jsx": "preserve",
     "baseUrl": ".",
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "verbatimModuleSyntax": true
   },
   "include": ["src"]
 }
