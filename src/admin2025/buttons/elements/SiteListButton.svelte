@@ -5,7 +5,7 @@
   import { isOuterClick } from "../outerClick";
   import { modalOverlay } from "../../svelte/action";
   import { fetchSites } from "src/utils/fetch-sites";
-  import { Site } from "src/@types/site";
+  import type { Site } from "src/@types/site";
 
   export let magicToken: string;
   export let limit: number = 50;

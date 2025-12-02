@@ -3,8 +3,8 @@
   import { portal } from "svelte-portal";
   import { isOuterClick } from "../outerClick";
   import { modalOverlay } from "../../svelte/action";
-  import { ContentType } from "src/@types/contenttype";
-  import { SearchTab } from "../search-button";
+  import type { ContentType } from "src/@types/contenttype";
+  import type { SearchTab } from "../search-button";
   import SearchForm from "../../forms/search/SearchForm.svelte";
   import { fetchContentTypes } from "src/utils/fetch-content-types";
 
