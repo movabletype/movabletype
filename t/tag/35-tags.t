@@ -5173,30 +5173,44 @@ path is required.
 --- expected
 <script src="/mt-static/foo/bar.js?v=VERSION_ID" type="text/javascript" async defer charset="utf-8"></script>
 
-=== test 919 stylesheet (MTC-25985)
+=== test 919 script (MTC-30989)
+--- skip_php
+--- template
+<MTApp:Script path="/foo/bar.js" version="1.0.0">
+--- expected
+<script src="/mt-static/foo/bar.js?v=1.0.0" charset="utf-8"></script>
+
+=== test 920 stylesheet (MTC-25985)
 --- skip_php
 --- template
 <MTApp:Stylesheet path="/foo/bar.css">
 --- expected
 <link rel="stylesheet" href="/mt-static/foo/bar.css?v=VERSION_ID">
 
-=== test 920 stylesheet (MTC-25985)
+=== test 921 stylesheet (MTC-25985)
 --- skip_php
 --- template
 <MTApp:Stylesheet path="foo/bar.css">
 --- expected
 <link rel="stylesheet" href="/mt-static/foo/bar.css?v=VERSION_ID">
 
-=== test 921 stylesheet (MTC-25985)
+=== test 922 stylesheet (MTC-25985)
 --- skip_php
 --- template
 <MTApp:Stylesheet path="foo/bar_%l.css">
 --- expected
 <link rel="stylesheet" href="/mt-static/foo/bar_en_us.css?v=VERSION_ID">
 
-=== test 922 stylesheet (MTC-25985)
+=== test 923 stylesheet (MTC-25985)
 --- skip_php
 --- template
 <MTApp:Stylesheet>
 --- expected_error
 path is required.
+
+=== test 924 stylesheet (MTC-30989)
+--- skip_php
+--- template
+<MTApp:Stylesheet path="/foo/bar.css" version="1.0.0">
+--- expected
+<link rel="stylesheet" href="/mt-static/foo/bar.css?v=1.0.0">
