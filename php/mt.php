@@ -12,8 +12,8 @@ require_once 'vendor/autoload.php';
  */
 require_once('lib/class.exception.php');
 
-define('VERSION', '9.000005');
-define('PRODUCT_VERSION', '9.0.5');
+define('VERSION', '9.001000');
+define('PRODUCT_VERSION', '9.1.0');
 define('DATA_API_DEFAULT_VERSION', '7');
 
 $PRODUCT_NAME = '__PRODUCT_NAME__';
