@@ -13,7 +13,8 @@ BEGIN {
 }
 
 BEGIN {
-    eval { use Test::MockTime::HiRes qw(set_fixed_time); 1 } or plan skip_all => "requires Test::MockTime::HiRes";
+    eval { require Test::MockTime::HiRes; Test::MockTime::HiRes->import(qw(set_fixed_time)); 1 }
+        or plan skip_all => "requires Test::MockTime::HiRes";
     use MT::Test;
 }
 

@@ -2078,18 +2078,21 @@ sub translate_naughty_words {
     }
 }
 
+# Enable "allow_nonref" by default for compatibility with RFC 7159.
+# This behavior is the same as in 4.00 and later versions of JSON::XS.
 sub to_json {
     my ( $value, $args ) = @_;
-    if ( MT->config->JSONCanonicalization ) {
-        $args ||= {};
-        $args->{canonical} = 1;
-    }
+    $args ||= {};
+    $args->{canonical}    = 1 if MT->config->JSONCanonicalization;
+    $args->{allow_nonref} = 1 unless exists $args->{allow_nonref};
     require JSON;
     return JSON::to_json( $value, $args );
 }
 
 sub from_json {
     my ( $value, $args ) = @_;
+    $args ||= {};
+    $args->{allow_nonref} = 1 unless exists $args->{allow_nonref};
     require JSON;
     return JSON::from_json( $value, $args );
 }

@@ -5,7 +5,6 @@ use utf8;
 use 5.010;
 use FindBin;
 use lib "$FindBin::Bin/../lib";    # t/lib
-use File::Path;
 use Test::More;
 use MT::Test::Env;
 our $test_env;

@@ -3064,6 +3064,31 @@ FooBar
 --- expected
 BarBar
 
+=== test 575-2
+--- template
+<MTSetVar name="foo" value="aあb"><MTVar name="foo" regex_replace="/あ/","い">
+--- expected
+aいb
+
+=== test 575-3
+--- template
+<MTSetVar name="foo" value="a b"><MTVar name="foo" regex_replace="/\s/","-">
+--- expected
+a-b
+
+=== test 575-4(wide space)
+--- skip_php
+--- template
+<MTSetVar name="foo" value="a　b"><MTVar name="foo" regex_replace="/\s/","-">
+--- expected
+a-b
+
+=== test 575-5(wide space with u option)
+--- template
+<MTSetVar name="foo" value="a　b"><MTVar name="foo" regex_replace="/\s/u","-">
+--- expected
+a-b
+
 === test 576
 --- template
 <MTSetVarBlock name="foo">Foo Bar Baz</MTSetVarBlock><MTGetVar name="foo" count_words="1">
@@ -5072,30 +5097,44 @@ path is required.
 --- expected
 <script src="/mt-static/foo/bar.js?v=VERSION_ID" type="text/javascript" async defer charset="utf-8"></script>
 
-=== test 919 stylesheet (MTC-25985)
+=== test 919 script (MTC-30989)
+--- skip_php
+--- template
+<MTApp:Script path="/foo/bar.js" version="1.0.0">
+--- expected
+<script src="/mt-static/foo/bar.js?v=1.0.0" charset="utf-8"></script>
+
+=== test 920 stylesheet (MTC-25985)
 --- skip_php
 --- template
 <MTApp:Stylesheet path="/foo/bar.css">
 --- expected
 <link rel="stylesheet" href="/mt-static/foo/bar.css?v=VERSION_ID">
 
-=== test 920 stylesheet (MTC-25985)
+=== test 921 stylesheet (MTC-25985)
 --- skip_php
 --- template
 <MTApp:Stylesheet path="foo/bar.css">
 --- expected
 <link rel="stylesheet" href="/mt-static/foo/bar.css?v=VERSION_ID">
 
-=== test 921 stylesheet (MTC-25985)
+=== test 922 stylesheet (MTC-25985)
 --- skip_php
 --- template
 <MTApp:Stylesheet path="foo/bar_%l.css">
 --- expected
 <link rel="stylesheet" href="/mt-static/foo/bar_en_us.css?v=VERSION_ID">
 
-=== test 922 stylesheet (MTC-25985)
+=== test 923 stylesheet (MTC-25985)
 --- skip_php
 --- template
 <MTApp:Stylesheet>
 --- expected_error
 path is required.
+
+=== test 924 stylesheet (MTC-30989)
+--- skip_php
+--- template
+<MTApp:Stylesheet path="/foo/bar.css" version="1.0.0">
+--- expected
+<link rel="stylesheet" href="/mt-static/foo/bar.css?v=1.0.0">

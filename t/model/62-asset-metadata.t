@@ -13,7 +13,6 @@ BEGIN {
 }
 
 use File::Basename qw( basename );
-use File::Spec;
 
 use MT::Test;
 use MT::Test::Permission;
