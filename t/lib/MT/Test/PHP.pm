@@ -11,6 +11,8 @@ use Test::TCP;
 
 my $PHPVersion;
 
+php_version();
+
 sub php_version {
     return 0 if $ENV{MT_TEST_SKIP_PHP};
     return $PHPVersion if defined $PHPVersion;
@@ -60,7 +62,7 @@ sub supports_memcached {
     $result =~ /memcache support\s*=>\s*enabled/ ? 1 : 0;
 }
 
-my ($INI_FILE, $command);
+my ($INI_FILE, $command, $SYSTEM_INI_SETTING);
 
 sub _make_php_command {
     return $command if $command;
@@ -88,8 +90,8 @@ INI
 
     close $fh;
 
-    my $ini_setting = `php --ini`;
-    if ($ini_setting =~ /Scan for additional .ini files in: \(none\)/) {
+    $SYSTEM_INI_SETTING //= `php --ini`;
+    if ($SYSTEM_INI_SETTING =~ /Scan for additional .ini files in: \(none\)/) {
         $ENV{PHP_INI_SCAN_DIR} = $dir;
         $command = ['php'];
     }
