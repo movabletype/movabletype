@@ -289,6 +289,9 @@ sub _request_internally {
     CGI::initialize_globals();
     $self->_clear_cache;
 
+    # Since ODBC driver seems to be fork-unsafe, dbh must be destroyed after forking process so that MT::Object will establish new one.
+    MT::Blog->driver->dbh(undef) if MT->config->ODBCDriver;
+
     my $app_params = $self->_app_params($params);
     my $cgi        = $self->_create_cgi_object($params);
     my $app        = $self->{app_class}->new(CGIObject => $cgi);
