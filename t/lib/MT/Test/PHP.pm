@@ -46,6 +46,10 @@ sub run {
     my ( $class, $script, $stderr ) = @_;
     my $command = _make_php_command();
     IPC::Run3::run3 $command, \$script, \my $result, $stderr, { binmode_stdin => 1 } or die $?;
+
+    # Since ODBC driver seems to be fork-unsafe, dbh must be destroyed after forking process so that MT::Object will establish new one.
+    MT::Blog->driver->dbh(undef) if MT->config->ODBCDriver;
+
     $result =~ s/^(\r\n|\r|\n|\s)+|(\r\n|\r|\n|\s)+\z//g;
     $result = Encode::decode_utf8($result);
 
@@ -116,6 +120,10 @@ sub daemon {
                 '--port',      $port,
                 '--mt_config', $config,
             );
+
+            # Since ODBC driver seems to be fork-unsafe, dbh must be destroyed after forking process so that MT::Object will establish new one.
+            MT::Blog->driver->dbh(undef) if $ENV{MT_TEST_ODBCDRIVER};
+
             exec join(' ', @$command, @opts);
         });
 
@@ -137,6 +145,9 @@ sub daemon {
 
     $result =~ s/^(\r\n|\r|\n|\s)+|(\r\n|\r|\n|\s)+\z//g;
     $result = Encode::decode_utf8($result);
+
+    # Since ODBC driver seems to be fork-unsafe, dbh must be destroyed after forking process so that MT::Object will establish new one.
+    MT::Blog->driver->dbh(undef) if $ENV{MT_TEST_ODBCDRIVER};
 
     return $result;
 }
