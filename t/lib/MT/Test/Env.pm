@@ -528,6 +528,46 @@ sub _connect_info_sqlite {
     );
 }
 
+sub _connect_info_umssqlserver {
+    my $self = shift;
+
+    my %connect_info = (
+        ObjectDriver => 'DBI::UMSSQLServer',
+        DBUser       => 'SA',
+        DBPort       => 1433,
+    );
+    my @keys = qw(ObjectDriver Database DBPort DBHost DBSocket DBUser DBPassword ODBCDriver ODBCEncrypt);
+    for my $key (@keys) {
+        my $env_key = "MT_TEST_" . (uc $key);
+        $connect_info{$key} = $ENV{$env_key} if $ENV{$env_key};
+    }
+    note "DRIVER: UMSSQLServer";
+
+    eval { require MT::ObjectDriver::Driver::DBD::UMSSQLServer; 1 } or die 'UMSSQLServer is needed';
+    require MT::ConfigMgr;
+    my $config = MT::ConfigMgr->new;
+    $config->set($_ => $connect_info{$_}) for keys %connect_info;
+    $config->set(Database => '');
+    my $dsn = MT::ObjectDriver::Driver::DBD::UMSSQLServer->dsn_from_config($config);
+    my $dbh = DBI->connect($dsn, $connect_info{DBUser}, $connect_info{DBPassword});
+    $self->_prepare_umssql_database($dbh);
+    %connect_info;
+}
+
+sub _prepare_umssql_database {
+    my ($self, $dbh) = @_;
+    local $dbh->{RaiseError}         = 1;
+    local $dbh->{ShowErrorStatement} = 1;
+    my $sql           = <<"END_OF_SQL";
+DROP DATABASE IF EXISTS mt_test;
+CREATE DATABASE mt_test COLLATE Latin1_General_100_CI_AI_SC_UTF8;
+END_OF_SQL
+
+    for my $statement (split ";\n", $sql) {
+        $dbh->do($statement);
+    }
+}
+
 sub skip_unless_mysql_supports_utf8mb4 {
     my $self       = shift;
     my $db_charset = $self->mysql_db_charset // '';
