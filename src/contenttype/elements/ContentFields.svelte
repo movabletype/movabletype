@@ -26,6 +26,7 @@
   let labelFields: Array<{ value: string; label: string }> = [];
   let labelField = opts.labelField;
   let isExpanded = false;
+  let description = opts.description;
 
   const gathers: { [key: string]: (() => object) | undefined } = {};
   const tags: Array<HTMLDivElement> = [];
@@ -573,8 +574,9 @@
                       <textarea
                         name="description"
                         id="description"
-                        class="form-control">{opts.description}</textarea
-                      >
+                        class="form-control"
+                        bind:value={description}
+                      ></textarea>
                     </div>
                   </div>
                   <div class="col">
@@ -650,6 +652,9 @@
               </div>
             </div>
           </div>
+          <p class="text-muted" style="white-space: pre-line;">
+            {description}
+          </p>
         </div>
       {:else}
         <div id="name-field" class="form-group">
