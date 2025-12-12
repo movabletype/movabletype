@@ -37,7 +37,7 @@ class MT_Test_Error_Handler {
         if (preg_match('/Creation of dynamic property Memcache::\$connection is deprecated/', $msg) === 1) {
             return true;
         }
-        if (preg_match('/Creation of dynamic property/', $msg) === 1 && preg_match('!php/vendor/!', $file) === 1) {
+        if (preg_match('/Creation of dynamic property/', $msg) === 1 && preg_match('!php'. DIRECTORY_SEPARATOR .'vendor!', $file) === 1) {
             return true;
         }
         // Obsolete tags
