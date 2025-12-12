@@ -198,7 +198,7 @@ if (!defined('_ADODB_LAYER')) {
 		/**
 		 * ADODB version as a string.
 		 */
-		$ADODB_vers = 'v5.22.7  2023-11-04';
+		$ADODB_vers = 'v5.22.11  2025-11-22';
 
 		/**
 		 * Determines whether recordset->RecordCount() is used.
@@ -2176,7 +2176,7 @@ if (!defined('_ADODB_LAYER')) {
 			return false;
 		}
 
-		$midrow = (integer) ($total/2);
+		$midrow = (int) ($total/2);
 		$rs = $this->SelectLimit("select $field from $table $where order by 1",1,$midrow);
 		if ($rs && !$rs->EOF) {
 			return reset($rs->fields);
@@ -2655,39 +2655,48 @@ if (!defined('_ADODB_LAYER')) {
 	 * @noinspection PhpUnusedParameterInspection
 	 */
 	function autoExecute($table, $fields_values, $mode = 'INSERT', $where = '', $forceUpdate = true, $magic_quotes = false) {
+		switch($mode) {
+			case DB_AUTOQUERY_INSERT:
+			case DB_AUTOQUERY_UPDATE:
+				break;
+			case 'UPDATE':
+				$mode = DB_AUTOQUERY_UPDATE;
+				break;
+			case 'INSERT':
+				$mode = DB_AUTOQUERY_INSERT;
+				break;
+			default:
+				$this->outp_throw("AutoExecute: Unknown mode=$mode", 'AutoExecute');
+				return false;
+		}
+
 		if (empty($fields_values)) {
 			$this->outp_throw('AutoExecute: Empty fields array', 'AutoExecute');
 			return false;
 		}
-		if (empty($where) && ($mode == 'UPDATE' || $mode == 2 /* DB_AUTOQUERY_UPDATE */)) {
+		if (empty($where) && $mode == DB_AUTOQUERY_UPDATE) {
 			$this->outp_throw('AutoExecute: Illegal mode=UPDATE with empty WHERE clause', 'AutoExecute');
 			return false;
 		}
 
 		$sql = "SELECT * FROM $table";
-		$rs = $this->SelectLimit($sql, 1);
-		if (!$rs) {
-			return false; // table does not exist
-		}
-
-		$rs->tableName = $table;
 		if (!empty($where)) {
 			$sql .= " WHERE $where";
 		}
+
+		$rs = $this->SelectLimit($sql, 1);
+		if (!$rs || $mode == DB_AUTOQUERY_UPDATE && $rs->EOF) {
+			// Table does not exist or udpate where clause matches no rows
+			return false;
+		}
+
+		$rs->tableName = $table;
 		$rs->sql = $sql;
 
-		switch($mode) {
-			case 'UPDATE':
-			case DB_AUTOQUERY_UPDATE:
-				$sql = $this->GetUpdateSQL($rs, $fields_values, $forceUpdate);
-				break;
-			case 'INSERT':
-			case DB_AUTOQUERY_INSERT:
-				$sql = $this->GetInsertSQL($rs, $fields_values);
-				break;
-			default:
-				$this->outp_throw("AutoExecute: Unknown mode=$mode", 'AutoExecute');
-				return false;
+		if ($mode == DB_AUTOQUERY_UPDATE) {
+			$sql = $this->getUpdateSQL($rs, $fields_values, $forceUpdate);
+		} else {
+			$sql = $this->getInsertSQL($rs, $fields_values);
 		}
 		return $sql && $this->Execute($sql);
 	}
@@ -4300,6 +4309,8 @@ class ADORecordSet implements IteratorAggregate {
 	 */
 	function getAssoc($force_array = false, $first2cols = false)
 	{
+		global $ADODB_FETCH_MODE;
+
 		/*
 		* Insufficient rows to show data
 		*/
@@ -4322,8 +4333,8 @@ class ADORecordSet implements IteratorAggregate {
 		* Get the fetch mode when the call was executed, this may be
 		* different than ADODB_FETCH_MODE
 		*/
-		$fetchMode = $this->connection->fetchMode;
-		if ($fetchMode == ADODB_FETCH_BOTH) {
+		$fetchMode = $this->adodbFetchMode;
+		if ($fetchMode == ADODB_FETCH_BOTH || $fetchMode == ADODB_FETCH_DEFAULT) {
 			/*
 			* If we are using BOTH, we present the data as if it
 			* was in ASSOC mode. This could be enhanced by adding
@@ -4355,7 +4366,7 @@ class ADORecordSet implements IteratorAggregate {
 
 			$myFields = $this->fields;
 
-			if ($fetchMode == ADODB_FETCH_BOTH) {
+			if ($fetchMode == ADODB_FETCH_BOTH || $fetchMode == ADODB_FETCH_DEFAULT) {
 				/*
 				* extract the associative keys
 				*/
@@ -5699,10 +5710,10 @@ class ADORecordSet implements IteratorAggregate {
 										$nconnect = true; $persist = true; break;
 					case 'persist':
 					case 'persistent':	$persist = $v; break;
-					case 'debug':		$obj->debug = (integer) $v; break;
+					case 'debug':		$obj->debug = (int) $v; break;
 					#ibase
 					case 'role':		$obj->role = $v; break;
-					case 'dialect':	$obj->dialect = (integer) $v; break;
+					case 'dialect':	$obj->dialect = (int) $v; break;
 					case 'charset':		$obj->charset = $v; $obj->charSet=$v; break;
 					case 'buffers':		$obj->buffers = $v; break;
 					case 'fetchmode':   $obj->SetFetchMode($v); break;
