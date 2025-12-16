@@ -26,7 +26,7 @@ class MT_Test_Error_Handler {
                 $error_msg,
                 $error_file,
                 $error_line,
-                $_SERVER['REQUEST_URI']
+                $_ENV['REQUEST_URI']
             );
             error_log($line. "\n", 3, $this->log);
         }
