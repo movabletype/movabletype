@@ -32,7 +32,7 @@ class MT_Test_Error_Handler {
         }
     }
 
-    private function do_ignore($msg, $file) {
+    public function do_ignore($msg, $file) {
 
         if (preg_match('/Creation of dynamic property Memcache::\$connection is deprecated/', $msg) === 1) {
             return true;
