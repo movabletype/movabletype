@@ -29,9 +29,14 @@ EOF
     $php .= <<'EOF';
     include_once($MT_HOME . '/php/mt.php');
     include_once($MT_HOME . '/php/lib/MTUtil.php');
-    $prev = set_error_handler(function($errno, $errstr, $errfile, $errline, $errorvars = null) {
+    include_once($MT_HOME . '/t/lib/MT/Test/PHP/error_handler.php');
+    $error_handler = new MT_Test_Error_Handler();
+    $prev = set_error_handler(function($errno, $errstr, $errfile, $errline, $errorvars = null) use ($error_handler) {
         if (preg_match('/include_once/', $errstr)) {
-            return false;
+            return true;
+        }
+        if ($error_handler->do_ignore($errstr, $errfile)) {
+            return true;
         }
         $stderr = fopen('php://stderr', 'w');
         fwrite($stderr, "no:$errno error:$errstr file:$errfile line:$errline\n");
@@ -43,10 +48,12 @@ EOF
     $ctx =& $mt->context();
     $blog = $db->fetch_blog($blog_id);
     $ctx->stash('blog', $blog);
+    echo 'success';
 EOF
 
     my $ret = MT::Test::PHP->run($php, \my $error_log);
 
+    is $ret, 'success', 'right output';
     is $error_log, '', 'no warnings';
 };
 
