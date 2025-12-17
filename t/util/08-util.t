@@ -37,7 +37,12 @@ use MT::Util qw( start_end_day start_end_week start_end_month start_end_year
     sax_parser trim ltrim rtrim asset_cleanup caturl
     weaken log_time make_string_csv browser_language sanitize_embed
     extract_url_path break_up_text dir_separator deep_do
-    deep_copy canonicalize_path clear_site_stats_widget_cache);
+    deep_copy canonicalize_path clear_site_stats_widget_cache asset_from_url)
+    , # import only
+    qw( munge_comment html_text_transform archive_file_for get_entry
+    launch_background_tasks valid_date_time2ts expat_parser libxml_parser
+    trim_path multi_iter realpath check_fast_cgi encode_json
+    build_upload_destination date_for_listing is_within_a_directory );
 
 $test_env->prepare_fixture('db_data');
 
@@ -875,6 +880,38 @@ my $fmgr = MT::FileMgr->new('Local');
     ok( $fmgr->exists($dir), 'Site stats directory exists' );
     clear_site_stats_widget_cache();
     ok( !$fmgr->exists($dir), 'Site stats directory was removed' );
+}
+
+{
+    require MT::Test::Image;
+    require Test::MockModule;
+    # asset_from_url() might be worth adding some additional test cases.
+    my $res;
+    my $mock = Test::MockModule->new('LWP::UserAgent');
+    $mock->mock('get', sub {
+        my ($self, $url) = @_;
+        return $res;
+    });
+    my $url = 'https://example.com/image/sample.jpg';
+
+    $res = HTTP::Response->new(404);
+    is asset_from_url($url), undef, "asset_from_url() without success";
+    $res->code(200);
+    is asset_from_url($url), undef, "asset_from_url() without content";
+
+    my $fh = MT::Test::Image->tempfile(UNLINK => 1, SUFFIX => '.jpg');
+    seek($fh, 0,0);
+    $res->content(join('', <$fh>));
+    is asset_from_url($url), undef, "asset_from_url() without mimetype";
+    $res->header(content_type => 'image/jpeg');
+
+    my $asset = asset_from_url($url);
+    ok $asset, 'asset_from_url() returns MT::Asset';
+    if ( $asset ) {
+        is $asset->file_ext, 'jpg', 'Asset file_ext';
+        is $asset->width,  640,     'Asset width';
+        is $asset->height, 480,     'Asset height';
+    }
 }
 
 done_testing();
