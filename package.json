@@ -79,7 +79,7 @@
     "postcss-flexbugs-fixes": "^5.0.1",
     "prettier": "^3.3.3",
     "prettier-plugin-svelte": "^3.2.7",
-    "rollup": "^4.53.3",
+    "rollup": "^4.54.0",
     "rollup-plugin-css-only": "^4.5.5",
     "rollup-plugin-esbuild": "^6.1.1",
     "rollup-plugin-livereload": "^2.0.5",
