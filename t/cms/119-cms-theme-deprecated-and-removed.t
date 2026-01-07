@@ -40,7 +40,6 @@ use MT::Test::Permission;
 use MT::Test::Fixture;
 use MT::Test::App;
 use MT::Test::Image;
-use File::Path;
 
 MT::Test::Image->write(file => $test_env->path('themes/deprecated_theme/thumb.png'));
 MT::Test::Image->write(file => $test_env->path('themes/deprecated_theme/thumb-medium.png'));

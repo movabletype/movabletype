@@ -33,7 +33,7 @@ our @EXPORT_OK
     weaken log_time make_string_csv browser_language sanitize_embed
     extract_url_path break_up_text dir_separator deep_do deep_copy
     realpath canonicalize_path clear_site_stats_widget_cache check_fast_cgi
-    encode_json build_upload_destination is_asset_from_url
+    encode_json build_upload_destination asset_from_url
     date_for_listing is_within_a_directory );
 
 push @EXPORT_OK, @MT::Util::Deprecated::EXPORT_OK;
@@ -2075,18 +2075,21 @@ sub translate_naughty_words {
     }
 }
 
+# Enable "allow_nonref" by default for compatibility with RFC 7159.
+# This behavior is the same as in 4.00 and later versions of JSON::XS.
 sub to_json {
     my ( $value, $args ) = @_;
-    if ( MT->config->JSONCanonicalization ) {
-        $args ||= {};
-        $args->{canonical} = 1;
-    }
+    $args ||= {};
+    $args->{canonical}    = 1 if MT->config->JSONCanonicalization;
+    $args->{allow_nonref} = 1 unless exists $args->{allow_nonref};
     require JSON;
     return JSON::to_json( $value, $args );
 }
 
 sub from_json {
     my ( $value, $args ) = @_;
+    $args ||= {};
+    $args->{allow_nonref} = 1 unless exists $args->{allow_nonref};
     require JSON;
     return JSON::from_json( $value, $args );
 }

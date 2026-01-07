@@ -70,7 +70,7 @@ subtest 'blockeditor_dialog_list_asset_permission' => sub {
         can_multi   => 1,
         dialog      => 1,
     });
-    $app->has_permission_error("blockeditor_dialog_list_asset by non permitted user.");
+    ok $app->last_location->query_param('permission'), "blockeditor_dialog_list_asset by non permitted user.";
 };
 
 done_testing();

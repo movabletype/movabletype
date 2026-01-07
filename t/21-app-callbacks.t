@@ -35,8 +35,8 @@ my $plugin = MT::Plugin->new({name => "21-app-callbacks.t"});
 my $entry2 = MT::Entry->load({}, { limit => 1 });
 
 my $app_post_save_called;
-MT->add_callback('AppPostEntrySave', 1, $plugin, 
-                 sub { 
+MT->add_callback('AppPostEntrySave', 1, $plugin,
+                 sub {
                        $app_post_save_called = 1;
                        my @plcmts = MT::Placement->load({entry_id => $_[2]->id});
                        for my $plcmt (@plcmts) {

@@ -100,19 +100,19 @@ MT.App = new Class( MT.App, {
                 this.editor.setMode( "iframe" );
                 break;
 
-            case "doRemoveItems":
+            case "doRemoveItems": // XXX: Seems no longer in use
                 /* only used for entry edit */
                 var form = DOM.getFirstAncestorByTagName( event.target, "form", true );
                 if ( !form )
                     return;
 
                 var e = event.target;
-                var return_args = '__mode=list&amp;_type='
+                var return_args = '__mode=list&_type='
                     + e.getAttribute( "mt:object-type" )
-                    + '&amp;blog_id='
+                    + '&blog_id='
                     + e.getAttribute( "mt:blog-id" );
                 if (e.hasAttribute('mt:subtype'))
-                    return_args += '&amp;type='
+                    return_args += '&type='
                         + e.getAttribute('mt:subtype');
                 if( !doRemoveItems(
                         form,

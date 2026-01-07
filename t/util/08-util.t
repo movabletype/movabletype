@@ -7,6 +7,7 @@ use FindBin;
 use lib "$FindBin::Bin/../lib"; # t/lib
 use Test::More;
 use MT::Test::Env;
+use Mock::MonkeyPatch;
 our $test_env;
 BEGIN {
     $test_env = MT::Test::Env->new(
@@ -36,7 +37,12 @@ use MT::Util qw( start_end_day start_end_week start_end_month start_end_year
     sax_parser trim ltrim rtrim asset_cleanup caturl
     weaken log_time make_string_csv browser_language sanitize_embed
     extract_url_path break_up_text dir_separator deep_do
-    deep_copy canonicalize_path clear_site_stats_widget_cache);
+    deep_copy canonicalize_path clear_site_stats_widget_cache asset_from_url)
+    , # import only
+    qw( munge_comment html_text_transform archive_file_for get_entry
+    launch_background_tasks valid_date_time2ts expat_parser libxml_parser
+    trim_path multi_iter realpath check_fast_cgi encode_json
+    build_upload_destination date_for_listing is_within_a_directory );
 
 $test_env->prepare_fixture('db_data');
 
@@ -193,20 +199,74 @@ is( remove_html(
     "remove html prevents abuse, saves plain text, escapes inner < characters"
 );
 
-is( MT::Util::to_json( { 'foo' => 2 } ),       '{"foo":2}' );
-is( MT::Util::to_json( { 'foo' => 1 } ),       '{"foo":1}' );
-is( MT::Util::to_json( { 'foo' => 0 } ),       '{"foo":0}' );
-is( MT::Util::to_json( { 'foo' => 'hoge' } ),  '{"foo":"hoge"}' );
-is( MT::Util::to_json( { 'foo' => 'ho1ge' } ), '{"foo":"ho1ge"}' );
-is( MT::Util::to_json( [ 'foo', 'bar', 'baz' ] ), '["foo","bar","baz"]' );
-is( MT::Util::to_json( [ 'foo', 1, 'bar', 2, 3, 4 ] ),
-    '["foo",1,"bar",2,3,4]' );
-is( MT::Util::to_json(
-        [ 'foo', 1, 'bar', { hoge => 1, moge => 'a' } ],
-        { canonical => 1 }
-    ),
-    '["foo",1,"bar",{"hoge":1,"moge":"a"}]'
-);
+subtest 'to_json' => sub {
+    is( MT::Util::to_json( { 'foo' => 2 } ),       '{"foo":2}' );
+    is( MT::Util::to_json( { 'foo' => 1 } ),       '{"foo":1}' );
+    is( MT::Util::to_json( { 'foo' => 0 } ),       '{"foo":0}' );
+    is( MT::Util::to_json( { 'foo' => 'hoge' } ),  '{"foo":"hoge"}' );
+    is( MT::Util::to_json( { 'foo' => 'ho1ge' } ), '{"foo":"ho1ge"}' );
+    is( MT::Util::to_json( [ 'foo', 'bar', 'baz' ] ), '["foo","bar","baz"]' );
+    is( MT::Util::to_json( [ 'foo', 1, 'bar', 2, 3, 4 ] ),
+        '["foo",1,"bar",2,3,4]' );
+    is( MT::Util::to_json(
+            [ 'foo', 1, 'bar', { hoge => 1, moge => 'a' } ],
+            { canonical => 1 }
+        ),
+        '["foo",1,"bar",{"hoge":1,"moge":"a"}]'
+    );
+
+    subtest 'allow_nonref' => sub {
+        my ($last_value, $last_args);
+        my $guard = Mock::MonkeyPatch->patch(
+            'JSON::to_json' => sub {
+                ($last_value, $last_args) = @_;
+                Mock::MonkeyPatch::ORIGINAL(@_);
+            },
+        );
+
+        is( MT::Util::to_json(1), '1' );
+        is( $last_args->{allow_nonref}, 1, 'allow_nonref is enabled by default' );
+
+        is ( MT::Util::to_json({}, { allow_nonref => 0 }), '{}' );
+        is( $last_args->{allow_nonref}, 0, 'allow_nonref is passed correctly' );
+
+        is ( MT::Util::to_json({}, { allow_nonref => undef }), '{}' );
+        is( $last_args->{allow_nonref}, undef, 'allow_nonref is passed correctly' );
+    };
+};
+
+subtest 'from_json' => sub {
+    # add tests like the above
+    is_deeply( MT::Util::from_json('{"foo":2}'),       { 'foo' => 2 } );
+    is_deeply( MT::Util::from_json('{"foo":1}'),       { 'foo' => 1 } );
+    is_deeply( MT::Util::from_json('{"foo":0}'),       { 'foo' => 0 } );
+    is_deeply( MT::Util::from_json('{"foo":"hoge"}'),  { 'foo' => 'hoge' } );
+    is_deeply( MT::Util::from_json('{"foo":"ho1ge"}'), { 'foo' => 'ho1ge' } );
+    is_deeply( MT::Util::from_json('["foo","bar","baz"]'), [ 'foo', 'bar', 'baz' ] );
+    is_deeply( MT::Util::from_json('["foo",1,"bar",2,3,4]'),
+        [ 'foo', 1, 'bar', 2, 3, 4 ] );
+    is_deeply( MT::Util::from_json('["foo",1,"bar",{"hoge":1,"moge":"a"}]'),
+        [ 'foo', 1, 'bar', { hoge => 1, moge => 'a' } ] );
+
+    subtest 'allow_nonref' => sub {
+        my ($last_value, $last_args);
+        my $guard = Mock::MonkeyPatch->patch(
+            'JSON::from_json' => sub {
+                ($last_value, $last_args) = @_;
+                Mock::MonkeyPatch::ORIGINAL(@_);
+            },
+        );
+
+        is( MT::Util::from_json('1'), 1 );
+        is( $last_args->{allow_nonref}, 1, 'allow_nonref is enabled by default' );
+
+        is_deeply ( MT::Util::from_json('{}', { allow_nonref => 0 }), {} );
+        is( $last_args->{allow_nonref}, 0, 'allow_nonref is passed correctly' );
+
+        is_deeply ( MT::Util::from_json('{}', { allow_nonref => undef }), {} );
+        is( $last_args->{allow_nonref}, undef, 'allow_nonref is passed correctly' );
+    };
+};
 
 ### start_end_*
 is( start_end_day('19770908153005'),
@@ -820,6 +880,38 @@ my $fmgr = MT::FileMgr->new('Local');
     ok( $fmgr->exists($dir), 'Site stats directory exists' );
     clear_site_stats_widget_cache();
     ok( !$fmgr->exists($dir), 'Site stats directory was removed' );
+}
+
+{
+    require MT::Test::Image;
+    require Test::MockModule;
+    # asset_from_url() might be worth adding some additional test cases.
+    my $res;
+    my $mock = Test::MockModule->new('LWP::UserAgent');
+    $mock->mock('get', sub {
+        my ($self, $url) = @_;
+        return $res;
+    });
+    my $url = 'https://example.com/image/sample.jpg';
+
+    $res = HTTP::Response->new(404);
+    is asset_from_url($url), undef, "asset_from_url() without success";
+    $res->code(200);
+    is asset_from_url($url), undef, "asset_from_url() without content";
+
+    my $fh = MT::Test::Image->tempfile(UNLINK => 1, SUFFIX => '.jpg');
+    seek($fh, 0,0);
+    $res->content(join('', <$fh>));
+    is asset_from_url($url), undef, "asset_from_url() without mimetype";
+    $res->header(content_type => 'image/jpeg');
+
+    my $asset = asset_from_url($url);
+    ok $asset, 'asset_from_url() returns MT::Asset';
+    if ( $asset ) {
+        is $asset->file_ext, 'jpg', 'Asset file_ext';
+        is $asset->width,  640,     'Asset width';
+        is $asset->height, 480,     'Asset height';
+    }
 }
 
 done_testing();

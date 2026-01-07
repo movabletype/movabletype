@@ -2281,3 +2281,17 @@ li.nav-item {
 .app-setting {
   margin-bottom: 2rem;
 }
+
+/* List Theme */
+.theme-thumbnail {
+  flex: 0 1 160px;
+}
+.theme-meta {
+  flex: 1 1;
+}
+
+@include media-breakpoint-up(md) {
+  .theme-thumbnail {
+    flex: 0 1 180px;
+  }
+}

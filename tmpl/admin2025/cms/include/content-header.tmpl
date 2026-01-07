@@ -1,6 +1,6 @@
 <mt:setvarblock name="product_header_name">
 <mt:if name="scope_type" eq="user">
-  Movable Type <mt:var name="mt_version_id" regex_replace="/\..+$/","">
+  Movable Type<mt:if name="mt_product_code" eq="MTP"> Premium</mt:if> <mt:var name="mt_version_id" regex_replace="/\..+$/","">
 <mt:elseif name="scope_type" eq="system">
   <__trans phrase="System">
 <mt:elseif name="scope_type" eq="website">

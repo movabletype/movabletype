@@ -16,7 +16,7 @@ class MT_Test_Error_Handler {
 
         if ($error_no & E_NOTICE) {
             return;
-        } elseif (!empty($this->log) && !$this->do_ignore($error_msg)) {
+        } elseif (!empty($this->log) && !$this->do_ignore($error_msg, $error_file)) {
             $ts = date('Y-m-d H:i:s');
             $error_msg = preg_replace('/\t/', '\\t', $error_msg);
             $line = sprintf(
@@ -26,15 +26,18 @@ class MT_Test_Error_Handler {
                 $error_msg,
                 $error_file,
                 $error_line,
-                $_SERVER['REQUEST_URI']
+                $_ENV['REQUEST_URI']
             );
             error_log($line. "\n", 3, $this->log);
         }
     }
 
-    private function do_ignore($msg) {
+    public function do_ignore($msg, $file) {
 
         if (preg_match('/Creation of dynamic property Memcache::\$connection is deprecated/', $msg) === 1) {
+            return true;
+        }
+        if (preg_match('/Creation of dynamic property/', $msg) === 1 && preg_match('!php/vendor/!', $file) === 1) {
             return true;
         }
         // Obsolete tags

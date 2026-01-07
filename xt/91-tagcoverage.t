@@ -125,13 +125,12 @@ foreach my $c ( sort keys %$components ) {
     $tag_count += $count;
 }
 
+my $core_tags = $mt->component('core')->registry('tags');
 foreach my $c ( sort keys %$components ) {
     next unless $mt->component($c);
     note("Checking for tag documentation for component $c");
     my $all_docs  = '';
     my $tags      = $mt->component($c)->registry('tags');
-    my $core_tags = $mt->component('core')->registry('tags')
-        unless $c eq 'core';
 
     my $paths = $components->{$c}{paths};
     {
@@ -183,7 +182,7 @@ foreach my $c ( sort keys %$components ) {
     foreach my $tag ( sort keys %{ $tags->{function} } ) {
         next if $tag eq 'plugin';
         next if $is_removed{$tag};
-        if ( $core_tags && $core_tags->{function}{$tag} ) {
+        if ( $c ne 'core' && $core_tags->{function}{$tag} ) {
             ok( 1, "component $c, function tag $tag (extends core tag)" );
         }
         else {
@@ -196,7 +195,7 @@ foreach my $c ( sort keys %$components ) {
         next if $tag eq 'plugin';
         $tag =~ s/\?$//;
         next if $is_removed{$tag};
-        if ( $core_tags && $core_tags->{block}{$tag} ) {
+        if ( $c ne 'core' && $core_tags->{block}{$tag} ) {
             ok( 1, "component $c, block tag $tag (extends core tag)" );
         }
         else {
@@ -207,7 +206,7 @@ foreach my $c ( sort keys %$components ) {
     foreach my $tag ( sort keys %{ $tags->{modifier} } ) {
         next if $tag eq 'plugin';
         next if $is_removed{$tag};
-        if ( $core_tags && $core_tags->{modifier}{$tag} ) {
+        if ( $c ne 'core' && $core_tags->{modifier}{$tag} ) {
             ok( 1, "component $c, modifier $tag (extends core tag)" );
         }
         else {

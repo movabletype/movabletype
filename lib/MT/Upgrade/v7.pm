@@ -602,7 +602,7 @@ sub _v7_migrate_blog_templatemap_archive_type {
 sub _migrate_site_archive_type {
     my ( $self, $site ) = @_;
 
-    my @archive_type = split ',', ($site->archive_type || '');
+    my @archive_type = split ',', $site->archive_type;
     my %hash = map { $_, 1 } map { my $tmp = $_; $tmp =~ s/_/-/; $tmp; } @archive_type;
     my @unique_archive_type = sort keys %hash;
     $site->archive_type( join( ',', @unique_archive_type ) );

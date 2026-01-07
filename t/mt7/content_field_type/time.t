@@ -110,7 +110,7 @@ subtest 'feed_value_handler' => sub {
             required      => 0,
         },
     };
-      
+
     my $result = MT::ContentFieldType::Time::feed_value_handler( $app, $field_data, '20010101000000' );
     is $result, '00:00:00';
 };

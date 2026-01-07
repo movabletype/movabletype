@@ -17,10 +17,8 @@ BEGIN {
 use MT::Util::PluginVersions;
 use ExtUtils::Manifest;
 use File::Copy qw(copy);
-use Path::Tiny;
+use Path::Tiny qw(path);
 use File::pushd;
-use Test::Differences;
-use File::Spec;
 
 $test_env->save_file('plugins/AddedPluginYaml/config.yaml', <<ADDED_PLUGIN_YAML);
 id: AddedPluginYaml

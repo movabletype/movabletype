@@ -2859,8 +2859,11 @@ sub is_authorized {
         { author_id => $user->id },
         '-and',
         { blog_id => \@blog_ids },
-        '-and_not',
-        { permissions => [\'IS NULL', ''] },
+        '-and',
+        [   { permissions => \'IS NOT NULL' },
+            '-or',
+            { permissions => { not => '' } },
+        ]
     ];
     my @perms = MT->model('permission')->load($terms);
     if (@perms) {
@@ -2879,10 +2882,10 @@ sub is_authorized {
                 return 1;
             }
         }
-        return $app->errtrans('Permission denied');
+        return $app->permission_denied();
     }
     else {
-        return $app->errtrans('Permission denied');
+        return $app->permission_denied();
     }
 
 }
@@ -5061,7 +5064,10 @@ sub setup_filtered_ids {
     else {
         $filteritems = [];
     }
-    my $ds     = $app->param('_type');
+    my $ds = $app->param('_type');
+    if ($ds eq 'content_data') {
+        $ds .= '.' . $app->param('type');
+    }
     my $filter = MT->model('filter')->new;
     $filter->set_values(
         {   object_ds => $ds,
@@ -5162,9 +5168,8 @@ sub setup_editor_param {
                             @{ $tmpls->{ $k . 's' } },
                             {
                                 %$conf,
-                                tmpl          => $tmpl,
-                                version       => $plugin->version,
-                                mt_version_id => $plugin->version,
+                                tmpl    => $tmpl,
+                                version => $plugin->version,
                             });
                     }
                 }

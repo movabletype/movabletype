@@ -15,7 +15,7 @@ use MT::DataAPI::Endpoint::Common;
 sub search_openapi_spec {
     +{
         tags       => ['Search'],
-        summary    => 'Searching entries',
+        summary    => 'Searching entries/pages',
         parameters => [{
                 required    => JSON::true,
                 in          => 'query',
@@ -56,7 +56,7 @@ DESCRIPTION
                 name        => 'limit',
                 schema      => { type => 'integer' },
                 description => <<'DESCRIPTION',
-Maximum number of entries to retrieve.
+Maximum number of entries/pages to retrieve.
 
 **Default**: 20
 DESCRIPTION
@@ -86,11 +86,11 @@ The sort column for the search results. Available values are as follows.
 
 #### created_on
 
-Will sort the entries by the authored on date.
+Will sort the entries/pages by the authored on date.
 
 #### title
 
-Will sort the entries by title.
+Will sort the entries/pages by title.
 DESCRIPTION
             },
             {
@@ -109,11 +109,11 @@ Defines the sort order search results. Available values are as follows.
 
 #### ascend
 
-will list the entries in chronological order (oldest entry at the top)
+will list the entries/pages in chronological order (oldest entry/page at the top)
 
 #### descend
 
-will list the entries in reverse chronological order (newest entry at the top).
+will list the entries/pages in reverse chronological order (newest entry/page at the top).
 
 **Default**: ascend
 DESCRIPTION
@@ -123,12 +123,35 @@ DESCRIPTION
                 name        => 'SearchMaxResults',
                 schema      => { type => 'integer' },
                 description => <<'DESCRIPTION',
-Maximum number of entries to retrieve.
+Maximum number of entries/pages to retrieve.
 
 NOTE: By default, "SearchMaxResults" override is disabled.
 
 **Default**: 20
 DESCRIPTION
+            },
+            {
+                in          => 'query',
+                name        => 'class',
+                schema      => { type => 'string' },
+                description => <<'DESCRIPTION',
+Class name of the object to be searched. Available values are as follows.
+
+- entry: Search results will only contain entries.
+- page: Search results will only contain pages.
+DESCRIPTION
+            },
+            {
+                in          => 'query',
+                name        => 'tagSearch',
+                schema      => { type => 'integer' },
+                description => 'If set to 1, searching entries/pages by tags.',
+            },
+            {
+                in          => 'query',
+                name        => 'tag',
+                schema      => { type => 'string' },
+                description => 'The search term for tag search mode.',
             },
         ],
         responses => {
@@ -141,13 +164,16 @@ DESCRIPTION
                             properties => {
                                 totalResults => {
                                     type        => 'integer',
-                                    description => ' The total number of entries.',
+                                    description => ' The total number of entries/pages.',
                                 },
                                 items => {
                                     type        => 'array',
-                                    description => 'An array of Entries resource. ',
+                                    description => 'An array of Entries/Pages resource. ',
                                     items       => {
-                                        '$ref' => '#/components/schemas/entry',
+                                        oneOf => [
+                                            { '$ref' => '#/components/schemas/entry' },
+                                            { '$ref' => '#/components/schemas/page' },
+                                        ],
                                     }
                                 },
                             },
