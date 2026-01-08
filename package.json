@@ -43,10 +43,10 @@
     "copy-js-cookie": "cp -rf node_modules/js-cookie/dist/js.cookie.min.js mt-static/js-cookie/",
     "test-riot": "docker run --rm -v $PWD:/mt -w /mt node:8 bash -c \"npm install -g riot-cli && npm run build-riot && npm run build-ss\" && test `git status -s | wc -l` = 0",
     "src-build": "rollup --config rollup.config.ts --configPlugin typescript",
-    "src-check-all": "npm run src-eslint && npm run src-format && npm run src-tsc && npm run src-svelte-check",
+    "src-check-all": "npm run src-eslint && npm run src-prettier && npm run src-tsc && npm run src-svelte-check",
     "src-dev": "rollup --config rollup.config.ts --configPlugin typescript -w",
     "src-eslint": "eslint --max-warnings 0 --fix src",
-    "src-format": "prettier --plugin prettier-plugin-svelte --write 'src/**/*.{ts,svelte}' '*.ts'",
+    "src-prettier": "prettier --plugin prettier-plugin-svelte --write 'src/**/*.{ts,svelte}' '*.ts'",
     "src-tsc": "tsc",
     "src-svelte-check": "svelte-check"
   },
