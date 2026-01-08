@@ -507,14 +507,6 @@ sub _confirm_action {
         return $perm->{permitted_action}{$action};
     }
 
-    ## search from ancestors
-    my $inherits = $perm->{inherit_from};
-    return unless defined $inherits;
-    for my $inherit (@$inherits) {
-        my $res
-            = __PACKAGE__->_confirm_action( $inherit, $action, $permissions );
-        return $res if defined $res;
-    }
     return;
 }
 
