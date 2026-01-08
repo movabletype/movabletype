@@ -507,6 +507,35 @@ sub _confirm_action {
         return $perm->{permitted_action}{$action};
     }
 
+    ## search from ancestors if system permission
+    return if $perm_name !~ /^system\./;
+    my $inherits = $perm->{inherit_from};
+    return unless defined $inherits;
+    for my $inherit (@$inherits) {
+        my $res = __PACKAGE__->_confirm_action_recursive($inherit, $action, $permissions);
+        return $res if defined $res;
+    }
+    return;
+}
+
+sub _confirm_action_recursive {
+    my $pkg = shift;
+    my ($perm_name, $action, $permissions) = @_;
+    my $perm = $permissions->{$perm_name};
+
+    ## No such permission.
+    return unless defined $perm;
+    if (exists $perm->{permitted_action}{$action}) {
+        return $perm->{permitted_action}{$action};
+    }
+
+    ## search from ancestors
+    my $inherits = $perm->{inherit_from};
+    return unless defined $inherits;
+    for my $inherit (@$inherits) {
+        my $res = __PACKAGE__->_confirm_action_recursive($inherit, $action, $permissions);
+        return $res if defined $res;
+    }
     return;
 }
 
