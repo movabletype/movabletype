@@ -5138,3 +5138,12 @@ path is required.
 <MTApp:Stylesheet path="/foo/bar.css" version="1.0.0">
 --- expected
 <link rel="stylesheet" href="/mt-static/foo/bar.css?v=1.0.0">
+
+=== test 925 attribute value (MTC-30459)
+--- skip_php
+--- template
+<mt:Var name="x" _="<" />
+<mt:Var name="y">
+<a href="">test</a>
+--- expected
+<a href="">test</a>
