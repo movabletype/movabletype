@@ -83,7 +83,7 @@ sub compile {
     # Tag and attributes are case-insensitive. So you can write:
     #   <mtfoo>...</MTFOO>
     while ( $text
-        =~ m!(<\$?(MT:?)((?:<[^>]+?>|"(?:<[^>]+?>|.)*?"|'(?:<[^>]+?>|.)*?'|.)+?)([-]?)[\$/]?>)!gis
+        =~ m!(<\$?(MT:?)((?:<[^>]+?>|"[^"]*?"|'[^']*?'|.)+?)([-]?)[\$/]?>)!gis
         )
     {
         my ( $whole_tag, $prefix, $tag, $space_eater ) = ( $1, $2, $3, $4 );
