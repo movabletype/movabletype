@@ -178,7 +178,7 @@ sub write_config {
         LoggerModule           => 'Test',
         LoggerPath             => 'TEST_ROOT/log',
         LoggerFileName         => 'TEST_ROOT/.test.log',
-        LoggerLevel            => 'DEBUG',
+        LoggerLevel            => $ENV{MT_TEST_LOGGER_LEVEL} || 'DEBUG',
         MailTransfer           => 'debug',
         MailTransferEncoding   => '8bit',
         DBIRaiseError          => 1,
