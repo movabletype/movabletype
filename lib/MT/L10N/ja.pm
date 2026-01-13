@@ -4955,6 +4955,7 @@ use vars qw( @ISA %Lexicon );
 	'Operation for a file exists' => '既存ファイルの処理',
 	'Upload Options' => 'アップロードオプション',
 	'Change Upload Settings' => 'アップロードの設定を変更する',
+	'Non-ASCII characters are not allowed in filenames. Please rename the file using only ASCII characters.' => 'ファイル名にASCII文字以外の文字（日本語など）が含まれています。ファイル名には半角英数字を使用してください。',
 
 ## tmpl/admin2023/cms/include/author_table.tmpl
 	'Disable selected users (d)' => '選択したユーザーを無効化 (d)',
