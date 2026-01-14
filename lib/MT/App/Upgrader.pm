@@ -241,6 +241,19 @@ sub upgrade {
 
     $app->validate_magic or return;
 
+    my $author = $app->user;
+    if ( $author ) {
+        my $has_permission = $app->{cfg}->RequireStrictUpgradePermission
+            ? $author->can_do('upgrade_system')
+            : $author->is_superuser;
+
+        unless ( $has_permission ) {
+            return $app->errtrans(
+                "No permissions. Please contact your Movable Type administrator for assistance with upgrading Movable Type."
+            );
+        }
+    }
+
     # if code flows here, this is upgrading
     my $steps;
     eval {

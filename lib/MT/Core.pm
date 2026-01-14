@@ -2253,6 +2253,7 @@ BEGIN {
             },
             'GrantRoleSitesView' => { default => 'list' }, # DEPRECATED
             'DisableContentFieldPermission' => { default => undef },
+            'RequireStrictUpgradePermission' => { default => 0 },
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {
@@ -3258,6 +3259,7 @@ sub load_core_permissions {
                 'use_tools:system_info_menu' => 1,
                 'delete_any_filters'         => 1,
                 'access_to_role_list'        => 1,
+                'upgrade_system'             => 1,
             }
         },
         'system.create_blog' => {
