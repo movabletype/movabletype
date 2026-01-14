@@ -40,11 +40,11 @@
 <button
    type="submit"
 <mt:if name="dialog">
-   onclick="if ( window.opener ) { window.close(); } else { parent.jQuery.fn.mtModal.close('<mt:var name="link" escape="js">'); }; return false;"
+   onclick="if ( window.opener ) { window.close(); } else { parent.jQuery.fn.mtModal.close('<mt:var name="link" escape="js" escape="html">'); }; return false;"
 <mt:elseif name="fs">
-   onclick="window.location='<mt:var name="link" escape="js">'; return false;"
+   onclick="window.location='<mt:var name="link" escape="js" escape="html">'; return false;"
 <mt:else>
-   onclick="if ( window.opener ) { window.opener.location.href='<mt:var name="link" escape="js">'; window.close(); } else { window.open('<mt:var name="link" escape="js">') }; return false;"
+   onclick="if ( window.opener ) { window.opener.location.href='<mt:var name="link" escape="js" escape="html">'; window.close(); } else { window.open('<mt:var name="link" escape="js">') }; return false;"
 </mt:if>
    class="action button btn btn-default">
   <mt:var name="label" escape="html">
