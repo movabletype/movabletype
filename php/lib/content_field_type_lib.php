@@ -171,8 +171,9 @@ class ContentTypeRegistry implements ContentFieldType {
     public function get_field_value($value, &$ctx, &$args) {
         $content = $ctx->stash('content');
         if (!$content) return '';
-        return $content->label
-            ? $content->label
+        $label = $content->label();
+        return $label
+            ? $label
             : $ctx->mt->translate( 'No Label (ID:[_1])', $content->id );
     }
     public function tag_handler($value, $args, &$res, &$ctx, &$repeat) {
