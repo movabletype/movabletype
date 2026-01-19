@@ -1767,6 +1767,7 @@ sub _build_content_data_preview {
     my $archive_url;
     if ($tmpl_map) {
         $tmpl         = MT::Template->load( $tmpl_map->template_id );
+        $file_ext     = $blog->file_extension || '';
         $archive_file = $content_data->archive_file;
         my $base_url = $blog->archive_url;
         $base_url .= '/' unless $base_url =~ m|/$|;
@@ -1776,8 +1777,8 @@ sub _build_content_data_preview {
         my $blog_path = $blog->archive_path || $blog->site_path;
         $archive_file = File::Spec->catfile( $blog_path, $archive_file );
         my $path;
-        ( $orig_file, $path, $file_ext )
-            = File::Basename::fileparse( $archive_file, qr/\..*/ );
+        ( $orig_file, $path ) = File::Basename::fileparse($archive_file);
+        $file_ext = '.' . $file_ext if $file_ext ne '';
         $archive_file
             = File::Spec->catfile( $path, $preview_basename . $file_ext );
     }
