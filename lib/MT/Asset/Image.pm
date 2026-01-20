@@ -881,23 +881,23 @@ sub normalize_orientation {
 
         my ( $blob, $width, $height ) = do {
             if ( $o eq 'Mirror horizontal' ) {
-                $img->flipVertical();
+                $img->flipHorizontal();
             }
             elsif ( $o eq 'Rotate 180' ) {
                 $img->rotate( Degrees => 180 );
             }
             elsif ( $o eq 'Mirror vertical' ) {
-                $img->flipHorizontal();
+                $img->flipVertical();
             }
             elsif ( $o eq 'Mirror horizontal and rotate 270 CW' ) {
-                $img->flipVertical();
+                $img->flipHorizontal();
                 $img->rotate( Degrees => 270 );
             }
             elsif ( $o eq 'Rotate 90 CW' ) {
                 $img->rotate( Degrees => 90 );
             }
             elsif ( $o eq 'Mirror horizontal and rotate 90 CW' ) {
-                $img->flipVertical();
+                $img->flipHorizontal();
                 $img->rotate( Degrees => 90 );
             }
             elsif ( $o eq 'Rotate 270 CW' ) {
