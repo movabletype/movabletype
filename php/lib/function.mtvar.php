@@ -59,9 +59,12 @@ function smarty_function_mtvar($args, &$ctx) {
 
     if (preg_match('/^\$/', $name)) {
         $name = $vars[$name];
-        if (!isset($name))
+        if (!isset($name)) {
             return $ctx->error($ctx->mt->translate(
-                "You used an [_1] tag without a valid name attribute.", "<MT$tag>" ));
+                "You used an [_1] tag without a valid name attribute.",
+                "<MTVar>"
+            ));
+        }
     }
 
     if (isset($vars[$name]))
