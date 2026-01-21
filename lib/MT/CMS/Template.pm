@@ -160,7 +160,9 @@ sub edit {
             && $param->{type} ne 'archive'
             && $param->{type} ne 'category'
             && $param->{type} ne 'page'
-            && $param->{type} ne 'individual';
+            && $param->{type} ne 'individual'
+            && $param->{type} ne 'ct'
+            && $param->{type} ne 'ct_archive';
         $param->{has_build_options}
             = $param->{has_build_options}
             && $param->{type} ne 'custom'
@@ -784,7 +786,9 @@ sub edit {
             && $param->{type} ne 'archive'
             && $param->{type} ne 'category'
             && $param->{type} ne 'page'
-            && $param->{type} ne 'individual';
+            && $param->{type} ne 'individual'
+            && $param->{type} ne 'ct'
+            && $param->{type} ne 'ct_archive';
         $param->{has_build_options}
             = $param->{has_build_options}
             && $param->{type} ne 'custom'
@@ -1530,6 +1534,79 @@ sub preview {
             $app->user );
         $archive_file = File::Spec->catfile( $blog_path, $file );
         $archive_url = MT::Util::caturl( $blog_url, $file );
+    }
+    elsif ( ( $type eq 'ct' ) || ( $type eq 'ct_archive' ) ) {
+        my $ctx = $preview_tmpl->context;
+        my $content_type_id = $app->param('content_type_id');
+
+        my $map = MT->model('templatemap')->load( { template_id => $id } );
+        if ( !$map ) {
+            return $app->error(
+                $app->translate("Cannot preview without a template map!") );
+        }
+        $ctx->{curernt_archive_type} = $map->archive_type;
+
+        my $archiver = MT->publisher->archiver( $map->archive_type );
+        my $tparams  = $archiver->template_params;
+        if ($tparams) {
+            $ctx->var( $_, $tparams->{$_} ) for keys %$tparams;
+        }
+
+        $ctx->stash( 'author', $app->user );
+        $ctx->stash( 'blog', $blog );
+
+        my $cat;
+        if ($map->cat_field_id) {
+            my $obj_cat = MT->model('objectcategory')->load(
+                {   object_ds  => 'content_data',
+                    is_primary => 1,
+                    cf_id      => $map->cat_field_id,
+                },
+                { limit => 1 }
+            );
+            $cat = $obj_cat ? MT->model('category')->load($obj_cat->category_id) : '';
+        }
+
+        my @contents = MT->model('content_data')->load(
+            {   blog_id         => $blog->id,
+                author_id       => $app->user->id,
+                status          => MT::ContentStatus::RELEASE(),
+                content_type_id => $content_type_id
+            },
+            {   ( $cat
+                    ? ( 'join' => [
+                            'MT::ContentFieldIndex',
+                            'content_data_id',
+                            {   content_field_id => $map->cat_field_id,
+                                value_integer    => $cat->id
+                            }
+                        ]
+                        )
+                    : (),
+                ),
+                'sort'      => 'authored_on',
+                'direction' => 'descend',
+                'limit' => $type eq 'ct' ? 1 : 10
+            }
+        );
+
+        $ctx->stash( 'content_type', $contents[0]->content_type );
+        $ctx->{current_timestamp}     = $contents[$#contents]->authored_on;
+        $ctx->{current_timestamp_end} = $contents[0]->authored_on;
+
+        my $file = MT->publisher->archive_file_for( $contents[0], $blog,
+            $map->archive_type, $cat, $map, $ctx->{current_timestamp},
+            $app->user );
+
+        if ( $type eq "ct" ) {
+            $ctx->stash( 'content', $contents[0] );
+        } else {
+            $ctx->stash( 'contents', \@contents );
+        }
+
+        $archive_file = File::Spec->catfile( $blog_path, $file );
+        $archive_url = MT::Util::caturl( $blog_url, $file );
+        $ctx->stash( 'current_mapping_url', $archive_url );
     }
     elsif ( $type eq 'index' ) {
     }
