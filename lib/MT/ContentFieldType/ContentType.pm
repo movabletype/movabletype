@@ -372,6 +372,7 @@ sub search_handler {
         my $content_type = $cd->content_type or next;
         my $data         = $cd->data;
         for my $f_id ( keys %$data ) {
+            next unless $f_id =~ /^[0-9]+$/;
             my $f_data = $content_type->get_field($f_id) or next;
             next if $f_data->{type} eq 'content_type';
 
