@@ -42,12 +42,13 @@
     "copy-codemirror": "cp -rf node_modules/codemirror/addon node_modules/codemirror/keymap node_modules/codemirror/lib node_modules/codemirror/mode node_modules/codemirror/theme mt-static/codemirror/",
     "copy-js-cookie": "cp -rf node_modules/js-cookie/dist/js.cookie.min.js mt-static/js-cookie/",
     "test-riot": "docker run --rm -v $PWD:/mt -w /mt node:8 bash -c \"npm install -g riot-cli && npm run build-riot && npm run build-ss\" && test `git status -s | wc -l` = 0",
-    "build-svelte:app": "rollup --config rollup.config.ts --configPlugin typescript",
-    "build-svelte": "npm run build-svelte:app",
-    "svelte-dev": "rollup --config rollup.config.ts --configPlugin typescript -w",
-    "svelte-check-types": "tsc",
-    "svelte-format": "prettier --plugin prettier-plugin-svelte --write 'src/**/*.{ts,svelte}' '*.ts'",
-    "svelte-lint": "eslint --fix src"
+    "src-build": "rollup --config rollup.config.ts --configPlugin typescript",
+    "src-check": "npm run src-eslint && npm run src-prettier && npm run src-tsc && npm run src-svelte-check",
+    "src-dev": "rollup --config rollup.config.ts --configPlugin typescript -w",
+    "src-eslint": "eslint --max-warnings 0 --fix src",
+    "src-prettier": "prettier --plugin prettier-plugin-svelte --write 'src/**/*.{ts,svelte}' '*.ts'",
+    "src-tsc": "tsc",
+    "src-svelte-check": "svelte-check"
   },
   "repository": {
     "type": "git",
