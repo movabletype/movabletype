@@ -3564,7 +3564,7 @@ sub load_widgets {
             $order
                 = $order && ref $order eq 'HASH'
                 ? $all_widgets->{$widget_id}{order}{$scope_type}
-                : $order * 100;
+                : ( $order || 0 ) * 100;
             $order = $order_num = $order_num + 100 unless defined $order;
             $widget_param->{order} = $order;
             $resave_widgets = 1;
