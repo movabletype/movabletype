@@ -1635,6 +1635,10 @@ sub _run_rpt {
         diag $1;
         BAIL_OUT;
     }
+
+    # Since ODBC driver seems to be fork-unsafe, dbh must be destroyed after forking process so that MT::Object will establish new one.
+    MT::Blog->driver->dbh(undef) if MT->config->ODBCDriver;
+
     $res;
 }
 

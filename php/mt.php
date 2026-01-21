@@ -279,6 +279,13 @@ class MT {
         if (!isset($this->db)) {
             require_once("mtdb.".$this->config('DBDriver').".php");
             $mtdbclass = 'MTDatabase'.$this->config('DBDriver');
+            $options = [];
+            if ($this->config('DBIConnectOptions')) {
+                $options = array_merge($this->config('DBIConnectOptions'));
+            }
+            if ($this->config('ODBCEncrypt')) {
+                $options['ODBCEncrypt'] = $this->config('ODBCEncrypt');
+            }
             $this->db = new $mtdbclass($this->config('DBUser'),
                 $this->config('DBPassword'),
                 $this->config('Database'),
@@ -287,7 +294,7 @@ class MT {
                 $this->config('DBSocket'),
                 $this->config('DBMaxRetries'),
                 $this->config('DBRetryInterval'),
-                $this->config('DBIConnectOptions')
+                $options
             );
         }
         return $this->db;
