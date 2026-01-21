@@ -844,17 +844,12 @@ BEGIN {
                             = $prop->datasource->has_column('author_id')
                             ? 'author_id'
                             : 'created_by';
-                        my %author_id
-                            = map { ( $_->$col ) ? ( $_->$col => 1 ) : () }
-                            @$objs;
+                        my %nickname = map { ($_->$col || 0) => '' } @$objs;
                         my @authors = MT->model('author')
-                            ->load( { id => [ keys %author_id ] } );
-                        my %nickname = map {
-                                  $_->id => defined $_->nickname
-                                ? $_->nickname
-                                : ''
-                        } @authors;
-                        $nickname{0} = '';    # fallback
+                            ->load( { id => [ keys %nickname ] } );
+                        for my $author (@authors) {
+                            $nickname{$author->id} = $author->nickname // '';
+                        }
                         return sort {
                             $nickname{ $a->$col || 0 }
                                 cmp $nickname{ $b->$col || 0 }
