@@ -168,7 +168,7 @@ sub _get_all_child_categories {
     my @all_child_cats = map {
         (   $_,
             _get_all_child_categories( $_, $max_depth, $current_depth + 1 )
-            )
+        )
     } @child_cats;
 
     return @all_child_cats;
@@ -255,7 +255,7 @@ sub list_parents_common {
 
     my $cat = get_common( $app, $endpoint, $class ) or return;
 
-    my $max_depth = $app->param('maxDepth') || 0;
+    my $max_depth   = $app->param('maxDepth') || 0;
     my @parent_cats = _get_all_parent_categories( $cat, $max_depth );
 
     for my $parent_cat (@parent_cats) {
@@ -481,7 +481,7 @@ sub list_children_common {
 
     my $cat = get_common( $app, $endpoint, $class ) or return;
 
-    my $max_depth = $app->param('maxDepth') || 0;
+    my $max_depth  = $app->param('maxDepth') || 0;
     my @child_cats = _get_all_child_categories( $cat, $max_depth );
 
     for my $child_cat (@child_cats) {
@@ -571,17 +571,6 @@ sub create_common {
 
     my $new_category = $app->resource_object( $class, $orig_category )
         or return;
-
-    if (   !defined( $new_category->basename )
-        || $new_category->basename eq ''
-        || $app->model($class)->exist(
-            { blog_id => $blog->id, basename => $new_category->basename }
-        )
-        )
-    {
-        $new_category->basename(
-            MT::Util::make_unique_category_basename($new_category) );
-    }
 
     save_object( $app, $class, $new_category )
         or return;
@@ -955,7 +944,7 @@ sub list_for_entry {
     }
 
     my %terms = (
-        id => @$rows ? [ map { $_->[0] } @$rows ] : 0,
+        id              => @$rows ? [ map { $_->[0] } @$rows ] : 0,
         category_set_id => 0,
     );
     my $res = filtered_list( $app, $endpoint, 'category', \%terms ) or return;
