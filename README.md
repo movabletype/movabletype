@@ -51,3 +51,10 @@ If you receive an "Internal Server Error" message, a configuration change may be
 ### Finding more help
 
 Need additional information or support? Check out the [Detailed Installation Guide](https://www.movabletype.org/documentation/installation/).
+
+Get Involved
+--------
+
+### Testing
+
+See [t/README.md](https://github.com/movabletype/movabletype/blob/develop/t/README.md).

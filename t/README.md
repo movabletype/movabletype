@@ -1,53 +1,111 @@
 # MT test documentation
 
-## Setup
+## Overview
 
-Create database `mt_test` and user `mt`
+You can learn how to test Movabletype by reading 
+[.github/workflows/movabletype.yml](https://github.com/movabletype/movabletype/blob/develop/.github/workflows/movabletype.yml).
+This document shows you small portions of it, and some extra information.
 
 ```
-$ mysql -uroot
-mysql> create database mt_test character set utf8;
-mysql> grant all privileges on mt_test.* to mt@localhost;
+$ git clone git@github.com:movabletype/movabletype.git
+$ cd movabletype
+$ docker run -it -v $PWD:/mt -w /mt movabletype/test:centos8 prove -It/lib t
 ```
 
-## Test commands
+Some tests need to be run on the dedicated docker images.
 
-### default
-
-```sh
-$ prove ./t ./plugins/**/t
+```
+$ docker run -it -v $PWD:/mt -w /mt movabletype/test:chromiumdriver prove -It/lib t/selenium
 ```
 
-### parallel test
+## Environment Variables
+
+Environment variables starting with `MT_TEST_` (and some common names) change the behavior of tests. Please do `grep -r MT_TEST_ t/` for
+details.
+
+### Examples
+
+```
+$ docker run -it -v $PWD:/mt -w /mt movabletype/test:centos8 /bin/bash
+[root@0919d7f18f05 mt]# MT_TEST_DEBUG_MODE=7 prove -It/lib t/20-setup.t
+[root@0919d7f18f05 mt]# MT_TEST_QUERY_LOG=1 prove -It/lib t/20-setup.t
+[root@0919d7f18f05 mt]# MT_TEST_CRAWL=1 prove -It/lib t/selenium/crawl.t
+[root@0919d7f18f05 mt]# EXTENDED_TESTING=1 prove -It/lib t/tag/php-only-test.t
+```
+
+Note that some test options may need extra cpan modules. Please do `cpanm ...` inside the container.
+
+## Parallel testing
 
 Run tests in parallel. This command needs [App::Prove::Plugin::MySQLPool](https://metacpan.org/pod/App::Prove::Plugin::MySQLPool).
 
-```sh
-$ prove -j4 -PMySQLPool=MT::Test::Env -It/lib ./t ./plugins/**/t
+```
+[root@0919d7f18f05 mt]# prove -j4 -PMySQLPool=MT::Test::Env -It/lib ./t ./plugins/**/t
 ```
 
-### update fixture
+## Fixture
 
-Fixture depends on the followings.
+Pre-recorded fixtures are used by default for speeding up the tests. You can ignore/update them.
+
+### Update fixture
+
+Fixtures depend on the following.
 * installed addons/plugins
 * schema_version of core and addons/plugins
 
-So, when you update fixture for Travis CI, you need to remove additional addons/plugins before executing the following command.
+So, when you update fixtures for core tests, you need to remove additional addons/plugins before executing the following command.
 
-```sh
-$ MT_TEST_UPDATE_FIXTURE=1 prove ./t ./plugins/**/t
+```
+[root@0919d7f18f05 mt]# MT_TEST_UPDATE_FIXTURE=1 prove -It/lib ./t ./plugins/**/t
 ```
 
-### ignore fixture
+### Ignore fixture
 
-```sh
-$ MT_TEST_IGNORE_FIXTURE=1 prove ./t ./plugins/**/t
+```
+[root@0919d7f18f05 mt]# MT_TEST_IGNORE_FIXTURE=1 prove -It/lib ./t ./plugins/**/t
 ```
 
-### update fixture schema
+### Update fixture schema
 
-```sh
-$ perl -It/lib -MMT::Test::Env -E 'MT::Test::Env->save_schema'
+```
+[root@0919d7f18f05 mt]# perl -It/lib -MMT::Test::Env -E 'MT::Test::Env->save_schema'
+```
+
+## Test for PHP
+
+PHP files can be tested by following command.
+
+```
+[root@0919d7f18f05 mt]# phpunit
+```
+
+Some perl tests also include tests against PHP via `MT::Test::Tag`. The following are just a partial list.
+
+```
+[root@0919d7f18f05 mt]# prove -It/lib t/tag/ t/mt7/tag/ t/mt7/multiblog/
+```
+
+## Crawler test
+
+As can be read from the github workflow configurations, you need to `make` before you can run following crawler test.
+
+```
+$ docker run -it -v $PWD:/mt -w /mt movabletype/test:centos8 bash -c "BUILD_RELEASE_NUMBER=1 make && MT_TEST_CRAWL=1 prove -It/lib t/selenium/crawl.t"
+```
+
+`make` prevents the crawler from detecting 404 errors on `mt-static/mt_ja.js`.
+`make` also overwrites version placeholders in the sources but these aren't necessary for tests. You can `git reset` them
+in order not to commit accidentally.
+
+## Database inspection
+
+mysql is used for tests by default and a database named `mt_test` is automatically created.
+You can inspect the tables by following command.
+
+```
+$ docker run -it -v $PWD:/mt -w /mt movabletype/test:centos8 /bin/bash
+[root@0919d7f18f05 mt]# prove -It/lib path/to/test.t
+[root@0919d7f18f05 mt]# mysql -u root --database mt_test
 ```
 
 ## Test files
@@ -84,20 +142,29 @@ There are test files in ./t and ./plugins/**/t directories.
   * tests for MT::Util*
 * t/xt/*.t
   * author tests
+* t/tools
+  * tests for command line tools
+* t/upgrade
+  * tests for upgrade
+* t/admin_theme_id
+  * tests for the theming mechanism of CMS
 * t/*.t
   * tests other than the above
 
-## CI services
+## Testing your own plugins
 
-### [Travis CI](https://travis-ci.org/movabletype/movabletype)
+For starters, run core tests against Movabletype source with your plugin installed to ensure your plugin
+isn't a cause of any regressions.
 
-Test on the following environments.
+```
+$ cd movabletype
+$ cp -r path/to/your-repo/plugins/your-plugin ./plugins/
+$ cp -r path/to/your-repo/mt-static/plugins/your-plugin ./mt-static/plugins/
+$ docker run -it -v $PWD:/mt -w /mt movabletype/test:centos8 prove -It/lib t
+```
 
-* all branches
-  * Perl 5.18, PHP 5.5, MySQL 5.5
-* master/develop branch
-  * Perl 5.10, PHP 5.3, MySQL 5.1
-  * Perl 5.24, PHP 7.0, MariaDB 10.1
-  * Perl 5.26, PHP 7.2, MySQL 5.7
+You can also run your own tests.
 
-Setting file is .travis.yml.
+```
+$ docker run -it -v $PWD:/mt -w /mt movabletype/test:centos8 prove -It/lib plugins/your-plugin/t
+```
