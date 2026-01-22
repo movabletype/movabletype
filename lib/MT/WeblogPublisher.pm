@@ -2263,8 +2263,11 @@ sub publish_future_posts {
             eval {
                 foreach my $id ( keys %rebuild_queue ) {
                     my $entry = $rebuild_queue{$id};
-                    $mt->rebuild_entry( Entry => $entry, Blog => $blog )
-                        or die $mt->errstr;
+                    $mt->rebuild_entry(
+                        Entry         => $entry,
+                        Blog          => $blog,
+                        BuildArchives => 1
+                    ) or die $mt->errstr;
                     $rebuilt_okay{$id} = 1;
                     if ( $ping_queue{$id} ) {
                         $mt->ping_and_save( Entry => $entry, Blog => $blog );
@@ -2399,8 +2402,11 @@ sub unpublish_past_entries {
             eval {
                 foreach my $id ( keys %rebuild_queue ) {
                     my $entry = $rebuild_queue{$id};
-                    $mt->rebuild_entry( Entry => $entry, Blog => $site )
-                        or die $mt->errstr;
+                    $mt->rebuild_entry(
+                        Entry         => $entry,
+                        Blog          => $site,
+                        BuildArchives => 1
+                    ) or die $mt->errstr;
                     $rebuilt_okay{$id} = 1;
                     $rebuilt++;
                 }
