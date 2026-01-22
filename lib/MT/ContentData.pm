@@ -633,7 +633,9 @@ sub content_type {
     $self->cache_property(
         'content_type',
         sub {
-            MT::ContentType->load( $self->content_type_id || 0 );
+            $self->content_type_id
+                ? MT::ContentType->load($self->content_type_id)
+                : undef;
         },
     );
 }
@@ -645,7 +647,7 @@ sub blog {
         sub {
             my $blog_id = $ct_data->blog_id || 0;
             require MT::Blog;
-            MT->request->{__stash}{__obj}{"site:$blog_id"} ||= MT::Blog->load($blog_id)
+            MT->request->{__stash}{__obj}{"site:$blog_id"} ||= $blog_id ? MT::Blog->load($blog_id) : undef
                 or $ct_data->error(
                 MT->translate(
                     "Loading blog '[_1]' failed: [_2]",
@@ -1230,7 +1232,7 @@ sub make_list_props {
                 label_via_param => sub {
                     my $prop = shift;
                     my ( $app, $val ) = @_;
-                    my $author = MT->model('author')->load( $val || 0 )
+                    my $author = $val && MT->model('author')->load( $val )
                         or return $prop->error(
                         MT->translate(
                             '[_1] ( id:[_2] ) does not exists.',
@@ -2220,8 +2222,8 @@ sub convert_breaks {
 sub remove_category_from_categories_field {
     my $class = shift;
     my ($objcat) = @_;
-    return unless $objcat->cf_id;
-    my $cd = $class->load( $objcat->object_id || 0 );
+    return unless $objcat->cf_id && $objcat->object_id;
+    my $cd = $class->load( $objcat->object_id );
     return unless $cd;
     $cd->_remove_data_from_fields( $objcat->category_id, $objcat->cf_id );
 }
@@ -2229,8 +2231,8 @@ sub remove_category_from_categories_field {
 sub remove_tag_from_tags_field {
     my $class = shift;
     my ($objtag) = @_;
-    return unless $objtag->cf_id;
-    my $cd = $class->load( $objtag->object_id || 0 );
+    return unless $objtag->cf_id && $objtag->object_id;
+    my $cd = $class->load( $objtag->object_id );
     return unless $cd;
     $cd->_remove_data_from_fields( $objtag->tag_id, $objtag->cf_id );
 }
@@ -2238,8 +2240,8 @@ sub remove_tag_from_tags_field {
 sub remove_asset_from_asset_field {
     my $class = shift;
     my ($objasset) = @_;
-    return unless $objasset->cf_id;
-    my $cd = $class->load( $objasset->object_id || 0 );
+    return unless $objasset->cf_id && $objasset->object_id;
+    my $cd = $class->load( $objasset->object_id );
     return unless $cd;
     $cd->_remove_data_from_fields( $objasset->asset_id, $objasset->cf_id );
 }
