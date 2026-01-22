@@ -230,7 +230,7 @@ sub search_handler {
         = 'editor-input-content-field-' . $field_data->{id} . '-blockeditor';
     for my $key ( keys %{ $data->{$editor_key} } ) {
         return 1
-            if $data->{$editor_key}->{$key}->{value} =~ /$search_regex/
+            if ($data->{$editor_key}->{$key}->{value} // '') =~ /$search_regex/
             || $data->{$editor_key}->{$key}->{html}  =~ /$search_regex/;
 
         # parts image
