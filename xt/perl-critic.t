@@ -22,7 +22,7 @@ for my $file (sort @files) {
 done_testing;
 
 sub _find {
-    return if $File::Find::name =~ m!/(?:extlib|local|blib)/!;
+    return if $File::Find::name =~ m!/(?:extlib|local|blib|tmp|zzz)/!;
     if ( $File::Find::name =~ /\.(?:cgi|pl|pm|t)\z/ ) {
         push @files, $File::Find::name;
     }
