@@ -1098,6 +1098,12 @@ sub delete {
             }
         }
 
+        my %recipe;
+        %recipe = $app->publisher->rebuild_deleted_content_data(
+            ContentData => $obj,
+            Blog        => $obj->blog,
+        ) if $obj->status eq MT::ContentStatus::RELEASE();
+
         # Remove object from database
         my $content_type_name
             = defined $content_type->name && $content_type->name ne ''
@@ -1107,12 +1113,6 @@ sub delete {
             or return $app->errtrans( 'Removing [_1] failed: [_2]',
             $content_type_name, $obj->errstr );
         $app->run_callbacks( 'cms_post_delete.content_data', $app, $obj );
-
-        my %recipe;
-        %recipe = $app->publisher->rebuild_deleted_content_data(
-            ContentData => $obj,
-            Blog        => $obj->blog,
-        ) if $obj->status eq MT::ContentStatus::RELEASE();
 
         my $child_hash = $rebuild_recipe{ $obj->blog_id } || {};
         MT::__merge_hash( $child_hash, \%recipe );
