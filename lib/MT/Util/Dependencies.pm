@@ -1109,11 +1109,11 @@ USED:
                 my $type = $used->{$module}{$where};
                 if ($index->{dist}{$dist}{$where}) {
                     print STDERR " $module (in $dist) is ignored as it is used by $where internally.\n" if $args{debug};
-                    next;
+                    next USED;
                 }
                 if ($type ne 'requires') {
                     print STDERR " $module (in $dist) is ignored as $where only $type.\n" if $args{debug};
-                    next;
+                    next USED;
                 }
                 print STDERR " $where $type $module (in $dist).\n" if $args{debug};
                 $used_in_extlib = 1;
