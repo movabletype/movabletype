@@ -38,7 +38,7 @@ our %Requirements = (
         url   => "https://metacpan.org/pod/Cache::Memcached",
     },
     "CGI" => {
-        extlib   => 4.69,
+        extlib   => 4.71,
         label    => "CGI is required for all Movable Type application functionality.",
         required => 1,
         tags     => ["Base"],
@@ -131,7 +131,7 @@ our %Requirements = (
         version   => 0.8,
     },
     "File::Temp" => {
-        extlib    => 0.2311,
+        extlib    => 0.2312,
         label     => "File::Temp is optional; It is needed if you would like to be able to overwrite existing files when you upload.",
         perl_core => 0.22,
         tags      => ["Base", "Filesys"],
@@ -177,7 +177,7 @@ our %Requirements = (
         url    => "https://metacpan.org/pod/HTTP::Request",
     },
     "Image::ExifTool" => {
-        extlib => "13.30",
+        extlib => 13.44,
         label  => "Image::ExifTool is used to manipulate image metadata.",
         tags   => ["Image"],
         url    => "https://metacpan.org/pod/Image::ExifTool",
@@ -286,7 +286,7 @@ our %Requirements = (
         url    => "https://metacpan.org/pod/LWP::Protocol::https",
     },
     "LWP::UserAgent" => {
-        extlib => 6.78,
+        extlib => 6.81,
         label  => "LWP::UserAgent is optional. It is used to fetch information from local and external servers.",
         tags   => ["HTTP"],
         url    => "https://metacpan.org/pod/LWP::UserAgent",
@@ -298,7 +298,7 @@ our %Requirements = (
         url       => "https://metacpan.org/pod/MIME::Base64",
     },
     "MIME::Lite" => {
-        extlib => 3.033,
+        extlib => 3.035,
         label  => "MIME::Lite is an alternative module to create mail.",
         tags   => ["Mail"],
         url    => "https://metacpan.org/pod/MIME::Lite",
@@ -391,7 +391,7 @@ our %Requirements = (
         url        => "https://metacpan.org/pod/Time::HiRes",
     },
     "URI" => {
-        extlib  => 5.32,
+        extlib  => 5.34,
         label   => "This module is sometimes used to parse URI.",
         tags    => ["HTTP", "URI"],
         url     => "https://metacpan.org/pod/URI",
@@ -525,7 +525,7 @@ our %ExtLibOnly = (
         used_in => ["MT::Util::UniqueID"],
     },
     "Data::ObjectDriver" => {
-        extlib  => 0.25,
+        extlib  => 0.26,
         url     => "https://metacpan.org/pod/Data::ObjectDriver",
         used_in => ["MT::Object"],
     },
@@ -652,7 +652,7 @@ our %ExtLibOnly = (
         used_in => ["HTTP::Request::Common"],
     },
     "LWP::Protocol::http" => {
-        extlib  => 6.78,
+        extlib  => 6.81,
         url     => "https://metacpan.org/pod/LWP::Protocol::http",
         used_in => ["MT::App::Wizard"],
     },
@@ -684,12 +684,12 @@ our %ExtLibOnly = (
         used_in => ["MT::Mail"],
     },
     "MIME::Types" => {
-        extlib  => 2.28,
+        extlib  => "2.30",
         url     => "https://metacpan.org/pod/MIME::Types",
         used_in => ["MT::Mail::MIME"],
     },
     "Net::HTTPS" => {
-        extlib  => 6.23,
+        extlib  => 6.24,
         url     => "https://metacpan.org/pod/Net::HTTPS",
         used_in => ["MT"],
     },
@@ -832,7 +832,12 @@ our %HiddenCoreDeps = (
         perl_core  => 1.51,
         url        => "https://metacpan.org/pod/FindBin",
     },
-    "Getopt::Long"   => { perl_core => 2.38, url => "https://metacpan.org/pod/Getopt::Long" },
+    "Getopt::Long" => { perl_core => 2.38, url => "https://metacpan.org/pod/Getopt::Long" },
+    "Hash::Util"   => {
+        perl_core => 0.11,
+        perl_only => 1,
+        url       => "https://metacpan.org/pod/Hash::Util",
+    },
     "I18N::LangTags" => {
         perl_core => 0.38,
         perl_only => 1,
@@ -887,6 +892,11 @@ our %HiddenCoreDeps = (
     "Text::Wrap"     => {
         perl_core => 2009.0305,
         url       => "https://metacpan.org/pod/Text::Wrap",
+    },
+    "Unicode::UCD" => {
+        perl_core => 0.43,
+        perl_only => 1,
+        url       => "https://metacpan.org/pod/Unicode::UCD",
     },
 );
 
