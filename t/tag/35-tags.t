@@ -578,6 +578,18 @@ A Rainy Day
 --- expected
 \"A Rainy Day\"
 
+=== test 92-1 double encode(js -> html)
+--- template
+<MTSetVarBlock name="foo">foo === "" && 1</MTSetVarBlock><MTGetVar name="foo" encode_js="1" encode_html="1">
+--- expected
+foo === \&quot;\&quot; &amp;&amp; 1
+
+=== test 92-2 double encode(html -> js)
+--- template
+<MTSetVarBlock name="foo">foo === "" && 1</MTSetVarBlock><MTGetVar name="foo" encode_html="1" encode_js="1">
+--- expected
+foo === &quot;&quot; &amp;&amp; 1
+
 === test 93
 --- template
 <MTEntries lastn="1" encode_php="1">'<MTEntryTitle>'</MTEntries>
