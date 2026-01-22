@@ -163,7 +163,7 @@ on 'test' => sub {
     requires 'Test::Spec';
     requires 'Text::Diff';
     requires 'Time::Piece';
-    requires 'URI::Escape';
+    requires 'URI', '>= 1.62';
     requires 'Web::Query';
     requires 'Web::Scraper';
 };

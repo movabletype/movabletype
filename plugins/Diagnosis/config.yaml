@@ -1,0 +1,44 @@
+id: Diagnosis
+name: Diagnosis
+version: 0.01
+author_link: http://www.movabletype.org/
+author_name: Six Apart Ltd.
+description: <MT_TRANS phrase="Diagnosis and Repiar Tool.">
+l10n_class: MT::Plugin::Diagnosis::L10N
+schema_version: 0.09
+object_types:
+    repair_task: MT::Plugin::Diagnosis::RepairTask
+methods:
+    diagnosis_scanner: $Diagnosis::MT::Plugin::Diagnosis::App::scanner
+    diagnosis_scan: $Diagnosis::MT::Plugin::Diagnosis::App::scan
+    diagnosis_repair: $Diagnosis::MT::Plugin::Diagnosis::App::repair
+applications:
+    cms:
+        enable_object_methods:
+            repair_task:
+                delete: 1
+        menus:
+            tools:diagnosis:
+                label: Diagnosis
+                order: 1000
+                mode: list
+                args:
+                    _type: repair_task
+                condition: $Diagnosis::MT::Plugin::Diagnosis::App::permitted
+                view: system
+callbacks:
+    MT::App::CMS::list_template_param.repair_task: $Diagnosis::MT::Plugin::Diagnosis::App::list_template_param
+    cms_delete_permission_filter.repair_task: $Diagnosis::MT::Plugin::Diagnosis::App::permitted
+list_properties:
+    repair_task: $Diagnosis::MT::Plugin::Diagnosis::RepairTask::list_props
+listing_screens:
+    repair_task: $Diagnosis::MT::Plugin::Diagnosis::App::listing_screens
+list_actions:
+    repair_task: $Diagnosis::MT::Plugin::Diagnosis::App::list_actions
+content_actions:
+    repair_task: $Diagnosis::MT::Plugin::Diagnosis::App::content_actions
+tasks:
+    RunRepairTasks:
+        label: Run Repair Tasks
+        frequency: 60
+        code: $Diagnosis::MT::Plugin::Diagnosis::RepairTask::run_task
