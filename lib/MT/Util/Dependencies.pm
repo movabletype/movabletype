@@ -16,7 +16,7 @@ my %CustomURL = (
 our %Requirements = (
     "Archive::Tar" => {
         dropped_in => ["amazonlinux2023", "centos7"],
-        label      => "This module is optional. It is used to manipulate files during import/export operations.",
+        label      => "This module is shipped with perl. If missing, your perl distribution is incomplete and needs an extra package.",
         perl_core  => 1.82,
         tags       => ["Archive"],
         url        => "https://metacpan.org/pod/Archive::Tar",
@@ -93,14 +93,14 @@ our %Requirements = (
     },
     "Digest::MD5" => {
         dropped_in => ["centos7"],
-        label      => "This module is used to make checksums.",
+        label      => "This module is shipped with perl. If missing, your perl distribution is incomplete and needs an extra package.",
         perl_core  => 2.51,
         tags       => ["Digest"],
         url        => "https://metacpan.org/pod/Digest::MD5",
     },
     "Digest::SHA" => {
         dropped_in => ["amazonlinux2023", "centos7"],
-        label      => "Digest::SHA is required in order to provide enhanced protection of user passwords.",
+        label      => "This module is shipped with perl. If missing, your perl distribution is incomplete and needs an extra package.",
         perl_core  => 5.71,
         tags       => ["Digest"],
         url        => "https://metacpan.org/pod/Digest::SHA",
@@ -118,7 +118,7 @@ our %Requirements = (
         url   => "https://metacpan.org/pod/Email::MIME",
     },
     "Encode" => {
-        label     => "Encode is required to handle multibyte characters correctly.",
+        label     => "This module is shipped with perl. If missing, your perl distribution is incomplete and needs an extra package.",
         perl_core => "2.44_01",
         required  => 1,
         tags      => ["Base"],
@@ -157,16 +157,15 @@ our %Requirements = (
         url        => "https://metacpan.org/pod/File::Find",
     },
     "File::Spec" => {
-        label     => "File::Spec is required to work with file system path information on all supported operating systems.",
+        label     => "This module is shipped with perl. If missing, your perl distribution is incomplete and needs an extra package.",
         perl_core => "3.39_02",
         required  => 1,
         tags      => ["Base", "Filesys"],
         url       => "https://metacpan.org/pod/File::Spec",
-        version   => 0.8,
     },
     "File::Temp" => {
         extlib    => 0.2312,
-        label     => "File::Temp is optional; It is needed if you would like to be able to overwrite existing files when you upload.",
+        label     => "This module is shipped with perl. If missing, your perl distribution is incomplete and needs an extra package.",
         perl_core => 0.22,
         tags      => ["Base", "Filesys"],
         url       => "https://metacpan.org/pod/File::Temp",
@@ -254,7 +253,7 @@ our %Requirements = (
     },
     "IO::Compress::Gzip" => {
         dropped_in => ["amazonlinux2023", "centos7"],
-        label      => "IO::Compress::Gzip is required in order to compress files during an export operation.",
+        label      => "This module is shipped with perl. If missing, your perl distribution is incomplete and needs an extra package.",
         perl_core  => 2.048,
         tags       => ["Archive"],
         url        => "https://metacpan.org/pod/IO::Compress::Gzip",
@@ -266,7 +265,7 @@ our %Requirements = (
     },
     "IO::Uncompress::Gunzip" => {
         dropped_in => ["amazonlinux2023", "centos7"],
-        label      => "IO::Uncompress::Gunzip is required in order to decompress files during an import operation.",
+        label      => "This module is shipped with perl. If missing, your perl distribution is incomplete and needs an extra package.",
         perl_core  => 2.048,
         tags       => ["Archive"],
         url        => "https://metacpan.org/pod/IO::Uncompress::Gunzip",
@@ -286,7 +285,7 @@ our %Requirements = (
     "JSON::PP" => {
         dropped_in => ["amazonlinux2023", "centos7"],
         extlib     => 4.16,
-        label      => "JSON::PP is used internally to process JSON by default.",
+        label      => "This module is shipped with perl. If missing, your perl distribution is incomplete and needs an extra package.",
         perl_core  => "2.27200",
         tags       => ["JSON"],
         url        => "https://metacpan.org/pod/JSON::PP",
@@ -297,7 +296,7 @@ our %Requirements = (
         url   => "https://metacpan.org/pod/JSON::XS",
     },
     "List::Util" => {
-        label     => "List::Util is required to manipulate a list of numbers.",
+        label     => "This module is shipped with perl. If missing, your perl distribution is incomplete and needs an extra package.",
         perl_core => 1.25,
         required  => 1,
         tags      => ["Base"],
@@ -346,7 +345,7 @@ our %Requirements = (
         url    => "https://metacpan.org/pod/LWP::UserAgent",
     },
     "MIME::Base64" => {
-        label     => "MIME::Base64 is required to send mail and handle blobs during import/export operations.",
+        label     => "This module is shipped with perl. If missing, your perl distribution is incomplete and needs an extra package.",
         perl_core => 3.13,
         tags      => ["Mail", "Encoding"],
         url       => "https://metacpan.org/pod/MIME::Base64",
@@ -370,7 +369,7 @@ our %Requirements = (
         url   => "https://metacpan.org/pod/Mozilla::CA",
     },
     "Net::FTP" => {
-        label     => "This module is optional. It is used to manipulate files via FTP(S).",
+        label     => "This module is shipped with perl. If missing, your perl distribution is incomplete and needs an extra package.",
         perl_core => 2.77,
         tags      => ["FTP", "Filesys"],
         url       => "https://metacpan.org/pod/Net::FTP",
@@ -387,7 +386,7 @@ our %Requirements = (
         url   => "https://metacpan.org/pod/Net::SFTP",
     },
     "Net::SMTP" => {
-        label     => "Net::SMTP is required in order to send mail via an SMTP server.",
+        label     => "This module is shipped with perl. If missing, your perl distribution is incomplete and needs an extra package.",
         perl_core => 2.31,
         tags      => ["Mail", "SMTP"],
         url       => "https://metacpan.org/pod/Net::SMTP",
@@ -409,20 +408,20 @@ our %Requirements = (
     },
     "Safe" => {
         dropped_in => ["amazonlinux2023"],
-        label      => "This module is used in a test attribute for the MTIf conditional tag.",
+        label      => "This module is shipped with perl. If missing, your perl distribution is incomplete and needs an extra package.",
         perl_core  => "2.31_01",
         tags       => ["System"],
         url        => "https://metacpan.org/pod/Safe",
     },
     "Scalar::Util" => {
-        label     => "Scalar::Util is required to avoid memory leaks.",
+        label     => "This module is shipped with perl. If missing, your perl distribution is incomplete and needs an extra package.",
         perl_core => 1.25,
         tags      => ["Base"],
         url       => "https://metacpan.org/pod/Scalar::Util",
         version   => "1.10",
     },
     "Storable" => {
-        label     => "Storable is required to make deep-copy of complicated data structures.",
+        label     => "This module is shipped with perl. If missing, your perl distribution is incomplete and needs an extra package.",
         perl_core => 2.34,
         required  => 1,
         tags      => ["Base"],
@@ -453,7 +452,7 @@ our %Requirements = (
     },
     "Time::HiRes" => {
         dropped_in => ["amazonlinux2023"],
-        label      => "This module is required for profiling.",
+        label      => "This module is shipped with perl. If missing, your perl distribution is incomplete and needs an extra package.",
         perl_core  => 1.9725,
         tags       => ["System", "DateTime"],
         url        => "https://metacpan.org/pod/Time::HiRes",
