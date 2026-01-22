@@ -1011,6 +1011,11 @@ sub lacks_core_modules {
         next unless $HiddenCoreDeps{$module}{dropped_in};
         eval "require $module; 1" or return 1;
     }
+    for my $module (keys %Requirements) {
+        next unless $Requirements{$module}{perl_core};
+        next unless $Requirements{$module}{dropped_in};
+        eval "require $module; 1" or return 1;
+    }
     return;
 }
 
