@@ -799,9 +799,10 @@ our %HiddenCoreDeps = (
     },
     "Getopt::Long" => { perl_core => 2.38, url => "https://metacpan.org/pod/Getopt::Long" },
     "Hash::Util"   => {
-        perl_core => 0.11,
-        perl_only => 1,
-        url       => "https://metacpan.org/pod/Hash::Util",
+        dropped_in => ["amazonlinux2023"],
+        perl_core  => 0.11,
+        perl_only  => 1,
+        url        => "https://metacpan.org/pod/Hash::Util",
     },
     "I18N::LangTags" => {
         perl_core => 0.38,
@@ -859,9 +860,10 @@ our %HiddenCoreDeps = (
         url       => "https://metacpan.org/pod/Text::Wrap",
     },
     "Unicode::UCD" => {
-        perl_core => 0.43,
-        perl_only => 1,
-        url       => "https://metacpan.org/pod/Unicode::UCD",
+        dropped_in => ["amazonlinux2023"],
+        perl_core  => 0.43,
+        perl_only  => 1,
+        url        => "https://metacpan.org/pod/Unicode::UCD",
     },
 );
 
