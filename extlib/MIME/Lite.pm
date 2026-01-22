@@ -343,44 +343,31 @@ and trusting these other packages to do the right thing.
 use Carp ();
 use FileHandle;
 
-use vars qw(
-  $AUTO_CC
-  $AUTO_CONTENT_TYPE
-  $AUTO_ENCODE
-  $AUTO_VERIFY
-  $PARANOID
-  $QUIET
-  $VANILLA
-  $VERSION
-  $DEBUG
-);
-
-
 # GLOBALS, EXTERNAL/CONFIGURATION...
-$VERSION = '3.033';
+our $VERSION = '3.035';
 
 ### Automatically interpret CC/BCC for SMTP:
-$AUTO_CC = 1;
+our $AUTO_CC = 1;
 
 ### Automatically choose content type from file name:
-$AUTO_CONTENT_TYPE = 0;
+our $AUTO_CONTENT_TYPE = 0;
 
 ### Automatically choose encoding from content type:
-$AUTO_ENCODE = 1;
+our $AUTO_ENCODE = 1;
 
 ### Check paths right before printing:
-$AUTO_VERIFY = 1;
+our $AUTO_VERIFY = 1;
 
 ### Set this true if you don't want to use MIME::Base64/QuotedPrint/Types:
-$PARANOID = 0;
+our $PARANOID = 0;
 
 ### Don't warn me about dangerous activities:
-$QUIET = undef;
+our $QUIET = undef;
 
 ### Unsupported (for tester use): don't qualify boundary with time/pid:
-$VANILLA = 0;
+our $VANILLA = 0;
 
-$MIME::Lite::DEBUG = 0;
+our $DEBUG = 0;
 
 #==============================
 #==============================
@@ -429,7 +416,7 @@ my %KnownField = map { $_ => 1 }
   bcc         cc          comments      date          encrypted
   from        keywords    message-id    mime-version  organization
   received    references  reply-to      return-path   sender
-  subject     to
+  subject     to          in-reply-to
 
   approved
 );
@@ -1153,7 +1140,7 @@ sub build {
 # top_level ONOFF
 #
 # Set/unset the top-level attributes and headers.
-# This affects "MIME-Version" and "X-Mailer".
+# This affects "MIME-Version", "X-Mailer", and "Date"
 
 sub top_level {
     my ( $self, $onoff ) = @_;
@@ -1166,6 +1153,7 @@ sub top_level {
     } else {
         delete $attrs->{'mime-version'};
         $self->delete('X-Mailer');
+        $self->delete('Date');
     }
 }
 
@@ -1399,7 +1387,9 @@ sub fields {
         ### handle sub-attrs if available
         if (my $subs = $sub_attrs->{$tag}) {
             $value .= '; ' .
-              join('; ', map { qq{$_="$subs->{$_}"} } sort keys %$subs);
+              join('; ', map {
+                  /\*$/ ? qq[$_=$subs->{$_}] : qq[$_="$subs->{$_}"]
+              } sort keys %$subs);
         }
 
         # handle stripping \r\n now since we're not doing it in attr()
@@ -2432,9 +2422,43 @@ sub fields_as_string {
         next if ( $value eq '' );         ### skip empties
         $tag =~ s/\b([a-z])/uc($1)/ge;    ### make pretty
         $tag =~ s/^mime-/MIME-/i;         ### even prettier
+        if (length($value) > 72 && $value !~ /\n/) {
+            $value = fold_header($value);
+        }
         $out .= "$tag: $value\n";
     }
     return $out;
+}
+
+sub fold_header {
+    local $_ = shift;
+    my $Eol = shift || "\n";
+
+    # Undo any existing folding
+    s/\r?\n(\s)/$1/gms;
+
+    # Pulled partly from Mail::Message::Field
+    my $Folded = '';
+    while (1) {
+        if (length($_) < 72) {
+            $Folded .= $_;
+            last;
+        }
+        # Prefer breaking at ; or ,
+        s/^(.{18,72}[;,])([ \t])// ||
+        # Otherwise any space is fine
+        s/^(.{18,72})([ \t])// ||
+        # Hmmm, longer than 72 chars, find up to next whitespace
+        s/^(.{72,}?)([ \t])// ||
+        # Ok, better just get everything
+        s/^(.*)()//;
+        $Folded .= $1 . $Eol . $2;
+    }
+
+    # Strip the trailing eol
+    $Folded =~ s/${Eol}$//;
+
+    return $Folded;
 }
 
 #------------------------------
@@ -3465,7 +3489,7 @@ I<send> your message.
 
 B<Note:>
 As of MIME::Lite v3.02 the mail name extraction routines have been
-beefed up considerably. Furthermore if Mail::Address if provided then
+beefed up considerably. Furthermore if Mail::Address is provided then
 name extraction is done using that. Accordingly the above advice is now
 less true than it once was. Funky email names I<should> work properly
 now. However the disclaimer remains. Patches welcome. :-)
@@ -3696,7 +3720,7 @@ L<MIME::QuotedPrint|MIME::QuotedPrint>, and L<Net::SMTP>.
 L<Email::Date::Format> is strictly required.
 
 If they aren't present then some functionality won't work, and other features
-wont be as efficient or up to date as they could be. Nevertheless they are optional
+won't be as efficient or up to date as they could be. Nevertheless they are optional
 extras.
 
 =head1 BUNDLED GOODIES
@@ -3731,7 +3755,7 @@ feature of not using Test::More that I can see.
 
 Bug fixes / Patches / Contribution are welcome, however I probably won't apply
 them unless they also have an associated test. This means that if I don't have
-the time to write the test the patch wont get applied, so please, include tests
+the time to write the test the patch won't get applied, so please, include tests
 for any patches you provide.
 
 =head1 VERSION
