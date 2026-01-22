@@ -145,7 +145,7 @@ sub suite {
             code  => 403,
             error => 'Do not have permission to upload.',
         },
-        
+
         # AllowNonAsciiFilename = 0
         {
             path   => '/v3/assets/upload',

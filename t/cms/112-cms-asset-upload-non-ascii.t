@@ -20,9 +20,6 @@ binmode $builder->output,         ':encoding(utf8)';
 binmode $builder->failure_output, ':encoding(utf8)';
 binmode $builder->todo_output,    ':encoding(utf8)';
 
-use File::Spec;
-use File::Path;
-
 use MT::Test;
 use MT::Test::Image;
 use MT::Test::App;
