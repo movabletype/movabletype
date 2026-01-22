@@ -105,6 +105,13 @@ our %Requirements = (
         tags       => ["Digest"],
         url        => "https://metacpan.org/pod/Digest::SHA",
     },
+    "DirHandle" => {
+        dropped_in => ["amazonlinux2023"],
+        label      => "This module is shipped with perl. If missing, your perl distribution is incomplete and needs an extra package.",
+        perl_core  => 1.04,
+        perl_only  => 1,
+        url        => "https://metacpan.org/pod/DirHandle",
+    },
     "Email::MIME" => {
         label => "This module and its dependencies are optional. It is an alternative module to create mail.",
         tags  => ["Mail"],
@@ -117,10 +124,37 @@ our %Requirements = (
         tags      => ["Base"],
         url       => "https://metacpan.org/pod/Encode",
     },
+    "English" => {
+        dropped_in => ["amazonlinux2023"],
+        label      => "This module is shipped with perl. If missing, your perl distribution is incomplete and needs an extra package.",
+        perl_core  => 1.05,
+        perl_only  => 1,
+        url        => "https://metacpan.org/pod/English",
+    },
+    "ExtUtils::Manifest" => {
+        dropped_in => ["amazonlinux2023", "centos7"],
+        label      => "This module is shipped with perl. If missing, your perl distribution is incomplete and needs an extra package.",
+        perl_core  => 1.61,
+        url        => "https://metacpan.org/pod/ExtUtils::Manifest",
+    },
     "FCGI" => {
         label => "This module and its dependencies are required to run Movable Type under FastCGI.",
         tags  => ["Backend", "FastCGI"],
         url   => "https://metacpan.org/pod/FCGI",
+    },
+    "File::Copy" => {
+        dropped_in => ["amazonlinux2023"],
+        label      => "This module is shipped with perl. If missing, your perl distribution is incomplete and needs an extra package.",
+        perl_core  => 2.23,
+        perl_only  => 1,
+        url        => "https://metacpan.org/pod/File::Copy",
+    },
+    "File::Find" => {
+        dropped_in => ["amazonlinux2023"],
+        label      => "This module is shipped with perl. If missing, your perl distribution is incomplete and needs an extra package.",
+        perl_core  => "1.20",
+        perl_only  => 1,
+        url        => "https://metacpan.org/pod/File::Find",
     },
     "File::Spec" => {
         label     => "File::Spec is required to work with file system path information on all supported operating systems.",
@@ -141,6 +175,12 @@ our %Requirements = (
         label => "This module is optional. It is used to see if the disk is full while backing up.",
         tags  => ["Filesys"],
         url   => "https://metacpan.org/pod/Filesys::DfPortable",
+    },
+    "FindBin" => {
+        dropped_in => ["amazonlinux2023"],
+        label      => "This module is shipped with perl. If missing, your perl distribution is incomplete and needs an extra package.",
+        perl_core  => 1.51,
+        url        => "https://metacpan.org/pod/FindBin",
     },
     "Fluent::Logger" => {
         label => "This module is optional. It is used to customize the logging behavior.",
@@ -175,6 +215,20 @@ our %Requirements = (
         pinned => 1,
         tags   => ["HTTP"],
         url    => "https://metacpan.org/pod/HTTP::Request",
+    },
+    "Hash::Util" => {
+        dropped_in => ["amazonlinux2023"],
+        label      => "This module is shipped with perl. If missing, your perl distribution is incomplete and needs an extra package.",
+        perl_core  => 0.11,
+        perl_only  => 1,
+        url        => "https://metacpan.org/pod/Hash::Util",
+    },
+    "I18N::LangTags::List" => {
+        dropped_in => ["amazonlinux2023"],
+        label      => "This module is shipped with perl. If missing, your perl distribution is incomplete and needs an extra package.",
+        perl_core  => "0.35_01",
+        perl_only  => 1,
+        url        => "https://metacpan.org/pod/I18N::LangTags::List",
     },
     "Image::ExifTool" => {
         extlib => 13.44,
@@ -303,6 +357,13 @@ our %Requirements = (
         tags   => ["Mail"],
         url    => "https://metacpan.org/pod/MIME::Lite",
     },
+    "Module::Load" => {
+        dropped_in => ["amazonlinux2023", "centos7"],
+        extlib     => 0.36,
+        label      => "This module is shipped with perl. If missing, your perl distribution is incomplete and needs an extra package.",
+        perl_core  => 0.22,
+        url        => "https://metacpan.org/pod/Module::Load",
+    },
     "Mozilla::CA" => {
         label => "This module is required for Google Analytics site statistics and for verification of SSL certificates.",
         tags  => ["Security"],
@@ -367,6 +428,13 @@ our %Requirements = (
         tags      => ["Base"],
         url       => "https://metacpan.org/pod/Storable",
     },
+    "Sys::Hostname" => {
+        dropped_in => ["amazonlinux2023"],
+        label      => "This module is shipped with perl. If missing, your perl distribution is incomplete and needs an extra package.",
+        perl_core  => 1.16,
+        perl_only  => 1,
+        url        => "https://metacpan.org/pod/Sys::Hostname",
+    },
     "Sys::MemInfo" => {
         label => "This module is optional. It is used to see if swap memory is enough while processing background jobs.",
         tags  => ["System"],
@@ -396,6 +464,18 @@ our %Requirements = (
         tags    => ["HTTP", "URI"],
         url     => "https://metacpan.org/pod/URI",
         version => 5.12,
+    },
+    "Unicode::UCD" => {
+        dropped_in => ["amazonlinux2023"],
+        label      => "This module is shipped with perl. If missing, your perl distribution is incomplete and needs an extra package.",
+        perl_core  => 0.43,
+        perl_only  => 1,
+        url        => "https://metacpan.org/pod/Unicode::UCD",
+    },
+    "WWW::Form::UrlEncoded::XS" => {
+        label => "This module is optional; It parses the query string faster.",
+        tags  => ["Base", "Performance"],
+        url   => "https://metacpan.org/pod/WWW::Form::UrlEncoded::XS",
     },
     "XML::LibXML::SAX" => {
         label   => "This module is optional; It is one of the modules required to import an exported site and such.",
@@ -778,25 +858,8 @@ our %HiddenCoreDeps = (
         perl_core  => "2.135_06",
         url        => "https://metacpan.org/pod/Data::Dumper",
     },
-    "DirHandle" => {
-        dropped_in => ["amazonlinux2023"],
-        perl_core  => 1.04,
-        perl_only  => 1,
-        url        => "https://metacpan.org/pod/DirHandle",
-    },
-    "English" => {
-        dropped_in => ["amazonlinux2023"],
-        perl_core  => 1.05,
-        perl_only  => 1,
-        url        => "https://metacpan.org/pod/English",
-    },
-    "Exporter"           => { perl_core => 5.66, url => "https://metacpan.org/pod/Exporter" },
-    "ExtUtils::Manifest" => {
-        dropped_in => ["amazonlinux2023", "centos7"],
-        perl_core  => 1.61,
-        url        => "https://metacpan.org/pod/ExtUtils::Manifest",
-    },
-    "Fcntl" => {
+    "Exporter" => { perl_core => 5.66, url => "https://metacpan.org/pod/Exporter" },
+    "Fcntl"    => {
         perl_core => 1.11,
         perl_only => 1,
         url       => "https://metacpan.org/pod/Fcntl",
@@ -805,18 +868,6 @@ our %HiddenCoreDeps = (
         perl_core => 2.84,
         perl_only => 1,
         url       => "https://metacpan.org/pod/File::Basename",
-    },
-    "File::Copy" => {
-        dropped_in => ["amazonlinux2023"],
-        perl_core  => 2.23,
-        perl_only  => 1,
-        url        => "https://metacpan.org/pod/File::Copy",
-    },
-    "File::Find" => {
-        dropped_in => ["amazonlinux2023"],
-        perl_core  => "1.20",
-        perl_only  => 1,
-        url        => "https://metacpan.org/pod/File::Find",
     },
     "File::Path" => {
         perl_core => "2.08_01",
@@ -827,18 +878,7 @@ our %HiddenCoreDeps = (
         perl_only => 1,
         url       => "https://metacpan.org/pod/FileHandle",
     },
-    "FindBin" => {
-        dropped_in => ["amazonlinux2023"],
-        perl_core  => 1.51,
-        url        => "https://metacpan.org/pod/FindBin",
-    },
-    "Getopt::Long" => { perl_core => 2.38, url => "https://metacpan.org/pod/Getopt::Long" },
-    "Hash::Util"   => {
-        dropped_in => ["amazonlinux2023"],
-        perl_core  => 0.11,
-        perl_only  => 1,
-        url        => "https://metacpan.org/pod/Hash::Util",
-    },
+    "Getopt::Long"   => { perl_core => 2.38, url => "https://metacpan.org/pod/Getopt::Long" },
     "I18N::LangTags" => {
         perl_core => 0.38,
         perl_only => 1,
@@ -848,12 +888,6 @@ our %HiddenCoreDeps = (
         perl_core => 1.05,
         perl_only => 1,
         url       => "https://metacpan.org/pod/I18N::LangTags::Detect",
-    },
-    "I18N::LangTags::List" => {
-        dropped_in => ["amazonlinux2023"],
-        perl_core  => "0.35_01",
-        perl_only  => 1,
-        url        => "https://metacpan.org/pod/I18N::LangTags::List",
     },
     "IO::File"         => { perl_core => 1.16, url => "https://metacpan.org/pod/IO::File" },
     "IO::Select"       => { perl_core => 1.21, url => "https://metacpan.org/pod/IO::Select" },
@@ -866,12 +900,6 @@ our %HiddenCoreDeps = (
         perl_only => 1,
         url       => "https://metacpan.org/pod/IPC::Open3",
     },
-    "Module::Load" => {
-        dropped_in => ["amazonlinux2023", "centos7"],
-        extlib     => 0.36,
-        perl_core  => 0.22,
-        url        => "https://metacpan.org/pod/Module::Load",
-    },
     "POSIX" => {
         perl_core => "1.30",
         perl_only => 1,
@@ -883,22 +911,10 @@ our %HiddenCoreDeps = (
         perl_only => 1,
         url       => "https://metacpan.org/pod/Symbol",
     },
-    "Sys::Hostname" => {
-        dropped_in => ["amazonlinux2023"],
-        perl_core  => 1.16,
-        perl_only  => 1,
-        url        => "https://metacpan.org/pod/Sys::Hostname",
-    },
     "Text::Balanced" => { perl_core => 2.02, url => "https://metacpan.org/pod/Text::Balanced" },
     "Text::Wrap"     => {
         perl_core => 2009.0305,
         url       => "https://metacpan.org/pod/Text::Wrap",
-    },
-    "Unicode::UCD" => {
-        dropped_in => ["amazonlinux2023"],
-        perl_core  => 0.43,
-        perl_only  => 1,
-        url        => "https://metacpan.org/pod/Unicode::UCD",
     },
 );
 
