@@ -3822,6 +3822,9 @@ sub build_actions {
         $action->{order} ||= 0;
         $action->{plugin} = $actions->{$id}->{plugin}->{id};
 
+        for my $key (qw(class condition href icon label mobile mode order target)) {
+            $action->{$key} = exists $action->{$key} ? $action->{$key} : undef;
+        }
         push @valid_actions, { %$action, href => $href };
     }
 
