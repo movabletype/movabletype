@@ -471,11 +471,6 @@ our %Requirements = (
         perl_only  => 1,
         url        => "https://metacpan.org/pod/Unicode::UCD",
     },
-    "WWW::Form::UrlEncoded::XS" => {
-        label => "This module is optional; It parses the query string faster.",
-        tags  => ["Base", "Performance"],
-        url   => "https://metacpan.org/pod/WWW::Form::UrlEncoded::XS",
-    },
     "XML::LibXML::SAX" => {
         label   => "This module is optional; It is one of the modules required to import an exported site and such.",
         tags    => ["XML", "Backup"],
