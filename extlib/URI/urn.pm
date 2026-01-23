@@ -3,7 +3,7 @@ package URI::urn;  # RFC 2141
 use strict;
 use warnings;
 
-our $VERSION = '5.32';
+our $VERSION = '5.34';
 
 use parent 'URI';
 

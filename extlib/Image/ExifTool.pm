@@ -29,7 +29,7 @@ use vars qw($VERSION $RELEASE @ISA @EXPORT_OK %EXPORT_TAGS $AUTOLOAD @fileTypes
             %jpegMarker %specialTags %fileTypeLookup $testLen $exeDir
             %static_vars $advFmtSelf $configFile @configFiles $noConfig);
 
-$VERSION = '13.30';
+$VERSION = '13.44';
 $RELEASE = '';
 @ISA = qw(Exporter);
 %EXPORT_TAGS = (
@@ -42,7 +42,7 @@ $RELEASE = '';
     # exports not part of the public API, but used by ExifTool modules:
     DataAccess => [qw(
         ReadValue GetByteOrder SetByteOrder ToggleByteOrder Get8u Get8s Get16u
-        Get16s Get32u Get32s Get64u GetFloat GetDouble GetFixed32s Write
+        Get16s Get32u Get32s Get64u Get64s GetFloat GetDouble GetFixed32s Write
         WriteValue Tell Set8u Set8s Set16u Set32u Set64u Set64s
     )],
     Utils => [qw(GetTagTable TagTableKeys GetTagInfoList AddTagToTable HexDump)],
@@ -148,16 +148,16 @@ sub ReadValue($$$;$$$);
     PCX PGF PSP PhotoCD Radiance Other::PFM PDF PostScript Photoshop::Header
     Photoshop::Layers Photoshop::ImageData FujiFilm::RAFHeader FujiFilm::RAF
     FujiFilm::IFD FujiFilm::MRAW Samsung::Trailer Sony::SRF2 Sony::SR2SubIFD
-    Sony::PMP ITC ID3 ID3::Lyrics3 FLAC AAC Ogg Vorbis APE APE::NewHeader
-    APE::OldHeader Audible MPC MPEG::Audio MPEG::Video MPEG::Xing M2TS QuickTime
-    QuickTime::ImageFile QuickTime::Stream QuickTime::Tags360Fly Matroska
-    Matroska::StdTag MOI MXF DV Flash Flash::FLV Real::Media Real::Audio
-    Real::Metafile Red RIFF AIFF ASF WTV DICOM FITS XISF MIE JSON HTML XMP::SVG
-    Palm Palm::MOBI Palm::EXTH Torrent EXE EXE::PEVersion EXE::PEString
-    EXE::DebugRSDS EXE::DebugNB10 EXE::Misc EXE::MachO EXE::PEF EXE::ELF EXE::AR
-    EXE::CHM LNK PCAP Font VCard Text VCard::VCalendar VCard::VNote RSRC Rawzor
-    ZIP ZIP::GZIP ZIP::RAR ZIP::RAR5 RTF OOXML iWork ISO FLIR::AFF FLIR::FPF
-    MacOS MacOS::MDItem FlashPix::DocTable
+    Sony::PMP ITC ID3 ID3::Lyrics3 FLAC AAC Ogg Vorbis DSF WavPack APE
+    APE::NewHeader APE::OldHeader Audible MPC MPEG::Audio MPEG::Video MPEG::Xing
+    M2TS QuickTime QuickTime::ImageFile QuickTime::Stream QuickTime::Tags360Fly
+    Matroska Matroska::StdTag MOI MXF DV Flash Flash::FLV Real::Media
+    Real::Audio Real::Metafile Red RIFF AIFF ASF TNEF WTV DICOM FITS XISF MIE
+    JSON HTML XMP::SVG Palm Palm::MOBI Palm::EXTH Torrent EXE EXE::PEVersion
+    EXE::PEString EXE::DebugRSDS EXE::DebugNB10 EXE::Misc EXE::MachO EXE::PEF
+    EXE::ELF EXE::AR EXE::CHM LNK LNK::INI PCAP Font VCard Text VCard::VCalendar
+    VCard::VNote RSRC Rawzor ZIP ZIP::GZIP ZIP::RAR ZIP::RAR5 RTF OOXML iWork
+    ISO FLIR::AFF FLIR::FPF MacOS MacOS::MDItem FlashPix::DocTable
 );
 
 # alphabetical list of current Lang modules
@@ -194,13 +194,13 @@ $defaultLang = 'en';    # default language
 # 3) PLIST must be in this list for the binary PLIST format, although it may
 #    cause a file to be checked twice for XML
 @fileTypes = qw(JPEG EXV CRW DR4 TIFF GIF MRW RAF X3F JP2 PNG MIE MIFF PS PDF
-                PSD XMP BMP WPG BPG PPM RIFF AIFF ASF MOV MPEG Real SWF PSP FLV
-                OGG FLAC APE MPC MKV MXF DV PMP IND PGF ICC ITC FLIR FLIF FPF
-                LFP HTML VRD RTF FITS XISF XCF DSS QTIF FPX PICT ZIP GZIP PLIST
-                RAR 7Z BZ2 CZI TAR EXE EXR HDR CHM LNK WMF AVC DEX DPX RAW Font
-                JUMBF RSRC M2TS MacOS PHP PCX DCX DWF DWG DXF WTV Torrent VCard
-                LRI R3D AA PDB PFM2 MRC LIF JXL MOI ISO ALIAS PCAP JSON MP3
-                DICOM PCD NKA ICO TXT AAC);
+                PSD XMP BMP WPG BPG PPM WV RIFF AIFF ASF MOV MPEG Real SWF PSP
+                FLV OGG FLAC APE MPC MKV MXF DV PMP IND PGF ICC ITC FLIR FLIF
+                FPF LFP HTML VRD RTF FITS XISF XCF DSF DSS QTIF FPX PICT ZIP
+                GZIP PLIST RAR 7Z BZ2 CZI TAR EXE EXR HDR CHM LNK WMF AVC DEX
+                DPX RAW Font JUMBF RSRC M2TS MacOS PHP PCX DCX DWF DWG DXF WTV
+                Torrent VCard LRI R3D AA PDB PFM2 MRC LIF JXL MOI ISO ALIAS PCAP
+                JSON MP3 KVAR TNEF DICOM PCD NKA ICO TXT AAC);
 
 # file types that we can write (edit)
 my @writeTypes = qw(JPEG TIFF GIF CRW MRW ORF RAF RAW PNG MIE PSD XMP PPM EPS
@@ -304,6 +304,7 @@ my %createTypes = map { $_ => 1 } qw(XMP ICC MIE VRD DR4 EXIF EXV);
     DPX  => ['DPX',  'Digital Picture Exchange' ],
     DR4  => ['DR4',  'Canon VRD version 4 Recipe'],
     DS2  => ['DSS',  'Digital Speech Standard 2'],
+    DSF  => ['DSF',  'DSF Stream File'],
     DSS  => ['DSS',  'Digital Speech Standard'],
     DV   => ['DV',   'Digital Video'],
     DVB  => ['MOV',  'Digital Video Broadcasting'],
@@ -386,13 +387,15 @@ my %createTypes = map { $_ => 1 } qw(XMP ICC MIE VRD DR4 EXIF EXV);
     KDC  => ['TIFF', 'Kodak Digital Camera RAW'],
     KEY  => ['ZIP',  'Apple Keynote presentation'],
     KTH  => ['ZIP',  'Apple Keynote Theme'],
+    KVAR => ['KVAR', 'Kandao Video Asset Resource'], #PH (NC)
     LA   => ['RIFF', 'Lossless Audio'],
     LFP  => ['LFP',  'Lytro Light Field Picture'],
     LFR  =>  'LFP', # (Light Field RAW)
     LIF  => ['LIF',  'Leica Image File'],
     LNK  => ['LNK',  'Windows shortcut'],
+    LRF  => ['MOV',  'Low-Resolution video File'], # (DJI)
     LRI  => ['LRI',  'Light RAW'],
-    LRV  => ['MOV',  'Low-Resolution Video'],
+    LRV  => ['MOV',  'Low-Resolution Video'], # (GoPro)
     M2T  =>  'M2TS',
     M2TS => ['M2TS', 'MPEG-2 Transport Stream'],
     M2V  => ['MPEG', 'MPEG-2 Video'],
@@ -536,12 +539,14 @@ my %createTypes = map { $_ => 1 } qw(XMP ICC MIE VRD DR4 EXIF EXV);
     THMX => [['ZIP','FPX'], 'Office Open XML Theme'],
     TIF  =>  'TIFF',
     TIFF => ['TIFF', 'Tagged Image File Format'],
+    TNEF => ['TNEF', 'Transport Neural Encapsulation Format'], # (actual extension is .DAT)
     TORRENT => ['Torrent', 'BitTorrent description file'],
     TS   =>  'M2TS',
     TTC  => ['Font', 'True Type Font Collection'],
     TTF  => ['Font', 'True Type Font'],
     TUB  => 'PSP',
     TXT  => ['TXT',  'Text file'],
+    URL  => ['LNK',  'Windows shortcut URL'],
     VCARD=> ['VCard','Virtual Card'],
     VCF  => 'VCARD',
     VOB  => ['MPEG', 'Video Object'],
@@ -555,7 +560,8 @@ my %createTypes = map { $_ => 1 } qw(XMP ICC MIE VRD DR4 EXIF EXV);
     WMA  => ['ASF',  'Windows Media Audio'],
     WMF  => ['WMF',  'Windows Metafile Format'],
     WMV  => ['ASF',  'Windows Media Video'],
-    WV   => ['RIFF', 'WavePack lossless audio'],
+    WV   => ['WV',   'WavPack Audio'],
+    WVP  =>  'WV',
     X3F  => ['X3F',  'Sigma RAW format'],
     XCF  => ['XCF',  'GIMP native image format'],
     XHTML=> ['HTML', 'Extensible HyperText Markup Language'],
@@ -570,6 +576,7 @@ my %createTypes = map { $_ => 1 } qw(XMP ICC MIE VRD DR4 EXIF EXV);
     XLTM => [['ZIP','FPX'], 'Office Open XML Spreadsheet Template Macro-enabled'],
     XLTX => [['ZIP','FPX'], 'Office Open XML Spreadsheet Template'],
     XMP  => ['XMP',  'Extensible Metadata Platform'],
+    VSDX => ['ZIP',  'Visio Diagram Document'],
     WOFF => ['Font', 'Web Open Font Format'],
     WOFF2=> ['Font', 'Web Open Font Format 2'],
     WPG  => ['WPG',  'WordPerfect Graphics'],
@@ -651,6 +658,7 @@ my %fileDescription = (
     DPX  => 'image/x-dpx',
     DR4  => 'application/octet-stream', #PH (NC)
     DS2  => 'audio/x-ds2',
+    DSF  => 'audio/x-dsf',
     DSS  => 'audio/x-dss',
     DV   => 'video/x-dv',
    'DVR-MS' => 'video/x-ms-dvr',
@@ -802,6 +810,7 @@ my %fileDescription = (
     TAR  => 'application/x-tar',
     THMX => 'application/vnd.ms-officetheme',
     TIFF => 'image/tiff',
+    TNEF => 'application/vnd.ms-tnef',
     Torrent => 'application/x-bittorrent',
     TTC  => 'application/font-ttf',
     TTF  => 'application/font-ttf',
@@ -809,6 +818,7 @@ my %fileDescription = (
     VCard=> 'text/vcard',
     VRD  => 'application/octet-stream', #PH (NC)
     VSD  => 'application/x-visio',
+    VSDX => 'application/vnd.ms-visio.drawing',
     WDP  => 'image/vnd.ms-photo',
     WEBM => 'video/webm',
     WMA  => 'audio/x-ms-wma',
@@ -816,6 +826,7 @@ my %fileDescription = (
     WMV  => 'video/x-ms-wmv',
     WPG  => 'image/x-wpg',
     WTV  => 'video/x-ms-wtv',
+    WV   => 'audio/x-wavpack',
     X3F  => 'image/x-sigma-x3f',
     XCF  => 'image/x-xcf',
     XISF => 'image/x-xisf',
@@ -871,6 +882,7 @@ my %moduleName = (
     JPEG => '',
     JUMBF=> 'Jpeg2000',
     JXL  => 'Jpeg2000',
+    KVAR => 'Kandao',
     LFP  => 'Lytro',
     LRI  => 0,
     MOV  => 'QuickTime',
@@ -899,6 +911,7 @@ my %moduleName = (
     TXT  => 'Text',
     VRD  => 'CanonVRD',
     WMF  => 0,
+    WV   => 'WavPack',
     X3F  => 'SigmaRaw',
     XCF  => 'GIMP',
 );
@@ -931,6 +944,7 @@ $testLen = 1024;    # number of bytes to read when testing for magic number
     DOCX => 'PK\x03\x04',
     DPX  => '(SDPX|XPDS)',
     DR4  => 'IIII[\x04|\x05]\0\x04\0',
+    DSF  => 'DSD \x1c\0{7}.{16}fmt ',
     DSS  => '(\x02dss|\x03ds2)',
     DV   => '\x1f\x07\0[\x3f\xbf]', # (not tested if extension recognized)
     DWF  => '\(DWF V\d',
@@ -964,11 +978,12 @@ $testLen = 1024;    # number of bytes to read when testing for magic number
     JSON => '(\xef\xbb\xbf)?\s*(\[\s*)?\{\s*"[^"]*"\s*:',
     JUMBF=> '.{4}jumb\0.{3}jumd',
     JXL  => '(\xff\x0a|\0\0\0\x0cJXL \x0d\x0a......ftypjxl )',
+    KVAR => '.{2}\0\0[A-Z].{31}(CHAR|BOOL|[US](8|16|32|64)|FLOAT|DOUBLE)\0',
     LFP  => '\x89LFP\x0d\x0a\x1a\x0a',
     LIF  => '\x70\0{3}.{4}\x2a.{4}<\0',
-    LNK  => '.{4}\x01\x14\x02\0{5}\xc0\0{6}\x46',
+    LNK  => '(.{4}\x01\x14\x02\0{5}\xc0\0{6}\x46|\[[InternetShortcut\][\x0d\x0a])',
     LRI  => 'LELR \0',
-    M2TS => '(....)?\x47',
+    M2TS => '.{0,191}?\x47(.{187}|.{191})\x47(.{187}|.{191})\x47',
     MacOS=> '\0\x05\x16\x07\0.\0\0Mac OS X        ',
     MIE  => '~[\x10\x18]\x04.0MIE',
     MIFF => 'id=ImageMagick',
@@ -1012,6 +1027,7 @@ $testLen = 1024;    # number of bytes to read when testing for magic number
     RWZ  => 'rawzor',
     SWF  => '[FC]WS[^\0]',
     TAR  => '.{257}ustar(  )?\0', # (this doesn't catch old-style tar files)
+    TNEF => '\x78\x9f\x3e\x22..\x01\x06\x90\x08\0',
     TXT  => '(\xff\xfe|(\0\0)?\xfe\xff|(\xef\xbb\xbf)?[\x07-\x0d\x20-\x7e\x80-\xfe]*$)',
     TIFF => '(II|MM)', # don't test magic number (some raw formats are different)
     VCard=> '(?i)BEGIN:(VCARD|VCALENDAR|VNOTE)\r\n',
@@ -1129,6 +1145,7 @@ my @availableOptions = (
     [ 'GeoMaxHDOP',       undef,  'geotag maximum HDOP' ],
     [ 'GeoMaxPDOP',       undef,  'geotag maximum PDOP' ],
     [ 'GeoMinSats',       undef,  'geotag minimum satellites' ],
+    [ 'GeoHPosErr',       undef,  'geotag GPSHPositioningError based on $GPSDOP' ],
     [ 'GeoSpeedRef',      undef,  'geotag GPSSpeedRef' ],
     [ 'GlobalTimeShift',  undef,  'apply time shift to all extracted date/time values' ],
     [ 'GPSQuadrant',      undef,  'quadrant for GPS if not otherwise known' ],
@@ -1178,6 +1195,7 @@ my @availableOptions = (
     [ 'SystemTags',       undef,  'extract additional File System tags' ],
     [ 'TextOut',        \*STDOUT, 'file for Verbose/HtmlDump output' ],
     [ 'TimeZone',         undef,  'local time zone' ],
+    [ 'UndefTags',        undef,  'leave undef tags in -if conditions when -m or -f are used' ],
     [ 'Unknown',          0,      'flag to get values of unknown tags (0-2)' ],
     [ 'UserParam',        { },    'user parameters for additional user-defined tag values' ],
     [ 'Validate',         undef,  'perform additional validation' ],
@@ -1255,7 +1273,7 @@ my %systemTagsNotes = (
 #       used to write the entire corresponding directory as a block.
 %Image::ExifTool::Extra = (
     GROUPS => { 0 => 'File', 1 => 'File', 2 => 'Image' },
-    VARS => { NO_ID => 1 }, # tag ID's aren't meaningful for these tags
+    VARS => { ID_FMT => 'none' }, # tag ID's aren't meaningful for these tags
     WRITE_PROC => \&DummyWriteProc,
     Error   => {
         Priority => 0,
@@ -1804,6 +1822,13 @@ my %systemTagsNotes = (
             MM => 'Big-endian (Motorola, MM)',
         },
     },
+    MakerNoteByteOrder => {
+        Notes => 'byte order of maker notes.  Generated only if different from ExifByteOrder',
+        PrintConv => {
+            II => 'Little-endian (Intel, II)',
+            MM => 'Big-endian (Motorola, MM)',
+        },
+    },
     ExifUnicodeByteOrder => {
         Writable => 1,
         WriteOnly => 1,
@@ -2118,7 +2143,7 @@ my %systemTagsNotes = (
 %Image::ExifTool::JPEG::SOF = (
     GROUPS => { 0 => 'File', 1 => 'File', 2 => 'Image' },
     NOTES => 'This information is extracted from the JPEG Start Of Frame segment.',
-    VARS => { NO_ID => 1 }, # tag ID's aren't meaningful for these tags
+    VARS => { ID_FMT => 'none' }, # tag ID's aren't meaningful for these tags
     EncodingProcess => {
         PrintHex => 1,
         PrintConv => {
@@ -2257,7 +2282,7 @@ my %systemTagsNotes = (
     GROUPS => { 0 => 'Composite', 1 => 'Composite' },
     TABLE_NAME => 'Image::ExifTool::Composite',
     SHORT_NAME => 'Composite',
-    VARS => { NO_ID => 1 }, # want empty tagID's for Composite tags
+    VARS => { ID_FMT => 'none' }, # want empty tagID's for Composite tags
     WRITE_PROC => \&DummyWriteProc,
 );
 
@@ -2288,7 +2313,8 @@ sub CleanWarning(;$)
         return undef unless defined $evalWarning;
         $str = $evalWarning;
     }
-    $str = $1 if $str =~ /(.*) at /s;
+    # truncate at first " at " for warnings like "syntax error at (eval 80) line 1, at EOF"
+    $str = $1 if $str =~ /(.*?) at /s;
     $str =~ s/\s+$//s;
     return $str;
 }
@@ -2821,6 +2847,8 @@ sub ExtractInfo($;@)
                 $isDir = 1;
             } else {
                 $self->Error('Error opening file');
+                # continue to process alt files if necessary
+                $self->DoneExtract() if $$self{ALT_EXIFTOOL};
             }
         } else {
             $self->Error('No file specified');
@@ -4292,6 +4320,7 @@ sub Init($)
     $$self{LOW_PRIORITY_DIR} = { PreviewIFD => 1 }; # names of priority 0 directories
     $$self{TIFF_TYPE}  = '';        # type of TIFF data (APP1, TIFF, NEF, etc...)
     $$self{FMT_EXPR}   = undef;     # current advanced formatting expression
+    $$self{HAS_DOC}    = { };       # lookup for all document numbers in this file
     $$self{Make}       = '';        # camera make
     $$self{Model}      = '';        # camera model
     $$self{CameraType} = '';        # Olympus camera type
@@ -5516,23 +5545,31 @@ sub AddCleanup($)
 #------------------------------------------------------------------------------
 # Add warning tag
 # Inputs: 0) ExifTool object reference, 1) warning message
-#         2) true if minor (2 if behaviour changes when warning is ignored,
-#            or 3 if warning shouldn't be issued when Validate option is used)
+#         2) 0=normal warning, 1=minor, 2=minor with behavioural change when
+#            ignored, 3=warning shouldn't be issued with Validate option,
+#            bit 0x04 set causes warning count to not be incremented
 # Returns: true if warning tag was added
 sub Warn($$;$)
 {
     my ($self, $str, $ignorable) = @_;
     my $noWarn = $$self{OPTIONS}{NoWarning};
-    if ($ignorable) {
+    my $noCount;
+    while ($ignorable) {
+        if ($ignorable & 0x04) {
+            $noCount = 1;
+            $ignorable &= 0x03 or last;
+        }
+        my $ignorable = $ignorable & 0x03;
         return 0 if $$self{OPTIONS}{IgnoreMinorErrors};
         return 0 if $ignorable eq '3' and $$self{OPTIONS}{Validate};
         return 1 if defined $noWarn and eval { $str =~ /$noWarn/ };
         $str = $ignorable eq '2' ? "[Minor] $str" : "[minor] $str";
+        last;
     }
     unless (defined $noWarn and eval { $str =~ /$noWarn/ }) {
         # add each warning only once but count number of occurrences
         if ($$self{WAS_WARNED}{$str}) {
-            ++$$self{WAS_WARNED}{$str};
+            ++$$self{WAS_WARNED}{$str} unless $noCount;
         } else {
             $self->FoundTag('Warning', $str);
             $$self{WAS_WARNED}{$str} = 1;
@@ -6582,6 +6619,8 @@ sub ConvertDateTime($$)
             }
             $a[5] -= 1900;  # strftime year starts from 1900
             $date = POSIX::strftime($fmt, @a);  # generate the formatted date/time
+            # apparently strftime can set the UTF-8 flag (argh!), so reset this if necessary
+            $self->Sanitize(\$date) if $fmt =~ /[\x80-\xff]/;
         } elsif ($$self{OPTIONS}{StrictDate}) {
             undef $date;
         }
@@ -8598,6 +8637,7 @@ sub DoProcessTIFF($$;$)
     my $ifdName = ($$dirInfo{DirName} and $$dirInfo{DirName} =~ /^(ExifIFD|GPS)$/) ? $1 : 'IFD0';
     if (not $tagTablePtr or $$tagTablePtr{GROUPS}{0} eq 'EXIF') {
         $self->FoundTag('ExifByteOrder', $byteOrder) unless $outfile;
+        $$self{ExifByteOrder} = $byteOrder;
     } elsif ($$tagTablePtr{GROUPS}{0} eq 'MakerNotes') { # (for writing CR3 maker notes)
         $ifdName = $$tagTablePtr{GROUPS}{0};
     } else {
@@ -9480,6 +9520,7 @@ sub FoundTag($$$;@)
     $$self{TAG_EXTRA}{$tag}{G1} = $grps[1] if $grps[1];
     if ($$self{DOC_NUM}) {
         $$self{TAG_EXTRA}{$tag}{G3} = $$self{DOC_NUM};
+        $$self{HAS_DOC}{$$self{DOC_NUM}} = 1;
         if ($$self{DOC_NUM} =~ /^(\d+)/) {
             # keep track of maximum 1st-level sub-document number
             $$self{DOC_COUNT} = $1 unless $$self{DOC_COUNT} >= $1;
@@ -9565,6 +9606,7 @@ sub DoEscape($$)
 sub SetFileType($;$$$)
 {
     my ($self, $fileType, $mimeType, $normExt) = @_;
+    # use only the first FileType set if called again for the main document
     unless ($$self{FileType} and not $$self{DOC_NUM}) {
         my $baseType = $$self{FILE_TYPE};
         my $ext = $$self{FILE_EXT};
@@ -9655,10 +9697,10 @@ sub VPrint($$@)
 # Print verbose directory information
 # Inputs: 0) ExifTool object reference, 1) directory name or dirInfo ref
 #         2) number of entries in directory (or 0 if unknown)
-#         3) optional size of directory in bytes
-sub VerboseDir($$;$$)
+#         3) optional size of directory in bytes, 4) optional byte order for -v3 output
+sub VerboseDir($$;$$$)
 {
-    my ($self, $name, $entries, $size) = @_;
+    my ($self, $name, $entries, $size, $byteOrder) = @_;
     return unless $$self{OPTIONS}{Verbose};
     if (ref $name eq 'HASH') {
         $size = $$name{DirLen} unless $size;
@@ -9668,6 +9710,9 @@ sub VerboseDir($$;$$)
     my $out = $$self{OPTIONS}{TextOut};
     my $str = ($entries or defined $entries and not $size) ? " with $entries entries" : '';
     $str .= ", $size bytes" if $size;
+    if ($byteOrder and $$self{OPTIONS}{Verbose} > 2) {
+        $str .= ', ' . (GetByteOrder() eq 'II' ? 'Little-endian' : 'Big-endian');
+    }
     print $out "$indent+ [$name directory$str]\n";
 }
 
@@ -9719,8 +9764,10 @@ sub ExtractBinary($$$;$)
             $isPreview = 1;
         }
         my $lcTag = lc $tag;
-        if ((not $$self{OPTIONS}{Binary} or $$self{EXCL_TAG_LOOKUP}{$lcTag}) and
-             not $$self{OPTIONS}{Verbose} and not $$self{REQ_TAG_LOOKUP}{$lcTag})
+        my $options = $$self{OPTIONS};
+        if ((not $$options{Binary} or $$self{EXCL_TAG_LOOKUP}{$lcTag}) and
+             not $$options{Verbose} and not $$options{Validate} and
+             not $$self{REQ_TAG_LOOKUP}{$lcTag})
         {
             return "Binary data $length bytes";
         }
@@ -9788,7 +9835,7 @@ sub ProcessBinaryData($$$)
         # extract known tags in numerical order
         @tags = sort { ($a < 0 ? $a + 1e9 : $a) <=> ($b < 0 ? $b + 1e9 : $b) } TagTableKeys($tagTablePtr);
     }
-    $self->VerboseDir('BinaryData', undef, $size) if $verbose;
+    $self->VerboseDir('BinaryData', undef, $size, GetByteOrder()) if $verbose;
     # avoid creating unknown tags for tags that fail condition if Unknown is 1
     $$self{NO_UNKNOWN} = 1 if $unknown < 2;
     my ($index, %val);

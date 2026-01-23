@@ -5,7 +5,7 @@ use strict;
 our @EXPORT_OK = qw(rearrange rearrange_header make_attributes unescape escape
         expires ebcdic2ascii ascii2ebcdic);
 
-our $VERSION = '4.69';
+our $VERSION = '4.71';
 
 our $_EBCDIC = "\t" ne "\011";
 
