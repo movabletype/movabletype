@@ -4,9 +4,11 @@
 # Description:  Read meta information from MS Shell Link files
 #
 # Revisions:    2009/09/19 - P. Harvey Created
+#               2025/10/20 - PH Added .URL file support
 #
 # References:   1) http://msdn.microsoft.com/en-us/library/dd871305(PROT.10).aspx
 #               2) http://www.i2s-lab.com/Papers/The_Windows_Shortcut_File_Format.pdf
+#               3) https://harfanglab.io/insidethelab/sadfuture-xdspy-latest-evolution/#tid_specifications_ignored
 #------------------------------------------------------------------------------
 
 package Image::ExifTool::LNK;
@@ -14,8 +16,9 @@ package Image::ExifTool::LNK;
 use strict;
 use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
+use Image::ExifTool::Microsoft;
 
-$VERSION = '1.09';
+$VERSION = '1.13';
 
 sub ProcessItemID($$$);
 sub ProcessLinkInfo($$$);
@@ -24,7 +27,7 @@ sub ProcessLinkInfo($$$);
 %Image::ExifTool::LNK::Main = (
     PROCESS_PROC => \&Image::ExifTool::ProcessBinaryData,
     GROUPS => { 2 => 'Other' },
-    VARS => { HEX_ID => 1 },    # print hex ID's in documentation
+    VARS => { ID_FMT => 'hex' },    # print hex ID's in documentation
     NOTES => 'Information extracted from MS Shell Link (Windows shortcut) files.',
     # maybe the Flags aren't very useful to the user (since they are
     # mainly structural), but extract them anyway for completeness
@@ -188,7 +191,7 @@ sub ProcessLinkInfo($$$);
     },
     0xa0000001 => {
         Name => 'EnvVarData',
-        SubDirectory => { TagTable => 'Image::ExifTool::LNK::UnknownData' },
+        SubDirectory => { TagTable => 'Image::ExifTool::LNK::EnvVarData' },
     },
     0xa0000002 => {
         Name => 'ConsoleData',
@@ -260,7 +263,7 @@ sub ProcessLinkInfo($$$);
     GROUPS => { 2 => 'Other' },
     PROCESS_PROC => \&ProcessLinkInfo,
     FORMAT => 'int32u',
-    VARS => { NO_ID => 1 },
+    VARS => { ID_FMT => 'none' },
     VolumeID => { },
     DriveType => {
         PrintConv => {
@@ -440,7 +443,55 @@ sub ProcessLinkInfo($$$);
     0x08 => {
         Name => 'CodePage',
         Format => 'int32u',
+        SeparateTable => 'Microsoft CodePage',
+        PrintConv => \%Image::ExifTool::Microsoft::codePage,
     },
+);
+
+%Image::ExifTool::LNK::EnvVarData = (
+    PROCESS_PROC => \&Image::ExifTool::ProcessBinaryData,
+    GROUPS => { 2 => 'Other' },
+    8 => {
+        Name => 'EnvironmentTarget',
+        Format => 'string[260]',
+    },
+    268 => {
+        Name => 'EnvironmentTargetUnicode',
+        Format => 'unicode[260]',
+    },
+);
+
+%Image::ExifTool::LNK::INI = (
+    GROUPS => { 2 => 'Document' },
+    VARS => { ID_FMT => 'none' },
+    NOTES => 'Tags found in INI-format Windows .URL files.',
+    URL         => { },
+    IconFile    => { },
+    IconIndex   => { },
+    WorkingDirectory => { },
+    HotKey      => { },
+    ShowCommand => { PrintConv => { 1 => 'Normal', 2 => 'Minimized', 3 => 'Maximized' } },
+    Modified    => {
+        Groups => { 2 => 'Time' },
+        Format => 'int64u',
+        Groups => { 2 => 'Time' },
+        # convert time from 100-ns intervals since Jan 1, 1601 (NC)
+        RawConv => q{
+            my $dat = pack('H*', $val);
+            return undef if length $dat < 8;
+            my ($lo, $hi) = unpack('V2', $dat);
+            return undef unless $lo or $hi;
+            return $hi * 4294967296 + $lo;
+        },
+        ValueConv => '$val=$val/1e7-11644473600; ConvertUnixTime($val,1)',
+        PrintConv => '$self->ConvertDateTime($val)',
+    },
+    Author      => { Groups => { 2 => 'Author' } },
+    WhatsNew    => { },
+    Comment     => { },
+    Desc        => { },
+    Roamed      => { Notes => '1 if synced across multiple devices' },
+    IDList      => { },
 );
 
 #------------------------------------------------------------------------------
@@ -545,7 +596,7 @@ sub ProcessLinkInfo($$$)
         $off = Get32u($dataPt, 0x14);
         if ($off and $off + 0x14 <= $dataLen) {
             my $siz = Get32u($dataPt, $off);
-            return 0 if $off + $siz > $dataLen; 
+            return 0 if $off + $siz > $dataLen;
             $pos = Get32u($dataPt, $off + 0x08);
             if ($pos > 0x14 and $siz >= 0x18) {
                 $pos = Get32u($dataPt, $off + 0x14);
@@ -585,6 +636,27 @@ sub ProcessLinkInfo($$$)
 }
 
 #------------------------------------------------------------------------------
+# Extract information from a INI-format file
+# Inputs: 0) ExifTool object reference, 1) dirInfo reference
+# Returns: 1 on success, 0 if this wasn't a valid INI file
+sub ProcessINI($$)
+{
+    my ($et, $dirInfo) = @_;
+    my $raf = $$dirInfo{RAF};
+    my $buff;
+    local $/ = "\x0d\x0a";
+    my $tagTablePtr = GetTagTable('Image::ExifTool::LNK::INI');
+    while ($raf->ReadLine($buff)) {
+        if ($buff =~ /^\[(.*?)\]/) {
+            $et->VPrint(0, "$1 section:\n");
+        } elsif ($buff =~ /^\s*(\w+)=(.*)\x0d\x0a$/) {
+            $et->HandleTag($tagTablePtr, $1, $2, MakeTagInfo => 1);
+        }
+    }
+    return 1;
+}
+
+#------------------------------------------------------------------------------
 # Extract information from a MS Shell Link (Windows shortcut) file
 # Inputs: 0) ExifTool object reference, 1) dirInfo reference
 # Returns: 1 on success, 0 if this wasn't a valid LNK file
@@ -596,7 +668,13 @@ sub ProcessLNK($$)
 
     # read LNK file header
     $raf->Read($buff, 0x4c) == 0x4c or return 0;
-    $buff =~ /^.{4}\x01\x14\x02\0{5}\xc0\0{6}\x46/s or return 0;
+    unless ($buff =~ /^.{4}\x01\x14\x02\0{5}\xc0\0{6}\x46/s) {
+        # check for INI-format LNK file (eg. .URL file)
+        return undef unless $buff =~ /^\[[InternetShortcut\][\x0d\x0a]/;
+        $raf->Seek(0,0) or return 0;
+        $et->SetFileType('URL', 'application/x-mswinurl');
+        return ProcessINI($et, $dirInfo);
+    };
     $len = unpack('V', $buff);
     $len >= 0x4c or return 0;
     if ($len > 0x4c) {
@@ -647,17 +725,32 @@ sub ProcessLNK($$)
     my @strings = qw(Description RelativePath WorkingDirectory
                      CommandLineArguments IconFileName);
     for ($i=0; $i<@strings; ++$i) {
+        my ($val, $limit);
         my $mask = 0x04 << $i;
         next unless $flags & $mask;
         $raf->Read($buff, 2) or return 1;
+        my $pos = $raf->Tell();
         $len = unpack('v', $buff) or next;
+        # Windows doesn't follow their own specification and limits the length
+        # for most of these strings (ref 3)
+        if ($i != 3 and $len >= 260) {
+            $limit = 1;
+            if ($len > 260) {
+                $len = 260;
+                $et->Warn('LNK string data overrun! Possible security issue');
+            }
+        }
         $len *= 2 if $flags & 0x80;  # characters are 2 bytes if Unicode flag is set
         $raf->Read($buff, $len) or return 1;
-        my $val;
+        # remove last character if string is at length limit (Windows treats this as a null)
+        if ($limit) {
+            $len -= $flags & 0x80 ? 2 : 1;
+            $buff = substr($buff, 0, $len);
+        }
         $val = $et->Decode($buff, 'UCS2') if $flags & 0x80;
         $et->HandleTag($tagTablePtr, 0x30000 | $mask, $val,
             DataPt  => \$buff,
-            DataPos => $raf->Tell() - $len,
+            DataPos => $pos,
             Size    => $len,
         );
     }
@@ -715,6 +808,8 @@ under the same terms as Perl itself.
 =item L<http://msdn.microsoft.com/en-us/library/dd871305(PROT.10).aspx>
 
 =item L<http://www.i2s-lab.com/Papers/The_Windows_Shortcut_File_Format.pdf>
+
+=item L<https://harfanglab.io/insidethelab/sadfuture-xdspy-latest-evolution/#tid_specifications_ignored>
 
 =back
 

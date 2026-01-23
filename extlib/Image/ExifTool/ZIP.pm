@@ -258,7 +258,7 @@ my %iWorkType = (
 # RAR v5 tags (ref 7, github#203)
 %Image::ExifTool::ZIP::RAR5 = (
     GROUPS => { 2 => 'Other' },
-    VARS => { NO_ID => 1 },
+    VARS => { ID_FMT => 'none' },
     NOTES => 'These tags are extracted from RAR v5 and 7z archive files.',
     FileVersion     => { },
     CompressedSize  => { },
@@ -381,7 +381,7 @@ sub ProcessRAR($$)
             # skip over all headers except file or service header
             next unless $headType == 2 or $headType == 3;
             $et->VerboseDir('RAR5 file', undef, $headSize) if $headType == 2;
-            
+
             my $headFlag = ReadULEB($rafHdr);
             ReadULEB($rafHdr);                  # skip extraSize
             my $dataSize;
