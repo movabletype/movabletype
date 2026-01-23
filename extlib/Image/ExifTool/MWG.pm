@@ -28,7 +28,7 @@ my $mwgLoaded;  # flag set if we alreaded Load()ed the MWG tags
 # MWG Composite tags
 %Image::ExifTool::MWG::Composite = (
     GROUPS => { 0 => 'Composite', 1 => 'MWG', 2 => 'Image' },
-    VARS => { NO_ID => 1 },
+    VARS => { ID_FMT => 'none' },
     WRITE_PROC => \&Image::ExifTool::DummyWriteProc,
     NOTES => q{
         The table below lists special Composite tags which are used to access other
@@ -487,7 +487,7 @@ my %sKeywordStruct;
     GROUPS => { 0 => 'XMP', 1 => 'XMP-mwg-kw', 2 => 'Image' },
     NAMESPACE => 'mwg-kw',
     NOTES => q{
-        Hierarchical keywords metadata defined by the MWG 2.0 specification. 
+        Hierarchical keywords metadata defined by the MWG 2.0 specification.
         ExifTool unrolls keyword structures to an arbitrary depth of 6 to allow
         individual levels to be accessed with different tag names, and to avoid
         infinite recursion.  See

@@ -18,7 +18,7 @@ use Module::Load qw( load );
 use Scalar::Util qw(blessed openhandle);
 use Try::Tiny qw(try catch);
 
-our $VERSION = '6.78';
+our $VERSION = '6.81';
 
 sub new
 {
@@ -602,7 +602,7 @@ sub is_online {
 }
 
 
-my @ANI = qw(- \ | /);
+my @ANI = ('-', '\\', '|', '/');
 
 sub progress {
     my($self, $status, $m) = @_;
@@ -1688,8 +1688,8 @@ proxy server.
 Load proxy settings from C<*_proxy> environment variables.  You might
 specify proxies like this (sh-syntax):
 
-  gopher_proxy=http://proxy.my.place/
-  wais_proxy=http://proxy.my.place/
+  gopher_proxy=http://proxy.example.org/
+  wais_proxy=http://proxy.example.org/
   no_proxy="localhost,example.com"
   export gopher_proxy wais_proxy no_proxy
 
@@ -1999,6 +1999,8 @@ forced to match that of the server.
 Uses L<File::Copy/move> to attempt to atomically replace the C<$filename>.
 
 The return value is an L<HTTP::Response> object.
+
+Dies if the response to fetch the document contains an C<X-Died> header.
 
 =head2 patch
 

@@ -8,7 +8,7 @@ use strict;
 use warnings;
 #/;
 
-$CGI::VERSION='4.69';
+$CGI::VERSION='4.71';
 
 use CGI::Util qw(rearrange rearrange_header make_attributes unescape escape expires ebcdic2ascii ascii2ebcdic);
 
@@ -1098,7 +1098,7 @@ sub read_postdata_putdata {
         # unique for each filehandle.  Don't use the file descriptor as
         # this will be re-used for each filehandle if the
         # close_upload_files feature is used.
-        $self->{'.tmpfiles'}->{$$filehandle . $filehandle} = {
+        $self->{'.tmpfiles'}->{$filehandle->filename . $filehandle} = {
             hndl => $filehandle,
 			name => $filehandle->filename,
             info => {%header},
@@ -3453,7 +3453,7 @@ sub read_multipart {
 	  # unique for each filehandle.  Don't use the file descriptor as
 	  # this will be re-used for each filehandle if the
 	  # close_upload_files feature is used.
-      $self->{'.tmpfiles'}->{$$filehandle . $filehandle} = {
+      $self->{'.tmpfiles'}->{$filehandle->filename . $filehandle} = {
               hndl => $filehandle,
 		  name => $filehandle->filename,
 	      info => {%header},
@@ -3576,7 +3576,7 @@ sub read_multipart_related {
 	  # unique for each filehandle.  Don't use the file descriptor as
 	  # this will be re-used for each filehandle if the
 	  # close_upload_files feature is used.
-	  $self->{'.tmpfiles'}->{$$filehandle . $filehandle} = {
+	  $self->{'.tmpfiles'}->{$filehandle->filename . $filehandle} = {
               hndl => $filehandle,
 		  name => $filehandle->filename,
 	      info => {%header},
@@ -3599,7 +3599,7 @@ sub tmpFileName {
 
     # preferred calling convention: $filename came directly from param or upload
     if (ref $filename) {
-        return $self->{'.tmpfiles'}->{$$filename . $filename}->{name} || '';
+        return $self->{'.tmpfiles'}->{$filename->filename . $filename}->{name} || '';
     }
 
     # backwards compatible with older versions: $filename is merely equal to
@@ -3607,7 +3607,7 @@ sub tmpFileName {
     foreach my $param_name ($self->param) {
         foreach my $filehandle ($self->multi_param($param_name)) {
             if ($filehandle eq $filename) {
-                return $self->{'.tmpfiles'}->{$$filehandle . $filehandle}->{name} || '';
+                return $self->{'.tmpfiles'}->{$filehandle->filename . $filehandle}->{name} || '';
             }
         }
     }
@@ -3618,7 +3618,7 @@ sub tmpFileName {
 sub uploadInfo {
     my($self,$filename) = self_or_default(@_);
     return if ! defined $$filename;
-    return $self->{'.tmpfiles'}->{$$filename . $filename}->{info};
+    return $self->{'.tmpfiles'}->{$filename->filename . $filename}->{info};
 }
 
 # internal routine, don't use

@@ -89,3 +89,5 @@ mt-static/js/build/*.map
 CHECKSUMS
 
 *.bak
+
+/local/

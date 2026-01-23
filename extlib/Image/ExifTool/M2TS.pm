@@ -32,7 +32,7 @@ use strict;
 use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 
-$VERSION = '1.29';
+$VERSION = '1.31';
 
 # program map table "stream_type" lookup (ref 6/1/9)
 my %streamType = (
@@ -132,7 +132,7 @@ my $knotsToKph = 1.852;     # knots --> km/h
 # information extracted from the MPEG-2 transport stream
 %Image::ExifTool::M2TS::Main = (
     GROUPS => { 2 => 'Video' },
-    VARS => { NO_ID => 1 },
+    VARS => { ID_FMT => 'none' },
     NOTES => q{
         The MPEG-2 transport stream is used as a container for many different
         audio/video formats (including AVCHD).  This table lists information
@@ -165,7 +165,7 @@ my $knotsToKph = 1.852;     # knots --> km/h
 # information extracted from AC-3 audio streams
 %Image::ExifTool::M2TS::AC3 = (
     GROUPS => { 1 => 'AC3', 2 => 'Audio' },
-    VARS => { NO_ID => 1 },
+    VARS => { ID_FMT => 'none' },
     NOTES => 'Tags extracted from AC-3 audio streams.',
     AudioSampleRate => {
         PrintConv => {
@@ -322,7 +322,7 @@ sub ParsePID($$$$$)
         if ($$et{OPTIONS}{ExtractEmbedded}) {
             $more = 1;
         } elsif (not $$et{OPTIONS}{Validate}) {
-            $et->Warn('The ExtractEmbedded option may find more tags in the video data',3);
+            $et->Warn('The ExtractEmbedded option may find more tags in the video data',7);
         }
     } elsif ($type == 0x81 or $type == 0x87 or $type == 0x91) {
         # AC-3 audio
@@ -557,33 +557,40 @@ sub ProcessM2TS($$)
 {
     my ($et, $dirInfo) = @_;
     my $raf = $$dirInfo{RAF};
-    my ($buff, $pLen, $upkPrefix, $j, $fileType, $eof);
+    my ($buff, $j, $eof, $pLen, $readSize);
     my (%pmt, %pidType, %data, %sectLen, %packLen, %fromStart);
     my ($startTime, $endTime, $fwdTime, $backScan, $maxBack);
     my $verbose = $et->Options('Verbose');
     my $out = $et->Options('TextOut');
 
-    # read first packet
-    return 0 unless $raf->Read($buff, 8) == 8;
+    # read enough to guarantee 2 sync bytes
+    return 0 unless $raf->Read($buff, 383) == 383;
     # test for magic number (sync byte is the only thing we can safely check)
-    return 0 unless $buff =~ /^(....)?\x47/s;
-    unless ($1) {
-        $pLen = 188;        # no timecode
-        $fileType = 'M2T';  # (just as a way to tell there is no timecode)
-        $upkPrefix = 'N';
-    } else {
-        $pLen = 192; # 188-byte transport packet + leading 4-byte timecode (ref 4)
-        $upkPrefix = 'x4N';
+    return 0 unless $buff =~ /^(.{0,190}?)\x47(.{187}|.{191})\x47/s;
+    my $tcLen = length($2) - 187; # (length of timecode = 0 or 4 bytes)
+    my $start = length($1) - $tcLen;
+    # we may need to try the validation twice to handle the edge case
+    # where the first byte of a timecode is 0x47 and we were fooled
+    # into thinking there was no timecode
+Try: for (;;) {
+        $start += 192 if $start < 0; # (if all or part of first timecode was missing)
+        $pLen = 188 + $tcLen;
+        $readSize = 64 * $pLen;      # size of our read buffer
+        $raf->Seek($start, 0);       # rewind to start
+        $raf->Read($buff, $readSize) >= $pLen * 4 or return 0;  # require at least 4 packets
+        # validate the sync byte in the next 3 packets
+        for ($j=1; $j<4; ++$j) {
+            next if substr($buff, $tcLen + $pLen * $j, 1) eq 'G'; # (0x47)
+            return 0 if $tcLen;
+            $tcLen = 4;
+            $start -= 4;
+            next Try;
+        }
+        last;   # success!
     }
-    my $prePos = $pLen - 188;       # byte position of packet prefix
-    my $readSize = 64 * $pLen;      # size of our read buffer
-    $raf->Seek(0,0);                # rewind to start
-    $raf->Read($buff, $readSize) >= $pLen * 4 or return 0;  # require at least 4 packets
-    # validate the sync byte in the next 3 packets
-    for ($j=1; $j<4; ++$j) {
-        return 0 unless substr($buff, $prePos + $pLen * $j, 1) eq 'G'; # (0x47)
-    }
-    $et->SetFileType($fileType);
+    # (use M2T instead of M2TS just as an indicator that there is no timecode)
+    $et->SetFileType($tcLen ? 'M2TS' : 'M2T');
+    $et->Warn("File doesn't begin with the start of a packet") if $start;
     SetByteOrder('MM');
     my $tagTablePtr = GetTagTable('Image::ExifTool::M2TS::Main');
 
@@ -669,7 +676,7 @@ sub ProcessM2TS($$)
         }
         $pEnd += $pLen;
         # decode the packet prefix
-        $pos += $prePos;
+        $pos += $tcLen;
         my $prefix = unpack("x${pos}N", $buff); # (use unpack instead of Get32u for speed)
         # validate sync byte
         unless (($prefix & 0xff000000) == 0x47000000) {
@@ -687,9 +694,9 @@ sub ProcessM2TS($$)
         if ($verbose > 1) {
             my $i = ($raf->Tell() - length($buff) + $pEnd) / $pLen - 1;
             print  $out "Transport packet $i:\n";
-            $et->VerboseDump(\$buff, Len => $pLen, Addr => $i * $pLen, Start => $pos - $prePos);
+            $et->VerboseDump(\$buff, Len => $pLen, Addr => $i * $pLen, Start => $pos - $tcLen);
             my $str = $pidName{$pid} ? " ($pidName{$pid})" : ' <not in Program Map Table!>';
-            printf $out "  Timecode:   0x%.4x\n", Get32u(\$buff, $pos - $prePos) if $pLen == 192;
+            printf $out "  Timecode:   0x%.4x\n", Get32u(\$buff, $pos - $tcLen) if $pLen == 192;
             printf $out "  Packet ID:  0x%.4x$str\n", $pid;
             printf $out "  Start Flag: %s\n", $payload_unit_start_indicator ? 'Yes' : 'No';
         }
