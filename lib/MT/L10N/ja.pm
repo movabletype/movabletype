@@ -4535,6 +4535,7 @@ use vars qw( @ISA %Lexicon );
 	'You must configure this site before you can publish this content data.' => 'コンテンツデータを公開する前にサイトの設定を行ってください。',
 	'[_1] is also editing the same data (last updated at [_2]).' => '同じコンテンツデータを編集中のユーザーがいます: [_1] (最終更新日時: [_2])',
 	q{Warning: Changing this content data's basename may break inbound links.} => q{警告: このコンテンツデータの出力ファイル名の変更は、内部のリンク切れの原因となります。},
+    'Delete [_1] Content' => '[_1]を削除',
 
 ## tmpl/admin2023/cms/edit_content_type.tmpl
 	'1 or more label-value pairs are required' => '1つ以上の値とラベルの組み合わせが必要です。',
