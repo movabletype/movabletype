@@ -43,9 +43,6 @@ This allows the inner 'if' statements to do their work. See above
 for how the '$conditional' variable is used.
 */
 function smarty_prefilter_mt_to_smarty($tpl_source, $ctx2) {
-    // used to serialize attributes when creating tag stack for
-    // function tags.
-    $var_export = function_exists('var_export');
 
     $mt = MT::get_instance();
     $ctx =& $mt->context();
