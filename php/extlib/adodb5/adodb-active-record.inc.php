@@ -1139,12 +1139,23 @@ global $_ADODB_ACTIVE_DBS;
 	$save = $db->SetFetchMode(ADODB_FETCH_NUM);
 
 	$qry = "select * from ".$table;
+	// Separate table name if table name was already joined other table.
+	if (preg_match('/^(.+)\sJOIN\s.+ON/i', $table)) {
+		$matches = preg_split('/\s/i', $table);
+		$tblname = trim($matches[0]);
+		$qry = "$tblname.* from ".$table;
+		$table = $tblname;
+	} else
+		$qry = "* from ".$table;
+
+	if (isset($extra['distinct']))
+		$qry = "distinct " . $qry;
+	$qry = "select " . $qry;
 
 	if (!empty($whereOrderBy)) {
 		$qry .= ' WHERE '.$whereOrderBy;
 	}
 	if(isset($extra['limit'])) {
-		$rows = false;
 		if(isset($extra['offset'])) {
 			$rs = $db->SelectLimit($qry, $extra['limit'], $extra['offset'],$bindarr);
 		} else {
@@ -1163,7 +1174,7 @@ global $_ADODB_ACTIVE_DBS;
 
 	$false = false;
 
-	if ($rows === false) {
+	if (!isset($rows) || !is_array($rows)) {
 		return $false;
 	}
 
