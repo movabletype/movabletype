@@ -3,7 +3,7 @@
         'name' => 'movabletype/movabletype',
         'pretty_version' => 'dev-develop',
         'version' => 'dev-develop',
-        'reference' => '6fd664ce499d494c29edb8101b091ffd20a77e02',
+        'reference' => '8736701e3cd6bfc608565423fe73357a26c4175c',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -11,9 +11,9 @@
     ),
     'versions' => array(
         'adodb/adodb-php' => array(
-            'pretty_version' => 'v5.22.7',
-            'version' => '5.22.7.0',
-            'reference' => 'e7150539d5707ae556172532e2b25ac4e88cb2a6',
+            'pretty_version' => 'v5.22.11',
+            'version' => '5.22.11.0',
+            'reference' => 'a741375176f48b084ca9a110c112323fc7101b75',
             'type' => 'library',
             'install_path' => __DIR__ . '/../adodb/adodb-php',
             'aliases' => array(),
@@ -22,7 +22,7 @@
         'movabletype/movabletype' => array(
             'pretty_version' => 'dev-develop',
             'version' => 'dev-develop',
-            'reference' => '6fd664ce499d494c29edb8101b091ffd20a77e02',
+            'reference' => '8736701e3cd6bfc608565423fe73357a26c4175c',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
