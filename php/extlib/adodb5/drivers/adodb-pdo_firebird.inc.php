@@ -24,7 +24,7 @@
 /**
  * Class ADODB_pdo_firebird
  */
-class ADODB_pdo_firebird extends ADODB_pdo
+class ADODB_pdo_firebird extends ADODB_pdo_base
 {
 	public $dialect = 3;
 	public $metaTablesSQL = "select lower(rdb\$relation_name) from rdb\$relations where rdb\$relation_name not like 'RDB\$%'";
@@ -245,7 +245,7 @@ class ADODB_pdo_firebird extends ADODB_pdo
 			$rs = $this->execute($getnext);
 		}
 		if ($rs && !$rs->EOF) {
-			$this->genID = (integer)reset($rs->fields);
+			$this->genID = (int)reset($rs->fields);
 		} else {
 			$this->genID = 0; // false
 		}
@@ -259,8 +259,8 @@ class ADODB_pdo_firebird extends ADODB_pdo
 
 	public function selectLimit($sql, $nrows = -1, $offset = -1, $inputarr = false, $secs = 0)
 	{
-		$nrows = (integer)$nrows;
-		$offset = (integer)$offset;
+		$nrows = (int)$nrows;
+		$offset = (int)$offset;
 		$str = 'SELECT ';
 		if ($nrows >= 0) {
 			$str .= "FIRST $nrows ";
