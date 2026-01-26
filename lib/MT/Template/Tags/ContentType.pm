@@ -248,6 +248,8 @@ sub _hdlr_contents {
 
     $terms{content_type_id} = $content_type_id;
 
+    my $content_field_types = MT->registry('content_field_types');
+
     my $namespace        = $args->{namespace};
     my $no_resort        = 0;
     my $post_sort_limit  = 0;
@@ -351,8 +353,7 @@ sub _hdlr_contents {
                 );
             }
             if ($cf) {
-                my $data_type = MT->registry('content_field_types')
-                    ->{ $cf->type }{data_type};
+                my $data_type = $content_field_types->{ $cf->type }{data_type};
                 my $join = MT->model('cf_idx')->join_on(
                     'content_data_id',
                     undef,
@@ -406,8 +407,7 @@ sub _hdlr_contents {
                     }
                 );
                 my $type      = $cf->type;
-                my $data_type = MT->registry('content_field_types')
-                    ->{ $cf->type }{data_type};
+                my $data_type = $content_field_types->{ $cf->type }{data_type};
                 if ( $type eq 'categories' ) {
                     my $category_arg = $value;
                     my ( $cexpr, $cats );
@@ -843,6 +843,7 @@ sub _hdlr_contents {
     my $vars = $ctx->{__stash}{vars} ||= {};
     local $ctx->{__stash}{contents}
         = ( @contents && defined $contents[0] ) ? \@contents : undef;
+    local $ctx->{__stash}{content_field_types} = $content_field_types;
     for my $content_data (@contents) {
         local $vars->{__first__}       = !$i;
         local $vars->{__last__}        = !defined $contents[ $i + 1 ];
@@ -1900,7 +1901,7 @@ sub _hdlr_content_field {
     return $ctx->_hdlr_pass_tokens_else($args, $cond) if !$check_value && $check_value eq '';
 
     my $field_type
-        = MT->registry('content_field_types')->{ $field_data->{type} }
+        = $ctx->stash('content_field_types')->{ $field_data->{type} }
         or return $ctx->error(
         MT->translate('No Content Field Type could be found.') );
 
@@ -1961,7 +1962,7 @@ sub _hdlr_content_fields {
     my $content_type = $ctx->stash('content_type')
         or return $ctx->_no_content_type_error;
 
-    my $content_field_types = MT->registry('content_field_types');
+    my $content_field_types = $ctx->stash('content_field_types');
 
     my @field_data = @{ $content_type->fields };
     my $builder    = $ctx->stash('builder');
@@ -2020,7 +2021,7 @@ sub _hdlr_content_field_value {
         or return $ctx->_no_content_field_error;
 
     my $field_type = $ctx->stash('content_field_type')
-        || MT->registry('content_field_types')->{ $field_data->{type} };
+        || $ctx->stash('content_field_types')->{ $field_data->{type} };
     return $ctx->error(
         MT->translate('No Content Field Type could be found.') )
         unless $field_type;

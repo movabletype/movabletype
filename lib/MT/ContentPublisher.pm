@@ -952,7 +952,8 @@ sub rebuild_file {
                 ->load( $category->category_set_id );
             $ctx->{__stash}{category_set} = $category_set;
             if ($args{ContentType}) {
-                $ctx->{__stash}{content_type} = $args{ContentType};
+                $ctx->{__stash}{content_type}        = $args{ContentType};
+                $ctx->{__stash}{content_field_types} = MT->registry('content_field_types');
             }
         }
     }
@@ -1005,7 +1006,8 @@ sub rebuild_file {
         my $content_type
             = MT::ContentType->load( $content_data->content_type_id );
         $ctx->var( 'content_archive', 1 );
-        $ctx->{__stash}{content_type} = $content_type;
+        $ctx->{__stash}{content_type}        = $content_type;
+        $ctx->{__stash}{content_field_types} = MT->registry('content_field_types');
         if ( $archiver->contenttype_based ) {
             $ctx->{__stash}{content} = $content_data;
         }
@@ -1898,6 +1900,8 @@ sub _rebuild_content_archive_type {
         local $ctx->{__stash}{content} = $obj
             if $obj && ref $obj eq 'MT::ContentData';
         local $ctx->{__stash}{content_type} = $obj->content_type
+            if $ctx->stash('content');
+        local $ctx->{__stash}{content_field_types} = MT->registry('content_field_types')
             if $ctx->stash('content');
         local $ctx->{__stash}{author}
             = $author ? $author : $obj ? $obj->author : undef;
