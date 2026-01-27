@@ -93,6 +93,7 @@ sub archive_group_iter {
     my $tsend = $ctx->{current_timestamp_end};
 
     require MT::Entry;
+    my $sql_class = MT::Entry->driver->dbd->sql_class;
     $iter = MT::Entry->count_group_by(
         {   blog_id => $blog->id,
             status  => MT::Entry::RELEASE(),
@@ -100,19 +101,19 @@ sub archive_group_iter {
         },
         {   ( $ts && $tsend ? ( range_incl => { authored_on => 1 } ) : () ),
             group => [
-                "extract(year from authored_on) AS year",
-                "extract(month from authored_on) AS month",
-                "extract(day from authored_on) AS day"
+                $sql_class->extract('year', 'authored_on') . " AS year",
+                $sql_class->extract('month', 'authored_on') . " AS month",
+                $sql_class->extract('day', 'authored_on') . " AS day"
             ],
             $args->{lastn} ? ( limit => $args->{lastn} ) : (),
             sort => [
-                {   column => "extract(year from authored_on)",
+                {   column => $sql_class->extract('year', 'authored_on'),
                     desc   => $order
                 },
-                {   column => "extract(month from authored_on)",
+                {   column => $sql_class->extract('month', 'authored_on'),
                     desc   => $order
                 },
-                { column => "extract(day from authored_on)", desc => $order }
+                { column => $sql_class->extract('day', 'authored_on'), desc => $order }
             ],
         }
     ) or return $ctx->error("Couldn't get daily archive list");
