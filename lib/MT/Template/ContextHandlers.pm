@@ -5075,6 +5075,8 @@ B<Example:> Passing Parameters to a Template Module
                 )
             );
         }
+        require MT::Util::Deprecated;
+        MT::Util::Deprecated::warning(name => 'MTInclude file="..."', alternative => 'MTInclude name="..."', since => '9.2.0');
         my $file = $arg->{file} or return;
         require File::Basename;
         my $base_filename = File::Basename::basename($file);
