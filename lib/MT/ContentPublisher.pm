@@ -502,7 +502,6 @@ sub _get_categories_for_rebuild {
 
     my %categories_for_rebuild;
     for my $field_id (@field_ids) {
-        my $field_hash = $ct->get_field($field_id);
         my %rebuild_ids;
         $rebuild_ids{$_} = 1 for @{ $old_categories->{$field_id} || [] };
         $rebuild_ids{$_} = 0 for @{ $cd->data->{$field_id}       || [] };
