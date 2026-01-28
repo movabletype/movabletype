@@ -1932,7 +1932,7 @@ BEGIN {
             'CheckScript'             => { default => 'mt-check.cgi', },
             'DataAPIScript'           => { default => 'mt-data-api.cgi', },
             'PublishCharset'          => { default => 'utf-8', },
-            'SafeMode'                => { default => 1, },
+            'SafeMode'                => { default => 1, deprecated => '9.2.0' },
             'AllowFileInclude'        => { default => 0, },
             'AllowTestModifier'       => { default => 0 },
             'GlobalSanitizeSpec'      => {
