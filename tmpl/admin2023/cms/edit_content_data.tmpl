@@ -470,6 +470,9 @@
   </mtapp:setting>
 </mt:if>
 
+<mt:setvarblock name="preview_button_title"><__trans phrase="Preview this [_1] (v)" params="<mt:var name="object_label" escape="html">"></mt:setvarblock>
+<mt:setvarblock name="delete_button_title"><__trans phrase="Delete this [_1] (x)" params="<mt:var name="object_label" escape="html">"></mt:setvarblock>
+
   <div class="row">
     <div class="col">
       <button
@@ -498,8 +501,8 @@
   <a
      href="javascript:void(0)"
      mt:command="do-remove-items"
-     mt:object-singular="<mt:var name="object_label" lower_case="1" escape="html">"
-     mt:object-plural="<mt:var name="object_label_plural" lower_case="1" escape="html">"
+     mt:object-singular="<mt:var name="object_label" escape="html">"
+     mt:object-plural="<mt:var name="object_label_plural" escape="html">"
      mt:subtype="content_data_<mt:var name="content_type_id" escape="html">"
      mt:object-type="content_data"
      mt:blog-id="<mt:var name="blog_id">"
