@@ -1,0 +1,22 @@
+{
+  "name": "movabletype-migration",
+  "version": "1.0.0",
+  "description": "Welcome to Movable Type",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/movabletype/movabletype.git"
+  },
+  "author": "",
+  "bugs": {
+    "url": "https://github.com/movabletype/movabletype/issues"
+  },
+  "homepage": "https://github.com/movabletype/movabletype#readme",
+  "dependencies": {
+    "jquery": "npm:jquery@4.0.0",
+    "jquery-migrate": "npm:jquery-migrate@4.0.2"
+  }
+}
