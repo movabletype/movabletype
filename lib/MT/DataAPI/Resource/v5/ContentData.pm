@@ -37,7 +37,7 @@ sub fields {
                 my @field_ids = map { $_->{id} } @{ $content_type->fields };
                 my @data;
                 for my $fid (@field_ids) {
-                    my $field = $content_type->get_field($fid) || {};
+                    my $field = $content_type->get_field($fid) or next;
                     my $options = $field->{options} || {};
                     my $chunk = +{
                         id    => $fid + 0,
