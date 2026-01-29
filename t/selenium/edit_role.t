@@ -18,6 +18,8 @@ use MT::Test::Permission;
 use MT::Test::Selenium;
 use Selenium::Waiter;
 
+my $selenium = MT::Test::Selenium->new($test_env, { rebootable => 1 });
+
 $test_env->prepare_fixture('db');
 
 my $site         = MT->model('website')->load or die MT->model('website')->errstr;
@@ -31,7 +33,6 @@ ok $admin->is_superuser, 'login user is superuser';
 $admin->set_password('Nelson');
 $admin->save or die $admin->errstr;
 
-my $selenium = MT::Test::Selenium->new($test_env, { rebootable => 1 });
 $selenium->login($admin);
 
 MT->instance->reboot;    # update content type permissions
