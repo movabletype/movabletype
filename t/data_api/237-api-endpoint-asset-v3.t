@@ -19,6 +19,7 @@ use MT::Test::Permission;
 use MT::Test::Image;
 use File::Basename;
 use Encode;
+use utf8;
 
 use MT::App::DataAPI;
 my $app = MT::App::DataAPI->new;
