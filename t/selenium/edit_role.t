@@ -18,9 +18,10 @@ use MT::Test::Permission;
 use MT::Test::Selenium;
 use Selenium::Waiter;
 
+$test_env->prepare_fixture('db');
+
 my $selenium = MT::Test::Selenium->new($test_env, { rebootable => 1 });
 
-$test_env->prepare_fixture('db');
 
 my $site         = MT->model('website')->load or die MT->model('website')->errstr;
 my $content_type = MT::Test::Permission->make_content_type(
