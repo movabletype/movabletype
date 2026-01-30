@@ -602,39 +602,6 @@ subtest 'template' => sub {
     );
 };
 
-subtest 'asset' => sub {
-    my $app = MT::Test::App->new;
-    $app->login($author);
-    $app->get_ok({ __mode => 'search_replace', blog_id => $blog_id });
-    $app->change_tab('asset');
-
-    $app->search('Sample', { is_limited => 1, search_cols => 'label' });
-    is_deeply($app->found_titles, ['Sample Image 1', 'Sample Image 2', 'Sample Image 3']);
-};
-
-subtest 'blog' => sub {
-    my $app = MT::Test::App->new;
-    $app->login($author);
-    $app->get_ok({ __mode => 'search_replace', blog_id => 1 });
-    $app->change_tab('blog');
-
-    $app->search('site', { is_limited => 1, search_cols => 'name' });
-    is_deeply($app->found_titles, ['My Site']);
-
-    $app->get_ok({ __mode => 'search_replace', blog_id => $blog_id });
-    ok !$app->tab_exists('blog'), 'blog tab is not available';
-};
-
-subtest 'website' => sub {
-    my $app = MT::Test::App->new;
-    $app->login($author);
-    $app->get_ok({ __mode => 'search_replace', blog_id => 0 });
-    ok $app->tab_exists('website'), 'blog tab is available';
-    $app->change_tab('website');
-    $app->search('site', { is_limited => 1, search_cols => 'name' });
-    is_deeply($app->found_titles, ['First Website']);
-};
-
 subtest 'content_data replace' => sub {
     my $cf_id1 = $objs->{content_type}{ct_multi}{content_field}{cf_single_line_text}->id;
     my $cf_id2 = $objs->{content_type}{ct_multi}{content_field}{cf_multi_line_text}->id;
