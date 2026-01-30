@@ -193,7 +193,11 @@ function check_static_uri() {
         jQuery('form').append(input);
         return true;
     } else {
+<mt:if name="config.usejquery4">
+        var static_uri = document.getElementById('set_static_uri_to').value + '/jquery4/jquery.js?.r=' + Math.random();
+<mt:else>
         var static_uri = document.getElementById('set_static_uri_to').value + '/jquery/jquery.js?.r=' + Math.random();
+</mt:if>
         var script     = document.createElement('script');
 
         script.type = 'text/javascript';

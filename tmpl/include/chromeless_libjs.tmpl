@@ -10,16 +10,26 @@
 </mt:unless>
 
 <mt:unless name="optimize_ui">
+<mt:if name="config.usejquery4">
+  <mtapp:script type="text/javascript" path="jquery4/jquery.js">
+  <mtapp:script type="text/javascript" path="jquery4/jquery-migrate.js">
+<mt:else>
   <mtapp:script type="text/javascript" path="jquery/jquery.js">
   <mtapp:script type="text/javascript" path="jquery/jquery-migrate.js">
+</mt:if>
   <mtapp:script type="text/javascript" path="jqueryui/jquery-ui.js">
   <mtapp:script type="text/javascript" path="jquery/jquery.validate.js">
 <mt:if name="use_svg4everybody">
   <mtapp:script type="text/javascript" path="svg4everybody/svg4everybody.js">
 </mt:if>
 <mt:else>
+<mt:if name="config.usejquery4">
+  <mtapp:script type="text/javascript" path="jquery4/jquery.min.js">
+  <mtapp:script type="text/javascript" path="jquery4/jquery-migrate.min.js">
+<mt:else>
   <mtapp:script type="text/javascript" path="jquery/jquery.min.js">
   <mtapp:script type="text/javascript" path="jquery/jquery-migrate.min.js">
+</mt:if>
   <mtapp:script type="text/javascript" path="jqueryui/jquery-ui.js">
   <mtapp:script type="text/javascript" path="jquery/jquery.validate.min.js">
 <mt:if name="use_svg4everybody">
