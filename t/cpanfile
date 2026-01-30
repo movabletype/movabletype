@@ -29,10 +29,8 @@ requires 'Digest::SHA';
 requires 'Plack', '1.0034';
 requires 'CGI::PSGI';
 requires 'CGI::Parse::PSGI';
-requires 'XMLRPC::Transport::HTTP::Plack';
 requires 'HTML::Entities';
 requires 'HTML::Parser';
-requires 'SOAP::Lite', '0.5';
 requires 'File::Temp';
 requires 'Scalar::Util';
 requires 'List::Util';
@@ -43,8 +41,8 @@ requires 'List::Util';
 
 requires 'GD', '2.72';
 requires 'Imager', '1.006';
+requires 'IPC::Run';
 requires 'Storable', '3.05';
-requires 'Crypt::DSA';
 
 # TODO: libdb-dev is needed for installing Cache::File.
 #requires 'Cache::File';
@@ -60,8 +58,6 @@ requires 'XML::SAX';
 requires 'Digest::SHA1';
 requires 'Net::SMTP', '2.32';
 requires 'Authen::SASL';
-requires 'Net::SMTP::SSL';
-requires 'Net::SMTP::TLS';
 requires 'IO::Socket::SSL', '1.35';
 requires 'Net::SSLeay', '1.25';
 requires 'Safe', '2.27';
