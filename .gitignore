@@ -92,3 +92,5 @@ CHECKSUMS
 PLUGIN_VERSIONS
 
 *.bak
+
+/local/

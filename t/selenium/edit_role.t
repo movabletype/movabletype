@@ -20,6 +20,9 @@ use Selenium::Waiter;
 
 $test_env->prepare_fixture('db');
 
+my $selenium = MT::Test::Selenium->new($test_env, { rebootable => 1 });
+
+
 my $site         = MT->model('website')->load or die MT->model('website')->errstr;
 my $content_type = MT::Test::Permission->make_content_type(
     blog_id => $site->id,
@@ -31,7 +34,6 @@ ok $admin->is_superuser, 'login user is superuser';
 $admin->set_password('Nelson');
 $admin->save or die $admin->errstr;
 
-my $selenium = MT::Test::Selenium->new($test_env, { rebootable => 1 });
 $selenium->login($admin);
 
 MT->instance->reboot;    # update content type permissions
