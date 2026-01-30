@@ -408,11 +408,11 @@ sub listing {
     my $args    = $opt->{args}    || $opt->{Args} || {};
     my $no_html = $opt->{no_html} || $opt->{NoHTML};
     my $json    = $opt->{json}    || $app->param('json');
-    my $search = $app->param('search');
+    my $search = $app->param('search') // '';
     my $no_limit
         = exists( $opt->{no_limit} )
         ? $opt->{no_limit}
-        : ( $search ? 1 : 0 );
+        : ( $search ne '' ? 1 : 0 );
     my $pre_build;
     $pre_build = $opt->{pre_build} if ref( $opt->{pre_build} ) eq 'CODE';
     $param->{json} = 1 if $json;
@@ -436,7 +436,7 @@ sub listing {
     $param->{limit_none} = 1 if $no_limit;
 
     # handle search parameter
-    if ($search) {
+    if ($search ne '') {
         $app->param( 'do_search', 1 );
         if ( $app->can('do_search_replace') ) {
             my @cols;
@@ -700,11 +700,11 @@ sub multi_listing {
     my $app_search_type = $app->param('search_type');
 
     my $no_html = $opt->{no_html} || $opt->{NoHTML};
-    my $search = $app->param('search');
+    my $search = $app->param('search') // '';
     my $no_limit
         = exists( $opt->{no_limit} )
         ? $opt->{no_limit}
-        : ( $search ? 1 : 0 );
+        : ( $search ne '' ? 1 : 0 );
     my $json   = $opt->{json}          || $app->param('json');
     my $param  = $opt->{params}        || $opt->{Params} || {};
     my $offset = $app->param('offset') || 0;

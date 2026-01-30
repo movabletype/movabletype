@@ -908,7 +908,8 @@ sub dialog_list_content_data {
     };
 
     my $limit;
-    if (defined $app->param('search') && $app->param('search') ne '') {
+    my $search = $app->param('search') // '';
+    if ($search ne '') {
         $limit =
                MT->config->CMSSearchLimitContent_data
             || MT->config->CMSSearchLimit
@@ -928,7 +929,7 @@ sub dialog_list_content_data {
     my $can_multi = $app->param('can_multi');
 
     my @cols;
-    if ($app->param('search') && !$app->param('search_cols') && MT->config->DisableRegexpSearch) {
+    if ($search ne '' && !$app->param('search_cols') && MT->config->DisableRegexpSearch) {
         my $ct = MT::ContentType->load($content_type_id);
         @cols = map { $_->{field} } @{_search_cols($app, $ct)};
     }

@@ -27,6 +27,8 @@ my $blog_id = $objs->{blog_id};
 
 subtest 'site dialog in "Site Export"' => sub {
 
+    my @sites;
+
     for my $num (1 .. 27) {
         my $datetime = sprintf('202207040102%02d', $num);
         my $site     = MT::Test::Permission->make_website(
@@ -35,6 +37,7 @@ subtest 'site dialog in "Site Export"' => sub {
             modified_on => $datetime,
             name        => sprintf("site-%02d-name", $num),
         );
+        push @sites, $site;
     }
 
     my $app = MT::Test::App->new('MT::App::CMS');
@@ -102,10 +105,44 @@ subtest 'site dialog in "Site Export"' => sub {
             is $pager, undef;
         };
     }
+
+    $_->remove for @sites;
+
+    subtest 'search by falsy strings' => sub {
+        my $site1 = MT::Test::Permission->make_website(name => 'test0');
+        my $site2 = MT::Test::Permission->make_website(name => 'NOT INTERESTED');
+        my @sites = MT::Blog->load({class=> 'website'});
+        for (@sites) {
+            $_->site_path('/tmp/dummy'); # avoid TEST_ROOT happen to include 0
+            $_->save;
+        }
+
+        my $app = MT::Test::App->new;
+        $app->login($author);
+
+        subtest 'zero' => sub {
+            $app->post_ok({
+                __mode      => 'dialog_select_website',
+                _type       => 'blog',
+                search_type => 'website',
+                json        => 1,
+                dialog      => 1,
+                multi       => 1,
+                idfield     => 'selected_blog_ids',
+                namefield   => 'selected_blogs',
+                search      => '0',
+            });
+            my ($labels, $pager, $have_more) = search_result_site($app);
+            is_deeply($labels, ['test0']);
+            is $pager, undef;
+        };
+
+        $_->remove for ($site1, $site2);
+    };
 };
 
 {
-    my @cds = MT::ContentData->load({ content_type_id => $objs->{content_type}{ct_multi}{content_type}->id });
+    my @cds = MT::ContentData->load();
     $_->remove for @cds;
 }
 
@@ -163,7 +200,7 @@ subtest 'content data' => sub {
             my ($labels, $pager, $have_more) = search_result_cd($app);
             is scalar(@$labels),    25, 'right length';
             is $pager->{limit},     25;
-            is $pager->{listTotal}, 28;
+            is $pager->{listTotal}, 27;
             is $pager->{offset},    0;
             is $pager->{rows},      25;
             is $have_more,          undef;
@@ -476,6 +513,69 @@ subtest 'content data' => sub {
         };
 
         $_->remove for @cds;
+    };
+
+    subtest 'search by falsy strings' => sub {
+        my $ct_id = $objs->{content_type}{ct}{content_type}->id;
+        my $cf_id = $objs->{content_type}{ct}{content_field}{cf_single_line_text}->id;
+
+        my @cds;
+
+        for my $label ('label 0', 'NOT INTERESTED') {
+            my $cd = MT::Test::Permission->make_content_data(
+                blog_id         => $blog_id,
+                content_type_id => $ct_id,
+                identifier      => $label,
+                label           => $label,
+                data            => { $cf_id => '---' },
+            );
+            push @cds, $cd;
+        }
+
+        my $app = MT::Test::App->new;
+        $app->login($author);
+
+        subtest 'zero' => sub {
+
+            $app->post_ok({
+                __mode          => 'dialog_list_content_data',
+                offset          => 0,
+                blog_id         => $blog_id,
+                content_type_id => $ct_id,
+                can_multi       => 1,
+                dialog          => 1,
+                dialog_view     => 1,
+                json            => 1,
+                is_limited      => 1,
+                search_cols     => 'label',
+                search          => '0',
+            });
+            my ($labels, $pager, $have_more) = search_result_cd($app);
+            is_deeply($labels, ['label 0']);
+            is $pager, undef;
+        };
+
+        subtest 'null string' => sub {
+
+            $app->post_ok({
+                __mode          => 'dialog_list_content_data',
+                offset          => 0,
+                blog_id         => $blog_id,
+                content_type_id => $ct_id,
+                can_multi       => 1,
+                dialog          => 1,
+                dialog_view     => 1,
+                json            => 1,
+                is_limited      => 1,
+                search_cols     => 'label',
+                search          => '',
+            });
+            my ($labels, $pager, $have_more) = search_result_cd($app);
+            is_deeply($labels, ['label 0', 'NOT INTERESTED']);
+            is $pager->{listTotal}, 2;
+        };
+
+        $_->remove for (@cds);
     };
 };
 
