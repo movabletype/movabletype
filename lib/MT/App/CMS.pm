@@ -902,6 +902,7 @@ sub core_list_actions {
         'entry' => {
             'set_draft' => {
                 label         => "Unpublish Entries",
+                js_message    => 'unpublish',
                 order         => 200,
                 code          => "${pkg}Entry::draft_entries",
                 mobile        => 1,
@@ -995,6 +996,7 @@ sub core_list_actions {
         'page' => {
             'set_draft' => {
                 label         => "Unpublish Pages",
+                js_message    => 'unpublish',
                 order         => 200,
                 code          => "${pkg}Entry::draft_entries",
                 mobile        => 1,
