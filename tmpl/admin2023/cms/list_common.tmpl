@@ -184,7 +184,8 @@ document.addEventListener('DOMContentLoaded', () => {
   var listActions = {};
   <mt:loop name="list_actions">
   listActions['<mt:var name="key">'] = {
-    type:'core'
+    type:'core',
+    js_message: '<__trans phrase="<mt:var name="js_message">" escape="js">'
     <mt:if name="action_mode">,mode:'<mt:var name="action_mode">'</mt:if>
     <mt:if name="input">,input:'<mt:var name="input_label" escape="js">'</mt:if>
     <mt:if name="continue_prompt">,continue_prompt:"<mt:var name="continue_prompt" escape="js">"</mt:if>
@@ -202,7 +203,8 @@ document.addEventListener('DOMContentLoaded', () => {
   var moreListActions = {};
   <mt:loop name="more_list_actions">
   moreListActions['<mt:var name="key">'] = {
-    type:'core'
+    type:'core',
+    js_message: '<__trans phrase="<mt:var name="js_message">" escape="js">'
     <mt:if name="action_mode">,mode:'<mt:var name="action_mode">'</mt:if>
     <mt:if name="input">,input:'<mt:var name="input_label" escape="js">'</mt:if>
     <mt:if name="continue_prompt">,continue_prompt:"<mt:var name="continue_prompt" escape="js">"</mt:if>
