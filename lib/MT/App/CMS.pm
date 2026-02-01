@@ -1043,6 +1043,7 @@ sub core_list_actions {
                 label         => "Batch Edit Pages",
                 code          => "${pkg}Entry::open_batch_editor",
                 order         => 500,
+                no_prompt     => 1,
                 permit_action => {
                     permit_action => 'open_batch_page_editor_via_list',
                     include_all   => 1,
