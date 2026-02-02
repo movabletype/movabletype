@@ -93,9 +93,6 @@ for my $blog_id (0, $blog1->id) {
 
 subtest 'unit tests for site panel on blog_id:0' => sub {
 
-    plan skip_all => 'not for nameless admin theme'
-        if defined($ENV{MT_TEST_ADMIN_THEME_ID}) && $ENV{MT_TEST_ADMIN_THEME_ID} eq '0';
-
     my $app = MT::Test::App->new('MT::App::CMS');
     $app->login($authors[0]);
     $app->open_dialog(0);
@@ -158,9 +155,6 @@ subtest 'unit tests for site panel on blog_id:0' => sub {
 # Note that the expectations of the subtest are possibly wrong.
 subtest 'tree view(deprecated)' => sub {
     $test_env->update_config(GrantRoleSitesView => 'tree');
-
-    plan skip_all => 'not for nameless admin theme'
-        if defined($ENV{MT_TEST_ADMIN_THEME_ID}) && $ENV{MT_TEST_ADMIN_THEME_ID} eq '0';
 
     my $app = MT::Test::App->new('MT::App::CMS');
     $app->login($authors[0]);

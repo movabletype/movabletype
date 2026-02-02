@@ -907,14 +907,6 @@ sub dialog_list_content_data {
         content_type_id => $content_type_id,
     };
 
-    if (my $search_cols = $app->param('search_cols')) {
-        my @cols = split(',', $search_cols);
-        if (!grep { $_ =~ /^__field:/ } @cols) {
-            my $plain_search = $app->param('search');
-            require MT::CMS::Search;
-            $terms = MT::CMS::Search::make_terms_for_plain_search($terms, \@cols, $plain_search);
-        }
-    }
     my $limit;
     if (defined $app->param('search') && $app->param('search') ne '') {
         $limit =
@@ -935,6 +927,12 @@ sub dialog_list_content_data {
     my $no_insert = $app->param('no_insert') ? 1 : 0;
     my $can_multi = $app->param('can_multi');
 
+    my @cols;
+    if ($app->param('search') && !$app->param('search_cols') && MT->config->DisableRegexpSearch) {
+        my $ct = MT::ContentType->load($content_type_id);
+        @cols = map { $_->{field} } @{_search_cols($app, $ct)};
+    }
+
     $app->listing(
         {   terms    => $terms,
             args     => $args,
@@ -942,6 +940,7 @@ sub dialog_list_content_data {
             type     => 'content_data',
             code     => $hasher,
             template => 'include/content_data_list.tmpl',
+            search_cols => \@cols,
             params   => {
                 (   $blog
                     ? ( blog_id      => $blog->id,

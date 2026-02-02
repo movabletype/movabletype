@@ -439,6 +439,17 @@ sub listing {
     if ($search) {
         $app->param( 'do_search', 1 );
         if ( $app->can('do_search_replace') ) {
+            my @cols;
+            if ($opt->{search_cols} && @{$opt->{search_cols}}) {
+                @cols = @{$opt->{search_cols}};
+            } elsif ($app->param('search_cols')) {
+                @cols = split(',', $app->param('search_cols'));
+            } else {
+                my $search_api = $app->registry("search_apis")->{$type};
+                @cols = grep { $_ ne 'plugin' } keys %{ $search_api->{search_cols} };
+            }
+            require MT::CMS::Search;
+            $terms = MT::CMS::Search::make_terms($terms, \@cols, $search) if MT->config->DisableRegexpSearch;
             my $search_param = $app->do_search_replace(
                 { terms => $terms, args => $args } );
             if ($hasher) {

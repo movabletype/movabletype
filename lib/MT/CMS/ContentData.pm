@@ -2231,10 +2231,8 @@ sub build_content_data_table {
         $row->{author_name}
             = $author ? $author->name : $app->translate('(user deleted)');
         $row->{id} = $content_data->id;
-        $row->{label}
-            = defined $content_data->label && $content_data->label ne ''
-            ? $content_data->label
-            : $app->translate('(No Label)');
+        my $label = $content_data->label;
+        $row->{label} = defined $label && $label ne '' ? $label : $app->translate('(No Label)');
         my $ds = 'content_data.content_data_' . $content_data->content_type_id;
         $list_properties{$ds} ||= MT::ListProperty->list_properties($ds);
         $row->{label_html}   = $list_properties{$ds}{label}->html($content_data, $app);
@@ -2246,8 +2244,12 @@ sub build_content_data_table {
             %highlight_fields = map { $_ => 1 } @$fields;
             $content_data->{__search_result_fields_index} = \%highlight_fields;
             $row->{preview_data_show} = !!grep { $_ =~ /^__field:(\d*)/ } @$fields;
-            $row->{label_html} =~ s/class="label"/data-search-highlight="1" class="label"/ if $highlight_fields{label};
-            $row->{search_highlight}{identifier} = 1 if $highlight_fields{identifier};
+            if ($highlight_fields{label} && ($label // '') =~ $content_data->{__search_term}) {
+                $row->{label_html} =~ s/class="label"/data-search-highlight="1" class="label"/;
+            }
+            if ($highlight_fields{identifier} && $row->{identifier} =~ $content_data->{__search_term}) {
+                $row->{search_highlight}{identifier} = 1;
+            }
         }
 
         $row->{preview_data} = $content_data->preview_data;

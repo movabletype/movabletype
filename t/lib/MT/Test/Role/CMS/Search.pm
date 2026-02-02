@@ -236,9 +236,27 @@ sub found_site_ids {
 
 sub found_highlighted_count {
     my $self = shift;
+    my @values = $self->found_highlighted_values;
+    return scalar(@values);
+}
+
+sub found_highlighted_values {
+    my $self = shift;
     my @titles;
     my $type  = $self->current_tab or return [];
-    return $self->wq_find(qq!form#${type}-listing-form table tbody [data-search-highlight="1"]!)->size;
+    my @values;
+    $self->wq_find(qq!form#${type}-listing-form table tbody [data-search-highlight="1"]!)->each(sub {
+        my ($i, $elem) = @_;
+        if ($elem->tagname eq 'span') {
+            my $text = $elem->parent->text;
+            $text =~ s/( \n|\n |\n)/ /g;
+            push @values, $text;
+        } else {
+            my $text = $elem->text;
+            push @values, $text;
+        }
+    });
+    return \@values;
 }
 
 1;

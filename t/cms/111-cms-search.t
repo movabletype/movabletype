@@ -262,6 +262,7 @@ subtest search => sub {
     };
 
     subtest 'regex search for asset on system context by non-superuser (MTC-30084)' => sub {
+        plan skip_all => 'skip for now (MTC-29012)' if MT->config->DisableRegexpSearch;
 
         MT::Test::Permission->make_asset(class => 'image', blog_id => 1, file_name => 'MTC30084-1.jpg', label => 'MTC30084-1');
         MT::Test::Permission->make_asset(class => 'image', blog_id => 1, file_name => 'MTC30084-2.jpg', label => 'MTC30084-2');
@@ -280,6 +281,7 @@ subtest search => sub {
     };
 
     subtest 'regex search for author on system context by non-superuser (MTC-30084)' => sub {
+        plan skip_all => 'skip for now (MTC-29012)' if MT->config->DisableRegexpSearch;
         my $app = MT::Test::App->new('MT::App::CMS');
         $app->login($egawa);
         $app->get_ok({__mode  => 'search_replace'});
@@ -293,6 +295,7 @@ subtest search => sub {
     };
 
     subtest 'regex search for website on system context by non-superuser (MTC-30084)' => sub {
+        plan skip_all => 'skip for now (MTC-29012)' if MT->config->DisableRegexpSearch;
         my $app = MT::Test::App->new('MT::App::CMS');
         $app->login($ichikawa);
         $app->get_ok({__mode  => 'search_replace'});
