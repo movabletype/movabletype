@@ -90,7 +90,7 @@
     "sass": "1.77.6",
     "svelte": "^4.2.19",
     "svelte-check": "^4.3.3",
-    "svelte-preprocess": "^5.0.4",
+    "svelte-preprocess": "^6.0.3",
     "typescript": "^5.7.3",
     "vitest": "^2.1.9"
   },
