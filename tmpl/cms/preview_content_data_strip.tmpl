@@ -44,8 +44,13 @@
       /* ]]> */
     </script>
 <mt:unless name="optimize_ui">
+<mt:if name="config.usejquery4">
+    <mtapp:script type="text/javascript" path="jquery4/jquery.js">
+    <mtapp:script type="text/javascript" path="jquery4/jquery-migrate.js">
+<mt:else>
     <mtapp:script type="text/javascript" path="jquery/jquery.js">
     <mtapp:script type="text/javascript" path="jquery/jquery-migrate.js">
+</mt:if>
     <mtapp:script type="text/javascript" path="js/common/Core.js">
 <mt:if name="use_mt_common_json">
     <mtapp:script type="text/javascript" path="js/common/JSON.js">
@@ -73,8 +78,13 @@
     <mtapp:script type="text/javascript" path="svg4everybody/svg4everybody.js">
 </mt:if>
 <mt:else>
+<mt:if name="config.usejquery4">
+    <mtapp:script type="text/javascript" path="jquery4/jquery.min.js">
+    <mtapp:script type="text/javascript" path="jquery4/jquery-migrate.min.js">
+<mt:else>
     <mtapp:script type="text/javascript" path="jquery/jquery.min.js">
     <mtapp:script type="text/javascript" path="jquery/jquery-migrate.min.js">
+</mt:if>
     <mtapp:script type="text/javascript" path="js/mt_core_compact.js">
 <mt:if name="use_mt_common_json">
     <mtapp:script type="text/javascript" path="js/common/JSON.js">

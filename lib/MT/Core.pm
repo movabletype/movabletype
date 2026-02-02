@@ -2262,6 +2262,7 @@ BEGIN {
                 type    => 'ARRAY',
                 handler => \&TrustedHosts,
             },
+            'UsejQuery4' => { default => 0 },
             'GrantRoleSitesView' => { default => 'tree' }, # DEPRECATED
             'DisableContentFieldPermission' => { default => undef },
         },
