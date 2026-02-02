@@ -7,4 +7,4 @@ $ENV{MT_TEST_DELETE_FILES_AFTER_REBUILD} = 1;
 $ENV{MT_TEST_PUBLISH_ASYNC} = 0;
 
 my $file = File::Spec->canonpath("$FindBin::Bin/async_delete_after_rebuild.t");
-do $file or die "$file: $!";
+do $file or die "$file: $! $@";
