@@ -1,16 +1,31 @@
 <script lang="ts">
+  import { getContext } from "svelte";
   import type * as Listing from "../../@types/listing";
 
   import ListFilterSaveModal from "./ListFilterSaveModal.svelte";
+  import type { ListStoreContext } from "../listStoreContext";
 
-  export let currentFilter: Listing.Filter;
-  export let listFilterTopGetItemValues: () => void;
-  export let listFilterTopIsUserFilter: () => boolean;
-  export let listFilterTopValidateFilterDetails: () => boolean;
-  export let objectLabel: string;
-  export let store: Listing.ListStore;
+  type Props = {
+    currentFilter: Listing.Filter;
+    listFilterTopGetItemValues: () => void;
+    listFilterTopIsUserFilter: () => boolean;
+    listFilterTopValidateFilterDetails: () => boolean;
+    objectLabel: string;
+  };
+  let {
+    currentFilter,
+    listFilterTopGetItemValues,
+    listFilterTopIsUserFilter,
+    listFilterTopValidateFilterDetails,
+    objectLabel,
+  }: Props = $props();
 
-  let openModal: (args: { filterLabel?: string; saveAs?: boolean }) => void;
+  const { store } = getContext<ListStoreContext>("listStore");
+
+  type ListFilterSaveModalInstance = {
+    openModal: (args?: { filterLabel?: string; saveAs?: boolean }) => void;
+  };
+  let saveModal: ListFilterSaveModalInstance;
 
   const applyFilter = (): boolean | void => {
     if (!listFilterTopValidateFilterDetails()) {
@@ -30,7 +45,7 @@
       store.trigger("save_filter", currentFilter);
     } else {
       const filterLabel = store.getNewFilterLabel(objectLabel);
-      openModal({
+      saveModal.openModal({
         filterLabel: filterLabel,
       });
     }
@@ -40,7 +55,7 @@
     if (!listFilterTopValidateFilterDetails()) {
       return false;
     }
-    openModal({
+    saveModal.openModal({
       filterLabel: currentFilter.label,
       saveAs: true,
     });
@@ -67,9 +82,4 @@
     {window.trans("Save As")}
   </button>
 {/if}
-<ListFilterSaveModal
-  {currentFilter}
-  {listFilterTopGetItemValues}
-  {store}
-  bind:openModal
-/>
+<ListFilterSaveModal {listFilterTopGetItemValues} bind:this={saveModal} />

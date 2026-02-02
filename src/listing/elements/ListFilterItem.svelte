@@ -5,26 +5,39 @@
 
   import ListFilterItemField from "./ListFilterItemField.svelte";
 
-  export let currentFilter: Listing.Filter;
-  export let filterTypes: Array<Listing.FilterType>;
-  export let item: Listing.Item;
-  export let listFilterTopAddFilterItemContent: (
-    itemIndex: string,
-    contentIndex: string,
-  ) => void;
-  export let listFilterTopRemoveFilterItem: (itemIndex: string) => void;
-  export let listFilterTopRemoveFilterItemContent: (
-    itemIndex: string,
-    contentIndex: string,
-  ) => void;
-  export let localeCalendarHeader: Array<string>;
+  type Props = {
+    currentFilter: Listing.Filter;
+    filterTypes: Array<Listing.FilterType>;
+    item: Listing.Item;
+    listFilterTopAddFilterItemContent: (
+      itemIndex: string,
+      contentIndex: string,
+    ) => void;
+    listFilterTopRemoveFilterItem: (itemIndex: string) => void;
+    listFilterTopRemoveFilterItemContent: (
+      itemIndex: string,
+      contentIndex: string,
+    ) => void;
+    localeCalendarHeader: Array<string>;
+  };
+  let {
+    currentFilter,
+    filterTypes,
+    item,
+    listFilterTopAddFilterItemContent,
+    listFilterTopRemoveFilterItem,
+    listFilterTopRemoveFilterItemContent,
+    localeCalendarHeader,
+  }: Props = $props();
 
-  let fieldParentDivs: Array<HTMLDivElement | undefined> = [];
+  let fieldParentDivs: Array<HTMLDivElement | undefined> = $state([]);
 
-  $: filterTypeHash = filterTypes.reduce((hash, filterType) => {
-    hash[filterType.type] = filterType;
-    return hash;
-  }, {});
+  let filterTypeHash = $derived(
+    filterTypes.reduce((hash, filterType) => {
+      hash[filterType.type] = filterType;
+      return hash;
+    }, {}),
+  );
 
   const addFilterItemContent = (e: Event): void => {
     const target = e.target as HTMLElement;
@@ -134,7 +147,7 @@
                 />
               {/key}
               {#if !filterTypeHash[loopItem.type].singleton}
-                <!-- svelte-ignore a11y-invalid-attribute -->
+                <!-- svelte-ignore a11y_invalid_attribute -->
                 <a
                   href="javascript:void(0);"
                   class="d-inline-block"

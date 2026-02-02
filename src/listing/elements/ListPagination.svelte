@@ -1,37 +1,28 @@
 <script lang="ts">
-  import type * as Listing from "../../@types/listing";
-
-  import { onMount } from "svelte";
+  import { getContext, onMount } from "svelte";
+  import type { ListStoreContext } from "../listStoreContext";
 
   import ListPaginationForMobile from "./ListPaginationForMobile.svelte";
   import ListPaginationForPc from "./ListPaginationForPc.svelte";
 
-  let { store }: { store: Listing.ListStore } = $props();
+  const { store, reactiveStore } = getContext<ListStoreContext>("listStore");
 
-  let nextDisabledProp: { disabled?: string } = {};
-  let isTooNarrowWidth: boolean;
-  let previousDisabledProp: { disabled?: string } = {};
+  let isTooNarrowWidth: boolean = $state(false);
 
-  let page = $derived(store.page || 0);
-  $effect(() => {
-    previousDisabledProp = {};
-    if (page <= 1) {
-      previousDisabledProp.disabled = "disabled";
-    }
-  });
-  $effect(() => {
-    nextDisabledProp = {};
-    if (page >= store.pageMax) {
-      nextDisabledProp.disabled = "disabled";
-    }
-  });
+  let page = $derived($reactiveStore.page || 0);
+  let previousDisabledProp: { disabled?: string } = $derived(
+    page <= 1 ? { disabled: "disabled" } : {},
+  );
+  let nextDisabledProp: { disabled?: string } = $derived(
+    page >= $reactiveStore.pageMax ? { disabled: "disabled" } : {},
+  );
 
   onMount(() => {
     checkTooNarrowWidth();
   });
 
   const checkTooNarrowWidth = (): void => {
-    isTooNarrowWidth = store.pageMax >= 5 && window.innerWidth < 400;
+    isTooNarrowWidth = $reactiveStore.pageMax >= 5 && window.innerWidth < 400;
   };
 
   const movePage = (e: Event): boolean => {
@@ -74,7 +65,6 @@
       {nextDisabledProp}
       {page}
       {previousDisabledProp}
-      {store}
     />
     <ListPaginationForMobile
       {isTooNarrowWidth}
@@ -82,7 +72,6 @@
       {page}
       {previousDisabledProp}
       {movePage}
-      {store}
     />
   </nav>
 </div>

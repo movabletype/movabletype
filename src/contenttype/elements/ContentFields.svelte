@@ -13,13 +13,7 @@
     opts: ContentType.ContentFieldsOpts;
     root: Element;
   };
-  let {
-    config,
-    fieldsStore,
-    optionsHtmlParams,
-    opts,
-    root,
-  } : Props = $props();
+  let { config, fieldsStore, optionsHtmlParams, opts, root }: Props = $props();
 
   let isEmpty: boolean = $state($fieldsStore.length > 0 ? false : true);
   let data = "";

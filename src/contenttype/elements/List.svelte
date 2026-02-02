@@ -10,7 +10,7 @@
     id,
     options = $bindable(),
     optionsHtmlParams,
-  } : ContentType.ContentFieldProps = $props();
+  }: ContentType.ContentFieldProps = $props();
 </script>
 
 <ContentFieldOptionGroup type="list" bind:field {id} bind:options />

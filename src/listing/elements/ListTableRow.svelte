@@ -1,23 +1,20 @@
 <script lang="ts">
-  import type * as Listing from "../../@types/listing";
+  import { getContext } from "svelte";
+  import type { ListStoreContext } from "../listStoreContext";
 
   type Props = {
     checked: boolean;
     hasListActions: boolean;
     hasMobilePulldownActions: boolean;
     object: Array<string | number>;
-    store: Listing.ListStore;
   };
-  let {
-    checked,
-    hasListActions,
-    hasMobilePulldownActions,
-    object,
-    store,
-  }: Props = $props();
+  let { checked, hasListActions, hasMobilePulldownActions, object }: Props =
+    $props();
+
+  const { store, reactiveStore } = getContext<ListStoreContext>("listStore");
 
   const classes = (index: string): string => {
-    const nameClass = store.showColumns[index].id;
+    const nameClass = $reactiveStore.showColumns[index].id;
     let classes: string;
     if (store.hasMobileColumn()) {
       if (store.getMobileColumnIndex().toString() === index) {
@@ -26,7 +23,7 @@
         classes = "d-none d-md-table-cell";
       }
     } else {
-      if (store.showColumns[index].primary) {
+      if ($reactiveStore.showColumns[index].primary) {
         classes = "";
       } else {
         classes = "d-none d-md-table-cell";

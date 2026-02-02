@@ -1,29 +1,31 @@
 <script lang="ts">
+  import { getContext } from "svelte";
   import type * as Listing from "../../@types/listing";
 
   import ListFilterDetail from "./ListFilterDetail.svelte";
   import ListFilterHeader from "./ListFilterHeader.svelte";
+  import type { ListStoreContext } from "../listStoreContext";
 
   type Props = {
     filterTypes: Array<Listing.FilterType>;
     listActionClient: Listing.ListActionClient;
     localeCalendarHeader: Array<string>;
     objectLabel: string;
-    store: Listing.ListStore;
   };
   let {
     filterTypes,
     listActionClient,
     localeCalendarHeader,
     objectLabel,
-    store,
   }: Props = $props();
 
-  let currentFilter = $state(store.currentFilter);
+  const { store, reactiveStore } = getContext<ListStoreContext>("listStore");
+
+  let currentFilter = $state($reactiveStore.currentFilter);
   let validateErrorMessage: JQuery<HTMLElement>;
 
   const validateFilterName = (name: string): boolean => {
-    return !store.filters.some(function (filter) {
+    return !$reactiveStore.filters.some(function (filter) {
       return filter.label === name;
     });
   };
@@ -44,7 +46,7 @@
     };
 
   store.on("refresh_current_filter", () => {
-    currentFilter = store.currentFilter;
+    currentFilter = $reactiveStore.currentFilter;
   });
 
   store.on("open_filter_detail", () => {
@@ -61,7 +63,10 @@
     if (isAllpassFilter) {
       createNewFilter(window.trans("New Filter"));
     }
-    currentFilter.items.push({ type: filterType, args: { items: [] } });
+    $reactiveStore.currentFilter.items.push({
+      type: filterType,
+      args: { items: [] },
+    });
     update();
   };
 
@@ -71,23 +76,28 @@
   ): void => {
     getItemValues();
 
-    if (currentFilter.items[itemIndex].type !== "pack") {
-      const items = [currentFilter.items[itemIndex]];
-      currentFilter.items[itemIndex] = {
+    if ($reactiveStore.currentFilter.items[itemIndex].type !== "pack") {
+      const items = [$reactiveStore.currentFilter.items[itemIndex]];
+      $reactiveStore.currentFilter.items[itemIndex] = {
         type: "pack",
         args: { op: "and", items: items },
       };
     }
-    const type = currentFilter.items[itemIndex].args.items[0].type;
-    currentFilter.items[itemIndex].args.items.splice(contentIndex + 1, 0, {
-      type: type,
-      args: {},
-    });
+    const type =
+      $reactiveStore.currentFilter.items[itemIndex].args.items[0].type;
+    $reactiveStore.currentFilter.items[itemIndex].args.items.splice(
+      contentIndex + 1,
+      0,
+      {
+        type: type,
+        args: {},
+      },
+    );
     update();
   };
 
   const createNewFilter = (filterLabel?: string): void => {
-    currentFilter = {
+    $reactiveStore.currentFilter = {
       can_delete: 0,
       can_save: 1,
       can_edit: 0,
@@ -136,10 +146,13 @@
       }
       vals.push(data);
     });
-    currentFilter.items = vals;
+    $reactiveStore.currentFilter.items = vals;
+    update();
   };
 
-  let isAllpassFilter = $derived(currentFilter.id === store.allpassFilter.id);
+  let isAllpassFilter = $derived(
+    currentFilter.id === $reactiveStore.allpassFilter.id,
+  );
 
   /* add "filter" argument for updating this output after changing "filter" */
   const isFilterItemSelected = (
@@ -158,7 +171,7 @@
   };
 
   const removeFilterItem = (itemIndex: string): void => {
-    currentFilter.items.splice(Number(itemIndex), 1);
+    $reactiveStore.currentFilter.items.splice(Number(itemIndex), 1);
     update();
   };
 
@@ -166,7 +179,10 @@
     itemIndex: string,
     contentIndex: string,
   ): void => {
-    currentFilter.items[itemIndex].args.items.splice(contentIndex, 1);
+    $reactiveStore.currentFilter.items[itemIndex].args.items.splice(
+      contentIndex,
+      1,
+    );
     update();
   };
 
@@ -212,7 +228,7 @@
 
   const update = (): void => {
     // eslint-disable-next-line no-self-assign
-    currentFilter = currentFilter;
+    currentFilter = $reactiveStore.currentFilter;
   };
 </script>
 
@@ -223,7 +239,6 @@
     listFilterTopCreateNewFilter={createNewFilter}
     listFilterTopUpdate={update}
     {listActionClient}
-    {store}
   />
 </div>
 <div id="list-filter-collapse" class="collapse">
@@ -241,7 +256,6 @@
       listFilterTopValidateFilterDetails={validateFilterDetails}
       {localeCalendarHeader}
       {objectLabel}
-      {store}
     />
   </div>
 </div>

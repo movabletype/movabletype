@@ -9,7 +9,7 @@
     required?: number;
     showHint?: number;
     showLabel?: number;
-  }
+  };
   let {
     id,
     attr = "",

@@ -11,7 +11,7 @@
     id,
     options = $bindable(),
     optionsHtmlParams,
-  } : ContentType.ContentFieldProps = $props();
+  }: ContentType.ContentFieldProps = $props();
 
   options.min_length ??= 0;
   options.max_length ??= 255;

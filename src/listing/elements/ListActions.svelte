@@ -1,8 +1,10 @@
 <script lang="ts">
+  import { getContext } from "svelte";
   import type * as Listing from "../../@types/listing";
 
   import ListActionsForMobile from "./ListActionsForMobile.svelte";
   import ListActionsForPc from "./ListActionsForPc.svelte";
+  import type { ListStoreContext } from "../listStoreContext";
 
   type Props = {
     buttonActions: Listing.ButtonActions;
@@ -12,7 +14,6 @@
     moreListActions: Listing.MoreListActions;
     plural: string;
     singular: string;
-    store: Listing.ListStore;
   };
   let {
     buttonActions,
@@ -22,8 +23,9 @@
     moreListActions,
     plural,
     singular,
-    store,
   }: Props = $props();
+
+  const { store, reactiveStore } = getContext<ListStoreContext>("listStore");
 
   let selectedAction:
     | Listing.ButtonAction
@@ -94,8 +96,8 @@
     return {
       action: selectedAction,
       actionName: selectedActionId,
-      allSelected: store.checkedAllRows,
-      filter: store.currentFilter,
+      allSelected: $reactiveStore.checkedAllRows,
+      filter: $reactiveStore.currentFilter,
       ids: store.getCheckedRowIds(),
       ...args,
     };

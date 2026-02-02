@@ -17,7 +17,8 @@
     optionsHtmlParams: ContentType.OptionsHtmlParams;
   } = $props();
 
-  let customContentFieldObject = $state<ContentType.CustomContentFieldObject | null>(null);
+  let customContentFieldObject =
+    $state<ContentType.CustomContentFieldObject | null>(null);
   let target = $state<Element | null>(null);
   let type = $state<string | null>(null);
 
@@ -33,7 +34,11 @@
       gather = null;
     }
 
-    if (!customContentFieldObject && customContentFieldMountFunction && target) {
+    if (
+      !customContentFieldObject &&
+      customContentFieldMountFunction &&
+      target
+    ) {
       customContentFieldObject = customContentFieldMountFunction(
         {
           config: config,

@@ -1,20 +1,22 @@
 <script lang="ts">
+  import { getContext } from "svelte";
   import type * as Listing from "../../@types/listing";
+  import type { ListStoreContext } from "../listStoreContext";
 
   type Props = {
     hasListActions: boolean;
-    store: Listing.ListStore;
     toggleAllRowsOnPage: () => void;
     toggleSortColumn: (e: Event) => void;
   };
-  let { hasListActions, store, toggleAllRowsOnPage, toggleSortColumn }: Props =
+  let { hasListActions, toggleAllRowsOnPage, toggleSortColumn }: Props =
     $props();
+  const { reactiveStore } = getContext<ListStoreContext>("listStore");
 
   const classProps = (column: Listing.ListColumn): object => {
-    if (column.sortable && store.sortBy === column.id) {
-      if (store.sortOrder === "ascend") {
+    if (column.sortable && $reactiveStore.sortBy === column.id) {
+      if ($reactiveStore.sortOrder === "ascend") {
         return { class: "mt-table__ascend" };
-      } else if (store.sortOrder === "descend") {
+      } else if ($reactiveStore.sortOrder === "descend") {
         return { class: "mt-table__descend" };
       } else {
         return {};
@@ -35,7 +37,7 @@
           type="checkbox"
           class="form-check-input"
           id="select-all"
-          checked={store.checkedAllRowsOnPage}
+          checked={$reactiveStore.checkedAllRowsOnPage}
           onchange={toggleAllRowsOnPage}
         />
         <label class="form-check-label form-label" for="select-all">
@@ -46,14 +48,14 @@
       </div>
     </th>
   {/if}
-  {#each store.columns as column}
+  {#each $reactiveStore.columns as column}
     {#if column.checked && column.id !== "__mobile"}
       <th
         scope="col"
         data-id={column.id}
         class:primary={column.primary}
         class:sortable={column.sortable}
-        class:sorted={store.sortBy === column.id}
+        class:sorted={$reactiveStore.sortBy === column.id}
         class="text-truncate"
       >
         {#if column.sortable}

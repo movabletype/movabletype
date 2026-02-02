@@ -1,15 +1,16 @@
 <script lang="ts">
-  import type * as Listing from "../../@types/listing";
-
+  import { getContext } from "svelte";
   import DisplayOptionsColumns from "./DisplayOptionsColumns.svelte";
   import DisplayOptionsLimit from "./DisplayOptionsLimit.svelte";
+  import type { ListStoreContext } from "../listStoreContext";
 
   type Props = {
     changeLimit: (e: Event) => void;
     disableUserDispOption: boolean;
-    store: Listing.ListStore;
   };
-  let { changeLimit, disableUserDispOption, store }: Props = $props();
+  let { changeLimit, disableUserDispOption }: Props = $props();
+
+  const { store } = getContext<ListStoreContext>("listStore");
 
   const resetColumns = (): void => {
     store.trigger("reset_columns");
@@ -20,12 +21,12 @@
   <div class="card card-block p-3">
     <fieldset class="form-group">
       <div data-is="display-options-limit" id="per_page-field">
-        <DisplayOptionsLimit {changeLimit} {store} />
+        <DisplayOptionsLimit {changeLimit} />
       </div>
     </fieldset>
     <fieldset class="form-group">
       <div data-is="display-options-columns" id="display_columns-field">
-        <DisplayOptionsColumns {disableUserDispOption} {store} />
+        <DisplayOptionsColumns {disableUserDispOption} />
       </div>
     </fieldset>
     {#if !disableUserDispOption}

@@ -1,8 +1,12 @@
 <script lang="ts">
   import type * as Listing from "../../@types/listing";
 
-  import { onMount } from "svelte";
-  import { writable } from 'svelte/store';
+  import { onMount, setContext } from "svelte";
+  import { writable, type Writable } from "svelte/store";
+  import {
+    createReactiveStoreData,
+    type ReactiveStoreData,
+  } from "../listStoreContext";
 
   import DisplayOptions from "./DisplayOptions.svelte";
   import DisplayOptionsForMobile from "./DisplayOptionsForMobile.svelte";
@@ -57,7 +61,12 @@
   }: Props = $props();
   let callListReady = false;
 
-  let hidden = $derived(store.count === 0);
+  const reactiveStore: Writable<ReactiveStoreData> = writable(
+    createReactiveStoreData(store),
+  );
+  setContext("listStore", { store, reactiveStore });
+
+  let hidden = $derived($reactiveStore.count === 0);
 
   onMount(() => {
     store.trigger("load_list");
@@ -95,8 +104,7 @@
   };
 
   const update = (): void => {
-    // eslint-disable-next-line no-self-assign
-    store = store;
+    reactiveStore.set(createReactiveStoreData(store));
   };
 
   const updateSubFields = (): void => {
@@ -118,7 +126,7 @@
 </script>
 
 <div class="d-none d-md-block mb-3" data-is="display-options">
-  <DisplayOptions {changeLimit} {disableUserDispOption} {store} />
+  <DisplayOptions {changeLimit} {disableUserDispOption} />
 </div>
 <div id="actions-bar-top" class="row mb-5 mb-md-3">
   <div class="col">
@@ -131,12 +139,11 @@
         {moreListActions}
         {plural}
         {singular}
-        {store}
       />
     {/if}
   </div>
   <div class="col-auto align-self-end list-counter">
-    <ListCount {store} />
+    <ListCount />
   </div>
 </div>
 <div class="row mb-5 mb-md-3">
@@ -148,7 +155,6 @@
           {listActionClient}
           {localeCalendarHeader}
           {objectLabel}
-          {store}
         />
       {/if}
       <div style="overflow-x: auto">
@@ -156,7 +162,6 @@
           <ListTable
             {hasListActions}
             {hasMobilePulldownActions}
-            {store}
             {zeroStateLabel}
           />
         </table>
@@ -165,6 +170,6 @@
   </div>
 </div>
 <div class="row" {hidden} style:display={hidden ? "none" : ""}>
-  <ListPagination {store} />
+  <ListPagination />
 </div>
-<DisplayOptionsForMobile {changeLimit} {store} />
+<DisplayOptionsForMobile {changeLimit} />

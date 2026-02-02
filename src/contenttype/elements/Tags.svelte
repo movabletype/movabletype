@@ -11,7 +11,7 @@
     id,
     options = $bindable(),
     optionsHtmlParams,
-  } : ContentType.ContentFieldProps = $props();
+  }: ContentType.ContentFieldProps = $props();
 
   if (options.multiple === "0") {
     options.multiple = 0;

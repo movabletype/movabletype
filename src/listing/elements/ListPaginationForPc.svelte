@@ -1,15 +1,17 @@
 <script lang="ts">
-  import type * as Listing from "../../@types/listing";
+  import { getContext } from "svelte";
+  import type { ListStoreContext } from "../listStoreContext";
 
   type Props = {
     movePage: (e: Event) => void;
     nextDisabledProp: { disabled?: string };
     page: number;
     previousDisabledProp: { disabled?: string };
-    store: Listing.ListStore;
   };
-  let { movePage, nextDisabledProp, page, previousDisabledProp, store }: Props =
+  let { movePage, nextDisabledProp, page, previousDisabledProp }: Props =
     $props();
+
+  const { reactiveStore } = getContext<ListStoreContext>("listStore");
 </script>
 
 <ul class="pagination d-none d-md-flex">
@@ -66,8 +68,11 @@
     </a>
   </li>
 
-  {#if page + 1 <= store.pageMax}
-    <li class="page-item" class:first-last={page + 1 === store.pageMax}>
+  {#if page + 1 <= $reactiveStore.pageMax}
+    <li
+      class="page-item"
+      class:first-last={page + 1 === $reactiveStore.pageMax}
+    >
       <!-- svelte-ignore a11y-invalid-attribute -->
       <a
         href="javascript:void(0);"
@@ -80,20 +85,20 @@
     </li>
   {/if}
 
-  {#if page + 3 <= store.pageMax}
+  {#if page + 3 <= $reactiveStore.pageMax}
     <li class="page-item" aria-hidden="true">...</li>
   {/if}
 
-  {#if page + 2 <= store.pageMax}
+  {#if page + 2 <= $reactiveStore.pageMax}
     <li class="page-item first-last">
       <!-- svelte-ignore a11y-invalid-attribute -->
       <a
         href="javascript:void(0);"
         class="page-link"
-        data-page={store.pageMax}
+        data-page={$reactiveStore.pageMax}
         onclick={movePage}
       >
-        {store.pageMax}
+        {$reactiveStore.pageMax}
       </a>
     </li>
   {/if}

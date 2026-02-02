@@ -29,7 +29,7 @@
     parent,
     gather,
     optionsHtmlParams,
-  } : Props = $props();
+  }: Props = $props();
 
   let id = $derived(`field-options-${field.id}`);
 

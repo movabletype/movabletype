@@ -1,13 +1,15 @@
 <script lang="ts">
-  import type * as Listing from "../../@types/listing";
+  import { getContext } from "svelte";
+  import type { ListStoreContext } from "../listStoreContext";
 
   type Props = {
     changeLimit: (e: Event) => void;
-    store: Listing.ListStore;
   };
-  let { changeLimit, store }: Props = $props();
+  let { changeLimit }: Props = $props();
 
-  let limit = $derived(store.limit || 0);
+  const { reactiveStore } = getContext<ListStoreContext>("listStore");
+
+  let limit = $derived($reactiveStore.limit || 0);
   let limitToString = $derived(limit.toString());
 </script>
 

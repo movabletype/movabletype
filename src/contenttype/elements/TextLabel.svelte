@@ -13,7 +13,7 @@
     id,
     options = $bindable(),
     optionsHtmlParams,
-  } : ContentType.ContentFieldProps = $props();
+  }: ContentType.ContentFieldProps = $props();
 
   options.text ??= "";
 

@@ -1,11 +1,12 @@
 <script lang="ts">
-  import type * as Listing from "../../@types/listing";
+  import { getContext } from "svelte";
+  import type { ListStoreContext } from "../listStoreContext";
 
-  let { store }: { store: Listing.ListStore } = $props();
+  const { reactiveStore } = getContext<ListStoreContext>("listStore");
 
-  let count = $derived(store.count || 0);
-  let limit = $derived(store.limit || 0);
-  let page = $derived(store.page || 0);
+  let count = $derived($reactiveStore.count || 0);
+  let limit = $derived($reactiveStore.limit || 0);
+  let page = $derived($reactiveStore.page || 0);
 
   let from = $derived(count === 0 ? 0 : limit * (page - 1) + 1);
   let to = $derived(limit * page > count ? count : limit * page);

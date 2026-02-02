@@ -1,20 +1,18 @@
 <script lang="ts">
+  import { getContext } from "svelte";
   import type * as Listing from "../../@types/listing";
 
   import ListTableRow from "./ListTableRow.svelte";
+  import type { ListStoreContext } from "../listStoreContext";
 
   type Props = {
     hasListActions: boolean;
     hasMobilePulldownActions: boolean;
-    store: Listing.ListStore;
     zeroStateLabel: string;
   };
-  let {
-    hasListActions,
-    hasMobilePulldownActions,
-    store,
-    zeroStateLabel,
-  }: Props = $props();
+  let { hasListActions, hasMobilePulldownActions, zeroStateLabel }: Props =
+    $props();
+  const { store, reactiveStore } = getContext<ListStoreContext>("listStore");
 
   const clickRow = (e: Event): boolean | undefined => {
     store.trigger("reset_all_clicked_rows");
@@ -65,34 +63,40 @@
   };
 </script>
 
-{#if !store.objects || store.objects.length === 0}
+{#if !$reactiveStore.objects || $reactiveStore.objects.length === 0}
   <tr>
-    <td colspan={store.columns.length + 1}>
+    <td colspan={$reactiveStore.columns.length + 1}>
       {window.trans("No [_1] could be found.", zeroStateLabel)}
     </td>
   </tr>
 {/if}
 
-{#if store.pageMax > 1 && store.checkedAllRowsOnPage && !store.checkedAllRows}
+{#if $reactiveStore.pageMax > 1 && $reactiveStore.checkedAllRowsOnPage && !$reactiveStore.checkedAllRows}
   <tr style="background-color: #ffffff;">
-    <td colspan={store.columns.length + 1}>
+    <td colspan={$reactiveStore.columns.length + 1}>
       <!-- svelte-ignore a11y-invalid-attribute -->
       <a href="javascript:void(0);" onclick={checkAllRows}>
-        {window.trans("Select all [_1] items", store.count.toString())}
+        {window.trans(
+          "Select all [_1] items",
+          ($reactiveStore.count ?? 0).toString(),
+        )}
       </a>
     </td>
   </tr>
 {/if}
 
-{#if store.pageMax > 1 && store.checkedAllRows}
+{#if $reactiveStore.pageMax > 1 && $reactiveStore.checkedAllRows}
   <tr class="success">
-    <td colspan={store.columns.length + 1}>
-      {window.trans("All [_1] items are selected", store.count.toString())}
+    <td colspan={$reactiveStore.columns.length + 1}>
+      {window.trans(
+        "All [_1] items are selected",
+        ($reactiveStore.count ?? 0).toString(),
+      )}
     </td>
   </tr>
 {/if}
 
-{#each store.objects as obj, index}
+{#each $reactiveStore.objects as obj, index}
   <!-- remove "object" property because it is not output in Riot.js -->
   <tr
     data-is="list-table-row"
@@ -105,7 +109,6 @@
       {hasListActions}
       {hasMobilePulldownActions}
       object={obj.object}
-      {store}
     />
   </tr>
 {/each}

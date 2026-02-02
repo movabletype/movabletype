@@ -23,7 +23,6 @@
     listFilterTopValidateFilterDetails: () => boolean;
     localeCalendarHeader: Array<string>;
     objectLabel: string;
-    store: Listing.ListStore;
   };
   let {
     currentFilter,
@@ -38,7 +37,6 @@
     listFilterTopValidateFilterDetails,
     localeCalendarHeader,
     objectLabel,
-    store,
   }: Props = $props();
 
   const addFilterItem = (e: Event): void => {
@@ -120,7 +118,6 @@
       {listFilterTopIsUserFilter}
       {listFilterTopValidateFilterDetails}
       {objectLabel}
-      {store}
     />
   </div>
 </div>

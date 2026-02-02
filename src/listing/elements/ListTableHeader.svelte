@@ -1,15 +1,16 @@
 <script lang="ts">
-  import type * as Listing from "../../@types/listing";
+  import { getContext } from "svelte";
 
   import ListTableHeaderForMobile from "./ListTableHeaderForMobile.svelte";
   import ListTableHeaderForPc from "./ListTableHeaderForPc.svelte";
+  import type { ListStoreContext } from "../listStoreContext";
 
   type Props = {
     hasListActions: boolean;
     hasMobilePulldownActions: boolean;
-    store: Listing.ListStore;
   };
-  let { hasListActions, hasMobilePulldownActions, store }: Props = $props();
+  let { hasListActions, hasMobilePulldownActions }: Props = $props();
+  const { store } = getContext<ListStoreContext>("listStore");
 
   const toggleAllRowsOnPage = (): void => {
     store.trigger("toggle_all_rows_on_page");
@@ -24,12 +25,7 @@
 
 <ListTableHeaderForPc
   {hasListActions}
-  {store}
   {toggleAllRowsOnPage}
   {toggleSortColumn}
 />
-<ListTableHeaderForMobile
-  {hasMobilePulldownActions}
-  {store}
-  {toggleAllRowsOnPage}
-/>
+<ListTableHeaderForMobile {hasMobilePulldownActions} {toggleAllRowsOnPage} />

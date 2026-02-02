@@ -1,15 +1,16 @@
 <script lang="ts">
-  import type * as Listing from "../../@types/listing";
+  import { getContext } from "svelte";
 
   import SVG from "../../svg/elements/SVG.svelte";
+  import type { ListStoreContext } from "../listStoreContext";
 
   type Props = {
     listFilterTopCreateNewFilter: (filterLabel?: string) => void;
     listFilterTopUpdate: () => void;
-    store: Listing.ListStore;
   };
-  let { listFilterTopCreateNewFilter, listFilterTopUpdate, store }: Props =
-    $props();
+  let { listFilterTopCreateNewFilter, listFilterTopUpdate }: Props = $props();
+
+  const { store, reactiveStore } = getContext<ListStoreContext>("listStore");
 
   let isEditingFilter: { [key: string]: boolean } = $state({});
   let modal: HTMLDivElement;
@@ -102,7 +103,7 @@
         <div class="filter-list-block">
           <h6 class="filter-list-label">{window.trans("My Filters")}</h6>
           <ul id="user-filters" class="list-unstyled editable">
-            {#each store.filters as filter}
+            {#each $reactiveStore.filters as filter}
               {@const filterId = filter.id ?? ""}
               {#if filter.can_save?.toString() === "1"}
                 <li
@@ -182,7 +183,7 @@
               {window.trans("Built in Filters")}
             </h6>
             <ul id="built-in-filters" class="list-unstyled">
-              {#each store.filters as filter}
+              {#each $reactiveStore.filters as filter}
                 {#if filter.can_save?.toString() === "0"}
                   <li
                     class="filter line"

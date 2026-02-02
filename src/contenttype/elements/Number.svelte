@@ -11,7 +11,7 @@
     id,
     options = $bindable(),
     optionsHtmlParams,
-  } : ContentType.ContentFieldProps = $props();
+  }: ContentType.ContentFieldProps = $props();
 
   options.max_value ??= config.NumberFieldMaxValue;
   options.min_value ??= config.NumberFieldMinValue;

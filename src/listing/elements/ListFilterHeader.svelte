@@ -1,7 +1,9 @@
 <script lang="ts">
+  import { getContext } from "svelte";
   import type * as Listing from "../../@types/listing";
 
   import ListFilterSelectModal from "./ListFilterSelectModal.svelte";
+  import type { ListStoreContext } from "../listStoreContext";
 
   type Props = {
     currentFilter: Listing.Filter;
@@ -9,7 +11,6 @@
     listActionClient: Listing.ListActionClient;
     listFilterTopCreateNewFilter: (filterLabel?: string) => void;
     listFilterTopUpdate: () => void;
-    store: Listing.ListStore;
   };
   let {
     currentFilter,
@@ -17,8 +18,8 @@
     listActionClient,
     listFilterTopCreateNewFilter,
     listFilterTopUpdate,
-    store,
   }: Props = $props();
+  const { store } = getContext<ListStoreContext>("listStore");
 
   const resetFilter = (): void => {
     listActionClient.removeFilterKeyFromReturnArgs();
@@ -47,7 +48,6 @@
         <ListFilterSelectModal
           {listFilterTopCreateNewFilter}
           {listFilterTopUpdate}
-          {store}
         />
       </li>
       <li class="list-inline-item">

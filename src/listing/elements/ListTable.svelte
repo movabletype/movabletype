@@ -1,5 +1,6 @@
 <script lang="ts">
-  import type * as Listing from "../../@types/listing";
+  import { getContext } from "svelte";
+  import type { ListStoreContext } from "../listStoreContext";
 
   import ListTableBody from "./ListTableBody.svelte";
   import ListTableHeader from "./ListTableHeader.svelte";
@@ -7,23 +8,21 @@
   type Props = {
     hasListActions: boolean;
     hasMobilePulldownActions: boolean;
-    store: Listing.ListStore;
     zeroStateLabel: string;
   };
-  let {
-    hasListActions,
-    hasMobilePulldownActions,
-    store,
-    zeroStateLabel,
-  }: Props = $props();
+  let { hasListActions, hasMobilePulldownActions, zeroStateLabel }: Props =
+    $props();
 
-  let isLoading = $derived(store.isLoading);
-  let hasObjects = $derived(!!store.objects && store.objects.length > 0);
-  let columnsLength = $derived(store.columns.length);
+  const { reactiveStore } = getContext<ListStoreContext>("listStore");
+  let isLoading = $derived($reactiveStore.isLoading || false);
+  let hasObjects = $derived(
+    $reactiveStore.objects && $reactiveStore.objects.length > 0,
+  );
+  let columnsLength = $derived($reactiveStore.columns.length || 0);
 </script>
 
 <thead data-is="list-table-header">
-  <ListTableHeader {hasListActions} {hasMobilePulldownActions} {store} />
+  <ListTableHeader {hasListActions} {hasMobilePulldownActions} />
 </thead>
 {#if isLoading}
   <tbody>
@@ -38,7 +37,6 @@
     <ListTableBody
       {hasListActions}
       {hasMobilePulldownActions}
-      {store}
       {zeroStateLabel}
     />
   </tbody>

@@ -1,7 +1,8 @@
 <script lang="ts">
-  import type * as Listing from "../../@types/listing";
+  import { getContext } from "svelte";
 
   import SVG from "../../svg/elements/SVG.svelte";
+  import type { ListStoreContext } from "../listStoreContext";
 
   type Props = {
     isTooNarrowWidth: boolean;
@@ -9,7 +10,6 @@
     nextDisabledProp: { disabled?: string };
     page: number;
     previousDisabledProp: { disabled?: string };
-    store: Listing.ListStore;
   };
   let {
     isTooNarrowWidth,
@@ -17,8 +17,9 @@
     nextDisabledProp,
     page,
     previousDisabledProp,
-    store,
   }: Props = $props();
+
+  const { reactiveStore } = getContext<ListStoreContext>("listStore");
 </script>
 
 <ul class="pagination__mobile d-md-none">
@@ -39,7 +40,7 @@
     </a>
   </li>
 
-  {#if page - 4 >= 1 && store.pageMax - page < 1}
+  {#if page - 4 >= 1 && $reactiveStore.pageMax - page < 1}
     <li class="page-item" class:me-auto={isTooNarrowWidth}>
       <!-- svelte-ignore a11y-invalid-attribute -->
       <a
@@ -53,7 +54,7 @@
     </li>
   {/if}
 
-  {#if page - 3 >= 1 && store.pageMax - page < 2}
+  {#if page - 3 >= 1 && $reactiveStore.pageMax - page < 2}
     <li class="page-item" class:me-auto={isTooNarrowWidth}>
       <!-- svelte-ignore a11y-invalid-attribute -->
       <a
@@ -103,7 +104,7 @@
     </a>
   </li>
 
-  {#if page + 1 <= store.pageMax}
+  {#if page + 1 <= $reactiveStore.pageMax}
     <li class="page-item" class:me-auto={isTooNarrowWidth}>
       <!-- svelte-ignore a11y-invalid-attribute -->
       <a
@@ -117,7 +118,7 @@
     </li>
   {/if}
 
-  {#if page + 2 <= store.pageMax}
+  {#if page + 2 <= $reactiveStore.pageMax}
     <li class="page-item" class:me-auto={isTooNarrowWidth}>
       <!-- svelte-ignore a11y-invalid-attribute -->
       <a
@@ -131,7 +132,7 @@
     </li>
   {/if}
 
-  {#if page + 3 <= store.pageMax && page <= 2}
+  {#if page + 3 <= $reactiveStore.pageMax && page <= 2}
     <li class="page-item" class:me-auto={isTooNarrowWidth}>
       <!-- svelte-ignore a11y-invalid-attribute -->
       <a
@@ -145,7 +146,7 @@
     </li>
   {/if}
 
-  {#if page + 4 <= store.pageMax && page <= 1}
+  {#if page + 4 <= $reactiveStore.pageMax && page <= 1}
     <li class="page-item" class:me-auto={isTooNarrowWidth}>
       <!-- svelte-ignore a11y-invalid-attribute -->
       <a

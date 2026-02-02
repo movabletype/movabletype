@@ -1,11 +1,12 @@
 <script lang="ts">
-  import type * as Listing from "../../@types/listing";
+  import { getContext } from "svelte";
+  import type { ListStoreContext } from "../listStoreContext";
 
   type Props = {
     disableUserDispOption: boolean;
-    store: Listing.ListStore;
   };
-  let { disableUserDispOption, store }: Props = $props();
+  let { disableUserDispOption }: Props = $props();
+  const { store, reactiveStore } = getContext<ListStoreContext>("listStore");
 
   const toggleColumn = (e: Event): void => {
     const columnId = (e.currentTarget as HTMLInputElement)?.id;
@@ -19,7 +20,7 @@
 </script>
 
 <div class="field-header">
-  <!-- svelte-ignore a11y-label-has-associated-control -->
+  <!-- svelte-ignore a11y_label_has_associated_control -->
   <label class="form-label">{window.trans("Column")}</label>
 </div>
 {#if disableUserDispOption}
@@ -29,7 +30,7 @@
 {:else}
   <div class="field-content">
     <ul id="disp_cols" class="list-inline m-0">
-      {#each store.columns as column}
+      {#each $reactiveStore.columns as column}
         {@const hiddenColumn = Boolean(column.force_display)}
         <li
           class="list-inline-item"
@@ -45,7 +46,7 @@
               id={column.id}
               checked={Boolean(column.checked)}
               onchange={toggleColumn}
-              disabled={store.isLoading}
+              disabled={$reactiveStore.isLoading}
             />
             <label class="form-check-label form-label" for={column.id}>
               {@html column.label}
@@ -67,7 +68,7 @@
                 id={subField.id}
                 {...{ pid: subField.parent_id }}
                 class="form-check-input {subField.class}"
-                disabled={!column.checked}
+                disabled={!column.checked || $reactiveStore.isLoading}
                 checked={Boolean(subField.checked)}
                 onchange={toggleSubField}
               />

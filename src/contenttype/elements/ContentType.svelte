@@ -13,7 +13,7 @@
     id,
     options = $bindable(),
     optionsHtmlParams,
-  } : ContentType.ContentFieldProps = $props();
+  }: ContentType.ContentFieldProps = $props();
 
   const contentTypes: Array<{ id: string; name: string }> =
     optionsHtmlParams.content_type.content_types;

@@ -11,7 +11,7 @@
     id,
     options = $bindable(),
     optionsHtmlParams,
-  } : ContentType.ContentFieldProps = $props();
+  }: ContentType.ContentFieldProps = $props();
 
   if (options.increase_decrease_rows === "0") {
     options.increase_decrease_rows = 0;
