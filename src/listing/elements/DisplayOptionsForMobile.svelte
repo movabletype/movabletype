@@ -1,11 +1,14 @@
 <script lang="ts">
   import type * as Listing from "../../@types/listing";
 
-  export let changeLimit: (e: Event) => void;
-  export let store: Listing.ListStore;
+  type Props = {
+    changeLimit: (e: Event) => void;
+    store: Listing.ListStore;
+  };
+  let { changeLimit, store }: Props = $props();
 
-  $: limit = store.limit || 0;
-  $: limitToString = limit.toString();
+  let limit = $derived(store.limit || 0);
+  let limitToString = $derived(limit.toString());
 </script>
 
 <div class="row d-md-none">
@@ -19,7 +22,7 @@
         class="custom-select form-control form-select"
         {...{ ref: "limit" }}
         bind:value={limitToString}
-        on:change={changeLimit}
+        onchange={changeLimit}
       >
         <option value="10">{window.trans("[_1] rows", "10")}</option>
         <option value="25">{window.trans("[_1] rows", "25")}</option>

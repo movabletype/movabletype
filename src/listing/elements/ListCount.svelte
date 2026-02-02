@@ -1,14 +1,14 @@
 <script lang="ts">
   import type * as Listing from "../../@types/listing";
 
-  export let store: Listing.ListStore;
+  let { store }: { store: Listing.ListStore } = $props();
 
-  $: count = store.count || 0;
-  $: limit = store.limit || 0;
-  $: page = store.page || 0;
+  let count = $derived(store.count || 0);
+  let limit = $derived(store.limit || 0);
+  let page = $derived(store.page || 0);
 
-  $: from = count === 0 ? 0 : limit * (page - 1) + 1;
-  $: to = limit * page > count ? count : limit * page;
+  let from = $derived(count === 0 ? 0 : limit * (page - 1) + 1);
+  let to = $derived(limit * page > count ? count : limit * page);
 </script>
 
 <div>

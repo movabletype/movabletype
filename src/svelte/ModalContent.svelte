@@ -16,7 +16,7 @@
         class="close"
         data-dismiss="modal"
         aria-label="Close"
-        on:click={close}
+        onclick={close}
       >
         <span aria-hidden="true">&times;</span>
       </button>

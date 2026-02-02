@@ -1,1 +1,16 @@
-(function(){"use strict";var e;if(document.querySelector('[name="type"][value="dashboard_widget"]')){(e=document.querySelector('[name="name"]'))===null||e===void 0||e.remove();const a=document.querySelector('[name="name_display"]');a.name="name",a.disabled=!1,document.querySelectorAll('#useful-links a[href$="#system"], .plugin-actions').forEach(n=>n.classList.add("d-none"))}})();
+
+(function(l, r) { if (!l || l.getElementById('livereloadscript')) return; r = l.createElement('script'); r.async = 1; r.src = '//' + (self.location.host || 'localhost').split(':')[0] + ':35737/livereload.js?snipver=1'; r.id = 'livereloadscript'; l.getElementsByTagName('head')[0].appendChild(r) })(self.document);
+(function () {
+    'use strict';
+
+    var _a;
+    if (document.querySelector(`[name="type"][value="dashboard_widget"]`)) {
+      (_a = document.querySelector(`[name="name"]`)) === null || _a === void 0 ? void 0 : _a.remove();
+      const nameInput = document.querySelector(`[name="name_display"]`);
+      nameInput.name = "name";
+      nameInput.disabled = false;
+      document.querySelectorAll(`#useful-links a[href$="#system"], .plugin-actions`).forEach((el) => el.classList.add("d-none"));
+    }
+
+})();
+//# sourceMappingURL=edit_template.js.map

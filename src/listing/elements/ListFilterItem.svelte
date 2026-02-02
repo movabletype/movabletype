@@ -110,11 +110,7 @@
 </script>
 
 <div class="filteritem">
-  <button
-    class="close btn-close"
-    aria-label="Close"
-    on:click={removeFilterItem}
-  >
+  <button class="close btn-close" aria-label="Close" onclick={removeFilterItem}>
     <span aria-hidden="true">&times;</span>
   </button>
   {#if item.type === "pack"}
@@ -142,7 +138,7 @@
                 <a
                   href="javascript:void(0);"
                   class="d-inline-block"
-                  on:click={addFilterItemContent}
+                  onclick={addFilterItemContent}
                 >
                   <SVG
                     title={window.trans("Add")}
@@ -153,10 +149,7 @@
               {/if}
               {#if !filterTypeHash[loopItem.type].singleton && item.args.items.length > 1}
                 <!-- svelte-ignore a11y-invalid-attribute -->
-                <a
-                  href="javascript:void(0);"
-                  on:click={removeFilterItemContent}
-                >
+                <a href="javascript:void(0);" onclick={removeFilterItemContent}>
                   <SVG
                     title={window.trans("Remove")}
                     class="mt-icon mt-icon--sm"
@@ -189,7 +182,7 @@
           <a
             href="javascript:void(0);"
             class="d-inline-block"
-            on:click={addFilterItemContent}
+            onclick={addFilterItemContent}
           >
             <SVG
               title={window.trans("Add")}

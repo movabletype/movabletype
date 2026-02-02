@@ -1,8 +1,11 @@
 <script lang="ts">
   import type * as Listing from "../../@types/listing";
 
-  export let disableUserDispOption: boolean;
-  export let store: Listing.ListStore;
+  type Props = {
+    disableUserDispOption: boolean;
+    store: Listing.ListStore;
+  };
+  let { disableUserDispOption, store }: Props = $props();
 
   const toggleColumn = (e: Event): void => {
     const columnId = (e.currentTarget as HTMLInputElement)?.id;
@@ -41,7 +44,7 @@
               class="form-check-input"
               id={column.id}
               checked={Boolean(column.checked)}
-              on:change={toggleColumn}
+              onchange={toggleColumn}
               disabled={store.isLoading}
             />
             <label class="form-check-label form-label" for={column.id}>
@@ -66,7 +69,7 @@
                 class="form-check-input {subField.class}"
                 disabled={!column.checked}
                 checked={Boolean(subField.checked)}
-                on:change={toggleSubField}
+                onchange={toggleSubField}
               />
               <label class="form-check-label form-label" for={subField.id}>
                 {subField.label}

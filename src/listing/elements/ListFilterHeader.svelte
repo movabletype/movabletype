@@ -3,12 +3,22 @@
 
   import ListFilterSelectModal from "./ListFilterSelectModal.svelte";
 
-  export let currentFilter: Listing.Filter;
-  export let isAllpassFilter: boolean;
-  export let listActionClient: Listing.ListActionClient;
-  export let listFilterTopCreateNewFilter: (filterLabel?: string) => void;
-  export let listFilterTopUpdate: () => void;
-  export let store: Listing.ListStore;
+  type Props = {
+    currentFilter: Listing.Filter;
+    isAllpassFilter: boolean;
+    listActionClient: Listing.ListActionClient;
+    listFilterTopCreateNewFilter: (filterLabel?: string) => void;
+    listFilterTopUpdate: () => void;
+    store: Listing.ListStore;
+  };
+  let {
+    currentFilter,
+    isAllpassFilter,
+    listActionClient,
+    listFilterTopCreateNewFilter,
+    listFilterTopUpdate,
+    store,
+  }: Props = $props();
 
   const resetFilter = (): void => {
     listActionClient.removeFilterKeyFromReturnArgs();
@@ -43,7 +53,7 @@
       <li class="list-inline-item">
         {#if isAllpassFilter === false}
           <!-- svelte-ignore a11y-invalid-attribute -->
-          <a href="#" id="allpass-filter" on:click={resetFilter}>
+          <a href="#" id="allpass-filter" onclick={resetFilter}>
             [ {window.trans("Reset Filter")} ]
           </a>
         {/if}

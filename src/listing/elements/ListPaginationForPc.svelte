@@ -1,11 +1,15 @@
 <script lang="ts">
   import type * as Listing from "../../@types/listing";
 
-  export let movePage: (e: Event) => void;
-  export let nextDisabledProp: { disabled?: string };
-  export let page: number;
-  export let previousDisabledProp: { disabled?: string };
-  export let store: Listing.ListStore;
+  type Props = {
+    movePage: (e: Event) => void;
+    nextDisabledProp: { disabled?: string };
+    page: number;
+    previousDisabledProp: { disabled?: string };
+    store: Listing.ListStore;
+  };
+  let { movePage, nextDisabledProp, page, previousDisabledProp, store }: Props =
+    $props();
 </script>
 
 <ul class="pagination d-none d-md-flex">
@@ -16,7 +20,7 @@
       class="page-link"
       {...previousDisabledProp}
       data-page={page - 1}
-      on:click={movePage}
+      onclick={movePage}
     >
       {window.trans("Previous")}
     </a>
@@ -29,7 +33,7 @@
         href="javascript:void(0);"
         class="page-link"
         data-page={1}
-        on:click={movePage}
+        onclick={movePage}
       >
         1
       </a>
@@ -47,7 +51,7 @@
         href="javascript:void(0);"
         class="page-link"
         data-page={page - 1}
-        on:click={movePage}
+        onclick={movePage}
       >
         {page - 1}
       </a>
@@ -69,7 +73,7 @@
         href="javascript:void(0);"
         class="page-link"
         data-page={page + 1}
-        on:click={movePage}
+        onclick={movePage}
       >
         {page + 1}
       </a>
@@ -87,7 +91,7 @@
         href="javascript:void(0);"
         class="page-link"
         data-page={store.pageMax}
-        on:click={movePage}
+        onclick={movePage}
       >
         {store.pageMax}
       </a>
@@ -101,7 +105,7 @@
       class="page-link"
       {...nextDisabledProp}
       data-page={page + 1}
-      on:click={movePage}
+      onclick={movePage}
     >
       {window.trans("Next")}
     </a>

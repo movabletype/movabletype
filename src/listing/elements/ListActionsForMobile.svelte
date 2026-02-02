@@ -55,7 +55,7 @@
           class="dropdown-item"
           href="javascript:void(0);"
           data-action-id={key}
-          on:click={doAction}
+          onclick={doAction}
         >
           {@html action.label}
         </a>
@@ -67,7 +67,7 @@
           class="dropdown-item"
           href="javascript:void(0);"
           data-action-id={key}
-          on:click={doAction}
+          onclick={doAction}
         >
           {@html action.label}
         </a>
@@ -83,7 +83,7 @@
           class="dropdown-item"
           href="javascript:void(0);"
           data-action-id={key}
-          on:click={doAction}
+          onclick={doAction}
         >
           {@html action.label}
         </a>

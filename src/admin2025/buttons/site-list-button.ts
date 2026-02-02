@@ -1,4 +1,5 @@
 import SiteListButton from "./elements/SiteListButton.svelte";
+import { mount } from "svelte";
 
 type SiteListButtonProps = {
   magicToken: string;
@@ -12,18 +13,23 @@ export function svelteMountSiteListButton(
   target: HTMLElement,
   props: SiteListButtonProps,
 ): void {
-  const app = new SiteListButton({
+  const app = mount(SiteListButton, {
     target: target,
-    props: props,
+    props: {
+      magicToken: props.magicToken,
+      limit: props.limit,
+      open: props.open,
+      anchorRef: props.anchorRef,
+      initialStarredSites: props.initialStarredSites,
+    },
   });
 
   props.anchorRef.addEventListener("click", (event: MouseEvent) => {
     event.preventDefault();
     if (props.anchorRef.classList.contains("open")) {
-      props.open = false;
+      app.open = false;
     } else {
-      props.open = true;
+      app.open = true;
     }
-    app.$set(props);
   });
 }

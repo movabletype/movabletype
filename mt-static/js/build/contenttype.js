@@ -1,2 +1,16451 @@
-function Pl(e){return e&&e.__esModule&&Object.prototype.hasOwnProperty.call(e,"default")?e.default:e}var Bn={exports:{}},zr;function Cl(){return zr||(zr=1,function(e,t){(function(n,i){const l="*",a=Object.defineProperties,r=Object.entries,s=(w,_)=>(S,c)=>(w.has(S)?w.get(S).add(c):w.set(S,new Set().add(c)),_),u=(w,_,S,c)=>{if(c){const f=w.get(S);f&&(f.delete(c),f.size===0&&w.delete(S))}else w.delete(S)},o=(w,_)=>(S,c)=>(S===l&&!c?w.clear():u(w,_,S,c),_),v=(w,_)=>(S,c)=>{function f(...g){_.off(S,f),c.apply(_,g)}return _.on(S,f)},x=(w,_)=>(S,...c)=>{const f=w.get(S);return f&&f.forEach(g=>g.apply(_,c)),w.get(l)&&S!==l&&_.trigger(l,S,...c),_},h=function(w){const _=new Map,S={on:s,off:o,one:v,trigger:x};return w=w||{},a(w,r(S).reduce((c,[f,g])=>(c[f]={value:g(_,w),enumerable:!1,writable:!1,configurable:!1},c),{})),w};e.exports=h})()}(Bn)),Bn.exports}var Al=Cl(),Tl=Pl(Al);function wn(e,t,n,i){if(n==="a"&&!i)throw new TypeError("Private accessor was defined without a getter");if(typeof t=="function"?e!==t||!i:!t.has(e))throw new TypeError("Cannot read private member from an object whose class did not declare it");return n==="m"?i:n==="a"?i.call(e):i?i.value:t.get(e)}function yn(e,t,n,i,l){if(i==="m")throw new TypeError("Private method is not writable");if(i==="a"&&!l)throw new TypeError("Private accessor was defined without a setter");if(typeof t=="function"?e!==t||!l:!t.has(e))throw new TypeError("Cannot write private member to an object whose class did not declare it");return i==="a"?l.call(e,n):l?l.value=n:t.set(e,n),n}typeof SuppressedError=="function"&&SuppressedError;var Yn=!1,Gn=Array.isArray,Il=Array.prototype.indexOf,Wr=Array.from,Kr=Object.defineProperty,Xt=Object.getOwnPropertyDescriptor,Jr=Object.getOwnPropertyDescriptors,Nl=Object.prototype,Ml=Array.prototype,zn=Object.getPrototypeOf;const Ft=()=>{};function Dl(e){return e()}function Wn(e){for(var t=0;t<e.length;t++)e[t]()}function Xr(){var e,t,n=new Promise((i,l)=>{e=i,t=l});return{promise:n,resolve:e,reject:t}}const ge=2,Kn=4,xn=8,Zr=1<<24,Xe=16,Ze=32,Lt=64,Jn=128,Ue=512,we=1024,Ne=2048,Ge=4096,De=8192,et=16384,Xn=32768,gt=65536,ei=1<<17,ti=1<<18,$n=1<<19,ni=1<<20,wt=32768,Zn=1<<21,er=1<<22,at=1<<23,tt=Symbol("$state"),Rl=Symbol("legacy props"),Fl=Symbol(""),jt=new class extends Error{name="StaleReactionError";message="The reaction that called `getAbortSignal()` was re-run or destroyed"};function ri(e){return e===this.v}function ii(e,t){return e!=e?t==t:e!==t||e!==null&&typeof e=="object"||typeof e=="function"}function li(e){return!ii(e,this.v)}function tr(e){throw new Error("https://svelte.dev/e/lifecycle_outside_component")}function Ll(){throw new Error("https://svelte.dev/e/async_derived_orphan")}function jl(e){throw new Error("https://svelte.dev/e/effect_in_teardown")}function ql(){throw new Error("https://svelte.dev/e/effect_in_unowned_derived")}function Ol(e){throw new Error("https://svelte.dev/e/effect_orphan")}function Vl(){throw new Error("https://svelte.dev/e/effect_update_depth_exceeded")}function Hl(e){throw new Error("https://svelte.dev/e/lifecycle_legacy_only")}function Ql(e){throw new Error("https://svelte.dev/e/props_invalid_value")}function Ul(){throw new Error("https://svelte.dev/e/state_descriptors_fixed")}function Bl(){throw new Error("https://svelte.dev/e/state_prototype_fixed")}function Yl(){throw new Error("https://svelte.dev/e/state_unsafe_mutation")}let qt=!1,Gl=!1;function zl(){qt=!0}const ai=1,oi=2,si=4,Wl=8,Kl=16,Jl=1,Xl=2,Zl=4,ea=8,ta=16,na=1,ra=2,ye=Symbol(),ia="http://www.w3.org/1999/xhtml",la="http://www.w3.org/2000/svg",aa="@attach";let le=null;function Sn(e){le=e}function te(e,t=!1,n){le={p:le,i:!1,c:null,e:null,s:e,x:null,l:qt&&!t?{s:null,u:null,$:[]}:null}}function ne(e){var t=le,n=t.e;if(n!==null){t.e=null;for(var i of n)Ii(i)}return e!==void 0&&(t.x=e),t.i=!0,le=t.p,e??{}}function Zt(){return!qt||le!==null&&le.l===null}let yt=[];function ui(){var e=yt;yt=[],Wn(e)}function en(e){if(yt.length===0&&!rn){var t=yt;queueMicrotask(()=>{t===yt&&ui()})}yt.push(e)}function oa(){for(;yt.length>0;)ui()}function sa(){console.warn("https://svelte.dev/e/select_multiple_invalid_value")}function Ot(e){if(typeof e!="object"||e===null||tt in e)return e;const t=zn(e);if(t!==Nl&&t!==Ml)return e;var n=new Map,i=Gn(e),l=ft(0),a=St,r=s=>{if(St===a)return s();var u=W,o=St;Ke(null),Si(a);var v=s();return Ke(u),Si(o),v};return i&&n.set("length",ft(e.length)),new Proxy(e,{defineProperty(s,u,o){(!("value"in o)||o.configurable===!1||o.enumerable===!1||o.writable===!1)&&Ul();var v=n.get(u);return v===void 0?v=r(()=>{var x=ft(o.value);return n.set(u,x),x}):G(v,o.value,!0),!0},deleteProperty(s,u){var o=n.get(u);if(o===void 0){if(u in s){const v=r(()=>ft(ye));n.set(u,v),ar(l)}}else G(o,ye),ar(l);return!0},get(s,u,o){if(u===tt)return e;var v=n.get(u),x=u in s;if(v===void 0&&(!x||Xt(s,u)?.writable)&&(v=r(()=>{var w=Ot(x?s[u]:ye),_=ft(w);return _}),n.set(u,v)),v!==void 0){var h=$(v);return h===ye?void 0:h}return Reflect.get(s,u,o)},getOwnPropertyDescriptor(s,u){var o=Reflect.getOwnPropertyDescriptor(s,u);if(o&&"value"in o){var v=n.get(u);v&&(o.value=$(v))}else if(o===void 0){var x=n.get(u),h=x?.v;if(x!==void 0&&h!==ye)return{enumerable:!0,configurable:!0,value:h,writable:!0}}return o},has(s,u){if(u===tt)return!0;var o=n.get(u),v=o!==void 0&&o.v!==ye||Reflect.has(s,u);if(o!==void 0||Z!==null&&(!v||Xt(s,u)?.writable)){o===void 0&&(o=r(()=>{var h=v?Ot(s[u]):ye,w=ft(h);return w}),n.set(u,o));var x=$(o);if(x===ye)return!1}return v},set(s,u,o,v){var x=n.get(u),h=u in s;if(i&&u==="length")for(var w=o;w<x.v;w+=1){var _=n.get(w+"");_!==void 0?G(_,ye):w in s&&(_=r(()=>ft(ye)),n.set(w+"",_))}if(x===void 0)(!h||Xt(s,u)?.writable)&&(x=r(()=>ft(void 0)),G(x,Ot(o)),n.set(u,x));else{h=x.v!==ye;var S=r(()=>Ot(o));G(x,S)}var c=Reflect.getOwnPropertyDescriptor(s,u);if(c?.set&&c.set.call(v,o),!h){if(i&&typeof u=="string"){var f=n.get("length"),g=Number(u);Number.isInteger(g)&&g>=f.v&&G(f,g+1)}ar(l)}return!0},ownKeys(s){$(l);var u=Reflect.ownKeys(s).filter(x=>{var h=n.get(x);return h===void 0||h.v!==ye});for(var[o,v]of n)v.v!==ye&&!(o in s)&&u.push(o);return u},setPrototypeOf(){Bl()}})}function di(e){try{if(e!==null&&typeof e=="object"&&tt in e)return e[tt]}catch{}return e}function ua(e,t){return Object.is(di(e),di(t))}var da,fa,ca;function ot(e=""){return document.createTextNode(e)}function ze(e){return fa.call(e)}function tn(e){return ca.call(e)}function C(e,t){return ze(e)}function j(e,t=!1){{var n=ze(e);return n instanceof Comment&&n.data===""?tn(n):n}}function y(e,t=1,n=!1){let i=e;for(;t--;)i=tn(i);return i}function va(e){e.textContent=""}function fi(){return!1}function _a(e){var t=Z;if(t===null)return W.f|=at,e;if(t.f&Xn)kn(e,t);else{if(!(t.f&Jn))throw e;t.b.error(e)}}function kn(e,t){for(;t!==null;){if(t.f&Jn)try{t.b.error(e);return}catch(n){e=n}t=t.parent}throw e}const En=new Set;let z=null,nn=null,Le=null,je=[],Pn=null,nr=!1,rn=!1;class pn{committed=!1;current=new Map;previous=new Map;#t=new Set;#n=new Set;#e=0;#r=0;#a=null;#i=[];#o=[];skipped_effects=new Set;is_fork=!1;is_deferred(){return this.is_fork||this.#r>0}process(t){je=[],nn=null,this.apply();var n={parent:null,effect:null,effects:[],render_effects:[],block_effects:[]};for(const i of t)this.#s(i,n);this.is_fork||this.#d(),this.is_deferred()?(this.#l(n.effects),this.#l(n.render_effects),this.#l(n.block_effects)):(nn=this,z=null,vi(n.render_effects),vi(n.effects),nn=null,this.#a?.resolve()),Le=null}#s(t,n){t.f^=we;for(var i=t.first;i!==null;){var l=i.f,a=(l&(Ze|Lt))!==0,r=a&&(l&we)!==0,s=r||(l&De)!==0||this.skipped_effects.has(i);if(i.f&Jn&&i.b?.is_pending()&&(n={parent:n,effect:i,effects:[],render_effects:[],block_effects:[]}),!s&&i.fn!==null){a?i.f^=we:l&Kn?n.effects.push(i):Qt(i)&&(i.f&Xe&&n.block_effects.push(i),Ut(i));var u=i.first;if(u!==null){i=u;continue}}var o=i.parent;for(i=i.next;i===null&&o!==null;)o===n.effect&&(this.#l(n.effects),this.#l(n.render_effects),this.#l(n.block_effects),n=n.parent),i=o.next,o=o.parent}}#l(t){for(const n of t)(n.f&Ne?this.#i:this.#o).push(n),this.#u(n.deps),xe(n,we)}#u(t){if(t!==null)for(const n of t)!(n.f&ge)||!(n.f&wt)||(n.f^=wt,this.#u(n.deps))}capture(t,n){this.previous.has(t)||this.previous.set(t,n),t.f&at||(this.current.set(t,t.v),Le?.set(t,t.v))}activate(){z=this,this.apply()}deactivate(){z===this&&(z=null,Le=null)}flush(){if(this.activate(),je.length>0){if(ci(),z!==null&&z!==this)return}else this.#e===0&&this.process([]);this.deactivate()}discard(){for(const t of this.#n)t(this);this.#n.clear()}#d(){if(this.#r===0){for(const t of this.#t)t();this.#t.clear()}this.#e===0&&this.#f()}#f(){if(En.size>1){this.previous.clear();var t=Le,n=!0,i={parent:null,effect:null,effects:[],render_effects:[],block_effects:[]};for(const a of En){if(a===this){n=!1;continue}const r=[];for(const[u,o]of this.current){if(a.current.has(u))if(n&&o!==a.current.get(u))a.current.set(u,o);else continue;r.push(u)}if(r.length===0)continue;const s=[...a.current.keys()].filter(u=>!this.current.has(u));if(s.length>0){var l=je;je=[];const u=new Set,o=new Map;for(const v of r)_i(v,s,u,o);if(je.length>0){z=a,a.apply();for(const v of je)a.#s(v,i);a.deactivate()}je=l}}z=null,Le=t}this.committed=!0,En.delete(this)}increment(t){this.#e+=1,t&&(this.#r+=1)}decrement(t){this.#e-=1,t&&(this.#r-=1),this.revive()}revive(){for(const t of this.#i)xe(t,Ne),xt(t);for(const t of this.#o)xe(t,Ge),xt(t);this.#i=[],this.#o=[],this.flush()}oncommit(t){this.#t.add(t)}ondiscard(t){this.#n.add(t)}settled(){return(this.#a??=Xr()).promise}static ensure(){if(z===null){const t=z=new pn;En.add(z),rn||pn.enqueue(()=>{z===t&&t.flush()})}return z}static enqueue(t){en(t)}apply(){}}function ma(e){var t=rn;rn=!0;try{for(var n;;){if(oa(),je.length===0&&(z?.flush(),je.length===0))return Pn=null,n;ci()}}finally{rn=t}}function ci(){var e=vt;nr=!0;var t=null;try{var n=0;for(In(!0);je.length>0;){var i=pn.ensure();if(n++>1e3){var l,a;pa()}i.process(je),dt.clear()}}finally{nr=!1,In(e),Pn=null}}function pa(){try{Vl()}catch(e){kn(e,Pn)}}let nt=null;function vi(e){var t=e.length;if(t!==0){for(var n=0;n<t;){var i=e[n++];if(!(i.f&(et|De))&&Qt(i)&&(nt=new Set,Ut(i),i.deps===null&&i.first===null&&i.nodes_start===null&&(i.teardown===null&&i.ac===null?Fi(i):i.fn=null),nt?.size>0)){dt.clear();for(const l of nt){if(l.f&(et|De))continue;const a=[l];let r=l.parent;for(;r!==null;)nt.has(r)&&(nt.delete(r),a.push(r)),r=r.parent;for(let s=a.length-1;s>=0;s--){const u=a[s];u.f&(et|De)||Ut(u)}}nt.clear()}}nt=null}}function _i(e,t,n,i){if(!n.has(e)&&(n.add(e),e.reactions!==null))for(const l of e.reactions){const a=l.f;a&ge?_i(l,t,n,i):a&(er|Xe)&&!(a&Ne)&&mi(l,t,i)&&(xe(l,Ne),xt(l))}}function mi(e,t,n){const i=n.get(e);if(i!==void 0)return i;if(e.deps!==null)for(const l of e.deps){if(t.includes(l))return!0;if(l.f&ge&&mi(l,t,n))return n.set(l,!0),!0}return n.set(e,!1),!1}function xt(e){for(var t=Pn=e;t.parent!==null;){t=t.parent;var n=t.f;if(nr&&t===Z&&n&Xe&&!(n&ti))return;if(n&(Lt|Ze)){if(!(n&we))return;t.f^=we}}je.push(t)}function st(e,t){return t}function ha(e,t,n){for(var i=[],l=t.length,a=0;a<l;a++)dr(t[a].e,i,!0);ji(i,()=>{var r=i.length===0&&n!==null;if(r){var s=n,u=s.parentNode;va(u),u.append(s),e.items.clear(),Be(e,t[0].prev,t[l-1].next)}for(var o=0;o<l;o++){var v=t[o];r||(e.items.delete(v.k),Be(e,v.prev,v.next)),Ve(v.e,!r)}e.first===t[0]&&(e.first=t[0].prev)})}function ut(e,t,n,i,l,a=null){var r=e,s=new Map,u=null,o=(t&si)!==0,v=(t&ai)!==0,x=(t&oi)!==0;if(o){var h=e;r=h.appendChild(ot())}var w=null,_=_e(()=>{var b=n();return Gn(b)?b:b==null?[]:Wr(b)}),S,c=!0;function f(){ba(p,S,r,t,i),w!==null&&(S.length===0?(w.fragment?(r.before(w.fragment),w.fragment=null):fr(w.effect),g.first=w.effect):Li(w.effect,()=>{w=null}))}var g=Dn(()=>{S=$(_);for(var b=S.length,E=new Set,A=z,D=null,R=fi(),L=0;L<b;L+=1){var q=S[L],U=i(q,L),B=c?null:s.get(U);B?(v&&Vt(B.v,q),x?Vt(B.i,L):B.i=L,R&&A.skipped_effects.delete(B.e)):(B=ga(c?r:null,D,q,U,L,l,t,n),c&&(B.o=!0,D===null?u=B:D.next=B,D=B),s.set(U,B)),E.add(U)}if(b===0&&a&&!w)if(c)w={fragment:null,effect:kt(()=>a(r))};else{var ee=document.createDocumentFragment(),ue=ot();ee.append(ue),w={fragment:ee,effect:kt(()=>a(ue))}}if(!c)if(R){for(const[ve,me]of s)E.has(ve)||A.skipped_effects.add(me.e);A.oncommit(f),A.ondiscard(()=>{})}else f();$(_)}),p={effect:g,items:s,first:u};c=!1}function ba(e,t,n,i,l){var a=(i&Wl)!==0,r=t.length,s=e.items,u=e.first,o,v=null,x,h=[],w=[],_,S,c,f;if(a)for(f=0;f<r;f+=1)_=t[f],S=l(_,f),c=s.get(S),c.o&&(c.a?.measure(),(x??=new Set).add(c));for(f=0;f<r;f+=1){if(_=t[f],S=l(_,f),c=s.get(S),e.first??=c,!c.o){c.o=!0;var g=v?v.next:u;Be(e,v,c),Be(e,c,g),rr(c,g,n),v=c,h=[],w=[],u=v.next;continue}if(c.e.f&De&&(fr(c.e),a&&(c.a?.unfix(),(x??=new Set).delete(c))),c!==u){if(o!==void 0&&o.has(c)){if(h.length<w.length){var p=w[0],b;v=p.prev;var E=h[0],A=h[h.length-1];for(b=0;b<h.length;b+=1)rr(h[b],p,n);for(b=0;b<w.length;b+=1)o.delete(w[b]);Be(e,E.prev,A.next),Be(e,v,E),Be(e,A,p),u=p,v=A,f-=1,h=[],w=[]}else o.delete(c),rr(c,u,n),Be(e,c.prev,c.next),Be(e,c,v===null?e.first:v.next),Be(e,v,c),v=c;continue}for(h=[],w=[];u!==null&&u.k!==S;)u.e.f&De||(o??=new Set).add(u),w.push(u),u=u.next;if(u===null)continue;c=u}h.push(c),v=c,u=c.next}let D=s.size>r;if(u!==null||o!==void 0){for(var R=o===void 0?[]:Wr(o);u!==null;)u.e.f&De||R.push(u),u=u.next;var L=R.length;if(D=s.size-L>r,L>0){var q=i&si&&r===0?n:null;if(a){for(f=0;f<L;f+=1)R[f].a?.measure();for(f=0;f<L;f+=1)R[f].a?.fix()}ha(e,R,q)}}if(D)for(const U of s.values())U.o||(Be(e,v,U),v=U);e.effect.last=v&&v.e,a&&en(()=>{if(x!==void 0)for(c of x)c.a?.apply()})}function ga(e,t,n,i,l,a,r,s){var u=(r&ai)!==0,o=(r&Kl)===0,v=u?o?de(n,!1,!1):ln(n):n,x=r&oi?ln(l):l,h={i:x,v,k:i,a:null,e:null,o:!1,prev:t,next:null};try{if(e===null){var w=document.createDocumentFragment();w.append(e=ot())}return h.e=kt(()=>a(e,v,x,s)),t!==null&&(t.next=h),h}finally{}}function rr(e,t,n){for(var i=e.next?e.next.e.nodes_start:n,l=t?t.e.nodes_start:n,a=e.e.nodes_start;a!==null&&a!==i;){var r=tn(a);l.before(a),a=r}}function Be(e,t,n){t===null?(e.first=n,e.effect.first=n&&n.e):(t.e.next&&(t.e.next.prev=null),t.next=n,t.e.next=n&&n.e),n!==null&&(n.e.prev&&(n.e.prev.next=null),n.prev=t,n.e.prev=t&&t.e)}function pi(e,t,n,i){const l=Zt()?An:_e;if(n.length===0&&e.length===0){i(t.map(l));return}var a=z,r=Z,s=wa();function u(){Promise.all(n.map(o=>ya(o))).then(o=>{s();try{i([...t.map(l),...o])}catch(v){r.f&et||kn(v,r)}a?.deactivate(),Cn()}).catch(o=>{kn(o,r)})}e.length>0?Promise.all(e).then(()=>{s();try{return u()}finally{a?.deactivate(),Cn()}}):u()}function wa(){var e=Z,t=W,n=le,i=z;return function(a=!0){_t(e),Ke(t),Sn(n),a&&i?.activate()}}function Cn(){_t(null),Ke(null),Sn(null)}function An(e){var t=ge|Ne,n=W!==null&&W.f&ge?W:null;return Z!==null&&(Z.f|=$n),{ctx:le,deps:null,effects:null,equals:ri,f:t,fn:e,reactions:null,rv:0,v:ye,wv:0,parent:n??Z,ac:null}}function ya(e,t){let n=Z;n===null&&Ll();var i=n.b,l=void 0,a=ln(ye),r=!W,s=new Map;return Da(()=>{var u=Xr();l=u.promise;try{Promise.resolve(e()).then(u.resolve,u.reject).then(()=>{o===z&&o.committed&&o.deactivate(),Cn()})}catch(h){u.reject(h),Cn()}var o=z;if(r){var v=!i.is_pending();i.update_pending_count(1),o.increment(v),s.get(o)?.reject(jt),s.delete(o),s.set(o,u)}const x=(h,w=void 0)=>{if(o.activate(),w)w!==jt&&(a.f|=at,Vt(a,w));else{a.f&at&&(a.f^=at),Vt(a,h);for(const[_,S]of s){if(s.delete(_),_===o)break;S.reject(jt)}}r&&(i.update_pending_count(-1),o.decrement(v))};u.promise.then(x,h=>x(null,h||"unknown"))}),Bt(()=>{for(const u of s.values())u.reject(jt)}),new Promise(u=>{function o(v){function x(){v===l?u(a):o(l)}v.then(x,x)}o(l)})}function _e(e){const t=An(e);return t.equals=li,t}function hi(e){var t=e.effects;if(t!==null){e.effects=null;for(var n=0;n<t.length;n+=1)Ve(t[n])}}function xa(e){for(var t=e.parent;t!==null;){if(!(t.f&ge))return t.f&et?null:t;t=t.parent}return null}function ir(e){var t,n=Z;_t(xa(e));try{e.f&=~wt,hi(e),t=Pi(e)}finally{_t(n)}return t}function bi(e){var t=ir(e);if(e.equals(t)||(z?.is_fork||(e.v=t),e.wv=ki()),!$t)if(Le!==null)(Mn()||z?.is_fork)&&Le.set(e,t);else{var n=e.f&Ue?we:Ge;xe(e,n)}}let lr=new Set;const dt=new Map;let gi=!1;function ln(e,t){var n={f:0,v:e,reactions:null,equals:ri,rv:0,wv:0};return n}function ft(e,t){const n=ln(e);return Pa(n),n}function de(e,t=!1,n=!0){const i=ln(e);return t||(i.equals=li),qt&&n&&le!==null&&le.l!==null&&(le.l.s??=[]).push(i),i}function ct(e,t){return G(e,d(()=>$(e))),t}function G(e,t,n=!1){W!==null&&(!We||W.f&ei)&&Zt()&&W.f&(ge|Xe|er|ei)&&!rt?.includes(e)&&Yl();let i=n?Ot(t):t;return Vt(e,i)}function Vt(e,t){if(!e.equals(t)){var n=e.v;$t?dt.set(e,t):dt.set(e,n),e.v=t;var i=pn.ensure();i.capture(e,n),e.f&ge&&(e.f&Ne&&ir(e),xe(e,e.f&Ue?we:Ge)),e.wv=ki(),wi(e,Ne),Zt()&&Z!==null&&Z.f&we&&!(Z.f&(Ze|Lt))&&(Oe===null?Ca([e]):Oe.push(e)),!i.is_fork&&lr.size>0&&!gi&&$a()}return t}function $a(){gi=!1;var e=vt;In(!0);const t=Array.from(lr);try{for(const n of t)n.f&we&&xe(n,Ge),Qt(n)&&Ut(n)}finally{In(e)}lr.clear()}function ar(e){G(e,e.v+1)}function wi(e,t){var n=e.reactions;if(n!==null)for(var i=Zt(),l=n.length,a=0;a<l;a++){var r=n[a],s=r.f;if(!(!i&&r===Z)){var u=(s&Ne)===0;if(u&&xe(r,t),s&ge){var o=r;Le?.delete(o),s&wt||(s&Ue&&(r.f|=wt),wi(o,Ge))}else u&&(s&Xe&&nt!==null&&nt.add(r),xt(r))}}}let Ht=null;function Sa(e){var t=Ht;try{if(Ht=new Set,d(e),t!==null)for(var n of Ht)t.add(n);return Ht}finally{Ht=t}}function qe(e){for(var t of Sa(e))Vt(t,t.v)}function ka(e,t){if(t){const n=document.body;e.autofocus=!0,en(()=>{document.activeElement===n&&e.focus()})}}let yi=!1;function Ea(){yi||(yi=!0,document.addEventListener("reset",e=>{Promise.resolve().then(()=>{if(!e.defaultPrevented)for(const t of e.target.elements)t.__on_r?.()})},{capture:!0}))}function Tn(e){var t=W,n=Z;Ke(null),_t(null);try{return e()}finally{Ke(t),_t(n)}}function or(e,t,n,i=n){e.addEventListener(t,()=>Tn(n));const l=e.__on_r;l?e.__on_r=()=>{l(),i(!0)}:e.__on_r=()=>i(!0),Ea()}let vt=!1;function In(e){vt=e}let $t=!1;function xi(e){$t=e}let W=null,We=!1;function Ke(e){W=e}let Z=null;function _t(e){Z=e}let rt=null;function Pa(e){W!==null&&(rt===null?rt=[e]:rt.push(e))}let Ce=null,Re=0,Oe=null;function Ca(e){Oe=e}let $i=1,an=0,St=an;function Si(e){St=e}function ki(){return++$i}function Qt(e){var t=e.f;if(t&Ne)return!0;if(t&ge&&(e.f&=~wt),t&Ge){var n=e.deps;if(n!==null)for(var i=n.length,l=0;l<i;l++){var a=n[l];if(Qt(a)&&bi(a),a.wv>e.wv)return!0}t&Ue&&Le===null&&xe(e,we)}return!1}function Ei(e,t,n=!0){var i=e.reactions;if(i!==null&&!rt?.includes(e))for(var l=0;l<i.length;l++){var a=i[l];a.f&ge?Ei(a,t,!1):t===a&&(n?xe(a,Ne):a.f&we&&xe(a,Ge),xt(a))}}function Pi(e){var t=Ce,n=Re,i=Oe,l=W,a=rt,r=le,s=We,u=St,o=e.f;Ce=null,Re=0,Oe=null,W=o&(Ze|Lt)?null:e,rt=null,Sn(e.ctx),We=!1,St=++an,e.ac!==null&&(Tn(()=>{e.ac.abort(jt)}),e.ac=null);try{e.f|=Zn;var v=e.fn,x=v(),h=e.deps;if(Ce!==null){var w;if(Nn(e,Re),h!==null&&Re>0)for(h.length=Re+Ce.length,w=0;w<Ce.length;w++)h[Re+w]=Ce[w];else e.deps=h=Ce;if(vt&&Mn()&&e.f&Ue)for(w=Re;w<h.length;w++)(h[w].reactions??=[]).push(e)}else h!==null&&Re<h.length&&(Nn(e,Re),h.length=Re);if(Zt()&&Oe!==null&&!We&&h!==null&&!(e.f&(ge|Ge|Ne)))for(w=0;w<Oe.length;w++)Ei(Oe[w],e);return l!==null&&l!==e&&(an++,Oe!==null&&(i===null?i=Oe:i.push(...Oe))),e.f&at&&(e.f^=at),x}catch(_){return _a(_)}finally{e.f^=Zn,Ce=t,Re=n,Oe=i,W=l,rt=a,Sn(r),We=s,St=u}}function Aa(e,t){let n=t.reactions;if(n!==null){var i=Il.call(n,e);if(i!==-1){var l=n.length-1;l===0?n=t.reactions=null:(n[i]=n[l],n.pop())}}n===null&&t.f&ge&&(Ce===null||!Ce.includes(t))&&(xe(t,Ge),t.f&Ue&&(t.f^=Ue,t.f&=~wt),hi(t),Nn(t,0))}function Nn(e,t){var n=e.deps;if(n!==null)for(var i=t;i<n.length;i++)Aa(e,n[i])}function Ut(e){var t=e.f;if(!(t&et)){xe(e,we);var n=Z,i=vt;Z=e,vt=!0;try{t&(Xe|Zr)?Ra(e):Di(e),Mi(e);var l=Pi(e);e.teardown=typeof l=="function"?l:null,e.wv=$i;var a;Yn&&Gl&&e.f&Ne&&e.deps}finally{vt=i,Z=n}}}async function Ta(){await Promise.resolve(),ma()}function $(e){var t=e.f,n=(t&ge)!==0;if(Ht?.add(e),W!==null&&!We){var i=Z!==null&&(Z.f&et)!==0;if(!i&&!rt?.includes(e)){var l=W.deps;if(W.f&Zn)e.rv<an&&(e.rv=an,Ce===null&&l!==null&&l[Re]===e?Re++:Ce===null?Ce=[e]:Ce.includes(e)||Ce.push(e));else{(W.deps??=[]).push(e);var a=e.reactions;a===null?e.reactions=[W]:a.includes(W)||a.push(W)}}}if($t){if(dt.has(e))return dt.get(e);if(n){var r=e,s=r.v;return(!(r.f&we)&&r.reactions!==null||Ai(r))&&(s=ir(r)),dt.set(r,s),s}}else n&&(!Le?.has(e)||z?.is_fork&&!Mn())&&(r=e,Qt(r)&&bi(r),vt&&Mn()&&!(r.f&Ue)&&Ci(r));if(Le?.has(e))return Le.get(e);if(e.f&at)throw e.v;return e.v}function Ci(e){if(e.deps!==null){e.f^=Ue;for(const t of e.deps)(t.reactions??=[]).push(e),t.f&ge&&!(t.f&Ue)&&Ci(t)}}function Ai(e){if(e.v===ye)return!0;if(e.deps===null)return!1;for(const t of e.deps)if(dt.has(t)||t.f&ge&&Ai(t))return!0;return!1}function d(e){var t=We;try{return We=!0,e()}finally{We=t}}const Ia=-7169;function xe(e,t){e.f=e.f&Ia|t}function M(e){if(!(typeof e!="object"||!e||e instanceof EventTarget)){if(tt in e)sr(e);else if(!Array.isArray(e))for(let t in e){const n=e[t];typeof n=="object"&&n&&tt in n&&sr(n)}}}function sr(e,t=new Set){if(typeof e=="object"&&e!==null&&!(e instanceof EventTarget)&&!t.has(e)){t.add(e),e instanceof Date&&e.getTime();for(let i in e)try{sr(e[i],t)}catch{}const n=zn(e);if(n!==Object.prototype&&n!==Array.prototype&&n!==Map.prototype&&n!==Set.prototype&&n!==Date.prototype){const i=Jr(n);for(let l in i){const a=i[l].get;if(a)try{a.call(e)}catch{}}}}}function Ti(e){Z===null&&(W===null&&Ol(),ql()),$t&&jl()}function Na(e,t){var n=t.last;n===null?t.last=t.first=e:(n.next=e,e.prev=n,t.last=e)}function Je(e,t,n){var i=Z;i!==null&&i.f&De&&(e|=De);var l={ctx:le,deps:null,nodes_start:null,nodes_end:null,f:e|Ne|Ue,first:null,fn:t,last:null,next:null,parent:i,b:i&&i.b,prev:null,teardown:null,transitions:null,wv:0,ac:null};if(n)try{Ut(l),l.f|=Xn}catch(s){throw Ve(l),s}else t!==null&&xt(l);var a=l;if(n&&a.deps===null&&a.teardown===null&&a.nodes_start===null&&a.first===a.last&&!(a.f&$n)&&(a=a.first,e&Xe&&e&gt&&a!==null&&(a.f|=gt)),a!==null&&(a.parent=i,i!==null&&Na(a,i),W!==null&&W.f&ge&&!(e&Lt))){var r=W;(r.effects??=[]).push(a)}return l}function Mn(){return W!==null&&!We}function Bt(e){const t=Je(xn,null,!1);return xe(t,we),t.teardown=e,t}function ur(e){Ti();var t=Z.f,n=!W&&(t&Ze)!==0&&(t&Xn)===0;if(n){var i=le;(i.e??=[]).push(e)}else return Ii(e)}function Ii(e){return Je(Kn|ni,e,!1)}function Ma(e){return Ti(),Je(xn|ni,e,!0)}function on(e){return Je(Kn,e,!1)}function Ae(e,t){var n=le,i={effect:null,ran:!1,deps:e};n.l.$.push(i),i.effect=sn(()=>{e(),!i.ran&&(i.ran=!0,d(t))})}function mt(){var e=le;sn(()=>{for(var t of e.l.$){t.deps();var n=t.effect;n.f&we&&xe(n,Ge),Qt(n)&&Ut(n),t.ran=!1}})}function Da(e){return Je(er|$n,e,!0)}function sn(e,t=0){return Je(xn|t,e,!0)}function ae(e,t=[],n=[],i=[]){pi(i,t,n,l=>{Je(xn,()=>e(...l.map($)),!0)})}function Dn(e,t=0){var n=Je(Xe|t,e,!0);return n}function Ni(e,t=0){var n=Je(Zr|t,e,!0);return n}function kt(e){return Je(Ze|$n,e,!0)}function Mi(e){var t=e.teardown;if(t!==null){const n=$t,i=W;xi(!0),Ke(null);try{t.call(null)}finally{xi(n),Ke(i)}}}function Di(e,t=!1){var n=e.first;for(e.first=e.last=null;n!==null;){const l=n.ac;l!==null&&Tn(()=>{l.abort(jt)});var i=n.next;n.f&Lt?n.parent=null:Ve(n,t),n=i}}function Ra(e){for(var t=e.first;t!==null;){var n=t.next;t.f&Ze||Ve(t),t=n}}function Ve(e,t=!0){var n=!1;(t||e.f&ti)&&e.nodes_start!==null&&e.nodes_end!==null&&(Ri(e.nodes_start,e.nodes_end),n=!0),Di(e,t&&!n),Nn(e,0),xe(e,et);var i=e.transitions;if(i!==null)for(const a of i)a.stop();Mi(e);var l=e.parent;l!==null&&l.first!==null&&Fi(e),e.next=e.prev=e.teardown=e.ctx=e.deps=e.fn=e.nodes_start=e.nodes_end=e.ac=null}function Ri(e,t){for(;e!==null;){var n=e===t?null:tn(e);e.remove(),e=n}}function Fi(e){var t=e.parent,n=e.prev,i=e.next;n!==null&&(n.next=i),i!==null&&(i.prev=n),t!==null&&(t.first===e&&(t.first=i),t.last===e&&(t.last=n))}function Li(e,t,n=!0){var i=[];dr(e,i,!0),ji(i,()=>{n&&Ve(e),t&&t()})}function ji(e,t){var n=e.length;if(n>0){var i=()=>--n||t();for(var l of e)l.out(i)}else t()}function dr(e,t,n){if(!(e.f&De)){if(e.f^=De,e.transitions!==null)for(const r of e.transitions)(r.is_global||n)&&t.push(r);for(var i=e.first;i!==null;){var l=i.next,a=(i.f&gt)!==0||(i.f&Ze)!==0&&(e.f&Xe)!==0;dr(i,t,a?n:!1),i=l}}}function fr(e){qi(e,!0)}function qi(e,t){if(e.f&De){e.f^=De,e.f&we||(xe(e,Ne),xt(e));for(var n=e.first;n!==null;){var i=n.next,l=(n.f&gt)!==0||(n.f&Ze)!==0;qi(n,l?t:!1),n=i}if(e.transitions!==null)for(const a of e.transitions)(a.is_global||t)&&a.in()}}function Fa(e,t){for(var n=e.nodes_start,i=e.nodes_end;n!==null;){var l=n===i?null:tn(n);t.append(n),n=l}}function La(e){return e.endsWith("capture")&&e!=="gotpointercapture"&&e!=="lostpointercapture"}const ja=["beforeinput","click","change","dblclick","contextmenu","focusin","focusout","input","keydown","keyup","mousedown","mousemove","mouseout","mouseover","mouseup","pointerdown","pointermove","pointerout","pointerover","pointerup","touchend","touchmove","touchstart"];function qa(e){return ja.includes(e)}const Oa={formnovalidate:"formNoValidate",ismap:"isMap",nomodule:"noModule",playsinline:"playsInline",readonly:"readOnly",defaultvalue:"defaultValue",defaultchecked:"defaultChecked",srcobject:"srcObject",novalidate:"noValidate",allowfullscreen:"allowFullscreen",disablepictureinpicture:"disablePictureInPicture",disableremoteplayback:"disableRemotePlayback"};function Va(e){return e=e.toLowerCase(),Oa[e]??e}const Ha=new Set,Qa=new Set;function Oi(e,t,n,i={}){function l(a){if(i.capture||Ba.call(t,a),!a.cancelBubble)return Tn(()=>n?.call(this,a))}return e.startsWith("pointer")||e.startsWith("touch")||e==="wheel"?en(()=>{t.addEventListener(e,l,i)}):t.addEventListener(e,l,i),l}function oe(e,t,n,i,l){var a={capture:i,passive:l},r=Oi(e,t,n,a);(t===document.body||t===window||t===document||t instanceof HTMLMediaElement)&&Bt(()=>{t.removeEventListener(e,r,a)})}function Ua(e){for(var t=0;t<e.length;t++)Ha.add(e[t]);for(var n of Qa)n(e)}let Vi=null;function Ba(e){var t=this,n=t.ownerDocument,i=e.type,l=e.composedPath?.()||[],a=l[0]||e.target;Vi=e;var r=0,s=Vi===e&&e.__root;if(s){var u=l.indexOf(s);if(u!==-1&&(t===document||t===window)){e.__root=t;return}var o=l.indexOf(t);if(o===-1)return;u<=o&&(r=u)}if(a=l[r]||e.target,a!==t){Kr(e,"currentTarget",{configurable:!0,get(){return a||n}});var v=W,x=Z;Ke(null),_t(null);try{for(var h,w=[];a!==null;){var _=a.assignedSlot||a.parentNode||a.host||null;try{var S=a["__"+i];S!=null&&(!a.disabled||e.target===a)&&S.call(a,e)}catch(c){h?w.push(c):h=c}if(e.cancelBubble||_===t||_===null)break;a=_}if(h){for(let c of w)queueMicrotask(()=>{throw c});throw h}}finally{e.__root=t,delete e.currentTarget,Ke(v),_t(x)}}}function cr(e){var t=document.createElement("template");return t.innerHTML=e.replaceAll("<!>","<!---->"),t.content}function Et(e,t){var n=Z;n.nodes_start===null&&(n.nodes_start=e,n.nodes_end=t)}function P(e,t){var n=(t&na)!==0,i=(t&ra)!==0,l,a=!e.startsWith("<!>");return()=>{l===void 0&&(l=cr(a?e:"<!>"+e),n||(l=ze(l)));var r=i||da?document.importNode(l,!0):l.cloneNode(!0);if(n){var s=ze(r),u=r.lastChild;Et(s,u)}else Et(r,r);return r}}function Ya(e,t,n="svg"){var i=!e.startsWith("<!>"),l=`<${n}>${i?e:"<!>"+e}</${n}>`,a;return()=>{if(!a){var r=cr(l),s=ze(r);a=ze(s)}var u=a.cloneNode(!0);return Et(u,u),u}}function Hi(e,t){return Ya(e,t,"svg")}function Qi(e=""){{var t=ot(e+"");return Et(t,t),t}}function ke(){var e=document.createDocumentFragment(),t=document.createComment(""),n=ot();return e.append(t,n),Et(t,n),e}function k(e,t){e!==null&&e.before(t)}function He(e,t){var n=t==null?"":typeof t=="object"?t+"":t;n!==(e.__t??=e.nodeValue)&&(e.__t=n,e.nodeValue=n+"")}class vr{anchor;#t=new Map;#n=new Map;#e=new Map;#r=new Set;#a=!0;constructor(t,n=!0){this.anchor=t,this.#a=n}#i=()=>{var t=z;if(this.#t.has(t)){var n=this.#t.get(t),i=this.#n.get(n);if(i)fr(i),this.#r.delete(n);else{var l=this.#e.get(n);l&&(this.#n.set(n,l.effect),this.#e.delete(n),l.fragment.lastChild.remove(),this.anchor.before(l.fragment),i=l.effect)}for(const[a,r]of this.#t){if(this.#t.delete(a),a===t)break;const s=this.#e.get(r);s&&(Ve(s.effect),this.#e.delete(r))}for(const[a,r]of this.#n){if(a===n||this.#r.has(a))continue;const s=()=>{if(Array.from(this.#t.values()).includes(a)){var o=document.createDocumentFragment();Fa(r,o),o.append(ot()),this.#e.set(a,{effect:r,fragment:o})}else Ve(r);this.#r.delete(a),this.#n.delete(a)};this.#a||!i?(this.#r.add(a),Li(r,s,!1)):s()}}};#o=t=>{this.#t.delete(t);const n=Array.from(this.#t.values());for(const[i,l]of this.#e)n.includes(i)||(Ve(l.effect),this.#e.delete(i))};ensure(t,n){var i=z,l=fi();if(n&&!this.#n.has(t)&&!this.#e.has(t))if(l){var a=document.createDocumentFragment(),r=ot();a.append(r),this.#e.set(t,{effect:kt(()=>n(r)),fragment:a})}else this.#n.set(t,kt(()=>n(this.anchor)));if(this.#t.set(i,t),l){for(const[s,u]of this.#n)s===t?i.skipped_effects.delete(u):i.skipped_effects.add(u);for(const[s,u]of this.#e)s===t?i.skipped_effects.delete(u.effect):i.skipped_effects.add(u.effect);i.oncommit(this.#i),i.ondiscard(this.#o)}else this.#i()}}function he(e,t,n=!1){var i=new vr(e),l=n?gt:0;function a(r,s){i.ensure(r,s)}Dn(()=>{var r=!1;t((s,u=!0)=>{r=!0,a(u,s)}),r||a(!1,null)},l)}function un(e,t,n=!1,i=!1,l=!1){var a=e,r="";ae(()=>{var s=Z;if(r!==(r=t()??"")&&(s.nodes_start!==null&&(Ri(s.nodes_start,s.nodes_end),s.nodes_start=s.nodes_end=null),r!=="")){var u=r+"";n?u=`<svg>${u}</svg>`:i&&(u=`<math>${u}</math>`);var o=cr(u);if((n||i)&&(o=ze(o)),Et(ze(o),o.lastChild),n||i)for(;ze(o);)a.before(ze(o));else a.before(o)}})}function Rn(e,t,n,i,l){var a=t.$$slots?.[n],r=!1;a===!0&&(a=t[n==="default"?"children":n],r=!0),a===void 0||a(e,r?()=>i:i)}function Ga(e,t,n){var i=new vr(e);Dn(()=>{var l=t()??null;i.ensure(l,l&&(a=>n(a,l)))},gt)}function za(e,t,n,i,l,a){var r=null,s=e,u=new vr(s,!1);Dn(()=>{const o=t()||null;var v=o==="svg"?la:null;if(o===null){u.ensure(null,null);return}return u.ensure(o,x=>{if(o){if(r=v?document.createElementNS(v,o):document.createElement(o),Et(r,r),i){var h=r.appendChild(ot());i(r,h)}Z.nodes_end=r,x.before(r)}}),()=>{}},gt),Bt(()=>{})}function Wa(e,t,n){on(()=>{var i=d(()=>t(e,n?.())||{});if(i?.destroy)return()=>i.destroy()})}function Ka(e,t){var n=void 0,i;Ni(()=>{n!==(n=t())&&(i&&(Ve(i),i=null),n&&(i=kt(()=>{on(()=>n(e))})))})}function Ui(e){var t,n,i="";if(typeof e=="string"||typeof e=="number")i+=e;else if(typeof e=="object")if(Array.isArray(e)){var l=e.length;for(t=0;t<l;t++)e[t]&&(n=Ui(e[t]))&&(i&&(i+=" "),i+=n)}else for(n in e)e[n]&&(i&&(i+=" "),i+=n);return i}function Ja(){for(var e,t,n=0,i="",l=arguments.length;n<l;n++)(e=arguments[n])&&(t=Ui(e))&&(i&&(i+=" "),i+=t);return i}function Bi(e){return typeof e=="object"?Ja(e):e??""}const Yi=[...` 	
-\r\f\xA0\v\uFEFF`];function Xa(e,t,n){var i=e==null?"":""+e;if(n){for(var l in n)if(n[l])i=i?i+" "+l:l;else if(i.length)for(var a=l.length,r=0;(r=i.indexOf(l,r))>=0;){var s=r+a;(r===0||Yi.includes(i[r-1]))&&(s===i.length||Yi.includes(i[s]))?i=(r===0?"":i.substring(0,r))+i.substring(s+1):r=s}}return i===""?null:i}function Gi(e,t=!1){var n=t?" !important;":";",i="";for(var l in e){var a=e[l];a!=null&&a!==""&&(i+=" "+l+": "+a+n)}return i}function _r(e){return e[0]!=="-"||e[1]!=="-"?e.toLowerCase():e}function Za(e,t){if(t){var n="",i,l;if(Array.isArray(t)?(i=t[0],l=t[1]):i=t,e){e=String(e).replaceAll(/\s*\/\*.*?\*\/\s*/g,"").trim();var a=!1,r=0,s=!1,u=[];i&&u.push(...Object.keys(i).map(_r)),l&&u.push(...Object.keys(l).map(_r));var o=0,v=-1;const S=e.length;for(var x=0;x<S;x++){var h=e[x];if(s?h==="/"&&e[x-1]==="*"&&(s=!1):a?a===h&&(a=!1):h==="/"&&e[x+1]==="*"?s=!0:h==='"'||h==="'"?a=h:h==="("?r++:h===")"&&r--,!s&&a===!1&&r===0){if(h===":"&&v===-1)v=x;else if(h===";"||x===S-1){if(v!==-1){var w=_r(e.substring(o,v).trim());if(!u.includes(w)){h!==";"&&x++;var _=e.substring(o,x).trim();n+=" "+_+";"}}o=x+1,v=-1}}}}return i&&(n+=Gi(i)),l&&(n+=Gi(l,!0)),n=n.trim(),n===""?null:n}return e==null?null:String(e)}function zi(e,t,n,i,l,a){var r=e.__className;if(r!==n||r===void 0){var s=Xa(n,i,a);s==null?e.removeAttribute("class"):t?e.className=s:e.setAttribute("class",s),e.__className=n}else if(a&&l!==a)for(var u in a){var o=!!a[u];(l==null||o!==!!l[u])&&e.classList.toggle(u,o)}return a}function mr(e,t={},n,i){for(var l in n){var a=n[l];t[l]!==a&&(n[l]==null?e.style.removeProperty(l):e.style.setProperty(l,a,i))}}function Wi(e,t,n,i){var l=e.__style;if(l!==t){var a=Za(t,i);a==null?e.removeAttribute("style"):e.style.cssText=a,e.__style=t}else i&&(Array.isArray(i)?(mr(e,n?.[0],i[0]),mr(e,n?.[1],i[1],"important")):mr(e,n,i));return i}function Fn(e,t,n=!1){if(e.multiple){if(t==null)return;if(!Gn(t))return sa();for(var i of e.options)i.selected=t.includes(fn(i));return}for(i of e.options){var l=fn(i);if(ua(l,t)){i.selected=!0;return}}(!n||t!==void 0)&&(e.selectedIndex=-1)}function Ki(e){var t=new MutationObserver(()=>{Fn(e,e.__value)});t.observe(e,{childList:!0,subtree:!0,attributes:!0,attributeFilter:["value"]}),Bt(()=>{t.disconnect()})}function dn(e,t,n=t){var i=new WeakSet,l=!0;or(e,"change",a=>{var r=a?"[selected]":":checked",s;if(e.multiple)s=[].map.call(e.querySelectorAll(r),fn);else{var u=e.querySelector(r)??e.querySelector("option:not([disabled])");s=u&&fn(u)}n(s),z!==null&&i.add(z)}),on(()=>{var a=t();if(e===document.activeElement){var r=nn??z;if(i.has(r))return}if(Fn(e,a,l),l&&a===void 0){var s=e.querySelector(":checked");s!==null&&(a=fn(s),n(a))}e.__value=a,l=!1}),Ki(e)}function fn(e){return"__value"in e?e.__value:e.value}const Pt=Symbol("class"),cn=Symbol("style"),Ji=Symbol("is custom element"),Xi=Symbol("is html");function pt(e,t){var n=jn(e);n.value===(n.value=t??void 0)||e.value===t&&(t!==0||e.nodeName!=="PROGRESS")||(e.value=t??"")}function Ln(e,t){var n=jn(e);n.checked!==(n.checked=t??void 0)&&(e.checked=t)}function eo(e,t){t?e.hasAttribute("selected")||e.setAttribute("selected",""):e.removeAttribute("selected")}function Ee(e,t,n,i){var l=jn(e);l[t]!==(l[t]=n)&&(t==="loading"&&(e[Fl]=n),n==null?e.removeAttribute(t):typeof n!="string"&&el(e).includes(t)?e[t]=n:e.setAttribute(t,n))}function Ct(e,t,n){e.setAttributeNS("http://www.w3.org/1999/xlink",t,n)}function to(e,t,n,i,l=!1,a=!1){var r=jn(e),s=r[Ji],u=!r[Xi],o=t||{},v=e.tagName==="OPTION";for(var x in t)x in n||(n[x]=null);n.class?n.class=Bi(n.class):n[Pt]&&(n.class=null),n[cn]&&(n.style??=null);var h=el(e);for(const b in n){let E=n[b];if(v&&b==="value"&&E==null){e.value=e.__value="",o[b]=E;continue}if(b==="class"){var w=e.namespaceURI==="http://www.w3.org/1999/xhtml";zi(e,w,E,i,t?.[Pt],n[Pt]),o[b]=E,o[Pt]=n[Pt];continue}if(b==="style"){Wi(e,E,t?.[cn],n[cn]),o[b]=E,o[cn]=n[cn];continue}var _=o[b];if(!(E===_&&!(E===void 0&&e.hasAttribute(b)))){o[b]=E;var S=b[0]+b[1];if(S!=="$$")if(S==="on"){const A={},D="$$"+b;let R=b.slice(2);var c=qa(R);if(La(R)&&(R=R.slice(0,-7),A.capture=!0),!c&&_){if(E!=null)continue;e.removeEventListener(R,o[D],A),o[D]=null}if(E!=null)if(c)e[`__${R}`]=E,Ua([R]);else{let L=function(q){o[b].call(this,q)};var p=L;o[D]=Oi(R,e,L,A)}else c&&(e[`__${R}`]=void 0)}else if(b==="style")Ee(e,b,E);else if(b==="autofocus")ka(e,!!E);else if(!s&&(b==="__value"||b==="value"&&E!=null))e.value=e.__value=E;else if(b==="selected"&&v)eo(e,E);else{var f=b;u||(f=Va(f));var g=f==="defaultValue"||f==="defaultChecked";if(E==null&&!s&&!g)if(r[b]=null,f==="value"||f==="checked"){let A=e;const D=t===void 0;if(f==="value"){let R=A.defaultValue;A.removeAttribute(f),A.defaultValue=R,A.value=A.__value=D?R:null}else{let R=A.defaultChecked;A.removeAttribute(f),A.defaultChecked=R,A.checked=D?R:!1}}else e.removeAttribute(b);else g||h.includes(f)&&(s||typeof E!="string")?(e[f]=E,f in r&&(r[f]=ye)):typeof E!="function"&&Ee(e,f,E)}}}return o}function I(e,t,n=[],i=[],l=[],a,r=!1,s=!1){pi(l,n,i,u=>{var o=void 0,v={},x=e.nodeName==="SELECT",h=!1;if(Ni(()=>{var _=t(...u.map($)),S=to(e,o,_,a,r,s);h&&x&&"value"in _&&Fn(e,_.value);for(let f of Object.getOwnPropertySymbols(v))_[f]||Ve(v[f]);for(let f of Object.getOwnPropertySymbols(_)){var c=_[f];f.description===aa&&(!o||c!==o[f])&&(v[f]&&Ve(v[f]),v[f]=kt(()=>Ka(e,()=>c))),S[f]=c}o=S}),x){var w=e;on(()=>{Fn(w,o.value,!0),Ki(w)})}h=!0})}function jn(e){return e.__attributes??={[Ji]:e.nodeName.includes("-"),[Xi]:e.namespaceURI===ia}}var Zi=new Map;function el(e){var t=e.getAttribute("is")||e.nodeName,n=Zi.get(t);if(n)return n;Zi.set(t,n=[]);for(var i,l=e,a=Element.prototype;a!==l;){i=Jr(l);for(var r in i)i[r].set&&n.push(r);l=zn(l)}return n}function H(e,t,n=t){var i=new WeakSet;or(e,"input",async l=>{var a=l?e.defaultValue:e.value;if(a=pr(e)?hr(a):a,n(a),z!==null&&i.add(z),await Ta(),a!==(a=t())){var r=e.selectionStart,s=e.selectionEnd,u=e.value.length;if(e.value=a??"",s!==null){var o=e.value.length;r===s&&s===u&&o>u?(e.selectionStart=o,e.selectionEnd=o):(e.selectionStart=r,e.selectionEnd=Math.min(s,o))}}}),d(t)==null&&e.value&&(n(pr(e)?hr(e.value):e.value),z!==null&&i.add(z)),sn(()=>{var l=t();if(e===document.activeElement){var a=nn??z;if(i.has(a))return}pr(e)&&l===hr(e.value)||e.type==="date"&&!l&&!e.value||l!==e.value&&(e.value=l??"")})}function be(e,t,n=t){or(e,"change",i=>{var l=i?e.defaultChecked:e.checked;n(l)}),d(t)==null&&n(e.checked),sn(()=>{var i=t();e.checked=!!i})}function pr(e){var t=e.type;return t==="number"||t==="range"}function hr(e){return e===""?null:+e}function br(e,t,n){var i=Xt(e,t);i&&i.set&&(e[t]=n,Bt(()=>{e[t]=null}))}function tl(e,t){return e===t||e?.[tt]===t}function Yt(e={},t,n,i){return on(()=>{var l,a;return sn(()=>{l=a,a=i?.()||[],d(()=>{e!==n(...a)&&(t(e,...a),l&&tl(n(...l),e)&&t(null,...l))})}),()=>{en(()=>{a&&tl(n(...a),e)&&t(null,...a)})}}),e}function ie(e=!1){const t=le,n=t.l.u;if(!n)return;let i=()=>M(t.s);if(e){let l=0,a={};const r=An(()=>{let s=!1;const u=t.s;for(const o in u)u[o]!==a[o]&&(a[o]=u[o],s=!0);return s&&l++,l});i=()=>$(r)}n.b.length&&Ma(()=>{nl(t,i),Wn(n.b)}),ur(()=>{const l=d(()=>n.m.map(Dl));return()=>{for(const a of l)typeof a=="function"&&a()}}),n.a.length&&ur(()=>{nl(t,i),Wn(n.a)})}function nl(e,t){if(e.l.s)for(const n of e.l.s)$(n);t()}let vn=!1,gr=Symbol();function wr(e,t,n){const i=n[t]??={store:null,source:de(void 0),unsubscribe:Ft};if(i.store!==e&&!(gr in n))if(i.unsubscribe(),i.store=e??null,e==null)i.source.v=void 0,i.unsubscribe=Ft;else{var l=!0;i.unsubscribe=ll(e,a=>{l?i.source.v=a:G(i.source,a)}),l=!1}return e&&gr in n?so(e):$(i.source)}function rl(e,t){return e.set(t),t}function no(e,t){var n=e[t];n.store!==null&&rl(n.store,n.source.v)}function yr(){const e={};function t(){Bt(()=>{for(var n in e)e[n].unsubscribe();Kr(e,gr,{enumerable:!1,value:!0})})}return[e,t]}function ro(e,t,n){return e.set(n),t}function io(){vn=!0}function lo(e){var t=vn;try{return vn=!1,[e(),vn]}finally{vn=t}}function m(e,t,n,i){var l=!qt||(n&Xl)!==0,a=(n&ea)!==0,r=(n&ta)!==0,s=i,u=!0,o=()=>(u&&(u=!1,s=r?d(i):i),s),v;if(a){var x=tt in e||Rl in e;v=Xt(e,t)?.set??(x&&t in e?p=>e[t]=p:void 0)}var h,w=!1;a?[h,w]=lo(()=>e[t]):h=e[t],h===void 0&&i!==void 0&&(h=o(),v&&(l&&Ql(),v(h)));var _;if(l?_=()=>{var p=e[t];return p===void 0?o():(u=!0,p)}:_=()=>{var p=e[t];return p!==void 0&&(s=void 0),p===void 0?s:p},l&&!(n&Zl))return _;if(v){var S=e.$$legacy;return function(p,b){return arguments.length>0?((!l||!b||S||w)&&v(b?_():p),p):_()}}var c=!1,f=(n&Jl?An:_e)(()=>(c=!1,_()));a&&$(f);var g=Z;return function(p,b){if(arguments.length>0){const E=b?$(f):l&&a?Ot(p):p;return G(f,E),c=!0,s!==void 0&&(s=E),p}return $t&&c||g.f&et?f.v:$(f)}}function xr(e){le===null&&tr(),qt&&le.l!==null?il(le).m.push(e):ur(()=>{const t=d(e);if(typeof t=="function")return t})}function ao(e){le===null&&tr(),xr(()=>()=>d(e))}function _n(e){le===null&&tr(),le.l===null&&Hl(),il(le).a.push(e)}function il(e){var t=e.l;return t.u??={a:[],b:[],m:[]}}function ll(e,t,n){if(e==null)return t(void 0),Ft;const i=d(()=>e.subscribe(t,n));return i.unsubscribe?()=>i.unsubscribe():i}const Gt=[];function oo(e,t=Ft){let n=null;const i=new Set;function l(s){if(ii(e,s)&&(e=s,n)){const u=!Gt.length;for(const o of i)o[1](),Gt.push(o,e);if(u){for(let o=0;o<Gt.length;o+=2)Gt[o][0](Gt[o+1]);Gt.length=0}}}function a(s){l(s(e))}function r(s,u=Ft){const o=[s,u];return i.add(o),i.size===1&&(n=t(l,a)||Ft),s(e),()=>{i.delete(o),i.size===0&&n&&(n(),n=null)}}return{set:l,update:a,subscribe:r}}function so(e){let t;return ll(e,n=>t=n)(),t}const uo="5";typeof window<"u"&&((window.__svelte??={}).v??=new Set).add(uo),zl();var fo=P('<span class="badge badge-danger"></span>'),co=P("<label> <!></label>"),vo=P('<small class="form-text text-muted"> </small>'),_o=P("<div><!> <!> <!></div>");function F(e,t){te(t,!1);const n=de();let i=m(t,"id",8),l=m(t,"attr",8,""),a=m(t,"attrShow",8,null),r=m(t,"hint",8,""),s=m(t,"label",8,""),u=m(t,"required",8,0),o=m(t,"showHint",8,0),v=m(t,"showLabel",8,1);i()||console.error("ConetntFieldOption: 'id' attribute missing");let x=de({});Ae(()=>M(l()),()=>{G(n,l()?{attr:l()}:{})}),Ae(()=>M(a()),()=>{a()!==null&&(a()?G(x,{style:""}):G(x,{hidden:"",style:"display: none;"}))}),mt();var h=_o();I(h,()=>({id:`${i()??""}-field`,class:"form-group",...$(n),...$(x),[Pt]:{required:u()}}));var w=C(h);{var _=g=>{var p=co(),b=C(p),E=y(b);{var A=D=>{var R=fo();R.textContent=d(()=>window.trans("Required")),k(D,R)};he(E,D=>{u()&&D(A)})}ae(()=>{Ee(p,"for",i()),He(b,`${s()??""} `)}),k(g,p)};he(w,g=>{s()&&v()&&g(_)})}var S=y(w,2);Rn(S,t,"default",{});var c=y(S,2);{var f=g=>{var p=vo(),b=C(p);ae(()=>{Ee(p,"id",`${i()??""}-field-help`),He(b,r())}),k(g,p)};he(c,g=>{r()&&o()&&g(f)})}k(e,h),ne()}function zt(e){const t=e.getElementsByClassName("mt-contentfield");let n=0;for(let i=0;i<t.length;i++)n+=t[i].offsetHeight;n>=e.clientHeight||n>=400?jQuery(e).height(n+100):jQuery(e).height(392)}var mo=P("<input/>"),po=P("<input/>"),ho=P("<input/> <label></label>",1),bo=P("<select><option></option><option></option><option></option><option></option></select>"),go=P('<input/> <!> <!> <!> <!> <!> <div class="form-group-button"><button type="button" class="btn btn-default"></button></div>',1);function ce(e,t){te(t,!1);let n=m(t,"field",12),i=m(t,"id",8),l=m(t,"options",12),a=m(t,"type",8);a()||console.error('ContentFieldOptionGroup: "type" attribute is required.'),xr(()=>{const f=s();if(!f)return;const g=f.querySelectorAll("*");Array.prototype.slice.call(g).forEach(function(p){p.hasAttribute("id")&&!p.classList.contains("mt-custom-contentfield")&&p.setAttribute("id",p.getAttribute("id")+"-"+i()),p.tagName.toLowerCase()==="label"&&p.hasAttribute("for")&&p.setAttribute("for",p.getAttribute("for")+"-"+i())})});const r=()=>{const f=s();if(!f)return;let g=f.className;f.className=g.replace(/\s*show\s*/,"");const p=document.getElementsByClassName("mt-draggable__area")[0];zt(p),jQuery("a[aria-controls='field-options-"+n().id+"']").attr("aria-expanded","false")},s=()=>document.querySelector("#field-options-"+n().id);Ae(()=>M(l()),()=>{l().display||l(l().display="default",!0)}),mt(),ie();var u=go(),o=j(u);I(o,()=>({type:"hidden",ref:"id",name:"id",id:`${a()??""}-id`,class:"form-control",value:(M(n()),d(()=>n().isNew?`id:${n().id}`:n().id))}),void 0,void 0,void 0,void 0,!0);var v=y(o,2);F(v,{get id(){return`${a()??""}-label`},label:d(()=>window.trans("Label")),required:1,children:(f,g)=>{var p=mo();I(p,()=>({type:"text",ref:"label",name:"label",id:`${a()??""}-label`,class:"form-control html5-form",required:!0,"data-mt-content-field-unique":!0}),void 0,void 0,void 0,void 0,!0),H(p,()=>n().label,b=>n(n().label=b,!0)),k(f,p)},$$slots:{default:!0}});var x=y(v,2);F(x,{get id(){return`${a()??""}-description`},label:d(()=>window.trans("Description")),showHint:1,hint:d(()=>window.trans("The entered message is displayed as a input field hint.")),children:(f,g)=>{var p=po();I(p,()=>({type:"text",ref:"description",name:"description",id:`${a()??""}-description`,class:"form-control","aria-describedby":`${a()??""}-description-field-help`}),void 0,void 0,void 0,void 0,!0),H(p,()=>l().description,b=>l(l().description=b,!0)),k(f,p)},$$slots:{default:!0}});var h=y(x,2);F(h,{get id(){return`${a()??""}-required`},label:d(()=>window.trans("Is this field required?")),children:(f,g)=>{var p=ho(),b=j(p);I(b,()=>({ref:"required",type:"checkbox",class:"mt-switch form-control",id:`${a()??""}-required`,name:"required"}),void 0,void 0,void 0,void 0,!0);var E=y(b,2);E.textContent=d(()=>window.trans("Is this field required?")),ae(()=>Ee(E,"for",`${a()??""}-required`)),be(b,()=>l().required,A=>l(l().required=A,!0)),k(f,p)},$$slots:{default:!0}});var w=y(h,2);F(w,{get id(){return`${a()??""}-display`},label:d(()=>window.trans("Display Options")),required:1,showHint:1,hint:d(()=>window.trans("Choose the display options for this content field in the listing screen.")),children:(f,g)=>{var p=bo();ae(()=>{l(),qe(()=>{a()})}),I(p,()=>({ref:"display",name:"display",id:`${a()??""}-display`,class:"custom-select form-control form-select"}));var b=C(p);b.textContent=d(()=>window.trans("Force")),b.value=b.__value="force";var E=y(b);E.textContent=d(()=>window.trans("Default")),E.value=E.__value="default";var A=y(E);A.textContent=d(()=>window.trans("Optional")),A.value=A.__value="optional";var D=y(A);D.textContent=d(()=>window.trans("None")),D.value=D.__value="none",dn(p,()=>l().display,R=>l(l().display=R,!0)),k(f,p)},$$slots:{default:!0}});var _=y(w,2);Rn(_,t,"default",{});var S=y(_,2),c=C(S);c.textContent=d(()=>window.trans("Close")),oe("click",c,r),k(e,u),ne()}var wo=P('<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'),yo=P("<div><!> <!> <!></div>");function xo(e,t){te(t,!1);let n=m(t,"blogId",8,""),i=m(t,"canClose",8),l=m(t,"canRebuild",8),a=m(t,"class",8),r=m(t,"didReplace",8),s=m(t,"dynamicAll",8),u=m(t,"hidden",8),o=m(t,"id",8),v=m(t,"noLink",8),x=m(t,"rebuild",8),h=de({});Ae(()=>(M(o()),M(a()),M(i()),M(u())),()=>{G(h,{}),o()&&ct(h,$(h).id=o()),a()?ct(h,$(h).class="alert alert-"+a()):ct(h,$(h).class="alert alert-info"),i()&&ct(h,$(h)["alert-dismissible"]=""),u()&&ct(h,$(h).style="display: none;"),a().match(/\bwarning|\bdanger/)&&ct(h,$(h).role="alert")}),mt(),ie();var w=yo();I(w,()=>({...$(h)}));var _=C(w);{var S=b=>{var E=wo();k(b,E)};he(_,b=>{i()&&b(S)})}var c=y(_,2);Rn(c,t,"msg",{});var f=y(c,2);{var g=b=>{var E=ke(),A=j(E);{var D=R=>{var L=ke(),q=j(L);un(q,()=>(M(n()),M(x()),d(()=>window.trans("[_1]Publish[_2] your [_3] to see these changes take effect.",`<a href="${window.CMSScriptURI}?__mode=rebuild_confirm&blog_id=${n()}&prompt=index" class="mt-rebuild alert-link">`,"</a>",x()==="blog"?window.trans("blog(s)"):window.trans("website(s)"))))),k(R,L)};he(A,R=>{v()||R(D)})}k(b,E)},p=b=>{var E=ke(),A=j(E);{var D=R=>{var L=ke(),q=j(L);{var U=ee=>{var ue=ke(),ve=j(ue);un(ve,()=>(M(n()),d(()=>window.trans("[_1]Publish[_2] your site to see these changes take effect, even when publishing profile is dynamic publishing.",`<a href="${window.CMSScriptURI}?__mode=rebuild_confirm&blog_id=${n()}" class="mt-rebuild alert-link">`,"</a>")))),k(ee,ue)},B=ee=>{var ue=ke(),ve=j(ue);{var me=pe=>{var Y=ke(),J=j(Y);{var re=Te=>{var fe=ke(),se=j(fe);un(se,()=>(M(n()),d(()=>window.trans("[_1]Publish[_2] your site to see these changes take effect.",`<a href="${window.CMSScriptURI}?__mode=rebuild_confirm&blog_id=${n()}" class="mt-rebuild alert-link">`,"</a>")))),k(Te,fe)};he(J,Te=>{s()||Te(re)})}k(pe,Y)},Se=pe=>{var Y=ke(),J=j(Y);{var re=fe=>{var se=ke(),Ie=j(se);{var Fe=Me=>{var Pe=ke(),it=j(Pe);un(it,()=>(M(n()),d(()=>window.trans("[_1]Publish[_2] your site to see these changes take effect.",`<a href="${window.CMSScriptURI}?__mode=rebuild_confirm&blog_id=${n()}&prompt=index" class="mt-rebuild alert-link">`,"</a>")))),k(Me,Pe)};he(Ie,Me=>{s()||Me(Fe)})}k(fe,se)},Te=fe=>{var se=ke(),Ie=j(se);un(Ie,x),k(fe,se)};he(J,fe=>{x()==="index"?fe(re):fe(Te,!1)},!0)}k(pe,Y)};he(ve,pe=>{x()==="all"?pe(me):pe(Se,!1)},!0)}k(ee,ue)};he(q,ee=>{x()==="cfg_prefs"?ee(U):ee(B,!1)})}k(R,L)};he(A,R=>{l()&&R(D)},!0)}k(b,E)};he(f,b=>{r()?b(g):b(p,!1)})}k(e,w),ne()}function al(e,t){te(t,!1);let n=m(t,"blogId",8,""),i=m(t,"canClose",12),l=m(t,"class",12,"info"),a=m(t,"id",8,""),r=m(t,"hidden",8,""),s=m(t,"noLink",8,""),u=m(t,"rebuild",8,"");Ae(()=>M(l()),()=>{l()||l("info"),l(l().replace(/\balert\b/,"warning")),l(l().replace(/\berror\b/,"danger"))}),Ae(()=>(M(a()),M(i())),()=>{a()&&(i()||i()===null)&&i(1)}),mt(),ie();{let o=_e(()=>r()??""),v=_e(()=>s()??"");xo(e,{get blogId(){return n()},get canClose(){return i()},canRebuild:0,get class(){return l()},didReplace:0,dynamicAll:0,get hidden(){return $(o)},get id(){return a()},get noLink(){return $(v)},get rebuild(){return u()},$$slots:{msg:(x,h)=>{var w=ke(),_=j(w);Rn(_,t,"msg",{}),k(x,w)}}})}ne()}var $o=P('<input/><label for="content_type-multiple" class="form-label"></label>',1),So=P("<input/>"),ko=P("<input/>"),Eo=P("<option> </option>"),Po=P("<select></select>"),Co=P("<!> <!> <!> <!>",1);function Ao(e,t){te(t,!1);var n,i;m(t,"config",8);let l=m(t,"field",12);m(t,"gather",8,null);let a=m(t,"id",8),r=m(t,"options",12);const u=m(t,"optionsHtmlParams",8)().content_type.content_types;r().multiple==="0"&&r(r().multiple=0,!0),r().can_add==="0"&&r(r().can_add=0,!0),(n=r().min)!==null&&n!==void 0||r(r().min="",!0),(i=r().max)!==null&&i!==void 0||r(r().max="",!0),ie(),ce(e,{type:"content-type",get id(){return a()},get field(){return l()},set field(o){l(o)},get options(){return r()},set options(o){r(o)},children:(o,v)=>{var x=Co(),h=j(x);F(h,{id:"content_type-multiple",label:d(()=>window.trans("Allow users to select multiple values?")),children:(c,f)=>{var g=$o(),p=j(g);I(p,()=>({ref:"multiple",type:"checkbox",class:"mt-switch form-control",id:"content_type-multiple",name:"multiple"}),void 0,void 0,void 0,void 0,!0);var b=y(p);b.textContent=d(()=>window.trans("Allow users to select multiple values?")),be(p,()=>r().multiple,E=>r(r().multiple=E,!0)),k(c,g)},$$slots:{default:!0}});var w=y(h,2);{let c=_e(()=>(M(r()),d(()=>!!r().multiple)));F(w,{id:"content_type-min",label:d(()=>window.trans("Minimum number of selections")),get attrShow(){return $(c)},children:(f,g)=>{var p=So();I(p,()=>({ref:"min",type:"number",name:"min",id:"content_type-min",class:"form-control w-25",min:"0"}),void 0,void 0,void 0,void 0,!0),H(p,()=>r().min,b=>r(r().min=b,!0)),k(f,p)},$$slots:{default:!0}})}var _=y(w,2);{let c=_e(()=>(M(r()),d(()=>!!r().multiple)));F(_,{id:"content_type-max",label:d(()=>window.trans("Maximum number of selections")),get attrShow(){return $(c)},children:(f,g)=>{var p=ko();I(p,()=>({ref:"max",type:"number",name:"max",id:"content_type-max",class:"form-control w-25",min:"1"}),void 0,void 0,void 0,void 0,!0),H(p,()=>r().max,b=>r(r().max=b,!0)),k(f,p)},$$slots:{default:!0}})}var S=y(_,2);F(S,{id:"content_type-source",required:1,label:d(()=>window.trans("Source Content Type")),children:(c,f)=>{var g=ke(),p=j(g);{var b=A=>{var D=Po();ae(()=>{r(),qe(()=>{})}),I(D,()=>({ref:"source",name:"source",id:"content_type-source",class:"custom-select form-control html5-form form-select"})),ut(D,5,()=>u,st,(R,L)=>{var q=Eo(),U=C(q),B={};ae(()=>{He(U,($(L),d(()=>$(L).name))),B!==(B=($(L),d(()=>$(L).id)))&&(q.value=(q.__value=($(L),d(()=>$(L).id)))??"")}),k(R,q)}),dn(D,()=>r().source,R=>r(r().source=R,!0)),k(A,D)},E=A=>{al(A,{id:"no-content-type",class:"warning",canClose:0,$$slots:{msg:(D,R)=>{var L=Qi();L.nodeValue=d(()=>window.trans("There is no content type that can be selected. Please create a content type if you use the Content Type field type.")),k(D,L)}}})};he(p,A=>{d(()=>u.length>0)?A(b):A(E,!1)})}k(c,g)},$$slots:{default:!0}}),k(o,x)},$$slots:{default:!0},$$legacy:!0}),ne()}var To=P("<input/>"),Io=P("<input/>"),No=P("<input/>"),Mo=P("<!> <!> <!>",1);function Do(e,t){te(t,!1);var n,i,l;m(t,"config",8);let a=m(t,"field",12);m(t,"gather",8,null);let r=m(t,"id",8),s=m(t,"options",12);m(t,"optionsHtmlParams",8),(n=s().min_length)!==null&&n!==void 0||s(s().min_length=0,!0),(i=s().max_length)!==null&&i!==void 0||s(s().max_length=255,!0),(l=s().initial_value)!==null&&l!==void 0||s(s().initial_value="",!0),ie(),ce(e,{type:"single-line-text",get id(){return r()},get field(){return a()},set field(u){a(u)},get options(){return s()},set options(u){s(u)},children:(u,o)=>{var v=Mo(),x=j(v);F(x,{id:"single_line_text-min_length",label:d(()=>window.trans("Min Length")),children:(_,S)=>{var c=To();I(c,()=>({ref:"min_length",type:"number",name:"min_length",id:"single_line_text-min_length",class:"form-control w-25",min:"0"}),void 0,void 0,void 0,void 0,!0),H(c,()=>s().min_length,f=>s(s().min_length=f,!0)),k(_,c)},$$slots:{default:!0}});var h=y(x,2);F(h,{id:"single_line_text-max_length",label:d(()=>window.trans("Max Length")),children:(_,S)=>{var c=Io();I(c,()=>({ref:"max_length",type:"number",name:"max_length",id:"single_line_text-max_length",class:"form-control w-25",min:"1"}),void 0,void 0,void 0,void 0,!0),H(c,()=>s().max_length,f=>s(s().max_length=f,!0)),k(_,c)},$$slots:{default:!0}});var w=y(h,2);F(w,{id:"single_line_text-initial_value",label:d(()=>window.trans("Initial Value")),children:(_,S)=>{var c=No();I(c,()=>({ref:"initial_value",type:"text",name:"initial_value",id:"single_line_text-initial_value",class:"form-control"}),void 0,void 0,void 0,void 0,!0),H(c,()=>s().initial_value,f=>s(s().initial_value=f,!0)),k(_,c)},$$slots:{default:!0}}),k(u,v)},$$slots:{default:!0},$$legacy:!0}),ne()}var Ro=P("<textarea></textarea>"),Fo=P("<option> </option>"),Lo=P("<select></select>"),jo=P('<input/><label for="multi_line_text-full_rich_text" class="form-label"></label>',1),qo=P("<!> <!> <!>",1);function Oo(e,t){te(t,!1);var n;m(t,"config",8);let i=m(t,"field",12);m(t,"gather",8,null);let l=m(t,"id",8),a=m(t,"options",12);const s=m(t,"optionsHtmlParams",8)().multi_line_text.text_filters;i().isNew&&a(a().full_rich_text=1,!0),a().full_rich_text==="0"&&a(a().full_rich_text=0,!0),(n=a().initial_value)!==null&&n!==void 0||a(a().initial_value="",!0),ie(),ce(e,{type:"multi-line-text",get id(){return l()},get field(){return i()},set field(u){i(u)},get options(){return a()},set options(u){a(u)},children:(u,o)=>{var v=qo(),x=j(v);F(x,{id:"multi_line_text-initial_value",label:d(()=>window.trans("Initial Value")),children:(_,S)=>{var c=Ro();I(c,()=>({ref:"initial_value",name:"initial_value",id:"multi_line_text-initial_value",class:"form-control"})),H(c,()=>a().initial_value,f=>a(a().initial_value=f,!0)),k(_,c)},$$slots:{default:!0}});var h=y(x,2);F(h,{id:"multi_line_text-input_format",label:d(()=>window.trans("Input format")),children:(_,S)=>{var c=Lo();ae(()=>{a(),qe(()=>{})}),I(c,()=>({ref:"input_format",name:"input_format",id:"multi_line_text-input_format",class:"custom-select form-control form-select"})),ut(c,5,()=>s,st,(f,g)=>{var p=Fo(),b=C(p),E={};ae(()=>{He(b,($(g),d(()=>$(g).filter_label))),E!==(E=($(g),d(()=>$(g).filter_key)))&&(p.value=(p.__value=($(g),d(()=>$(g).filter_key)))??"")}),k(f,p)}),dn(c,()=>a().input_format,f=>a(a().input_format=f,!0)),k(_,c)},$$slots:{default:!0}});var w=y(h,2);F(w,{id:"multi_line_text-full_rich_text",label:d(()=>window.trans("Use all rich text decoration buttons")),children:(_,S)=>{var c=jo(),f=j(c);I(f,()=>({ref:"full_rich_text",type:"checkbox",class:"mt-switch form-control",id:"multi_line_text-full_rich_text",name:"full_rich_text"}),void 0,void 0,void 0,void 0,!0);var g=y(f);g.textContent=d(()=>window.trans("Use all rich text decoration buttons")),be(f,()=>a().full_rich_text,p=>a(a().full_rich_text=p,!0)),k(_,c)},$$slots:{default:!0}}),k(u,v)},$$slots:{default:!0},$$legacy:!0}),ne()}var Vo=P("<input/>"),Ho=P("<input/>"),Qo=P("<input/>"),Uo=P("<input/>"),Bo=P("<!> <!> <!> <!>",1);function Yo(e,t){te(t,!1);var n,i,l,a;let r=m(t,"config",8),s=m(t,"field",12);m(t,"gather",8,null);let u=m(t,"id",8),o=m(t,"options",12);m(t,"optionsHtmlParams",8),(n=o().max_value)!==null&&n!==void 0||o(o().max_value=r().NumberFieldMaxValue,!0),(i=o().min_value)!==null&&i!==void 0||o(o().min_value=r().NumberFieldMinValue,!0),(l=o().decimal_places)!==null&&l!==void 0||o(o().decimal_places=0,!0),(a=o().initial_value)!==null&&a!==void 0||o(o().initial_value="",!0),jQuery(function(){jQuery(document).on("keyup","input[id^=number-min_value-field-options-], input[id^=number-max_value-field-options-]",function(){const x=this.id.match(/[^-]+$/);if(!x)return;const w="#number-initial_value-field-options-"+x[0],_=jQuery(w);_.data("mtValidator")&&_.mtValid({focus:!1})})}),ie(),ce(e,{type:"number",get id(){return u()},get field(){return s()},set field(v){s(v)},get options(){return o()},set options(v){o(v)},children:(v,x)=>{var h=Bo(),w=j(h);F(w,{id:"number-min_value",label:d(()=>window.trans("Min Value")),children:(f,g)=>{var p=Vo();I(p,()=>({ref:"min_value",type:"number",name:"min_value",id:"number-min_value",class:"form-control html5-form w-25",min:(M(r()),d(()=>r().NumberFieldMinValue)),max:(M(r()),d(()=>r().NumberFieldMaxValue))}),void 0,void 0,void 0,void 0,!0),H(p,()=>o().min_value,b=>o(o().min_value=b,!0)),k(f,p)},$$slots:{default:!0}});var _=y(w,2);F(_,{id:"number-max_value",label:d(()=>window.trans("Max Value")),children:(f,g)=>{var p=Ho();I(p,()=>({ref:"max_value",type:"number",name:"max_value",id:"number-max_value",class:"form-control html5-form w-25",min:(M(r()),d(()=>r().NumberFieldMinValue)),max:(M(r()),d(()=>r().NumberFieldMaxValue))}),void 0,void 0,void 0,void 0,!0),H(p,()=>o().max_value,b=>o(o().max_value=b,!0)),k(f,p)},$$slots:{default:!0}});var S=y(_,2);F(S,{id:"number-decimal_places",label:d(()=>window.trans("Number of decimal places")),children:(f,g)=>{var p=Qo();I(p,()=>({ref:"decimal_places",type:"number",name:"decimal_places",id:"number-decimal_places",class:"form-control html5-form w-25",min:"0",max:(M(r()),d(()=>r().NumberFieldDecimalPlaces))}),void 0,void 0,void 0,void 0,!0),H(p,()=>o().decimal_places,b=>o(o().decimal_places=b,!0)),k(f,p)},$$slots:{default:!0}});var c=y(S,2);F(c,{id:"number-initial_value",label:d(()=>window.trans("Initial Value")),children:(f,g)=>{var p=Uo();I(p,()=>({ref:"initial_value",type:"number",name:"initial_value",id:"number-initial_value",class:"form-control html5-form w-25",min:(M(o()),d(()=>o().min_value)),max:(M(o()),d(()=>o().max_value))}),void 0,void 0,void 0,void 0,!0),H(p,()=>o().initial_value,b=>o(o().initial_value=b,!0)),k(f,p)},$$slots:{default:!0}}),k(v,h)},$$slots:{default:!0},$$legacy:!0}),ne()}var Go=P("<input/>");function zo(e,t){te(t,!1);var n;m(t,"config",8);let i=m(t,"field",12);m(t,"gather",8,null);let l=m(t,"id",8),a=m(t,"options",12);m(t,"optionsHtmlParams",8),(n=a().initial_value)!==null&&n!==void 0||a(a().initial_value="",!0),ie(),ce(e,{type:"url",get id(){return l()},get field(){return i()},set field(r){i(r)},get options(){return a()},set options(r){a(r)},children:(r,s)=>{F(r,{id:"url-initial_value",label:d(()=>window.trans("Initial Value")),children:(u,o)=>{var v=Go();I(v,()=>({ref:"initial_value",type:"text",name:"initial_value",id:"url-initial_value",class:"form-control"}),void 0,void 0,void 0,void 0,!0),H(v,()=>a().initial_value,x=>a(a().initial_value=x,!0)),k(u,v)},$$slots:{default:!0}})},$$slots:{default:!0},$$legacy:!0}),ne()}var Wo=P("<input/>"),Ko=P("<input/>"),Jo=P("<!> <!>",1);function Xo(e,t){te(t,!1);var n,i;m(t,"config",8);let l=m(t,"field",12);m(t,"gather",8,null);let a=m(t,"id",8),r=m(t,"options",12);m(t,"optionsHtmlParams",8),(n=r().initial_date)!==null&&n!==void 0||r(r().initial_date="",!0),(i=r().initial_time)!==null&&i!==void 0||r(r().initial_time="",!0),ie(),ce(e,{type:"date-and-time",get id(){return a()},get field(){return l()},set field(s){l(s)},get options(){return r()},set options(s){r(s)},children:(s,u)=>{var o=Jo(),v=j(o);F(v,{id:"date_and_time-initial-date_value",label:d(()=>window.trans("Initial Value (Date)")),children:(h,w)=>{var _=Wo();I(_,()=>({ref:"initial_date",type:"text",name:"initial_date",id:"date_and_time-initial_date",class:"form-control date-field w-25",placeholder:"YYYY-MM-DD"}),void 0,void 0,void 0,void 0,!0),H(_,()=>r().initial_date,S=>r(r().initial_date=S,!0)),k(h,_)},$$slots:{default:!0}});var x=y(v,2);F(x,{id:"date_and_time-initial-timevalue",label:d(()=>window.trans("Initial Value (Time)")),children:(h,w)=>{var _=Ko();I(_,()=>({ref:"initial_time",type:"text",name:"initial_time",id:"date_and_time-initial_time",class:"form-control time-field w-25",placeholder:"HH:mm:ss"}),void 0,void 0,void 0,void 0,!0),H(_,()=>r().initial_time,S=>r(r().initial_time=S,!0)),k(h,_)},$$slots:{default:!0}}),k(s,o)},$$slots:{default:!0},$$legacy:!0}),ne()}var Zo=P("<input/>");function es(e,t){te(t,!1);var n;m(t,"config",8);let i=m(t,"field",12);m(t,"gather",8,null);let l=m(t,"id",8),a=m(t,"options",12);m(t,"optionsHtmlParams",8),(n=a().initial_value)!==null&&n!==void 0||a(a().initial_value="",!0),ie(),ce(e,{type:"date-only",get id(){return l()},get field(){return i()},set field(r){i(r)},get options(){return a()},set options(r){a(r)},children:(r,s)=>{F(r,{id:"date_only-initial-date_value",label:d(()=>window.trans("Initial Value")),children:(u,o)=>{var v=Zo();I(v,()=>({ref:"initial_value",type:"text",name:"initial_value",id:"initial_value",class:"form-control date-field w-25",placeholder:"YYYY-MM-DD"}),void 0,void 0,void 0,void 0,!0),H(v,()=>a().initial_value,x=>a(a().initial_value=x,!0)),k(u,v)},$$slots:{default:!0}})},$$slots:{default:!0},$$legacy:!0}),ne()}var ts=P("<input/>");function ns(e,t){te(t,!1);var n;m(t,"config",8);let i=m(t,"field",12);m(t,"gather",8,null);let l=m(t,"id",8),a=m(t,"options",12);m(t,"optionsHtmlParams",8),(n=a().initial_value)!==null&&n!==void 0||a(a().initial_value="",!0),ie(),ce(e,{type:"time-only",get id(){return l()},get field(){return i()},set field(r){i(r)},get options(){return a()},set options(r){a(r)},children:(r,s)=>{F(r,{id:"time_only-initial-value",label:d(()=>window.trans("Initial Value")),children:(u,o)=>{var v=ts();I(v,()=>({ref:"initial_value",type:"text",name:"initial_value",id:"time_only-initial-value",class:"form-control time-field w-25",placeholder:"HH:mm:ss"}),void 0,void 0,void 0,void 0,!0),H(v,()=>a().initial_value,x=>a(a().initial_value=x,!0)),k(u,v)},$$slots:{default:!0}})},$$slots:{default:!0},$$legacy:!0}),ne()}const $r=e=>(e.push({checked:"",label:"",value:""}),e),Sr=(e,t)=>{if(e.splice(t,1),e.length===0)e=[{checked:"checked",label:"",value:""}];else{let n=!1;e.forEach(function(i){i.checked==="checked"&&(n=!0)}),n||(e[0].checked="checked")}return e},kr=e=>{const t=jQuery(e);if(t.data("mtValidator")){const n=t.find("input[type=text]:not(.is-invalid)");n.length>0?n.mtValidate("simple"):t.mtValid({focus:!1})}};var rs=P('<input/><label for="select_box-multiple" class="form-label"></label>',1),is=P("<input/>"),ls=P("<input/>"),as=P('<tr class="text-center align-middle"><td><input type="checkbox" class="form-check-input mt-3"/></td><td><input type="text" class="form-control required" name="label"/></td><td><input type="text" class="form-control required" name="value"/></td><td><button type="button" class="btn btn-default btn-sm"><svg role="img" class="mt-icon mt-icon--sm"><title></title><use></use></svg> </button></td></tr>'),os=P('<div class="mt-table--outline mb-3"><table><thead><tr><th scope="col"></th><th scope="col"></th><th scope="col"></th><th scope="col"></th></tr></thead><tbody></tbody></table></div> <button type="button" class="btn btn-default btn-sm"><svg role="img" class="mt-icon mt-icon--sm"><title></title><use></use></svg> </button>',1),ss=P("<!> <!> <!> <!>",1);function us(e,t){te(t,!1);var n,i;m(t,"config",8);let l=m(t,"field",12),a=m(t,"id",8),r=m(t,"options",12);m(t,"optionsHtmlParams",8),r().can_add==="0"&&r(r().can_add=0,!0),r().multiple==="0"&&r(r().multiple=0,!0),(n=r().min)!==null&&n!==void 0||r(r().min="",!0),(i=r().max)!==null&&i!==void 0||r(r().max="",!0);let s=de();r().values||r(r().values=[{checked:"",label:"",value:""}],!0),_n(()=>{kr($(s))});const u=()=>({values:r().values}),o=(c,f)=>{const p=c.target.checked,b=jQuery(c.target).parents(".mt-contentfield");(!r().multiple||r().multiple===0||r().multiple===!1)&&w(b),c.target.checked=p,r(r().values[f].checked=p?"checked":"",!0),(r().multiple||r().multiple===1)&&h(b),_()},v=c=>{const f=c.target,g=jQuery(f).parents(".mt-contentfield");r(r().multiple=f.checked,!0),!r().multiple&&g.find(".values-option-table").find('input[type="checkbox"]:checked').length>1&&w(g),_()},x=c=>{const f=jQuery(c.target).parents(".mt-contentfield");h(f)},h=c=>{const f=Number(c.find('input[name="max"]').val()),g=c.find(".values-option-table").find('input[type="checkbox"]:checked').length;if(f===0||g<f){const p=c.find(".values-option-table").find('input[type="checkbox"]');jQuery.each(p,function(b){jQuery(p[b]).prop("disabled",!1)})}else{const p=c.find(".values-option-table").find('input[type="checkbox"]:not(:checked)');jQuery.each(p,function(b){jQuery(p[b]).prop("disabled",!0)})}},w=c=>{const f=c.find(".values-option-table").find('input[type="checkbox"]');f.length>1&&jQuery.each(f,function(g){const p=jQuery(f[g]);p.prop("checked",!1),p.prop("disabled",!1)}),r().values.forEach(function(g){g.checked=""})},_=()=>{r(r())};var S={gather:u};return ie(),ce(e,{type:"select-box",get id(){return a()},get field(){return l()},set field(c){l(c)},get options(){return r()},set options(c){r(c)},children:(c,f)=>{var g=ss(),p=j(g);F(p,{id:"select_box-multiple",label:d(()=>window.trans("Allow users to select multiple values?")),children:(D,R)=>{var L=rs(),q=j(L);I(q,()=>({ref:"multiple",type:"checkbox",class:"mt-switch form-control form-check-input",id:"select_box-multiple",name:"multiple"}),void 0,void 0,void 0,void 0,!0);var U=y(q);U.textContent=d(()=>window.trans("Allow users to select multiple values?")),be(q,()=>r().multiple,B=>r(r().multiple=B,!0)),oe("click",q,v),k(D,L)},$$slots:{default:!0}});var b=y(p,2);{let D=_e(()=>(M(r()),d(()=>!!r().multiple)));F(b,{id:"select_box-min",label:d(()=>window.trans("Minimum number of selections")),get attrShow(){return $(D)},children:(R,L)=>{var q=is();I(q,()=>({ref:"min",type:"number",name:"min",id:"select_box-min",class:"form-control w-25",min:"0"}),void 0,void 0,void 0,void 0,!0),H(q,()=>r().min,U=>r(r().min=U,!0)),k(R,q)},$$slots:{default:!0}})}var E=y(b,2);{let D=_e(()=>(M(r()),d(()=>!!r().multiple)));F(E,{id:"select_box-max",label:d(()=>window.trans("Maximum number of selections")),get attrShow(){return $(D)},children:(R,L)=>{var q=ls();I(q,()=>({ref:"max",type:"number",name:"max",id:"select_box-max",class:"form-control w-25",min:"1"}),void 0,void 0,void 0,void 0,!0),H(q,()=>r().max,U=>r(r().max=U,!0)),oe("change",q,x),k(R,q)},$$slots:{default:!0}})}var A=y(E,2);F(A,{id:"select_box-values",required:1,label:d(()=>window.trans("Values")),children:(D,R)=>{var L=os(),q=j(L),U=C(q);I(U,()=>({class:"table mt-table values-option-table",ref:"table"}));var B=C(U),ee=C(B),ue=C(ee);ue.textContent=d(()=>window.trans("Selected"));var ve=y(ue);ve.textContent=d(()=>window.trans("Label"));var me=y(ve);me.textContent=d(()=>window.trans("Value"));var Se=y(B);ut(Se,5,()=>(M(r()),d(()=>r().values)),st,(fe,se,Ie)=>{var Fe=as(),Me=C(Fe),Pe=C(Me),it=y(Me),Tt=C(it),ht=y(it),It=C(ht),Nt=y(ht),Mt=C(Nt),Dt=C(Mt),Qe=C(Dt);Qe.textContent=d(()=>window.trans("delete"));var qn=y(Qe);Ct(qn,"xlink:href",`${d(()=>window.StaticURI)??""}images/sprite.svg#ic_trash`);var hn=y(Dt,1,!0);hn.nodeValue=d(()=>window.trans("delete")),ae(()=>Ln(Pe,($(se),d(()=>!!$(se).checked)))),oe("change",Pe,lt=>{o(lt,Ie)}),H(Tt,()=>$(se).label,lt=>($(se).label=lt,qe(()=>r()))),H(It,()=>$(se).value,lt=>($(se).value=lt,qe(()=>r()))),oe("click",Mt,()=>{r(r().values=Sr(r().values,Ie),!0)}),k(fe,Fe)}),Yt(U,fe=>G(s,fe),()=>$(s));var pe=y(q,2),Y=C(pe),J=C(Y);J.textContent=d(()=>window.trans("add"));var re=y(J);Ct(re,"xlink:href",`${d(()=>window.StaticURI)??""}images/sprite.svg#ic_add`);var Te=y(Y,1,!0);Te.nodeValue=d(()=>window.trans("add")),oe("click",pe,()=>{r(r().values=$r(r().values),!0)}),k(D,L)},$$slots:{default:!0}}),k(c,g)},$$slots:{default:!0},$$legacy:!0}),br(t,"gather",u),ne(S)}var ds=P('<tr class="text-center align-middle"><td><input type="radio" class="form-check-input mt-3"/></td><td><input type="text" class="form-control required" name="label"/></td><td><input type="text" class="form-control required" name="value"/></td><td><button type="button" class="btn btn-default btn-sm"><svg role="img" class="mt-icon mt-icon--sm"><title></title><use></use></svg> </button></td></tr>'),fs=P('<div class="mt-table--outline mb-3"><table><thead><tr><th scope="col"></th><th scope="col"></th><th scope="col"></th><th scope="col"></th></tr></thead><tbody></tbody></table></div> <button type="button" class="btn btn-default btn-sm"><svg role="img" class="mt-icon mt-icon--sm"><title></title><use></use></svg> </button>',1);function cs(e,t){te(t,!1),m(t,"config",8);let n=m(t,"field",12),i=m(t,"id",8),l=m(t,"options",12);m(t,"optionsHtmlParams",8);let a=de();l().values||l(l().values=[{checked:"",label:"",value:""}],!0),_n(()=>{kr($(a))});const r=()=>({values:l().values}),s=v=>{l().values.forEach(function(x){x.checked=""}),l(l().values[v].checked="checked",!0),u()},u=()=>{l(l())};var o={gather:r};return ie(),ce(e,{type:"radio-button",get id(){return i()},get field(){return n()},set field(v){n(v)},get options(){return l()},set options(v){l(v)},children:(v,x)=>{F(v,{id:"radio_button-values",required:1,label:d(()=>window.trans("Values")),children:(h,w)=>{var _=fs(),S=j(_),c=C(S);I(c,()=>({class:"table mt-table values-option-table",ref:"table"}));var f=C(c),g=C(f),p=C(g);p.textContent=d(()=>window.trans("Selected"));var b=y(p);b.textContent=d(()=>window.trans("Label"));var E=y(b);E.textContent=d(()=>window.trans("Value"));var A=y(f);ut(A,5,()=>(M(l()),d(()=>l().values)),st,(B,ee,ue)=>{var ve=ds(),me=C(ve),Se=C(me),pe=y(me),Y=C(pe),J=y(pe),re=C(J),Te=y(J),fe=C(Te),se=C(fe),Ie=C(se);Ie.textContent=d(()=>window.trans("delete"));var Fe=y(Ie);Ct(Fe,"xlink:href",`${d(()=>window.StaticURI)??""}images/sprite.svg#ic_trash`);var Me=y(se,1,!0);Me.nodeValue=d(()=>window.trans("delete")),ae(()=>{Ee(Se,"name",i()+"-initial"),Ln(Se,($(ee),d(()=>!!$(ee).checked)))}),oe("change",Se,()=>{s(ue)}),H(Y,()=>$(ee).label,Pe=>($(ee).label=Pe,qe(()=>l()))),H(re,()=>$(ee).value,Pe=>($(ee).value=Pe,qe(()=>l()))),oe("click",fe,()=>{l(l().values=Sr(l().values,ue),!0)}),k(B,ve)}),Yt(c,B=>G(a,B),()=>$(a));var D=y(S,2),R=C(D),L=C(R);L.textContent=d(()=>window.trans("add"));var q=y(L);Ct(q,"xlink:href",`${d(()=>window.StaticURI)??""}images/sprite.svg#ic_add`);var U=y(R,1,!0);U.nodeValue=d(()=>window.trans("add")),oe("click",D,()=>{l(l().values=$r(l().values),!0)}),k(h,_)},$$slots:{default:!0}})},$$slots:{default:!0},$$legacy:!0}),br(t,"gather",r),ne(o)}var vs=P("<input/>"),_s=P("<input/>"),ms=P('<tr class="text-center align-middle"><td><input type="checkbox" class="form-check-input mt-3"/></td><td><input type="text" class="form-control required" name="label"/></td><td><input type="text" class="form-control required" name="value"/></td><td><button type="button" class="btn btn-default btn-sm"><svg role="img" class="mt-icon mt-icon--sm"><title></title><use></use></svg> </button></td></tr>'),ps=P('<div class="mt-table--outline mb-3"><table><thead><tr><th scope="col"></th><th scope="col"></th><th scope="col"></th><th scope="col"></th></tr></thead><tbody></tbody></table></div> <button type="button" class="btn btn-default btn-sm"><svg role="img" class="mt-icon mt-icon--sm"><title></title><use></use></svg> </button>',1),hs=P("<!> <!> <!>",1);function bs(e,t){te(t,!1);var n,i;m(t,"config",8);let l=m(t,"field",12),a=m(t,"id",8),r=m(t,"options",12);m(t,"optionsHtmlParams",8),r().can_add==="0"&&r(r().can_add=0,!0),r().multiple==="0"&&r(r().multiple=0,!0),(n=r().min)!==null&&n!==void 0||r(r().min="",!0),(i=r().max)!==null&&i!==void 0||r(r().max="",!0);let s=de();r().values||r(r().values=[{checked:"",label:"",value:""}],!0),_n(()=>{kr($(s))});const u=()=>({values:r().values}),o=(_,S)=>{const f=_.target.checked,g=jQuery(_.target).parents(".mt-contentfield");_.target.checked=f,r(r().values[S].checked=f?"checked":"",!0),x(g),h()},v=_=>{const S=jQuery(_.target).parents(".mt-contentfield");x(S)},x=_=>{const S=Number(_.find('input[name="max"]').val()),c=_.find(".values-option-table").find('input[type="checkbox"]:checked').length;if(S===0||c<S){const f=_.find(".values-option-table").find('input[type="checkbox"]');jQuery.each(f,function(g){jQuery(f[g]).prop("disabled",!1)})}else{const f=_.find(".values-option-table").find('input[type="checkbox"]:not(:checked)');jQuery.each(f,function(g){jQuery(f[g]).prop("disabled",!0)})}},h=()=>{r(r())};var w={gather:u};return ie(),ce(e,{type:"checkboxes",get id(){return a()},get field(){return l()},set field(_){l(_)},get options(){return r()},set options(_){r(_)},children:(_,S)=>{var c=hs(),f=j(c);F(f,{id:"checkboxes-min",label:d(()=>window.trans("Minimum number of selections")),children:(b,E)=>{var A=vs();I(A,()=>({ref:"min",type:"number",name:"min",id:"checkboxes-min",class:"form-control w-25",min:"0"}),void 0,void 0,void 0,void 0,!0),H(A,()=>r().min,D=>r(r().min=D,!0)),k(b,A)},$$slots:{default:!0}});var g=y(f,2);F(g,{id:"checkboxes-max",label:d(()=>window.trans("Maximum number of selections")),children:(b,E)=>{var A=_s();I(A,()=>({ref:"max",type:"number",name:"max",id:"checkboxes-max",class:"form-control w-25",min:"1"}),void 0,void 0,void 0,void 0,!0),H(A,()=>r().max,D=>r(r().max=D,!0)),oe("change",A,v),k(b,A)},$$slots:{default:!0}});var p=y(g,2);F(p,{id:"checkboxes-values",required:1,label:d(()=>window.trans("Values")),children:(b,E)=>{var A=ps(),D=j(A),R=C(D);I(R,()=>({class:"table mt-table values-option-table",ref:"table"}));var L=C(R),q=C(L),U=C(q);U.textContent=d(()=>window.trans("Selected"));var B=y(U);B.textContent=d(()=>window.trans("Label"));var ee=y(B);ee.textContent=d(()=>window.trans("Value"));var ue=y(L);ut(ue,5,()=>(M(r()),d(()=>r().values)),st,(J,re,Te)=>{var fe=ms(),se=C(fe),Ie=C(se),Fe=y(se),Me=C(Fe),Pe=y(Fe),it=C(Pe),Tt=y(Pe),ht=C(Tt),It=C(ht),Nt=C(It);Nt.textContent=d(()=>window.trans("delete"));var Mt=y(Nt);Ct(Mt,"xlink:href",`${d(()=>window.StaticURI)??""}images/sprite.svg#ic_trash`);var Dt=y(It);Dt.nodeValue=` ${d(()=>window.trans("delete"))??""}`,ae(()=>Ln(Ie,($(re),d(()=>!!$(re).checked)))),oe("change",Ie,Qe=>{o(Qe,Te)}),H(Me,()=>$(re).label,Qe=>($(re).label=Qe,qe(()=>r()))),H(it,()=>$(re).value,Qe=>($(re).value=Qe,qe(()=>r()))),oe("click",ht,()=>{r(r().values=Sr(r().values,Te),!0)}),k(J,fe)}),Yt(R,J=>G(s,J),()=>$(s));var ve=y(D,2),me=C(ve),Se=C(me);Se.textContent=d(()=>window.trans("add"));var pe=y(Se);Ct(pe,"xlink:href",`${d(()=>window.StaticURI)??""}images/sprite.svg#ic_add`);var Y=y(me);Y.nodeValue=` ${d(()=>window.trans("add"))??""}`,oe("click",ve,()=>{r(r().values=$r(r().values),!0)}),k(b,A)},$$slots:{default:!0}}),k(_,c)},$$slots:{default:!0},$$legacy:!0}),br(t,"gather",u),ne(w)}var gs=P('<input/><label for="asset-multiple" class="form-label"></label>',1),ws=P("<input/>"),ys=P("<input/>"),xs=P('<input/><label for="asset-allow_upload" class="form-label"></label>',1),$s=P("<!> <!> <!> <!>",1);function Ss(e,t){te(t,!1);var n,i;m(t,"config",8);let l=m(t,"field",12);m(t,"gather",8,null);let a=m(t,"id",8),r=m(t,"options",12);m(t,"optionsHtmlParams",8),r().multiple==="0"&&r(r().multiple=0,!0),r().allow_upload==="0"&&r(r().allow_upload=0,!0),(n=r().min)!==null&&n!==void 0||r(r().min="",!0),(i=r().max)!==null&&i!==void 0||r(r().max="",!0),ie(),ce(e,{type:"asset",get id(){return a()},get field(){return l()},set field(s){l(s)},get options(){return r()},set options(s){r(s)},children:(s,u)=>{var o=$s(),v=j(o);F(v,{id:"asset-multiple",label:d(()=>window.trans("Allow users to select multiple assets?")),children:(_,S)=>{var c=gs(),f=j(c);I(f,()=>({ref:"multiple",type:"checkbox",class:"mt-switch form-control",id:"asset-multiple",name:"multiple"}),void 0,void 0,void 0,void 0,!0);var g=y(f);g.textContent=d(()=>window.trans("Allow users to select multiple assets?")),be(f,()=>r().multiple,p=>r(r().multiple=p,!0)),k(_,c)},$$slots:{default:!0}});var x=y(v,2);F(x,{id:"asset-min",label:d(()=>window.trans("Minimum number of selections")),get attrShow(){return M(r()),d(()=>r().multiple)},children:(_,S)=>{var c=ws();I(c,()=>({ref:"min",type:"number",name:"min",id:"asset-min",class:"form-control w-25",min:"0"}),void 0,void 0,void 0,void 0,!0),H(c,()=>r().min,f=>r(r().min=f,!0)),k(_,c)},$$slots:{default:!0}});var h=y(x,2);F(h,{id:"asset-max",label:d(()=>window.trans("Maximum number of selections")),get attrShow(){return M(r()),d(()=>r().multiple)},children:(_,S)=>{var c=ys();I(c,()=>({ref:"max",type:"number",name:"max",id:"asset-max",class:"form-control w-25",min:"1"}),void 0,void 0,void 0,void 0,!0),H(c,()=>r().max,f=>r(r().max=f,!0)),k(_,c)},$$slots:{default:!0}});var w=y(h,2);F(w,{id:"asset-allow_upload",label:d(()=>window.trans("Allow users to upload a new asset?")),children:(_,S)=>{var c=xs(),f=j(c);I(f,()=>({ref:"allow_upload",type:"checkbox",class:"mt-switch form-control",id:"asset-allow_upload",name:"allow_upload"}),void 0,void 0,void 0,void 0,!0);var g=y(f);g.textContent=d(()=>window.trans("Allow users to upload a new asset?")),be(f,()=>r().allow_upload,p=>r(r().allow_upload=p,!0)),k(_,c)},$$slots:{default:!0}}),k(s,o)},$$slots:{default:!0},$$legacy:!0}),ne()}var ks=P('<input/><label for="asset_audio-multiple" class="form-label"></label>',1),Es=P("<input/>"),Ps=P("<input/>"),Cs=P('<input/><label for="asset_audio-allow_upload" class="form-label"></label>',1),As=P("<!> <!> <!> <!>",1);function Ts(e,t){te(t,!1);var n,i;m(t,"config",8);let l=m(t,"field",12);m(t,"gather",8,null);let a=m(t,"id",8),r=m(t,"options",12);m(t,"optionsHtmlParams",8),r().multiple==="0"&&r(r().multiple=0,!0),r().allow_upload==="0"&&r(r().allow_upload=0,!0),(n=r().min)!==null&&n!==void 0||r(r().min="",!0),(i=r().max)!==null&&i!==void 0||r(r().max="",!0),ie(),ce(e,{type:"asset-audio",get id(){return a()},get field(){return l()},set field(s){l(s)},get options(){return r()},set options(s){r(s)},children:(s,u)=>{var o=As(),v=j(o);F(v,{id:"asset_audio-multiple",label:d(()=>window.trans("Allow users to select multiple assets?")),children:(_,S)=>{var c=ks(),f=j(c);I(f,()=>({ref:"multiple",type:"checkbox",class:"mt-switch form-control",id:"asset_audio-multiple",name:"multiple"}),void 0,void 0,void 0,void 0,!0);var g=y(f);g.textContent=d(()=>window.trans("Allow users to select multiple assets?")),be(f,()=>r().multiple,p=>r(r().multiple=p,!0)),k(_,c)},$$slots:{default:!0}});var x=y(v,2);{let _=_e(()=>(M(r()),d(()=>!!r().multiple)));F(x,{id:"asset_audio-min",label:d(()=>window.trans("Minimum number of selections")),get attrShow(){return $(_)},children:(S,c)=>{var f=Es();I(f,()=>({ref:"min",type:"number",name:"min",id:"asset_audio-min",class:"form-control w-25",min:"0"}),void 0,void 0,void 0,void 0,!0),H(f,()=>r().min,g=>r(r().min=g,!0)),k(S,f)},$$slots:{default:!0}})}var h=y(x,2);{let _=_e(()=>(M(r()),d(()=>!!r().multiple)));F(h,{id:"asset_audio-max",label:d(()=>window.trans("Maximum number of selections")),get attrShow(){return $(_)},children:(S,c)=>{var f=Ps();I(f,()=>({ref:"max",type:"number",name:"max",id:"asset_audio-max",class:"form-control w-25",min:"1"}),void 0,void 0,void 0,void 0,!0),H(f,()=>r().max,g=>r(r().max=g,!0)),k(S,f)},$$slots:{default:!0}})}var w=y(h,2);F(w,{id:"asset_audio-allow_upload",label:d(()=>window.trans("Allow users to upload a new audio asset?")),children:(_,S)=>{var c=Cs(),f=j(c);I(f,()=>({ref:"allow_upload",type:"checkbox",class:"mt-switch form-control",id:"asset_audio-allow_upload",name:"allow_upload"}),void 0,void 0,void 0,void 0,!0);var g=y(f);g.textContent=d(()=>window.trans("Allow users to upload a new audio asset?")),be(f,()=>r().allow_upload,p=>r(r().allow_upload=p,!0)),k(_,c)},$$slots:{default:!0}}),k(s,o)},$$slots:{default:!0},$$legacy:!0}),ne()}var Is=P('<input/><label for="asset_video-multiple" class="form-label"></label>',1),Ns=P("<input/>"),Ms=P("<input/>"),Ds=P('<input/><label for="asset_video-allow_upload" class="form-label"></label>',1),Rs=P("<!> <!> <!> <!>",1);function Fs(e,t){te(t,!1);var n,i;m(t,"config",8);let l=m(t,"field",12);m(t,"gather",8,null);let a=m(t,"id",8),r=m(t,"options",12);m(t,"optionsHtmlParams",8),r().multiple==="0"&&r(r().multiple=0,!0),r().allow_upload==="0"&&r(r().allow_upload=0,!0),(n=r().min)!==null&&n!==void 0||r(r().min="",!0),(i=r().max)!==null&&i!==void 0||r(r().max="",!0),ie(),ce(e,{type:"asset-video",get id(){return a()},get field(){return l()},set field(s){l(s)},get options(){return r()},set options(s){r(s)},children:(s,u)=>{var o=Rs(),v=j(o);F(v,{id:"asset_video-multiple",label:d(()=>window.trans("Allow users to select multiple video assets?")),children:(_,S)=>{var c=Is(),f=j(c);I(f,()=>({ref:"multiple",type:"checkbox",class:"mt-switch form-control",id:"asset_video-multiple",name:"multiple"}),void 0,void 0,void 0,void 0,!0);var g=y(f);g.textContent=d(()=>window.trans("Allow users to select multiple video assets?")),be(f,()=>r().multiple,p=>r(r().multiple=p,!0)),k(_,c)},$$slots:{default:!0}});var x=y(v,2);{let _=_e(()=>(M(r()),d(()=>!!r().multiple)));F(x,{id:"asset_video-min",label:d(()=>window.trans("Minimum number of selections")),get attrShow(){return $(_)},children:(S,c)=>{var f=Ns();I(f,()=>({ref:"min",type:"number",name:"min",id:"asset_video-min",class:"form-control w-25",min:"0"}),void 0,void 0,void 0,void 0,!0),H(f,()=>r().min,g=>r(r().min=g,!0)),k(S,f)},$$slots:{default:!0}})}var h=y(x,2);{let _=_e(()=>(M(r()),d(()=>!!r().multiple)));F(h,{id:"asset_video-max",label:d(()=>window.trans("Maximum number of selections")),get attrShow(){return $(_)},children:(S,c)=>{var f=Ms();I(f,()=>({ref:"max",type:"number",name:"max",id:"asset_video-max",class:"form-control w-25",min:"1"}),void 0,void 0,void 0,void 0,!0),H(f,()=>r().max,g=>r(r().max=g,!0)),k(S,f)},$$slots:{default:!0}})}var w=y(h,2);F(w,{id:"asset_video-allow_upload",label:d(()=>window.trans("Allow users to upload a new video asset?")),children:(_,S)=>{var c=Ds(),f=j(c);I(f,()=>({ref:"allow_upload",type:"checkbox",class:"mt-switch form-control",id:"asset_video-allow_upload",name:"allow_upload"}),void 0,void 0,void 0,void 0,!0);var g=y(f);g.textContent=d(()=>window.trans("Allow users to upload a new video asset?")),be(f,()=>r().allow_upload,p=>r(r().allow_upload=p,!0)),k(_,c)},$$slots:{default:!0}}),k(s,o)},$$slots:{default:!0},$$legacy:!0}),ne()}var Ls=P('<input/><label for="asset_image-multiple" class="form-label"></label>',1),js=P("<input/>"),qs=P("<input/>"),Os=P('<input/><label for="asset_image-allow_upload" class="form-label"></label>',1),Vs=P("<input/>"),Hs=P("<input/>"),Qs=P("<!> <!> <!> <!> <!> <!>",1);function Us(e,t){te(t,!1);var n,i,l,a;m(t,"config",8);let r=m(t,"field",12);m(t,"gather",8,null);let s=m(t,"id",8),u=m(t,"options",12);m(t,"optionsHtmlParams",8),u().multiple==="0"&&u(u().multiple=0,!0),u().allow_upload==="0"&&u(u().allow_upload=0,!0),(n=u().min)!==null&&n!==void 0||u(u().min="",!0),(i=u().max)!==null&&i!==void 0||u(u().max="",!0),(l=u().preview_width)!==null&&l!==void 0||u(u().preview_width=80,!0),(a=u().preivew_height)!==null&&a!==void 0||u(u().preivew_height=80,!0),ie(),ce(e,{type:"asset-image",get id(){return s()},get field(){return r()},set field(o){r(o)},get options(){return u()},set options(o){u(o)},children:(o,v)=>{var x=Qs(),h=j(x);F(h,{id:"asset_image-multiple",label:d(()=>window.trans("Allow users to select multiple image assets?")),children:(g,p)=>{var b=Ls(),E=j(b);I(E,()=>({ref:"multiple",type:"checkbox",class:"mt-switch form-control",id:"asset_image-multiple",name:"multiple"}),void 0,void 0,void 0,void 0,!0);var A=y(E);A.textContent=d(()=>window.trans("Allow users to select multiple image assets?")),be(E,()=>u().multiple,D=>u(u().multiple=D,!0)),k(g,b)},$$slots:{default:!0}});var w=y(h,2);{let g=_e(()=>(M(u()),d(()=>!!u().multiple)));F(w,{id:"asset_image-min",label:d(()=>window.trans("Minimum number of selections")),get attrShow(){return $(g)},children:(p,b)=>{var E=js();I(E,()=>({ref:"min",type:"number",name:"min",id:"asset_image-min",class:"form-control w-25",min:"0"}),void 0,void 0,void 0,void 0,!0),H(E,()=>u().min,A=>u(u().min=A,!0)),k(p,E)},$$slots:{default:!0}})}var _=y(w,2);{let g=_e(()=>(M(u()),d(()=>!!u().multiple)));F(_,{id:"asset_image-max",label:d(()=>window.trans("Maximum number of selections")),get attrShow(){return $(g)},children:(p,b)=>{var E=qs();I(E,()=>({ref:"max",type:"number",name:"max",id:"asset_image-max",class:"form-control w-25",min:"1"}),void 0,void 0,void 0,void 0,!0),H(E,()=>u().max,A=>u(u().max=A,!0)),k(p,E)},$$slots:{default:!0}})}var S=y(_,2);F(S,{id:"asset_image-allow_upload",label:d(()=>window.trans("Allow users to upload a new image asset?")),children:(g,p)=>{var b=Os(),E=j(b);I(E,()=>({ref:"allow_upload",type:"checkbox",class:"mt-switch form-control",id:"asset_image-allow_upload",name:"allow_upload"}),void 0,void 0,void 0,void 0,!0);var A=y(E);A.textContent=d(()=>window.trans("Allow users to upload a new image asset?")),be(E,()=>u().allow_upload,D=>u(u().allow_upload=D,!0)),k(g,b)},$$slots:{default:!0}});var c=y(S,2);F(c,{id:"asset_image-preview_width",label:d(()=>window.trans("Thumbnail width")),children:(g,p)=>{var b=Vs();I(b,()=>({ref:"preview_width",type:"number",class:"form-control w-25",id:"asset_image-preview_width",name:"preview_width"}),void 0,void 0,void 0,void 0,!0),H(b,()=>u().preview_width,E=>u(u().preview_width=E,!0)),k(g,b)},$$slots:{default:!0}});var f=y(c,2);F(f,{id:"asset_image-preview_height",label:d(()=>window.trans("Thumbnail height")),children:(g,p)=>{var b=Hs();I(b,()=>({ref:"preview_height",type:"number",class:"form-control w-25",id:"asset_image-preview_height",name:"preview_height"}),void 0,void 0,void 0,void 0,!0),H(b,()=>u().preview_height,E=>u(u().preview_height=E,!0)),k(g,b)},$$slots:{default:!0}}),k(o,x)},$$slots:{default:!0},$$legacy:!0}),ne()}var Bs=P("<textarea></textarea>");function Ys(e,t){te(t,!1);var n;m(t,"config",8);let i=m(t,"field",12);m(t,"gather",8,null);let l=m(t,"id",8),a=m(t,"options",12);m(t,"optionsHtmlParams",8),(n=a().initial_value)!==null&&n!==void 0||a(a().initial_value="",!0),ie(),ce(e,{type:"embedded-text",get id(){return l()},get field(){return i()},set field(r){i(r)},get options(){return a()},set options(r){a(r)},children:(r,s)=>{F(r,{id:"embedded_text-initial_value",label:d(()=>window.trans("Initial Value")),children:(u,o)=>{var v=Bs();I(v,()=>({ref:"initial_value",name:"initial_value",id:"embeddedded_text-initial_value",class:"form-control"})),H(v,()=>a().initial_value,x=>a(a().initial_value=x,!0)),k(u,v)},$$slots:{default:!0}})},$$slots:{default:!0},$$legacy:!0}),ne()}var Gs=P('<input/><label for="categories-multiple" class="form-label"></label>',1),zs=P("<input/>"),Ws=P("<input/>"),Ks=P('<input/><label for="categories-can_add" class="form-label"></label>',1),Js=P("<option> </option>"),Xs=P("<select></select>"),Zs=P("<!> <!> <!> <!> <!>",1);function eu(e,t){te(t,!1);var n,i;m(t,"config",8);let l=m(t,"field",12);m(t,"gather",8,null);let a=m(t,"id",8),r=m(t,"options",12);const u=m(t,"optionsHtmlParams",8)().categories.category_sets;r().multiple==="0"&&r(r().multiple=0,!0),r().can_add==="0"&&r(r().can_add=0,!0),(n=r().min)!==null&&n!==void 0||r(r().min="",!0),(i=r().max)!==null&&i!==void 0||r(r().max="",!0),ie(),ce(e,{type:"categories",get id(){return a()},get field(){return l()},set field(o){l(o)},get options(){return r()},set options(o){r(o)},children:(o,v)=>{var x=Zs(),h=j(x);F(h,{id:"categories-multiple",label:d(()=>window.trans("Allow users to select multiple categories?")),children:(f,g)=>{var p=Gs(),b=j(p);I(b,()=>({ref:"multiple",type:"checkbox",class:"mt-switch form-control",id:"categories-multiple",name:"multiple"}),void 0,void 0,void 0,void 0,!0);var E=y(b);E.textContent=d(()=>window.trans("Allow users to select multiple categories?")),be(b,()=>r().multiple,A=>r(r().multiple=A,!0)),k(f,p)},$$slots:{default:!0}});var w=y(h,2);{let f=_e(()=>(M(r()),d(()=>!!r().multiple)));F(w,{id:"categories-min",label:d(()=>window.trans("Minimum number of selections")),get attrShow(){return $(f)},children:(g,p)=>{var b=zs();I(b,()=>({ref:"min",type:"number",name:"min",id:"categories-min",class:"form-control w-25",min:"0"}),void 0,void 0,void 0,void 0,!0),H(b,()=>r().min,E=>r(r().min=E,!0)),k(g,b)},$$slots:{default:!0}})}var _=y(w,2);{let f=_e(()=>(M(r()),d(()=>!!r().multiple)));F(_,{id:"categories-max",label:d(()=>window.trans("Maximum number of selections")),get attrShow(){return $(f)},children:(g,p)=>{var b=Ws();I(b,()=>({ref:"max",type:"number",name:"max",id:"categories-max",class:"form-control w-25",min:"1"}),void 0,void 0,void 0,void 0,!0),H(b,()=>r().max,E=>r(r().max=E,!0)),k(g,b)},$$slots:{default:!0}})}var S=y(_,2);F(S,{id:"categories-can_add",label:d(()=>window.trans("Allow users to create new categories?")),children:(f,g)=>{var p=Ks(),b=j(p);I(b,()=>({ref:"can_add",type:"checkbox",class:"mt-switch form-control",id:"categories-can_add",name:"can_add"}),void 0,void 0,void 0,void 0,!0);var E=y(b);E.textContent=d(()=>window.trans("Allow users to create new categories?")),be(b,()=>r().can_add,A=>r(r().can_add=A,!0)),k(f,p)},$$slots:{default:!0}});var c=y(S,2);F(c,{id:"categories-category_set",label:d(()=>window.trans("Source Category Set")),required:1,children:(f,g)=>{var p=ke(),b=j(p);{var E=D=>{var R=Xs();ae(()=>{r(),qe(()=>{})}),I(R,()=>({ref:"category_sets",name:"category_set",id:"categories-category_set",class:"custom-select form-control html5-form form-select"})),ut(R,5,()=>u,st,(L,q)=>{var U=Js(),B=C(U),ee={};ae(()=>{He(B,($(q),d(()=>$(q).name))),ee!==(ee=($(q),d(()=>$(q).id)))&&(U.value=(U.__value=($(q),d(()=>$(q).id)))??"")}),k(L,U)}),dn(R,()=>r().category_set,L=>r(r().category_set=L,!0)),k(D,R)},A=D=>{al(D,{id:"no-cateogry-set",class:"warning",canClose:0,$$slots:{msg:(R,L)=>{var q=Qi();q.nodeValue=d(()=>window.trans("There is no content type that can be selected. Please create new content type if you use Content Type field type.")),k(R,q)}}})};he(b,D=>{d(()=>u&&u.length>0)?D(E):D(A,!1)})}k(f,p)},$$slots:{default:!0}}),k(o,x)},$$slots:{default:!0},$$legacy:!0}),ne()}var tu=P('<input/><label for="tags-multiple" class="form-label"></label>',1),nu=P("<input/>"),ru=P("<input/>"),iu=P("<input/>"),lu=P('<input/><label for="tags-can_add" class="form-label"></label>',1),au=P("<!> <!> <!> <!> <!>",1);function ou(e,t){te(t,!1);var n,i,l;m(t,"config",8);let a=m(t,"field",12);m(t,"gather",8,null);let r=m(t,"id",8),s=m(t,"options",12);m(t,"optionsHtmlParams",8),s().multiple==="0"&&s(s().multiple=0,!0),s().can_add==="0"&&s(s().can_add=0,!0),(n=s().min)!==null&&n!==void 0||s(s().min="",!0),(i=s().max)!==null&&i!==void 0||s(s().max="",!0),(l=s().initial_value)!==null&&l!==void 0||s(s().initial_value="",!0),ie(),ce(e,{type:"tags",get id(){return r()},get field(){return a()},set field(u){a(u)},get options(){return s()},set options(u){s(u)},children:(u,o)=>{var v=au(),x=j(v);F(x,{id:"tags-multiple",label:d(()=>window.trans("Allow users to input multiple values?")),children:(c,f)=>{var g=tu(),p=j(g);I(p,()=>({ref:"multiple",type:"checkbox",class:"mt-switch form-control",id:"tags-multiple",name:"multiple"}),void 0,void 0,void 0,void 0,!0);var b=y(p);b.textContent=d(()=>window.trans("Allow users to select multiple values?")),be(p,()=>s().multiple,E=>s(s().multiple=E,!0)),k(c,g)},$$slots:{default:!0}});var h=y(x,2);{let c=_e(()=>(M(s()),d(()=>!!s().multiple)));F(h,{id:"tags-min",label:d(()=>window.trans("Minimum number of selections")),get attrShow(){return $(c)},children:(f,g)=>{var p=nu();I(p,()=>({ref:"min",type:"number",name:"min",id:"tags-min",class:"form-control w-25",min:"0"}),void 0,void 0,void 0,void 0,!0),H(p,()=>s().min,b=>s(s().min=b,!0)),k(f,p)},$$slots:{default:!0}})}var w=y(h,2);{let c=_e(()=>(M(s()),d(()=>!!s().multiple)));F(w,{id:"tags-max",label:d(()=>window.trans("Maximum number of selections")),get attrShow(){return $(c)},children:(f,g)=>{var p=ru();I(p,()=>({ref:"max",type:"number",name:"max",id:"tags-max",class:"form-control w-25",min:"1"}),void 0,void 0,void 0,void 0,!0),H(p,()=>s().max,b=>s(s().max=b,!0)),k(f,p)},$$slots:{default:!0}})}var _=y(w,2);F(_,{id:"tags-initial_value",label:d(()=>window.trans("Initial Value")),children:(c,f)=>{var g=iu();I(g,()=>({ref:"initial_value",type:"text",name:"initial_value",id:"tags-initial_value",class:"form-control"}),void 0,void 0,void 0,void 0,!0),H(g,()=>s().initial_value,p=>s(s().initial_value=p,!0)),k(c,g)},$$slots:{default:!0}});var S=y(_,2);F(S,{id:"tags-can_add",label:d(()=>window.trans("Allow users to create new tags?")),children:(c,f)=>{var g=lu(),p=j(g);I(p,()=>({ref:"can_add",type:"checkbox",class:"mt-switch form-control",id:"tags-can_add",name:"can_add"}),void 0,void 0,void 0,void 0,!0);var b=y(p);b.textContent=d(()=>window.trans("Allow users to create new tags?")),be(p,()=>s().can_add,E=>s(s().can_add=E,!0)),k(c,g)},$$slots:{default:!0}}),k(u,v)},$$slots:{default:!0},$$legacy:!0}),ne()}function su(e,t){m(t,"config",8);let n=m(t,"field",12);m(t,"gather",8,null);let i=m(t,"id",8),l=m(t,"options",12);m(t,"optionsHtmlParams",8),ce(e,{type:"list",get id(){return i()},get field(){return n()},set field(a){n(a)},get options(){return l()},set options(a){l(a)},$$legacy:!0})}var uu=P("<input/>"),du=P("<input/>"),fu=P('<input/><label for="tables-can_increase_decrease_rows" class="form-label"></label>',1),cu=P('<input/><label for="tables-can_increase_decrease_cols" class="form-label"></label>',1),vu=P("<!> <!> <!> <!>",1);function _u(e,t){te(t,!1);var n,i;m(t,"config",8);let l=m(t,"field",12);m(t,"gather",8,null);let a=m(t,"id",8),r=m(t,"options",12);m(t,"optionsHtmlParams",8),r().increase_decrease_rows==="0"&&r(r().increase_decrease_rows=0,!0),r().increase_decrease_cols==="0"&&r(r().increase_decrease_cols=0,!0),(n=r().initial_rows)!==null&&n!==void 0||r(r().initial_rows=1,!0),(i=r().initial_cols)!==null&&i!==void 0||r(r().initial_cols=1,!0),ie(),ce(e,{type:"table",get id(){return a()},get field(){return l()},set field(s){l(s)},get options(){return r()},set options(s){r(s)},children:(s,u)=>{var o=vu(),v=j(o);F(v,{id:"tables-initial_rows",label:d(()=>window.trans("Initial Rows")),children:(_,S)=>{var c=uu();I(c,()=>({ref:"initial_rows",type:"number",name:"initial_rows",id:"tables-initial_rows",class:"form-control w-25",min:"1"}),void 0,void 0,void 0,void 0,!0),H(c,()=>r().initial_rows,f=>r(r().initial_rows=f,!0)),k(_,c)},$$slots:{default:!0}});var x=y(v,2);F(x,{id:"tables-initial_cols",label:d(()=>window.trans("Initial Cols")),children:(_,S)=>{var c=du();I(c,()=>({ref:"initial_cols",type:"number",name:"initial_cols",id:"tables-initial_cols",class:"form-control w-25",min:"1"}),void 0,void 0,void 0,void 0,!0),H(c,()=>r().initial_cols,f=>r(r().initial_cols=f,!0)),k(_,c)},$$slots:{default:!0}});var h=y(x,2);F(h,{id:"tables-can_increase_decrease_rows",label:d(()=>window.trans("Allow users to increase/decrease rows?")),children:(_,S)=>{var c=fu(),f=j(c);I(f,()=>({ref:"increase_decrease_rows",type:"checkbox",class:"mt-switch form-control",id:"tables-can_increase_decrease_rows",name:"increase_decrease_rows"}),void 0,void 0,void 0,void 0,!0);var g=y(f);g.textContent=d(()=>window.trans("Allow users to increase/decrease rows?")),be(f,()=>r().increase_decrease_rows,p=>r(r().increase_decrease_rows=p,!0)),k(_,c)},$$slots:{default:!0}});var w=y(h,2);F(w,{id:"tables-can_increase_decrease_cols",label:d(()=>window.trans("Allow users to increase/decrease cols?")),children:(_,S)=>{var c=cu(),f=j(c);I(f,()=>({ref:"increase_decrease_cols",type:"checkbox",class:"mt-switch form-control",id:"tables-can_increase_decrease_cols",name:"increase_decrease_cols"}),void 0,void 0,void 0,void 0,!0);var g=y(f);g.textContent=d(()=>window.trans("Allow users to increase/decrease cols?")),be(f,()=>r().increase_decrease_cols,p=>r(r().increase_decrease_cols=p,!0)),k(_,c)},$$slots:{default:!0}}),k(s,o)},$$slots:{default:!0},$$legacy:!0}),ne()}var mu=P("<textarea></textarea>");function pu(e,t){te(t,!1);var n;m(t,"config",8);let i=m(t,"field",12);m(t,"gather",8,null);let l=m(t,"id",8),a=m(t,"options",12);m(t,"optionsHtmlParams",8),(n=a().text)!==null&&n!==void 0||a(a().text="",!0),xr(()=>{document.getElementById("text-label-description-field-"+l()).style.display="none",document.getElementById("text-label-required-field-"+l()).style.display="none",document.getElementById("text-label-display-field-"+l()).style.display="none"}),ie(),ce(e,{type:"text-label",get id(){return l()},get field(){return i()},set field(r){i(r)},get options(){return a()},set options(r){a(r)},children:(r,s)=>{F(r,{id:"text_label-text",label:d(()=>window.trans("__TEXT_LABEL_TEXT")),hint:d(()=>window.trans("This block is only visible in the administration screen for comments.")),showHint:1,children:(u,o)=>{var v=mu();I(v,()=>({ref:"text",name:"text",id:"text_label-text",class:"form-control"})),H(v,()=>a().text,x=>a(a().text=x,!0)),k(u,v)},$$slots:{default:!0}})},$$slots:{default:!0},$$legacy:!0}),ne()}class Wt{static getCoreType(t){return!this.customTypes[t]&&this.coreTypes[t]}static getCustomType(t){return this.customTypes[t]}static registerCustomType(t,n){this.customTypes[t]=n}}Wt.coreTypes={"content-type":Ao,"single-line-text":Do,"multi-line-text":Oo,number:Yo,url:zo,"date-and-time":Xo,"date-only":es,"time-only":ns,"select-box":us,"radio-button":cs,checkboxes:bs,asset:Ss,"asset-audio":Ts,"asset-video":Fs,"asset-image":Us,"embedded-text":Ys,categories:eu,tags:ou,list:su,tables:_u,"text-label":pu},Wt.customTypes={};var hu=P('<div class="mt-custom-contentfield"></div>');function bu(e,t){te(t,!1);const n=()=>wr(o(),"$fieldsStore",i),[i,l]=yr(),a=de(),r=de();let s=m(t,"config",8),u=m(t,"fieldIndex",8),o=m(t,"fieldsStore",8),v=m(t,"gather",12),x=m(t,"optionsHtmlParams",8),h,w=de(),_;_n(()=>{$(a).type!==_&&h&&(h.destroy(),h=null,v(null)),!h&&$(r)&&(h=$(r)({config:s(),fieldIndex:u(),fieldsStore:o(),optionsHtmlParams:x()},$(w)),v(h?.gather)),_=$(a).type}),ao(()=>{h&&(v(null),h.destroy(),h=null),_=null}),Ae(()=>(n(),M(u())),()=>{G(a,n()[u()])}),Ae(()=>$(a),()=>{G(r,Wt.getCustomType($(a).type))}),mt(),ie();var S=hu();Yt(S,c=>G(w,c),()=>$(w)),ae(()=>Ee(S,"id",`custom-content-field-block-${$(a),d(()=>$(a).id)??""}`)),k(e,S),ne(),l()}var gu=Hi("<title> </title>"),wu=Hi('<svg role="img"><!><use></use></svg>');function At(e,t){let n=m(t,"class",8),i=m(t,"href",8),l=m(t,"title",8),a=m(t,"style",8,void 0);var r=wu(),s=C(r);{var u=v=>{var x=gu(),h=C(x);ae(()=>He(h,l())),k(v,x)};he(s,v=>{l()&&v(u)})}var o=y(s);ae(()=>{zi(r,0,Bi(n())),Wi(r,a()),Ct(o,"xlink:href",i())}),k(e,r)}var yu=P("<span> </span>"),xu=P('<div class="mt-collapse__container"><div class="col-auto p-0"><!></div> <div class="col text-wrap p-0"><!> <!></div> <div class="col-auto p-0"><a href="javascript:void(0)" class="d-inline-block duplicate-content-field"><!></a> <a href="javascript:void(0)" class="d-inline-block delete-content-field"><!></a> <a data-bs-toggle="collapse" class="d-inline-block"><!></a></div></div> <div><!> <!></div>',1);function $u(e,t){te(t,!1);const n=de();let i=m(t,"config",8),l=m(t,"field",12),a=m(t,"fields",12),r=m(t,"fieldIndex",8),s=m(t,"fieldsStore",8),u=m(t,"gatheringData",8),o=m(t,"parent",12),v=m(t,"gather",12),x=m(t,"optionsHtmlParams",8),h=de(),w=de();const _=()=>{const Y=l().label?l().label:window.trans("No Name");if(!confirm(window.trans("Do you want to delete [_1]([_2])?",Y,l().typeLabel)))return;a(a().slice(0,r()).concat(a().slice(r()+1)));const J=document.getElementsByClassName("mt-draggable__area")[0];zt(J)},S=()=>{const Y=jQuery.extend({},l());Y.options=u()(o(),r()),Y.id=Math.random().toString(36).slice(-8);let J=l().label;J||(J=jQuery("#content-field-block-"+l().id).find('[name="label"]').val(),J===""&&(J=window.trans("No Name"))),Y.label=window.trans("Duplicate")+"-"+J,Y.options.label=Y.label,Y.order=a().length+1,Y.isNew=!0,Y.isShow="show",a([...a(),Y]);const re=document.getElementsByClassName("mt-draggable__area")[0];zt(re)};Ae(()=>M(l()),()=>{G(n,`field-options-${l().id}`)}),Ae(()=>M(l()),()=>{l().isNew===null&&l(l().isNew=!1,!0),l().isShow===null&&l(l().isShow="",!0),l().realId===null&&l(l().realId="",!0),l().options===null&&l(l().options={},!0)}),Ae(()=>(M(l()),$(h),$(w)),()=>{Wt.getCoreType(l().type)?v($(h)):v($(w))}),mt(),ie();var c=xu(),f=j(c),g=C(f),p=C(g);At(p,{title:d(()=>window.trans("Move")),class:"mt-icon",href:`${d(()=>window.StaticURI)??""}/images/sprite.svg#ic_move`});var b=y(g,2),E=C(b);At(E,{title:d(()=>window.trans("ContentField")),class:"mt-icon--secondary",href:`${d(()=>window.StaticURI)??""}images/sprite.svg#ic_contentstype`});var A=y(E),D=y(A);{var R=Y=>{var J=yu(),re=C(J);ae(()=>He(re,`(ID: ${M(l()),d(()=>l().realId)??""})`)),k(Y,J)};he(D,Y=>{M(l()),d(()=>l().realId)&&Y(R)})}var L=y(b,2),q=C(L),U=C(q);At(U,{title:d(()=>window.trans("Duplicate")),class:"mt-icon--secondary",href:`${d(()=>window.StaticURI)??""}images/sprite.svg#ic_duplicate`});var B=y(q,2),ee=C(B);At(ee,{title:d(()=>window.trans("Delete")),class:"mt-icon--secondary",href:`${d(()=>window.StaticURI)??""}images/sprite.svg#ic_trash`});var ue=y(B,2),ve=C(ue);At(ve,{title:d(()=>window.trans("Edit")),class:"mt-icon--secondary",href:`${d(()=>window.StaticURI)??""}images/sprite.svg#ic_collapse`});var me=y(f,2);I(me,()=>({"data-is":(M(l()),d(()=>l().type)),class:"collapse mt-collapse__content",id:$(n),fieldid:l().id,isnew:l().isNew,[Pt]:{show:l().isShow==="show"}}));var Se=C(me);Ga(Se,()=>Wt.getCoreType(l().type),(Y,J)=>{J(Y,{get config(){return i()},get id(){return $(n)},get optionsHtmlParams(){return x()},get field(){return l()},set field(re){l(re)},get gather(){return $(h)},set gather(re){G(h,re)},get options(){return l().options},set options(re){l(l().options=re,!0)},$$legacy:!0})});var pe=y(Se,2);bu(pe,{get config(){return i()},get fieldIndex(){return r()},get fieldsStore(){return s()},get optionsHtmlParams(){return x()},get gather(){return $(w)},set gather(Y){G(w,Y)},$$legacy:!0}),Yt(me,Y=>o(Y),()=>o()),ae(()=>{He(A,` ${M(l()),d(()=>l().label??"")??""} (${M(l()),d(()=>l().typeLabel)??""}) `),Ee(ue,"href",`#field-options-${M(l()),d(()=>l().id)??""}`),Ee(ue,"aria-expanded",(M(l()),d(()=>l().isShow==="show"?"true":"false"))),Ee(ue,"aria-controls",`field-options-${M(l()),d(()=>l().id)??""}`)}),oe("click",q,S),oe("click",B,_),k(e,c),ne()}var Su=P("<option> </option>"),ku=P('<div id="name-field" class="form-group"><h3> <button type="button" class="btn btn-link" data-bs-toggle="modal" data-bs-target="#editDetail"></button></h3> <div id="editDetail" class="modal" data-role="dialog" aria-labelledby="editDetail" aria-hidden="true"><div class="modal-dialog modal-lg" data-role="document"><div class="modal-content"><div class="modal-header"><h4 class="modal-title"></h4> <button type="button" class="close btn-close" data-bs-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button></div> <div class="modal-body"><div class="col"><div id="name-field" class="form-group"><label for="name" class="form-control-label"> <span class="badge badge-danger"></span></label> <input type="text" name="name" id="name" class="form-control html5-form" required/></div></div> <div class="col"><div id="description-field" class="form-group"><label for="description" class="form-control-label"></label> <textarea name="description" id="description" class="form-control"></textarea></div></div> <div class="col"><div id="label-field" class="form-group"><label for="label_field" class="form-control-label"></label> <select id="label_field" name="label_field" class="custom-select form-control html5-form form-select"><option></option><!></select></div></div> <div class="col"><div id="unique_id-field" class="form-group"><label for="unique_id" class="form-control-label"></label> <input type="text" class="form-control-plaintext w-50" id="unieuq_id" readonly=""/></div></div> <div class="col"><div id="user_disp_option-field" class="form-group"><label for="user_disp_option"></label> <input type="checkbox" class="mt-switch form-control" id="user_disp_option" name="user_disp_option"/> <label for="user_disp_option" class="last-child"></label></div></div></div> <div class="modal-footer"><button type="button" class="btn btn-default" data-bs-dismiss="modal"></button></div></div></div></div></div>'),Eu=P('<div id="name-field" class="form-group"><label for="name" class="form-control-label"> <span class="badge badge-danger"></span></label> <input type="text" name="name" id="name" class="form-control html5-form" required/></div>'),Pu=P('<div class="mt-draggable__empty"><img width="240" height="120"/> <p></p></div>'),Cu=P('<div class="mt-contentfield" draggable="true" aria-grabbed="false" data-is="content-field" style="width: 100%;"><!></div>'),Au=P('<form name="content-type-form" method="POST"><input type="hidden" name="__mode" value="save"/> <input type="hidden" name="blog_id"/> <input type="hidden" name="magic_token"/> <input type="hidden" name="return_args"/> <input type="hidden" name="_type" value="content_type"/> <input type="hidden" name="id"/> <div class="row"><div class="col"><!></div></div></form> <form><fieldset id="content-fields" class="form-group"><legend class="h3"></legend> <div class="mt-collapse__all"><a data-bs-toggle="collapse" href="" class="d-inline-block"> <!></a></div> <div class="mt-draggable__area" style="height:400px;"><!> <!></div> <div class="mt-collapse__all"><a data-bs-toggle="collapse" href=".mt-collapse__content" class="d-inline-block"> <!></a></div></fieldset></form> <button type="button" class="btn btn-primary"></button>',1);function Tu(e,t){te(t,!1);const n=()=>wr(s(),"$fieldsStore",i),[i,l]=yr(),a=de();let r=m(t,"config",8),s=m(t,"fieldsStore",8),u=m(t,"optionsHtmlParams",8),o=m(t,"opts",12),v=m(t,"root",8),x="",h=!1;const w=o().observer;let _=null,S=null;const c=document.createElement("div");c.className="placeholder";let f=!1,g=de([]),p=de(o().labelField),b=de(!1);const E=de({}),A=de([]);_n(()=>{const N=v().querySelector("#label_field");jQuery(N).find("option").each(function(O,T){if(T.attributes.getNamedItem("selected"))return N.selectedIndex=O,!1})}),w.on("mtDragStart",function(){h=!0}),w.on("mtDragEnd",function(){h=!1,U()}),jQuery(document).on("show.bs.modal","#editDetail",function(){ve()}),jQuery(document).on("hide.bs.modal","#editDetail",function(){var N;if(jQuery("#name-field > input").mtValidate("simple"))o(o().name=((N=jQuery("#name-field > input").val())===null||N===void 0?void 0:N.toString())||"",!0),window.setDirty(!0);else return!1}),jQuery(document).on("shown.bs.collapse",".mt-collapse__content",function(){const N=document.getElementsByClassName("mt-draggable__area")[0];zt(N),re(),Se()}),jQuery(document).on("hidden.bs.collapse",".mt-collapse__content",function(){const N=document.getElementsByClassName("mt-draggable__area")[0];zt(N),re(),Se()}),jQuery(document).on("focus",".mt-draggable__area input, .mt-draggable__area textarea",function(){jQuery(this).closest(".mt-contentfield").attr("draggable","false")}),jQuery(document).on("blur",".mt-draggable__area input, .mt-draggable__area textarea",function(){jQuery(this).closest(".mt-contentfield").attr("draggable","true")});const D=N=>{if(h){const O=N.currentTarget,T=N.target;if(T.className!=="mt-draggable__area"&&T.className!=="mt-draggable"&&T.className!=="mt-contentfield"){N.preventDefault();return}if(f||(O.classList.add("mt-draggable__area--dragover"),f=!0),_){if(T.className==="mt-contentfield"){const V=T.getBoundingClientRect(),Q=T.parentNode;(N.clientY-V.top)/V.height>.5?Q.insertBefore(c,T.nextElementSibling):Q.insertBefore(c,T)}if(T.className==="mt-draggable__area"){const V=T.getElementsByClassName("mt-contentfield");(V.length===0||V.length===1&&V[0]===_)&&T.appendChild(c)}}else O.appendChild(c);N.preventDefault()}},R=N=>{var O;const T=N.currentTarget;if(_){let V=0,Q=null;if(c.parentNode&&(Q=c.parentNode.children),!Q){T.classList.remove("mt-draggable__area--dragover"),N.preventDefault();return}for(let K=0;K<Q.length&&Q[K]!==c;K++)Q[K]!==_&&Q[K].classList.contains("mt-contentfield")&&V++;S&&pe(S,V),window.setDirty(!0)}else{const V=((O=N.dataTransfer)===null||O===void 0?void 0:O.getData("text"))||"",Q=jQuery("[data-field-type='"+V+"']"),K=Q.data("field-label"),X=Q.data("can-data-label"),Ye=Math.random().toString(36).slice(-8),bt={type:V,typeLabel:K,id:Ye,isNew:!0,isShow:"show",canDataLabel:X,options:{}};s().update(Qn=>[...Qn,bt]),window.setDirty(!0),zt(document.getElementsByClassName("mt-draggable__area")[0])}ve(),T.classList.remove("mt-draggable__area--dragover"),N.preventDefault()},L=N=>{f&&(N.currentTarget.classList.remove("mt-draggable__area--dragover"),f=!1)},q=(N,O)=>{_=N.target,S=O,N.dataTransfer.setData("text",O.id||""),h=!0},U=()=>{c.parentNode&&c.parentNode.removeChild(c),h=!1,_=null,S=null,f=!1},B=N=>N.key==="Enter"?(N.preventDefault(),!1):!0,ee=()=>n().length===0?!0:n().filter(function(O){return o().invalid_types[O.type]}).length===0,ue=()=>{if(!ee()||!Y())return;ve(),window.setDirty(!1);const N=[];if(n()){for(let O=0;O<n().length;O++){const T=$(A)[O],V=J(T,O),Q={};Q.type=n()[O].type,Q.options=V,!n()[O].isNew&&V.id.match(/^\d+$/)&&(Q.id=V.id);const K=n().filter(function(X){return X.id===Q.id});K.length&&K[0].order?Q.order=K[0].order:Q.order=O+1,N.push(Q)}x=JSON.stringify(N)}else x="";Te(),document.forms["content-type-form"].submit()},ve=()=>{var N;const O=[];for(let T=0;T<n().length;T++)if(jQuery("#content-field-block-"+n()[T].id).find('[name="required"]').prop("checked")&&n()[T].canDataLabel===1){let Q=n()[T].label,K=n()[T].unique_id;Q||(Q=((N=jQuery("#content-field-block-"+n()[T].id).find('[name="label"]').val())===null||N===void 0?void 0:N.toString())||"",Q===""&&(Q=window.trans("No Name"))),K||(K="id:"+n()[T].id),O.push({value:K,label:Q})}G(g,O)},me=()=>{G(b,!$(b));const N=$(b)?"show":"";s().update(O=>O.map(T=>(T.isShow=N,T)))},Se=()=>{const N=document.querySelectorAll(".mt-collapse__content");let O=!0;N.forEach(T=>{T.classList.contains("show")?O=!0:O=!1}),G(b,!!O)},pe=(N,O)=>{s().update(T=>{for(let V=0;V<T.length;V++)if(T[V].id===N.id){T.splice(V,1);break}T.splice(O,0,N);for(let V=0;V<T.length;V++)T[V].order=V+1;return T})},Y=()=>{const N=jQuery(".html5-form").mtValidate("simple"),O=jQuery(".values-option-table input[type=text]").mtValidate("simple"),T=jQuery(".values-option-table").mtValidate("selection-field-values-option"),V=jQuery(".content-field-block").mtValidate("content-field-block"),Q=jQuery("input[data-mt-content-field-unique]").mtValidate("simple"),K=N&&O&&T&&V&&Q;return K||jQuery(".mt-contentfield").each(function(X,Ye){const bt=jQuery(Ye);bt.find(".form-control.is-invalid").length>0&&bt.find(".collapse").collapse("show")}),K},J=(N,O)=>{const T={},V=N.querySelectorAll("[data-is] [ref]");Object.keys(V).forEach(function(K){const X=V[K];if(X.type==="checkbox"){const Ye=X.checked?1:0;X.name in T?Array.isArray(T[X.name])&&T[X.name].push(Ye):T[X.name]=Ye}else T[X.name]=X.value});const Q=n()[O].id;if(Q){const K=$(E)[Q];if(K){const X=K();jQuery.extend(T,X)}}return T},re=()=>{const N=document.querySelectorAll(".mt-collapse__content");s().update(O=>O.map((T,V)=>(N[V].classList.contains("show")?T.isShow="show":T.isShow="",T)))},Te=()=>{const N=document.forms.namedItem("content-type-form"),O=N.querySelector('input[name="id"]'),T=document.createElement("input");T.setAttribute("type","hidden"),T.setAttribute("name","data"),T.setAttribute("value",x),N.insertBefore(T,O.nextElementSibling)};Ae(()=>n(),()=>{G(a,!(n().length>0))}),mt(),ie();var fe=Au(),se=j(fe);Ee(se,"action",d(()=>window.CMSScriptURI));var Ie=C(se),Fe=y(Ie,2),Me=y(Fe,2),Pe=y(Me,2),it=y(Pe,2),Tt=y(it,2),ht=y(Tt,2),It=C(ht),Nt=C(It);{var Mt=N=>{var O=ku(),T=C(O),V=C(T),Q=y(V);Q.textContent=d(()=>window.trans("Edit"));var K=y(T,2),X=C(K),Ye=C(X),bt=C(Ye),Qn=C(bt);Qn.textContent=d(()=>window.trans("Content Type"));var Mr=y(bt,2),Dr=C(Mr),vl=C(Dr),Rr=C(vl),Fr=C(Rr);Fr.nodeValue=`${d(()=>window.trans("Content Type Name"))??""} `;var _l=y(Fr);_l.textContent=d(()=>window.trans("Required"));var Lr=y(Rr,2),jr=y(Dr,2),ml=C(jr),qr=C(ml);qr.textContent=d(()=>window.trans("Description"));var pl=y(qr,2),Or=y(jr,2),hl=C(Or),Vr=C(hl);Vr.textContent=d(()=>window.trans("Data Label Field"));var Hr=y(Vr,2);ae(()=>{$(p),qe(()=>{$(g)})});var bn=C(Hr);bn.textContent=d(()=>window.trans("Show input field to enter data label")),bn.value=bn.__value="";var bl=y(bn);ut(bl,1,()=>$(g),st,(Un,Rt)=>{var gn=Su(),El=C(gn),Gr={};ae(()=>{He(El,($(Rt),d(()=>$(Rt).label))),Gr!==(Gr=($(Rt),d(()=>$(Rt).value)))&&(gn.value=(gn.__value=($(Rt),d(()=>$(Rt).value)))??"")}),k(Un,gn)});var Qr=y(Or,2),gl=C(Qr),Ur=C(gl);Ur.textContent=d(()=>window.trans("Unique ID"));var wl=y(Ur,2),yl=y(Qr,2),xl=C(yl),Br=C(xl);Br.textContent=d(()=>window.trans("Allow users to change the display and sort of fields by display option"));var Yr=y(Br,2),$l=y(Yr,2);$l.textContent=d(()=>window.trans("Allow users to change the display and sort of fields by display option"));var Sl=y(Mr,2),kl=C(Sl);kl.textContent=d(()=>window.trans("close")),ae(()=>{He(V,`${M(o()),d(()=>o().name)??""} `),pt(Lr,(M(o()),d(()=>o().name))),pt(pl,(M(o()),d(()=>o().description))),pt(wl,(M(o()),d(()=>o().unique_id))),Ln(Yr,(M(o()),d(()=>!!o().user_disp_option)))}),oe("keypress",Lr,B),dn(Hr,()=>$(p),Un=>G(p,Un)),k(N,O)},Dt=N=>{var O=Eu(),T=C(O),V=C(T);V.nodeValue=`${d(()=>window.trans("Name"))??""} `;var Q=y(V);Q.textContent=d(()=>window.trans("Required"));var K=y(T,2);ae(()=>pt(K,(M(o()),d(()=>o().name)))),oe("keypress",K,B),k(N,O)};he(Nt,N=>{M(o()),d(()=>o().id)?N(Mt):N(Dt,!1)})}var Qe=y(se,2),qn=C(Qe),hn=C(qn);hn.textContent=d(()=>window.trans("Content Fields"));var lt=y(hn,2),On=C(lt),Tr=C(On),sl=y(Tr);At(sl,{title:d(()=>window.trans("Edit")),class:"mt-icon--secondary expand-all-icon",href:`${d(()=>window.StaticURI)??""}images/sprite.svg#ic_collapse`});var Jt=y(lt,2),Ir=C(Jt);{var ul=N=>{var O=Pu(),T=C(O);Ee(T,"src",`${d(()=>window.StaticURI)??""}images/dragdrop.gif`),Ee(T,"alt",d(()=>window.trans("Drag and drop area")));var V=y(T,2);V.textContent=d(()=>window.trans("Please add a content field.")),k(N,O)};he(Ir,N=>{$(a)&&N(ul)})}var dl=y(Ir,2);ut(dl,1,n,st,(N,O,T)=>{const V=_e(()=>(n()[T],d(()=>n()[T].id??"")));var Q=Cu(),K=C(Q);$u(K,{get config(){return r()},fieldIndex:T,get fieldsStore(){return s()},gatheringData:J,get parent(){return $(A),d(()=>$(A)[T])},get optionsHtmlParams(){return u()},get field(){return n()[T]},set field(X){n()[T]=X,qe(()=>n()),no(i,"$fieldsStore")},get fields(){return io(),n()},set fields(X){rl(s(),X)},get gather(){return $(E)[$(V)]},set gather(X){ct(E,$(E)[$(V)]=X)},$$legacy:!0}),Yt(Q,(X,Ye)=>ct(A,$(A)[Ye]=X),X=>$(A)?.[X],()=>[T]),ae(()=>Ee(Q,"id",`content-field-block-${$(V)??""}`)),oe("dragstart",Q,X=>{q(X,n()[T])}),oe("dragend",Q,U),k(N,Q)});var fl=y(Jt,2),Vn=C(fl),Nr=C(Vn),cl=y(Nr);At(cl,{title:d(()=>window.trans("Edit")),class:"mt-icon--secondary expand-all-icon",href:`${d(()=>window.StaticURI)??""}images/sprite.svg#ic_collapse`});var Hn=y(Qe,2);Hn.textContent=d(()=>window.trans("Save")),ae((N,O,T)=>{pt(Fe,(M(o()),d(()=>o().blog_id))),pt(Me,(M(o()),d(()=>o().magic_token))),pt(Pe,(M(o()),d(()=>o().return_args))),pt(Tt,(M(o()),d(()=>o().id))),Ee(On,"aria-expanded",$(b)?"true":"false"),He(Tr,`${N??""} `),Ee(Vn,"aria-expanded",$(b)?"true":"false"),He(Nr,`${O??""} `),Hn.disabled=T},[()=>($(b),d(()=>$(b)?window.trans("Close all"):window.trans("Edit all"))),()=>($(b),d(()=>$(b)?window.trans("Close all"):window.trans("Edit all"))),()=>d(()=>!ee())]),oe("click",On,me),oe("drop",Jt,R),oe("dragover",Jt,D),oe("dragleave",Jt,L),oe("click",Vn,me),oe("click",Hn,ue),k(e,fe),ne(),l()}function Iu(e,t){te(t,!1);const n=()=>wr(o(),"$fieldsStore",i),[i,l]=yr(),a=de(),r=de(),s=de();m(t,"config",8);let u=m(t,"fieldIndex",8),o=m(t,"fieldsStore",8);m(t,"optionsHtmlParams",8);let v=m(t,"type",8),x=m(t,"customElement",8),h=m(t,"updateOptions",8);const w=_=>{const S=_.options;_.options=new Proxy(S,{set(c,f,g){return S[f]=g,ro(o(),d(n)[u()].options[f]=g,d(n)),h()(S),g}})};Ae(()=>(n(),M(u())),()=>{G(a,n()[u()])}),Ae(()=>$(a),()=>{G(r,$(a).options||{})}),Ae(()=>$(a),()=>{G(s,`field-options-${$(a).id}`)}),mt(),ie(),ce(e,{get type(){return v()},get id(){return $(s)},get field(){return $(a)},set field(_){G(a,_)},get options(){return $(r)},set options(_){G(r,_)},children:(_,S)=>{var c=ke(),f=j(c);za(f,x,!1,(g,p)=>{Wa(g,b=>w?.(b)),I(g,b=>({"data-options":b}),[()=>($(r),d(()=>JSON.stringify($(r))))])}),k(_,c)},$$slots:{default:!0},$$legacy:!0}),ne(),l()}customElements.define("mt-content-field-option",class extends HTMLElement{connectedCallback(){const e=this.getAttribute("id")||"",t=this.getAttribute("attr")||"",n=this.getAttribute("attr-show"),i=this.getAttribute("hint")||"",l=this.getAttribute("label")||"",a=this.getAttribute("required")==="1",r=this.getAttribute("show-hint")==="1",s=this.getAttribute("show-label")!=="0";if(!e){console.error("ContentFieldOption: 'id' attribute missing");return}const u=document.createElement("div");if(u.id=`${e}-field`,u.className="form-group",a&&u.classList.add("required"),t&&u.setAttribute("attr",t),n!==null&&(n==="true"?u.style.display="":(u.hidden=!0,u.style.display="none")),l&&s){const o=document.createElement("label");if(o.setAttribute("for",e),o.textContent=l,a){const v=document.createElement("span");v.className="badge badge-danger",v.textContent=window.trans("Required"),o.appendChild(v)}u.appendChild(o)}for(;this.firstChild;)u.appendChild(this.firstChild);if(i&&r){const o=document.createElement("small");o.id=`${e}-field-help`,o.className="form-text text-muted",o.textContent=i,u.appendChild(o)}this.appendChild(u)}});var $e,Er,Pr,Cr,Ar;class ol extends HTMLElement{constructor(){super(...arguments),this.options={}}connectedCallback(){this.options=JSON.parse(this.getAttribute("data-options")||"{}")}disconnectedCallback(){}}class Kt{static get config(){return wn($e,$e,"f",Er)}static set config(t){yn($e,$e,t,"f",Er)}static get fieldsStore(){return wn($e,$e,"f",Pr)}static set fieldsStore(t){yn($e,$e,t,"f",Pr)}static get optionsHtmlParams(){return wn($e,$e,"f",Cr)}static set optionsHtmlParams(t){yn($e,$e,t,"f",Cr)}static get opts(){return wn($e,$e,"f",Ar)}static set opts(t){yn($e,$e,t,"f",Ar)}static registerCustomType(t,n){if(n.prototype instanceof ol){const i=`mt-content-type-custom-type-${t}`;customElements.define(i,n),n=(l,a)=>{let r;const s=new Iu({props:{...l,type:t,customElement:i,updateOptions:u=>{r=u}},target:a});return{component:s,gather:()=>r,destroy:()=>{s.$destroy()}}}}this.types.registerCustomType(t,n)}static mount(t,n){const i=this.getContentFieldsTarget(t);this.fieldsStore=oo(n.fields),this.opts=n,new Tu({props:{config:this.config,fieldsStore:this.fieldsStore,optionsHtmlParams:this.optionsHtmlParams,opts:this.opts,root:i},target:i})}static getContentFieldsTarget(t){const n=document.querySelector(`[data-is="${t}"]`);if(!n)throw new Error("Target element is not found: "+t);return n}}$e=Kt,Er={value:{}},Pr={value:void 0},Cr={value:{}},Ar={value:void 0},Kt.types=Wt,Kt.CustomElementFieldBase=ol;const Nu=e=>{const t=e.substring(6);return t.substring(0,1).toUpperCase()+t.substring(1)};window.riot||(window.riot={}),window.riot.observable=Tl,window.ContentTypeEditor=Kt;const mn=document.getElementById("script-contenttype");if(mn){for(const e in mn.dataset){if(!e.startsWith("config"))continue;const t=Nu(e);t!==""&&(Kt.config[t]=mn.dataset[e])}if("optionsHtmlParams"in mn.dataset){let e={};try{e=JSON.parse(mn.dataset.optionsHtmlParams||"{}")}catch(t){console.log(t)}Kt.optionsHtmlParams=e}}
+
+(function(l, r) { if (!l || l.getElementById('livereloadscript')) return; r = l.createElement('script'); r.async = 1; r.src = '//' + (self.location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1'; r.id = 'livereloadscript'; l.getElementsByTagName('head')[0].appendChild(r) })(self.document);
+function getDefaultExportFromCjs (x) {
+	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
+}
+
+var observable$1 = {exports: {}};
+
+var hasRequiredObservable;
+
+function requireObservable () {
+	if (hasRequiredObservable) return observable$1.exports;
+	hasRequiredObservable = 1;
+	(function (module, exports$1) {
+(function(window, undefined$1) {const ALL_CALLBACKS = '*';
+		const define = Object.defineProperties;
+		const entries = Object.entries;
+
+		const on = (callbacks, el) => (event, fn) => {
+		  if (callbacks.has(event)) {
+		    callbacks.get(event).add(fn);
+		  } else {
+		    callbacks.set(event, new Set().add(fn));
+		  }
+
+		  return el
+		};
+
+		const deleteCallback = (callbacks, el, event,  fn) => {
+		  if (fn) {
+		    const fns = callbacks.get(event);
+
+		    if (fns) {
+		      fns.delete(fn);
+		      if (fns.size === 0) callbacks.delete(event);
+		    }
+		  } else callbacks.delete(event);
+		};
+
+		const off = (callbacks, el) => (event, fn) => {
+		  if (event === ALL_CALLBACKS && !fn) {
+		    callbacks.clear();
+		  } else {
+		    deleteCallback(callbacks, el, event, fn);
+		  }
+
+		  return el
+		};
+
+		const one = (callbacks, el) => (event, fn) => {
+		  function on(...args) {
+		    el.off(event, on);
+		    fn.apply(el, args);
+		  }
+		  return el.on(event, on)
+		};
+
+		const trigger = (callbacks, el) => (event, ...args) => {
+		  const fns = callbacks.get(event);
+
+		  if (fns) fns.forEach(fn => fn.apply(el, args));
+
+		  if (callbacks.get(ALL_CALLBACKS) && event !== ALL_CALLBACKS) {
+		    el.trigger(ALL_CALLBACKS, event, ...args);
+		  }
+
+		  return el
+		};
+
+		const observable = function(el) { // eslint-disable-line
+		  const callbacks = new Map();
+		  const methods = {on, off, one, trigger};
+
+		  el = el || {};
+
+		  define(el,
+		    entries(methods).reduce((acc, [key, method]) => {
+		      acc[key] = {
+		        value: method(callbacks, el),
+		        enumerable: false,
+		        writable: false,
+		        configurable: false
+		      };
+
+		      return acc
+		    }, {})
+		  );
+
+		  return el
+		};
+		  /* istanbul ignore next */
+		  // support CommonJS, AMD & browser
+		  module.exports = observable;
+
+		})(); 
+	} (observable$1));
+	return observable$1.exports;
+}
+
+var observableExports = requireObservable();
+var observable = /*@__PURE__*/getDefaultExportFromCjs(observableExports);
+
+/******************************************************************************
+Copyright (c) Microsoft Corporation.
+
+Permission to use, copy, modify, and/or distribute this software for any
+purpose with or without fee is hereby granted.
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+PERFORMANCE OF THIS SOFTWARE.
+***************************************************************************** */
+/* global Reflect, Promise, SuppressedError, Symbol, Iterator */
+
+
+function __classPrivateFieldGet(receiver, state, kind, f) {
+    if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a getter");
+    if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
+    return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
+}
+
+function __classPrivateFieldSet(receiver, state, value, kind, f) {
+    if (kind === "m") throw new TypeError("Private method is not writable");
+    if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
+    if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
+    return (kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value)), value;
+}
+
+typeof SuppressedError === "function" ? SuppressedError : function (error, suppressed, message) {
+    var e = new Error(message);
+    return e.name = "SuppressedError", e.error = error, e.suppressed = suppressed, e;
+};
+
+var DEV = false;
+
+// Store the references to globals in case someone tries to monkey patch these, causing the below
+// to de-opt (this occurs often when using popular extensions).
+var is_array = Array.isArray;
+var index_of = Array.prototype.indexOf;
+var array_from = Array.from;
+var define_property = Object.defineProperty;
+var get_descriptor = Object.getOwnPropertyDescriptor;
+var get_descriptors = Object.getOwnPropertyDescriptors;
+var object_prototype = Object.prototype;
+var array_prototype = Array.prototype;
+var get_prototype_of = Object.getPrototypeOf;
+var is_extensible = Object.isExtensible;
+
+const noop = () => {};
+
+/** @param {Function} fn */
+function run(fn) {
+	return fn();
+}
+
+/** @param {Array<() => void>} arr */
+function run_all(arr) {
+	for (var i = 0; i < arr.length; i++) {
+		arr[i]();
+	}
+}
+
+/**
+ * TODO replace with Promise.withResolvers once supported widely enough
+ * @template [T=void]
+ */
+function deferred() {
+	/** @type {(value: T) => void} */
+	var resolve;
+
+	/** @type {(reason: any) => void} */
+	var reject;
+
+	/** @type {Promise<T>} */
+	var promise = new Promise((res, rej) => {
+		resolve = res;
+		reject = rej;
+	});
+
+	// @ts-expect-error
+	return { promise, resolve, reject };
+}
+
+// General flags
+const DERIVED = 1 << 1;
+const EFFECT = 1 << 2;
+const RENDER_EFFECT = 1 << 3;
+/**
+ * An effect that does not destroy its child effects when it reruns.
+ * Runs as part of render effects, i.e. not eagerly as part of tree traversal or effect flushing.
+ */
+const MANAGED_EFFECT = 1 << 24;
+/**
+ * An effect that does not destroy its child effects when it reruns (like MANAGED_EFFECT).
+ * Runs eagerly as part of tree traversal or effect flushing.
+ */
+const BLOCK_EFFECT = 1 << 4;
+const BRANCH_EFFECT = 1 << 5;
+const ROOT_EFFECT = 1 << 6;
+const BOUNDARY_EFFECT = 1 << 7;
+/**
+ * Indicates that a reaction is connected to an effect root — either it is an effect,
+ * or it is a derived that is depended on by at least one effect. If a derived has
+ * no dependents, we can disconnect it from the graph, allowing it to either be
+ * GC'd or reconnected later if an effect comes to depend on it again
+ */
+const CONNECTED = 1 << 9;
+const CLEAN = 1 << 10;
+const DIRTY = 1 << 11;
+const MAYBE_DIRTY = 1 << 12;
+const INERT = 1 << 13;
+const DESTROYED = 1 << 14;
+
+// Flags exclusive to effects
+/** Set once an effect that should run synchronously has run */
+const EFFECT_RAN = 1 << 15;
+/**
+ * 'Transparent' effects do not create a transition boundary.
+ * This is on a block effect 99% of the time but may also be on a branch effect if its parent block effect was pruned
+ */
+const EFFECT_TRANSPARENT = 1 << 16;
+const EAGER_EFFECT = 1 << 17;
+const HEAD_EFFECT = 1 << 18;
+const EFFECT_PRESERVED = 1 << 19;
+const USER_EFFECT = 1 << 20;
+
+// Flags exclusive to deriveds
+/**
+ * Tells that we marked this derived and its reactions as visited during the "mark as (maybe) dirty"-phase.
+ * Will be lifted during execution of the derived and during checking its dirty state (both are necessary
+ * because a derived might be checked but not executed).
+ */
+const WAS_MARKED = 1 << 15;
+
+// Flags used for async
+const REACTION_IS_UPDATING = 1 << 21;
+const ASYNC = 1 << 22;
+
+const ERROR_VALUE = 1 << 23;
+
+const STATE_SYMBOL = Symbol('$state');
+const LEGACY_PROPS = Symbol('legacy props');
+const LOADING_ATTR_SYMBOL = Symbol('');
+const PROXY_PATH_SYMBOL = Symbol('proxy path');
+
+/** allow users to ignore aborted signal errors if `reason.name === 'StaleReactionError` */
+const STALE_REACTION = new (class StaleReactionError extends Error {
+	name = 'StaleReactionError';
+	message = 'The reaction that called `getAbortSignal()` was re-run or destroyed';
+})();
+
+const ELEMENT_NODE = 1;
+const DOCUMENT_FRAGMENT_NODE = 11;
+
+/** @import { Equals } from '#client' */
+
+/** @type {Equals} */
+function equals(value) {
+	return value === this.v;
+}
+
+/**
+ * @param {unknown} a
+ * @param {unknown} b
+ * @returns {boolean}
+ */
+function safe_not_equal(a, b) {
+	return a != a
+		? b == b
+		: a !== b || (a !== null && typeof a === 'object') || typeof a === 'function';
+}
+
+/** @type {Equals} */
+function safe_equals(value) {
+	return !safe_not_equal(value, this.v);
+}
+
+/* This file is generated by scripts/process-messages/index.js. Do not edit! */
+
+
+/**
+ * `%name%(...)` can only be used during component initialisation
+ * @param {string} name
+ * @returns {never}
+ */
+function lifecycle_outside_component(name) {
+	{
+		throw new Error(`https://svelte.dev/e/lifecycle_outside_component`);
+	}
+}
+
+/**
+ * Attempted to render a snippet without a `{@render}` block. This would cause the snippet code to be stringified instead of its content being rendered to the DOM. To fix this, change `{snippet}` to `{@render snippet()}`.
+ * @returns {never}
+ */
+function snippet_without_render_tag() {
+	{
+		throw new Error(`https://svelte.dev/e/snippet_without_render_tag`);
+	}
+}
+
+/**
+ * `%name%` is not a store with a `subscribe` method
+ * @param {string} name
+ * @returns {never}
+ */
+function store_invalid_shape(name) {
+	{
+		throw new Error(`https://svelte.dev/e/store_invalid_shape`);
+	}
+}
+
+/**
+ * The `this` prop on `<svelte:element>` must be a string, if defined
+ * @returns {never}
+ */
+function svelte_element_invalid_this_value() {
+	{
+		throw new Error(`https://svelte.dev/e/svelte_element_invalid_this_value`);
+	}
+}
+
+/* This file is generated by scripts/process-messages/index.js. Do not edit! */
+
+
+/**
+ * Cannot create a `$derived(...)` with an `await` expression outside of an effect tree
+ * @returns {never}
+ */
+function async_derived_orphan() {
+	{
+		throw new Error(`https://svelte.dev/e/async_derived_orphan`);
+	}
+}
+
+/**
+ * Calling `%method%` on a component instance (of %component%) is no longer valid in Svelte 5
+ * @param {string} method
+ * @param {string} component
+ * @returns {never}
+ */
+function component_api_changed(method, component) {
+	{
+		throw new Error(`https://svelte.dev/e/component_api_changed`);
+	}
+}
+
+/**
+ * Attempted to instantiate %component% with `new %name%`, which is no longer valid in Svelte 5. If this component is not under your control, set the `compatibility.componentApi` compiler option to `4` to keep it working.
+ * @param {string} component
+ * @param {string} name
+ * @returns {never}
+ */
+function component_api_invalid_new(component, name) {
+	{
+		throw new Error(`https://svelte.dev/e/component_api_invalid_new`);
+	}
+}
+
+/**
+ * `%rune%` cannot be used inside an effect cleanup function
+ * @param {string} rune
+ * @returns {never}
+ */
+function effect_in_teardown(rune) {
+	{
+		throw new Error(`https://svelte.dev/e/effect_in_teardown`);
+	}
+}
+
+/**
+ * Effect cannot be created inside a `$derived` value that was not itself created inside an effect
+ * @returns {never}
+ */
+function effect_in_unowned_derived() {
+	{
+		throw new Error(`https://svelte.dev/e/effect_in_unowned_derived`);
+	}
+}
+
+/**
+ * `%rune%` can only be used inside an effect (e.g. during component initialisation)
+ * @param {string} rune
+ * @returns {never}
+ */
+function effect_orphan(rune) {
+	{
+		throw new Error(`https://svelte.dev/e/effect_orphan`);
+	}
+}
+
+/**
+ * Maximum update depth exceeded. This typically indicates that an effect reads and writes the same piece of state
+ * @returns {never}
+ */
+function effect_update_depth_exceeded() {
+	{
+		throw new Error(`https://svelte.dev/e/effect_update_depth_exceeded`);
+	}
+}
+
+/**
+ * Cannot do `bind:%key%={undefined}` when `%key%` has a fallback value
+ * @param {string} key
+ * @returns {never}
+ */
+function props_invalid_value(key) {
+	{
+		throw new Error(`https://svelte.dev/e/props_invalid_value`);
+	}
+}
+
+/**
+ * Property descriptors defined on `$state` objects must contain `value` and always be `enumerable`, `configurable` and `writable`.
+ * @returns {never}
+ */
+function state_descriptors_fixed() {
+	{
+		throw new Error(`https://svelte.dev/e/state_descriptors_fixed`);
+	}
+}
+
+/**
+ * Cannot set prototype of `$state` object
+ * @returns {never}
+ */
+function state_prototype_fixed() {
+	{
+		throw new Error(`https://svelte.dev/e/state_prototype_fixed`);
+	}
+}
+
+/**
+ * Updating state inside `$derived(...)`, `$inspect(...)` or a template expression is forbidden. If the value should not be reactive, declare it without `$state`
+ * @returns {never}
+ */
+function state_unsafe_mutation() {
+	{
+		throw new Error(`https://svelte.dev/e/state_unsafe_mutation`);
+	}
+}
+
+/**
+ * A `<svelte:boundary>` `reset` function cannot be called while an error is still being handled
+ * @returns {never}
+ */
+function svelte_boundary_reset_onerror() {
+	{
+		throw new Error(`https://svelte.dev/e/svelte_boundary_reset_onerror`);
+	}
+}
+
+/** True if experimental.async=true */
+/** True if we're not certain that we only have Svelte 5 code in the compilation */
+let legacy_mode_flag = false;
+/** True if $inspect.trace is used */
+let tracing_mode_flag = false;
+
+function enable_legacy_mode_flag() {
+	legacy_mode_flag = true;
+}
+
+const EACH_ITEM_REACTIVE = 1;
+const EACH_INDEX_REACTIVE = 1 << 1;
+/** See EachBlock interface metadata.is_controlled for an explanation what this is */
+const EACH_IS_CONTROLLED = 1 << 2;
+const EACH_IS_ANIMATED = 1 << 3;
+const EACH_ITEM_IMMUTABLE = 1 << 4;
+
+const PROPS_IS_IMMUTABLE = 1;
+const PROPS_IS_RUNES = 1 << 1;
+const PROPS_IS_UPDATED = 1 << 2;
+const PROPS_IS_BINDABLE = 1 << 3;
+const PROPS_IS_LAZY_INITIAL = 1 << 4;
+
+const TEMPLATE_FRAGMENT = 1;
+const TEMPLATE_USE_IMPORT_NODE = 1 << 1;
+
+const UNINITIALIZED = Symbol();
+
+// Dev-time component properties
+const FILENAME = Symbol('filename');
+
+const NAMESPACE_HTML = 'http://www.w3.org/1999/xhtml';
+const NAMESPACE_SVG = 'http://www.w3.org/2000/svg';
+
+const ATTACHMENT_KEY = '@attach';
+
+/** @import { Derived, Reaction, Value } from '#client' */
+
+/**
+ * @param {Value} source
+ * @param {string} label
+ */
+function tag(source, label) {
+	source.label = label;
+	tag_proxy(source.v, label);
+
+	return source;
+}
+
+/**
+ * @param {unknown} value
+ * @param {string} label
+ */
+function tag_proxy(value, label) {
+	// @ts-expect-error
+	value?.[PROXY_PATH_SYMBOL]?.(label);
+	return value;
+}
+
+/** @import { ComponentContext, DevStackEntry, Effect } from '#client' */
+
+/** @type {ComponentContext | null} */
+let component_context = null;
+
+/** @param {ComponentContext | null} context */
+function set_component_context(context) {
+	component_context = context;
+}
+
+/** @type {DevStackEntry | null} */
+let dev_stack = null;
+
+/**
+ * Execute a callback with a new dev stack entry
+ * @param {() => any} callback - Function to execute
+ * @param {DevStackEntry['type']} type - Type of block/component
+ * @param {any} component - Component function
+ * @param {number} line - Line number
+ * @param {number} column - Column number
+ * @param {Record<string, any>} [additional] - Any additional properties to add to the dev stack entry
+ * @returns {any}
+ */
+function add_svelte_meta(callback, type, component, line, column, additional) {
+	const parent = dev_stack;
+
+	dev_stack = {
+		type,
+		file: component[FILENAME],
+		line,
+		column,
+		parent,
+		...additional
+	};
+
+	try {
+		return callback();
+	} finally {
+		dev_stack = parent;
+	}
+}
+
+/**
+ * The current component function. Different from current component context:
+ * ```html
+ * <!-- App.svelte -->
+ * <Foo>
+ *   <Bar /> <!-- context == Foo.svelte, function == App.svelte -->
+ * </Foo>
+ * ```
+ * @type {ComponentContext['function']}
+ */
+let dev_current_component_function = null;
+
+/** @param {ComponentContext['function']} fn */
+function set_dev_current_component_function(fn) {
+	dev_current_component_function = fn;
+}
+
+/**
+ * @param {Record<string, unknown>} props
+ * @param {any} runes
+ * @param {Function} [fn]
+ * @returns {void}
+ */
+function push(props, runes = false, fn) {
+	component_context = {
+		p: component_context,
+		i: false,
+		c: null,
+		e: null,
+		s: props,
+		x: null,
+		l: legacy_mode_flag && !runes ? { s: null, u: null, $: [] } : null
+	};
+}
+
+/**
+ * @template {Record<string, any>} T
+ * @param {T} [component]
+ * @returns {T}
+ */
+function pop(component) {
+	var context = /** @type {ComponentContext} */ (component_context);
+	var effects = context.e;
+
+	if (effects !== null) {
+		context.e = null;
+
+		for (var fn of effects) {
+			create_user_effect(fn);
+		}
+	}
+
+	if (component !== undefined) {
+		context.x = component;
+	}
+
+	context.i = true;
+
+	component_context = context.p;
+
+	return component ?? /** @type {T} */ ({});
+}
+
+/** @returns {boolean} */
+function is_runes() {
+	return !legacy_mode_flag || (component_context !== null && component_context.l === null);
+}
+
+/** @type {Array<() => void>} */
+let micro_tasks = [];
+
+function run_micro_tasks() {
+	var tasks = micro_tasks;
+	micro_tasks = [];
+	run_all(tasks);
+}
+
+/**
+ * @param {() => void} fn
+ */
+function queue_micro_task(fn) {
+	if (micro_tasks.length === 0 && !is_flushing_sync) {
+		var tasks = micro_tasks;
+		queueMicrotask(() => {
+			// If this is false, a flushSync happened in the meantime. Do _not_ run new scheduled microtasks in that case
+			// as the ordering of microtasks would be broken at that point - consider this case:
+			// - queue_micro_task schedules microtask A to flush task X
+			// - synchronously after, flushSync runs, processing task X
+			// - synchronously after, some other microtask B is scheduled, but not through queue_micro_task but for example a Promise.resolve() in user code
+			// - synchronously after, queue_micro_task schedules microtask C to flush task Y
+			// - one tick later, microtask A now resolves, flushing task Y before microtask B, which is incorrect
+			// This if check prevents that race condition (that realistically will only happen in tests)
+			if (tasks === micro_tasks) run_micro_tasks();
+		});
+	}
+
+	micro_tasks.push(fn);
+}
+
+/**
+ * Synchronously run any queued tasks.
+ */
+function flush_tasks() {
+	while (micro_tasks.length > 0) {
+		run_micro_tasks();
+	}
+}
+
+/* This file is generated by scripts/process-messages/index.js. Do not edit! */
+
+
+/**
+ * `%binding%` (%location%) is binding to a non-reactive property
+ * @param {string} binding
+ * @param {string | undefined | null} [location]
+ */
+function binding_property_non_reactive(binding, location) {
+	{
+		console.warn(`https://svelte.dev/e/binding_property_non_reactive`);
+	}
+}
+
+/**
+ * %parent% passed property `%prop%` to %child% with `bind:`, but its parent component %owner% did not declare `%prop%` as a binding. Consider creating a binding between %owner% and %parent% (e.g. `bind:%prop%={...}` instead of `%prop%={...}`)
+ * @param {string} parent
+ * @param {string} prop
+ * @param {string} child
+ * @param {string} owner
+ */
+function ownership_invalid_binding(parent, prop, child, owner) {
+	{
+		console.warn(`https://svelte.dev/e/ownership_invalid_binding`);
+	}
+}
+
+/**
+ * Mutating unbound props (`%name%`, at %location%) is strongly discouraged. Consider using `bind:%prop%={...}` in %parent% (or using a callback) instead
+ * @param {string} name
+ * @param {string} location
+ * @param {string} prop
+ * @param {string} parent
+ */
+function ownership_invalid_mutation(name, location, prop, parent) {
+	{
+		console.warn(`https://svelte.dev/e/ownership_invalid_mutation`);
+	}
+}
+
+/**
+ * The `value` property of a `<select multiple>` element should be an array, but it received a non-array value. The selection will be kept as is.
+ */
+function select_multiple_invalid_value() {
+	{
+		console.warn(`https://svelte.dev/e/select_multiple_invalid_value`);
+	}
+}
+
+/**
+ * Reactive `$state(...)` proxies and the values they proxy have different identities. Because of this, comparisons with `%operator%` will produce unexpected results
+ * @param {string} operator
+ */
+function state_proxy_equality_mismatch(operator) {
+	{
+		console.warn(`https://svelte.dev/e/state_proxy_equality_mismatch`);
+	}
+}
+
+/**
+ * A `<svelte:boundary>` `reset` function only resets the boundary the first time it is called
+ */
+function svelte_boundary_reset_noop() {
+	{
+		console.warn(`https://svelte.dev/e/svelte_boundary_reset_noop`);
+	}
+}
+
+/** @import { TemplateNode } from '#client' */
+
+
+/** @param {TemplateNode} node */
+function reset(node) {
+	return;
+}
+
+function next(count = 1) {
+}
+
+/** @import { Source } from '#client' */
+
+/**
+ * @template T
+ * @param {T} value
+ * @returns {T}
+ */
+function proxy(value) {
+	// if non-proxyable, or is already a proxy, return `value`
+	if (typeof value !== 'object' || value === null || STATE_SYMBOL in value) {
+		return value;
+	}
+
+	const prototype = get_prototype_of(value);
+
+	if (prototype !== object_prototype && prototype !== array_prototype) {
+		return value;
+	}
+
+	/** @type {Map<any, Source<any>>} */
+	var sources = new Map();
+	var is_proxied_array = is_array(value);
+	var version = state(0);
+	var parent_version = update_version;
+
+	/**
+	 * Executes the proxy in the context of the reaction it was originally created in, if any
+	 * @template T
+	 * @param {() => T} fn
+	 */
+	var with_parent = (fn) => {
+		if (update_version === parent_version) {
+			return fn();
+		}
+
+		// child source is being created after the initial proxy —
+		// prevent it from being associated with the current reaction
+		var reaction = active_reaction;
+		var version = update_version;
+
+		set_active_reaction(null);
+		set_update_version(parent_version);
+
+		var result = fn();
+
+		set_active_reaction(reaction);
+		set_update_version(version);
+
+		return result;
+	};
+
+	if (is_proxied_array) {
+		// We need to create the length source eagerly to ensure that
+		// mutations to the array are properly synced with our proxy
+		sources.set('length', state(/** @type {any[]} */ (value).length));
+	}
+
+	return new Proxy(/** @type {any} */ (value), {
+		defineProperty(_, prop, descriptor) {
+			if (
+				!('value' in descriptor) ||
+				descriptor.configurable === false ||
+				descriptor.enumerable === false ||
+				descriptor.writable === false
+			) {
+				// we disallow non-basic descriptors, because unless they are applied to the
+				// target object — which we avoid, so that state can be forked — we will run
+				// afoul of the various invariants
+				// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy/Proxy/getOwnPropertyDescriptor#invariants
+				state_descriptors_fixed();
+			}
+			var s = sources.get(prop);
+			if (s === undefined) {
+				s = with_parent(() => {
+					var s = state(descriptor.value);
+					sources.set(prop, s);
+					return s;
+				});
+			} else {
+				set(s, descriptor.value, true);
+			}
+
+			return true;
+		},
+
+		deleteProperty(target, prop) {
+			var s = sources.get(prop);
+
+			if (s === undefined) {
+				if (prop in target) {
+					const s = with_parent(() => state(UNINITIALIZED));
+					sources.set(prop, s);
+					increment(version);
+				}
+			} else {
+				set(s, UNINITIALIZED);
+				increment(version);
+			}
+
+			return true;
+		},
+
+		get(target, prop, receiver) {
+			if (prop === STATE_SYMBOL) {
+				return value;
+			}
+
+			var s = sources.get(prop);
+			var exists = prop in target;
+
+			// create a source, but only if it's an own property and not a prototype property
+			if (s === undefined && (!exists || get_descriptor(target, prop)?.writable)) {
+				s = with_parent(() => {
+					var p = proxy(exists ? target[prop] : UNINITIALIZED);
+					var s = state(p);
+
+					return s;
+				});
+
+				sources.set(prop, s);
+			}
+
+			if (s !== undefined) {
+				var v = get$1(s);
+				return v === UNINITIALIZED ? undefined : v;
+			}
+
+			return Reflect.get(target, prop, receiver);
+		},
+
+		getOwnPropertyDescriptor(target, prop) {
+			var descriptor = Reflect.getOwnPropertyDescriptor(target, prop);
+
+			if (descriptor && 'value' in descriptor) {
+				var s = sources.get(prop);
+				if (s) descriptor.value = get$1(s);
+			} else if (descriptor === undefined) {
+				var source = sources.get(prop);
+				var value = source?.v;
+
+				if (source !== undefined && value !== UNINITIALIZED) {
+					return {
+						enumerable: true,
+						configurable: true,
+						value,
+						writable: true
+					};
+				}
+			}
+
+			return descriptor;
+		},
+
+		has(target, prop) {
+			if (prop === STATE_SYMBOL) {
+				return true;
+			}
+
+			var s = sources.get(prop);
+			var has = (s !== undefined && s.v !== UNINITIALIZED) || Reflect.has(target, prop);
+
+			if (
+				s !== undefined ||
+				(active_effect !== null && (!has || get_descriptor(target, prop)?.writable))
+			) {
+				if (s === undefined) {
+					s = with_parent(() => {
+						var p = has ? proxy(target[prop]) : UNINITIALIZED;
+						var s = state(p);
+
+						return s;
+					});
+
+					sources.set(prop, s);
+				}
+
+				var value = get$1(s);
+				if (value === UNINITIALIZED) {
+					return false;
+				}
+			}
+
+			return has;
+		},
+
+		set(target, prop, value, receiver) {
+			var s = sources.get(prop);
+			var has = prop in target;
+
+			// variable.length = value -> clear all signals with index >= value
+			if (is_proxied_array && prop === 'length') {
+				for (var i = value; i < /** @type {Source<number>} */ (s).v; i += 1) {
+					var other_s = sources.get(i + '');
+					if (other_s !== undefined) {
+						set(other_s, UNINITIALIZED);
+					} else if (i in target) {
+						// If the item exists in the original, we need to create an uninitialized source,
+						// else a later read of the property would result in a source being created with
+						// the value of the original item at that index.
+						other_s = with_parent(() => state(UNINITIALIZED));
+						sources.set(i + '', other_s);
+					}
+				}
+			}
+
+			// If we haven't yet created a source for this property, we need to ensure
+			// we do so otherwise if we read it later, then the write won't be tracked and
+			// the heuristics of effects will be different vs if we had read the proxied
+			// object property before writing to that property.
+			if (s === undefined) {
+				if (!has || get_descriptor(target, prop)?.writable) {
+					s = with_parent(() => state(undefined));
+					set(s, proxy(value));
+
+					sources.set(prop, s);
+				}
+			} else {
+				has = s.v !== UNINITIALIZED;
+
+				var p = with_parent(() => proxy(value));
+				set(s, p);
+			}
+
+			var descriptor = Reflect.getOwnPropertyDescriptor(target, prop);
+
+			// Set the new value before updating any signals so that any listeners get the new value
+			if (descriptor?.set) {
+				descriptor.set.call(receiver, value);
+			}
+
+			if (!has) {
+				// If we have mutated an array directly, we might need to
+				// signal that length has also changed. Do it before updating metadata
+				// to ensure that iterating over the array as a result of a metadata update
+				// will not cause the length to be out of sync.
+				if (is_proxied_array && typeof prop === 'string') {
+					var ls = /** @type {Source<number>} */ (sources.get('length'));
+					var n = Number(prop);
+
+					if (Number.isInteger(n) && n >= ls.v) {
+						set(ls, n + 1);
+					}
+				}
+
+				increment(version);
+			}
+
+			return true;
+		},
+
+		ownKeys(target) {
+			get$1(version);
+
+			var own_keys = Reflect.ownKeys(target).filter((key) => {
+				var source = sources.get(key);
+				return source === undefined || source.v !== UNINITIALIZED;
+			});
+
+			for (var [key, source] of sources) {
+				if (source.v !== UNINITIALIZED && !(key in target)) {
+					own_keys.push(key);
+				}
+			}
+
+			return own_keys;
+		},
+
+		setPrototypeOf() {
+			state_prototype_fixed();
+		}
+	});
+}
+
+/**
+ * @param {any} value
+ */
+function get_proxied_value(value) {
+	try {
+		if (value !== null && typeof value === 'object' && STATE_SYMBOL in value) {
+			return value[STATE_SYMBOL];
+		}
+	} catch {
+		// the above if check can throw an error if the value in question
+		// is the contentWindow of an iframe on another domain, in which
+		// case we want to just return the value (because it's definitely
+		// not a proxied value) so we don't break any JavaScript interacting
+		// with that iframe (such as various payment companies client side
+		// JavaScript libraries interacting with their iframes on the same
+		// domain)
+	}
+
+	return value;
+}
+
+/**
+ * @param {any} a
+ * @param {any} b
+ */
+function is(a, b) {
+	return Object.is(get_proxied_value(a), get_proxied_value(b));
+}
+
+/**
+ * @param {any} a
+ * @param {any} b
+ * @param {boolean} equal
+ * @returns {boolean}
+ */
+function strict_equals(a, b, equal = true) {
+	// try-catch needed because this tries to read properties of `a` and `b`,
+	// which could be disallowed for example in a secure context
+	try {
+		if ((a === b) !== (get_proxied_value(a) === get_proxied_value(b))) {
+			state_proxy_equality_mismatch(equal ? '===' : '!==');
+		}
+	} catch {}
+
+	return (a === b) === equal;
+}
+
+/** @import { Effect, TemplateNode } from '#client' */
+
+// export these for reference in the compiled code, making global name deduplication unnecessary
+/** @type {Window} */
+var $window;
+
+/** @type {boolean} */
+var is_firefox;
+
+/** @type {() => Node | null} */
+var first_child_getter;
+/** @type {() => Node | null} */
+var next_sibling_getter;
+
+/**
+ * Initialize these lazily to avoid issues when using the runtime in a server context
+ * where these globals are not available while avoiding a separate server entry point
+ */
+function init_operations() {
+	if ($window !== undefined) {
+		return;
+	}
+
+	$window = window;
+	is_firefox = /Firefox/.test(navigator.userAgent);
+
+	var element_prototype = Element.prototype;
+	var node_prototype = Node.prototype;
+	var text_prototype = Text.prototype;
+
+	// @ts-ignore
+	first_child_getter = get_descriptor(node_prototype, 'firstChild').get;
+	// @ts-ignore
+	next_sibling_getter = get_descriptor(node_prototype, 'nextSibling').get;
+
+	if (is_extensible(element_prototype)) {
+		// the following assignments improve perf of lookups on DOM nodes
+		// @ts-expect-error
+		element_prototype.__click = undefined;
+		// @ts-expect-error
+		element_prototype.__className = undefined;
+		// @ts-expect-error
+		element_prototype.__attributes = null;
+		// @ts-expect-error
+		element_prototype.__style = undefined;
+		// @ts-expect-error
+		element_prototype.__e = undefined;
+	}
+
+	if (is_extensible(text_prototype)) {
+		// @ts-expect-error
+		text_prototype.__t = undefined;
+	}
+}
+
+/**
+ * @param {string} value
+ * @returns {Text}
+ */
+function create_text(value = '') {
+	return document.createTextNode(value);
+}
+
+/**
+ * @template {Node} N
+ * @param {N} node
+ * @returns {Node | null}
+ */
+/*@__NO_SIDE_EFFECTS__*/
+function get_first_child(node) {
+	return first_child_getter.call(node);
+}
+
+/**
+ * @template {Node} N
+ * @param {N} node
+ * @returns {Node | null}
+ */
+/*@__NO_SIDE_EFFECTS__*/
+function get_next_sibling(node) {
+	return next_sibling_getter.call(node);
+}
+
+/**
+ * Don't mark this as side-effect-free, hydration needs to walk all nodes
+ * @template {Node} N
+ * @param {N} node
+ * @param {boolean} is_text
+ * @returns {Node | null}
+ */
+function child(node, is_text) {
+	{
+		return get_first_child(node);
+	}
+}
+
+/**
+ * Don't mark this as side-effect-free, hydration needs to walk all nodes
+ * @param {DocumentFragment | TemplateNode | TemplateNode[]} fragment
+ * @param {boolean} [is_text]
+ * @returns {Node | null}
+ */
+function first_child(fragment, is_text = false) {
+	{
+		// when not hydrating, `fragment` is a `DocumentFragment` (the result of calling `open_frag`)
+		var first = /** @type {DocumentFragment} */ (get_first_child(/** @type {Node} */ (fragment)));
+
+		// TODO prevent user comments with the empty string when preserveComments is true
+		if (first instanceof Comment && first.data === '') return get_next_sibling(first);
+
+		return first;
+	}
+}
+
+/**
+ * Don't mark this as side-effect-free, hydration needs to walk all nodes
+ * @param {TemplateNode} node
+ * @param {number} count
+ * @param {boolean} is_text
+ * @returns {Node | null}
+ */
+function sibling(node, count = 1, is_text = false) {
+	let next_sibling = node;
+
+	while (count--) {
+		next_sibling = /** @type {TemplateNode} */ (get_next_sibling(next_sibling));
+	}
+
+	{
+		return next_sibling;
+	}
+}
+
+/**
+ * @template {Node} N
+ * @param {N} node
+ * @returns {void}
+ */
+function clear_text_content(node) {
+	node.textContent = '';
+}
+
+/**
+ * Returns `true` if we're updating the current block, for example `condition` in
+ * an `{#if condition}` block just changed. In this case, the branch should be
+ * appended (or removed) at the same time as other updates within the
+ * current `<svelte:boundary>`
+ */
+function should_defer_append() {
+	return false;
+}
+
+/** @import { Derived, Effect } from '#client' */
+/** @import { Boundary } from './dom/blocks/boundary.js' */
+
+/**
+ * @param {unknown} error
+ */
+function handle_error(error) {
+	var effect = active_effect;
+
+	// for unowned deriveds, don't throw until we read the value
+	if (effect === null) {
+		/** @type {Derived} */ (active_reaction).f |= ERROR_VALUE;
+		return error;
+	}
+
+	if ((effect.f & EFFECT_RAN) === 0) {
+		// if the error occurred while creating this subtree, we let it
+		// bubble up until it hits a boundary that can handle it
+		if ((effect.f & BOUNDARY_EFFECT) === 0) {
+
+			throw error;
+		}
+
+		/** @type {Boundary} */ (effect.b).error(error);
+	} else {
+		// otherwise we bubble up the effect tree ourselves
+		invoke_error_boundary(error, effect);
+	}
+}
+
+/**
+ * @param {unknown} error
+ * @param {Effect | null} effect
+ */
+function invoke_error_boundary(error, effect) {
+	while (effect !== null) {
+		if ((effect.f & BOUNDARY_EFFECT) !== 0) {
+			try {
+				/** @type {Boundary} */ (effect.b).error(error);
+				return;
+			} catch (e) {
+				error = e;
+			}
+		}
+
+		effect = effect.parent;
+	}
+
+	throw error;
+}
+
+/** @import { Fork } from 'svelte' */
+/** @import { Derived, Effect, Reaction, Source, Value } from '#client' */
+
+/**
+ * @typedef {{
+ *   parent: EffectTarget | null;
+ *   effect: Effect | null;
+ *   effects: Effect[];
+ *   render_effects: Effect[];
+ *   block_effects: Effect[];
+ * }} EffectTarget
+ */
+
+/** @type {Set<Batch>} */
+const batches = new Set();
+
+/** @type {Batch | null} */
+let current_batch = null;
+
+/**
+ * This is needed to avoid overwriting inputs in non-async mode
+ * TODO 6.0 remove this, as non-async mode will go away
+ * @type {Batch | null}
+ */
+let previous_batch = null;
+
+/**
+ * When time travelling (i.e. working in one batch, while other batches
+ * still have ongoing work), we ignore the real values of affected
+ * signals in favour of their values within the batch
+ * @type {Map<Value, any> | null}
+ */
+let batch_values = null;
+
+// TODO this should really be a property of `batch`
+/** @type {Effect[]} */
+let queued_root_effects = [];
+
+/** @type {Effect | null} */
+let last_scheduled_effect = null;
+
+let is_flushing = false;
+let is_flushing_sync = false;
+
+class Batch {
+	committed = false;
+
+	/**
+	 * The current values of any sources that are updated in this batch
+	 * They keys of this map are identical to `this.#previous`
+	 * @type {Map<Source, any>}
+	 */
+	current = new Map();
+
+	/**
+	 * The values of any sources that are updated in this batch _before_ those updates took place.
+	 * They keys of this map are identical to `this.#current`
+	 * @type {Map<Source, any>}
+	 */
+	previous = new Map();
+
+	/**
+	 * When the batch is committed (and the DOM is updated), we need to remove old branches
+	 * and append new ones by calling the functions added inside (if/each/key/etc) blocks
+	 * @type {Set<() => void>}
+	 */
+	#commit_callbacks = new Set();
+
+	/**
+	 * If a fork is discarded, we need to destroy any effects that are no longer needed
+	 * @type {Set<(batch: Batch) => void>}
+	 */
+	#discard_callbacks = new Set();
+
+	/**
+	 * The number of async effects that are currently in flight
+	 */
+	#pending = 0;
+
+	/**
+	 * The number of async effects that are currently in flight, _not_ inside a pending boundary
+	 */
+	#blocking_pending = 0;
+
+	/**
+	 * A deferred that resolves when the batch is committed, used with `settled()`
+	 * TODO replace with Promise.withResolvers once supported widely enough
+	 * @type {{ promise: Promise<void>, resolve: (value?: any) => void, reject: (reason: unknown) => void } | null}
+	 */
+	#deferred = null;
+
+	/**
+	 * Deferred effects (which run after async work has completed) that are DIRTY
+	 * @type {Effect[]}
+	 */
+	#dirty_effects = [];
+
+	/**
+	 * Deferred effects that are MAYBE_DIRTY
+	 * @type {Effect[]}
+	 */
+	#maybe_dirty_effects = [];
+
+	/**
+	 * A set of branches that still exist, but will be destroyed when this batch
+	 * is committed — we skip over these during `process`
+	 * @type {Set<Effect>}
+	 */
+	skipped_effects = new Set();
+
+	is_fork = false;
+
+	is_deferred() {
+		return this.is_fork || this.#blocking_pending > 0;
+	}
+
+	/**
+	 *
+	 * @param {Effect[]} root_effects
+	 */
+	process(root_effects) {
+		queued_root_effects = [];
+
+		previous_batch = null;
+
+		this.apply();
+
+		/** @type {EffectTarget} */
+		var target = {
+			parent: null,
+			effect: null,
+			effects: [],
+			render_effects: [],
+			block_effects: []
+		};
+
+		for (const root of root_effects) {
+			this.#traverse_effect_tree(root, target);
+			// Note: #traverse_effect_tree runs block effects eagerly, which can schedule effects,
+			// which means queued_root_effects now may be filled again.
+
+			// Helpful for debugging reactivity loss that has to do with branches being skipped:
+			// log_inconsistent_branches(root);
+		}
+
+		if (!this.is_fork) {
+			this.#resolve();
+		}
+
+		if (this.is_deferred()) {
+			this.#defer_effects(target.effects);
+			this.#defer_effects(target.render_effects);
+			this.#defer_effects(target.block_effects);
+		} else {
+			// If sources are written to, then work needs to happen in a separate batch, else prior sources would be mixed with
+			// newly updated sources, which could lead to infinite loops when effects run over and over again.
+			previous_batch = this;
+			current_batch = null;
+
+			flush_queued_effects(target.render_effects);
+			flush_queued_effects(target.effects);
+
+			previous_batch = null;
+
+			this.#deferred?.resolve();
+		}
+
+		batch_values = null;
+	}
+
+	/**
+	 * Traverse the effect tree, executing effects or stashing
+	 * them for later execution as appropriate
+	 * @param {Effect} root
+	 * @param {EffectTarget} target
+	 */
+	#traverse_effect_tree(root, target) {
+		root.f ^= CLEAN;
+
+		var effect = root.first;
+
+		while (effect !== null) {
+			var flags = effect.f;
+			var is_branch = (flags & (BRANCH_EFFECT | ROOT_EFFECT)) !== 0;
+			var is_skippable_branch = is_branch && (flags & CLEAN) !== 0;
+
+			var skip = is_skippable_branch || (flags & INERT) !== 0 || this.skipped_effects.has(effect);
+
+			if ((effect.f & BOUNDARY_EFFECT) !== 0 && effect.b?.is_pending()) {
+				target = {
+					parent: target,
+					effect,
+					effects: [],
+					render_effects: [],
+					block_effects: []
+				};
+			}
+
+			if (!skip && effect.fn !== null) {
+				if (is_branch) {
+					effect.f ^= CLEAN;
+				} else if ((flags & EFFECT) !== 0) {
+					target.effects.push(effect);
+				} else if (is_dirty(effect)) {
+					if ((effect.f & BLOCK_EFFECT) !== 0) target.block_effects.push(effect);
+					update_effect(effect);
+				}
+
+				var child = effect.first;
+
+				if (child !== null) {
+					effect = child;
+					continue;
+				}
+			}
+
+			var parent = effect.parent;
+			effect = effect.next;
+
+			while (effect === null && parent !== null) {
+				if (parent === target.effect) {
+					// TODO rather than traversing into pending boundaries and deferring the effects,
+					// could we just attach the effects _to_ the pending boundary and schedule them
+					// once the boundary is ready?
+					this.#defer_effects(target.effects);
+					this.#defer_effects(target.render_effects);
+					this.#defer_effects(target.block_effects);
+
+					target = /** @type {EffectTarget} */ (target.parent);
+				}
+
+				effect = parent.next;
+				parent = parent.parent;
+			}
+		}
+	}
+
+	/**
+	 * @param {Effect[]} effects
+	 */
+	#defer_effects(effects) {
+		for (const e of effects) {
+			const target = (e.f & DIRTY) !== 0 ? this.#dirty_effects : this.#maybe_dirty_effects;
+			target.push(e);
+
+			// Since we're not executing these effects now, we need to clear any WAS_MARKED flags
+			// so that other batches can correctly reach these effects during their own traversal
+			this.#clear_marked(e.deps);
+
+			// mark as clean so they get scheduled if they depend on pending async state
+			set_signal_status(e, CLEAN);
+		}
+	}
+
+	/**
+	 * @param {Value[] | null} deps
+	 */
+	#clear_marked(deps) {
+		if (deps === null) return;
+
+		for (const dep of deps) {
+			if ((dep.f & DERIVED) === 0 || (dep.f & WAS_MARKED) === 0) {
+				continue;
+			}
+
+			dep.f ^= WAS_MARKED;
+
+			this.#clear_marked(/** @type {Derived} */ (dep).deps);
+		}
+	}
+
+	/**
+	 * Associate a change to a given source with the current
+	 * batch, noting its previous and current values
+	 * @param {Source} source
+	 * @param {any} value
+	 */
+	capture(source, value) {
+		if (!this.previous.has(source)) {
+			this.previous.set(source, value);
+		}
+
+		// Don't save errors in `batch_values`, or they won't be thrown in `runtime.js#get`
+		if ((source.f & ERROR_VALUE) === 0) {
+			this.current.set(source, source.v);
+			batch_values?.set(source, source.v);
+		}
+	}
+
+	activate() {
+		current_batch = this;
+		this.apply();
+	}
+
+	deactivate() {
+		// If we're not the current batch, don't deactivate,
+		// else we could create zombie batches that are never flushed
+		if (current_batch !== this) return;
+
+		current_batch = null;
+		batch_values = null;
+	}
+
+	flush() {
+		this.activate();
+
+		if (queued_root_effects.length > 0) {
+			flush_effects();
+
+			if (current_batch !== null && current_batch !== this) {
+				// this can happen if a new batch was created during `flush_effects()`
+				return;
+			}
+		} else if (this.#pending === 0) {
+			this.process([]); // TODO this feels awkward
+		}
+
+		this.deactivate();
+	}
+
+	discard() {
+		for (const fn of this.#discard_callbacks) fn(this);
+		this.#discard_callbacks.clear();
+	}
+
+	#resolve() {
+		if (this.#blocking_pending === 0) {
+			// append/remove branches
+			for (const fn of this.#commit_callbacks) fn();
+			this.#commit_callbacks.clear();
+		}
+
+		if (this.#pending === 0) {
+			this.#commit();
+		}
+	}
+
+	#commit() {
+		// If there are other pending batches, they now need to be 'rebased' —
+		// in other words, we re-run block/async effects with the newly
+		// committed state, unless the batch in question has a more
+		// recent value for a given source
+		if (batches.size > 1) {
+			this.previous.clear();
+
+			var previous_batch_values = batch_values;
+			var is_earlier = true;
+
+			/** @type {EffectTarget} */
+			var dummy_target = {
+				parent: null,
+				effect: null,
+				effects: [],
+				render_effects: [],
+				block_effects: []
+			};
+
+			for (const batch of batches) {
+				if (batch === this) {
+					is_earlier = false;
+					continue;
+				}
+
+				/** @type {Source[]} */
+				const sources = [];
+
+				for (const [source, value] of this.current) {
+					if (batch.current.has(source)) {
+						if (is_earlier && value !== batch.current.get(source)) {
+							// bring the value up to date
+							batch.current.set(source, value);
+						} else {
+							// same value or later batch has more recent value,
+							// no need to re-run these effects
+							continue;
+						}
+					}
+
+					sources.push(source);
+				}
+
+				if (sources.length === 0) {
+					continue;
+				}
+
+				// Re-run async/block effects that depend on distinct values changed in both batches
+				const others = [...batch.current.keys()].filter((s) => !this.current.has(s));
+				if (others.length > 0) {
+					// Avoid running queued root effects on the wrong branch
+					var prev_queued_root_effects = queued_root_effects;
+					queued_root_effects = [];
+
+					/** @type {Set<Value>} */
+					const marked = new Set();
+					/** @type {Map<Reaction, boolean>} */
+					const checked = new Map();
+					for (const source of sources) {
+						mark_effects(source, others, marked, checked);
+					}
+
+					if (queued_root_effects.length > 0) {
+						current_batch = batch;
+						batch.apply();
+
+						for (const root of queued_root_effects) {
+							batch.#traverse_effect_tree(root, dummy_target);
+						}
+
+						// TODO do we need to do anything with `target`? defer block effects?
+
+						batch.deactivate();
+					}
+
+					queued_root_effects = prev_queued_root_effects;
+				}
+			}
+
+			current_batch = null;
+			batch_values = previous_batch_values;
+		}
+
+		this.committed = true;
+		batches.delete(this);
+	}
+
+	/**
+	 *
+	 * @param {boolean} blocking
+	 */
+	increment(blocking) {
+		this.#pending += 1;
+		if (blocking) this.#blocking_pending += 1;
+	}
+
+	/**
+	 *
+	 * @param {boolean} blocking
+	 */
+	decrement(blocking) {
+		this.#pending -= 1;
+		if (blocking) this.#blocking_pending -= 1;
+
+		this.revive();
+	}
+
+	revive() {
+		for (const e of this.#dirty_effects) {
+			set_signal_status(e, DIRTY);
+			schedule_effect(e);
+		}
+
+		for (const e of this.#maybe_dirty_effects) {
+			set_signal_status(e, MAYBE_DIRTY);
+			schedule_effect(e);
+		}
+
+		this.#dirty_effects = [];
+		this.#maybe_dirty_effects = [];
+
+		this.flush();
+	}
+
+	/** @param {() => void} fn */
+	oncommit(fn) {
+		this.#commit_callbacks.add(fn);
+	}
+
+	/** @param {(batch: Batch) => void} fn */
+	ondiscard(fn) {
+		this.#discard_callbacks.add(fn);
+	}
+
+	settled() {
+		return (this.#deferred ??= deferred()).promise;
+	}
+
+	static ensure() {
+		if (current_batch === null) {
+			const batch = (current_batch = new Batch());
+			batches.add(current_batch);
+
+			if (!is_flushing_sync) {
+				Batch.enqueue(() => {
+					if (current_batch !== batch) {
+						// a flushSync happened in the meantime
+						return;
+					}
+
+					batch.flush();
+				});
+			}
+		}
+
+		return current_batch;
+	}
+
+	/** @param {() => void} task */
+	static enqueue(task) {
+		queue_micro_task(task);
+	}
+
+	apply() {
+		return;
+	}
+}
+
+/**
+ * Synchronously flush any pending updates.
+ * Returns void if no callback is provided, otherwise returns the result of calling the callback.
+ * @template [T=void]
+ * @param {(() => T) | undefined} [fn]
+ * @returns {T}
+ */
+function flushSync(fn) {
+	var was_flushing_sync = is_flushing_sync;
+	is_flushing_sync = true;
+
+	try {
+		var result;
+
+		if (fn) ;
+
+		while (true) {
+			flush_tasks();
+
+			if (queued_root_effects.length === 0) {
+				current_batch?.flush();
+
+				// we need to check again, in case we just updated an `$effect.pending()`
+				if (queued_root_effects.length === 0) {
+					// this would be reset in `flush_effects()` but since we are early returning here,
+					// we need to reset it here as well in case the first time there's 0 queued root effects
+					last_scheduled_effect = null;
+
+					return /** @type {T} */ (result);
+				}
+			}
+
+			flush_effects();
+		}
+	} finally {
+		is_flushing_sync = was_flushing_sync;
+	}
+}
+
+function flush_effects() {
+	var was_updating_effect = is_updating_effect;
+	is_flushing = true;
+
+	var source_stacks = null;
+
+	try {
+		var flush_count = 0;
+		set_is_updating_effect(true);
+
+		while (queued_root_effects.length > 0) {
+			var batch = Batch.ensure();
+
+			if (flush_count++ > 1000) {
+				var updates, entry; if (DEV) ;
+
+				infinite_loop_guard();
+			}
+
+			batch.process(queued_root_effects);
+			old_values.clear();
+
+			if (DEV) ;
+		}
+	} finally {
+		is_flushing = false;
+		set_is_updating_effect(was_updating_effect);
+
+		last_scheduled_effect = null;
+	}
+}
+
+function infinite_loop_guard() {
+	try {
+		effect_update_depth_exceeded();
+	} catch (error) {
+
+		// Best effort: invoke the boundary nearest the most recent
+		// effect and hope that it's relevant to the infinite loop
+		invoke_error_boundary(error, last_scheduled_effect);
+	}
+}
+
+/** @type {Set<Effect> | null} */
+let eager_block_effects = null;
+
+/**
+ * @param {Array<Effect>} effects
+ * @returns {void}
+ */
+function flush_queued_effects(effects) {
+	var length = effects.length;
+	if (length === 0) return;
+
+	var i = 0;
+
+	while (i < length) {
+		var effect = effects[i++];
+
+		if ((effect.f & (DESTROYED | INERT)) === 0 && is_dirty(effect)) {
+			eager_block_effects = new Set();
+
+			update_effect(effect);
+
+			// Effects with no dependencies or teardown do not get added to the effect tree.
+			// Deferred effects (e.g. `$effect(...)`) _are_ added to the tree because we
+			// don't know if we need to keep them until they are executed. Doing the check
+			// here (rather than in `update_effect`) allows us to skip the work for
+			// immediate effects.
+			if (effect.deps === null && effect.first === null && effect.nodes_start === null) {
+				// if there's no teardown or abort controller we completely unlink
+				// the effect from the graph
+				if (effect.teardown === null && effect.ac === null) {
+					// remove this effect from the graph
+					unlink_effect(effect);
+				} else {
+					// keep the effect in the graph, but free up some memory
+					effect.fn = null;
+				}
+			}
+
+			// If update_effect() has a flushSync() in it, we may have flushed another flush_queued_effects(),
+			// which already handled this logic and did set eager_block_effects to null.
+			if (eager_block_effects?.size > 0) {
+				old_values.clear();
+
+				for (const e of eager_block_effects) {
+					// Skip eager effects that have already been unmounted
+					if ((e.f & (DESTROYED | INERT)) !== 0) continue;
+
+					// Run effects in order from ancestor to descendant, else we could run into nullpointers
+					/** @type {Effect[]} */
+					const ordered_effects = [e];
+					let ancestor = e.parent;
+					while (ancestor !== null) {
+						if (eager_block_effects.has(ancestor)) {
+							eager_block_effects.delete(ancestor);
+							ordered_effects.push(ancestor);
+						}
+						ancestor = ancestor.parent;
+					}
+
+					for (let j = ordered_effects.length - 1; j >= 0; j--) {
+						const e = ordered_effects[j];
+						// Skip eager effects that have already been unmounted
+						if ((e.f & (DESTROYED | INERT)) !== 0) continue;
+						update_effect(e);
+					}
+				}
+
+				eager_block_effects.clear();
+			}
+		}
+	}
+
+	eager_block_effects = null;
+}
+
+/**
+ * This is similar to `mark_reactions`, but it only marks async/block effects
+ * depending on `value` and at least one of the other `sources`, so that
+ * these effects can re-run after another batch has been committed
+ * @param {Value} value
+ * @param {Source[]} sources
+ * @param {Set<Value>} marked
+ * @param {Map<Reaction, boolean>} checked
+ */
+function mark_effects(value, sources, marked, checked) {
+	if (marked.has(value)) return;
+	marked.add(value);
+
+	if (value.reactions !== null) {
+		for (const reaction of value.reactions) {
+			const flags = reaction.f;
+
+			if ((flags & DERIVED) !== 0) {
+				mark_effects(/** @type {Derived} */ (reaction), sources, marked, checked);
+			} else if (
+				(flags & (ASYNC | BLOCK_EFFECT)) !== 0 &&
+				(flags & DIRTY) === 0 &&
+				depends_on(reaction, sources, checked)
+			) {
+				set_signal_status(reaction, DIRTY);
+				schedule_effect(/** @type {Effect} */ (reaction));
+			}
+		}
+	}
+}
+
+/**
+ * @param {Reaction} reaction
+ * @param {Source[]} sources
+ * @param {Map<Reaction, boolean>} checked
+ */
+function depends_on(reaction, sources, checked) {
+	const depends = checked.get(reaction);
+	if (depends !== undefined) return depends;
+
+	if (reaction.deps !== null) {
+		for (const dep of reaction.deps) {
+			if (sources.includes(dep)) {
+				return true;
+			}
+
+			if ((dep.f & DERIVED) !== 0 && depends_on(/** @type {Derived} */ (dep), sources, checked)) {
+				checked.set(/** @type {Derived} */ (dep), true);
+				return true;
+			}
+		}
+	}
+
+	checked.set(reaction, false);
+
+	return false;
+}
+
+/**
+ * @param {Effect} signal
+ * @returns {void}
+ */
+function schedule_effect(signal) {
+	var effect = (last_scheduled_effect = signal);
+
+	while (effect.parent !== null) {
+		effect = effect.parent;
+		var flags = effect.f;
+
+		// if the effect is being scheduled because a parent (each/await/etc) block
+		// updated an internal source, bail out or we'll cause a second flush
+		if (
+			is_flushing &&
+			effect === active_effect &&
+			(flags & BLOCK_EFFECT) !== 0 &&
+			(flags & HEAD_EFFECT) === 0
+		) {
+			return;
+		}
+
+		if ((flags & (ROOT_EFFECT | BRANCH_EFFECT)) !== 0) {
+			if ((flags & CLEAN) === 0) return;
+			effect.f ^= CLEAN;
+		}
+	}
+
+	queued_root_effects.push(effect);
+}
+
+/**
+ * Returns a `subscribe` function that integrates external event-based systems with Svelte's reactivity.
+ * It's particularly useful for integrating with web APIs like `MediaQuery`, `IntersectionObserver`, or `WebSocket`.
+ *
+ * If `subscribe` is called inside an effect (including indirectly, for example inside a getter),
+ * the `start` callback will be called with an `update` function. Whenever `update` is called, the effect re-runs.
+ *
+ * If `start` returns a cleanup function, it will be called when the effect is destroyed.
+ *
+ * If `subscribe` is called in multiple effects, `start` will only be called once as long as the effects
+ * are active, and the returned teardown function will only be called when all effects are destroyed.
+ *
+ * It's best understood with an example. Here's an implementation of [`MediaQuery`](https://svelte.dev/docs/svelte/svelte-reactivity#MediaQuery):
+ *
+ * ```js
+ * import { createSubscriber } from 'svelte/reactivity';
+ * import { on } from 'svelte/events';
+ *
+ * export class MediaQuery {
+ * 	#query;
+ * 	#subscribe;
+ *
+ * 	constructor(query) {
+ * 		this.#query = window.matchMedia(`(${query})`);
+ *
+ * 		this.#subscribe = createSubscriber((update) => {
+ * 			// when the `change` event occurs, re-run any effects that read `this.current`
+ * 			const off = on(this.#query, 'change', update);
+ *
+ * 			// stop listening when all the effects are destroyed
+ * 			return () => off();
+ * 		});
+ * 	}
+ *
+ * 	get current() {
+ * 		// This makes the getter reactive, if read in an effect
+ * 		this.#subscribe();
+ *
+ * 		// Return the current state of the query, whether or not we're in an effect
+ * 		return this.#query.matches;
+ * 	}
+ * }
+ * ```
+ * @param {(update: () => void) => (() => void) | void} start
+ * @since 5.7.0
+ */
+function createSubscriber(start) {
+	let subscribers = 0;
+	let version = source(0);
+	/** @type {(() => void) | void} */
+	let stop;
+
+	return () => {
+		if (effect_tracking()) {
+			get$1(version);
+
+			render_effect(() => {
+				if (subscribers === 0) {
+					stop = untrack(() => start(() => increment(version)));
+				}
+
+				subscribers += 1;
+
+				return () => {
+					queue_micro_task(() => {
+						// Only count down after a microtask, else we would reach 0 before our own render effect reruns,
+						// but reach 1 again when the tick callback of the prior teardown runs. That would mean we
+						// re-subcribe unnecessarily and create a memory leak because the old subscription is never cleaned up.
+						subscribers -= 1;
+
+						if (subscribers === 0) {
+							stop?.();
+							stop = undefined;
+							// Increment the version to ensure any dependent deriveds are marked dirty when the subscription is picked up again later.
+							// If we didn't do this then the comparison of write versions would determine that the derived has a later version than
+							// the subscriber, and it would not be re-run.
+							increment(version);
+						}
+					});
+				};
+			});
+		}
+	};
+}
+
+/** @import { Effect, Source, TemplateNode, } from '#client' */
+
+/**
+ * @typedef {{
+ * 	 onerror?: (error: unknown, reset: () => void) => void;
+ *   failed?: (anchor: Node, error: () => unknown, reset: () => () => void) => void;
+ *   pending?: (anchor: Node) => void;
+ * }} BoundaryProps
+ */
+
+var flags = EFFECT_TRANSPARENT | EFFECT_PRESERVED | BOUNDARY_EFFECT;
+
+/**
+ * @param {TemplateNode} node
+ * @param {BoundaryProps} props
+ * @param {((anchor: Node) => void)} children
+ * @returns {void}
+ */
+function boundary(node, props, children) {
+	new Boundary(node, props, children);
+}
+
+class Boundary {
+	/** @type {Boundary | null} */
+	parent;
+
+	#pending = false;
+
+	/** @type {TemplateNode} */
+	#anchor;
+
+	/** @type {TemplateNode | null} */
+	#hydrate_open = null;
+
+	/** @type {BoundaryProps} */
+	#props;
+
+	/** @type {((anchor: Node) => void)} */
+	#children;
+
+	/** @type {Effect} */
+	#effect;
+
+	/** @type {Effect | null} */
+	#main_effect = null;
+
+	/** @type {Effect | null} */
+	#pending_effect = null;
+
+	/** @type {Effect | null} */
+	#failed_effect = null;
+
+	/** @type {DocumentFragment | null} */
+	#offscreen_fragment = null;
+
+	/** @type {TemplateNode | null} */
+	#pending_anchor = null;
+
+	#local_pending_count = 0;
+	#pending_count = 0;
+
+	#is_creating_fallback = false;
+
+	/**
+	 * A source containing the number of pending async deriveds/expressions.
+	 * Only created if `$effect.pending()` is used inside the boundary,
+	 * otherwise updating the source results in needless `Batch.ensure()`
+	 * calls followed by no-op flushes
+	 * @type {Source<number> | null}
+	 */
+	#effect_pending = null;
+
+	#effect_pending_subscriber = createSubscriber(() => {
+		this.#effect_pending = source(this.#local_pending_count);
+
+		return () => {
+			this.#effect_pending = null;
+		};
+	});
+
+	/**
+	 * @param {TemplateNode} node
+	 * @param {BoundaryProps} props
+	 * @param {((anchor: Node) => void)} children
+	 */
+	constructor(node, props, children) {
+		this.#anchor = node;
+		this.#props = props;
+		this.#children = children;
+
+		this.parent = /** @type {Effect} */ (active_effect).b;
+
+		this.#pending = !!this.#props.pending;
+
+		this.#effect = block(() => {
+			/** @type {Effect} */ (active_effect).b = this;
+
+			{
+				var anchor = this.#get_anchor();
+
+				try {
+					this.#main_effect = branch(() => children(anchor));
+				} catch (error) {
+					this.error(error);
+				}
+
+				if (this.#pending_count > 0) {
+					this.#show_pending_snippet();
+				} else {
+					this.#pending = false;
+				}
+			}
+
+			return () => {
+				this.#pending_anchor?.remove();
+			};
+		}, flags);
+	}
+
+	#hydrate_resolved_content() {
+		try {
+			this.#main_effect = branch(() => this.#children(this.#anchor));
+		} catch (error) {
+			this.error(error);
+		}
+
+		// Since server rendered resolved content, we never show pending state
+		// Even if client-side async operations are still running, the content is already displayed
+		this.#pending = false;
+	}
+
+	#hydrate_pending_content() {
+		const pending = this.#props.pending;
+		if (!pending) {
+			return;
+		}
+		this.#pending_effect = branch(() => pending(this.#anchor));
+
+		Batch.enqueue(() => {
+			var anchor = this.#get_anchor();
+
+			this.#main_effect = this.#run(() => {
+				Batch.ensure();
+				return branch(() => this.#children(anchor));
+			});
+
+			if (this.#pending_count > 0) {
+				this.#show_pending_snippet();
+			} else {
+				pause_effect(/** @type {Effect} */ (this.#pending_effect), () => {
+					this.#pending_effect = null;
+				});
+
+				this.#pending = false;
+			}
+		});
+	}
+
+	#get_anchor() {
+		var anchor = this.#anchor;
+
+		if (this.#pending) {
+			this.#pending_anchor = create_text();
+			this.#anchor.before(this.#pending_anchor);
+
+			anchor = this.#pending_anchor;
+		}
+
+		return anchor;
+	}
+
+	/**
+	 * Returns `true` if the effect exists inside a boundary whose pending snippet is shown
+	 * @returns {boolean}
+	 */
+	is_pending() {
+		return this.#pending || (!!this.parent && this.parent.is_pending());
+	}
+
+	has_pending_snippet() {
+		return !!this.#props.pending;
+	}
+
+	/**
+	 * @param {() => Effect | null} fn
+	 */
+	#run(fn) {
+		var previous_effect = active_effect;
+		var previous_reaction = active_reaction;
+		var previous_ctx = component_context;
+
+		set_active_effect(this.#effect);
+		set_active_reaction(this.#effect);
+		set_component_context(this.#effect.ctx);
+
+		try {
+			return fn();
+		} catch (e) {
+			handle_error(e);
+			return null;
+		} finally {
+			set_active_effect(previous_effect);
+			set_active_reaction(previous_reaction);
+			set_component_context(previous_ctx);
+		}
+	}
+
+	#show_pending_snippet() {
+		const pending = /** @type {(anchor: Node) => void} */ (this.#props.pending);
+
+		if (this.#main_effect !== null) {
+			this.#offscreen_fragment = document.createDocumentFragment();
+			this.#offscreen_fragment.append(/** @type {TemplateNode} */ (this.#pending_anchor));
+			move_effect(this.#main_effect, this.#offscreen_fragment);
+		}
+
+		if (this.#pending_effect === null) {
+			this.#pending_effect = branch(() => pending(this.#anchor));
+		}
+	}
+
+	/**
+	 * Updates the pending count associated with the currently visible pending snippet,
+	 * if any, such that we can replace the snippet with content once work is done
+	 * @param {1 | -1} d
+	 */
+	#update_pending_count(d) {
+		if (!this.has_pending_snippet()) {
+			if (this.parent) {
+				this.parent.#update_pending_count(d);
+			}
+
+			// if there's no parent, we're in a scope with no pending snippet
+			return;
+		}
+
+		this.#pending_count += d;
+
+		if (this.#pending_count === 0) {
+			this.#pending = false;
+
+			if (this.#pending_effect) {
+				pause_effect(this.#pending_effect, () => {
+					this.#pending_effect = null;
+				});
+			}
+
+			if (this.#offscreen_fragment) {
+				this.#anchor.before(this.#offscreen_fragment);
+				this.#offscreen_fragment = null;
+			}
+		}
+	}
+
+	/**
+	 * Update the source that powers `$effect.pending()` inside this boundary,
+	 * and controls when the current `pending` snippet (if any) is removed.
+	 * Do not call from inside the class
+	 * @param {1 | -1} d
+	 */
+	update_pending_count(d) {
+		this.#update_pending_count(d);
+
+		this.#local_pending_count += d;
+
+		if (this.#effect_pending) {
+			internal_set(this.#effect_pending, this.#local_pending_count);
+		}
+	}
+
+	get_effect_pending() {
+		this.#effect_pending_subscriber();
+		return get$1(/** @type {Source<number>} */ (this.#effect_pending));
+	}
+
+	/** @param {unknown} error */
+	error(error) {
+		var onerror = this.#props.onerror;
+		let failed = this.#props.failed;
+
+		// If we have nothing to capture the error, or if we hit an error while
+		// rendering the fallback, re-throw for another boundary to handle
+		if (this.#is_creating_fallback || (!onerror && !failed)) {
+			throw error;
+		}
+
+		if (this.#main_effect) {
+			destroy_effect(this.#main_effect);
+			this.#main_effect = null;
+		}
+
+		if (this.#pending_effect) {
+			destroy_effect(this.#pending_effect);
+			this.#pending_effect = null;
+		}
+
+		if (this.#failed_effect) {
+			destroy_effect(this.#failed_effect);
+			this.#failed_effect = null;
+		}
+
+		var did_reset = false;
+		var calling_on_error = false;
+
+		const reset = () => {
+			if (did_reset) {
+				svelte_boundary_reset_noop();
+				return;
+			}
+
+			did_reset = true;
+
+			if (calling_on_error) {
+				svelte_boundary_reset_onerror();
+			}
+
+			// If the failure happened while flushing effects, current_batch can be null
+			Batch.ensure();
+
+			this.#local_pending_count = 0;
+
+			if (this.#failed_effect !== null) {
+				pause_effect(this.#failed_effect, () => {
+					this.#failed_effect = null;
+				});
+			}
+
+			// we intentionally do not try to find the nearest pending boundary. If this boundary has one, we'll render it on reset
+			// but it would be really weird to show the parent's boundary on a child reset.
+			this.#pending = this.has_pending_snippet();
+
+			this.#main_effect = this.#run(() => {
+				this.#is_creating_fallback = false;
+				return branch(() => this.#children(this.#anchor));
+			});
+
+			if (this.#pending_count > 0) {
+				this.#show_pending_snippet();
+			} else {
+				this.#pending = false;
+			}
+		};
+
+		var previous_reaction = active_reaction;
+
+		try {
+			set_active_reaction(null);
+			calling_on_error = true;
+			onerror?.(error, reset);
+			calling_on_error = false;
+		} catch (error) {
+			invoke_error_boundary(error, this.#effect && this.#effect.parent);
+		} finally {
+			set_active_reaction(previous_reaction);
+		}
+
+		if (failed) {
+			queue_micro_task(() => {
+				this.#failed_effect = this.#run(() => {
+					Batch.ensure();
+					this.#is_creating_fallback = true;
+
+					try {
+						return branch(() => {
+							failed(
+								this.#anchor,
+								() => error,
+								() => reset
+							);
+						});
+					} catch (error) {
+						invoke_error_boundary(error, /** @type {Effect} */ (this.#effect.parent));
+						return null;
+					} finally {
+						this.#is_creating_fallback = false;
+					}
+				});
+			});
+		}
+	}
+}
+
+/** @import { EachItem, EachState, Effect, MaybeSource, Source, TemplateNode, TransitionManager, Value } from '#client' */
+/** @import { Batch } from '../../reactivity/batch.js'; */
+
+/**
+ * The row of a keyed each block that is currently updating. We track this
+ * so that `animate:` directives have something to attach themselves to
+ * @type {EachItem | null}
+ */
+let current_each_item = null;
+
+/** @param {EachItem | null} item */
+function set_current_each_item(item) {
+	current_each_item = item;
+}
+
+/**
+ * @param {any} _
+ * @param {number} i
+ */
+function index(_, i) {
+	return i;
+}
+
+/**
+ * Pause multiple effects simultaneously, and coordinate their
+ * subsequent destruction. Used in each blocks
+ * @param {EachState} state
+ * @param {EachItem[]} to_destroy
+ * @param {null | Node} controlled_anchor
+ */
+function pause_effects(state, to_destroy, controlled_anchor) {
+	/** @type {TransitionManager[]} */
+	var transitions = [];
+	var length = to_destroy.length;
+
+	for (var i = 0; i < length; i++) {
+		pause_children(to_destroy[i].e, transitions, true);
+	}
+
+	run_out_transitions(transitions, () => {
+		// If we're in a controlled each block (i.e. the block is the only child of an
+		// element), and we are removing all items, _and_ there are no out transitions,
+		// we can use the fast path — emptying the element and replacing the anchor
+		var fast_path = transitions.length === 0 && controlled_anchor !== null;
+
+		// TODO only destroy effects if no pending batch needs them. otherwise,
+		// just set `item.o` back to `false`
+
+		if (fast_path) {
+			var anchor = /** @type {Element} */ (controlled_anchor);
+			var parent_node = /** @type {Element} */ (anchor.parentNode);
+
+			clear_text_content(parent_node);
+			parent_node.append(anchor);
+
+			state.items.clear();
+			link(state, to_destroy[0].prev, to_destroy[length - 1].next);
+		}
+
+		for (var i = 0; i < length; i++) {
+			var item = to_destroy[i];
+
+			if (!fast_path) {
+				state.items.delete(item.k);
+				link(state, item.prev, item.next);
+			}
+
+			destroy_effect(item.e, !fast_path);
+		}
+
+		if (state.first === to_destroy[0]) {
+			state.first = to_destroy[0].prev;
+		}
+	});
+}
+
+/**
+ * @template V
+ * @param {Element | Comment} node The next sibling node, or the parent node if this is a 'controlled' block
+ * @param {number} flags
+ * @param {() => V[]} get_collection
+ * @param {(value: V, index: number) => any} get_key
+ * @param {(anchor: Node, item: MaybeSource<V>, index: MaybeSource<number>) => void} render_fn
+ * @param {null | ((anchor: Node) => void)} fallback_fn
+ * @returns {void}
+ */
+function each(node, flags, get_collection, get_key, render_fn, fallback_fn = null) {
+	var anchor = node;
+
+	/** @type {Map<any, EachItem>} */
+	var items = new Map();
+
+	/** @type {EachItem | null} */
+	var first = null;
+
+	var is_controlled = (flags & EACH_IS_CONTROLLED) !== 0;
+	var is_reactive_value = (flags & EACH_ITEM_REACTIVE) !== 0;
+	var is_reactive_index = (flags & EACH_INDEX_REACTIVE) !== 0;
+
+	if (is_controlled) {
+		var parent_node = /** @type {Element} */ (node);
+
+		anchor = parent_node.appendChild(create_text());
+	}
+
+	/** @type {{ fragment: DocumentFragment | null, effect: Effect } | null} */
+	var fallback = null;
+
+	// TODO: ideally we could use derived for runes mode but because of the ability
+	// to use a store which can be mutated, we can't do that here as mutating a store
+	// will still result in the collection array being the same from the store
+	var each_array = derived_safe_equal(() => {
+		var collection = get_collection();
+
+		return is_array(collection) ? collection : collection == null ? [] : array_from(collection);
+	});
+
+	/** @type {V[]} */
+	var array;
+
+	var first_run = true;
+
+	function commit() {
+		reconcile(state, array, anchor, flags, get_key);
+
+		if (fallback !== null) {
+			if (array.length === 0) {
+				if (fallback.fragment) {
+					anchor.before(fallback.fragment);
+					fallback.fragment = null;
+				} else {
+					resume_effect(fallback.effect);
+				}
+
+				effect.first = fallback.effect;
+			} else {
+				pause_effect(fallback.effect, () => {
+					// TODO only null out if no pending batch needs it,
+					// otherwise re-add `fallback.fragment` and move the
+					// effect into it
+					fallback = null;
+				});
+			}
+		}
+	}
+
+	var effect = block(() => {
+		array = /** @type {V[]} */ (get$1(each_array));
+		var length = array.length;
+
+		var keys = new Set();
+		var batch = /** @type {Batch} */ (current_batch);
+		var prev = null;
+		var defer = should_defer_append();
+
+		for (var i = 0; i < length; i += 1) {
+
+			var value = array[i];
+			var key = get_key(value, i);
+
+			var item = first_run ? null : items.get(key);
+
+			if (item) {
+				// update before reconciliation, to trigger any async updates
+				if (is_reactive_value) {
+					internal_set(item.v, value);
+				}
+
+				if (is_reactive_index) {
+					internal_set(/** @type {Value<number>} */ (item.i), i);
+				} else {
+					item.i = i;
+				}
+
+				if (defer) {
+					batch.skipped_effects.delete(item.e);
+				}
+			} else {
+				item = create_item(
+					first_run ? anchor : null,
+					prev,
+					value,
+					key,
+					i,
+					render_fn,
+					flags,
+					get_collection
+				);
+
+				if (first_run) {
+					item.o = true;
+
+					if (prev === null) {
+						first = item;
+					} else {
+						prev.next = item;
+					}
+
+					prev = item;
+				}
+
+				items.set(key, item);
+			}
+
+			keys.add(key);
+		}
+
+		if (length === 0 && fallback_fn && !fallback) {
+			if (first_run) {
+				fallback = {
+					fragment: null,
+					effect: branch(() => fallback_fn(anchor))
+				};
+			} else {
+				var fragment = document.createDocumentFragment();
+				var target = create_text();
+				fragment.append(target);
+
+				fallback = {
+					fragment,
+					effect: branch(() => fallback_fn(target))
+				};
+			}
+		}
+
+		if (!first_run) {
+			if (defer) {
+				for (const [key, item] of items) {
+					if (!keys.has(key)) {
+						batch.skipped_effects.add(item.e);
+					}
+				}
+
+				batch.oncommit(commit);
+				batch.ondiscard(() => {
+					// TODO presumably we need to do something here?
+				});
+			} else {
+				commit();
+			}
+		}
+
+		// When we mount the each block for the first time, the collection won't be
+		// connected to this effect as the effect hasn't finished running yet and its deps
+		// won't be assigned. However, it's possible that when reconciling the each block
+		// that a mutation occurred and it's made the collection MAYBE_DIRTY, so reading the
+		// collection again can provide consistency to the reactive graph again as the deriveds
+		// will now be `CLEAN`.
+		get$1(each_array);
+	});
+
+	/** @type {EachState} */
+	var state = { effect, items, first };
+
+	first_run = false;
+}
+
+/**
+ * Add, remove, or reorder items output by an each block as its input changes
+ * @template V
+ * @param {EachState} state
+ * @param {Array<V>} array
+ * @param {Element | Comment | Text} anchor
+ * @param {number} flags
+ * @param {(value: V, index: number) => any} get_key
+ * @returns {void}
+ */
+function reconcile(state, array, anchor, flags, get_key) {
+	var is_animated = (flags & EACH_IS_ANIMATED) !== 0;
+
+	var length = array.length;
+	var items = state.items;
+	var current = state.first;
+
+	/** @type {undefined | Set<EachItem>} */
+	var seen;
+
+	/** @type {EachItem | null} */
+	var prev = null;
+
+	/** @type {undefined | Set<EachItem>} */
+	var to_animate;
+
+	/** @type {EachItem[]} */
+	var matched = [];
+
+	/** @type {EachItem[]} */
+	var stashed = [];
+
+	/** @type {V} */
+	var value;
+
+	/** @type {any} */
+	var key;
+
+	/** @type {EachItem | undefined} */
+	var item;
+
+	/** @type {number} */
+	var i;
+
+	if (is_animated) {
+		for (i = 0; i < length; i += 1) {
+			value = array[i];
+			key = get_key(value, i);
+			item = /** @type {EachItem} */ (items.get(key));
+
+			// offscreen == coming in now, no animation in that case,
+			// else this would happen https://github.com/sveltejs/svelte/issues/17181
+			if (item.o) {
+				item.a?.measure();
+				(to_animate ??= new Set()).add(item);
+			}
+		}
+	}
+
+	for (i = 0; i < length; i += 1) {
+		value = array[i];
+		key = get_key(value, i);
+
+		item = /** @type {EachItem} */ (items.get(key));
+
+		state.first ??= item;
+
+		if (!item.o) {
+			item.o = true;
+
+			var next = prev ? prev.next : current;
+
+			link(state, prev, item);
+			link(state, item, next);
+
+			move(item, next, anchor);
+			prev = item;
+
+			matched = [];
+			stashed = [];
+
+			current = prev.next;
+			continue;
+		}
+
+		if ((item.e.f & INERT) !== 0) {
+			resume_effect(item.e);
+			if (is_animated) {
+				item.a?.unfix();
+				(to_animate ??= new Set()).delete(item);
+			}
+		}
+
+		if (item !== current) {
+			if (seen !== undefined && seen.has(item)) {
+				if (matched.length < stashed.length) {
+					// more efficient to move later items to the front
+					var start = stashed[0];
+					var j;
+
+					prev = start.prev;
+
+					var a = matched[0];
+					var b = matched[matched.length - 1];
+
+					for (j = 0; j < matched.length; j += 1) {
+						move(matched[j], start, anchor);
+					}
+
+					for (j = 0; j < stashed.length; j += 1) {
+						seen.delete(stashed[j]);
+					}
+
+					link(state, a.prev, b.next);
+					link(state, prev, a);
+					link(state, b, start);
+
+					current = start;
+					prev = b;
+					i -= 1;
+
+					matched = [];
+					stashed = [];
+				} else {
+					// more efficient to move earlier items to the back
+					seen.delete(item);
+					move(item, current, anchor);
+
+					link(state, item.prev, item.next);
+					link(state, item, prev === null ? state.first : prev.next);
+					link(state, prev, item);
+
+					prev = item;
+				}
+
+				continue;
+			}
+
+			matched = [];
+			stashed = [];
+
+			while (current !== null && current.k !== key) {
+				// If the each block isn't inert and an item has an effect that is already inert,
+				// skip over adding it to our seen Set as the item is already being handled
+				if ((current.e.f & INERT) === 0) {
+					(seen ??= new Set()).add(current);
+				}
+				stashed.push(current);
+				current = current.next;
+			}
+
+			if (current === null) {
+				continue;
+			}
+
+			item = current;
+		}
+
+		matched.push(item);
+		prev = item;
+		current = item.next;
+	}
+
+	let has_offscreen_items = items.size > length;
+
+	if (current !== null || seen !== undefined) {
+		var to_destroy = seen === undefined ? [] : array_from(seen);
+
+		while (current !== null) {
+			// If the each block isn't inert, then inert effects are currently outroing and will be removed once the transition is finished
+			if ((current.e.f & INERT) === 0) {
+				to_destroy.push(current);
+			}
+			current = current.next;
+		}
+
+		var destroy_length = to_destroy.length;
+
+		has_offscreen_items = items.size - destroy_length > length;
+
+		if (destroy_length > 0) {
+			var controlled_anchor = (flags & EACH_IS_CONTROLLED) !== 0 && length === 0 ? anchor : null;
+
+			if (is_animated) {
+				for (i = 0; i < destroy_length; i += 1) {
+					to_destroy[i].a?.measure();
+				}
+
+				for (i = 0; i < destroy_length; i += 1) {
+					to_destroy[i].a?.fix();
+				}
+			}
+
+			pause_effects(state, to_destroy, controlled_anchor);
+		}
+	}
+
+	// Append offscreen items at the end
+	if (has_offscreen_items) {
+		for (const item of items.values()) {
+			if (!item.o) {
+				link(state, prev, item);
+				prev = item;
+			}
+		}
+	}
+
+	state.effect.last = prev && prev.e;
+
+	if (is_animated) {
+		queue_micro_task(() => {
+			if (to_animate === undefined) return;
+			for (item of to_animate) {
+				item.a?.apply();
+			}
+		});
+	}
+}
+
+/**
+ * @template V
+ * @param {Node | null} anchor
+ * @param {EachItem | null} prev
+ * @param {V} value
+ * @param {unknown} key
+ * @param {number} index
+ * @param {(anchor: Node, item: V | Source<V>, index: number | Value<number>, collection: () => V[]) => void} render_fn
+ * @param {number} flags
+ * @param {() => V[]} get_collection
+ * @returns {EachItem}
+ */
+function create_item(anchor, prev, value, key, index, render_fn, flags, get_collection) {
+	var previous_each_item = current_each_item;
+	var reactive = (flags & EACH_ITEM_REACTIVE) !== 0;
+	var mutable = (flags & EACH_ITEM_IMMUTABLE) === 0;
+
+	var v = reactive ? (mutable ? mutable_source(value, false, false) : source(value)) : value;
+	var i = (flags & EACH_INDEX_REACTIVE) === 0 ? index : source(index);
+
+	/** @type {EachItem} */
+	var item = {
+		i,
+		v,
+		k: key,
+		a: null,
+		// @ts-expect-error
+		e: null,
+		o: false,
+		prev,
+		next: null
+	};
+
+	current_each_item = item;
+
+	try {
+		if (anchor === null) {
+			var fragment = document.createDocumentFragment();
+			fragment.append((anchor = create_text()));
+		}
+
+		item.e = branch(() => render_fn(/** @type {Node} */ (anchor), v, i, get_collection));
+
+		if (prev !== null) {
+			// we only need to set `prev.next = item`, because
+			// `item.prev = prev` was set on initialization.
+			// the effects themselves are already linked
+			prev.next = item;
+		}
+
+		return item;
+	} finally {
+		current_each_item = previous_each_item;
+	}
+}
+
+/**
+ * @param {EachItem} item
+ * @param {EachItem | null} next
+ * @param {Text | Element | Comment} anchor
+ */
+function move(item, next, anchor) {
+	var end = item.next ? /** @type {TemplateNode} */ (item.next.e.nodes_start) : anchor;
+
+	var dest = next ? /** @type {TemplateNode} */ (next.e.nodes_start) : anchor;
+	var node = /** @type {TemplateNode} */ (item.e.nodes_start);
+
+	while (node !== null && node !== end) {
+		var next_node = /** @type {TemplateNode} */ (get_next_sibling(node));
+		dest.before(node);
+		node = next_node;
+	}
+}
+
+/**
+ * @param {EachState} state
+ * @param {EachItem | null} prev
+ * @param {EachItem | null} next
+ */
+function link(state, prev, next) {
+	if (prev === null) {
+		state.first = next;
+		state.effect.first = next && next.e;
+	} else {
+		if (prev.e.next) {
+			prev.e.next.prev = null;
+		}
+
+		prev.next = next;
+		prev.e.next = next && next.e;
+	}
+
+	if (next !== null) {
+		if (next.e.prev) {
+			next.e.prev.next = null;
+		}
+
+		next.prev = prev;
+		next.e.prev = prev && prev.e;
+	}
+}
+
+/** @import { Effect, TemplateNode, Value } from '#client' */
+
+/**
+ * @param {Array<Promise<void>>} blockers
+ * @param {Array<() => any>} sync
+ * @param {Array<() => Promise<any>>} async
+ * @param {(values: Value[]) => any} fn
+ */
+function flatten(blockers, sync, async, fn) {
+	const d = is_runes() ? derived : derived_safe_equal;
+
+	if (async.length === 0 && blockers.length === 0) {
+		fn(sync.map(d));
+		return;
+	}
+
+	var batch = current_batch;
+	var parent = /** @type {Effect} */ (active_effect);
+
+	var restore = capture();
+
+	function run() {
+		Promise.all(async.map((expression) => async_derived(expression)))
+			.then((result) => {
+				restore();
+
+				try {
+					fn([...sync.map(d), ...result]);
+				} catch (error) {
+					// ignore errors in blocks that have already been destroyed
+					if ((parent.f & DESTROYED) === 0) {
+						invoke_error_boundary(error, parent);
+					}
+				}
+
+				batch?.deactivate();
+				unset_context();
+			})
+			.catch((error) => {
+				invoke_error_boundary(error, parent);
+			});
+	}
+
+	if (blockers.length > 0) {
+		Promise.all(blockers).then(() => {
+			restore();
+
+			try {
+				return run();
+			} finally {
+				batch?.deactivate();
+				unset_context();
+			}
+		});
+	} else {
+		run();
+	}
+}
+
+/**
+ * @param {Array<Promise<void>>} blockers
+ * @param {(values: Value[]) => any} fn
+ */
+function run_after_blockers(blockers, fn) {
+	var each_item = current_each_item; // TODO should this be part of capture?
+	flatten(blockers, [], [], (v) => {
+		set_current_each_item(each_item);
+		fn(v);
+	});
+}
+
+/**
+ * Captures the current effect context so that we can restore it after
+ * some asynchronous work has happened (so that e.g. `await a + b`
+ * causes `b` to be registered as a dependency).
+ */
+function capture() {
+	var previous_effect = active_effect;
+	var previous_reaction = active_reaction;
+	var previous_component_context = component_context;
+	var previous_batch = current_batch;
+
+	return function restore(activate_batch = true) {
+		set_active_effect(previous_effect);
+		set_active_reaction(previous_reaction);
+		set_component_context(previous_component_context);
+		if (activate_batch) previous_batch?.activate();
+	};
+}
+
+function unset_context() {
+	set_active_effect(null);
+	set_active_reaction(null);
+	set_component_context(null);
+}
+
+/** @import { Derived, Effect, Source } from '#client' */
+/** @import { Batch } from './batch.js'; */
+
+/**
+ * @template V
+ * @param {() => V} fn
+ * @returns {Derived<V>}
+ */
+/*#__NO_SIDE_EFFECTS__*/
+function derived(fn) {
+	var flags = DERIVED | DIRTY;
+	var parent_derived =
+		active_reaction !== null && (active_reaction.f & DERIVED) !== 0
+			? /** @type {Derived} */ (active_reaction)
+			: null;
+
+	if (active_effect !== null) {
+		// Since deriveds are evaluated lazily, any effects created inside them are
+		// created too late to ensure that the parent effect is added to the tree
+		active_effect.f |= EFFECT_PRESERVED;
+	}
+
+	/** @type {Derived<V>} */
+	const signal = {
+		ctx: component_context,
+		deps: null,
+		effects: null,
+		equals,
+		f: flags,
+		fn,
+		reactions: null,
+		rv: 0,
+		v: /** @type {V} */ (UNINITIALIZED),
+		wv: 0,
+		parent: parent_derived ?? active_effect,
+		ac: null
+	};
+
+	return signal;
+}
+
+/**
+ * @template V
+ * @param {() => V | Promise<V>} fn
+ * @param {string} [location] If provided, print a warning if the value is not read immediately after update
+ * @returns {Promise<Source<V>>}
+ */
+/*#__NO_SIDE_EFFECTS__*/
+function async_derived(fn, location) {
+	let parent = /** @type {Effect | null} */ (active_effect);
+
+	if (parent === null) {
+		async_derived_orphan();
+	}
+
+	var boundary = /** @type {Boundary} */ (parent.b);
+
+	var promise = /** @type {Promise<V>} */ (/** @type {unknown} */ (undefined));
+	var signal = source(/** @type {V} */ (UNINITIALIZED));
+
+	// only suspend in async deriveds created on initialisation
+	var should_suspend = !active_reaction;
+
+	/** @type {Map<Batch, ReturnType<typeof deferred<V>>>} */
+	var deferreds = new Map();
+
+	async_effect(() => {
+
+		/** @type {ReturnType<typeof deferred<V>>} */
+		var d = deferred();
+		promise = d.promise;
+
+		try {
+			// If this code is changed at some point, make sure to still access the then property
+			// of fn() to read any signals it might access, so that we track them as dependencies.
+			// We call `unset_context` to undo any `save` calls that happen inside `fn()`
+			Promise.resolve(fn())
+				.then(d.resolve, d.reject)
+				.then(() => {
+					if (batch === current_batch && batch.committed) {
+						// if the batch was rejected as stale, we need to cleanup
+						// after any `$.save(...)` calls inside `fn()`
+						batch.deactivate();
+					}
+
+					unset_context();
+				});
+		} catch (error) {
+			d.reject(error);
+			unset_context();
+		}
+
+		var batch = /** @type {Batch} */ (current_batch);
+
+		if (should_suspend) {
+			var blocking = !boundary.is_pending();
+
+			boundary.update_pending_count(1);
+			batch.increment(blocking);
+
+			deferreds.get(batch)?.reject(STALE_REACTION);
+			deferreds.delete(batch); // delete to ensure correct order in Map iteration below
+			deferreds.set(batch, d);
+		}
+
+		/**
+		 * @param {any} value
+		 * @param {unknown} error
+		 */
+		const handler = (value, error = undefined) => {
+
+			batch.activate();
+
+			if (error) {
+				if (error !== STALE_REACTION) {
+					signal.f |= ERROR_VALUE;
+
+					// @ts-expect-error the error is the wrong type, but we don't care
+					internal_set(signal, error);
+				}
+			} else {
+				if ((signal.f & ERROR_VALUE) !== 0) {
+					signal.f ^= ERROR_VALUE;
+				}
+
+				internal_set(signal, value);
+
+				// All prior async derived runs are now stale
+				for (const [b, d] of deferreds) {
+					deferreds.delete(b);
+					if (b === batch) break;
+					d.reject(STALE_REACTION);
+				}
+			}
+
+			if (should_suspend) {
+				boundary.update_pending_count(-1);
+				batch.decrement(blocking);
+			}
+		};
+
+		d.promise.then(handler, (e) => handler(null, e || 'unknown'));
+	});
+
+	teardown(() => {
+		for (const d of deferreds.values()) {
+			d.reject(STALE_REACTION);
+		}
+	});
+
+	return new Promise((fulfil) => {
+		/** @param {Promise<V>} p */
+		function next(p) {
+			function go() {
+				if (p === promise) {
+					fulfil(signal);
+				} else {
+					// if the effect re-runs before the initial promise
+					// resolves, delay resolution until we have a value
+					next(promise);
+				}
+			}
+
+			p.then(go, go);
+		}
+
+		next(promise);
+	});
+}
+
+/**
+ * @template V
+ * @param {() => V} fn
+ * @returns {Derived<V>}
+ */
+/*#__NO_SIDE_EFFECTS__*/
+function user_derived(fn) {
+	const d = derived(fn);
+
+	push_reaction_value(d);
+
+	return d;
+}
+
+/**
+ * @template V
+ * @param {() => V} fn
+ * @returns {Derived<V>}
+ */
+/*#__NO_SIDE_EFFECTS__*/
+function derived_safe_equal(fn) {
+	const signal = derived(fn);
+	signal.equals = safe_equals;
+	return signal;
+}
+
+/**
+ * @param {Derived} derived
+ * @returns {void}
+ */
+function destroy_derived_effects(derived) {
+	var effects = derived.effects;
+
+	if (effects !== null) {
+		derived.effects = null;
+
+		for (var i = 0; i < effects.length; i += 1) {
+			destroy_effect(/** @type {Effect} */ (effects[i]));
+		}
+	}
+}
+
+/**
+ * @param {Derived} derived
+ * @returns {Effect | null}
+ */
+function get_derived_parent_effect(derived) {
+	var parent = derived.parent;
+	while (parent !== null) {
+		if ((parent.f & DERIVED) === 0) {
+			// The original parent effect might've been destroyed but the derived
+			// is used elsewhere now - do not return the destroyed effect in that case
+			return (parent.f & DESTROYED) === 0 ? /** @type {Effect} */ (parent) : null;
+		}
+		parent = parent.parent;
+	}
+	return null;
+}
+
+/**
+ * @template T
+ * @param {Derived} derived
+ * @returns {T}
+ */
+function execute_derived(derived) {
+	var value;
+	var prev_active_effect = active_effect;
+
+	set_active_effect(get_derived_parent_effect(derived));
+
+	{
+		try {
+			derived.f &= ~WAS_MARKED;
+			destroy_derived_effects(derived);
+			value = update_reaction(derived);
+		} finally {
+			set_active_effect(prev_active_effect);
+		}
+	}
+
+	return value;
+}
+
+/**
+ * @param {Derived} derived
+ * @returns {void}
+ */
+function update_derived(derived) {
+	var value = execute_derived(derived);
+
+	if (!derived.equals(value)) {
+		// in a fork, we don't update the underlying value, just `batch_values`.
+		// the underlying value will be updated when the fork is committed.
+		// otherwise, the next time we get here after a 'real world' state
+		// change, `derived.equals` may incorrectly return `true`
+		if (!current_batch?.is_fork) {
+			derived.v = value;
+		}
+
+		derived.wv = increment_write_version();
+	}
+
+	// don't mark derived clean if we're reading it inside a
+	// cleanup function, or it will cache a stale value
+	if (is_destroying_effect) {
+		return;
+	}
+
+	// During time traveling we don't want to reset the status so that
+	// traversal of the graph in the other batches still happens
+	if (batch_values !== null) {
+		// only cache the value if we're in a tracking context, otherwise we won't
+		// clear the cache in `mark_reactions` when dependencies are updated
+		if (effect_tracking() || current_batch?.is_fork) {
+			batch_values.set(derived, value);
+		}
+	} else {
+		var status = (derived.f & CONNECTED) === 0 ? MAYBE_DIRTY : CLEAN;
+		set_signal_status(derived, status);
+	}
+}
+
+/** @import { Derived, Effect, Source, Value } from '#client' */
+
+/** @type {Set<any>} */
+let eager_effects = new Set();
+
+/** @type {Map<Source, any>} */
+const old_values = new Map();
+
+let eager_effects_deferred = false;
+
+/**
+ * @template V
+ * @param {V} v
+ * @param {Error | null} [stack]
+ * @returns {Source<V>}
+ */
+// TODO rename this to `state` throughout the codebase
+function source(v, stack) {
+	/** @type {Value} */
+	var signal = {
+		f: 0, // TODO ideally we could skip this altogether, but it causes type errors
+		v,
+		reactions: null,
+		equals,
+		rv: 0,
+		wv: 0
+	};
+
+	return signal;
+}
+
+/**
+ * @template V
+ * @param {V} v
+ * @param {Error | null} [stack]
+ */
+/*#__NO_SIDE_EFFECTS__*/
+function state(v, stack) {
+	const s = source(v);
+
+	push_reaction_value(s);
+
+	return s;
+}
+
+/**
+ * @template V
+ * @param {V} initial_value
+ * @param {boolean} [immutable]
+ * @returns {Source<V>}
+ */
+/*#__NO_SIDE_EFFECTS__*/
+function mutable_source(initial_value, immutable = false, trackable = true) {
+	const s = source(initial_value);
+	if (!immutable) {
+		s.equals = safe_equals;
+	}
+
+	// bind the signal to the component context, in case we need to
+	// track updates to trigger beforeUpdate/afterUpdate callbacks
+	if (legacy_mode_flag && trackable && component_context !== null && component_context.l !== null) {
+		(component_context.l.s ??= []).push(s);
+	}
+
+	return s;
+}
+
+/**
+ * @template V
+ * @param {Value<V>} source
+ * @param {V} value
+ */
+function mutate(source, value) {
+	set(
+		source,
+		untrack(() => get$1(source))
+	);
+	return value;
+}
+
+/**
+ * @template V
+ * @param {Source<V>} source
+ * @param {V} value
+ * @param {boolean} [should_proxy]
+ * @returns {V}
+ */
+function set(source, value, should_proxy = false) {
+	if (
+		active_reaction !== null &&
+		// since we are untracking the function inside `$inspect.with` we need to add this check
+		// to ensure we error if state is set inside an inspect effect
+		(!untracking || (active_reaction.f & EAGER_EFFECT) !== 0) &&
+		is_runes() &&
+		(active_reaction.f & (DERIVED | BLOCK_EFFECT | ASYNC | EAGER_EFFECT)) !== 0 &&
+		!current_sources?.includes(source)
+	) {
+		state_unsafe_mutation();
+	}
+
+	let new_value = should_proxy ? proxy(value) : value;
+
+	return internal_set(source, new_value);
+}
+
+/**
+ * @template V
+ * @param {Source<V>} source
+ * @param {V} value
+ * @returns {V}
+ */
+function internal_set(source, value) {
+	if (!source.equals(value)) {
+		var old_value = source.v;
+
+		if (is_destroying_effect) {
+			old_values.set(source, value);
+		} else {
+			old_values.set(source, old_value);
+		}
+
+		source.v = value;
+
+		var batch = Batch.ensure();
+		batch.capture(source, old_value);
+
+		if ((source.f & DERIVED) !== 0) {
+			// if we are assigning to a dirty derived we set it to clean/maybe dirty but we also eagerly execute it to track the dependencies
+			if ((source.f & DIRTY) !== 0) {
+				execute_derived(/** @type {Derived} */ (source));
+			}
+
+			set_signal_status(source, (source.f & CONNECTED) !== 0 ? CLEAN : MAYBE_DIRTY);
+		}
+
+		source.wv = increment_write_version();
+
+		// For debugging, in case you want to know which reactions are being scheduled:
+		// log_reactions(source);
+		mark_reactions(source, DIRTY);
+
+		// It's possible that the current reaction might not have up-to-date dependencies
+		// whilst it's actively running. So in the case of ensuring it registers the reaction
+		// properly for itself, we need to ensure the current effect actually gets
+		// scheduled. i.e: `$effect(() => x++)`
+		if (
+			is_runes() &&
+			active_effect !== null &&
+			(active_effect.f & CLEAN) !== 0 &&
+			(active_effect.f & (BRANCH_EFFECT | ROOT_EFFECT)) === 0
+		) {
+			if (untracked_writes === null) {
+				set_untracked_writes([source]);
+			} else {
+				untracked_writes.push(source);
+			}
+		}
+
+		if (!batch.is_fork && eager_effects.size > 0 && !eager_effects_deferred) {
+			flush_eager_effects();
+		}
+	}
+
+	return value;
+}
+
+function flush_eager_effects() {
+	eager_effects_deferred = false;
+	var prev_is_updating_effect = is_updating_effect;
+	set_is_updating_effect(true);
+
+	const inspects = Array.from(eager_effects);
+
+	try {
+		for (const effect of inspects) {
+			// Mark clean inspect-effects as maybe dirty and then check their dirtiness
+			// instead of just updating the effects - this way we avoid overfiring.
+			if ((effect.f & CLEAN) !== 0) {
+				set_signal_status(effect, MAYBE_DIRTY);
+			}
+
+			if (is_dirty(effect)) {
+				update_effect(effect);
+			}
+		}
+	} finally {
+		set_is_updating_effect(prev_is_updating_effect);
+	}
+
+	eager_effects.clear();
+}
+
+/**
+ * Silently (without using `get`) increment a source
+ * @param {Source<number>} source
+ */
+function increment(source) {
+	set(source, source.v + 1);
+}
+
+/**
+ * @param {Value} signal
+ * @param {number} status should be DIRTY or MAYBE_DIRTY
+ * @returns {void}
+ */
+function mark_reactions(signal, status) {
+	var reactions = signal.reactions;
+	if (reactions === null) return;
+
+	var runes = is_runes();
+	var length = reactions.length;
+
+	for (var i = 0; i < length; i++) {
+		var reaction = reactions[i];
+		var flags = reaction.f;
+
+		// In legacy mode, skip the current effect to prevent infinite loops
+		if (!runes && reaction === active_effect) continue;
+
+		var not_dirty = (flags & DIRTY) === 0;
+
+		// don't set a DIRTY reaction to MAYBE_DIRTY
+		if (not_dirty) {
+			set_signal_status(reaction, status);
+		}
+
+		if ((flags & DERIVED) !== 0) {
+			var derived = /** @type {Derived} */ (reaction);
+
+			batch_values?.delete(derived);
+
+			if ((flags & WAS_MARKED) === 0) {
+				// Only connected deriveds can be reliably unmarked right away
+				if (flags & CONNECTED) {
+					reaction.f |= WAS_MARKED;
+				}
+
+				mark_reactions(derived, MAYBE_DIRTY);
+			}
+		} else if (not_dirty) {
+			if ((flags & BLOCK_EFFECT) !== 0 && eager_block_effects !== null) {
+				eager_block_effects.add(/** @type {Effect} */ (reaction));
+			}
+
+			schedule_effect(/** @type {Effect} */ (reaction));
+		}
+	}
+}
+
+/**
+ * @param {HTMLElement} dom
+ * @param {boolean} value
+ * @returns {void}
+ */
+function autofocus(dom, value) {
+	if (value) {
+		const body = document.body;
+		dom.autofocus = true;
+
+		queue_micro_task(() => {
+			if (document.activeElement === body) {
+				dom.focus();
+			}
+		});
+	}
+}
+
+/**
+ * The child of a textarea actually corresponds to the defaultValue property, so we need
+ * to remove it upon hydration to avoid a bug when someone resets the form value.
+ * @param {HTMLTextAreaElement} dom
+ * @returns {void}
+ */
+function remove_textarea_child(dom) {
+}
+
+let listening_to_form_reset = false;
+
+function add_form_reset_listener() {
+	if (!listening_to_form_reset) {
+		listening_to_form_reset = true;
+		document.addEventListener(
+			'reset',
+			(evt) => {
+				// Needs to happen one tick later or else the dom properties of the form
+				// elements have not updated to their reset values yet
+				Promise.resolve().then(() => {
+					if (!evt.defaultPrevented) {
+						for (const e of /**@type {HTMLFormElement} */ (evt.target).elements) {
+							// @ts-expect-error
+							e.__on_r?.();
+						}
+					}
+				});
+			},
+			// In the capture phase to guarantee we get noticed of it (no possibility of stopPropagation)
+			{ capture: true }
+		);
+	}
+}
+
+/**
+ * @template T
+ * @param {() => T} fn
+ */
+function without_reactive_context(fn) {
+	var previous_reaction = active_reaction;
+	var previous_effect = active_effect;
+	set_active_reaction(null);
+	set_active_effect(null);
+	try {
+		return fn();
+	} finally {
+		set_active_reaction(previous_reaction);
+		set_active_effect(previous_effect);
+	}
+}
+
+/**
+ * Listen to the given event, and then instantiate a global form reset listener if not already done,
+ * to notify all bindings when the form is reset
+ * @param {HTMLElement} element
+ * @param {string} event
+ * @param {(is_reset?: true) => void} handler
+ * @param {(is_reset?: true) => void} [on_reset]
+ */
+function listen_to_event_and_reset_event(element, event, handler, on_reset = handler) {
+	element.addEventListener(event, () => without_reactive_context(handler));
+	// @ts-expect-error
+	const prev = element.__on_r;
+	if (prev) {
+		// special case for checkbox that can have multiple binds (group & checked)
+		// @ts-expect-error
+		element.__on_r = () => {
+			prev();
+			on_reset(true);
+		};
+	} else {
+		// @ts-expect-error
+		element.__on_r = () => on_reset(true);
+	}
+
+	add_form_reset_listener();
+}
+
+/** @import { Derived, Effect, Reaction, Signal, Source, Value } from '#client' */
+
+let is_updating_effect = false;
+
+/** @param {boolean} value */
+function set_is_updating_effect(value) {
+	is_updating_effect = value;
+}
+
+let is_destroying_effect = false;
+
+/** @param {boolean} value */
+function set_is_destroying_effect(value) {
+	is_destroying_effect = value;
+}
+
+/** @type {null | Reaction} */
+let active_reaction = null;
+
+let untracking = false;
+
+/** @param {null | Reaction} reaction */
+function set_active_reaction(reaction) {
+	active_reaction = reaction;
+}
+
+/** @type {null | Effect} */
+let active_effect = null;
+
+/** @param {null | Effect} effect */
+function set_active_effect(effect) {
+	active_effect = effect;
+}
+
+/**
+ * When sources are created within a reaction, reading and writing
+ * them within that reaction should not cause a re-run
+ * @type {null | Source[]}
+ */
+let current_sources = null;
+
+/** @param {Value} value */
+function push_reaction_value(value) {
+	if (active_reaction !== null && (true)) {
+		if (current_sources === null) {
+			current_sources = [value];
+		} else {
+			current_sources.push(value);
+		}
+	}
+}
+
+/**
+ * The dependencies of the reaction that is currently being executed. In many cases,
+ * the dependencies are unchanged between runs, and so this will be `null` unless
+ * and until a new dependency is accessed — we track this via `skipped_deps`
+ * @type {null | Value[]}
+ */
+let new_deps = null;
+
+let skipped_deps = 0;
+
+/**
+ * Tracks writes that the effect it's executed in doesn't listen to yet,
+ * so that the dependency can be added to the effect later on if it then reads it
+ * @type {null | Source[]}
+ */
+let untracked_writes = null;
+
+/** @param {null | Source[]} value */
+function set_untracked_writes(value) {
+	untracked_writes = value;
+}
+
+/**
+ * @type {number} Used by sources and deriveds for handling updates.
+ * Version starts from 1 so that unowned deriveds differentiate between a created effect and a run one for tracing
+ **/
+let write_version = 1;
+
+/** @type {number} Used to version each read of a source of derived to avoid duplicating depedencies inside a reaction */
+let read_version = 0;
+
+let update_version = read_version;
+
+/** @param {number} value */
+function set_update_version(value) {
+	update_version = value;
+}
+
+function increment_write_version() {
+	return ++write_version;
+}
+
+/**
+ * Determines whether a derived or effect is dirty.
+ * If it is MAYBE_DIRTY, will set the status to CLEAN
+ * @param {Reaction} reaction
+ * @returns {boolean}
+ */
+function is_dirty(reaction) {
+	var flags = reaction.f;
+
+	if ((flags & DIRTY) !== 0) {
+		return true;
+	}
+
+	if (flags & DERIVED) {
+		reaction.f &= ~WAS_MARKED;
+	}
+
+	if ((flags & MAYBE_DIRTY) !== 0) {
+		var dependencies = reaction.deps;
+
+		if (dependencies !== null) {
+			var length = dependencies.length;
+
+			for (var i = 0; i < length; i++) {
+				var dependency = dependencies[i];
+
+				if (is_dirty(/** @type {Derived} */ (dependency))) {
+					update_derived(/** @type {Derived} */ (dependency));
+				}
+
+				if (dependency.wv > reaction.wv) {
+					return true;
+				}
+			}
+		}
+
+		if (
+			(flags & CONNECTED) !== 0 &&
+			// During time traveling we don't want to reset the status so that
+			// traversal of the graph in the other batches still happens
+			batch_values === null
+		) {
+			set_signal_status(reaction, CLEAN);
+		}
+	}
+
+	return false;
+}
+
+/**
+ * @param {Value} signal
+ * @param {Effect} effect
+ * @param {boolean} [root]
+ */
+function schedule_possible_effect_self_invalidation(signal, effect, root = true) {
+	var reactions = signal.reactions;
+	if (reactions === null) return;
+
+	if (current_sources?.includes(signal)) {
+		return;
+	}
+
+	for (var i = 0; i < reactions.length; i++) {
+		var reaction = reactions[i];
+
+		if ((reaction.f & DERIVED) !== 0) {
+			schedule_possible_effect_self_invalidation(/** @type {Derived} */ (reaction), effect, false);
+		} else if (effect === reaction) {
+			if (root) {
+				set_signal_status(reaction, DIRTY);
+			} else if ((reaction.f & CLEAN) !== 0) {
+				set_signal_status(reaction, MAYBE_DIRTY);
+			}
+			schedule_effect(/** @type {Effect} */ (reaction));
+		}
+	}
+}
+
+/** @param {Reaction} reaction */
+function update_reaction(reaction) {
+	var previous_deps = new_deps;
+	var previous_skipped_deps = skipped_deps;
+	var previous_untracked_writes = untracked_writes;
+	var previous_reaction = active_reaction;
+	var previous_sources = current_sources;
+	var previous_component_context = component_context;
+	var previous_untracking = untracking;
+	var previous_update_version = update_version;
+
+	var flags = reaction.f;
+
+	new_deps = /** @type {null | Value[]} */ (null);
+	skipped_deps = 0;
+	untracked_writes = null;
+	active_reaction = (flags & (BRANCH_EFFECT | ROOT_EFFECT)) === 0 ? reaction : null;
+
+	current_sources = null;
+	set_component_context(reaction.ctx);
+	untracking = false;
+	update_version = ++read_version;
+
+	if (reaction.ac !== null) {
+		without_reactive_context(() => {
+			/** @type {AbortController} */ (reaction.ac).abort(STALE_REACTION);
+		});
+
+		reaction.ac = null;
+	}
+
+	try {
+		reaction.f |= REACTION_IS_UPDATING;
+		var fn = /** @type {Function} */ (reaction.fn);
+		var result = fn();
+		var deps = reaction.deps;
+
+		if (new_deps !== null) {
+			var i;
+
+			remove_reactions(reaction, skipped_deps);
+
+			if (deps !== null && skipped_deps > 0) {
+				deps.length = skipped_deps + new_deps.length;
+				for (i = 0; i < new_deps.length; i++) {
+					deps[skipped_deps + i] = new_deps[i];
+				}
+			} else {
+				reaction.deps = deps = new_deps;
+			}
+
+			if (is_updating_effect && effect_tracking() && (reaction.f & CONNECTED) !== 0) {
+				for (i = skipped_deps; i < deps.length; i++) {
+					(deps[i].reactions ??= []).push(reaction);
+				}
+			}
+		} else if (deps !== null && skipped_deps < deps.length) {
+			remove_reactions(reaction, skipped_deps);
+			deps.length = skipped_deps;
+		}
+
+		// If we're inside an effect and we have untracked writes, then we need to
+		// ensure that if any of those untracked writes result in re-invalidation
+		// of the current effect, then that happens accordingly
+		if (
+			is_runes() &&
+			untracked_writes !== null &&
+			!untracking &&
+			deps !== null &&
+			(reaction.f & (DERIVED | MAYBE_DIRTY | DIRTY)) === 0
+		) {
+			for (i = 0; i < /** @type {Source[]} */ (untracked_writes).length; i++) {
+				schedule_possible_effect_self_invalidation(
+					untracked_writes[i],
+					/** @type {Effect} */ (reaction)
+				);
+			}
+		}
+
+		// If we are returning to an previous reaction then
+		// we need to increment the read version to ensure that
+		// any dependencies in this reaction aren't marked with
+		// the same version
+		if (previous_reaction !== null && previous_reaction !== reaction) {
+			read_version++;
+
+			if (untracked_writes !== null) {
+				if (previous_untracked_writes === null) {
+					previous_untracked_writes = untracked_writes;
+				} else {
+					previous_untracked_writes.push(.../** @type {Source[]} */ (untracked_writes));
+				}
+			}
+		}
+
+		if ((reaction.f & ERROR_VALUE) !== 0) {
+			reaction.f ^= ERROR_VALUE;
+		}
+
+		return result;
+	} catch (error) {
+		return handle_error(error);
+	} finally {
+		reaction.f ^= REACTION_IS_UPDATING;
+		new_deps = previous_deps;
+		skipped_deps = previous_skipped_deps;
+		untracked_writes = previous_untracked_writes;
+		active_reaction = previous_reaction;
+		current_sources = previous_sources;
+		set_component_context(previous_component_context);
+		untracking = previous_untracking;
+		update_version = previous_update_version;
+	}
+}
+
+/**
+ * @template V
+ * @param {Reaction} signal
+ * @param {Value<V>} dependency
+ * @returns {void}
+ */
+function remove_reaction(signal, dependency) {
+	let reactions = dependency.reactions;
+	if (reactions !== null) {
+		var index = index_of.call(reactions, signal);
+		if (index !== -1) {
+			var new_length = reactions.length - 1;
+			if (new_length === 0) {
+				reactions = dependency.reactions = null;
+			} else {
+				// Swap with last element and then remove.
+				reactions[index] = reactions[new_length];
+				reactions.pop();
+			}
+		}
+	}
+
+	// If the derived has no reactions, then we can disconnect it from the graph,
+	// allowing it to either reconnect in the future, or be GC'd by the VM.
+	if (
+		reactions === null &&
+		(dependency.f & DERIVED) !== 0 &&
+		// Destroying a child effect while updating a parent effect can cause a dependency to appear
+		// to be unused, when in fact it is used by the currently-updating parent. Checking `new_deps`
+		// allows us to skip the expensive work of disconnecting and immediately reconnecting it
+		(new_deps === null || !new_deps.includes(dependency))
+	) {
+		set_signal_status(dependency, MAYBE_DIRTY);
+		// If we are working with a derived that is owned by an effect, then mark it as being
+		// disconnected and remove the mark flag, as it cannot be reliably removed otherwise
+		if ((dependency.f & CONNECTED) !== 0) {
+			dependency.f ^= CONNECTED;
+			dependency.f &= ~WAS_MARKED;
+		}
+		// Disconnect any reactions owned by this reaction
+		destroy_derived_effects(/** @type {Derived} **/ (dependency));
+		remove_reactions(/** @type {Derived} **/ (dependency), 0);
+	}
+}
+
+/**
+ * @param {Reaction} signal
+ * @param {number} start_index
+ * @returns {void}
+ */
+function remove_reactions(signal, start_index) {
+	var dependencies = signal.deps;
+	if (dependencies === null) return;
+
+	for (var i = start_index; i < dependencies.length; i++) {
+		remove_reaction(signal, dependencies[i]);
+	}
+}
+
+/**
+ * @param {Effect} effect
+ * @returns {void}
+ */
+function update_effect(effect) {
+	var flags = effect.f;
+
+	if ((flags & DESTROYED) !== 0) {
+		return;
+	}
+
+	set_signal_status(effect, CLEAN);
+
+	var previous_effect = active_effect;
+	var was_updating_effect = is_updating_effect;
+
+	active_effect = effect;
+	is_updating_effect = true;
+
+	try {
+		if ((flags & (BLOCK_EFFECT | MANAGED_EFFECT)) !== 0) {
+			destroy_block_effect_children(effect);
+		} else {
+			destroy_effect_children(effect);
+		}
+
+		execute_effect_teardown(effect);
+		var teardown = update_reaction(effect);
+		effect.teardown = typeof teardown === 'function' ? teardown : null;
+		effect.wv = write_version;
+
+		// In DEV, increment versions of any sources that were written to during the effect,
+		// so that they are correctly marked as dirty when the effect re-runs
+		var dep; if (DEV && tracing_mode_flag && (effect.f & DIRTY) !== 0 && effect.deps !== null) ;
+	} finally {
+		is_updating_effect = was_updating_effect;
+		active_effect = previous_effect;
+	}
+}
+
+/**
+ * Returns a promise that resolves once any pending state changes have been applied.
+ * @returns {Promise<void>}
+ */
+async function tick() {
+
+	await Promise.resolve();
+
+	// By calling flushSync we guarantee that any pending state changes are applied after one tick.
+	// TODO look into whether we can make flushing subsequent updates synchronously in the future.
+	flushSync();
+}
+
+/**
+ * @template V
+ * @param {Value<V>} signal
+ * @returns {V}
+ */
+function get$1(signal) {
+	var flags = signal.f;
+	var is_derived = (flags & DERIVED) !== 0;
+
+	// Register the dependency on the current reaction signal.
+	if (active_reaction !== null && !untracking) {
+		// if we're in a derived that is being read inside an _async_ derived,
+		// it's possible that the effect was already destroyed. In this case,
+		// we don't add the dependency, because that would create a memory leak
+		var destroyed = active_effect !== null && (active_effect.f & DESTROYED) !== 0;
+
+		if (!destroyed && !current_sources?.includes(signal)) {
+			var deps = active_reaction.deps;
+
+			if ((active_reaction.f & REACTION_IS_UPDATING) !== 0) {
+				// we're in the effect init/update cycle
+				if (signal.rv < read_version) {
+					signal.rv = read_version;
+
+					// If the signal is accessing the same dependencies in the same
+					// order as it did last time, increment `skipped_deps`
+					// rather than updating `new_deps`, which creates GC cost
+					if (new_deps === null && deps !== null && deps[skipped_deps] === signal) {
+						skipped_deps++;
+					} else if (new_deps === null) {
+						new_deps = [signal];
+					} else if (!new_deps.includes(signal)) {
+						new_deps.push(signal);
+					}
+				}
+			} else {
+				// we're adding a dependency outside the init/update cycle
+				// (i.e. after an `await`)
+				(active_reaction.deps ??= []).push(signal);
+
+				var reactions = signal.reactions;
+
+				if (reactions === null) {
+					signal.reactions = [active_reaction];
+				} else if (!reactions.includes(active_reaction)) {
+					reactions.push(active_reaction);
+				}
+			}
+		}
+	}
+
+	if (is_destroying_effect) {
+		if (old_values.has(signal)) {
+			return old_values.get(signal);
+		}
+
+		if (is_derived) {
+			var derived = /** @type {Derived} */ (signal);
+
+			var value = derived.v;
+
+			// if the derived is dirty and has reactions, or depends on the values that just changed, re-execute
+			// (a derived can be maybe_dirty due to the effect destroy removing its last reaction)
+			if (
+				((derived.f & CLEAN) === 0 && derived.reactions !== null) ||
+				depends_on_old_values(derived)
+			) {
+				value = execute_derived(derived);
+			}
+
+			old_values.set(derived, value);
+
+			return value;
+		}
+	} else if (
+		is_derived &&
+		(!batch_values?.has(signal) || (current_batch?.is_fork && !effect_tracking()))
+	) {
+		derived = /** @type {Derived} */ (signal);
+
+		if (is_dirty(derived)) {
+			update_derived(derived);
+		}
+
+		if (is_updating_effect && effect_tracking() && (derived.f & CONNECTED) === 0) {
+			reconnect(derived);
+		}
+	}
+
+	if (batch_values?.has(signal)) {
+		return batch_values.get(signal);
+	}
+
+	if ((signal.f & ERROR_VALUE) !== 0) {
+		throw signal.v;
+	}
+
+	return signal.v;
+}
+
+/**
+ * (Re)connect a disconnected derived, so that it is notified
+ * of changes in `mark_reactions`
+ * @param {Derived} derived
+ */
+function reconnect(derived) {
+	if (derived.deps === null) return;
+
+	derived.f ^= CONNECTED;
+
+	for (const dep of derived.deps) {
+		(dep.reactions ??= []).push(derived);
+
+		if ((dep.f & DERIVED) !== 0 && (dep.f & CONNECTED) === 0) {
+			reconnect(/** @type {Derived} */ (dep));
+		}
+	}
+}
+
+/** @param {Derived} derived */
+function depends_on_old_values(derived) {
+	if (derived.v === UNINITIALIZED) return true; // we don't know, so assume the worst
+	if (derived.deps === null) return false;
+
+	for (const dep of derived.deps) {
+		if (old_values.has(dep)) {
+			return true;
+		}
+
+		if ((dep.f & DERIVED) !== 0 && depends_on_old_values(/** @type {Derived} */ (dep))) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+/**
+ * When used inside a [`$derived`](https://svelte.dev/docs/svelte/$derived) or [`$effect`](https://svelte.dev/docs/svelte/$effect),
+ * any state read inside `fn` will not be treated as a dependency.
+ *
+ * ```ts
+ * $effect(() => {
+ *   // this will run when `data` changes, but not when `time` changes
+ *   save(data, {
+ *     timestamp: untrack(() => time)
+ *   });
+ * });
+ * ```
+ * @template T
+ * @param {() => T} fn
+ * @returns {T}
+ */
+function untrack(fn) {
+	var previous_untracking = untracking;
+	try {
+		untracking = true;
+		return fn();
+	} finally {
+		untracking = previous_untracking;
+	}
+}
+
+const STATUS_MASK = -7169;
+
+/**
+ * @param {Signal} signal
+ * @param {number} status
+ * @returns {void}
+ */
+function set_signal_status(signal, status) {
+	signal.f = (signal.f & STATUS_MASK) | status;
+}
+
+/**
+ * Possibly traverse an object and read all its properties so that they're all reactive in case this is `$state`.
+ * Does only check first level of an object for performance reasons (heuristic should be good for 99% of all cases).
+ * @param {any} value
+ * @returns {void}
+ */
+function deep_read_state(value) {
+	if (typeof value !== 'object' || !value || value instanceof EventTarget) {
+		return;
+	}
+
+	if (STATE_SYMBOL in value) {
+		deep_read(value);
+	} else if (!Array.isArray(value)) {
+		for (let key in value) {
+			const prop = value[key];
+			if (typeof prop === 'object' && prop && STATE_SYMBOL in prop) {
+				deep_read(prop);
+			}
+		}
+	}
+}
+
+/**
+ * Deeply traverse an object and read all its properties
+ * so that they're all reactive in case this is `$state`
+ * @param {any} value
+ * @param {Set<any>} visited
+ * @returns {void}
+ */
+function deep_read(value, visited = new Set()) {
+	if (
+		typeof value === 'object' &&
+		value !== null &&
+		// We don't want to traverse DOM elements
+		!(value instanceof EventTarget) &&
+		!visited.has(value)
+	) {
+		visited.add(value);
+		// When working with a possible SvelteDate, this
+		// will ensure we capture changes to it.
+		if (value instanceof Date) {
+			value.getTime();
+		}
+		for (let key in value) {
+			try {
+				deep_read(value[key], visited);
+			} catch (e) {
+				// continue
+			}
+		}
+		const proto = get_prototype_of(value);
+		if (
+			proto !== Object.prototype &&
+			proto !== Array.prototype &&
+			proto !== Map.prototype &&
+			proto !== Set.prototype &&
+			proto !== Date.prototype
+		) {
+			const descriptors = get_descriptors(proto);
+			for (let key in descriptors) {
+				const get = descriptors[key].get;
+				if (get) {
+					try {
+						get.call(value);
+					} catch (e) {
+						// continue
+					}
+				}
+			}
+		}
+	}
+}
+
+/** @import { ComponentContext, ComponentContextLegacy, Derived, Effect, TemplateNode, TransitionManager } from '#client' */
+
+/**
+ * @param {'$effect' | '$effect.pre' | '$inspect'} rune
+ */
+function validate_effect(rune) {
+	if (active_effect === null) {
+		if (active_reaction === null) {
+			effect_orphan();
+		}
+
+		effect_in_unowned_derived();
+	}
+
+	if (is_destroying_effect) {
+		effect_in_teardown();
+	}
+}
+
+/**
+ * @param {Effect} effect
+ * @param {Effect} parent_effect
+ */
+function push_effect(effect, parent_effect) {
+	var parent_last = parent_effect.last;
+	if (parent_last === null) {
+		parent_effect.last = parent_effect.first = effect;
+	} else {
+		parent_last.next = effect;
+		effect.prev = parent_last;
+		parent_effect.last = effect;
+	}
+}
+
+/**
+ * @param {number} type
+ * @param {null | (() => void | (() => void))} fn
+ * @param {boolean} sync
+ * @returns {Effect}
+ */
+function create_effect(type, fn, sync) {
+	var parent = active_effect;
+
+	if (parent !== null && (parent.f & INERT) !== 0) {
+		type |= INERT;
+	}
+
+	/** @type {Effect} */
+	var effect = {
+		ctx: component_context,
+		deps: null,
+		nodes_start: null,
+		nodes_end: null,
+		f: type | DIRTY | CONNECTED,
+		first: null,
+		fn,
+		last: null,
+		next: null,
+		parent,
+		b: parent && parent.b,
+		prev: null,
+		teardown: null,
+		transitions: null,
+		wv: 0,
+		ac: null
+	};
+
+	if (sync) {
+		try {
+			update_effect(effect);
+			effect.f |= EFFECT_RAN;
+		} catch (e) {
+			destroy_effect(effect);
+			throw e;
+		}
+	} else if (fn !== null) {
+		schedule_effect(effect);
+	}
+
+	/** @type {Effect | null} */
+	var e = effect;
+
+	// if an effect has already ran and doesn't need to be kept in the tree
+	// (because it won't re-run, has no DOM, and has no teardown etc)
+	// then we skip it and go to its child (if any)
+	if (
+		sync &&
+		e.deps === null &&
+		e.teardown === null &&
+		e.nodes_start === null &&
+		e.first === e.last && // either `null`, or a singular child
+		(e.f & EFFECT_PRESERVED) === 0
+	) {
+		e = e.first;
+		if ((type & BLOCK_EFFECT) !== 0 && (type & EFFECT_TRANSPARENT) !== 0 && e !== null) {
+			e.f |= EFFECT_TRANSPARENT;
+		}
+	}
+
+	if (e !== null) {
+		e.parent = parent;
+
+		if (parent !== null) {
+			push_effect(e, parent);
+		}
+
+		// if we're in a derived, add the effect there too
+		if (
+			active_reaction !== null &&
+			(active_reaction.f & DERIVED) !== 0 &&
+			(type & ROOT_EFFECT) === 0
+		) {
+			var derived = /** @type {Derived} */ (active_reaction);
+			(derived.effects ??= []).push(e);
+		}
+	}
+
+	return effect;
+}
+
+/**
+ * Internal representation of `$effect.tracking()`
+ * @returns {boolean}
+ */
+function effect_tracking() {
+	return active_reaction !== null && !untracking;
+}
+
+/**
+ * @param {() => void} fn
+ */
+function teardown(fn) {
+	const effect = create_effect(RENDER_EFFECT, null, false);
+	set_signal_status(effect, CLEAN);
+	effect.teardown = fn;
+	return effect;
+}
+
+/**
+ * Internal representation of `$effect(...)`
+ * @param {() => void | (() => void)} fn
+ */
+function user_effect(fn) {
+	validate_effect();
+
+	// Non-nested `$effect(...)` in a component should be deferred
+	// until the component is mounted
+	var flags = /** @type {Effect} */ (active_effect).f;
+	var defer = !active_reaction && (flags & BRANCH_EFFECT) !== 0 && (flags & EFFECT_RAN) === 0;
+
+	if (defer) {
+		// Top-level `$effect(...)` in an unmounted component — defer until mount
+		var context = /** @type {ComponentContext} */ (component_context);
+		(context.e ??= []).push(fn);
+	} else {
+		// Everything else — create immediately
+		return create_user_effect(fn);
+	}
+}
+
+/**
+ * @param {() => void | (() => void)} fn
+ */
+function create_user_effect(fn) {
+	return create_effect(EFFECT | USER_EFFECT, fn, false);
+}
+
+/**
+ * Internal representation of `$effect.pre(...)`
+ * @param {() => void | (() => void)} fn
+ * @returns {Effect}
+ */
+function user_pre_effect(fn) {
+	validate_effect();
+	return create_effect(RENDER_EFFECT | USER_EFFECT, fn, true);
+}
+
+/**
+ * An effect root whose children can transition out
+ * @param {() => void} fn
+ * @returns {(options?: { outro?: boolean }) => Promise<void>}
+ */
+function component_root(fn) {
+	Batch.ensure();
+	const effect = create_effect(ROOT_EFFECT | EFFECT_PRESERVED, fn, true);
+
+	return (options = {}) => {
+		return new Promise((fulfil) => {
+			if (options.outro) {
+				pause_effect(effect, () => {
+					destroy_effect(effect);
+					fulfil(undefined);
+				});
+			} else {
+				destroy_effect(effect);
+				fulfil(undefined);
+			}
+		});
+	};
+}
+
+/**
+ * @param {() => void | (() => void)} fn
+ * @returns {Effect}
+ */
+function effect(fn) {
+	return create_effect(EFFECT, fn, false);
+}
+
+/**
+ * Internal representation of `$: ..`
+ * @param {() => any} deps
+ * @param {() => void | (() => void)} fn
+ */
+function legacy_pre_effect(deps, fn) {
+	var context = /** @type {ComponentContextLegacy} */ (component_context);
+
+	/** @type {{ effect: null | Effect, ran: boolean, deps: () => any }} */
+	var token = { effect: null, ran: false, deps };
+
+	context.l.$.push(token);
+
+	token.effect = render_effect(() => {
+		deps();
+
+		// If this legacy pre effect has already run before the end of the reset, then
+		// bail out to emulate the same behavior.
+		if (token.ran) return;
+
+		token.ran = true;
+		untrack(fn);
+	});
+}
+
+function legacy_pre_effect_reset() {
+	var context = /** @type {ComponentContextLegacy} */ (component_context);
+
+	render_effect(() => {
+		// Run dirty `$:` statements
+		for (var token of context.l.$) {
+			token.deps();
+
+			var effect = token.effect;
+
+			// If the effect is CLEAN, then make it MAYBE_DIRTY. This ensures we traverse through
+			// the effects dependencies and correctly ensure each dependency is up-to-date.
+			if ((effect.f & CLEAN) !== 0) {
+				set_signal_status(effect, MAYBE_DIRTY);
+			}
+
+			if (is_dirty(effect)) {
+				update_effect(effect);
+			}
+
+			token.ran = false;
+		}
+	});
+}
+
+/**
+ * @param {() => void | (() => void)} fn
+ * @returns {Effect}
+ */
+function async_effect(fn) {
+	return create_effect(ASYNC | EFFECT_PRESERVED, fn, true);
+}
+
+/**
+ * @param {() => void | (() => void)} fn
+ * @returns {Effect}
+ */
+function render_effect(fn, flags = 0) {
+	return create_effect(RENDER_EFFECT | flags, fn, true);
+}
+
+/**
+ * @param {(...expressions: any) => void | (() => void)} fn
+ * @param {Array<() => any>} sync
+ * @param {Array<() => Promise<any>>} async
+ * @param {Array<Promise<void>>} blockers
+ */
+function template_effect(fn, sync = [], async = [], blockers = []) {
+	flatten(blockers, sync, async, (values) => {
+		create_effect(RENDER_EFFECT, () => fn(...values.map(get$1)), true);
+	});
+}
+
+/**
+ * @param {(() => void)} fn
+ * @param {number} flags
+ */
+function block(fn, flags = 0) {
+	var effect = create_effect(BLOCK_EFFECT | flags, fn, true);
+	return effect;
+}
+
+/**
+ * @param {(() => void)} fn
+ * @param {number} flags
+ */
+function managed(fn, flags = 0) {
+	var effect = create_effect(MANAGED_EFFECT | flags, fn, true);
+	return effect;
+}
+
+/**
+ * @param {(() => void)} fn
+ */
+function branch(fn) {
+	return create_effect(BRANCH_EFFECT | EFFECT_PRESERVED, fn, true);
+}
+
+/**
+ * @param {Effect} effect
+ */
+function execute_effect_teardown(effect) {
+	var teardown = effect.teardown;
+	if (teardown !== null) {
+		const previously_destroying_effect = is_destroying_effect;
+		const previous_reaction = active_reaction;
+		set_is_destroying_effect(true);
+		set_active_reaction(null);
+		try {
+			teardown.call(null);
+		} finally {
+			set_is_destroying_effect(previously_destroying_effect);
+			set_active_reaction(previous_reaction);
+		}
+	}
+}
+
+/**
+ * @param {Effect} signal
+ * @param {boolean} remove_dom
+ * @returns {void}
+ */
+function destroy_effect_children(signal, remove_dom = false) {
+	var effect = signal.first;
+	signal.first = signal.last = null;
+
+	while (effect !== null) {
+		const controller = effect.ac;
+
+		if (controller !== null) {
+			without_reactive_context(() => {
+				controller.abort(STALE_REACTION);
+			});
+		}
+
+		var next = effect.next;
+
+		if ((effect.f & ROOT_EFFECT) !== 0) {
+			// this is now an independent root
+			effect.parent = null;
+		} else {
+			destroy_effect(effect, remove_dom);
+		}
+
+		effect = next;
+	}
+}
+
+/**
+ * @param {Effect} signal
+ * @returns {void}
+ */
+function destroy_block_effect_children(signal) {
+	var effect = signal.first;
+
+	while (effect !== null) {
+		var next = effect.next;
+		if ((effect.f & BRANCH_EFFECT) === 0) {
+			destroy_effect(effect);
+		}
+		effect = next;
+	}
+}
+
+/**
+ * @param {Effect} effect
+ * @param {boolean} [remove_dom]
+ * @returns {void}
+ */
+function destroy_effect(effect, remove_dom = true) {
+	var removed = false;
+
+	if (
+		(remove_dom || (effect.f & HEAD_EFFECT) !== 0) &&
+		effect.nodes_start !== null &&
+		effect.nodes_end !== null
+	) {
+		remove_effect_dom(effect.nodes_start, /** @type {TemplateNode} */ (effect.nodes_end));
+		removed = true;
+	}
+
+	destroy_effect_children(effect, remove_dom && !removed);
+	remove_reactions(effect, 0);
+	set_signal_status(effect, DESTROYED);
+
+	var transitions = effect.transitions;
+
+	if (transitions !== null) {
+		for (const transition of transitions) {
+			transition.stop();
+		}
+	}
+
+	execute_effect_teardown(effect);
+
+	var parent = effect.parent;
+
+	// If the parent doesn't have any children, then skip this work altogether
+	if (parent !== null && parent.first !== null) {
+		unlink_effect(effect);
+	}
+
+	// `first` and `child` are nulled out in destroy_effect_children
+	// we don't null out `parent` so that error propagation can work correctly
+	effect.next =
+		effect.prev =
+		effect.teardown =
+		effect.ctx =
+		effect.deps =
+		effect.fn =
+		effect.nodes_start =
+		effect.nodes_end =
+		effect.ac =
+			null;
+}
+
+/**
+ *
+ * @param {TemplateNode | null} node
+ * @param {TemplateNode} end
+ */
+function remove_effect_dom(node, end) {
+	while (node !== null) {
+		/** @type {TemplateNode | null} */
+		var next = node === end ? null : /** @type {TemplateNode} */ (get_next_sibling(node));
+
+		node.remove();
+		node = next;
+	}
+}
+
+/**
+ * Detach an effect from the effect tree, freeing up memory and
+ * reducing the amount of work that happens on subsequent traversals
+ * @param {Effect} effect
+ */
+function unlink_effect(effect) {
+	var parent = effect.parent;
+	var prev = effect.prev;
+	var next = effect.next;
+
+	if (prev !== null) prev.next = next;
+	if (next !== null) next.prev = prev;
+
+	if (parent !== null) {
+		if (parent.first === effect) parent.first = next;
+		if (parent.last === effect) parent.last = prev;
+	}
+}
+
+/**
+ * When a block effect is removed, we don't immediately destroy it or yank it
+ * out of the DOM, because it might have transitions. Instead, we 'pause' it.
+ * It stays around (in memory, and in the DOM) until outro transitions have
+ * completed, and if the state change is reversed then we _resume_ it.
+ * A paused effect does not update, and the DOM subtree becomes inert.
+ * @param {Effect} effect
+ * @param {() => void} [callback]
+ * @param {boolean} [destroy]
+ */
+function pause_effect(effect, callback, destroy = true) {
+	/** @type {TransitionManager[]} */
+	var transitions = [];
+
+	pause_children(effect, transitions, true);
+
+	run_out_transitions(transitions, () => {
+		if (destroy) destroy_effect(effect);
+		if (callback) callback();
+	});
+}
+
+/**
+ * @param {TransitionManager[]} transitions
+ * @param {() => void} fn
+ */
+function run_out_transitions(transitions, fn) {
+	var remaining = transitions.length;
+	if (remaining > 0) {
+		var check = () => --remaining || fn();
+		for (var transition of transitions) {
+			transition.out(check);
+		}
+	} else {
+		fn();
+	}
+}
+
+/**
+ * @param {Effect} effect
+ * @param {TransitionManager[]} transitions
+ * @param {boolean} local
+ */
+function pause_children(effect, transitions, local) {
+	if ((effect.f & INERT) !== 0) return;
+	effect.f ^= INERT;
+
+	if (effect.transitions !== null) {
+		for (const transition of effect.transitions) {
+			if (transition.is_global || local) {
+				transitions.push(transition);
+			}
+		}
+	}
+
+	var child = effect.first;
+
+	while (child !== null) {
+		var sibling = child.next;
+		var transparent =
+			(child.f & EFFECT_TRANSPARENT) !== 0 ||
+			// If this is a branch effect without a block effect parent,
+			// it means the parent block effect was pruned. In that case,
+			// transparency information was transferred to the branch effect.
+			((child.f & BRANCH_EFFECT) !== 0 && (effect.f & BLOCK_EFFECT) !== 0);
+		// TODO we don't need to call pause_children recursively with a linked list in place
+		// it's slightly more involved though as we have to account for `transparent` changing
+		// through the tree.
+		pause_children(child, transitions, transparent ? local : false);
+		child = sibling;
+	}
+}
+
+/**
+ * The opposite of `pause_effect`. We call this if (for example)
+ * `x` becomes falsy then truthy: `{#if x}...{/if}`
+ * @param {Effect} effect
+ */
+function resume_effect(effect) {
+	resume_children(effect, true);
+}
+
+/**
+ * @param {Effect} effect
+ * @param {boolean} local
+ */
+function resume_children(effect, local) {
+	if ((effect.f & INERT) === 0) return;
+	effect.f ^= INERT;
+
+	// If a dependency of this effect changed while it was paused,
+	// schedule the effect to update. we don't use `is_dirty`
+	// here because we don't want to eagerly recompute a derived like
+	// `{#if foo}{foo.bar()}{/if}` if `foo` is now `undefined
+	if ((effect.f & CLEAN) === 0) {
+		set_signal_status(effect, DIRTY);
+		schedule_effect(effect);
+	}
+
+	var child = effect.first;
+
+	while (child !== null) {
+		var sibling = child.next;
+		var transparent = (child.f & EFFECT_TRANSPARENT) !== 0 || (child.f & BRANCH_EFFECT) !== 0;
+		// TODO we don't need to call resume_children recursively with a linked list in place
+		// it's slightly more involved though as we have to account for `transparent` changing
+		// through the tree.
+		resume_children(child, transparent ? local : false);
+		child = sibling;
+	}
+
+	if (effect.transitions !== null) {
+		for (const transition of effect.transitions) {
+			if (transition.is_global || local) {
+				transition.in();
+			}
+		}
+	}
+}
+
+/**
+ * @param {Effect} effect
+ * @param {DocumentFragment} fragment
+ */
+function move_effect(effect, fragment) {
+	var node = effect.nodes_start;
+	var end = effect.nodes_end;
+
+	while (node !== null) {
+		/** @type {TemplateNode | null} */
+		var next = node === end ? null : /** @type {TemplateNode} */ (get_next_sibling(node));
+
+		fragment.append(node);
+		node = next;
+	}
+}
+
+/**
+ * @param {string} name
+ */
+function is_capture_event(name) {
+	return name.endsWith('capture') && name !== 'gotpointercapture' && name !== 'lostpointercapture';
+}
+
+/** List of Element events that will be delegated */
+const DELEGATED_EVENTS = [
+	'beforeinput',
+	'click',
+	'change',
+	'dblclick',
+	'contextmenu',
+	'focusin',
+	'focusout',
+	'input',
+	'keydown',
+	'keyup',
+	'mousedown',
+	'mousemove',
+	'mouseout',
+	'mouseover',
+	'mouseup',
+	'pointerdown',
+	'pointermove',
+	'pointerout',
+	'pointerover',
+	'pointerup',
+	'touchend',
+	'touchmove',
+	'touchstart'
+];
+
+/**
+ * Returns `true` if `event_name` is a delegated event
+ * @param {string} event_name
+ */
+function can_delegate_event(event_name) {
+	return DELEGATED_EVENTS.includes(event_name);
+}
+
+/**
+ * @type {Record<string, string>}
+ * List of attribute names that should be aliased to their property names
+ * because they behave differently between setting them as an attribute and
+ * setting them as a property.
+ */
+const ATTRIBUTE_ALIASES = {
+	// no `class: 'className'` because we handle that separately
+	formnovalidate: 'formNoValidate',
+	ismap: 'isMap',
+	nomodule: 'noModule',
+	playsinline: 'playsInline',
+	readonly: 'readOnly',
+	defaultvalue: 'defaultValue',
+	defaultchecked: 'defaultChecked',
+	srcobject: 'srcObject',
+	novalidate: 'noValidate',
+	allowfullscreen: 'allowFullscreen',
+	disablepictureinpicture: 'disablePictureInPicture',
+	disableremoteplayback: 'disableRemotePlayback'
+};
+
+/**
+ * @param {string} name
+ */
+function normalize_attribute(name) {
+	name = name.toLowerCase();
+	return ATTRIBUTE_ALIASES[name] ?? name;
+}
+
+/**
+ * Subset of delegated events which should be passive by default.
+ * These two are already passive via browser defaults on window, document and body.
+ * But since
+ * - we're delegating them
+ * - they happen often
+ * - they apply to mobile which is generally less performant
+ * we're marking them as passive by default for other elements, too.
+ */
+const PASSIVE_EVENTS = ['touchstart', 'touchmove'];
+
+/**
+ * Returns `true` if `name` is a passive event
+ * @param {string} name
+ */
+function is_passive_event(name) {
+	return PASSIVE_EVENTS.includes(name);
+}
+
+/**
+ * Prevent devtools trying to make `location` a clickable link by inserting a zero-width space
+ * @template {string | undefined} T
+ * @param {T} location
+ * @returns {T};
+ */
+function sanitize_location(location) {
+	return /** @type {T} */ (location?.replace(/\//g, '/\u200b'));
+}
+
+/** @import { SourceLocation } from '#client' */
+
+/**
+ * @param {any} fn
+ * @param {string} filename
+ * @param {SourceLocation[]} locations
+ * @returns {any}
+ */
+function add_locations(fn, filename, locations) {
+	return (/** @type {any[]} */ ...args) => {
+		const dom = fn(...args);
+
+		var node = dom.nodeType === DOCUMENT_FRAGMENT_NODE ? dom.firstChild : dom;
+		assign_locations(node, filename, locations);
+
+		return dom;
+	};
+}
+
+/**
+ * @param {Element} element
+ * @param {string} filename
+ * @param {SourceLocation} location
+ */
+function assign_location(element, filename, location) {
+	// @ts-expect-error
+	element.__svelte_meta = {
+		parent: dev_stack,
+		loc: { file: filename, line: location[0], column: location[1] }
+	};
+
+	if (location[2]) {
+		assign_locations(element.firstChild, filename, location[2]);
+	}
+}
+
+/**
+ * @param {Node | null} node
+ * @param {string} filename
+ * @param {SourceLocation[]} locations
+ */
+function assign_locations(node, filename, locations) {
+	var i = 0;
+
+	while (node && i < locations.length) {
+
+		if (node.nodeType === ELEMENT_NODE) {
+			assign_location(/** @type {Element} */ (node), filename, locations[i++]);
+		}
+
+		node = node.nextSibling;
+	}
+}
+
+/** @type {Set<string>} */
+const all_registered_events = new Set();
+
+/** @type {Set<(events: Array<string>) => void>} */
+const root_event_handles = new Set();
+
+/**
+ * @param {string} event_name
+ * @param {EventTarget} dom
+ * @param {EventListener} [handler]
+ * @param {AddEventListenerOptions} [options]
+ */
+function create_event(event_name, dom, handler, options = {}) {
+	/**
+	 * @this {EventTarget}
+	 */
+	function target_handler(/** @type {Event} */ event) {
+		if (!options.capture) {
+			// Only call in the bubble phase, else delegated events would be called before the capturing events
+			handle_event_propagation.call(dom, event);
+		}
+		if (!event.cancelBubble) {
+			return without_reactive_context(() => {
+				return handler?.call(this, event);
+			});
+		}
+	}
+
+	// Chrome has a bug where pointer events don't work when attached to a DOM element that has been cloned
+	// with cloneNode() and the DOM element is disconnected from the document. To ensure the event works, we
+	// defer the attachment till after it's been appended to the document. TODO: remove this once Chrome fixes
+	// this bug. The same applies to wheel events and touch events.
+	if (
+		event_name.startsWith('pointer') ||
+		event_name.startsWith('touch') ||
+		event_name === 'wheel'
+	) {
+		queue_micro_task(() => {
+			dom.addEventListener(event_name, target_handler, options);
+		});
+	} else {
+		dom.addEventListener(event_name, target_handler, options);
+	}
+
+	return target_handler;
+}
+
+/**
+ * @param {string} event_name
+ * @param {Element} dom
+ * @param {EventListener} [handler]
+ * @param {boolean} [capture]
+ * @param {boolean} [passive]
+ * @returns {void}
+ */
+function event(event_name, dom, handler, capture, passive) {
+	var options = { capture, passive };
+	var target_handler = create_event(event_name, dom, handler, options);
+
+	if (
+		dom === document.body ||
+		// @ts-ignore
+		dom === window ||
+		// @ts-ignore
+		dom === document ||
+		// Firefox has quirky behavior, it can happen that we still get "canplay" events when the element is already removed
+		dom instanceof HTMLMediaElement
+	) {
+		teardown(() => {
+			dom.removeEventListener(event_name, target_handler, options);
+		});
+	}
+}
+
+/**
+ * @param {Array<string>} events
+ * @returns {void}
+ */
+function delegate(events) {
+	for (var i = 0; i < events.length; i++) {
+		all_registered_events.add(events[i]);
+	}
+
+	for (var fn of root_event_handles) {
+		fn(events);
+	}
+}
+
+// used to store the reference to the currently propagated event
+// to prevent garbage collection between microtasks in Firefox
+// If the event object is GCed too early, the expando __root property
+// set on the event object is lost, causing the event delegation
+// to process the event twice
+let last_propagated_event = null;
+
+/**
+ * @this {EventTarget}
+ * @param {Event} event
+ * @returns {void}
+ */
+function handle_event_propagation(event) {
+	var handler_element = this;
+	var owner_document = /** @type {Node} */ (handler_element).ownerDocument;
+	var event_name = event.type;
+	var path = event.composedPath?.() || [];
+	var current_target = /** @type {null | Element} */ (path[0] || event.target);
+
+	last_propagated_event = event;
+
+	// composedPath contains list of nodes the event has propagated through.
+	// We check __root to skip all nodes below it in case this is a
+	// parent of the __root node, which indicates that there's nested
+	// mounted apps. In this case we don't want to trigger events multiple times.
+	var path_idx = 0;
+
+	// the `last_propagated_event === event` check is redundant, but
+	// without it the variable will be DCE'd and things will
+	// fail mysteriously in Firefox
+	// @ts-expect-error is added below
+	var handled_at = last_propagated_event === event && event.__root;
+
+	if (handled_at) {
+		var at_idx = path.indexOf(handled_at);
+		if (
+			at_idx !== -1 &&
+			(handler_element === document || handler_element === /** @type {any} */ (window))
+		) {
+			// This is the fallback document listener or a window listener, but the event was already handled
+			// -> ignore, but set handle_at to document/window so that we're resetting the event
+			// chain in case someone manually dispatches the same event object again.
+			// @ts-expect-error
+			event.__root = handler_element;
+			return;
+		}
+
+		// We're deliberately not skipping if the index is higher, because
+		// someone could create an event programmatically and emit it multiple times,
+		// in which case we want to handle the whole propagation chain properly each time.
+		// (this will only be a false negative if the event is dispatched multiple times and
+		// the fallback document listener isn't reached in between, but that's super rare)
+		var handler_idx = path.indexOf(handler_element);
+		if (handler_idx === -1) {
+			// handle_idx can theoretically be -1 (happened in some JSDOM testing scenarios with an event listener on the window object)
+			// so guard against that, too, and assume that everything was handled at this point.
+			return;
+		}
+
+		if (at_idx <= handler_idx) {
+			path_idx = at_idx;
+		}
+	}
+
+	current_target = /** @type {Element} */ (path[path_idx] || event.target);
+	// there can only be one delegated event per element, and we either already handled the current target,
+	// or this is the very first target in the chain which has a non-delegated listener, in which case it's safe
+	// to handle a possible delegated event on it later (through the root delegation listener for example).
+	if (current_target === handler_element) return;
+
+	// Proxy currentTarget to correct target
+	define_property(event, 'currentTarget', {
+		configurable: true,
+		get() {
+			return current_target || owner_document;
+		}
+	});
+
+	// This started because of Chromium issue https://chromestatus.com/feature/5128696823545856,
+	// where removal or moving of of the DOM can cause sync `blur` events to fire, which can cause logic
+	// to run inside the current `active_reaction`, which isn't what we want at all. However, on reflection,
+	// it's probably best that all event handled by Svelte have this behaviour, as we don't really want
+	// an event handler to run in the context of another reaction or effect.
+	var previous_reaction = active_reaction;
+	var previous_effect = active_effect;
+	set_active_reaction(null);
+	set_active_effect(null);
+
+	try {
+		/**
+		 * @type {unknown}
+		 */
+		var throw_error;
+		/**
+		 * @type {unknown[]}
+		 */
+		var other_errors = [];
+
+		while (current_target !== null) {
+			/** @type {null | Element} */
+			var parent_element =
+				current_target.assignedSlot ||
+				current_target.parentNode ||
+				/** @type {any} */ (current_target).host ||
+				null;
+
+			try {
+				// @ts-expect-error
+				var delegated = current_target['__' + event_name];
+
+				if (
+					delegated != null &&
+					(!(/** @type {any} */ (current_target).disabled) ||
+						// DOM could've been updated already by the time this is reached, so we check this as well
+						// -> the target could not have been disabled because it emits the event in the first place
+						event.target === current_target)
+				) {
+					delegated.call(current_target, event);
+				}
+			} catch (error) {
+				if (throw_error) {
+					other_errors.push(error);
+				} else {
+					throw_error = error;
+				}
+			}
+			if (event.cancelBubble || parent_element === handler_element || parent_element === null) {
+				break;
+			}
+			current_target = parent_element;
+		}
+
+		if (throw_error) {
+			for (let error of other_errors) {
+				// Throw the rest of the errors, one-by-one on a microtask
+				queueMicrotask(() => {
+					throw error;
+				});
+			}
+			throw throw_error;
+		}
+	} finally {
+		// @ts-expect-error is used above
+		event.__root = handler_element;
+		// @ts-ignore remove proxy on currentTarget
+		delete event.currentTarget;
+		set_active_reaction(previous_reaction);
+		set_active_effect(previous_effect);
+	}
+}
+
+/** @param {string} html */
+function create_fragment_from_html(html) {
+	var elem = document.createElement('template');
+	elem.innerHTML = html.replaceAll('<!>', '<!---->'); // XHTML compliance
+	return elem.content;
+}
+
+/** @import { Effect, TemplateNode } from '#client' */
+/** @import { TemplateStructure } from './types' */
+
+/**
+ * @param {TemplateNode} start
+ * @param {TemplateNode | null} end
+ */
+function assign_nodes(start, end) {
+	var effect = /** @type {Effect} */ (active_effect);
+	if (effect.nodes_start === null) {
+		effect.nodes_start = start;
+		effect.nodes_end = end;
+	}
+}
+
+/**
+ * @param {string} content
+ * @param {number} flags
+ * @returns {() => Node | Node[]}
+ */
+/*#__NO_SIDE_EFFECTS__*/
+function from_html(content, flags) {
+	var is_fragment = (flags & TEMPLATE_FRAGMENT) !== 0;
+	var use_import_node = (flags & TEMPLATE_USE_IMPORT_NODE) !== 0;
+
+	/** @type {Node} */
+	var node;
+
+	/**
+	 * Whether or not the first item is a text/element node. If not, we need to
+	 * create an additional comment node to act as `effect.nodes.start`
+	 */
+	var has_start = !content.startsWith('<!>');
+
+	return () => {
+
+		if (node === undefined) {
+			node = create_fragment_from_html(has_start ? content : '<!>' + content);
+			if (!is_fragment) node = /** @type {Node} */ (get_first_child(node));
+		}
+
+		var clone = /** @type {TemplateNode} */ (
+			use_import_node || is_firefox ? document.importNode(node, true) : node.cloneNode(true)
+		);
+
+		if (is_fragment) {
+			var start = /** @type {TemplateNode} */ (get_first_child(clone));
+			var end = /** @type {TemplateNode} */ (clone.lastChild);
+
+			assign_nodes(start, end);
+		} else {
+			assign_nodes(clone, clone);
+		}
+
+		return clone;
+	};
+}
+
+/**
+ * @param {string} content
+ * @param {number} flags
+ * @param {'svg' | 'math'} ns
+ * @returns {() => Node | Node[]}
+ */
+/*#__NO_SIDE_EFFECTS__*/
+function from_namespace(content, flags, ns = 'svg') {
+	/**
+	 * Whether or not the first item is a text/element node. If not, we need to
+	 * create an additional comment node to act as `effect.nodes.start`
+	 */
+	var has_start = !content.startsWith('<!>');
+	var wrapped = `<${ns}>${has_start ? content : '<!>' + content}</${ns}>`;
+
+	/** @type {Element | DocumentFragment} */
+	var node;
+
+	return () => {
+
+		if (!node) {
+			var fragment = /** @type {DocumentFragment} */ (create_fragment_from_html(wrapped));
+			var root = /** @type {Element} */ (get_first_child(fragment));
+
+			{
+				node = /** @type {Element} */ (get_first_child(root));
+			}
+		}
+
+		var clone = /** @type {TemplateNode} */ (node.cloneNode(true));
+
+		{
+			assign_nodes(clone, clone);
+		}
+
+		return clone;
+	};
+}
+
+/**
+ * @param {string} content
+ * @param {number} flags
+ */
+/*#__NO_SIDE_EFFECTS__*/
+function from_svg(content, flags) {
+	return from_namespace(content, flags, 'svg');
+}
+
+/**
+ * Don't mark this as side-effect-free, hydration needs to walk all nodes
+ * @param {any} value
+ */
+function text(value = '') {
+	{
+		var t = create_text(value + '');
+		assign_nodes(t, t);
+		return t;
+	}
+}
+
+/**
+ * @returns {TemplateNode | DocumentFragment}
+ */
+function comment() {
+
+	var frag = document.createDocumentFragment();
+	var start = document.createComment('');
+	var anchor = create_text();
+	frag.append(start, anchor);
+
+	assign_nodes(start, anchor);
+
+	return frag;
+}
+
+/**
+ * Assign the created (or in hydration mode, traversed) dom elements to the current block
+ * and insert the elements into the dom (in client mode).
+ * @param {Text | Comment | Element} anchor
+ * @param {DocumentFragment | Element} dom
+ */
+function append(anchor, dom) {
+
+	if (anchor === null) {
+		// edge case — void `<svelte:element>` with content
+		return;
+	}
+
+	anchor.before(/** @type {Node} */ (dom));
+}
+
+/** @import { ComponentContext, Effect, TemplateNode } from '#client' */
+/** @import { Component, ComponentType, SvelteComponent, MountOptions } from '../../index.js' */
+
+/**
+ * @param {Element} text
+ * @param {string} value
+ * @returns {void}
+ */
+function set_text(text, value) {
+	// For objects, we apply string coercion (which might make things like $state array references in the template reactive) before diffing
+	var str = value == null ? '' : typeof value === 'object' ? value + '' : value;
+	// @ts-expect-error
+	if (str !== (text.__t ??= text.nodeValue)) {
+		// @ts-expect-error
+		text.__t = str;
+		text.nodeValue = str + '';
+	}
+}
+
+/**
+ * Mounts a component to the given target and returns the exports and potentially the props (if compiled with `accessors: true`) of the component.
+ * Transitions will play during the initial render unless the `intro` option is set to `false`.
+ *
+ * @template {Record<string, any>} Props
+ * @template {Record<string, any>} Exports
+ * @param {ComponentType<SvelteComponent<Props>> | Component<Props, Exports, any>} component
+ * @param {MountOptions<Props>} options
+ * @returns {Exports}
+ */
+function mount(component, options) {
+	return _mount(component, options);
+}
+
+/** @type {Map<string, number>} */
+const document_listeners = new Map();
+
+/**
+ * @template {Record<string, any>} Exports
+ * @param {ComponentType<SvelteComponent<any>> | Component<any>} Component
+ * @param {MountOptions} options
+ * @returns {Exports}
+ */
+function _mount(Component, { target, anchor, props = {}, events, context, intro = true }) {
+	init_operations();
+
+	/** @type {Set<string>} */
+	var registered_events = new Set();
+
+	/** @param {Array<string>} events */
+	var event_handle = (events) => {
+		for (var i = 0; i < events.length; i++) {
+			var event_name = events[i];
+
+			if (registered_events.has(event_name)) continue;
+			registered_events.add(event_name);
+
+			var passive = is_passive_event(event_name);
+
+			// Add the event listener to both the container and the document.
+			// The container listener ensures we catch events from within in case
+			// the outer content stops propagation of the event.
+			target.addEventListener(event_name, handle_event_propagation, { passive });
+
+			var n = document_listeners.get(event_name);
+
+			if (n === undefined) {
+				// The document listener ensures we catch events that originate from elements that were
+				// manually moved outside of the container (e.g. via manual portals).
+				document.addEventListener(event_name, handle_event_propagation, { passive });
+				document_listeners.set(event_name, 1);
+			} else {
+				document_listeners.set(event_name, n + 1);
+			}
+		}
+	};
+
+	event_handle(array_from(all_registered_events));
+	root_event_handles.add(event_handle);
+
+	/** @type {Exports} */
+	// @ts-expect-error will be defined because the render effect runs synchronously
+	var component = undefined;
+
+	var unmount = component_root(() => {
+		var anchor_node = anchor ?? target.appendChild(create_text());
+
+		boundary(
+			/** @type {TemplateNode} */ (anchor_node),
+			{
+				pending: () => {}
+			},
+			(anchor_node) => {
+				if (context) {
+					push({});
+					var ctx = /** @type {ComponentContext} */ (component_context);
+					ctx.c = context;
+				}
+
+				if (events) {
+					// We can't spread the object or else we'd lose the state proxy stuff, if it is one
+					/** @type {any} */ (props).$$events = events;
+				}
+				// @ts-expect-error the public typings are not what the actual function looks like
+				component = Component(anchor_node, props) || {};
+
+				if (context) {
+					pop();
+				}
+			}
+		);
+
+		return () => {
+			for (var event_name of registered_events) {
+				target.removeEventListener(event_name, handle_event_propagation);
+
+				var n = /** @type {number} */ (document_listeners.get(event_name));
+
+				if (--n === 0) {
+					document.removeEventListener(event_name, handle_event_propagation);
+					document_listeners.delete(event_name);
+				} else {
+					document_listeners.set(event_name, n);
+				}
+			}
+
+			root_event_handles.delete(event_handle);
+
+			if (anchor_node !== anchor) {
+				anchor_node.parentNode?.removeChild(anchor_node);
+			}
+		};
+	});
+
+	mounted_components.set(component, unmount);
+	return component;
+}
+
+/**
+ * References of the components that were mounted or hydrated.
+ * Uses a `WeakMap` to avoid memory leaks.
+ */
+let mounted_components = new WeakMap();
+
+/** @typedef {{ file: string, line: number, column: number }} Location */
+
+
+/**
+ * Sets up a validator that
+ * - traverses the path of a prop to find out if it is allowed to be mutated
+ * - checks that the binding chain is not interrupted
+ * @param {Record<string, any>} props
+ */
+function create_ownership_validator(props) {
+	const component = component_context?.function;
+	const parent = component_context?.p?.function;
+
+	return {
+		/**
+		 * @param {string} prop
+		 * @param {any[]} path
+		 * @param {any} result
+		 * @param {number} line
+		 * @param {number} column
+		 */
+		mutation: (prop, path, result, line, column) => {
+			const name = path[0];
+			if (is_bound_or_unset(props, name) || !parent) {
+				return result;
+			}
+
+			/** @type {any} */
+			let value = props;
+
+			for (let i = 0; i < path.length - 1; i++) {
+				value = value[path[i]];
+				if (!value?.[STATE_SYMBOL]) {
+					return result;
+				}
+			}
+
+			const location = sanitize_location(`${component[FILENAME]}:${line}:${column}`);
+
+			ownership_invalid_mutation(name, location, prop, parent[FILENAME]);
+
+			return result;
+		},
+		/**
+		 * @param {any} key
+		 * @param {any} child_component
+		 * @param {() => any} value
+		 */
+		binding: (key, child_component, value) => {
+			if (!is_bound_or_unset(props, key) && parent && value()?.[STATE_SYMBOL]) {
+				ownership_invalid_binding(
+					component[FILENAME],
+					key,
+					child_component[FILENAME],
+					parent[FILENAME]
+				);
+			}
+		}
+	};
+}
+
+/**
+ * @param {Record<string, any>} props
+ * @param {string} prop_name
+ */
+function is_bound_or_unset(props, prop_name) {
+	// Can be the case when someone does `mount(Component, props)` with `let props = $state({...})`
+	// or `createClassComponent(Component, props)`
+	const is_entry_props = STATE_SYMBOL in props || LEGACY_PROPS in props;
+	return (
+		!!get_descriptor(props, prop_name)?.set ||
+		(is_entry_props && prop_name in props) ||
+		!(prop_name in props)
+	);
+}
+
+/** @param {Function & { [FILENAME]: string }} target */
+function check_target(target) {
+	if (target) {
+		component_api_invalid_new(target[FILENAME] ?? 'a component', target.name);
+	}
+}
+
+function legacy_api() {
+	const component = component_context?.function;
+
+	/** @param {string} method */
+	function error(method) {
+		component_api_changed(method, component[FILENAME]);
+	}
+
+	return {
+		$destroy: () => error('$destroy()'),
+		$on: () => error('$on(...)'),
+		$set: () => error('$set(...)')
+	};
+}
+
+/** @import { Effect, TemplateNode } from '#client' */
+
+/**
+ * @typedef {{ effect: Effect, fragment: DocumentFragment }} Branch
+ */
+
+/**
+ * @template Key
+ */
+class BranchManager {
+	/** @type {TemplateNode} */
+	anchor;
+
+	/** @type {Map<Batch, Key>} */
+	#batches = new Map();
+
+	/**
+	 * Map of keys to effects that are currently rendered in the DOM.
+	 * These effects are visible and actively part of the document tree.
+	 * Example:
+	 * ```
+	 * {#if condition}
+	 * 	foo
+	 * {:else}
+	 * 	bar
+	 * {/if}
+	 * ```
+	 * Can result in the entries `true->Effect` and `false->Effect`
+	 * @type {Map<Key, Effect>}
+	 */
+	#onscreen = new Map();
+
+	/**
+	 * Similar to #onscreen with respect to the keys, but contains branches that are not yet
+	 * in the DOM, because their insertion is deferred.
+	 * @type {Map<Key, Branch>}
+	 */
+	#offscreen = new Map();
+
+	/**
+	 * Keys of effects that are currently outroing
+	 * @type {Set<Key>}
+	 */
+	#outroing = new Set();
+
+	/**
+	 * Whether to pause (i.e. outro) on change, or destroy immediately.
+	 * This is necessary for `<svelte:element>`
+	 */
+	#transition = true;
+
+	/**
+	 * @param {TemplateNode} anchor
+	 * @param {boolean} transition
+	 */
+	constructor(anchor, transition = true) {
+		this.anchor = anchor;
+		this.#transition = transition;
+	}
+
+	#commit = () => {
+		var batch = /** @type {Batch} */ (current_batch);
+
+		// if this batch was made obsolete, bail
+		if (!this.#batches.has(batch)) return;
+
+		var key = /** @type {Key} */ (this.#batches.get(batch));
+
+		var onscreen = this.#onscreen.get(key);
+
+		if (onscreen) {
+			// effect is already in the DOM — abort any current outro
+			resume_effect(onscreen);
+			this.#outroing.delete(key);
+		} else {
+			// effect is currently offscreen. put it in the DOM
+			var offscreen = this.#offscreen.get(key);
+
+			if (offscreen) {
+				this.#onscreen.set(key, offscreen.effect);
+				this.#offscreen.delete(key);
+
+				// remove the anchor...
+				/** @type {TemplateNode} */ (offscreen.fragment.lastChild).remove();
+
+				// ...and append the fragment
+				this.anchor.before(offscreen.fragment);
+				onscreen = offscreen.effect;
+			}
+		}
+
+		for (const [b, k] of this.#batches) {
+			this.#batches.delete(b);
+
+			if (b === batch) {
+				// keep values for newer batches
+				break;
+			}
+
+			const offscreen = this.#offscreen.get(k);
+
+			if (offscreen) {
+				// for older batches, destroy offscreen effects
+				// as they will never be committed
+				destroy_effect(offscreen.effect);
+				this.#offscreen.delete(k);
+			}
+		}
+
+		// outro/destroy all onscreen effects...
+		for (const [k, effect] of this.#onscreen) {
+			// ...except the one that was just committed
+			//    or those that are already outroing (else the transition is aborted and the effect destroyed right away)
+			if (k === key || this.#outroing.has(k)) continue;
+
+			const on_destroy = () => {
+				const keys = Array.from(this.#batches.values());
+
+				if (keys.includes(k)) {
+					// keep the effect offscreen, as another batch will need it
+					var fragment = document.createDocumentFragment();
+					move_effect(effect, fragment);
+
+					fragment.append(create_text()); // TODO can we avoid this?
+
+					this.#offscreen.set(k, { effect, fragment });
+				} else {
+					destroy_effect(effect);
+				}
+
+				this.#outroing.delete(k);
+				this.#onscreen.delete(k);
+			};
+
+			if (this.#transition || !onscreen) {
+				this.#outroing.add(k);
+				pause_effect(effect, on_destroy, false);
+			} else {
+				on_destroy();
+			}
+		}
+	};
+
+	/**
+	 * @param {Batch} batch
+	 */
+	#discard = (batch) => {
+		this.#batches.delete(batch);
+
+		const keys = Array.from(this.#batches.values());
+
+		for (const [k, branch] of this.#offscreen) {
+			if (!keys.includes(k)) {
+				destroy_effect(branch.effect);
+				this.#offscreen.delete(k);
+			}
+		}
+	};
+
+	/**
+	 *
+	 * @param {any} key
+	 * @param {null | ((target: TemplateNode) => void)} fn
+	 */
+	ensure(key, fn) {
+		var batch = /** @type {Batch} */ (current_batch);
+		var defer = should_defer_append();
+
+		if (fn && !this.#onscreen.has(key) && !this.#offscreen.has(key)) {
+			if (defer) {
+				var fragment = document.createDocumentFragment();
+				var target = create_text();
+
+				fragment.append(target);
+
+				this.#offscreen.set(key, {
+					effect: branch(() => fn(target)),
+					fragment
+				});
+			} else {
+				this.#onscreen.set(
+					key,
+					branch(() => fn(this.anchor))
+				);
+			}
+		}
+
+		this.#batches.set(batch, key);
+
+		if (defer) {
+			for (const [k, effect] of this.#onscreen) {
+				if (k === key) {
+					batch.skipped_effects.delete(effect);
+				} else {
+					batch.skipped_effects.add(effect);
+				}
+			}
+
+			for (const [k, branch] of this.#offscreen) {
+				if (k === key) {
+					batch.skipped_effects.delete(branch.effect);
+				} else {
+					batch.skipped_effects.add(branch.effect);
+				}
+			}
+
+			batch.oncommit(this.#commit);
+			batch.ondiscard(this.#discard);
+		} else {
+
+			this.#commit();
+		}
+	}
+}
+
+/** @import { TemplateNode } from '#client' */
+
+// TODO reinstate https://github.com/sveltejs/svelte/pull/15250
+
+/**
+ * @param {TemplateNode} node
+ * @param {(branch: (fn: (anchor: Node) => void, flag?: boolean) => void) => void} fn
+ * @param {boolean} [elseif] True if this is an `{:else if ...}` block rather than an `{#if ...}`, as that affects which transitions are considered 'local'
+ * @returns {void}
+ */
+function if_block(node, fn, elseif = false) {
+
+	var branches = new BranchManager(node);
+	var flags = elseif ? EFFECT_TRANSPARENT : 0;
+
+	/**
+	 * @param {boolean} condition,
+	 * @param {null | ((anchor: Node) => void)} fn
+	 */
+	function update_branch(condition, fn) {
+
+		branches.ensure(condition, fn);
+	}
+
+	block(() => {
+		var has_branch = false;
+
+		fn((fn, flag = true) => {
+			has_branch = true;
+			update_branch(flag, fn);
+		});
+
+		if (!has_branch) {
+			update_branch(false, null);
+		}
+	}, flags);
+}
+
+/** @import { Effect, TemplateNode } from '#client' */
+
+/**
+ * @param {Element | Text | Comment} node
+ * @param {() => string} get_value
+ * @param {boolean} [svg]
+ * @param {boolean} [mathml]
+ * @param {boolean} [skip_warning]
+ * @returns {void}
+ */
+function html(node, get_value, svg = false, mathml = false, skip_warning = false) {
+	var anchor = node;
+
+	var value = '';
+
+	template_effect(() => {
+		var effect = /** @type {Effect} */ (active_effect);
+
+		if (value === (value = get_value() ?? '')) {
+			return;
+		}
+
+		if (effect.nodes_start !== null) {
+			remove_effect_dom(effect.nodes_start, /** @type {TemplateNode} */ (effect.nodes_end));
+			effect.nodes_start = effect.nodes_end = null;
+		}
+
+		if (value === '') return;
+
+		var html = value + '';
+		if (svg) html = `<svg>${html}</svg>`;
+		else if (mathml) html = `<math>${html}</math>`;
+
+		// Don't use create_fragment_with_script_from_html here because that would mean script tags are executed.
+		// @html is basically `.innerHTML = ...` and that doesn't execute scripts either due to security reasons.
+		/** @type {DocumentFragment | Element} */
+		var node = create_fragment_from_html(html);
+
+		if (svg || mathml) {
+			node = /** @type {Element} */ (get_first_child(node));
+		}
+
+		assign_nodes(
+			/** @type {TemplateNode} */ (get_first_child(node)),
+			/** @type {TemplateNode} */ (node.lastChild)
+		);
+
+		if (svg || mathml) {
+			while (get_first_child(node)) {
+				anchor.before(/** @type {Node} */ (get_first_child(node)));
+			}
+		} else {
+			anchor.before(node);
+		}
+	});
+}
+
+/**
+ * @param {Comment} anchor
+ * @param {Record<string, any>} $$props
+ * @param {string} name
+ * @param {Record<string, unknown>} slot_props
+ * @param {null | ((anchor: Comment) => void)} fallback_fn
+ */
+function slot(anchor, $$props, name, slot_props, fallback_fn) {
+
+	var slot_fn = $$props.$$slots?.[name];
+	// Interop: Can use snippets to fill slots
+	var is_interop = false;
+	if (slot_fn === true) {
+		slot_fn = $$props[name === 'default' ? 'children' : name];
+		is_interop = true;
+	}
+
+	if (slot_fn === undefined) ; else {
+		slot_fn(anchor, is_interop ? () => slot_props : slot_props);
+	}
+}
+
+/** @param {() => unknown} tag_fn */
+function validate_dynamic_element_tag(tag_fn) {
+	const tag = tag_fn();
+	const is_string = typeof tag === 'string';
+	if (tag && !is_string) {
+		svelte_element_invalid_this_value();
+	}
+}
+
+/**
+ * @param {any} store
+ * @param {string} name
+ */
+function validate_store(store, name) {
+	if (store != null && typeof store.subscribe !== 'function') {
+		store_invalid_shape();
+	}
+}
+
+/**
+ * @template {(...args: any[]) => unknown} T
+ * @param {T} fn
+ */
+function prevent_snippet_stringification(fn) {
+	fn.toString = () => {
+		snippet_without_render_tag();
+		return '';
+	};
+	return fn;
+}
+
+/** @import { Snippet } from 'svelte' */
+/** @import { TemplateNode } from '#client' */
+/** @import { Getters } from '#shared' */
+
+/**
+ * In development, wrap the snippet function so that it passes validation, and so that the
+ * correct component context is set for ownership checks
+ * @param {any} component
+ * @param {(node: TemplateNode, ...args: any[]) => void} fn
+ */
+function wrap_snippet(component, fn) {
+	const snippet = (/** @type {TemplateNode} */ node, /** @type {any[]} */ ...args) => {
+		var previous_component_function = dev_current_component_function;
+		set_dev_current_component_function(component);
+
+		try {
+			return fn(node, ...args);
+		} finally {
+			set_dev_current_component_function(previous_component_function);
+		}
+	};
+
+	prevent_snippet_stringification(snippet);
+
+	return snippet;
+}
+
+/** @import { TemplateNode, Dom } from '#client' */
+
+/**
+ * @template P
+ * @template {(props: P) => void} C
+ * @param {TemplateNode} node
+ * @param {() => C} get_component
+ * @param {(anchor: TemplateNode, component: C) => Dom | void} render_fn
+ * @returns {void}
+ */
+function component(node, get_component, render_fn) {
+
+	var branches = new BranchManager(node);
+
+	block(() => {
+		var component = get_component() ?? null;
+		branches.ensure(component, component && ((target) => render_fn(target, component)));
+	}, EFFECT_TRANSPARENT);
+}
+
+/** @import { Effect, TemplateNode } from '#client' */
+
+/**
+ * @param {Comment | Element} node
+ * @param {() => string} get_tag
+ * @param {boolean} is_svg
+ * @param {undefined | ((element: Element, anchor: Node | null) => void)} render_fn,
+ * @param {undefined | (() => string)} get_namespace
+ * @param {undefined | [number, number]} location
+ * @returns {void}
+ */
+function element(node, get_tag, is_svg, render_fn, get_namespace, location) {
+
+	/** @type {null | Element} */
+	var element = null;
+
+	var anchor = /** @type {TemplateNode} */ (node);
+
+	/**
+	 * The keyed `{#each ...}` item block, if any, that this element is inside.
+	 * We track this so we can set it when changing the element, allowing any
+	 * `animate:` directive to bind itself to the correct block
+	 */
+	var each_item_block = current_each_item;
+
+	var branches = new BranchManager(anchor, false);
+
+	block(() => {
+		const next_tag = get_tag() || null;
+		var ns = next_tag === 'svg' ? NAMESPACE_SVG : null;
+
+		if (next_tag === null) {
+			branches.ensure(null, null);
+			return;
+		}
+
+		branches.ensure(next_tag, (anchor) => {
+			// See explanation of `each_item_block` above
+			var previous_each_item = current_each_item;
+			set_current_each_item(each_item_block);
+
+			if (next_tag) {
+				element = ns
+						? document.createElementNS(ns, next_tag)
+						: document.createElement(next_tag);
+
+				assign_nodes(element, element);
+
+				if (render_fn) {
+
+					// If hydrating, use the existing ssr comment as the anchor so that the
+					// inner open and close methods can pick up the existing nodes correctly
+					var child_anchor = /** @type {TemplateNode} */ (
+						element.appendChild(create_text())
+					);
+
+					// `child_anchor` is undefined if this is a void element, but we still
+					// need to call `render_fn` in order to run actions etc. If the element
+					// contains children, it's a user error (which is warned on elsewhere)
+					// and the DOM will be silently discarded
+					render_fn(element, child_anchor);
+				}
+
+				// we do this after calling `render_fn` so that child effects don't override `nodes.end`
+				/** @type {Effect} */ (active_effect).nodes_end = element;
+
+				anchor.before(element);
+			}
+
+			set_current_each_item(previous_each_item);
+		});
+
+		return () => {
+		};
+	}, EFFECT_TRANSPARENT);
+
+	teardown(() => {
+	});
+}
+
+/** @import { ActionPayload } from '#client' */
+
+/**
+ * @template P
+ * @param {Element} dom
+ * @param {(dom: Element, value?: P) => ActionPayload<P>} action
+ * @param {() => P} [get_value]
+ * @returns {void}
+ */
+function action(dom, action, get_value) {
+	effect(() => {
+		var payload = untrack(() => action(dom, get_value?.()) || {});
+
+		if (payload?.destroy) {
+			return () => /** @type {Function} */ (payload.destroy)();
+		}
+	});
+}
+
+/** @import { Effect } from '#client' */
+
+// TODO in 6.0 or 7.0, when we remove legacy mode, we can simplify this by
+// getting rid of the block/branch stuff and just letting the effect rip.
+// see https://github.com/sveltejs/svelte/pull/15962
+
+/**
+ * @param {Element} node
+ * @param {() => (node: Element) => void} get_fn
+ */
+function attach(node, get_fn) {
+	/** @type {false | undefined | ((node: Element) => void)} */
+	var fn = undefined;
+
+	/** @type {Effect | null} */
+	var e;
+
+	managed(() => {
+		if (fn !== (fn = get_fn())) {
+			if (e) {
+				destroy_effect(e);
+				e = null;
+			}
+
+			if (fn) {
+				e = branch(() => {
+					effect(() => /** @type {(node: Element) => void} */ (fn)(node));
+				});
+			}
+		}
+	});
+}
+
+function r(e){var t,f,n="";if("string"==typeof e||"number"==typeof e)n+=e;else if("object"==typeof e)if(Array.isArray(e)){var o=e.length;for(t=0;t<o;t++)e[t]&&(f=r(e[t]))&&(n&&(n+=" "),n+=f);}else for(f in e)e[f]&&(n&&(n+=" "),n+=f);return n}function clsx$1(){for(var e,t,f=0,n="",o=arguments.length;f<o;f++)(e=arguments[f])&&(t=r(e))&&(n&&(n+=" "),n+=t);return n}
+
+/**
+ * Small wrapper around clsx to preserve Svelte's (weird) handling of falsy values.
+ * TODO Svelte 6 revisit this, and likely turn all falsy values into the empty string (what clsx also does)
+ * @param  {any} value
+ */
+function clsx(value) {
+	if (typeof value === 'object') {
+		return clsx$1(value);
+	} else {
+		return value ?? '';
+	}
+}
+
+const whitespace = [...' \t\n\r\f\u00a0\u000b\ufeff'];
+
+/**
+ * @param {any} value
+ * @param {string | null} [hash]
+ * @param {Record<string, boolean>} [directives]
+ * @returns {string | null}
+ */
+function to_class(value, hash, directives) {
+	var classname = value == null ? '' : '' + value;
+
+	if (directives) {
+		for (var key in directives) {
+			if (directives[key]) {
+				classname = classname ? classname + ' ' + key : key;
+			} else if (classname.length) {
+				var len = key.length;
+				var a = 0;
+
+				while ((a = classname.indexOf(key, a)) >= 0) {
+					var b = a + len;
+
+					if (
+						(a === 0 || whitespace.includes(classname[a - 1])) &&
+						(b === classname.length || whitespace.includes(classname[b]))
+					) {
+						classname = (a === 0 ? '' : classname.substring(0, a)) + classname.substring(b + 1);
+					} else {
+						a = b;
+					}
+				}
+			}
+		}
+	}
+
+	return classname === '' ? null : classname;
+}
+
+/**
+ *
+ * @param {Record<string,any>} styles
+ * @param {boolean} important
+ */
+function append_styles(styles, important = false) {
+	var separator = important ? ' !important;' : ';';
+	var css = '';
+
+	for (var key in styles) {
+		var value = styles[key];
+		if (value != null && value !== '') {
+			css += ' ' + key + ': ' + value + separator;
+		}
+	}
+
+	return css;
+}
+
+/**
+ * @param {string} name
+ * @returns {string}
+ */
+function to_css_name(name) {
+	if (name[0] !== '-' || name[1] !== '-') {
+		return name.toLowerCase();
+	}
+	return name;
+}
+
+/**
+ * @param {any} value
+ * @param {Record<string, any> | [Record<string, any>, Record<string, any>]} [styles]
+ * @returns {string | null}
+ */
+function to_style(value, styles) {
+	if (styles) {
+		var new_style = '';
+
+		/** @type {Record<string,any> | undefined} */
+		var normal_styles;
+
+		/** @type {Record<string,any> | undefined} */
+		var important_styles;
+
+		if (Array.isArray(styles)) {
+			normal_styles = styles[0];
+			important_styles = styles[1];
+		} else {
+			normal_styles = styles;
+		}
+
+		if (value) {
+			value = String(value)
+				.replaceAll(/\s*\/\*.*?\*\/\s*/g, '')
+				.trim();
+
+			/** @type {boolean | '"' | "'"} */
+			var in_str = false;
+			var in_apo = 0;
+			var in_comment = false;
+
+			var reserved_names = [];
+
+			if (normal_styles) {
+				reserved_names.push(...Object.keys(normal_styles).map(to_css_name));
+			}
+			if (important_styles) {
+				reserved_names.push(...Object.keys(important_styles).map(to_css_name));
+			}
+
+			var start_index = 0;
+			var name_index = -1;
+
+			const len = value.length;
+			for (var i = 0; i < len; i++) {
+				var c = value[i];
+
+				if (in_comment) {
+					if (c === '/' && value[i - 1] === '*') {
+						in_comment = false;
+					}
+				} else if (in_str) {
+					if (in_str === c) {
+						in_str = false;
+					}
+				} else if (c === '/' && value[i + 1] === '*') {
+					in_comment = true;
+				} else if (c === '"' || c === "'") {
+					in_str = c;
+				} else if (c === '(') {
+					in_apo++;
+				} else if (c === ')') {
+					in_apo--;
+				}
+
+				if (!in_comment && in_str === false && in_apo === 0) {
+					if (c === ':' && name_index === -1) {
+						name_index = i;
+					} else if (c === ';' || i === len - 1) {
+						if (name_index !== -1) {
+							var name = to_css_name(value.substring(start_index, name_index).trim());
+
+							if (!reserved_names.includes(name)) {
+								if (c !== ';') {
+									i++;
+								}
+
+								var property = value.substring(start_index, i).trim();
+								new_style += ' ' + property + ';';
+							}
+						}
+
+						start_index = i + 1;
+						name_index = -1;
+					}
+				}
+			}
+		}
+
+		if (normal_styles) {
+			new_style += append_styles(normal_styles);
+		}
+
+		if (important_styles) {
+			new_style += append_styles(important_styles, true);
+		}
+
+		new_style = new_style.trim();
+		return new_style === '' ? null : new_style;
+	}
+
+	return value == null ? null : String(value);
+}
+
+/**
+ * @param {Element} dom
+ * @param {boolean | number} is_html
+ * @param {string | null} value
+ * @param {string} [hash]
+ * @param {Record<string, any>} [prev_classes]
+ * @param {Record<string, any>} [next_classes]
+ * @returns {Record<string, boolean> | undefined}
+ */
+function set_class(dom, is_html, value, hash, prev_classes, next_classes) {
+	// @ts-expect-error need to add __className to patched prototype
+	var prev = dom.__className;
+
+	if (
+		prev !== value ||
+		prev === undefined // for edge case of `class={undefined}`
+	) {
+		var next_class_name = to_class(value, hash, next_classes);
+
+		{
+			// Removing the attribute when the value is only an empty string causes
+			// performance issues vs simply making the className an empty string. So
+			// we should only remove the class if the value is nullish
+			// and there no hash/directives :
+			if (next_class_name == null) {
+				dom.removeAttribute('class');
+			} else if (is_html) {
+				dom.className = next_class_name;
+			} else {
+				dom.setAttribute('class', next_class_name);
+			}
+		}
+
+		// @ts-expect-error need to add __className to patched prototype
+		dom.__className = value;
+	} else if (next_classes && prev_classes !== next_classes) {
+		for (var key in next_classes) {
+			var is_present = !!next_classes[key];
+
+			if (prev_classes == null || is_present !== !!prev_classes[key]) {
+				dom.classList.toggle(key, is_present);
+			}
+		}
+	}
+
+	return next_classes;
+}
+
+/**
+ * @param {Element & ElementCSSInlineStyle} dom
+ * @param {Record<string, any>} prev
+ * @param {Record<string, any>} next
+ * @param {string} [priority]
+ */
+function update_styles(dom, prev = {}, next, priority) {
+	for (var key in next) {
+		var value = next[key];
+
+		if (prev[key] !== value) {
+			if (next[key] == null) {
+				dom.style.removeProperty(key);
+			} else {
+				dom.style.setProperty(key, value, priority);
+			}
+		}
+	}
+}
+
+/**
+ * @param {Element & ElementCSSInlineStyle} dom
+ * @param {string | null} value
+ * @param {Record<string, any> | [Record<string, any>, Record<string, any>]} [prev_styles]
+ * @param {Record<string, any> | [Record<string, any>, Record<string, any>]} [next_styles]
+ */
+function set_style(dom, value, prev_styles, next_styles) {
+	// @ts-expect-error
+	var prev = dom.__style;
+
+	if (prev !== value) {
+		var next_style_attr = to_style(value, next_styles);
+
+		{
+			if (next_style_attr == null) {
+				dom.removeAttribute('style');
+			} else {
+				dom.style.cssText = next_style_attr;
+			}
+		}
+
+		// @ts-expect-error
+		dom.__style = value;
+	} else if (next_styles) {
+		if (Array.isArray(next_styles)) {
+			update_styles(dom, prev_styles?.[0], next_styles[0]);
+			update_styles(dom, prev_styles?.[1], next_styles[1], 'important');
+		} else {
+			update_styles(dom, prev_styles, next_styles);
+		}
+	}
+
+	return next_styles;
+}
+
+/**
+ * Selects the correct option(s) (depending on whether this is a multiple select)
+ * @template V
+ * @param {HTMLSelectElement} select
+ * @param {V} value
+ * @param {boolean} mounting
+ */
+function select_option(select, value, mounting = false) {
+	if (select.multiple) {
+		// If value is null or undefined, keep the selection as is
+		if (value == undefined) {
+			return;
+		}
+
+		// If not an array, warn and keep the selection as is
+		if (!is_array(value)) {
+			return select_multiple_invalid_value();
+		}
+
+		// Otherwise, update the selection
+		for (var option of select.options) {
+			option.selected = value.includes(get_option_value(option));
+		}
+
+		return;
+	}
+
+	for (option of select.options) {
+		var option_value = get_option_value(option);
+		if (is(option_value, value)) {
+			option.selected = true;
+			return;
+		}
+	}
+
+	if (!mounting || value !== undefined) {
+		select.selectedIndex = -1; // no option should be selected
+	}
+}
+
+/**
+ * Selects the correct option(s) if `value` is given,
+ * and then sets up a mutation observer to sync the
+ * current selection to the dom when it changes. Such
+ * changes could for example occur when options are
+ * inside an `#each` block.
+ * @param {HTMLSelectElement} select
+ */
+function init_select(select) {
+	var observer = new MutationObserver(() => {
+		// @ts-ignore
+		select_option(select, select.__value);
+		// Deliberately don't update the potential binding value,
+		// the model should be preserved unless explicitly changed
+	});
+
+	observer.observe(select, {
+		// Listen to option element changes
+		childList: true,
+		subtree: true, // because of <optgroup>
+		// Listen to option element value attribute changes
+		// (doesn't get notified of select value changes,
+		// because that property is not reflected as an attribute)
+		attributes: true,
+		attributeFilter: ['value']
+	});
+
+	teardown(() => {
+		observer.disconnect();
+	});
+}
+
+/**
+ * @param {HTMLSelectElement} select
+ * @param {() => unknown} get
+ * @param {(value: unknown) => void} set
+ * @returns {void}
+ */
+function bind_select_value(select, get, set = get) {
+	var batches = new WeakSet();
+	var mounting = true;
+
+	listen_to_event_and_reset_event(select, 'change', (is_reset) => {
+		var query = is_reset ? '[selected]' : ':checked';
+		/** @type {unknown} */
+		var value;
+
+		if (select.multiple) {
+			value = [].map.call(select.querySelectorAll(query), get_option_value);
+		} else {
+			/** @type {HTMLOptionElement | null} */
+			var selected_option =
+				select.querySelector(query) ??
+				// will fall back to first non-disabled option if no option is selected
+				select.querySelector('option:not([disabled])');
+			value = selected_option && get_option_value(selected_option);
+		}
+
+		set(value);
+
+		if (current_batch !== null) {
+			batches.add(current_batch);
+		}
+	});
+
+	// Needs to be an effect, not a render_effect, so that in case of each loops the logic runs after the each block has updated
+	effect(() => {
+		var value = get();
+
+		if (select === document.activeElement) {
+			// we need both, because in non-async mode, render effects run before previous_batch is set
+			var batch = /** @type {Batch} */ (previous_batch ?? current_batch);
+
+			// Don't update the <select> if it is focused. We can get here if, for example,
+			// an update is deferred because of async work depending on the select:
+			//
+			// <select bind:value={selected}>...</select>
+			// <p>{await find(selected)}</p>
+			if (batches.has(batch)) {
+				return;
+			}
+		}
+
+		select_option(select, value, mounting);
+
+		// Mounting and value undefined -> take selection from dom
+		if (mounting && value === undefined) {
+			/** @type {HTMLOptionElement | null} */
+			var selected_option = select.querySelector(':checked');
+			if (selected_option !== null) {
+				value = get_option_value(selected_option);
+				set(value);
+			}
+		}
+
+		// @ts-ignore
+		select.__value = value;
+		mounting = false;
+	});
+
+	init_select(select);
+}
+
+/** @param {HTMLOptionElement} option */
+function get_option_value(option) {
+	// __value only exists if the <option> has a value attribute
+	if ('__value' in option) {
+		return option.__value;
+	} else {
+		return option.value;
+	}
+}
+
+/** @import { Effect } from '#client' */
+
+const CLASS = Symbol('class');
+const STYLE = Symbol('style');
+
+const IS_CUSTOM_ELEMENT = Symbol('is custom element');
+const IS_HTML = Symbol('is html');
+
+/**
+ * The value/checked attribute in the template actually corresponds to the defaultValue property, so we need
+ * to remove it upon hydration to avoid a bug when someone resets the form value.
+ * @param {HTMLInputElement} input
+ * @returns {void}
+ */
+function remove_input_defaults(input) {
+	return;
+}
+
+/**
+ * @param {Element} element
+ * @param {any} value
+ */
+function set_value(element, value) {
+	var attributes = get_attributes(element);
+
+	if (
+		attributes.value ===
+			(attributes.value =
+				// treat null and undefined the same for the initial value
+				value ?? undefined) ||
+		// @ts-expect-error
+		// `progress` elements always need their value set when it's `0`
+		(element.value === value && (value !== 0 || element.nodeName !== 'PROGRESS'))
+	) {
+		return;
+	}
+
+	// @ts-expect-error
+	element.value = value ?? '';
+}
+
+/**
+ * @param {Element} element
+ * @param {boolean} checked
+ */
+function set_checked(element, checked) {
+	var attributes = get_attributes(element);
+
+	if (
+		attributes.checked ===
+		(attributes.checked =
+			// treat null and undefined the same for the initial value
+			checked ?? undefined)
+	) {
+		return;
+	}
+
+	// @ts-expect-error
+	element.checked = checked;
+}
+
+/**
+ * Sets the `selected` attribute on an `option` element.
+ * Not set through the property because that doesn't reflect to the DOM,
+ * which means it wouldn't be taken into account when a form is reset.
+ * @param {HTMLOptionElement} element
+ * @param {boolean} selected
+ */
+function set_selected(element, selected) {
+	if (selected) {
+		// The selected option could've changed via user selection, and
+		// setting the value without this check would set it back.
+		if (!element.hasAttribute('selected')) {
+			element.setAttribute('selected', '');
+		}
+	} else {
+		element.removeAttribute('selected');
+	}
+}
+
+/**
+ * @param {Element} element
+ * @param {string} attribute
+ * @param {string | null} value
+ * @param {boolean} [skip_warning]
+ */
+function set_attribute(element, attribute, value, skip_warning) {
+	var attributes = get_attributes(element);
+
+	if (attributes[attribute] === (attributes[attribute] = value)) return;
+
+	if (attribute === 'loading') {
+		// @ts-expect-error
+		element[LOADING_ATTR_SYMBOL] = value;
+	}
+
+	if (value == null) {
+		element.removeAttribute(attribute);
+	} else if (typeof value !== 'string' && get_setters(element).includes(attribute)) {
+		// @ts-ignore
+		element[attribute] = value;
+	} else {
+		element.setAttribute(attribute, value);
+	}
+}
+
+/**
+ * @param {Element} dom
+ * @param {string} attribute
+ * @param {string} value
+ */
+function set_xlink_attribute(dom, attribute, value) {
+	dom.setAttributeNS('http://www.w3.org/1999/xlink', attribute, value);
+}
+
+/**
+ * Spreads attributes onto a DOM element, taking into account the currently set attributes
+ * @param {Element & ElementCSSInlineStyle} element
+ * @param {Record<string | symbol, any> | undefined} prev
+ * @param {Record<string | symbol, any>} next New attributes - this function mutates this object
+ * @param {string} [css_hash]
+ * @param {boolean} [should_remove_defaults]
+ * @param {boolean} [skip_warning]
+ * @returns {Record<string, any>}
+ */
+function set_attributes(
+	element,
+	prev,
+	next,
+	css_hash,
+	should_remove_defaults = false,
+	skip_warning = false
+) {
+
+	var attributes = get_attributes(element);
+
+	var is_custom_element = attributes[IS_CUSTOM_ELEMENT];
+	var preserve_attribute_case = !attributes[IS_HTML];
+
+	var current = prev || {};
+	var is_option_element = element.tagName === 'OPTION';
+
+	for (var key in prev) {
+		if (!(key in next)) {
+			next[key] = null;
+		}
+	}
+
+	if (next.class) {
+		next.class = clsx(next.class);
+	} else if (next[CLASS]) {
+		next.class = null; /* force call to set_class() */
+	}
+
+	if (next[STYLE]) {
+		next.style ??= null; /* force call to set_style() */
+	}
+
+	var setters = get_setters(element);
+
+	// since key is captured we use const
+	for (const key in next) {
+		// let instead of var because referenced in a closure
+		let value = next[key];
+
+		// Up here because we want to do this for the initial value, too, even if it's undefined,
+		// and this wouldn't be reached in case of undefined because of the equality check below
+		if (is_option_element && key === 'value' && value == null) {
+			// The <option> element is a special case because removing the value attribute means
+			// the value is set to the text content of the option element, and setting the value
+			// to null or undefined means the value is set to the string "null" or "undefined".
+			// To align with how we handle this case in non-spread-scenarios, this logic is needed.
+			// There's a super-edge-case bug here that is left in in favor of smaller code size:
+			// Because of the "set missing props to null" logic above, we can't differentiate
+			// between a missing value and an explicitly set value of null or undefined. That means
+			// that once set, the value attribute of an <option> element can't be removed. This is
+			// a very rare edge case, and removing the attribute altogether isn't possible either
+			// for the <option value={undefined}> case, so we're not losing any functionality here.
+			// @ts-ignore
+			element.value = element.__value = '';
+			current[key] = value;
+			continue;
+		}
+
+		if (key === 'class') {
+			var is_html = element.namespaceURI === 'http://www.w3.org/1999/xhtml';
+			set_class(element, is_html, value, css_hash, prev?.[CLASS], next[CLASS]);
+			current[key] = value;
+			current[CLASS] = next[CLASS];
+			continue;
+		}
+
+		if (key === 'style') {
+			set_style(element, value, prev?.[STYLE], next[STYLE]);
+			current[key] = value;
+			current[STYLE] = next[STYLE];
+			continue;
+		}
+
+		var prev_value = current[key];
+
+		// Skip if value is unchanged, unless it's `undefined` and the element still has the attribute
+		if (value === prev_value && !(value === undefined && element.hasAttribute(key))) {
+			continue;
+		}
+
+		current[key] = value;
+
+		var prefix = key[0] + key[1]; // this is faster than key.slice(0, 2)
+		if (prefix === '$$') continue;
+
+		if (prefix === 'on') {
+			/** @type {{ capture?: true }} */
+			const opts = {};
+			const event_handle_key = '$$' + key;
+			let event_name = key.slice(2);
+			var delegated = can_delegate_event(event_name);
+
+			if (is_capture_event(event_name)) {
+				event_name = event_name.slice(0, -7);
+				opts.capture = true;
+			}
+
+			if (!delegated && prev_value) {
+				// Listening to same event but different handler -> our handle function below takes care of this
+				// If we were to remove and add listeners in this case, it could happen that the event is "swallowed"
+				// (the browser seems to not know yet that a new one exists now) and doesn't reach the handler
+				// https://github.com/sveltejs/svelte/issues/11903
+				if (value != null) continue;
+
+				element.removeEventListener(event_name, current[event_handle_key], opts);
+				current[event_handle_key] = null;
+			}
+
+			if (value != null) {
+				if (!delegated) {
+					/**
+					 * @this {any}
+					 * @param {Event} evt
+					 */
+					function handle(evt) {
+						current[key].call(this, evt);
+					}
+
+					current[event_handle_key] = create_event(event_name, element, handle, opts);
+				} else {
+					// @ts-ignore
+					element[`__${event_name}`] = value;
+					delegate([event_name]);
+				}
+			} else if (delegated) {
+				// @ts-ignore
+				element[`__${event_name}`] = undefined;
+			}
+		} else if (key === 'style') {
+			// avoid using the setter
+			set_attribute(element, key, value);
+		} else if (key === 'autofocus') {
+			autofocus(/** @type {HTMLElement} */ (element), Boolean(value));
+		} else if (!is_custom_element && (key === '__value' || (key === 'value' && value != null))) {
+			// @ts-ignore We're not running this for custom elements because __value is actually
+			// how Lit stores the current value on the element, and messing with that would break things.
+			element.value = element.__value = value;
+		} else if (key === 'selected' && is_option_element) {
+			set_selected(/** @type {HTMLOptionElement} */ (element), value);
+		} else {
+			var name = key;
+			if (!preserve_attribute_case) {
+				name = normalize_attribute(name);
+			}
+
+			var is_default = name === 'defaultValue' || name === 'defaultChecked';
+
+			if (value == null && !is_custom_element && !is_default) {
+				attributes[key] = null;
+
+				if (name === 'value' || name === 'checked') {
+					// removing value/checked also removes defaultValue/defaultChecked — preserve
+					let input = /** @type {HTMLInputElement} */ (element);
+					const use_default = prev === undefined;
+					if (name === 'value') {
+						let previous = input.defaultValue;
+						input.removeAttribute(name);
+						input.defaultValue = previous;
+						// @ts-ignore
+						input.value = input.__value = use_default ? previous : null;
+					} else {
+						let previous = input.defaultChecked;
+						input.removeAttribute(name);
+						input.defaultChecked = previous;
+						input.checked = use_default ? previous : false;
+					}
+				} else {
+					element.removeAttribute(key);
+				}
+			} else if (
+				is_default ||
+				(setters.includes(name) && (is_custom_element || typeof value !== 'string'))
+			) {
+				// @ts-ignore
+				element[name] = value;
+				// remove it from attributes's cache
+				if (name in attributes) attributes[name] = UNINITIALIZED;
+			} else if (typeof value !== 'function') {
+				set_attribute(element, name, value);
+			}
+		}
+	}
+
+	return current;
+}
+
+/**
+ * @param {Element & ElementCSSInlineStyle} element
+ * @param {(...expressions: any) => Record<string | symbol, any>} fn
+ * @param {Array<() => any>} sync
+ * @param {Array<() => Promise<any>>} async
+ * @param {Array<Promise<void>>} blockers
+ * @param {string} [css_hash]
+ * @param {boolean} [should_remove_defaults]
+ * @param {boolean} [skip_warning]
+ */
+function attribute_effect(
+	element,
+	fn,
+	sync = [],
+	async = [],
+	blockers = [],
+	css_hash,
+	should_remove_defaults = false,
+	skip_warning = false
+) {
+	flatten(blockers, sync, async, (values) => {
+		/** @type {Record<string | symbol, any> | undefined} */
+		var prev = undefined;
+
+		/** @type {Record<symbol, Effect>} */
+		var effects = {};
+
+		var is_select = element.nodeName === 'SELECT';
+		var inited = false;
+
+		managed(() => {
+			var next = fn(...values.map(get$1));
+			/** @type {Record<string | symbol, any>} */
+			var current = set_attributes(
+				element,
+				prev,
+				next,
+				css_hash,
+				should_remove_defaults,
+				skip_warning
+			);
+
+			if (inited && is_select && 'value' in next) {
+				select_option(/** @type {HTMLSelectElement} */ (element), next.value);
+			}
+
+			for (let symbol of Object.getOwnPropertySymbols(effects)) {
+				if (!next[symbol]) destroy_effect(effects[symbol]);
+			}
+
+			for (let symbol of Object.getOwnPropertySymbols(next)) {
+				var n = next[symbol];
+
+				if (symbol.description === ATTACHMENT_KEY && (!prev || n !== prev[symbol])) {
+					if (effects[symbol]) destroy_effect(effects[symbol]);
+					effects[symbol] = branch(() => attach(element, () => n));
+				}
+
+				current[symbol] = n;
+			}
+
+			prev = current;
+		});
+
+		if (is_select) {
+			var select = /** @type {HTMLSelectElement} */ (element);
+
+			effect(() => {
+				select_option(select, /** @type {Record<string | symbol, any>} */ (prev).value, true);
+				init_select(select);
+			});
+		}
+
+		inited = true;
+	});
+}
+
+/**
+ *
+ * @param {Element} element
+ */
+function get_attributes(element) {
+	return /** @type {Record<string | symbol, unknown>} **/ (
+		// @ts-expect-error
+		element.__attributes ??= {
+			[IS_CUSTOM_ELEMENT]: element.nodeName.includes('-'),
+			[IS_HTML]: element.namespaceURI === NAMESPACE_HTML
+		}
+	);
+}
+
+/** @type {Map<string, string[]>} */
+var setters_cache = new Map();
+
+/** @param {Element} element */
+function get_setters(element) {
+	var cache_key = element.getAttribute('is') || element.nodeName;
+	var setters = setters_cache.get(cache_key);
+	if (setters) return setters;
+	setters_cache.set(cache_key, (setters = []));
+
+	var descriptors;
+	var proto = element; // In the case of custom elements there might be setters on the instance
+	var element_proto = Element.prototype;
+
+	// Stop at Element, from there on there's only unnecessary setters we're not interested in
+	// Do not use contructor.name here as that's unreliable in some browser environments
+	while (element_proto !== proto) {
+		descriptors = get_descriptors(proto);
+
+		for (var key in descriptors) {
+			if (descriptors[key].set) {
+				setters.push(key);
+			}
+		}
+
+		proto = get_prototype_of(proto);
+	}
+
+	return setters;
+}
+
+/** @import { Batch } from '../../../reactivity/batch.js' */
+
+/**
+ * @param {HTMLInputElement} input
+ * @param {() => unknown} get
+ * @param {(value: unknown) => void} set
+ * @returns {void}
+ */
+function bind_value(input, get, set = get) {
+	var batches = new WeakSet();
+
+	listen_to_event_and_reset_event(input, 'input', async (is_reset) => {
+
+		/** @type {any} */
+		var value = is_reset ? input.defaultValue : input.value;
+		value = is_numberlike_input(input) ? to_number(value) : value;
+		set(value);
+
+		if (current_batch !== null) {
+			batches.add(current_batch);
+		}
+
+		// Because `{#each ...}` blocks work by updating sources inside the flush,
+		// we need to wait a tick before checking to see if we should forcibly
+		// update the input and reset the selection state
+		await tick();
+
+		// Respect any validation in accessors
+		if (value !== (value = get())) {
+			var start = input.selectionStart;
+			var end = input.selectionEnd;
+			var length = input.value.length;
+
+			// the value is coerced on assignment
+			input.value = value ?? '';
+
+			// Restore selection
+			if (end !== null) {
+				var new_length = input.value.length;
+				// If cursor was at end and new input is longer, move cursor to new end
+				if (start === end && end === length && new_length > length) {
+					input.selectionStart = new_length;
+					input.selectionEnd = new_length;
+				} else {
+					input.selectionStart = start;
+					input.selectionEnd = Math.min(end, new_length);
+				}
+			}
+		}
+	});
+
+	if (
+		// If we are hydrating and the value has since changed,
+		// then use the updated value from the input instead.
+		// If defaultValue is set, then value == defaultValue
+		// TODO Svelte 6: remove input.value check and set to empty string?
+		(untrack(get) == null && input.value)
+	) {
+		set(is_numberlike_input(input) ? to_number(input.value) : input.value);
+
+		if (current_batch !== null) {
+			batches.add(current_batch);
+		}
+	}
+
+	render_effect(() => {
+
+		var value = get();
+
+		if (input === document.activeElement) {
+			// we need both, because in non-async mode, render effects run before previous_batch is set
+			var batch = /** @type {Batch} */ (previous_batch ?? current_batch);
+
+			// Never rewrite the contents of a focused input. We can get here if, for example,
+			// an update is deferred because of async work depending on the input:
+			//
+			// <input bind:value={query}>
+			// <p>{await find(query)}</p>
+			if (batches.has(batch)) {
+				return;
+			}
+		}
+
+		if (is_numberlike_input(input) && value === to_number(input.value)) {
+			// handles 0 vs 00 case (see https://github.com/sveltejs/svelte/issues/9959)
+			return;
+		}
+
+		if (input.type === 'date' && !value && !input.value) {
+			// Handles the case where a temporarily invalid date is set (while typing, for example with a leading 0 for the day)
+			// and prevents this state from clearing the other parts of the date input (see https://github.com/sveltejs/svelte/issues/7897)
+			return;
+		}
+
+		// don't set the value of the input if it's the same to allow
+		// minlength to work properly
+		if (value !== input.value) {
+			// @ts-expect-error the value is coerced on assignment
+			input.value = value ?? '';
+		}
+	});
+}
+
+/**
+ * @param {HTMLInputElement} input
+ * @param {() => unknown} get
+ * @param {(value: unknown) => void} set
+ * @returns {void}
+ */
+function bind_checked(input, get, set = get) {
+	listen_to_event_and_reset_event(input, 'change', (is_reset) => {
+		var value = is_reset ? input.defaultChecked : input.checked;
+		set(value);
+	});
+
+	if (
+		// If we are hydrating and the value has since changed,
+		// then use the update value from the input instead.
+		// If defaultChecked is set, then checked == defaultChecked
+		untrack(get) == null
+	) {
+		set(input.checked);
+	}
+
+	render_effect(() => {
+		var value = get();
+		input.checked = Boolean(value);
+	});
+}
+
+/**
+ * @param {HTMLInputElement} input
+ */
+function is_numberlike_input(input) {
+	var type = input.type;
+	return type === 'number' || type === 'range';
+}
+
+/**
+ * @param {string} value
+ */
+function to_number(value) {
+	return value === '' ? null : +value;
+}
+
+/**
+ * @param {any} bound_value
+ * @param {Element} element_or_component
+ * @returns {boolean}
+ */
+function is_bound_this(bound_value, element_or_component) {
+	return (
+		bound_value === element_or_component || bound_value?.[STATE_SYMBOL] === element_or_component
+	);
+}
+
+/**
+ * @param {any} element_or_component
+ * @param {(value: unknown, ...parts: unknown[]) => void} update
+ * @param {(...parts: unknown[]) => unknown} get_value
+ * @param {() => unknown[]} [get_parts] Set if the this binding is used inside an each block,
+ * 										returns all the parts of the each block context that are used in the expression
+ * @returns {void}
+ */
+function bind_this(element_or_component = {}, update, get_value, get_parts) {
+	effect(() => {
+		/** @type {unknown[]} */
+		var old_parts;
+
+		/** @type {unknown[]} */
+		var parts;
+
+		render_effect(() => {
+			old_parts = parts;
+			// We only track changes to the parts, not the value itself to avoid unnecessary reruns.
+			parts = get_parts?.() || [];
+
+			untrack(() => {
+				if (element_or_component !== get_value(...parts)) {
+					update(element_or_component, ...parts);
+					// If this is an effect rerun (cause: each block context changes), then nullify the binding at
+					// the previous position if it isn't already taken over by a different effect.
+					if (old_parts && is_bound_this(get_value(...old_parts), element_or_component)) {
+						update(null, ...old_parts);
+					}
+				}
+			});
+		});
+
+		return () => {
+			// We cannot use effects in the teardown phase, we we use a microtask instead.
+			queue_micro_task(() => {
+				if (parts && is_bound_this(get_value(...parts), element_or_component)) {
+					update(null, ...parts);
+				}
+			});
+		};
+	});
+
+	return element_or_component;
+}
+
+/** @import { ComponentContextLegacy } from '#client' */
+
+/**
+ * Legacy-mode only: Call `onMount` callbacks and set up `beforeUpdate`/`afterUpdate` effects
+ * @param {boolean} [immutable]
+ */
+function init(immutable = false) {
+	const context = /** @type {ComponentContextLegacy} */ (component_context);
+
+	const callbacks = context.l.u;
+	if (!callbacks) return;
+
+	let props = () => deep_read_state(context.s);
+
+	if (immutable) {
+		let version = 0;
+		let prev = /** @type {Record<string, any>} */ ({});
+
+		// In legacy immutable mode, before/afterUpdate only fire if the object identity of a prop changes
+		const d = derived(() => {
+			let changed = false;
+			const props = context.s;
+			for (const key in props) {
+				if (props[key] !== prev[key]) {
+					prev[key] = props[key];
+					changed = true;
+				}
+			}
+			if (changed) version++;
+			return version;
+		});
+
+		props = () => get$1(d);
+	}
+
+	// beforeUpdate
+	if (callbacks.b.length) {
+		user_pre_effect(() => {
+			observe_all(context, props);
+			run_all(callbacks.b);
+		});
+	}
+
+	// onMount (must run before afterUpdate)
+	user_effect(() => {
+		const fns = untrack(() => callbacks.m.map(run));
+		return () => {
+			for (const fn of fns) {
+				if (typeof fn === 'function') {
+					fn();
+				}
+			}
+		};
+	});
+
+	// afterUpdate
+	if (callbacks.a.length) {
+		user_effect(() => {
+			observe_all(context, props);
+			run_all(callbacks.a);
+		});
+	}
+}
+
+/**
+ * Invoke the getter of all signals associated with a component
+ * so they can be registered to the effect this function is called in.
+ * @param {ComponentContextLegacy} context
+ * @param {(() => void)} props
+ */
+function observe_all(context, props) {
+	if (context.l.s) {
+		for (const signal of context.l.s) get$1(signal);
+	}
+
+	props();
+}
+
+/** @import { StoreReferencesContainer } from '#client' */
+/** @import { Store } from '#shared' */
+
+/**
+ * Whether or not the prop currently being read is a store binding, as in
+ * `<Child bind:x={$y} />`. If it is, we treat the prop as mutable even in
+ * runes mode, and skip `binding_property_non_reactive` validation
+ */
+let is_store_binding = false;
+
+let IS_UNMOUNTED = Symbol();
+
+/**
+ * Gets the current value of a store. If the store isn't subscribed to yet, it will create a proxy
+ * signal that will be updated when the store is. The store references container is needed to
+ * track reassignments to stores and to track the correct component context.
+ * @template V
+ * @param {Store<V> | null | undefined} store
+ * @param {string} store_name
+ * @param {StoreReferencesContainer} stores
+ * @returns {V}
+ */
+function store_get(store, store_name, stores) {
+	const entry = (stores[store_name] ??= {
+		store: null,
+		source: mutable_source(undefined),
+		unsubscribe: noop
+	});
+
+	// if the component that setup this is already unmounted we don't want to register a subscription
+	if (entry.store !== store && !(IS_UNMOUNTED in stores)) {
+		entry.unsubscribe();
+		entry.store = store ?? null;
+
+		if (store == null) {
+			entry.source.v = undefined; // see synchronous callback comment below
+			entry.unsubscribe = noop;
+		} else {
+			var is_synchronous_callback = true;
+
+			entry.unsubscribe = subscribe_to_store(store, (v) => {
+				if (is_synchronous_callback) {
+					// If the first updates to the store value (possibly multiple of them) are synchronously
+					// inside a derived, we will hit the `state_unsafe_mutation` error if we `set` the value
+					entry.source.v = v;
+				} else {
+					set(entry.source, v);
+				}
+			});
+
+			is_synchronous_callback = false;
+		}
+	}
+
+	// if the component that setup this stores is already unmounted the source will be out of sync
+	// so we just use the `get` for the stores, less performant but it avoids to create a memory leak
+	// and it will keep the value consistent
+	if (store && IS_UNMOUNTED in stores) {
+		return get(store);
+	}
+
+	return get$1(entry.source);
+}
+
+/**
+ * Sets the new value of a store and returns that value.
+ * @template V
+ * @param {Store<V>} store
+ * @param {V} value
+ * @returns {V}
+ */
+function store_set(store, value) {
+	store.set(value);
+	return value;
+}
+
+/**
+ * Unsubscribes from all auto-subscribed stores on destroy
+ * @returns {[StoreReferencesContainer, ()=>void]}
+ */
+function setup_stores() {
+	/** @type {StoreReferencesContainer} */
+	const stores = {};
+
+	function cleanup() {
+		teardown(() => {
+			for (var store_name in stores) {
+				const ref = stores[store_name];
+				ref.unsubscribe();
+			}
+			define_property(stores, IS_UNMOUNTED, {
+				enumerable: false,
+				value: true
+			});
+		});
+	}
+
+	return [stores, cleanup];
+}
+
+/**
+ * Updates a store with a new value.
+ * @param {Store<V>} store  the store to update
+ * @param {any} expression  the expression that mutates the store
+ * @param {V} new_value  the new store value
+ * @template V
+ */
+function store_mutate(store, expression, new_value) {
+	store.set(new_value);
+	return expression;
+}
+
+/**
+ * Called inside prop getters to communicate that the prop is a store binding
+ */
+function mark_store_binding() {
+	is_store_binding = true;
+}
+
+/**
+ * Returns a tuple that indicates whether `fn()` reads a prop that is a store binding.
+ * Used to prevent `binding_property_non_reactive` validation false positives and
+ * ensure that these props are treated as mutable even in runes mode
+ * @template T
+ * @param {() => T} fn
+ * @returns {[T, boolean]}
+ */
+function capture_store_binding(fn) {
+	var previous_is_store_binding = is_store_binding;
+
+	try {
+		is_store_binding = false;
+		return [fn(), is_store_binding];
+	} finally {
+		is_store_binding = previous_is_store_binding;
+	}
+}
+
+/** @import { Effect, Source } from './types.js' */
+
+/**
+ * This function is responsible for synchronizing a possibly bound prop with the inner component state.
+ * It is used whenever the compiler sees that the component writes to the prop, or when it has a default prop_value.
+ * @template V
+ * @param {Record<string, unknown>} props
+ * @param {string} key
+ * @param {number} flags
+ * @param {V | (() => V)} [fallback]
+ * @returns {(() => V | ((arg: V) => V) | ((arg: V, mutation: boolean) => V))}
+ */
+function prop(props, key, flags, fallback) {
+	var runes = !legacy_mode_flag || (flags & PROPS_IS_RUNES) !== 0;
+	var bindable = (flags & PROPS_IS_BINDABLE) !== 0;
+	var lazy = (flags & PROPS_IS_LAZY_INITIAL) !== 0;
+
+	var fallback_value = /** @type {V} */ (fallback);
+	var fallback_dirty = true;
+
+	var get_fallback = () => {
+		if (fallback_dirty) {
+			fallback_dirty = false;
+
+			fallback_value = lazy
+				? untrack(/** @type {() => V} */ (fallback))
+				: /** @type {V} */ (fallback);
+		}
+
+		return fallback_value;
+	};
+
+	/** @type {((v: V) => void) | undefined} */
+	var setter;
+
+	if (bindable) {
+		// Can be the case when someone does `mount(Component, props)` with `let props = $state({...})`
+		// or `createClassComponent(Component, props)`
+		var is_entry_props = STATE_SYMBOL in props || LEGACY_PROPS in props;
+
+		setter =
+			get_descriptor(props, key)?.set ??
+			(is_entry_props && key in props ? (v) => (props[key] = v) : undefined);
+	}
+
+	var initial_value;
+	var is_store_sub = false;
+
+	if (bindable) {
+		[initial_value, is_store_sub] = capture_store_binding(() => /** @type {V} */ (props[key]));
+	} else {
+		initial_value = /** @type {V} */ (props[key]);
+	}
+
+	if (initial_value === undefined && fallback !== undefined) {
+		initial_value = get_fallback();
+
+		if (setter) {
+			if (runes) props_invalid_value();
+			setter(initial_value);
+		}
+	}
+
+	/** @type {() => V} */
+	var getter;
+
+	if (runes) {
+		getter = () => {
+			var value = /** @type {V} */ (props[key]);
+			if (value === undefined) return get_fallback();
+			fallback_dirty = true;
+			return value;
+		};
+	} else {
+		getter = () => {
+			var value = /** @type {V} */ (props[key]);
+
+			if (value !== undefined) {
+				// in legacy mode, we don't revert to the fallback value
+				// if the prop goes from defined to undefined. The easiest
+				// way to model this is to make the fallback undefined
+				// as soon as the prop has a value
+				fallback_value = /** @type {V} */ (undefined);
+			}
+
+			return value === undefined ? fallback_value : value;
+		};
+	}
+
+	// prop is never written to — we only need a getter
+	if (runes && (flags & PROPS_IS_UPDATED) === 0) {
+		return getter;
+	}
+
+	// prop is written to, but the parent component had `bind:foo` which
+	// means we can just call `$$props.foo = value` directly
+	if (setter) {
+		var legacy_parent = props.$$legacy;
+		return /** @type {() => V} */ (
+			function (/** @type {V} */ value, /** @type {boolean} */ mutation) {
+				if (arguments.length > 0) {
+					// We don't want to notify if the value was mutated and the parent is in runes mode.
+					// In that case the state proxy (if it exists) should take care of the notification.
+					// If the parent is not in runes mode, we need to notify on mutation, too, that the prop
+					// has changed because the parent will not be able to detect the change otherwise.
+					if (!runes || !mutation || legacy_parent || is_store_sub) {
+						/** @type {Function} */ (setter)(mutation ? getter() : value);
+					}
+
+					return value;
+				}
+
+				return getter();
+			}
+		);
+	}
+
+	// Either prop is written to, but there's no binding, which means we
+	// create a derived that we can write to locally.
+	// Or we are in legacy mode where we always create a derived to replicate that
+	// Svelte 4 did not trigger updates when a primitive value was updated to the same value.
+	var overridden = false;
+
+	var d = ((flags & PROPS_IS_IMMUTABLE) !== 0 ? derived : derived_safe_equal)(() => {
+		overridden = false;
+		return getter();
+	});
+
+	// Capture the initial value if it's bindable
+	if (bindable) get$1(d);
+
+	var parent_effect = /** @type {Effect} */ (active_effect);
+
+	return /** @type {() => V} */ (
+		function (/** @type {any} */ value, /** @type {boolean} */ mutation) {
+			if (arguments.length > 0) {
+				const new_value = mutation ? get$1(d) : runes && bindable ? proxy(value) : value;
+
+				set(d, new_value);
+				overridden = true;
+
+				if (fallback_value !== undefined) {
+					fallback_value = new_value;
+				}
+
+				return value;
+			}
+
+			// special case — avoid recalculating the derived if we're in a
+			// teardown function and the prop was overridden locally, or the
+			// component was already destroyed (this latter part is necessary
+			// because `bind:this` can read props after the component has
+			// been destroyed. TODO simplify `bind:this`
+			if ((is_destroying_effect && overridden) || (parent_effect.f & DESTROYED) !== 0) {
+				return d.v;
+			}
+
+			return get$1(d);
+		}
+	);
+}
+
+/**
+ * @param {string} binding
+ * @param {Array<Promise<void>>} blockers
+ * @param {() => Record<string, any>} get_object
+ * @param {() => string} get_property
+ * @param {number} line
+ * @param {number} column
+ */
+function validate_binding(binding, blockers, get_object, get_property, line, column) {
+	run_after_blockers(blockers, () => {
+		var warned = false;
+
+		dev_current_component_function?.[FILENAME];
+
+		render_effect(() => {
+			if (warned) return;
+
+			var [object, is_store_sub] = capture_store_binding(get_object);
+
+			if (is_store_sub) return;
+
+			var property = get_property();
+
+			var ran = false;
+
+			// by making the (possibly false, but it would be an extreme edge case) assumption
+			// that a getter has a corresponding setter, we can determine if a property is
+			// reactive by seeing if this effect has dependencies
+			var effect = render_effect(() => {
+				if (ran) return;
+
+				// eslint-disable-next-line @typescript-eslint/no-unused-expressions
+				object[property];
+			});
+
+			ran = true;
+
+			if (effect.deps === null) {
+				binding_property_non_reactive();
+
+				warned = true;
+			}
+		});
+	});
+}
+
+/** @import { ComponentContext, ComponentContextLegacy } from '#client' */
+/** @import { EventDispatcher } from './index.js' */
+/** @import { NotFunction } from './internal/types.js' */
+
+/**
+ * `onMount`, like [`$effect`](https://svelte.dev/docs/svelte/$effect), schedules a function to run as soon as the component has been mounted to the DOM.
+ * Unlike `$effect`, the provided function only runs once.
+ *
+ * It must be called during the component's initialisation (but doesn't need to live _inside_ the component;
+ * it can be called from an external module). If a function is returned _synchronously_ from `onMount`,
+ * it will be called when the component is unmounted.
+ *
+ * `onMount` functions do not run during [server-side rendering](https://svelte.dev/docs/svelte/svelte-server#render).
+ *
+ * @template T
+ * @param {() => NotFunction<T> | Promise<NotFunction<T>> | (() => any)} fn
+ * @returns {void}
+ */
+function onMount(fn) {
+	if (component_context === null) {
+		lifecycle_outside_component();
+	}
+
+	if (legacy_mode_flag && component_context.l !== null) {
+		init_update_callbacks(component_context).m.push(fn);
+	} else {
+		user_effect(() => {
+			const cleanup = untrack(fn);
+			if (typeof cleanup === 'function') return /** @type {() => void} */ (cleanup);
+		});
+	}
+}
+
+/**
+ * Legacy-mode: Init callbacks object for onMount/beforeUpdate/afterUpdate
+ * @param {ComponentContext} context
+ */
+function init_update_callbacks(context) {
+	var l = /** @type {ComponentContextLegacy} */ (context).l;
+	return (l.u ??= { a: [], b: [], m: [] });
+}
+
+/** @import { Readable } from './public' */
+
+/**
+ * @template T
+ * @param {Readable<T> | null | undefined} store
+ * @param {(value: T) => void} run
+ * @param {(value: T) => void} [invalidate]
+ * @returns {() => void}
+ */
+function subscribe_to_store(store, run, invalidate) {
+	if (store == null) {
+		// @ts-expect-error
+		run(undefined);
+
+		return noop;
+	}
+
+	// Svelte store takes a private second argument
+	// StartStopNotifier could mutate state, and we want to silence the corresponding validation error
+	const unsub = untrack(() =>
+		store.subscribe(
+			run,
+			// @ts-expect-error
+			invalidate
+		)
+	);
+
+	// Also support RxJS
+	// @ts-expect-error TODO fix this in the types?
+	return unsub.unsubscribe ? () => unsub.unsubscribe() : unsub;
+}
+
+/** @import { Readable, StartStopNotifier, Subscriber, Unsubscriber, Updater, Writable } from '../public.js' */
+/** @import { Stores, StoresValues, SubscribeInvalidateTuple } from '../private.js' */
+
+/**
+ * @type {Array<SubscribeInvalidateTuple<any> | any>}
+ */
+const subscriber_queue = [];
+
+/**
+ * Create a `Writable` store that allows both updating and reading by subscription.
+ *
+ * @template T
+ * @param {T} [value] initial value
+ * @param {StartStopNotifier<T>} [start]
+ * @returns {Writable<T>}
+ */
+function writable(value, start = noop) {
+	/** @type {Unsubscriber | null} */
+	let stop = null;
+
+	/** @type {Set<SubscribeInvalidateTuple<T>>} */
+	const subscribers = new Set();
+
+	/**
+	 * @param {T} new_value
+	 * @returns {void}
+	 */
+	function set(new_value) {
+		if (safe_not_equal(value, new_value)) {
+			value = new_value;
+			if (stop) {
+				// store is ready
+				const run_queue = !subscriber_queue.length;
+				for (const subscriber of subscribers) {
+					subscriber[1]();
+					subscriber_queue.push(subscriber, value);
+				}
+				if (run_queue) {
+					for (let i = 0; i < subscriber_queue.length; i += 2) {
+						subscriber_queue[i][0](subscriber_queue[i + 1]);
+					}
+					subscriber_queue.length = 0;
+				}
+			}
+		}
+	}
+
+	/**
+	 * @param {Updater<T>} fn
+	 * @returns {void}
+	 */
+	function update(fn) {
+		set(fn(/** @type {T} */ (value)));
+	}
+
+	/**
+	 * @param {Subscriber<T>} run
+	 * @param {() => void} [invalidate]
+	 * @returns {Unsubscriber}
+	 */
+	function subscribe(run, invalidate = noop) {
+		/** @type {SubscribeInvalidateTuple<T>} */
+		const subscriber = [run, invalidate];
+		subscribers.add(subscriber);
+		if (subscribers.size === 1) {
+			stop = start(set, update) || noop;
+		}
+		run(/** @type {T} */ (value));
+		return () => {
+			subscribers.delete(subscriber);
+			if (subscribers.size === 0 && stop) {
+				stop();
+				stop = null;
+			}
+		};
+	}
+	return { set, update, subscribe };
+}
+
+/**
+ * Get the current value from a store by subscribing and immediately unsubscribing.
+ *
+ * @template T
+ * @param {Readable<T>} store
+ * @returns {T}
+ */
+function get(store) {
+	let value;
+	subscribe_to_store(store, (_) => (value = _))();
+	// @ts-expect-error
+	return value;
+}
+
+// generated during release, do not modify
+
+const PUBLIC_VERSION = '5';
+
+if (typeof window !== 'undefined') {
+	// @ts-expect-error
+	((window.__svelte ??= {}).v ??= new Set()).add(PUBLIC_VERSION);
+}
+
+ContentFieldOption[FILENAME] = 'src/contenttype/elements/ContentFieldOption.svelte';
+
+var root_2$m = add_locations(from_html(`<span class="badge badge-danger"></span>`), ContentFieldOption[FILENAME], [[37, 8]]);
+var root_1$j = add_locations(from_html(`<label> <!></label>`), ContentFieldOption[FILENAME], [[33, 4]]);
+var root_3$h = add_locations(from_html(`<small class="form-text text-muted"> </small>`), ContentFieldOption[FILENAME], [[47, 4]]);
+var root$4 = add_locations(from_html(`<div><!> <!> <!></div>`), ContentFieldOption[FILENAME], [[25, 0]]);
+
+function ContentFieldOption($$anchor, $$props) {
+	check_target(new.target);
+	push($$props, true);
+
+	let attr = prop($$props, 'attr', 3, ""),
+		attrShow = prop($$props, 'attrShow', 3, null),
+		hint = prop($$props, 'hint', 3, ""),
+		label = prop($$props, 'label', 3, ""),
+		required = prop($$props, 'required', 3, 0),
+		showHint = prop($$props, 'showHint', 3, 0),
+		showLabel = prop($$props, 'showLabel', 3, 1);
+
+	if (!$$props.id) {
+		console.error("ConetntFieldOption 'id' attribute missing");
+	}
+
+	let attrProp = tag(user_derived(() => attr() ? { attr: attr() } : {}), 'attrProp');
+	let attrShowProps = tag(state(proxy({})), 'attrShowProps');
+
+	user_effect(() => {
+		if (strict_equals(attrShow(), null, false)) {
+			if (attrShow()) {
+				set(attrShowProps, { style: "" }, true);
+			} else {
+				set(attrShowProps, { hidden: "", style: "display: none;" }, true);
+			}
+		}
+	});
+
+	var $$exports = { ...legacy_api() };
+	var div = root$4();
+
+	attribute_effect(div, () => ({
+		id: `${$$props.id ?? ''}-field`,
+		class: 'form-group',
+		...get$1(attrProp),
+		...get$1(attrShowProps),
+		[CLASS]: { required: required() }
+	}));
+
+	var node = child(div);
+
+	{
+		var consequent_1 = ($$anchor) => {
+			var label_1 = root_1$j();
+			var text = child(label_1);
+			var node_1 = sibling(text);
+
+			{
+				var consequent = ($$anchor) => {
+					var span = root_2$m();
+
+					span.textContent = window.trans("Required");
+					append($$anchor, span);
+				};
+
+				add_svelte_meta(
+					() => if_block(node_1, ($$render) => {
+						if (required()) $$render(consequent);
+					}),
+					'if',
+					ContentFieldOption,
+					36,
+					6
+				);
+			}
+
+			template_effect(() => {
+				set_attribute(label_1, 'for', $$props.id);
+				set_text(text, `${label() ?? ''} `);
+			});
+
+			append($$anchor, label_1);
+		};
+
+		add_svelte_meta(
+			() => if_block(node, ($$render) => {
+				if (label() && showLabel()) $$render(consequent_1);
+			}),
+			'if',
+			ContentFieldOption,
+			32,
+			2
+		);
+	}
+
+	var node_2 = sibling(node, 2);
+
+	slot(node_2, $$props, 'default', {});
+
+	var node_3 = sibling(node_2, 2);
+
+	{
+		var consequent_2 = ($$anchor) => {
+			var small = root_3$h();
+			var text_1 = child(small);
+
+			template_effect(() => {
+				set_attribute(small, 'id', `${$$props.id ?? ''}-field-help`);
+				set_text(text_1, hint());
+			});
+
+			append($$anchor, small);
+		};
+
+		add_svelte_meta(
+			() => if_block(node_3, ($$render) => {
+				if (hint() && showHint()) $$render(consequent_2);
+			}),
+			'if',
+			ContentFieldOption,
+			46,
+			2
+		);
+	}
+	append($$anchor, div);
+
+	return pop($$exports);
+}
+
+function recalcHeight(droppableArea) {
+  const contentFields = droppableArea.getElementsByClassName("mt-contentfield");
+  let clientHeight = 0;
+  for (let i = 0; i < contentFields.length; i++) {
+    clientHeight += contentFields[i].offsetHeight;
+  }
+  if (clientHeight >= droppableArea.clientHeight) {
+    jQuery(droppableArea).height(clientHeight + 100);
+  } else {
+    if (clientHeight >= 400) {
+      jQuery(droppableArea).height(clientHeight + 100);
+    } else {
+      jQuery(droppableArea).height(400 - 8);
+    }
+  }
+}
+
+ContentFieldOptionGroup[FILENAME] = 'src/contenttype/elements/ContentFieldOptionGroup.svelte';
+
+var root_2$l = add_locations(from_html(`<input/>`), ContentFieldOptionGroup[FILENAME], [[66, 2]]);
+var root_3$g = add_locations(from_html(`<input/>`), ContentFieldOptionGroup[FILENAME], [[84, 2]]);
+var root_4$e = add_locations(from_html(`<input/> <label></label>`, 1), ContentFieldOptionGroup[FILENAME], [[100, 2], [108, 2]]);
+var root_5$c = add_locations(from_html(`<select><option></option><option></option><option></option><option></option></select>`), ContentFieldOptionGroup[FILENAME], [[123, 2, [[130, 4], [131, 4], [132, 4], [133, 4]]]]);
+var root_1$i = add_locations(from_html(`<input/> <!> <!> <!> <!> <!> <div class="form-group-button"><button type="button" class="btn btn-default"></button></div>`, 1), ContentFieldOptionGroup[FILENAME], [[51, 0], [139, 0, [[140, 2]]]]);
+
+function ContentFieldOptionGroup($$anchor, $$props) {
+	check_target(new.target);
+	push($$props, true);
+
+	var $$ownership_validator = create_ownership_validator($$props);
+
+	// copied from lib/MT/Template/ContextHandlers.pm
+	let field = prop($$props, 'field', 15),
+		options = prop($$props, 'options', 15);
+
+	if (!$$props.type) {
+		console.error('ContentFieldOptionGroup: "type" attribute is required.');
+	}
+
+	user_effect(() => {
+		if (!options().display) {
+			$$ownership_validator.mutation('options', ['options', 'display'], options(options().display = "default", true), 10, 8);
+		}
+	});
+
+	user_effect(() => {
+		const root = getRoot();
+
+		if (!root) {
+			return;
+		}
+
+		const elms = root.querySelectorAll("*");
+
+		Array.prototype.slice.call(elms).forEach(function (v) {
+			if (v.hasAttribute("id") && !v.classList.contains("mt-custom-contentfield")) {
+				v.setAttribute("id", v.getAttribute("id") + "-" + $$props.id);
+			}
+
+			if (strict_equals(v.tagName.toLowerCase(), "label") && v.hasAttribute("for")) {
+				v.setAttribute("for", v.getAttribute("for") + "-" + $$props.id);
+			}
+		});
+	});
+
+	// inputLabel was removed because unused
+	// gatheringData was moved to ContentFields.svelte
+	const closePanel = () => {
+		const root = getRoot();
+
+		if (!root) {
+			return;
+		}
+
+		let className = root.className;
+
+		root.className = className.replace(/\s*show\s*/, "");
+
+		const target = document.getElementsByClassName("mt-draggable__area")[0];
+
+		recalcHeight(target);
+		jQuery("a[aria-controls='field-options-" + field().id + "']").attr("aria-expanded", "false");
+	};
+
+	// changeStateRequired was removed bacause unused
+	// $script was removed, and script is written in content field svelte file
+	// added in Svelte
+	const getRoot = () => {
+		return document.querySelector("#field-options-" + field().id);
+	};
+
+	var $$exports = { ...legacy_api() };
+	var fragment = root_1$i();
+	var input = first_child(fragment);
+
+	attribute_effect(
+		input,
+		() => ({
+			type: 'hidden',
+			...{ ref: "id" },
+			name: 'id',
+			id: `${$$props.type ?? ''}-id`,
+			class: 'form-control',
+			value: field().isNew ? `id:${field().id}` : field().id
+		}),
+		void 0,
+		void 0,
+		void 0,
+		void 0,
+		true
+	);
+
+	var node = sibling(input, 2);
+
+	add_svelte_meta(
+		() => ContentFieldOption(node, {
+			get id() {
+				return `${$$props.type ?? ''}-label`;
+			},
+
+			label: window.trans("Label"),
+			required: 1,
+
+			children: wrap_snippet(ContentFieldOptionGroup, ($$anchor, $$slotProps) => {
+				var input_1 = root_2$l();
+
+				attribute_effect(
+					input_1,
+					() => ({
+						type: 'text',
+						...{ ref: "label" },
+						name: 'label',
+						id: `${$$props.type ?? ''}-label`,
+						class: 'form-control html5-form',
+						required: true,
+						'data-mt-content-field-unique': true
+					}),
+					void 0,
+					void 0,
+					void 0,
+					void 0,
+					true
+				);
+
+				validate_binding('bind:value={field.label}', [], field, () => 'label', 72, 4);
+
+				bind_value(
+					input_1,
+					function get() {
+						return field().label;
+					},
+					function set($$value) {
+						$$ownership_validator.mutation('field', ['field', 'label'], field(field().label = $$value, true), 72, 16);
+					}
+				);
+
+				append($$anchor, input_1);
+			}),
+
+			$$slots: { default: true }
+		}),
+		'component',
+		ContentFieldOptionGroup,
+		60,
+		0,
+		{ componentTag: 'ContentFieldOption' }
+	);
+
+	var node_1 = sibling(node, 2);
+
+	add_svelte_meta(
+		() => ContentFieldOption(node_1, {
+			get id() {
+				return `${$$props.type ?? ''}-description`;
+			},
+
+			label: window.trans("Description"),
+			showHint: 1,
+			hint: window.trans("The entered message is displayed as a input field hint."),
+
+			children: wrap_snippet(ContentFieldOptionGroup, ($$anchor, $$slotProps) => {
+				var input_2 = root_3$g();
+
+				attribute_effect(
+					input_2,
+					() => ({
+						type: 'text',
+						...{ ref: "description" },
+						name: 'description',
+						id: `${$$props.type ?? ''}-description`,
+						class: 'form-control',
+						'aria-describedby': `${$$props.type ?? ''}-description-field-help`
+					}),
+					void 0,
+					void 0,
+					void 0,
+					void 0,
+					true
+				);
+
+				validate_binding('bind:value={options.description}', [], options, () => 'description', 91, 4);
+
+				bind_value(
+					input_2,
+					function get() {
+						return options().description;
+					},
+					function set($$value) {
+						$$ownership_validator.mutation('options', ['options', 'description'], options(options().description = $$value, true), 91, 16);
+					}
+				);
+
+				append($$anchor, input_2);
+			}),
+
+			$$slots: { default: true }
+		}),
+		'component',
+		ContentFieldOptionGroup,
+		78,
+		0,
+		{ componentTag: 'ContentFieldOption' }
+	);
+
+	var node_2 = sibling(node_1, 2);
+
+	add_svelte_meta(
+		() => ContentFieldOption(node_2, {
+			get id() {
+				return `${$$props.type ?? ''}-required`;
+			},
+
+			label: window.trans("Is this field required?"),
+
+			children: wrap_snippet(ContentFieldOptionGroup, ($$anchor, $$slotProps) => {
+				var fragment_1 = root_4$e();
+				var input_3 = first_child(fragment_1);
+
+				attribute_effect(
+					input_3,
+					() => ({
+						...{ ref: "required" },
+						type: 'checkbox',
+						class: 'mt-switch form-control',
+						id: `${$$props.type ?? ''}-required`,
+						name: 'required'
+					}),
+					void 0,
+					void 0,
+					void 0,
+					void 0,
+					true
+				);
+
+				validate_binding('bind:checked={options.required}', [], options, () => 'required', 106, 4);
+
+				var label = sibling(input_3, 2);
+
+				label.textContent = window.trans("Is this field required?");
+				template_effect(() => set_attribute(label, 'for', `${$$props.type ?? ''}-required`));
+
+				bind_checked(
+					input_3,
+					function get() {
+						return options().required;
+					},
+					function set($$value) {
+						$$ownership_validator.mutation('options', ['options', 'required'], options(options().required = $$value, true), 106, 18);
+					}
+				);
+
+				append($$anchor, fragment_1);
+			}),
+
+			$$slots: { default: true }
+		}),
+		'component',
+		ContentFieldOptionGroup,
+		95,
+		0,
+		{ componentTag: 'ContentFieldOption' }
+	);
+
+	var node_3 = sibling(node_2, 2);
+
+	add_svelte_meta(
+		() => ContentFieldOption(node_3, {
+			get id() {
+				return `${$$props.type ?? ''}-display`;
+			},
+
+			label: window.trans("Display Options"),
+			required: 1,
+			showHint: 1,
+			hint: window.trans("Choose the display options for this content field in the listing screen."),
+
+			children: wrap_snippet(ContentFieldOptionGroup, ($$anchor, $$slotProps) => {
+				var select = root_5$c();
+
+				attribute_effect(select, () => ({
+					...{ ref: "display" },
+					name: 'display',
+					id: `${$$props.type ?? ''}-display`,
+					class: 'custom-select form-control form-select'
+				}));
+
+				var option = child(select);
+
+				option.textContent = window.trans("Force");
+				option.value = option.__value = 'force';
+
+				var option_1 = sibling(option);
+
+				option_1.textContent = window.trans("Default");
+				option_1.value = option_1.__value = 'default';
+
+				var option_2 = sibling(option_1);
+
+				option_2.textContent = window.trans("Optional");
+				option_2.value = option_2.__value = 'optional';
+
+				var option_3 = sibling(option_2);
+
+				option_3.textContent = window.trans("None");
+				option_3.value = option_3.__value = 'none';
+				reset(select);
+				validate_binding('bind:value={options.display}', [], options, () => 'display', 128, 4);
+
+				bind_select_value(
+					select,
+					function get() {
+						return options().display;
+					},
+					function set($$value) {
+						$$ownership_validator.mutation('options', ['options', 'display'], options(options().display = $$value, true), 128, 16);
+					}
+				);
+
+				append($$anchor, select);
+			}),
+
+			$$slots: { default: true }
+		}),
+		'component',
+		ContentFieldOptionGroup,
+		113,
+		0,
+		{ componentTag: 'ContentFieldOption' }
+	);
+
+	var node_4 = sibling(node_3, 2);
+
+	slot(node_4, $$props, 'default', {});
+
+	var div = sibling(node_4, 2);
+	var button = child(div);
+
+	button.__click = closePanel;
+	button.textContent = window.trans("Close");
+	append($$anchor, fragment);
+
+	return pop($$exports);
+}
+
+delegate(['click']);
+
+enable_legacy_mode_flag();
+
+StatusMsgTmpl[FILENAME] = 'src/contenttype/elements/StatusMsgTmpl.svelte';
+
+var root_1$h = add_locations(from_html(`<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>`), StatusMsgTmpl[FILENAME], [[39, 4, [[45, 6]]]]);
+var root$3 = add_locations(from_html(`<div><!> <!> <!></div>`), StatusMsgTmpl[FILENAME], [[37, 0]]);
+
+function StatusMsgTmpl($$anchor, $$props) {
+	check_target(new.target);
+	push($$props, false);
+
+	// copied from mtapp_statusmsg.tmpl
+	let blogId = prop($$props, 'blogId', 8, "");
+
+	let canClose = prop($$props, 'canClose', 8);
+	let canRebuild = prop($$props, 'canRebuild', 8);
+	let className = prop($$props, 'class', 8);
+	let didReplace = prop($$props, 'didReplace', 8);
+	let dynamicAll = prop($$props, 'dynamicAll', 8);
+	let hidden = prop($$props, 'hidden', 8);
+	let id = prop($$props, 'id', 8);
+	let noLink = prop($$props, 'noLink', 8);
+	let rebuild = prop($$props, 'rebuild', 8);
+	let divProps = mutable_source({});
+
+	legacy_pre_effect(
+		() => (
+			deep_read_state(id()),
+			deep_read_state(className()),
+			deep_read_state(canClose()),
+			deep_read_state(hidden())
+		),
+		() => {
+			set(divProps, {});
+
+			if (id()) {
+				mutate(divProps, get$1(divProps)["id"] = id());
+			}
+
+			if (className()) {
+				mutate(divProps, get$1(divProps)["class"] = "alert alert-" + className());
+			} else {
+				mutate(divProps, get$1(divProps)["class"] = "alert alert-info");
+			}
+
+			if (canClose()) {
+				mutate(divProps, get$1(divProps)["alert-dismissible"] = "");
+			}
+
+			if (hidden()) {
+				mutate(divProps, get$1(divProps)["style"] = "display: none;");
+			}
+
+			if (className().match(/\bwarning|\bdanger/)) {
+				mutate(divProps, get$1(divProps)["role"] = "alert");
+			}
+		}
+	);
+
+	legacy_pre_effect_reset();
+
+	var $$exports = { ...legacy_api() };
+
+	init();
+
+	var div = root$3();
+
+	attribute_effect(div, () => ({ ...get$1(divProps) }));
+
+	var node = child(div);
+
+	{
+		var consequent = ($$anchor) => {
+			var button = root_1$h();
+
+			append($$anchor, button);
+		};
+
+		add_svelte_meta(
+			() => if_block(node, ($$render) => {
+				if (canClose()) $$render(consequent);
+			}),
+			'if',
+			StatusMsgTmpl,
+			38,
+			2
+		);
+	}
+
+	var node_1 = sibling(node, 2);
+
+	slot(node_1, $$props, 'msg', {});
+
+	var node_2 = sibling(node_1, 2);
+
+	{
+		var consequent_2 = ($$anchor) => {
+			var fragment = comment();
+			var node_3 = first_child(fragment);
+
+			{
+				var consequent_1 = ($$anchor) => {
+					var fragment_1 = comment();
+					var node_4 = first_child(fragment_1);
+
+					html(node_4, () => (
+						deep_read_state(blogId()),
+						deep_read_state(rebuild()),
+						untrack(() => window.trans("[_1]Publish[_2] your [_3] to see these changes take effect.", `<a href="${window.CMSScriptURI}?__mode=rebuild_confirm&blog_id=${blogId()}&prompt=index" class="mt-rebuild alert-link">`, "</a>", strict_equals(rebuild(), "blog") ? window.trans("blog(s)") : window.trans("website(s)")))
+					));
+
+					append($$anchor, fragment_1);
+				};
+
+				add_svelte_meta(
+					() => if_block(node_3, ($$render) => {
+						if (!noLink()) $$render(consequent_1);
+					}),
+					'if',
+					StatusMsgTmpl,
+					52,
+					4
+				);
+			}
+
+			append($$anchor, fragment);
+		};
+
+		var alternate_3 = ($$anchor) => {
+			var fragment_2 = comment();
+			var node_5 = first_child(fragment_2);
+
+			{
+				var consequent_8 = ($$anchor) => {
+					var fragment_3 = comment();
+					var node_6 = first_child(fragment_3);
+
+					{
+						var consequent_3 = ($$anchor) => {
+							var fragment_4 = comment();
+							var node_7 = first_child(fragment_4);
+
+							html(node_7, () => (
+								deep_read_state(blogId()),
+								untrack(() => window.trans("[_1]Publish[_2] your site to see these changes take effect, even when publishing profile is dynamic publishing.", `<a href="${window.CMSScriptURI}?__mode=rebuild_confirm&blog_id=${blogId()}" class="mt-rebuild alert-link">`, "</a>"))
+							));
+
+							append($$anchor, fragment_4);
+						};
+
+						var alternate_2 = ($$anchor) => {
+							var fragment_5 = comment();
+							var node_8 = first_child(fragment_5);
+
+							{
+								var consequent_5 = ($$anchor) => {
+									var fragment_6 = comment();
+									var node_9 = first_child(fragment_6);
+
+									{
+										var consequent_4 = ($$anchor) => {
+											var fragment_7 = comment();
+											var node_10 = first_child(fragment_7);
+
+											html(node_10, () => (
+												deep_read_state(blogId()),
+												untrack(() => window.trans("[_1]Publish[_2] your site to see these changes take effect.", `<a href="${window.CMSScriptURI}?__mode=rebuild_confirm&blog_id=${blogId()}" class="mt-rebuild alert-link">`, "</a>"))
+											));
+
+											append($$anchor, fragment_7);
+										};
+
+										add_svelte_meta(
+											() => if_block(node_9, ($$render) => {
+												if (!dynamicAll()) $$render(consequent_4);
+											}),
+											'if',
+											StatusMsgTmpl,
+											70,
+											6
+										);
+									}
+
+									append($$anchor, fragment_6);
+								};
+
+								var alternate_1 = ($$anchor) => {
+									var fragment_8 = comment();
+									var node_11 = first_child(fragment_8);
+
+									{
+										var consequent_7 = ($$anchor) => {
+											var fragment_9 = comment();
+											var node_12 = first_child(fragment_9);
+
+											{
+												var consequent_6 = ($$anchor) => {
+													var fragment_10 = comment();
+													var node_13 = first_child(fragment_10);
+
+													html(node_13, () => (
+														deep_read_state(blogId()),
+														untrack(() => window.trans("[_1]Publish[_2] your site to see these changes take effect.", `<a href="${window.CMSScriptURI}?__mode=rebuild_confirm&blog_id=${blogId()}&prompt=index" class="mt-rebuild alert-link">`, "</a>"))
+													));
+
+													append($$anchor, fragment_10);
+												};
+
+												add_svelte_meta(
+													() => if_block(node_12, ($$render) => {
+														if (!dynamicAll()) $$render(consequent_6);
+													}),
+													'if',
+													StatusMsgTmpl,
+													78,
+													6
+												);
+											}
+
+											append($$anchor, fragment_9);
+										};
+
+										var alternate = ($$anchor) => {
+											var fragment_11 = comment();
+											var node_14 = first_child(fragment_11);
+
+											html(node_14, rebuild);
+											append($$anchor, fragment_11);
+										};
+
+										add_svelte_meta(
+											() => if_block(
+												node_11,
+												($$render) => {
+													if (strict_equals(rebuild(), "index")) $$render(consequent_7); else $$render(alternate, false);
+												},
+												true
+											),
+											'if',
+											StatusMsgTmpl,
+											77,
+											4
+										);
+									}
+
+									append($$anchor, fragment_8);
+								};
+
+								add_svelte_meta(
+									() => if_block(
+										node_8,
+										($$render) => {
+											if (strict_equals(rebuild(), "all")) $$render(consequent_5); else $$render(alternate_1, false);
+										},
+										true
+									),
+									'if',
+									StatusMsgTmpl,
+									69,
+									4
+								);
+							}
+
+							append($$anchor, fragment_5);
+						};
+
+						add_svelte_meta(
+							() => if_block(node_6, ($$render) => {
+								if (strict_equals(rebuild(), "cfg_prefs")) $$render(consequent_3); else $$render(alternate_2, false);
+							}),
+							'if',
+							StatusMsgTmpl,
+							63,
+							4
+						);
+					}
+
+					append($$anchor, fragment_3);
+				};
+
+				add_svelte_meta(
+					() => if_block(
+						node_5,
+						($$render) => {
+							if (canRebuild()) $$render(consequent_8);
+						},
+						true
+					),
+					'if',
+					StatusMsgTmpl,
+					62,
+					2
+				);
+			}
+
+			append($$anchor, fragment_2);
+		};
+
+		add_svelte_meta(
+			() => if_block(node_2, ($$render) => {
+				if (didReplace()) $$render(consequent_2); else $$render(alternate_3, false);
+			}),
+			'if',
+			StatusMsgTmpl,
+			51,
+			2
+		);
+	}
+	append($$anchor, div);
+
+	return pop($$exports);
+}
+
+StatusMsg[FILENAME] = 'src/contenttype/elements/StatusMsg.svelte';
+
+function StatusMsg($$anchor, $$props) {
+	check_target(new.target);
+	push($$props, false);
+
+	// copied from lib/MT/Template/ContextHandlers.pm
+	let blogId = prop($$props, 'blogId', 8, "");
+
+	let canClose = prop($$props, 'canClose', 12);
+	let className = prop($$props, 'class', 12, "info");
+	let id = prop($$props, 'id', 8, "");
+	let hidden = prop($$props, 'hidden', 8, "");
+	let noLink = prop($$props, 'noLink', 8, "");
+	let rebuild = prop($$props, 'rebuild', 8, "");
+
+	legacy_pre_effect(() => (deep_read_state(className())), () => {
+		if (!className()) {
+			className("info");
+		}
+
+		className(className().replace(/\balert\b/, "warning"));
+		className(className().replace(/\berror\b/, "danger"));
+	});
+
+	legacy_pre_effect(() => (deep_read_state(id()), deep_read_state(canClose())), () => {
+		if (id() && (canClose() || strict_equals(canClose(), null))) {
+			canClose(1);
+		}
+	});
+
+	legacy_pre_effect_reset();
+
+	var $$exports = { ...legacy_api() };
+
+	init();
+
+	{
+		let $0 = derived_safe_equal(() => hidden() ?? "");
+		let $1 = derived_safe_equal(() => noLink() ?? "");
+
+		add_svelte_meta(
+			() => StatusMsgTmpl($$anchor, {
+				get blogId() {
+					return blogId();
+				},
+
+				get canClose() {
+					return canClose();
+				},
+
+				canRebuild: 0,
+
+				get class() {
+					return className();
+				},
+
+				didReplace: 0,
+				dynamicAll: 0,
+
+				get hidden() {
+					return get$1($0);
+				},
+
+				get id() {
+					return id();
+				},
+
+				get noLink() {
+					return get$1($1);
+				},
+
+				get rebuild() {
+					return rebuild();
+				},
+
+				$$slots: {
+					msg: ($$anchor, $$slotProps) => {
+						var fragment_1 = comment();
+						var node = first_child(fragment_1);
+
+						slot(node, $$props, 'msg', {}, null);
+						append($$anchor, fragment_1);
+					}
+				}
+			}),
+			'component',
+			StatusMsg,
+			25,
+			0,
+			{ componentTag: 'StatusMsgTmpl' }
+		);
+	}
+
+	return pop($$exports);
+}
+
+ContentType[FILENAME] = 'src/contenttype/elements/ContentType.svelte';
+
+var root_2$k = add_locations(from_html(`<input/><label for="content_type-multiple" class="form-label"></label>`, 1), ContentType[FILENAME], [[24, 4], [31, 6]]);
+var root_3$f = add_locations(from_html(`<input/>`), ContentType[FILENAME], [[41, 4]]);
+var root_4$d = add_locations(from_html(`<input/>`), ContentType[FILENAME], [[57, 4]]);
+var root_7$2 = add_locations(from_html(`<option> </option>`), ContentType[FILENAME], [[83, 10]]);
+var root_6$4 = add_locations(from_html(`<select></select>`), ContentType[FILENAME], [[75, 6]]);
+var root_1$g = add_locations(from_html(`<!> <!> <!> <!>`, 1), ContentType[FILENAME], []);
+
+function ContentType($$anchor, $$props) {
+	check_target(new.target);
+	push($$props, true);
+
+	var $$ownership_validator = create_ownership_validator($$props);
+	var _a;
+	var _b;
+
+	let field = prop($$props, 'field', 15);
+		prop($$props, 'gather', 11, null);
+		let options = prop($$props, 'options', 15);
+
+	const contentTypes = $$props.optionsHtmlParams.content_type.content_types;
+
+	if (strict_equals(options().multiple, "0")) {
+		$$ownership_validator.mutation('options', ['options', 'multiple'], options(options().multiple = 0, true), 8, 4);
+	}
+
+	if (strict_equals(options().can_add, "0")) {
+		$$ownership_validator.mutation('options', ['options', 'can_add'], options(options().can_add = 0, true), 11, 4);
+	}
+
+	// changeStateMultiple was removed because unused
+	strict_equals(_a = options().min, null, false) && strict_equals(_a, void 0, false)
+		? _a
+		: $$ownership_validator.mutation('options', ['options', 'min'], options(options().min = "", true), 14, 53);
+
+	strict_equals(_b = options().max, null, false) && strict_equals(_b, void 0, false)
+		? _b
+		: $$ownership_validator.mutation('options', ['options', 'max'], options(options().max = "", true), 15, 53);
+
+	var $$exports = { ...legacy_api() };
+
+	{
+		$$ownership_validator.binding('field', ContentFieldOptionGroup, field);
+		$$ownership_validator.binding('options', ContentFieldOptionGroup, options);
+
+		add_svelte_meta(
+			() => ContentFieldOptionGroup($$anchor, {
+				type: 'content-type',
+
+				get id() {
+					return $$props.id;
+				},
+
+				get field() {
+					return field();
+				},
+
+				set field($$value) {
+					field($$value);
+				},
+
+				get options() {
+					return options();
+				},
+
+				set options($$value) {
+					options($$value);
+				},
+
+				children: wrap_snippet(ContentType, ($$anchor, $$slotProps) => {
+					var fragment_1 = root_1$g();
+					var node = first_child(fragment_1);
+
+					add_svelte_meta(
+						() => ContentFieldOption(node, {
+							id: 'content_type-multiple',
+							label: window.trans("Allow users to select multiple values?"),
+
+							children: wrap_snippet(ContentType, ($$anchor, $$slotProps) => {
+								var fragment_2 = root_2$k();
+								var input = first_child(fragment_2);
+
+								attribute_effect(
+									input,
+									() => ({
+										...{ ref: "multiple" },
+										type: 'checkbox',
+										class: 'mt-switch form-control',
+										id: 'content_type-multiple',
+										name: 'multiple'
+									}),
+									void 0,
+									void 0,
+									void 0,
+									void 0,
+									true
+								);
+
+								validate_binding('bind:checked={options.multiple}', [], options, () => 'multiple', 30, 6);
+
+								var label = sibling(input);
+
+								label.textContent = window.trans("Allow users to select multiple values?");
+
+								bind_checked(
+									input,
+									function get() {
+										return options().multiple;
+									},
+									function set($$value) {
+										$$ownership_validator.mutation('options', ['options', 'multiple'], options(options().multiple = $$value, true), 30, 20);
+									}
+								);
+
+								append($$anchor, fragment_2);
+							}),
+
+							$$slots: { default: true }
+						}),
+						'component',
+						ContentType,
+						19,
+						2,
+						{ componentTag: 'ContentFieldOption' }
+					);
+
+					var node_1 = sibling(node, 2);
+
+					{
+						let $0 = user_derived(() => options().multiple ? true : false);
+
+						add_svelte_meta(
+							() => ContentFieldOption(node_1, {
+								id: 'content_type-min',
+								label: window.trans("Minimum number of selections"),
+
+								get attrShow() {
+									return get$1($0);
+								},
+
+								children: wrap_snippet(ContentType, ($$anchor, $$slotProps) => {
+									var input_1 = root_3$f();
+
+									attribute_effect(
+										input_1,
+										() => ({
+											...{ ref: "min" },
+											type: 'number',
+											name: 'min',
+											id: 'content_type-min',
+											class: 'form-control w-25',
+											min: '0'
+										}),
+										void 0,
+										void 0,
+										void 0,
+										void 0,
+										true
+									);
+
+									validate_binding('bind:value={options.min}', [], options, () => 'min', 48, 6);
+
+									bind_value(
+										input_1,
+										function get() {
+											return options().min;
+										},
+										function set($$value) {
+											$$ownership_validator.mutation('options', ['options', 'min'], options(options().min = $$value, true), 48, 18);
+										}
+									);
+
+									append($$anchor, input_1);
+								}),
+
+								$$slots: { default: true }
+							}),
+							'component',
+							ContentType,
+							36,
+							2,
+							{ componentTag: 'ContentFieldOption' }
+						);
+					}
+
+					var node_2 = sibling(node_1, 2);
+
+					{
+						let $0 = user_derived(() => options().multiple ? true : false);
+
+						add_svelte_meta(
+							() => ContentFieldOption(node_2, {
+								id: 'content_type-max',
+								label: window.trans("Maximum number of selections"),
+
+								get attrShow() {
+									return get$1($0);
+								},
+
+								children: wrap_snippet(ContentType, ($$anchor, $$slotProps) => {
+									var input_2 = root_4$d();
+
+									attribute_effect(
+										input_2,
+										() => ({
+											...{ ref: "max" },
+											type: 'number',
+											name: 'max',
+											id: 'content_type-max',
+											class: 'form-control w-25',
+											min: '1'
+										}),
+										void 0,
+										void 0,
+										void 0,
+										void 0,
+										true
+									);
+
+									validate_binding('bind:value={options.max}', [], options, () => 'max', 64, 6);
+
+									bind_value(
+										input_2,
+										function get() {
+											return options().max;
+										},
+										function set($$value) {
+											$$ownership_validator.mutation('options', ['options', 'max'], options(options().max = $$value, true), 64, 18);
+										}
+									);
+
+									append($$anchor, input_2);
+								}),
+
+								$$slots: { default: true }
+							}),
+							'component',
+							ContentType,
+							52,
+							2,
+							{ componentTag: 'ContentFieldOption' }
+						);
+					}
+
+					var node_3 = sibling(node_2, 2);
+
+					add_svelte_meta(
+						() => ContentFieldOption(node_3, {
+							id: 'content_type-source',
+							required: 1,
+							label: window.trans("Source Content Type"),
+
+							children: wrap_snippet(ContentType, ($$anchor, $$slotProps) => {
+								var fragment_3 = comment();
+								var node_4 = first_child(fragment_3);
+
+								{
+									var consequent = ($$anchor) => {
+										var select = root_6$4();
+
+										attribute_effect(select, () => ({
+											...{ ref: "source" },
+											name: 'source',
+											id: 'content_type-source',
+											class: 'custom-select form-control html5-form form-select'
+										}));
+
+										add_svelte_meta(
+											() => each(select, 21, () => contentTypes, index, ($$anchor, ct) => {
+												var option = root_7$2();
+												var text = child(option, true);
+
+												reset(option);
+
+												var option_value = {};
+
+												template_effect(() => {
+													set_text(text, get$1(ct).name);
+
+													if (option_value !== (option_value = get$1(ct).id)) {
+														option.value = (option.__value = get$1(ct).id) ?? '';
+													}
+												});
+
+												append($$anchor, option);
+											}),
+											'each',
+											ContentType,
+											82,
+											8
+										);
+
+										reset(select);
+										validate_binding('bind:value={options.source}', [], options, () => 'source', 80, 8);
+
+										bind_select_value(
+											select,
+											function get() {
+												return options().source;
+											},
+											function set($$value) {
+												$$ownership_validator.mutation('options', ['options', 'source'], options(options().source = $$value, true), 80, 20);
+											}
+										);
+
+										append($$anchor, select);
+									};
+
+									var alternate = ($$anchor) => {
+										add_svelte_meta(
+											() => StatusMsg($$anchor, {
+												id: 'no-content-type',
+												class: 'warning',
+												canClose: 0,
+
+												$$slots: {
+													msg: ($$anchor, $$slotProps) => {
+														var text_1 = text();
+
+														text_1.nodeValue = window.trans("There is no content type that can be selected. Please create a content type if you use the Content Type field type.");
+														append($$anchor, text_1);
+													}
+												}
+											}),
+											'component',
+											ContentType,
+											89,
+											6,
+											{ componentTag: 'StatusMsg' }
+										);
+									};
+
+									add_svelte_meta(
+										() => if_block(node_4, ($$render) => {
+											if (contentTypes.length > 0) $$render(consequent); else $$render(alternate, false);
+										}),
+										'if',
+										ContentType,
+										73,
+										4
+									);
+								}
+
+								append($$anchor, fragment_3);
+							}),
+
+							$$slots: { default: true }
+						}),
+						'component',
+						ContentType,
+						68,
+						2,
+						{ componentTag: 'ContentFieldOption' }
+					);
+
+					append($$anchor, fragment_1);
+				}),
+
+				$$slots: { default: true }
+			}),
+			'component',
+			ContentType,
+			18,
+			0,
+			{ componentTag: 'ContentFieldOptionGroup' }
+		);
+	}
+
+	return pop($$exports);
+}
+
+SingleLineText[FILENAME] = 'src/contenttype/elements/SingleLineText.svelte';
+
+var root_2$j = add_locations(from_html(`<input/>`), SingleLineText[FILENAME], [[15, 4]]);
+var root_3$e = add_locations(from_html(`<input/>`), SingleLineText[FILENAME], [[30, 4]]);
+var root_4$c = add_locations(from_html(`<input/>`), SingleLineText[FILENAME], [[45, 4]]);
+var root_1$f = add_locations(from_html(`<!> <!> <!>`, 1), SingleLineText[FILENAME], []);
+
+function SingleLineText($$anchor, $$props) {
+	check_target(new.target);
+	push($$props, true);
+
+	var $$ownership_validator = create_ownership_validator($$props);
+	var _a;
+	var _b;
+	var _c;
+
+	let field = prop($$props, 'field', 15);
+		prop($$props, 'gather', 11, null);
+		let options = prop($$props, 'options', 15);
+
+	strict_equals(_a = options().min_length, null, false) && strict_equals(_a, void 0, false)
+		? _a
+		: $$ownership_validator.mutation('options', ['options', 'min_length'], options(options().min_length = 0, true), 5, 60);
+
+	strict_equals(_b = options().max_length, null, false) && strict_equals(_b, void 0, false)
+		? _b
+		: $$ownership_validator.mutation('options', ['options', 'max_length'], options(options().max_length = 255, true), 6, 60);
+
+	strict_equals(_c = options().initial_value, null, false) && strict_equals(_c, void 0, false)
+		? _c
+		: $$ownership_validator.mutation('options', ['options', 'initial_value'], options(options().initial_value = "", true), 7, 63);
+
+	var $$exports = { ...legacy_api() };
+
+	{
+		$$ownership_validator.binding('field', ContentFieldOptionGroup, field);
+		$$ownership_validator.binding('options', ContentFieldOptionGroup, options);
+
+		add_svelte_meta(
+			() => ContentFieldOptionGroup($$anchor, {
+				type: 'single-line-text',
+
+				get id() {
+					return $$props.id;
+				},
+
+				get field() {
+					return field();
+				},
+
+				set field($$value) {
+					field($$value);
+				},
+
+				get options() {
+					return options();
+				},
+
+				set options($$value) {
+					options($$value);
+				},
+
+				children: wrap_snippet(SingleLineText, ($$anchor, $$slotProps) => {
+					var fragment_1 = root_1$f();
+					var node = first_child(fragment_1);
+
+					add_svelte_meta(
+						() => ContentFieldOption(node, {
+							id: 'single_line_text-min_length',
+							label: window.trans("Min Length"),
+
+							children: wrap_snippet(SingleLineText, ($$anchor, $$slotProps) => {
+								var input = root_2$j();
+
+								attribute_effect(
+									input,
+									() => ({
+										...{ ref: "min_length" },
+										type: 'number',
+										name: 'min_length',
+										id: 'single_line_text-min_length',
+										class: 'form-control w-25',
+										min: '0'
+									}),
+									void 0,
+									void 0,
+									void 0,
+									void 0,
+									true
+								);
+
+								validate_binding('bind:value={options.min_length}', [], options, () => 'min_length', 22, 6);
+
+								bind_value(
+									input,
+									function get() {
+										return options().min_length;
+									},
+									function set($$value) {
+										$$ownership_validator.mutation('options', ['options', 'min_length'], options(options().min_length = $$value, true), 22, 18);
+									}
+								);
+
+								append($$anchor, input);
+							}),
+
+							$$slots: { default: true }
+						}),
+						'component',
+						SingleLineText,
+						11,
+						2,
+						{ componentTag: 'ContentFieldOption' }
+					);
+
+					var node_1 = sibling(node, 2);
+
+					add_svelte_meta(
+						() => ContentFieldOption(node_1, {
+							id: 'single_line_text-max_length',
+							label: window.trans("Max Length"),
+
+							children: wrap_snippet(SingleLineText, ($$anchor, $$slotProps) => {
+								var input_1 = root_3$e();
+
+								attribute_effect(
+									input_1,
+									() => ({
+										...{ ref: "max_length" },
+										type: 'number',
+										name: 'max_length',
+										id: 'single_line_text-max_length',
+										class: 'form-control w-25',
+										min: '1'
+									}),
+									void 0,
+									void 0,
+									void 0,
+									void 0,
+									true
+								);
+
+								validate_binding('bind:value={options.max_length}', [], options, () => 'max_length', 37, 6);
+
+								bind_value(
+									input_1,
+									function get() {
+										return options().max_length;
+									},
+									function set($$value) {
+										$$ownership_validator.mutation('options', ['options', 'max_length'], options(options().max_length = $$value, true), 37, 18);
+									}
+								);
+
+								append($$anchor, input_1);
+							}),
+
+							$$slots: { default: true }
+						}),
+						'component',
+						SingleLineText,
+						26,
+						2,
+						{ componentTag: 'ContentFieldOption' }
+					);
+
+					var node_2 = sibling(node_1, 2);
+
+					add_svelte_meta(
+						() => ContentFieldOption(node_2, {
+							id: 'single_line_text-initial_value',
+							label: window.trans("Initial Value"),
+
+							children: wrap_snippet(SingleLineText, ($$anchor, $$slotProps) => {
+								var input_2 = root_4$c();
+
+								attribute_effect(
+									input_2,
+									() => ({
+										...{ ref: "initial_value" },
+										type: 'text',
+										name: 'initial_value',
+										id: 'single_line_text-initial_value',
+										class: 'form-control'
+									}),
+									void 0,
+									void 0,
+									void 0,
+									void 0,
+									true
+								);
+
+								validate_binding('bind:value={options.initial_value}', [], options, () => 'initial_value', 51, 6);
+
+								bind_value(
+									input_2,
+									function get() {
+										return options().initial_value;
+									},
+									function set($$value) {
+										$$ownership_validator.mutation('options', ['options', 'initial_value'], options(options().initial_value = $$value, true), 51, 18);
+									}
+								);
+
+								append($$anchor, input_2);
+							}),
+
+							$$slots: { default: true }
+						}),
+						'component',
+						SingleLineText,
+						41,
+						2,
+						{ componentTag: 'ContentFieldOption' }
+					);
+
+					append($$anchor, fragment_1);
+				}),
+
+				$$slots: { default: true }
+			}),
+			'component',
+			SingleLineText,
+			10,
+			0,
+			{ componentTag: 'ContentFieldOptionGroup' }
+		);
+	}
+
+	return pop($$exports);
+}
+
+MultiLineText[FILENAME] = 'src/contenttype/elements/MultiLineText.svelte';
+
+var root_2$i = add_locations(from_html(`<textarea></textarea>`), MultiLineText[FILENAME], [[21, 4]]);
+var root_4$b = add_locations(from_html(`<option> </option>`), MultiLineText[FILENAME], [[43, 8]]);
+var root_3$d = add_locations(from_html(`<select></select>`), MultiLineText[FILENAME], [[35, 4]]);
+var root_5$b = add_locations(from_html(`<input/><label for="multi_line_text-full_rich_text" class="form-label"></label>`, 1), MultiLineText[FILENAME], [[53, 4], [60, 6]]);
+var root_1$e = add_locations(from_html(`<!> <!> <!>`, 1), MultiLineText[FILENAME], []);
+
+function MultiLineText($$anchor, $$props) {
+	check_target(new.target);
+	push($$props, true);
+
+	var $$ownership_validator = create_ownership_validator($$props);
+	var _a;
+
+	let field = prop($$props, 'field', 15);
+		prop($$props, 'gather', 11, null);
+		let options = prop($$props, 'options', 15);
+
+	const textFilters = $$props.optionsHtmlParams.multi_line_text.text_filters;
+
+	if (field().isNew) {
+		$$ownership_validator.mutation('options', ['options', 'full_rich_text'], options(options().full_rich_text = 1, true), 7, 4);
+	}
+
+	if (strict_equals(options().full_rich_text, "0")) {
+		$$ownership_validator.mutation('options', ['options', 'full_rich_text'], options(options().full_rich_text = 0, true), 10, 4);
+	}
+
+	// changeStateFullRichText was removed because unused
+	strict_equals(_a = options().initial_value, null, false) && strict_equals(_a, void 0, false)
+		? _a
+		: $$ownership_validator.mutation('options', ['options', 'initial_value'], options(options().initial_value = "", true), 13, 63);
+
+	var $$exports = { ...legacy_api() };
+
+	{
+		$$ownership_validator.binding('field', ContentFieldOptionGroup, field);
+		$$ownership_validator.binding('options', ContentFieldOptionGroup, options);
+
+		add_svelte_meta(
+			() => ContentFieldOptionGroup($$anchor, {
+				type: 'multi-line-text',
+
+				get id() {
+					return $$props.id;
+				},
+
+				get field() {
+					return field();
+				},
+
+				set field($$value) {
+					field($$value);
+				},
+
+				get options() {
+					return options();
+				},
+
+				set options($$value) {
+					options($$value);
+				},
+
+				children: wrap_snippet(MultiLineText, ($$anchor, $$slotProps) => {
+					var fragment_1 = root_1$e();
+					var node = first_child(fragment_1);
+
+					add_svelte_meta(
+						() => ContentFieldOption(node, {
+							id: 'multi_line_text-initial_value',
+							label: window.trans("Initial Value"),
+
+							children: wrap_snippet(MultiLineText, ($$anchor, $$slotProps) => {
+								var textarea = root_2$i();
+
+								remove_textarea_child(textarea);
+
+								attribute_effect(textarea, () => ({
+									...{ ref: "initial_value" },
+									name: 'initial_value',
+									id: 'multi_line_text-initial_value',
+									class: 'form-control'
+								}));
+
+								validate_binding('bind:value={options.initial_value}', [], options, () => 'initial_value', 26, 6);
+
+								bind_value(
+									textarea,
+									function get() {
+										return options().initial_value;
+									},
+									function set($$value) {
+										$$ownership_validator.mutation('options', ['options', 'initial_value'], options(options().initial_value = $$value, true), 26, 18);
+									}
+								);
+
+								append($$anchor, textarea);
+							}),
+
+							$$slots: { default: true }
+						}),
+						'component',
+						MultiLineText,
+						17,
+						2,
+						{ componentTag: 'ContentFieldOption' }
+					);
+
+					var node_1 = sibling(node, 2);
+
+					add_svelte_meta(
+						() => ContentFieldOption(node_1, {
+							id: 'multi_line_text-input_format',
+							label: window.trans("Input format"),
+
+							children: wrap_snippet(MultiLineText, ($$anchor, $$slotProps) => {
+								var select = root_3$d();
+
+								attribute_effect(select, () => ({
+									...{ ref: "input_format" },
+									name: 'input_format',
+									id: 'multi_line_text-input_format',
+									class: 'custom-select form-control form-select'
+								}));
+
+								add_svelte_meta(
+									() => each(select, 21, () => textFilters, index, ($$anchor, filter) => {
+										var option = root_4$b();
+										var text = child(option, true);
+
+										reset(option);
+
+										var option_value = {};
+
+										template_effect(() => {
+											set_text(text, get$1(filter).filter_label);
+
+											if (option_value !== (option_value = get$1(filter).filter_key)) {
+												option.value = (option.__value = get$1(filter).filter_key) ?? '';
+											}
+										});
+
+										append($$anchor, option);
+									}),
+									'each',
+									MultiLineText,
+									42,
+									6
+								);
+
+								reset(select);
+								validate_binding('bind:value={options.input_format}', [], options, () => 'input_format', 40, 6);
+
+								bind_select_value(
+									select,
+									function get() {
+										return options().input_format;
+									},
+									function set($$value) {
+										$$ownership_validator.mutation('options', ['options', 'input_format'], options(options().input_format = $$value, true), 40, 18);
+									}
+								);
+
+								append($$anchor, select);
+							}),
+
+							$$slots: { default: true }
+						}),
+						'component',
+						MultiLineText,
+						30,
+						2,
+						{ componentTag: 'ContentFieldOption' }
+					);
+
+					var node_2 = sibling(node_1, 2);
+
+					add_svelte_meta(
+						() => ContentFieldOption(node_2, {
+							id: 'multi_line_text-full_rich_text',
+							label: window.trans("Use all rich text decoration buttons"),
+
+							children: wrap_snippet(MultiLineText, ($$anchor, $$slotProps) => {
+								var fragment_2 = root_5$b();
+								var input = first_child(fragment_2);
+
+								attribute_effect(
+									input,
+									() => ({
+										...{ ref: "full_rich_text" },
+										type: 'checkbox',
+										class: 'mt-switch form-control',
+										id: 'multi_line_text-full_rich_text',
+										name: 'full_rich_text'
+									}),
+									void 0,
+									void 0,
+									void 0,
+									void 0,
+									true
+								);
+
+								validate_binding('bind:checked={options.full_rich_text}', [], options, () => 'full_rich_text', 59, 6);
+
+								var label = sibling(input);
+
+								label.textContent = window.trans("Use all rich text decoration buttons");
+
+								bind_checked(
+									input,
+									function get() {
+										return options().full_rich_text;
+									},
+									function set($$value) {
+										$$ownership_validator.mutation('options', ['options', 'full_rich_text'], options(options().full_rich_text = $$value, true), 59, 20);
+									}
+								);
+
+								append($$anchor, fragment_2);
+							}),
+
+							$$slots: { default: true }
+						}),
+						'component',
+						MultiLineText,
+						48,
+						2,
+						{ componentTag: 'ContentFieldOption' }
+					);
+
+					append($$anchor, fragment_1);
+				}),
+
+				$$slots: { default: true }
+			}),
+			'component',
+			MultiLineText,
+			16,
+			0,
+			{ componentTag: 'ContentFieldOptionGroup' }
+		);
+	}
+
+	return pop($$exports);
+}
+
+Number$1[FILENAME] = 'src/contenttype/elements/Number.svelte';
+
+var root_2$h = add_locations(from_html(`<input/>`), Number$1[FILENAME], [[29, 4]]);
+var root_3$c = add_locations(from_html(`<input/>`), Number$1[FILENAME], [[42, 4]]);
+var root_4$a = add_locations(from_html(`<input/>`), Number$1[FILENAME], [[58, 4]]);
+var root_5$a = add_locations(from_html(`<input/>`), Number$1[FILENAME], [[74, 4]]);
+var root_1$d = add_locations(from_html(`<!> <!> <!> <!>`, 1), Number$1[FILENAME], []);
+
+function Number$1($$anchor, $$props) {
+	check_target(new.target);
+	push($$props, true);
+
+	var $$ownership_validator = create_ownership_validator($$props);
+	var _a;
+	var _b;
+	var _c;
+	var _d;
+
+	let field = prop($$props, 'field', 15);
+		prop($$props, 'gather', 11, null);
+		let options = prop($$props, 'options', 15);
+
+	strict_equals(_a = options().max_value, null, false) && strict_equals(_a, void 0, false)
+		? _a
+		: $$ownership_validator.mutation('options', ['options', 'max_value'], options(options().max_value = $$props.config.NumberFieldMaxValue, true), 5, 59);
+
+	strict_equals(_b = options().min_value, null, false) && strict_equals(_b, void 0, false)
+		? _b
+		: $$ownership_validator.mutation('options', ['options', 'min_value'], options(options().min_value = $$props.config.NumberFieldMinValue, true), 6, 59);
+
+	strict_equals(_c = options().decimal_places, null, false) && strict_equals(_c, void 0, false)
+		? _c
+		: $$ownership_validator.mutation('options', ['options', 'decimal_places'], options(options().decimal_places = 0, true), 7, 64);
+
+	strict_equals(_d = options().initial_value, null, false) && strict_equals(_d, void 0, false)
+		? _d
+		: $$ownership_validator.mutation('options', ['options', 'initial_value'], options(options().initial_value = "", true), 8, 63);
+
+	// jQuery(document).ready(function () {...}) is deprecated
+	jQuery(function () {
+		const minValueOrMaxValueSelector = "input[id^=number-min_value-field-options-], input[id^=number-max_value-field-options-]";
+
+		jQuery(document).on("keyup", minValueOrMaxValueSelector, function () {
+			const matched = this.id.match(/[^-]+$/);
+
+			if (!matched) return;
+
+			const fieldId = matched[0];
+			const initialValueId = "#number-initial_value-field-options-" + fieldId;
+			const jqInitialValue = jQuery(initialValueId);
+
+			if (!jqInitialValue.data("mtValidator")) return;
+
+			/* @ts-expect-error : mtValid is undefined */
+			jqInitialValue.mtValid({ focus: false });
+		});
+	});
+
+	var $$exports = { ...legacy_api() };
+
+	{
+		$$ownership_validator.binding('field', ContentFieldOptionGroup, field);
+		$$ownership_validator.binding('options', ContentFieldOptionGroup, options);
+
+		add_svelte_meta(
+			() => ContentFieldOptionGroup($$anchor, {
+				type: 'number',
+
+				get id() {
+					return $$props.id;
+				},
+
+				get field() {
+					return field();
+				},
+
+				set field($$value) {
+					field($$value);
+				},
+
+				get options() {
+					return options();
+				},
+
+				set options($$value) {
+					options($$value);
+				},
+
+				children: wrap_snippet(Number$1, ($$anchor, $$slotProps) => {
+					var fragment_1 = root_1$d();
+					var node = first_child(fragment_1);
+
+					add_svelte_meta(
+						() => ContentFieldOption(node, {
+							id: 'number-min_value',
+							label: window.trans("Min Value"),
+
+							children: wrap_snippet(Number$1, ($$anchor, $$slotProps) => {
+								var input = root_2$h();
+
+								attribute_effect(
+									input,
+									() => ({
+										...{ ref: "min_value" },
+										type: 'number',
+										name: 'min_value',
+										id: 'number-min_value',
+										class: 'form-control html5-form w-25',
+										min: $$props.config.NumberFieldMinValue,
+										max: $$props.config.NumberFieldMaxValue
+									}),
+									void 0,
+									void 0,
+									void 0,
+									void 0,
+									true
+								);
+
+								validate_binding('bind:value={options.min_value}', [], options, () => 'min_value', 35, 6);
+
+								bind_value(
+									input,
+									function get() {
+										return options().min_value;
+									},
+									function set($$value) {
+										$$ownership_validator.mutation('options', ['options', 'min_value'], options(options().min_value = $$value, true), 35, 18);
+									}
+								);
+
+								append($$anchor, input);
+							}),
+
+							$$slots: { default: true }
+						}),
+						'component',
+						Number$1,
+						28,
+						2,
+						{ componentTag: 'ContentFieldOption' }
+					);
+
+					var node_1 = sibling(node, 2);
+
+					add_svelte_meta(
+						() => ContentFieldOption(node_1, {
+							id: 'number-max_value',
+							label: window.trans("Max Value"),
+
+							children: wrap_snippet(Number$1, ($$anchor, $$slotProps) => {
+								var input_1 = root_3$c();
+
+								attribute_effect(
+									input_1,
+									() => ({
+										...{ ref: "max_value" },
+										type: 'number',
+										name: 'max_value',
+										id: 'number-max_value',
+										class: 'form-control html5-form w-25',
+										min: $$props.config.NumberFieldMinValue,
+										max: $$props.config.NumberFieldMaxValue
+									}),
+									void 0,
+									void 0,
+									void 0,
+									void 0,
+									true
+								);
+
+								validate_binding('bind:value={options.max_value}', [], options, () => 'max_value', 48, 6);
+
+								bind_value(
+									input_1,
+									function get() {
+										return options().max_value;
+									},
+									function set($$value) {
+										$$ownership_validator.mutation('options', ['options', 'max_value'], options(options().max_value = $$value, true), 48, 18);
+									}
+								);
+
+								append($$anchor, input_1);
+							}),
+
+							$$slots: { default: true }
+						}),
+						'component',
+						Number$1,
+						41,
+						2,
+						{ componentTag: 'ContentFieldOption' }
+					);
+
+					var node_2 = sibling(node_1, 2);
+
+					add_svelte_meta(
+						() => ContentFieldOption(node_2, {
+							id: 'number-decimal_places',
+							label: window.trans("Number of decimal places"),
+
+							children: wrap_snippet(Number$1, ($$anchor, $$slotProps) => {
+								var input_2 = root_4$a();
+
+								attribute_effect(
+									input_2,
+									() => ({
+										...{ ref: "decimal_places" },
+										type: 'number',
+										name: 'decimal_places',
+										id: 'number-decimal_places',
+										class: 'form-control html5-form w-25',
+										min: '0',
+										max: $$props.config.NumberFieldDecimalPlaces
+									}),
+									void 0,
+									void 0,
+									void 0,
+									void 0,
+									true
+								);
+
+								validate_binding('bind:value={options.decimal_places}', [], options, () => 'decimal_places', 66, 6);
+
+								bind_value(
+									input_2,
+									function get() {
+										return options().decimal_places;
+									},
+									function set($$value) {
+										$$ownership_validator.mutation('options', ['options', 'decimal_places'], options(options().decimal_places = $$value, true), 66, 18);
+									}
+								);
+
+								append($$anchor, input_2);
+							}),
+
+							$$slots: { default: true }
+						}),
+						'component',
+						Number$1,
+						54,
+						2,
+						{ componentTag: 'ContentFieldOption' }
+					);
+
+					var node_3 = sibling(node_2, 2);
+
+					add_svelte_meta(
+						() => ContentFieldOption(node_3, {
+							id: 'number-initial_value',
+							label: window.trans("Initial Value"),
+
+							children: wrap_snippet(Number$1, ($$anchor, $$slotProps) => {
+								var input_3 = root_5$a();
+
+								attribute_effect(
+									input_3,
+									() => ({
+										...{ ref: "initial_value" },
+										type: 'number',
+										name: 'initial_value',
+										id: 'number-initial_value',
+										class: 'form-control html5-form w-25',
+										min: options().min_value,
+										max: options().max_value
+									}),
+									void 0,
+									void 0,
+									void 0,
+									void 0,
+									true
+								);
+
+								validate_binding('bind:value={options.initial_value}', [], options, () => 'initial_value', 80, 6);
+
+								bind_value(
+									input_3,
+									function get() {
+										return options().initial_value;
+									},
+									function set($$value) {
+										$$ownership_validator.mutation('options', ['options', 'initial_value'], options(options().initial_value = $$value, true), 80, 18);
+									}
+								);
+
+								append($$anchor, input_3);
+							}),
+
+							$$slots: { default: true }
+						}),
+						'component',
+						Number$1,
+						70,
+						2,
+						{ componentTag: 'ContentFieldOption' }
+					);
+
+					append($$anchor, fragment_1);
+				}),
+
+				$$slots: { default: true }
+			}),
+			'component',
+			Number$1,
+			27,
+			0,
+			{ componentTag: 'ContentFieldOptionGroup' }
+		);
+	}
+
+	return pop($$exports);
+}
+
+Url[FILENAME] = 'src/contenttype/elements/Url.svelte';
+
+var root_2$g = add_locations(from_html(`<input/>`), Url[FILENAME], [[13, 4]]);
+
+function Url($$anchor, $$props) {
+	check_target(new.target);
+	push($$props, true);
+
+	var $$ownership_validator = create_ownership_validator($$props);
+	var _a;
+
+	let field = prop($$props, 'field', 15);
+		prop($$props, 'gather', 11, null);
+		let options = prop($$props, 'options', 15);
+
+	strict_equals(_a = options().initial_value, null, false) && strict_equals(_a, void 0, false)
+		? _a
+		: $$ownership_validator.mutation('options', ['options', 'initial_value'], options(options().initial_value = "", true), 5, 63);
+
+	var $$exports = { ...legacy_api() };
+
+	{
+		$$ownership_validator.binding('field', ContentFieldOptionGroup, field);
+		$$ownership_validator.binding('options', ContentFieldOptionGroup, options);
+
+		add_svelte_meta(
+			() => ContentFieldOptionGroup($$anchor, {
+				type: 'url',
+
+				get id() {
+					return $$props.id;
+				},
+
+				get field() {
+					return field();
+				},
+
+				set field($$value) {
+					field($$value);
+				},
+
+				get options() {
+					return options();
+				},
+
+				set options($$value) {
+					options($$value);
+				},
+
+				children: wrap_snippet(Url, ($$anchor, $$slotProps) => {
+					add_svelte_meta(
+						() => ContentFieldOption($$anchor, {
+							id: 'url-initial_value',
+							label: window.trans("Initial Value"),
+
+							children: wrap_snippet(Url, ($$anchor, $$slotProps) => {
+								var input = root_2$g();
+
+								attribute_effect(
+									input,
+									() => ({
+										...{ ref: "initial_value" },
+										type: 'text',
+										name: 'initial_value',
+										id: 'url-initial_value',
+										class: 'form-control'
+									}),
+									void 0,
+									void 0,
+									void 0,
+									void 0,
+									true
+								);
+
+								validate_binding('bind:value={options.initial_value}', [], options, () => 'initial_value', 19, 6);
+
+								bind_value(
+									input,
+									function get() {
+										return options().initial_value;
+									},
+									function set($$value) {
+										$$ownership_validator.mutation('options', ['options', 'initial_value'], options(options().initial_value = $$value, true), 19, 18);
+									}
+								);
+
+								append($$anchor, input);
+							}),
+
+							$$slots: { default: true }
+						}),
+						'component',
+						Url,
+						9,
+						2,
+						{ componentTag: 'ContentFieldOption' }
+					);
+				}),
+
+				$$slots: { default: true }
+			}),
+			'component',
+			Url,
+			8,
+			0,
+			{ componentTag: 'ContentFieldOptionGroup' }
+		);
+	}
+
+	return pop($$exports);
+}
+
+DateTime[FILENAME] = 'src/contenttype/elements/DateTime.svelte';
+
+var root_2$f = add_locations(from_html(`<input/>`), DateTime[FILENAME], [[14, 4]]);
+var root_3$b = add_locations(from_html(`<input/>`), DateTime[FILENAME], [[29, 4]]);
+var root_1$c = add_locations(from_html(`<!> <!>`, 1), DateTime[FILENAME], []);
+
+function DateTime($$anchor, $$props) {
+	check_target(new.target);
+	push($$props, true);
+
+	var $$ownership_validator = create_ownership_validator($$props);
+	var _a;
+	var _b;
+
+	let field = prop($$props, 'field', 15);
+		prop($$props, 'gather', 11, null);
+		let options = prop($$props, 'options', 15);
+
+	strict_equals(_a = options().initial_date, null, false) && strict_equals(_a, void 0, false)
+		? _a
+		: $$ownership_validator.mutation('options', ['options', 'initial_date'], options(options().initial_date = "", true), 5, 62);
+
+	strict_equals(_b = options().initial_time, null, false) && strict_equals(_b, void 0, false)
+		? _b
+		: $$ownership_validator.mutation('options', ['options', 'initial_time'], options(options().initial_time = "", true), 6, 62);
+
+	var $$exports = { ...legacy_api() };
+
+	{
+		$$ownership_validator.binding('field', ContentFieldOptionGroup, field);
+		$$ownership_validator.binding('options', ContentFieldOptionGroup, options);
+
+		add_svelte_meta(
+			() => ContentFieldOptionGroup($$anchor, {
+				type: 'date-and-time',
+
+				get id() {
+					return $$props.id;
+				},
+
+				get field() {
+					return field();
+				},
+
+				set field($$value) {
+					field($$value);
+				},
+
+				get options() {
+					return options();
+				},
+
+				set options($$value) {
+					options($$value);
+				},
+
+				children: wrap_snippet(DateTime, ($$anchor, $$slotProps) => {
+					var fragment_1 = root_1$c();
+					var node = first_child(fragment_1);
+
+					add_svelte_meta(
+						() => ContentFieldOption(node, {
+							id: 'date_and_time-initial-date_value',
+							label: window.trans("Initial Value (Date)"),
+
+							children: wrap_snippet(DateTime, ($$anchor, $$slotProps) => {
+								var input = root_2$f();
+
+								attribute_effect(
+									input,
+									() => ({
+										...{ ref: "initial_date" },
+										type: 'text',
+										name: 'initial_date',
+										id: 'date_and_time-initial_date',
+										class: 'form-control date-field w-25',
+										placeholder: 'YYYY-MM-DD'
+									}),
+									void 0,
+									void 0,
+									void 0,
+									void 0,
+									true
+								);
+
+								validate_binding('bind:value={options.initial_date}', [], options, () => 'initial_date', 20, 6);
+
+								bind_value(
+									input,
+									function get() {
+										return options().initial_date;
+									},
+									function set($$value) {
+										$$ownership_validator.mutation('options', ['options', 'initial_date'], options(options().initial_date = $$value, true), 20, 18);
+									}
+								);
+
+								append($$anchor, input);
+							}),
+
+							$$slots: { default: true }
+						}),
+						'component',
+						DateTime,
+						10,
+						2,
+						{ componentTag: 'ContentFieldOption' }
+					);
+
+					var node_1 = sibling(node, 2);
+
+					add_svelte_meta(
+						() => ContentFieldOption(node_1, {
+							id: 'date_and_time-initial-timevalue',
+							label: window.trans("Initial Value (Time)"),
+
+							children: wrap_snippet(DateTime, ($$anchor, $$slotProps) => {
+								var input_1 = root_3$b();
+
+								attribute_effect(
+									input_1,
+									() => ({
+										...{ ref: "initial_time" },
+										type: 'text',
+										name: 'initial_time',
+										id: 'date_and_time-initial_time',
+										class: 'form-control time-field w-25',
+										placeholder: 'HH:mm:ss'
+									}),
+									void 0,
+									void 0,
+									void 0,
+									void 0,
+									true
+								);
+
+								validate_binding('bind:value={options.initial_time}', [], options, () => 'initial_time', 35, 6);
+
+								bind_value(
+									input_1,
+									function get() {
+										return options().initial_time;
+									},
+									function set($$value) {
+										$$ownership_validator.mutation('options', ['options', 'initial_time'], options(options().initial_time = $$value, true), 35, 18);
+									}
+								);
+
+								append($$anchor, input_1);
+							}),
+
+							$$slots: { default: true }
+						}),
+						'component',
+						DateTime,
+						25,
+						2,
+						{ componentTag: 'ContentFieldOption' }
+					);
+
+					append($$anchor, fragment_1);
+				}),
+
+				$$slots: { default: true }
+			}),
+			'component',
+			DateTime,
+			9,
+			0,
+			{ componentTag: 'ContentFieldOptionGroup' }
+		);
+	}
+
+	return pop($$exports);
+}
+
+Date$1[FILENAME] = 'src/contenttype/elements/Date.svelte';
+
+var root_2$e = add_locations(from_html(`<input/>`), Date$1[FILENAME], [[14, 4]]);
+
+function Date$1($$anchor, $$props) {
+	check_target(new.target);
+	push($$props, true);
+
+	var $$ownership_validator = create_ownership_validator($$props);
+	var _a;
+
+	let field = prop($$props, 'field', 15);
+		prop($$props, 'gather', 11, null);
+		let options = prop($$props, 'options', 15);
+
+	strict_equals(_a = options().initial_value, null, false) && strict_equals(_a, void 0, false)
+		? _a
+		: $$ownership_validator.mutation('options', ['options', 'initial_value'], options(options().initial_value = "", true), 5, 63);
+
+	var $$exports = { ...legacy_api() };
+
+	{
+		$$ownership_validator.binding('field', ContentFieldOptionGroup, field);
+		$$ownership_validator.binding('options', ContentFieldOptionGroup, options);
+
+		add_svelte_meta(
+			() => ContentFieldOptionGroup($$anchor, {
+				type: 'date-only',
+
+				get id() {
+					return $$props.id;
+				},
+
+				get field() {
+					return field();
+				},
+
+				set field($$value) {
+					field($$value);
+				},
+
+				get options() {
+					return options();
+				},
+
+				set options($$value) {
+					options($$value);
+				},
+
+				children: wrap_snippet(Date$1, ($$anchor, $$slotProps) => {
+					add_svelte_meta(
+						() => ContentFieldOption($$anchor, {
+							id: 'date_only-initial-date_value',
+							label: window.trans("Initial Value"),
+
+							children: wrap_snippet(Date$1, ($$anchor, $$slotProps) => {
+								var input = root_2$e();
+
+								attribute_effect(
+									input,
+									() => ({
+										...{ ref: "initial_value" },
+										type: 'text',
+										name: 'initial_value',
+										id: 'initial_value',
+										class: 'form-control date-field w-25',
+										placeholder: 'YYYY-MM-DD'
+									}),
+									void 0,
+									void 0,
+									void 0,
+									void 0,
+									true
+								);
+
+								validate_binding('bind:value={options.initial_value}', [], options, () => 'initial_value', 20, 6);
+
+								bind_value(
+									input,
+									function get() {
+										return options().initial_value;
+									},
+									function set($$value) {
+										$$ownership_validator.mutation('options', ['options', 'initial_value'], options(options().initial_value = $$value, true), 20, 18);
+									}
+								);
+
+								append($$anchor, input);
+							}),
+
+							$$slots: { default: true }
+						}),
+						'component',
+						Date$1,
+						9,
+						2,
+						{ componentTag: 'ContentFieldOption' }
+					);
+				}),
+
+				$$slots: { default: true }
+			}),
+			'component',
+			Date$1,
+			8,
+			0,
+			{ componentTag: 'ContentFieldOptionGroup' }
+		);
+	}
+
+	return pop($$exports);
+}
+
+Time[FILENAME] = 'src/contenttype/elements/Time.svelte';
+
+var root_2$d = add_locations(from_html(`<input/>`), Time[FILENAME], [[13, 4]]);
+
+function Time($$anchor, $$props) {
+	check_target(new.target);
+	push($$props, true);
+
+	var $$ownership_validator = create_ownership_validator($$props);
+	var _a;
+
+	let field = prop($$props, 'field', 15);
+		prop($$props, 'gather', 11, null);
+		let options = prop($$props, 'options', 15);
+
+	strict_equals(_a = options().initial_value, null, false) && strict_equals(_a, void 0, false)
+		? _a
+		: $$ownership_validator.mutation('options', ['options', 'initial_value'], options(options().initial_value = "", true), 5, 63);
+
+	var $$exports = { ...legacy_api() };
+
+	{
+		$$ownership_validator.binding('field', ContentFieldOptionGroup, field);
+		$$ownership_validator.binding('options', ContentFieldOptionGroup, options);
+
+		add_svelte_meta(
+			() => ContentFieldOptionGroup($$anchor, {
+				type: 'time-only',
+
+				get id() {
+					return $$props.id;
+				},
+
+				get field() {
+					return field();
+				},
+
+				set field($$value) {
+					field($$value);
+				},
+
+				get options() {
+					return options();
+				},
+
+				set options($$value) {
+					options($$value);
+				},
+
+				children: wrap_snippet(Time, ($$anchor, $$slotProps) => {
+					add_svelte_meta(
+						() => ContentFieldOption($$anchor, {
+							id: 'time_only-initial-value',
+							label: window.trans("Initial Value"),
+
+							children: wrap_snippet(Time, ($$anchor, $$slotProps) => {
+								var input = root_2$d();
+
+								attribute_effect(
+									input,
+									() => ({
+										...{ ref: "initial_value" },
+										type: 'text',
+										name: 'initial_value',
+										id: 'time_only-initial-value',
+										class: 'form-control time-field w-25',
+										placeholder: 'HH:mm:ss'
+									}),
+									void 0,
+									void 0,
+									void 0,
+									void 0,
+									true
+								);
+
+								validate_binding('bind:value={options.initial_value}', [], options, () => 'initial_value', 19, 6);
+
+								bind_value(
+									input,
+									function get() {
+										return options().initial_value;
+									},
+									function set($$value) {
+										$$ownership_validator.mutation('options', ['options', 'initial_value'], options(options().initial_value = $$value, true), 19, 18);
+									}
+								);
+
+								append($$anchor, input);
+							}),
+
+							$$slots: { default: true }
+						}),
+						'component',
+						Time,
+						9,
+						2,
+						{ componentTag: 'ContentFieldOption' }
+					);
+				}),
+
+				$$slots: { default: true }
+			}),
+			'component',
+			Time,
+			8,
+			0,
+			{ componentTag: 'ContentFieldOptionGroup' }
+		);
+	}
+
+	return pop($$exports);
+}
+
+const addRow = (values) => {
+  values.push({ checked: "", label: "", value: "" });
+  return values;
+};
+const deleteRow = (values, index) => {
+  values.splice(index, 1);
+  if (values.length === 0) {
+    values = [
+      {
+        checked: "checked",
+        label: "",
+        value: ""
+      }
+    ];
+  } else {
+    let found = false;
+    values.forEach(function(v) {
+      if (v.checked === "checked") {
+        found = true;
+      }
+    });
+    if (!found) {
+      values[0].checked = "checked";
+    }
+  }
+  return values;
+};
+const validateTable = (table) => {
+  const jqTable = jQuery(table);
+  const tableIsValidated = jqTable.data("mtValidator") ? true : false;
+  if (tableIsValidated) {
+    const jqNotValidatedLabelsValues = jqTable.find("input[type=text]:not(.is-invalid)");
+    if (jqNotValidatedLabelsValues.length > 0) {
+      jqNotValidatedLabelsValues.mtValidate("simple");
+    } else {
+      jqTable.mtValid({ focus: false });
+    }
+  }
+};
+
+SelectBox[FILENAME] = 'src/contenttype/elements/SelectBox.svelte';
+
+var root_2$c = add_locations(from_html(`<input/><label for="select_box-multiple" class="form-label"></label>`, 1), SelectBox[FILENAME], [[122, 4], [130, 6]]);
+var root_3$a = add_locations(from_html(`<input/>`), SelectBox[FILENAME], [[140, 4]]);
+var root_4$9 = add_locations(from_html(`<input/>`), SelectBox[FILENAME], [[156, 4]]);
+
+var root_6$3 = add_locations(from_html(`<tr class="text-center align-middle"><td><input type="checkbox" class="form-check-input mt-3"/></td><td><input type="text" class="form-control required" name="label"/></td><td><input type="text" class="form-control required" name="value"/></td><td><button type="button" class="btn btn-default btn-sm"><svg role="img" class="mt-icon mt-icon--sm"><title></title><use></use></svg> </button></td></tr>`), SelectBox[FILENAME], [
+	[
+		189,
+		12,
+
+		[
+			[190, 14, [[191, 17]]],
+			[200, 14, [[202, 16]]],
+			[209, 14, [[211, 16]]],
+			[218, 14, [[219, 17, [[225, 19, [[226, 21], [226, 60]]]]]]]
+		]
+	]
+]);
+
+var root_5$9 = add_locations(from_html(`<div class="mt-table--outline mb-3"><table><thead><tr><th scope="col"></th><th scope="col"></th><th scope="col"></th><th scope="col"></th></tr></thead><tbody></tbody></table></div> <button type="button" class="btn btn-default btn-sm"><svg role="img" class="mt-icon mt-icon--sm"><title></title><use></use></svg> </button>`, 1), SelectBox[FILENAME], [
+	[
+		173,
+		4,
+
+		[
+			[
+				174,
+				6,
+
+				[
+					[
+						179,
+						8,
+						[[180, 10, [[181, 12], [182, 12], [183, 12], [184, 12]]]]
+					],
+
+					[187, 8]
+				]
+			]
+		]
+	],
+
+	[237, 4, [[243, 7, [[244, 9], [244, 45]]]]]
+]);
+
+var root_1$b = add_locations(from_html(`<!> <!> <!> <!>`, 1), SelectBox[FILENAME], []);
+
+function SelectBox($$anchor, $$props) {
+	check_target(new.target);
+	push($$props, true);
+
+	var $$ownership_validator = create_ownership_validator($$props);
+	var _a;
+	var _b;
+
+	let field = prop($$props, 'field', 15),
+		gather = prop($$props, 'gather', 15, null),
+		options = prop($$props, 'options', 15);
+
+	if (strict_equals(options().can_add, "0")) {
+		$$ownership_validator.mutation('options', ['options', 'can_add'], options(options().can_add = 0, true), 7, 4);
+	}
+
+	if (strict_equals(options().multiple, "0")) {
+		$$ownership_validator.mutation('options', ['options', 'multiple'], options(options().multiple = 0, true), 10, 4);
+	}
+
+	strict_equals(_a = options().min, null, false) && strict_equals(_a, void 0, false)
+		? _a
+		: $$ownership_validator.mutation('options', ['options', 'min'], options(options().min = "", true), 12, 53);
+
+	strict_equals(_b = options().max, null, false) && strict_equals(_b, void 0, false)
+		? _b
+		: $$ownership_validator.mutation('options', ['options', 'max'], options(options().max = "", true), 13, 53);
+
+	let refsTable;
+
+	// <mt:include name="content_field_type_options/selection_common_script.tmpl">
+	// copoied some functions from selection_common_script.tmpl below
+	if (!options().values) {
+		$$ownership_validator.mutation('options', ['options', 'values'], options(options().values = [{ checked: "", label: "", value: "" }], true), 18, 4);
+	}
+
+	user_effect(() => {
+		if (refsTable) {
+			validateTable(refsTable);
+		}
+	});
+
+	gather(() => {
+		return { values: options().values };
+	});
+
+	// copied some functions from selection_common_script.tmpl above
+	// <mt:include name="content_field_type_options/selection_common_script.tmpl">
+	// deleteRow was moved to SelectionCommonScript.svelte
+	const enterInitial = (e, index) => {
+		const target = e.target;
+		const state = target.checked;
+		const block = jQuery(e.target).parents(".mt-contentfield");
+
+		// Clear all check when not to allow multiple selection
+		if (!options().multiple || strict_equals(options().multiple, 0) || strict_equals(options().multiple, false)) {
+			_clearAllInitial(block);
+		}
+
+		// Set current item status
+		e.target.checked = state;
+
+		$$ownership_validator.mutation('options', ['options', 'values', index, 'checked'], options(options().values[index].checked = state ? "checked" : "", true), 51, 4);
+
+		if (options().multiple || strict_equals(options().multiple, 1)) {
+			_updateInittialField(block);
+		}
+
+		// added in Svelte
+		refreshView();
+	};
+
+	const changeStateMultiple = (e) => {
+		const target = e.target;
+		const block = jQuery(target).parents(".mt-contentfield");
+
+		$$ownership_validator.mutation('options', ['options', 'multiple'], options(options().multiple = target.checked, true), 61, 4);
+
+		if (!options().multiple && block.find(".values-option-table").find('input[type="checkbox"]:checked').length > 1) {
+			_clearAllInitial(block);
+		}
+
+		refreshView();
+	};
+
+	const enterMax = (e) => {
+		const block = jQuery(e.target).parents(".mt-contentfield");
+
+		_updateInittialField(block);
+	};
+
+	const _updateInittialField = (block) => {
+		const max = Number(block.find('input[name="max"]').val());
+		const cur = block.find(".values-option-table").find('input[type="checkbox"]:checked').length;
+
+		if (strict_equals(max, 0) || cur < max) {
+			const chkbox = block.find(".values-option-table").find('input[type="checkbox"]');
+
+			jQuery.each(chkbox, function (i) {
+				jQuery(chkbox[i]).prop("disabled", false);
+			});
+		} else {
+			const chkbox = block.find(".values-option-table").find('input[type="checkbox"]:not(:checked)');
+
+			jQuery.each(chkbox, function (i) {
+				jQuery(chkbox[i]).prop("disabled", true);
+			});
+		}
+	};
+
+	const _clearAllInitial = (block) => {
+		const initials = block.find(".values-option-table").find('input[type="checkbox"]');
+
+		if (initials.length > 1) {
+			jQuery.each(initials, function (v) {
+				const elm = jQuery(initials[v]);
+
+				elm.prop("checked", false);
+				elm.prop("disabled", false);
+			});
+		}
+
+		options().values.forEach(function (v) {
+			v.checked = "";
+		});
+	};
+
+	// added in Svelte
+	const refreshView = () => {
+		// eslint-disable-next-line no-self-assign
+		options(options());
+	};
+
+	var $$exports = { ...legacy_api() };
+
+	{
+		$$ownership_validator.binding('field', ContentFieldOptionGroup, field);
+		$$ownership_validator.binding('options', ContentFieldOptionGroup, options);
+
+		add_svelte_meta(
+			() => ContentFieldOptionGroup($$anchor, {
+				type: 'select-box',
+
+				get id() {
+					return $$props.id;
+				},
+
+				get field() {
+					return field();
+				},
+
+				set field($$value) {
+					field($$value);
+				},
+
+				get options() {
+					return options();
+				},
+
+				set options($$value) {
+					options($$value);
+				},
+
+				children: wrap_snippet(SelectBox, ($$anchor, $$slotProps) => {
+					var fragment_1 = root_1$b();
+					var node = first_child(fragment_1);
+
+					add_svelte_meta(
+						() => ContentFieldOption(node, {
+							id: 'select_box-multiple',
+							label: window.trans("Allow users to select multiple values?"),
+
+							children: wrap_snippet(SelectBox, ($$anchor, $$slotProps) => {
+								var fragment_2 = root_2$c();
+								var input = first_child(fragment_2);
+
+								attribute_effect(
+									input,
+									() => ({
+										...{ ref: "multiple" },
+										type: 'checkbox',
+										class: 'mt-switch form-control form-check-input',
+										id: 'select_box-multiple',
+										name: 'multiple',
+										onclick: changeStateMultiple
+									}),
+									void 0,
+									void 0,
+									void 0,
+									void 0,
+									true
+								);
+
+								validate_binding('bind:checked={options.multiple}', [], options, () => 'multiple', 128, 6);
+
+								var label = sibling(input);
+
+								label.textContent = window.trans("Allow users to select multiple values?");
+
+								bind_checked(
+									input,
+									function get() {
+										return options().multiple;
+									},
+									function set($$value) {
+										$$ownership_validator.mutation('options', ['options', 'multiple'], options(options().multiple = $$value, true), 128, 20);
+									}
+								);
+
+								append($$anchor, fragment_2);
+							}),
+
+							$$slots: { default: true }
+						}),
+						'component',
+						SelectBox,
+						118,
+						2,
+						{ componentTag: 'ContentFieldOption' }
+					);
+
+					var node_1 = sibling(node, 2);
+
+					{
+						let $0 = user_derived(() => options().multiple ? true : false);
+
+						add_svelte_meta(
+							() => ContentFieldOption(node_1, {
+								id: 'select_box-min',
+								label: window.trans("Minimum number of selections"),
+
+								get attrShow() {
+									return get$1($0);
+								},
+
+								children: wrap_snippet(SelectBox, ($$anchor, $$slotProps) => {
+									var input_1 = root_3$a();
+
+									attribute_effect(
+										input_1,
+										() => ({
+											...{ ref: "min" },
+											type: 'number',
+											name: 'min',
+											id: 'select_box-min',
+											class: 'form-control w-25',
+											min: '0'
+										}),
+										void 0,
+										void 0,
+										void 0,
+										void 0,
+										true
+									);
+
+									validate_binding('bind:value={options.min}', [], options, () => 'min', 147, 6);
+
+									bind_value(
+										input_1,
+										function get() {
+											return options().min;
+										},
+										function set($$value) {
+											$$ownership_validator.mutation('options', ['options', 'min'], options(options().min = $$value, true), 147, 18);
+										}
+									);
+
+									append($$anchor, input_1);
+								}),
+
+								$$slots: { default: true }
+							}),
+							'component',
+							SelectBox,
+							135,
+							2,
+							{ componentTag: 'ContentFieldOption' }
+						);
+					}
+
+					var node_2 = sibling(node_1, 2);
+
+					{
+						let $0 = user_derived(() => options().multiple ? true : false);
+
+						add_svelte_meta(
+							() => ContentFieldOption(node_2, {
+								id: 'select_box-max',
+								label: window.trans("Maximum number of selections"),
+
+								get attrShow() {
+									return get$1($0);
+								},
+
+								children: wrap_snippet(SelectBox, ($$anchor, $$slotProps) => {
+									var input_2 = root_4$9();
+
+									attribute_effect(
+										input_2,
+										() => ({
+											...{ ref: "max" },
+											type: 'number',
+											name: 'max',
+											id: 'select_box-max',
+											class: 'form-control w-25',
+											min: '1',
+											onchange: enterMax
+										}),
+										void 0,
+										void 0,
+										void 0,
+										void 0,
+										true
+									);
+
+									validate_binding('bind:value={options.max}', [], options, () => 'max', 163, 6);
+
+									bind_value(
+										input_2,
+										function get() {
+											return options().max;
+										},
+										function set($$value) {
+											$$ownership_validator.mutation('options', ['options', 'max'], options(options().max = $$value, true), 163, 18);
+										}
+									);
+
+									append($$anchor, input_2);
+								}),
+
+								$$slots: { default: true }
+							}),
+							'component',
+							SelectBox,
+							151,
+							2,
+							{ componentTag: 'ContentFieldOption' }
+						);
+					}
+
+					var node_3 = sibling(node_2, 2);
+
+					add_svelte_meta(
+						() => ContentFieldOption(node_3, {
+							id: 'select_box-values',
+							required: 1,
+							label: window.trans("Values"),
+
+							children: wrap_snippet(SelectBox, ($$anchor, $$slotProps) => {
+								var fragment_3 = root_5$9();
+								var div = first_child(fragment_3);
+								var table = child(div);
+
+								attribute_effect(table, () => ({
+									class: 'table mt-table values-option-table',
+									...{ ref: "table" }
+								}));
+
+								var thead = child(table);
+								var tr = child(thead);
+								var th = child(tr);
+
+								th.textContent = window.trans("Selected");
+
+								var th_1 = sibling(th);
+
+								th_1.textContent = window.trans("Label");
+
+								var th_2 = sibling(th_1);
+
+								th_2.textContent = window.trans("Value");
+								next();
+								reset(tr);
+								reset(thead);
+
+								var tbody = sibling(thead);
+
+								add_svelte_meta(
+									() => each(tbody, 21, () => options().values, index, ($$anchor, v, index) => {
+										var tr_1 = root_6$3();
+										var td = child(tr_1);
+										var input_3 = child(td);
+
+										remove_input_defaults(input_3);
+
+										input_3.__change = (e) => {
+											enterInitial(e, index);
+										};
+
+										reset(td);
+
+										var td_1 = sibling(td);
+										var input_4 = child(td_1);
+
+										remove_input_defaults(input_4);
+										validate_binding('bind:value={v.label}', [], () => get$1(v), () => 'label', 206, 18);
+										reset(td_1);
+
+										var td_2 = sibling(td_1);
+										var input_5 = child(td_2);
+
+										remove_input_defaults(input_5);
+										validate_binding('bind:value={v.value}', [], () => get$1(v), () => 'value', 215, 18);
+										reset(td_2);
+
+										var td_3 = sibling(td_2);
+										var button = child(td_3);
+
+										button.__click = () => {
+											$$ownership_validator.mutation('options', ['options', 'values'], options(options().values = deleteRow(options().values, index), true), 221, 20);
+										};
+
+										var svg = child(button);
+										var title = child(svg);
+
+										title.textContent = window.trans("delete");
+
+										var use = sibling(title);
+
+										set_xlink_attribute(use, 'xlink:href', `${window.StaticURI ?? ''}images/sprite.svg#ic_trash`);
+										reset(svg);
+
+										var text = sibling(svg, 1, true);
+
+										text.nodeValue = window.trans("delete");
+										reset(button);
+										reset(td_3);
+										reset(tr_1);
+										template_effect(() => set_checked(input_3, get$1(v).checked ? true : false));
+
+										bind_value(
+											input_4,
+											function get() {
+												return get$1(v).label;
+											},
+											function set($$value) {
+												(get$1(v).label = $$value);
+											}
+										);
+
+										bind_value(
+											input_5,
+											function get() {
+												return get$1(v).value;
+											},
+											function set($$value) {
+												(get$1(v).value = $$value);
+											}
+										);
+
+										append($$anchor, tr_1);
+									}),
+									'each',
+									SelectBox,
+									188,
+									10
+								);
+
+								reset(tbody);
+								reset(table);
+								bind_this(table, ($$value) => refsTable = $$value, () => refsTable);
+								reset(div);
+
+								var button_1 = sibling(div, 2);
+
+								button_1.__click = () => {
+									$$ownership_validator.mutation('options', ['options', 'values'], options(options().values = addRow(options().values), true), 239, 8);
+								};
+
+								var svg_1 = child(button_1);
+								var title_1 = child(svg_1);
+
+								title_1.textContent = window.trans("add");
+
+								var use_1 = sibling(title_1);
+
+								set_xlink_attribute(use_1, 'xlink:href', `${window.StaticURI ?? ''}images/sprite.svg#ic_add`);
+								reset(svg_1);
+
+								var text_1 = sibling(svg_1, 1, true);
+
+								text_1.nodeValue = window.trans("add");
+								reset(button_1);
+								append($$anchor, fragment_3);
+							}),
+
+							$$slots: { default: true }
+						}),
+						'component',
+						SelectBox,
+						168,
+						2,
+						{ componentTag: 'ContentFieldOption' }
+					);
+
+					append($$anchor, fragment_1);
+				}),
+
+				$$slots: { default: true }
+			}),
+			'component',
+			SelectBox,
+			117,
+			0,
+			{ componentTag: 'ContentFieldOptionGroup' }
+		);
+	}
+
+	return pop($$exports);
+}
+
+delegate(['change', 'click']);
+
+RadioButton[FILENAME] = 'src/contenttype/elements/RadioButton.svelte';
+
+var root_3$9 = add_locations(from_html(`<tr class="text-center align-middle"><td><input type="radio" class="form-check-input mt-3"/></td><td><input type="text" class="form-control required" name="label"/></td><td><input type="text" class="form-control required" name="value"/></td><td><button type="button" class="btn btn-default btn-sm"><svg role="img" class="mt-icon mt-icon--sm"><title></title><use></use></svg> </button></td></tr>`), RadioButton[FILENAME], [
+	[
+		72,
+		12,
+
+		[
+			[73, 14, [[74, 17]]],
+			[84, 14, [[86, 16]]],
+			[93, 14, [[95, 16]]],
+			[102, 14, [[103, 17, [[109, 19, [[110, 21], [110, 60]]]]]]]
+		]
+	]
+]);
+
+var root_2$b = add_locations(from_html(`<div class="mt-table--outline mb-3"><table><thead><tr><th scope="col"></th><th scope="col"></th><th scope="col"></th><th scope="col"></th></tr></thead><tbody></tbody></table></div> <button type="button" class="btn btn-default btn-sm"><svg role="img" class="mt-icon mt-icon--sm"><title></title><use></use></svg> </button>`, 1), RadioButton[FILENAME], [
+	[
+		50,
+		4,
+
+		[
+			[
+				51,
+				6,
+
+				[
+					[56, 8, [[57, 10, [[58, 12], [61, 12], [64, 12], [67, 12]]]]],
+					[70, 8]
+				]
+			]
+		]
+	],
+
+	[121, 4, [[127, 7, [[128, 9], [128, 45]]]]]
+]);
+
+function RadioButton($$anchor, $$props) {
+	check_target(new.target);
+	push($$props, true);
+
+	var $$ownership_validator = create_ownership_validator($$props);
+
+	let field = prop($$props, 'field', 15),
+		gather = prop($$props, 'gather', 15, null),
+		options = prop($$props, 'options', 15);
+
+	let refsTable;
+
+	// <mt:include name="content_field_type_options/selection_common_script.tmpl">
+	// copied some functions from selection_common_script.tmpl below
+	if (!options().values) {
+		$$ownership_validator.mutation('options', ['options', 'values'], options(options().values = [{ checked: "", label: "", value: "" }], true), 9, 4);
+	}
+
+	user_effect(() => {
+		if (refsTable) {
+			validateTable(refsTable);
+		}
+	});
+
+	gather(() => {
+		return { values: options().values };
+	});
+
+	// copied some functions from selection_common_script.tmpl above
+	// <mt:include name="content_field_type_options/selection_common_script.tmpl">
+	const enterInitial = (index) => {
+		options().values.forEach(function (v) {
+			v.checked = "";
+		});
+
+		$$ownership_validator.mutation('options', ['options', 'values', index, 'checked'], options(options().values[index].checked = "checked", true), 33, 4);
+		refreshView();
+	};
+
+	// deleteRow was moved to SelectionCommonScript.svelte
+	// added in Svelte
+	const refreshView = () => {
+		// eslint-disable-next-line no-self-assign
+		options(options());
+	};
+
+	var $$exports = { ...legacy_api() };
+
+	{
+		$$ownership_validator.binding('field', ContentFieldOptionGroup, field);
+		$$ownership_validator.binding('options', ContentFieldOptionGroup, options);
+
+		add_svelte_meta(
+			() => ContentFieldOptionGroup($$anchor, {
+				type: 'radio-button',
+
+				get id() {
+					return $$props.id;
+				},
+
+				get field() {
+					return field();
+				},
+
+				set field($$value) {
+					field($$value);
+				},
+
+				get options() {
+					return options();
+				},
+
+				set options($$value) {
+					options($$value);
+				},
+
+				children: wrap_snippet(RadioButton, ($$anchor, $$slotProps) => {
+					add_svelte_meta(
+						() => ContentFieldOption($$anchor, {
+							id: 'radio_button-values',
+							required: 1,
+							label: window.trans("Values"),
+
+							children: wrap_snippet(RadioButton, ($$anchor, $$slotProps) => {
+								var fragment_2 = root_2$b();
+								var div = first_child(fragment_2);
+								var table = child(div);
+
+								attribute_effect(table, () => ({
+									class: 'table mt-table values-option-table',
+									...{ ref: "table" }
+								}));
+
+								var thead = child(table);
+								var tr = child(thead);
+								var th = child(tr);
+
+								th.textContent = window.trans("Selected");
+
+								var th_1 = sibling(th);
+
+								th_1.textContent = window.trans("Label");
+
+								var th_2 = sibling(th_1);
+
+								th_2.textContent = window.trans("Value");
+								next();
+								reset(tr);
+								reset(thead);
+
+								var tbody = sibling(thead);
+
+								add_svelte_meta(
+									() => each(tbody, 21, () => options().values, index, ($$anchor, v, index) => {
+										var tr_1 = root_3$9();
+										var td = child(tr_1);
+										var input = child(td);
+
+										remove_input_defaults(input);
+
+										input.__change = () => {
+											enterInitial(index);
+										};
+
+										reset(td);
+
+										var td_1 = sibling(td);
+										var input_1 = child(td_1);
+
+										remove_input_defaults(input_1);
+										validate_binding('bind:value={v.label}', [], () => get$1(v), () => 'label', 90, 18);
+										reset(td_1);
+
+										var td_2 = sibling(td_1);
+										var input_2 = child(td_2);
+
+										remove_input_defaults(input_2);
+										validate_binding('bind:value={v.value}', [], () => get$1(v), () => 'value', 99, 18);
+										reset(td_2);
+
+										var td_3 = sibling(td_2);
+										var button = child(td_3);
+
+										button.__click = () => {
+											$$ownership_validator.mutation('options', ['options', 'values'], options(options().values = deleteRow(options().values, index), true), 105, 20);
+										};
+
+										var svg = child(button);
+										var title = child(svg);
+
+										title.textContent = window.trans("delete");
+
+										var use = sibling(title);
+
+										set_xlink_attribute(use, 'xlink:href', `${window.StaticURI ?? ''}images/sprite.svg#ic_trash`);
+										reset(svg);
+
+										var text = sibling(svg, 1, true);
+
+										text.nodeValue = window.trans("delete");
+										reset(button);
+										reset(td_3);
+										reset(tr_1);
+
+										template_effect(() => {
+											set_attribute(input, 'name', $$props.id + "-initial");
+											set_checked(input, get$1(v).checked ? true : false);
+										});
+
+										bind_value(
+											input_1,
+											function get() {
+												return get$1(v).label;
+											},
+											function set($$value) {
+												(get$1(v).label = $$value);
+											}
+										);
+
+										bind_value(
+											input_2,
+											function get() {
+												return get$1(v).value;
+											},
+											function set($$value) {
+												(get$1(v).value = $$value);
+											}
+										);
+
+										append($$anchor, tr_1);
+									}),
+									'each',
+									RadioButton,
+									71,
+									10
+								);
+
+								reset(tbody);
+								reset(table);
+								bind_this(table, ($$value) => refsTable = $$value, () => refsTable);
+								reset(div);
+
+								var button_1 = sibling(div, 2);
+
+								button_1.__click = () => {
+									$$ownership_validator.mutation('options', ['options', 'values'], options(options().values = addRow(options().values), true), 123, 8);
+								};
+
+								var svg_1 = child(button_1);
+								var title_1 = child(svg_1);
+
+								title_1.textContent = window.trans("add");
+
+								var use_1 = sibling(title_1);
+
+								set_xlink_attribute(use_1, 'xlink:href', `${window.StaticURI ?? ''}images/sprite.svg#ic_add`);
+								reset(svg_1);
+
+								var text_1 = sibling(svg_1, 1, true);
+
+								text_1.nodeValue = window.trans("add");
+								reset(button_1);
+								append($$anchor, fragment_2);
+							}),
+
+							$$slots: { default: true }
+						}),
+						'component',
+						RadioButton,
+						45,
+						2,
+						{ componentTag: 'ContentFieldOption' }
+					);
+				}),
+
+				$$slots: { default: true }
+			}),
+			'component',
+			RadioButton,
+			44,
+			0,
+			{ componentTag: 'ContentFieldOptionGroup' }
+		);
+	}
+
+	return pop($$exports);
+}
+
+delegate(['change', 'click']);
+
+Checkboxes[FILENAME] = 'src/contenttype/elements/Checkboxes.svelte';
+
+var root_2$a = add_locations(from_html(`<input/>`), Checkboxes[FILENAME], [[86, 4]]);
+var root_3$8 = add_locations(from_html(`<input/>`), Checkboxes[FILENAME], [[101, 4]]);
+
+var root_5$8 = add_locations(from_html(`<tr class="text-center align-middle"><td><input type="checkbox" class="form-check-input mt-3"/></td><td><input type="text" class="form-control required" name="label"/></td><td><input type="text" class="form-control required" name="value"/></td><td><button type="button" class="btn btn-default btn-sm"><svg role="img" class="mt-icon mt-icon--sm"><title></title><use></use></svg> </button></td></tr>`), Checkboxes[FILENAME], [
+	[
+		140,
+		12,
+
+		[
+			[141, 14, [[142, 17]]],
+			[151, 14, [[153, 16]]],
+			[160, 14, [[162, 16]]],
+			[169, 14, [[170, 17, [[176, 19, [[177, 21], [179, 28]]]]]]]
+		]
+	]
+]);
+
+var root_4$8 = add_locations(from_html(`<div class="mt-table--outline mb-3"><table><thead><tr><th scope="col"></th><th scope="col"></th><th scope="col"></th><th scope="col"></th></tr></thead><tbody></tbody></table></div> <button type="button" class="btn btn-default btn-sm"><svg role="img" class="mt-icon mt-icon--sm"><title></title><use></use></svg> </button>`, 1), Checkboxes[FILENAME], [
+	[
+		118,
+		4,
+
+		[
+			[
+				119,
+				6,
+
+				[
+					[
+						124,
+						8,
+						[[125, 10, [[126, 12], [129, 12], [132, 12], [135, 12]]]]
+					],
+
+					[138, 8]
+				]
+			]
+		]
+	],
+
+	[191, 4, [[197, 7, [[198, 9], [200, 16]]]]]
+]);
+
+var root_1$a = add_locations(from_html(`<!> <!> <!>`, 1), Checkboxes[FILENAME], []);
+
+function Checkboxes($$anchor, $$props) {
+	check_target(new.target);
+	push($$props, true);
+
+	var $$ownership_validator = create_ownership_validator($$props);
+	var _a;
+	var _b;
+
+	let field = prop($$props, 'field', 15),
+		gather = prop($$props, 'gather', 15, null),
+		options = prop($$props, 'options', 15);
+
+	if (strict_equals(options().can_add, "0")) {
+		$$ownership_validator.mutation('options', ['options', 'can_add'], options(options().can_add = 0, true), 7, 4);
+	}
+
+	if (strict_equals(options().multiple, "0")) {
+		$$ownership_validator.mutation('options', ['options', 'multiple'], options(options().multiple = 0, true), 10, 4);
+	}
+
+	strict_equals(_a = options().min, null, false) && strict_equals(_a, void 0, false)
+		? _a
+		: $$ownership_validator.mutation('options', ['options', 'min'], options(options().min = "", true), 12, 53);
+
+	strict_equals(_b = options().max, null, false) && strict_equals(_b, void 0, false)
+		? _b
+		: $$ownership_validator.mutation('options', ['options', 'max'], options(options().max = "", true), 13, 53);
+
+	let refsTable;
+
+	// <mt:include name="content_field_type_options/selection_common_script.tmpl">
+	// copied some functions from selection_common_script.tmpl below
+	if (!options().values) {
+		$$ownership_validator.mutation('options', ['options', 'values'], options(options().values = [{ checked: "", label: "", value: "" }], true), 18, 4);
+	}
+
+	user_effect(() => {
+		if (refsTable) {
+			validateTable(refsTable);
+		}
+	});
+
+	gather(() => {
+		return { values: options().values };
+	});
+
+	// copied some functions from selection_common_script.tmpl above
+	// <mt:include name="content_field_type_options/selection_common_script.tmpl">
+	const enterInitial = (e, index) => {
+		const target = e.target;
+		const state = target.checked;
+		const block = jQuery(e.target).parents(".mt-contentfield");
+
+		// Set current item status
+		e.target.checked = state;
+
+		$$ownership_validator.mutation('options', ['options', 'values', index, 'checked'], options(options().values[index].checked = state ? "checked" : "", true), 44, 4);
+		_updateInitialField(block);
+		refreshView();
+	};
+
+	const enterMax = (e) => {
+		const block = jQuery(e.target).parents(".mt-contentfield");
+
+		_updateInitialField(block);
+	};
+
+	const _updateInitialField = (block) => {
+		const max = Number(block.find('input[name="max"]').val());
+		const cur = block.find(".values-option-table").find('input[type="checkbox"]:checked').length;
+
+		if (strict_equals(max, 0) || cur < max) {
+			const chkbox = block.find(".values-option-table").find('input[type="checkbox"]');
+
+			jQuery.each(chkbox, function (i) {
+				jQuery(chkbox[i]).prop("disabled", false);
+			});
+		} else {
+			const chkbox = block.find(".values-option-table").find('input[type="checkbox"]:not(:checked)');
+
+			jQuery.each(chkbox, function (i) {
+				jQuery(chkbox[i]).prop("disabled", true);
+			});
+		}
+	};
+
+	// added in Svelte
+	const refreshView = () => {
+		// eslint-disable-next-line no-self-assign
+		options(options());
+	};
+
+	var $$exports = { ...legacy_api() };
+
+	{
+		$$ownership_validator.binding('field', ContentFieldOptionGroup, field);
+		$$ownership_validator.binding('options', ContentFieldOptionGroup, options);
+
+		add_svelte_meta(
+			() => ContentFieldOptionGroup($$anchor, {
+				type: 'checkboxes',
+
+				get id() {
+					return $$props.id;
+				},
+
+				get field() {
+					return field();
+				},
+
+				set field($$value) {
+					field($$value);
+				},
+
+				get options() {
+					return options();
+				},
+
+				set options($$value) {
+					options($$value);
+				},
+
+				children: wrap_snippet(Checkboxes, ($$anchor, $$slotProps) => {
+					var fragment_1 = root_1$a();
+					var node = first_child(fragment_1);
+
+					add_svelte_meta(
+						() => ContentFieldOption(node, {
+							id: 'checkboxes-min',
+							label: window.trans("Minimum number of selections"),
+
+							children: wrap_snippet(Checkboxes, ($$anchor, $$slotProps) => {
+								var input = root_2$a();
+
+								attribute_effect(
+									input,
+									() => ({
+										...{ ref: "min" },
+										type: 'number',
+										name: 'min',
+										id: 'checkboxes-min',
+										class: 'form-control w-25',
+										min: '0'
+									}),
+									void 0,
+									void 0,
+									void 0,
+									void 0,
+									true
+								);
+
+								validate_binding('bind:value={options.min}', [], options, () => 'min', 93, 6);
+
+								bind_value(
+									input,
+									function get() {
+										return options().min;
+									},
+									function set($$value) {
+										$$ownership_validator.mutation('options', ['options', 'min'], options(options().min = $$value, true), 93, 18);
+									}
+								);
+
+								append($$anchor, input);
+							}),
+
+							$$slots: { default: true }
+						}),
+						'component',
+						Checkboxes,
+						82,
+						2,
+						{ componentTag: 'ContentFieldOption' }
+					);
+
+					var node_1 = sibling(node, 2);
+
+					add_svelte_meta(
+						() => ContentFieldOption(node_1, {
+							id: 'checkboxes-max',
+							label: window.trans("Maximum number of selections"),
+
+							children: wrap_snippet(Checkboxes, ($$anchor, $$slotProps) => {
+								var input_1 = root_3$8();
+
+								attribute_effect(
+									input_1,
+									() => ({
+										...{ ref: "max" },
+										type: 'number',
+										name: 'max',
+										id: 'checkboxes-max',
+										class: 'form-control w-25',
+										min: '1',
+										onchange: enterMax
+									}),
+									void 0,
+									void 0,
+									void 0,
+									void 0,
+									true
+								);
+
+								validate_binding('bind:value={options.max}', [], options, () => 'max', 108, 6);
+
+								bind_value(
+									input_1,
+									function get() {
+										return options().max;
+									},
+									function set($$value) {
+										$$ownership_validator.mutation('options', ['options', 'max'], options(options().max = $$value, true), 108, 18);
+									}
+								);
+
+								append($$anchor, input_1);
+							}),
+
+							$$slots: { default: true }
+						}),
+						'component',
+						Checkboxes,
+						97,
+						2,
+						{ componentTag: 'ContentFieldOption' }
+					);
+
+					var node_2 = sibling(node_1, 2);
+
+					add_svelte_meta(
+						() => ContentFieldOption(node_2, {
+							id: 'checkboxes-values',
+							required: 1,
+							label: window.trans("Values"),
+
+							children: wrap_snippet(Checkboxes, ($$anchor, $$slotProps) => {
+								var fragment_2 = root_4$8();
+								var div = first_child(fragment_2);
+								var table = child(div);
+
+								attribute_effect(table, () => ({
+									class: 'table mt-table values-option-table',
+									...{ ref: "table" }
+								}));
+
+								var thead = child(table);
+								var tr = child(thead);
+								var th = child(tr);
+
+								th.textContent = window.trans("Selected");
+
+								var th_1 = sibling(th);
+
+								th_1.textContent = window.trans("Label");
+
+								var th_2 = sibling(th_1);
+
+								th_2.textContent = window.trans("Value");
+								next();
+								reset(tr);
+								reset(thead);
+
+								var tbody = sibling(thead);
+
+								add_svelte_meta(
+									() => each(tbody, 21, () => options().values, index, ($$anchor, v, index) => {
+										var tr_1 = root_5$8();
+										var td = child(tr_1);
+										var input_2 = child(td);
+
+										remove_input_defaults(input_2);
+
+										input_2.__change = (e) => {
+											enterInitial(e, index);
+										};
+
+										reset(td);
+
+										var td_1 = sibling(td);
+										var input_3 = child(td_1);
+
+										remove_input_defaults(input_3);
+										validate_binding('bind:value={v.label}', [], () => get$1(v), () => 'label', 157, 18);
+										reset(td_1);
+
+										var td_2 = sibling(td_1);
+										var input_4 = child(td_2);
+
+										remove_input_defaults(input_4);
+										validate_binding('bind:value={v.value}', [], () => get$1(v), () => 'value', 166, 18);
+										reset(td_2);
+
+										var td_3 = sibling(td_2);
+										var button = child(td_3);
+
+										button.__click = () => {
+											$$ownership_validator.mutation('options', ['options', 'values'], options(options().values = deleteRow(options().values, index), true), 172, 20);
+										};
+
+										var svg = child(button);
+										var title = child(svg);
+
+										title.textContent = window.trans("delete");
+
+										var use = sibling(title);
+
+										set_xlink_attribute(use, 'xlink:href', `${window.StaticURI ?? ''}images/sprite.svg#ic_trash`);
+										reset(svg);
+
+										var text = sibling(svg);
+
+										text.nodeValue = ` ${window.trans("delete") ?? ''}`;
+										reset(button);
+										reset(td_3);
+										reset(tr_1);
+										template_effect(() => set_checked(input_2, get$1(v).checked ? true : false));
+
+										bind_value(
+											input_3,
+											function get() {
+												return get$1(v).label;
+											},
+											function set($$value) {
+												(get$1(v).label = $$value);
+											}
+										);
+
+										bind_value(
+											input_4,
+											function get() {
+												return get$1(v).value;
+											},
+											function set($$value) {
+												(get$1(v).value = $$value);
+											}
+										);
+
+										append($$anchor, tr_1);
+									}),
+									'each',
+									Checkboxes,
+									139,
+									10
+								);
+
+								reset(tbody);
+								reset(table);
+								bind_this(table, ($$value) => refsTable = $$value, () => refsTable);
+								reset(div);
+
+								var button_1 = sibling(div, 2);
+
+								button_1.__click = () => {
+									$$ownership_validator.mutation('options', ['options', 'values'], options(options().values = addRow(options().values), true), 193, 8);
+								};
+
+								var svg_1 = child(button_1);
+								var title_1 = child(svg_1);
+
+								title_1.textContent = window.trans("add");
+
+								var use_1 = sibling(title_1);
+
+								set_xlink_attribute(use_1, 'xlink:href', `${window.StaticURI ?? ''}images/sprite.svg#ic_add`);
+								reset(svg_1);
+
+								var text_1 = sibling(svg_1);
+
+								text_1.nodeValue = ` ${window.trans("add") ?? ''}`;
+								reset(button_1);
+								append($$anchor, fragment_2);
+							}),
+
+							$$slots: { default: true }
+						}),
+						'component',
+						Checkboxes,
+						113,
+						2,
+						{ componentTag: 'ContentFieldOption' }
+					);
+
+					append($$anchor, fragment_1);
+				}),
+
+				$$slots: { default: true }
+			}),
+			'component',
+			Checkboxes,
+			81,
+			0,
+			{ componentTag: 'ContentFieldOptionGroup' }
+		);
+	}
+
+	return pop($$exports);
+}
+
+delegate(['change', 'click']);
+
+Asset[FILENAME] = 'src/contenttype/elements/Asset.svelte';
+
+var root_2$9 = add_locations(from_html(`<input/><label for="asset-multiple" class="form-label"></label>`, 1), Asset[FILENAME], [[22, 4], [29, 6]]);
+var root_3$7 = add_locations(from_html(`<input/>`), Asset[FILENAME], [[39, 4]]);
+var root_4$7 = add_locations(from_html(`<input/>`), Asset[FILENAME], [[55, 4]]);
+var root_5$7 = add_locations(from_html(`<input/><label for="asset-allow_upload" class="form-label"></label>`, 1), Asset[FILENAME], [[70, 4], [77, 6]]);
+var root_1$9 = add_locations(from_html(`<!> <!> <!> <!>`, 1), Asset[FILENAME], []);
+
+function Asset($$anchor, $$props) {
+	check_target(new.target);
+	push($$props, true);
+
+	var $$ownership_validator = create_ownership_validator($$props);
+	var _a;
+	var _b;
+
+	let field = prop($$props, 'field', 15);
+		prop($$props, 'gather', 11, null);
+		let options = prop($$props, 'options', 15);
+
+	if (strict_equals(options().multiple, "0")) {
+		$$ownership_validator.mutation('options', ['options', 'multiple'], options(options().multiple = 0, true), 6, 4);
+	}
+
+	if (strict_equals(options().allow_upload, "0")) {
+		$$ownership_validator.mutation('options', ['options', 'allow_upload'], options(options().allow_upload = 0, true), 9, 4);
+	}
+
+	// changeStateMultiple was removed because unused
+	strict_equals(_a = options().min, null, false) && strict_equals(_a, void 0, false)
+		? _a
+		: $$ownership_validator.mutation('options', ['options', 'min'], options(options().min = "", true), 12, 53);
+
+	strict_equals(_b = options().max, null, false) && strict_equals(_b, void 0, false)
+		? _b
+		: $$ownership_validator.mutation('options', ['options', 'max'], options(options().max = "", true), 13, 53);
+
+	var $$exports = { ...legacy_api() };
+
+	{
+		$$ownership_validator.binding('field', ContentFieldOptionGroup, field);
+		$$ownership_validator.binding('options', ContentFieldOptionGroup, options);
+
+		add_svelte_meta(
+			() => ContentFieldOptionGroup($$anchor, {
+				type: 'asset',
+
+				get id() {
+					return $$props.id;
+				},
+
+				get field() {
+					return field();
+				},
+
+				set field($$value) {
+					field($$value);
+				},
+
+				get options() {
+					return options();
+				},
+
+				set options($$value) {
+					options($$value);
+				},
+
+				children: wrap_snippet(Asset, ($$anchor, $$slotProps) => {
+					var fragment_1 = root_1$9();
+					var node = first_child(fragment_1);
+
+					add_svelte_meta(
+						() => ContentFieldOption(node, {
+							id: 'asset-multiple',
+							label: window.trans("Allow users to select multiple assets?"),
+
+							children: wrap_snippet(Asset, ($$anchor, $$slotProps) => {
+								var fragment_2 = root_2$9();
+								var input = first_child(fragment_2);
+
+								attribute_effect(
+									input,
+									() => ({
+										...{ ref: "multiple" },
+										type: 'checkbox',
+										class: 'mt-switch form-control',
+										id: 'asset-multiple',
+										name: 'multiple'
+									}),
+									void 0,
+									void 0,
+									void 0,
+									void 0,
+									true
+								);
+
+								validate_binding('bind:checked={options.multiple}', [], options, () => 'multiple', 28, 6);
+
+								var label = sibling(input);
+
+								label.textContent = window.trans("Allow users to select multiple assets?");
+
+								bind_checked(
+									input,
+									function get() {
+										return options().multiple;
+									},
+									function set($$value) {
+										$$ownership_validator.mutation('options', ['options', 'multiple'], options(options().multiple = $$value, true), 28, 20);
+									}
+								);
+
+								append($$anchor, fragment_2);
+							}),
+
+							$$slots: { default: true }
+						}),
+						'component',
+						Asset,
+						17,
+						2,
+						{ componentTag: 'ContentFieldOption' }
+					);
+
+					var node_1 = sibling(node, 2);
+
+					add_svelte_meta(
+						() => ContentFieldOption(node_1, {
+							id: 'asset-min',
+							label: window.trans("Minimum number of selections"),
+
+							get attrShow() {
+								return options().multiple;
+							},
+
+							children: wrap_snippet(Asset, ($$anchor, $$slotProps) => {
+								var input_1 = root_3$7();
+
+								attribute_effect(
+									input_1,
+									() => ({
+										...{ ref: "min" },
+										type: 'number',
+										name: 'min',
+										id: 'asset-min',
+										class: 'form-control w-25',
+										min: '0'
+									}),
+									void 0,
+									void 0,
+									void 0,
+									void 0,
+									true
+								);
+
+								validate_binding('bind:value={options.min}', [], options, () => 'min', 46, 6);
+
+								bind_value(
+									input_1,
+									function get() {
+										return options().min;
+									},
+									function set($$value) {
+										$$ownership_validator.mutation('options', ['options', 'min'], options(options().min = $$value, true), 46, 18);
+									}
+								);
+
+								append($$anchor, input_1);
+							}),
+
+							$$slots: { default: true }
+						}),
+						'component',
+						Asset,
+						34,
+						2,
+						{ componentTag: 'ContentFieldOption' }
+					);
+
+					var node_2 = sibling(node_1, 2);
+
+					add_svelte_meta(
+						() => ContentFieldOption(node_2, {
+							id: 'asset-max',
+							label: window.trans("Maximum number of selections"),
+
+							get attrShow() {
+								return options().multiple;
+							},
+
+							children: wrap_snippet(Asset, ($$anchor, $$slotProps) => {
+								var input_2 = root_4$7();
+
+								attribute_effect(
+									input_2,
+									() => ({
+										...{ ref: "max" },
+										type: 'number',
+										name: 'max',
+										id: 'asset-max',
+										class: 'form-control w-25',
+										min: '1'
+									}),
+									void 0,
+									void 0,
+									void 0,
+									void 0,
+									true
+								);
+
+								validate_binding('bind:value={options.max}', [], options, () => 'max', 62, 6);
+
+								bind_value(
+									input_2,
+									function get() {
+										return options().max;
+									},
+									function set($$value) {
+										$$ownership_validator.mutation('options', ['options', 'max'], options(options().max = $$value, true), 62, 18);
+									}
+								);
+
+								append($$anchor, input_2);
+							}),
+
+							$$slots: { default: true }
+						}),
+						'component',
+						Asset,
+						50,
+						2,
+						{ componentTag: 'ContentFieldOption' }
+					);
+
+					var node_3 = sibling(node_2, 2);
+
+					add_svelte_meta(
+						() => ContentFieldOption(node_3, {
+							id: 'asset-allow_upload',
+							label: window.trans("Allow users to upload a new asset?"),
+
+							children: wrap_snippet(Asset, ($$anchor, $$slotProps) => {
+								var fragment_3 = root_5$7();
+								var input_3 = first_child(fragment_3);
+
+								attribute_effect(
+									input_3,
+									() => ({
+										...{ ref: "allow_upload" },
+										type: 'checkbox',
+										class: 'mt-switch form-control',
+										id: 'asset-allow_upload',
+										name: 'allow_upload'
+									}),
+									void 0,
+									void 0,
+									void 0,
+									void 0,
+									true
+								);
+
+								validate_binding('bind:checked={options.allow_upload}', [], options, () => 'allow_upload', 76, 6);
+
+								var label_1 = sibling(input_3);
+
+								label_1.textContent = window.trans("Allow users to upload a new asset?");
+
+								bind_checked(
+									input_3,
+									function get() {
+										return options().allow_upload;
+									},
+									function set($$value) {
+										$$ownership_validator.mutation('options', ['options', 'allow_upload'], options(options().allow_upload = $$value, true), 76, 20);
+									}
+								);
+
+								append($$anchor, fragment_3);
+							}),
+
+							$$slots: { default: true }
+						}),
+						'component',
+						Asset,
+						66,
+						2,
+						{ componentTag: 'ContentFieldOption' }
+					);
+
+					append($$anchor, fragment_1);
+				}),
+
+				$$slots: { default: true }
+			}),
+			'component',
+			Asset,
+			16,
+			0,
+			{ componentTag: 'ContentFieldOptionGroup' }
+		);
+	}
+
+	return pop($$exports);
+}
+
+AssetAudio[FILENAME] = 'src/contenttype/elements/AssetAudio.svelte';
+
+var root_2$8 = add_locations(from_html(`<input/><label for="asset_audio-multiple" class="form-label"></label>`, 1), AssetAudio[FILENAME], [[22, 4], [29, 6]]);
+var root_3$6 = add_locations(from_html(`<input/>`), AssetAudio[FILENAME], [[39, 4]]);
+var root_4$6 = add_locations(from_html(`<input/>`), AssetAudio[FILENAME], [[55, 4]]);
+var root_5$6 = add_locations(from_html(`<input/><label for="asset_audio-allow_upload" class="form-label"></label>`, 1), AssetAudio[FILENAME], [[70, 4], [77, 6]]);
+var root_1$8 = add_locations(from_html(`<!> <!> <!> <!>`, 1), AssetAudio[FILENAME], []);
+
+function AssetAudio($$anchor, $$props) {
+	check_target(new.target);
+	push($$props, true);
+
+	var $$ownership_validator = create_ownership_validator($$props);
+	var _a;
+	var _b;
+
+	let field = prop($$props, 'field', 15);
+		prop($$props, 'gather', 11, null);
+		let options = prop($$props, 'options', 15);
+
+	if (strict_equals(options().multiple, "0")) {
+		$$ownership_validator.mutation('options', ['options', 'multiple'], options(options().multiple = 0, true), 6, 4);
+	}
+
+	if (strict_equals(options().allow_upload, "0")) {
+		$$ownership_validator.mutation('options', ['options', 'allow_upload'], options(options().allow_upload = 0, true), 9, 4);
+	}
+
+	// changeStateMultiple was removed because unused
+	strict_equals(_a = options().min, null, false) && strict_equals(_a, void 0, false)
+		? _a
+		: $$ownership_validator.mutation('options', ['options', 'min'], options(options().min = "", true), 12, 53);
+
+	strict_equals(_b = options().max, null, false) && strict_equals(_b, void 0, false)
+		? _b
+		: $$ownership_validator.mutation('options', ['options', 'max'], options(options().max = "", true), 13, 53);
+
+	var $$exports = { ...legacy_api() };
+
+	{
+		$$ownership_validator.binding('field', ContentFieldOptionGroup, field);
+		$$ownership_validator.binding('options', ContentFieldOptionGroup, options);
+
+		add_svelte_meta(
+			() => ContentFieldOptionGroup($$anchor, {
+				type: 'asset-audio',
+
+				get id() {
+					return $$props.id;
+				},
+
+				get field() {
+					return field();
+				},
+
+				set field($$value) {
+					field($$value);
+				},
+
+				get options() {
+					return options();
+				},
+
+				set options($$value) {
+					options($$value);
+				},
+
+				children: wrap_snippet(AssetAudio, ($$anchor, $$slotProps) => {
+					var fragment_1 = root_1$8();
+					var node = first_child(fragment_1);
+
+					add_svelte_meta(
+						() => ContentFieldOption(node, {
+							id: 'asset_audio-multiple',
+							label: window.trans("Allow users to select multiple assets?"),
+
+							children: wrap_snippet(AssetAudio, ($$anchor, $$slotProps) => {
+								var fragment_2 = root_2$8();
+								var input = first_child(fragment_2);
+
+								attribute_effect(
+									input,
+									() => ({
+										...{ ref: "multiple" },
+										type: 'checkbox',
+										class: 'mt-switch form-control',
+										id: 'asset_audio-multiple',
+										name: 'multiple'
+									}),
+									void 0,
+									void 0,
+									void 0,
+									void 0,
+									true
+								);
+
+								validate_binding('bind:checked={options.multiple}', [], options, () => 'multiple', 28, 6);
+
+								var label = sibling(input);
+
+								label.textContent = window.trans("Allow users to select multiple assets?");
+
+								bind_checked(
+									input,
+									function get() {
+										return options().multiple;
+									},
+									function set($$value) {
+										$$ownership_validator.mutation('options', ['options', 'multiple'], options(options().multiple = $$value, true), 28, 20);
+									}
+								);
+
+								append($$anchor, fragment_2);
+							}),
+
+							$$slots: { default: true }
+						}),
+						'component',
+						AssetAudio,
+						17,
+						2,
+						{ componentTag: 'ContentFieldOption' }
+					);
+
+					var node_1 = sibling(node, 2);
+
+					{
+						let $0 = user_derived(() => options().multiple ? true : false);
+
+						add_svelte_meta(
+							() => ContentFieldOption(node_1, {
+								id: 'asset_audio-min',
+								label: window.trans("Minimum number of selections"),
+
+								get attrShow() {
+									return get$1($0);
+								},
+
+								children: wrap_snippet(AssetAudio, ($$anchor, $$slotProps) => {
+									var input_1 = root_3$6();
+
+									attribute_effect(
+										input_1,
+										() => ({
+											...{ ref: "min" },
+											type: 'number',
+											name: 'min',
+											id: 'asset_audio-min',
+											class: 'form-control w-25',
+											min: '0'
+										}),
+										void 0,
+										void 0,
+										void 0,
+										void 0,
+										true
+									);
+
+									validate_binding('bind:value={options.min}', [], options, () => 'min', 46, 6);
+
+									bind_value(
+										input_1,
+										function get() {
+											return options().min;
+										},
+										function set($$value) {
+											$$ownership_validator.mutation('options', ['options', 'min'], options(options().min = $$value, true), 46, 18);
+										}
+									);
+
+									append($$anchor, input_1);
+								}),
+
+								$$slots: { default: true }
+							}),
+							'component',
+							AssetAudio,
+							34,
+							2,
+							{ componentTag: 'ContentFieldOption' }
+						);
+					}
+
+					var node_2 = sibling(node_1, 2);
+
+					{
+						let $0 = user_derived(() => options().multiple ? true : false);
+
+						add_svelte_meta(
+							() => ContentFieldOption(node_2, {
+								id: 'asset_audio-max',
+								label: window.trans("Maximum number of selections"),
+
+								get attrShow() {
+									return get$1($0);
+								},
+
+								children: wrap_snippet(AssetAudio, ($$anchor, $$slotProps) => {
+									var input_2 = root_4$6();
+
+									attribute_effect(
+										input_2,
+										() => ({
+											...{ ref: "max" },
+											type: 'number',
+											name: 'max',
+											id: 'asset_audio-max',
+											class: 'form-control w-25',
+											min: '1'
+										}),
+										void 0,
+										void 0,
+										void 0,
+										void 0,
+										true
+									);
+
+									validate_binding('bind:value={options.max}', [], options, () => 'max', 62, 6);
+
+									bind_value(
+										input_2,
+										function get() {
+											return options().max;
+										},
+										function set($$value) {
+											$$ownership_validator.mutation('options', ['options', 'max'], options(options().max = $$value, true), 62, 18);
+										}
+									);
+
+									append($$anchor, input_2);
+								}),
+
+								$$slots: { default: true }
+							}),
+							'component',
+							AssetAudio,
+							50,
+							2,
+							{ componentTag: 'ContentFieldOption' }
+						);
+					}
+
+					var node_3 = sibling(node_2, 2);
+
+					add_svelte_meta(
+						() => ContentFieldOption(node_3, {
+							id: 'asset_audio-allow_upload',
+							label: window.trans("Allow users to upload a new audio asset?"),
+
+							children: wrap_snippet(AssetAudio, ($$anchor, $$slotProps) => {
+								var fragment_3 = root_5$6();
+								var input_3 = first_child(fragment_3);
+
+								attribute_effect(
+									input_3,
+									() => ({
+										...{ ref: "allow_upload" },
+										type: 'checkbox',
+										class: 'mt-switch form-control',
+										id: 'asset_audio-allow_upload',
+										name: 'allow_upload'
+									}),
+									void 0,
+									void 0,
+									void 0,
+									void 0,
+									true
+								);
+
+								validate_binding('bind:checked={options.allow_upload}', [], options, () => 'allow_upload', 76, 6);
+
+								var label_1 = sibling(input_3);
+
+								label_1.textContent = window.trans("Allow users to upload a new audio asset?");
+
+								bind_checked(
+									input_3,
+									function get() {
+										return options().allow_upload;
+									},
+									function set($$value) {
+										$$ownership_validator.mutation('options', ['options', 'allow_upload'], options(options().allow_upload = $$value, true), 76, 20);
+									}
+								);
+
+								append($$anchor, fragment_3);
+							}),
+
+							$$slots: { default: true }
+						}),
+						'component',
+						AssetAudio,
+						66,
+						2,
+						{ componentTag: 'ContentFieldOption' }
+					);
+
+					append($$anchor, fragment_1);
+				}),
+
+				$$slots: { default: true }
+			}),
+			'component',
+			AssetAudio,
+			16,
+			0,
+			{ componentTag: 'ContentFieldOptionGroup' }
+		);
+	}
+
+	return pop($$exports);
+}
+
+AssetVideo[FILENAME] = 'src/contenttype/elements/AssetVideo.svelte';
+
+var root_2$7 = add_locations(from_html(`<input/><label for="asset_video-multiple" class="form-label"></label>`, 1), AssetVideo[FILENAME], [[22, 4], [29, 6]]);
+var root_3$5 = add_locations(from_html(`<input/>`), AssetVideo[FILENAME], [[39, 4]]);
+var root_4$5 = add_locations(from_html(`<input/>`), AssetVideo[FILENAME], [[55, 4]]);
+var root_5$5 = add_locations(from_html(`<input/><label for="asset_video-allow_upload" class="form-label"></label>`, 1), AssetVideo[FILENAME], [[70, 4], [77, 6]]);
+var root_1$7 = add_locations(from_html(`<!> <!> <!> <!>`, 1), AssetVideo[FILENAME], []);
+
+function AssetVideo($$anchor, $$props) {
+	check_target(new.target);
+	push($$props, true);
+
+	var $$ownership_validator = create_ownership_validator($$props);
+	var _a;
+	var _b;
+
+	let field = prop($$props, 'field', 15);
+		prop($$props, 'gather', 11, null);
+		let options = prop($$props, 'options', 15);
+
+	if (strict_equals(options().multiple, "0")) {
+		$$ownership_validator.mutation('options', ['options', 'multiple'], options(options().multiple = 0, true), 6, 4);
+	}
+
+	if (strict_equals(options().allow_upload, "0")) {
+		$$ownership_validator.mutation('options', ['options', 'allow_upload'], options(options().allow_upload = 0, true), 9, 4);
+	}
+
+	strict_equals(_a = options().min, null, false) && strict_equals(_a, void 0, false)
+		? _a
+		: $$ownership_validator.mutation('options', ['options', 'min'], options(options().min = "", true), 11, 53);
+
+	strict_equals(_b = options().max, null, false) && strict_equals(_b, void 0, false)
+		? _b
+		: $$ownership_validator.mutation('options', ['options', 'max'], options(options().max = "", true), 12, 53);
+
+	var $$exports = { ...legacy_api() };
+
+	{
+		$$ownership_validator.binding('field', ContentFieldOptionGroup, field);
+		$$ownership_validator.binding('options', ContentFieldOptionGroup, options);
+
+		add_svelte_meta(
+			() => ContentFieldOptionGroup($$anchor, {
+				type: 'asset-video',
+
+				get id() {
+					return $$props.id;
+				},
+
+				get field() {
+					return field();
+				},
+
+				set field($$value) {
+					field($$value);
+				},
+
+				get options() {
+					return options();
+				},
+
+				set options($$value) {
+					options($$value);
+				},
+
+				children: wrap_snippet(AssetVideo, ($$anchor, $$slotProps) => {
+					var fragment_1 = root_1$7();
+					var node = first_child(fragment_1);
+
+					add_svelte_meta(
+						() => ContentFieldOption(node, {
+							id: 'asset_video-multiple',
+							label: window.trans("Allow users to select multiple video assets?"),
+
+							children: wrap_snippet(AssetVideo, ($$anchor, $$slotProps) => {
+								var fragment_2 = root_2$7();
+								var input = first_child(fragment_2);
+
+								attribute_effect(
+									input,
+									() => ({
+										...{ ref: "multiple" },
+										type: 'checkbox',
+										class: 'mt-switch form-control',
+										id: 'asset_video-multiple',
+										name: 'multiple'
+									}),
+									void 0,
+									void 0,
+									void 0,
+									void 0,
+									true
+								);
+
+								validate_binding('bind:checked={options.multiple}', [], options, () => 'multiple', 28, 6);
+
+								var label = sibling(input);
+
+								label.textContent = window.trans("Allow users to select multiple video assets?");
+
+								bind_checked(
+									input,
+									function get() {
+										return options().multiple;
+									},
+									function set($$value) {
+										$$ownership_validator.mutation('options', ['options', 'multiple'], options(options().multiple = $$value, true), 28, 20);
+									}
+								);
+
+								append($$anchor, fragment_2);
+							}),
+
+							$$slots: { default: true }
+						}),
+						'component',
+						AssetVideo,
+						17,
+						2,
+						{ componentTag: 'ContentFieldOption' }
+					);
+
+					var node_1 = sibling(node, 2);
+
+					{
+						let $0 = user_derived(() => options().multiple ? true : false);
+
+						add_svelte_meta(
+							() => ContentFieldOption(node_1, {
+								id: 'asset_video-min',
+								label: window.trans("Minimum number of selections"),
+
+								get attrShow() {
+									return get$1($0);
+								},
+
+								children: wrap_snippet(AssetVideo, ($$anchor, $$slotProps) => {
+									var input_1 = root_3$5();
+
+									attribute_effect(
+										input_1,
+										() => ({
+											...{ ref: "min" },
+											type: 'number',
+											name: 'min',
+											id: 'asset_video-min',
+											class: 'form-control w-25',
+											min: '0'
+										}),
+										void 0,
+										void 0,
+										void 0,
+										void 0,
+										true
+									);
+
+									validate_binding('bind:value={options.min}', [], options, () => 'min', 46, 6);
+
+									bind_value(
+										input_1,
+										function get() {
+											return options().min;
+										},
+										function set($$value) {
+											$$ownership_validator.mutation('options', ['options', 'min'], options(options().min = $$value, true), 46, 18);
+										}
+									);
+
+									append($$anchor, input_1);
+								}),
+
+								$$slots: { default: true }
+							}),
+							'component',
+							AssetVideo,
+							34,
+							2,
+							{ componentTag: 'ContentFieldOption' }
+						);
+					}
+
+					var node_2 = sibling(node_1, 2);
+
+					{
+						let $0 = user_derived(() => options().multiple ? true : false);
+
+						add_svelte_meta(
+							() => ContentFieldOption(node_2, {
+								id: 'asset_video-max',
+								label: window.trans("Maximum number of selections"),
+
+								get attrShow() {
+									return get$1($0);
+								},
+
+								children: wrap_snippet(AssetVideo, ($$anchor, $$slotProps) => {
+									var input_2 = root_4$5();
+
+									attribute_effect(
+										input_2,
+										() => ({
+											...{ ref: "max" },
+											type: 'number',
+											name: 'max',
+											id: 'asset_video-max',
+											class: 'form-control w-25',
+											min: '1'
+										}),
+										void 0,
+										void 0,
+										void 0,
+										void 0,
+										true
+									);
+
+									validate_binding('bind:value={options.max}', [], options, () => 'max', 62, 6);
+
+									bind_value(
+										input_2,
+										function get() {
+											return options().max;
+										},
+										function set($$value) {
+											$$ownership_validator.mutation('options', ['options', 'max'], options(options().max = $$value, true), 62, 18);
+										}
+									);
+
+									append($$anchor, input_2);
+								}),
+
+								$$slots: { default: true }
+							}),
+							'component',
+							AssetVideo,
+							50,
+							2,
+							{ componentTag: 'ContentFieldOption' }
+						);
+					}
+
+					var node_3 = sibling(node_2, 2);
+
+					add_svelte_meta(
+						() => ContentFieldOption(node_3, {
+							id: 'asset_video-allow_upload',
+							label: window.trans("Allow users to upload a new video asset?"),
+
+							children: wrap_snippet(AssetVideo, ($$anchor, $$slotProps) => {
+								var fragment_3 = root_5$5();
+								var input_3 = first_child(fragment_3);
+
+								attribute_effect(
+									input_3,
+									() => ({
+										...{ ref: "allow_upload" },
+										type: 'checkbox',
+										class: 'mt-switch form-control',
+										id: 'asset_video-allow_upload',
+										name: 'allow_upload'
+									}),
+									void 0,
+									void 0,
+									void 0,
+									void 0,
+									true
+								);
+
+								validate_binding('bind:checked={options.allow_upload}', [], options, () => 'allow_upload', 76, 6);
+
+								var label_1 = sibling(input_3);
+
+								label_1.textContent = window.trans("Allow users to upload a new video asset?");
+
+								bind_checked(
+									input_3,
+									function get() {
+										return options().allow_upload;
+									},
+									function set($$value) {
+										$$ownership_validator.mutation('options', ['options', 'allow_upload'], options(options().allow_upload = $$value, true), 76, 20);
+									}
+								);
+
+								append($$anchor, fragment_3);
+							}),
+
+							$$slots: { default: true }
+						}),
+						'component',
+						AssetVideo,
+						66,
+						2,
+						{ componentTag: 'ContentFieldOption' }
+					);
+
+					append($$anchor, fragment_1);
+				}),
+
+				$$slots: { default: true }
+			}),
+			'component',
+			AssetVideo,
+			16,
+			0,
+			{ componentTag: 'ContentFieldOptionGroup' }
+		);
+	}
+
+	return pop($$exports);
+}
+
+AssetImage[FILENAME] = 'src/contenttype/elements/AssetImage.svelte';
+
+var root_2$6 = add_locations(from_html(`<input/><label for="asset_image-multiple" class="form-label"></label>`, 1), AssetImage[FILENAME], [[24, 4], [31, 6]]);
+var root_3$4 = add_locations(from_html(`<input/>`), AssetImage[FILENAME], [[41, 4]]);
+var root_4$4 = add_locations(from_html(`<input/>`), AssetImage[FILENAME], [[57, 4]]);
+var root_5$4 = add_locations(from_html(`<input/><label for="asset_image-allow_upload" class="form-label"></label>`, 1), AssetImage[FILENAME], [[72, 4], [79, 6]]);
+var root_6$2 = add_locations(from_html(`<input/>`), AssetImage[FILENAME], [[88, 4]]);
+var root_7$1 = add_locations(from_html(`<input/>`), AssetImage[FILENAME], [[102, 4]]);
+var root_1$6 = add_locations(from_html(`<!> <!> <!> <!> <!> <!>`, 1), AssetImage[FILENAME], []);
+
+function AssetImage($$anchor, $$props) {
+	check_target(new.target);
+	push($$props, true);
+
+	var $$ownership_validator = create_ownership_validator($$props);
+	var _a;
+	var _b;
+	var _c;
+	var _d;
+
+	let field = prop($$props, 'field', 15);
+		prop($$props, 'gather', 11, null);
+		let options = prop($$props, 'options', 15);
+
+	if (strict_equals(options().multiple, "0")) {
+		$$ownership_validator.mutation('options', ['options', 'multiple'], options(options().multiple = 0, true), 6, 4);
+	}
+
+	if (strict_equals(options().allow_upload, "0")) {
+		$$ownership_validator.mutation('options', ['options', 'allow_upload'], options(options().allow_upload = 0, true), 9, 4);
+	}
+
+	// changeStateMultiple was removed because unused
+	strict_equals(_a = options().min, null, false) && strict_equals(_a, void 0, false)
+		? _a
+		: $$ownership_validator.mutation('options', ['options', 'min'], options(options().min = "", true), 12, 53);
+
+	strict_equals(_b = options().max, null, false) && strict_equals(_b, void 0, false)
+		? _b
+		: $$ownership_validator.mutation('options', ['options', 'max'], options(options().max = "", true), 13, 53);
+
+	strict_equals(_c = options().preview_width, null, false) && strict_equals(_c, void 0, false)
+		? _c
+		: $$ownership_validator.mutation('options', ['options', 'preview_width'], options(options().preview_width = 80, true), 14, 63);
+
+	strict_equals(_d = options().preivew_height, null, false) && strict_equals(_d, void 0, false)
+		? _d
+		: $$ownership_validator.mutation('options', ['options', 'preivew_height'], options(options().preivew_height = 80, true), 15, 64);
+
+	var $$exports = { ...legacy_api() };
+
+	{
+		$$ownership_validator.binding('field', ContentFieldOptionGroup, field);
+		$$ownership_validator.binding('options', ContentFieldOptionGroup, options);
+
+		add_svelte_meta(
+			() => ContentFieldOptionGroup($$anchor, {
+				type: 'asset-image',
+
+				get id() {
+					return $$props.id;
+				},
+
+				get field() {
+					return field();
+				},
+
+				set field($$value) {
+					field($$value);
+				},
+
+				get options() {
+					return options();
+				},
+
+				set options($$value) {
+					options($$value);
+				},
+
+				children: wrap_snippet(AssetImage, ($$anchor, $$slotProps) => {
+					var fragment_1 = root_1$6();
+					var node = first_child(fragment_1);
+
+					add_svelte_meta(
+						() => ContentFieldOption(node, {
+							id: 'asset_image-multiple',
+							label: window.trans("Allow users to select multiple image assets?"),
+
+							children: wrap_snippet(AssetImage, ($$anchor, $$slotProps) => {
+								var fragment_2 = root_2$6();
+								var input = first_child(fragment_2);
+
+								attribute_effect(
+									input,
+									() => ({
+										...{ ref: "multiple" },
+										type: 'checkbox',
+										class: 'mt-switch form-control',
+										id: 'asset_image-multiple',
+										name: 'multiple'
+									}),
+									void 0,
+									void 0,
+									void 0,
+									void 0,
+									true
+								);
+
+								validate_binding('bind:checked={options.multiple}', [], options, () => 'multiple', 30, 6);
+
+								var label = sibling(input);
+
+								label.textContent = window.trans("Allow users to select multiple image assets?");
+
+								bind_checked(
+									input,
+									function get() {
+										return options().multiple;
+									},
+									function set($$value) {
+										$$ownership_validator.mutation('options', ['options', 'multiple'], options(options().multiple = $$value, true), 30, 20);
+									}
+								);
+
+								append($$anchor, fragment_2);
+							}),
+
+							$$slots: { default: true }
+						}),
+						'component',
+						AssetImage,
+						19,
+						2,
+						{ componentTag: 'ContentFieldOption' }
+					);
+
+					var node_1 = sibling(node, 2);
+
+					{
+						let $0 = user_derived(() => options().multiple ? true : false);
+
+						add_svelte_meta(
+							() => ContentFieldOption(node_1, {
+								id: 'asset_image-min',
+								label: window.trans("Minimum number of selections"),
+
+								get attrShow() {
+									return get$1($0);
+								},
+
+								children: wrap_snippet(AssetImage, ($$anchor, $$slotProps) => {
+									var input_1 = root_3$4();
+
+									attribute_effect(
+										input_1,
+										() => ({
+											...{ ref: "min" },
+											type: 'number',
+											name: 'min',
+											id: 'asset_image-min',
+											class: 'form-control w-25',
+											min: '0'
+										}),
+										void 0,
+										void 0,
+										void 0,
+										void 0,
+										true
+									);
+
+									validate_binding('bind:value={options.min}', [], options, () => 'min', 48, 6);
+
+									bind_value(
+										input_1,
+										function get() {
+											return options().min;
+										},
+										function set($$value) {
+											$$ownership_validator.mutation('options', ['options', 'min'], options(options().min = $$value, true), 48, 18);
+										}
+									);
+
+									append($$anchor, input_1);
+								}),
+
+								$$slots: { default: true }
+							}),
+							'component',
+							AssetImage,
+							36,
+							2,
+							{ componentTag: 'ContentFieldOption' }
+						);
+					}
+
+					var node_2 = sibling(node_1, 2);
+
+					{
+						let $0 = user_derived(() => options().multiple ? true : false);
+
+						add_svelte_meta(
+							() => ContentFieldOption(node_2, {
+								id: 'asset_image-max',
+								label: window.trans("Maximum number of selections"),
+
+								get attrShow() {
+									return get$1($0);
+								},
+
+								children: wrap_snippet(AssetImage, ($$anchor, $$slotProps) => {
+									var input_2 = root_4$4();
+
+									attribute_effect(
+										input_2,
+										() => ({
+											...{ ref: "max" },
+											type: 'number',
+											name: 'max',
+											id: 'asset_image-max',
+											class: 'form-control w-25',
+											min: '1'
+										}),
+										void 0,
+										void 0,
+										void 0,
+										void 0,
+										true
+									);
+
+									validate_binding('bind:value={options.max}', [], options, () => 'max', 64, 6);
+
+									bind_value(
+										input_2,
+										function get() {
+											return options().max;
+										},
+										function set($$value) {
+											$$ownership_validator.mutation('options', ['options', 'max'], options(options().max = $$value, true), 64, 18);
+										}
+									);
+
+									append($$anchor, input_2);
+								}),
+
+								$$slots: { default: true }
+							}),
+							'component',
+							AssetImage,
+							52,
+							2,
+							{ componentTag: 'ContentFieldOption' }
+						);
+					}
+
+					var node_3 = sibling(node_2, 2);
+
+					add_svelte_meta(
+						() => ContentFieldOption(node_3, {
+							id: 'asset_image-allow_upload',
+							label: window.trans("Allow users to upload a new image asset?"),
+
+							children: wrap_snippet(AssetImage, ($$anchor, $$slotProps) => {
+								var fragment_3 = root_5$4();
+								var input_3 = first_child(fragment_3);
+
+								attribute_effect(
+									input_3,
+									() => ({
+										...{ ref: "allow_upload" },
+										type: 'checkbox',
+										class: 'mt-switch form-control',
+										id: 'asset_image-allow_upload',
+										name: 'allow_upload'
+									}),
+									void 0,
+									void 0,
+									void 0,
+									void 0,
+									true
+								);
+
+								validate_binding('bind:checked={options.allow_upload}', [], options, () => 'allow_upload', 78, 6);
+
+								var label_1 = sibling(input_3);
+
+								label_1.textContent = window.trans("Allow users to upload a new image asset?");
+
+								bind_checked(
+									input_3,
+									function get() {
+										return options().allow_upload;
+									},
+									function set($$value) {
+										$$ownership_validator.mutation('options', ['options', 'allow_upload'], options(options().allow_upload = $$value, true), 78, 20);
+									}
+								);
+
+								append($$anchor, fragment_3);
+							}),
+
+							$$slots: { default: true }
+						}),
+						'component',
+						AssetImage,
+						68,
+						2,
+						{ componentTag: 'ContentFieldOption' }
+					);
+
+					var node_4 = sibling(node_3, 2);
+
+					add_svelte_meta(
+						() => ContentFieldOption(node_4, {
+							id: 'asset_image-preview_width',
+							label: window.trans("Thumbnail width"),
+
+							children: wrap_snippet(AssetImage, ($$anchor, $$slotProps) => {
+								var input_4 = root_6$2();
+
+								attribute_effect(
+									input_4,
+									() => ({
+										...{ ref: "preview_width" },
+										type: 'number',
+										class: 'form-control w-25',
+										id: 'asset_image-preview_width',
+										name: 'preview_width'
+									}),
+									void 0,
+									void 0,
+									void 0,
+									void 0,
+									true
+								);
+
+								validate_binding('bind:value={options.preview_width}', [], options, () => 'preview_width', 94, 6);
+
+								bind_value(
+									input_4,
+									function get() {
+										return options().preview_width;
+									},
+									function set($$value) {
+										$$ownership_validator.mutation('options', ['options', 'preview_width'], options(options().preview_width = $$value, true), 94, 18);
+									}
+								);
+
+								append($$anchor, input_4);
+							}),
+
+							$$slots: { default: true }
+						}),
+						'component',
+						AssetImage,
+						84,
+						2,
+						{ componentTag: 'ContentFieldOption' }
+					);
+
+					var node_5 = sibling(node_4, 2);
+
+					add_svelte_meta(
+						() => ContentFieldOption(node_5, {
+							id: 'asset_image-preview_height',
+							label: window.trans("Thumbnail height"),
+
+							children: wrap_snippet(AssetImage, ($$anchor, $$slotProps) => {
+								var input_5 = root_7$1();
+
+								attribute_effect(
+									input_5,
+									() => ({
+										...{ ref: "preview_height" },
+										type: 'number',
+										class: 'form-control w-25',
+										id: 'asset_image-preview_height',
+										name: 'preview_height'
+									}),
+									void 0,
+									void 0,
+									void 0,
+									void 0,
+									true
+								);
+
+								validate_binding('bind:value={options.preview_height}', [], options, () => 'preview_height', 108, 6);
+
+								bind_value(
+									input_5,
+									function get() {
+										return options().preview_height;
+									},
+									function set($$value) {
+										$$ownership_validator.mutation('options', ['options', 'preview_height'], options(options().preview_height = $$value, true), 108, 18);
+									}
+								);
+
+								append($$anchor, input_5);
+							}),
+
+							$$slots: { default: true }
+						}),
+						'component',
+						AssetImage,
+						98,
+						2,
+						{ componentTag: 'ContentFieldOption' }
+					);
+
+					append($$anchor, fragment_1);
+				}),
+
+				$$slots: { default: true }
+			}),
+			'component',
+			AssetImage,
+			18,
+			0,
+			{ componentTag: 'ContentFieldOptionGroup' }
+		);
+	}
+
+	return pop($$exports);
+}
+
+EmbeddedText[FILENAME] = 'src/contenttype/elements/EmbeddedText.svelte';
+
+var root_2$5 = add_locations(from_html(`<textarea></textarea>`), EmbeddedText[FILENAME], [[14, 4]]);
+
+function EmbeddedText($$anchor, $$props) {
+	check_target(new.target);
+	push($$props, true);
+
+	var $$ownership_validator = create_ownership_validator($$props);
+	var _a;
+
+	let field = prop($$props, 'field', 15);
+		prop($$props, 'gather', 11, null);
+		let options = prop($$props, 'options', 15);
+
+	strict_equals(_a = options().initial_value, null, false) && strict_equals(_a, void 0, false)
+		? _a
+		: $$ownership_validator.mutation('options', ['options', 'initial_value'], options(options().initial_value = "", true), 5, 63);
+
+	var $$exports = { ...legacy_api() };
+
+	{
+		$$ownership_validator.binding('field', ContentFieldOptionGroup, field);
+		$$ownership_validator.binding('options', ContentFieldOptionGroup, options);
+
+		add_svelte_meta(
+			() => ContentFieldOptionGroup($$anchor, {
+				type: 'embedded-text',
+
+				get id() {
+					return $$props.id;
+				},
+
+				get field() {
+					return field();
+				},
+
+				set field($$value) {
+					field($$value);
+				},
+
+				get options() {
+					return options();
+				},
+
+				set options($$value) {
+					options($$value);
+				},
+
+				children: wrap_snippet(EmbeddedText, ($$anchor, $$slotProps) => {
+					add_svelte_meta(
+						() => ContentFieldOption($$anchor, {
+							id: 'embedded_text-initial_value',
+							label: window.trans("Initial Value"),
+
+							children: wrap_snippet(EmbeddedText, ($$anchor, $$slotProps) => {
+								var textarea = root_2$5();
+
+								remove_textarea_child(textarea);
+
+								attribute_effect(textarea, () => ({
+									...{ ref: "initial_value" },
+									name: 'initial_value',
+									id: 'embeddedded_text-initial_value',
+									class: 'form-control'
+								}));
+
+								validate_binding('bind:value={options.initial_value}', [], options, () => 'initial_value', 19, 6);
+
+								bind_value(
+									textarea,
+									function get() {
+										return options().initial_value;
+									},
+									function set($$value) {
+										$$ownership_validator.mutation('options', ['options', 'initial_value'], options(options().initial_value = $$value, true), 19, 18);
+									}
+								);
+
+								append($$anchor, textarea);
+							}),
+
+							$$slots: { default: true }
+						}),
+						'component',
+						EmbeddedText,
+						9,
+						2,
+						{ componentTag: 'ContentFieldOption' }
+					);
+				}),
+
+				$$slots: { default: true }
+			}),
+			'component',
+			EmbeddedText,
+			8,
+			0,
+			{ componentTag: 'ContentFieldOptionGroup' }
+		);
+	}
+
+	return pop($$exports);
+}
+
+Categories[FILENAME] = 'src/contenttype/elements/Categories.svelte';
+
+var root_2$4 = add_locations(from_html(`<input/><label for="categories-multiple" class="form-label"></label>`, 1), Categories[FILENAME], [[24, 4], [31, 6]]);
+var root_3$3 = add_locations(from_html(`<input/>`), Categories[FILENAME], [[41, 4]]);
+var root_4$3 = add_locations(from_html(`<input/>`), Categories[FILENAME], [[57, 4]]);
+var root_5$3 = add_locations(from_html(`<input/><label for="categories-can_add" class="form-label"></label>`, 1), Categories[FILENAME], [[72, 4], [79, 6]]);
+var root_8 = add_locations(from_html(`<option> </option>`), Categories[FILENAME], [[99, 10]]);
+var root_7 = add_locations(from_html(`<select></select>`), Categories[FILENAME], [[91, 6]]);
+var root_1$5 = add_locations(from_html(`<!> <!> <!> <!> <!>`, 1), Categories[FILENAME], []);
+
+function Categories($$anchor, $$props) {
+	check_target(new.target);
+	push($$props, true);
+
+	var $$ownership_validator = create_ownership_validator($$props);
+	var _a;
+	var _b;
+
+	let field = prop($$props, 'field', 15);
+		prop($$props, 'gather', 11, null);
+		let options = prop($$props, 'options', 15);
+
+	const categorySets = $$props.optionsHtmlParams.categories.category_sets;
+
+	if (strict_equals(options().multiple, "0")) {
+		$$ownership_validator.mutation('options', ['options', 'multiple'], options(options().multiple = 0, true), 8, 4);
+	}
+
+	if (strict_equals(options().can_add, "0")) {
+		$$ownership_validator.mutation('options', ['options', 'can_add'], options(options().can_add = 0, true), 11, 4);
+	}
+
+	strict_equals(_a = options().min, null, false) && strict_equals(_a, void 0, false)
+		? _a
+		: $$ownership_validator.mutation('options', ['options', 'min'], options(options().min = "", true), 13, 53);
+
+	strict_equals(_b = options().max, null, false) && strict_equals(_b, void 0, false)
+		? _b
+		: $$ownership_validator.mutation('options', ['options', 'max'], options(options().max = "", true), 14, 53);
+
+	var $$exports = { ...legacy_api() };
+
+	{
+		$$ownership_validator.binding('field', ContentFieldOptionGroup, field);
+		$$ownership_validator.binding('options', ContentFieldOptionGroup, options);
+
+		add_svelte_meta(
+			() => ContentFieldOptionGroup($$anchor, {
+				type: 'categories',
+
+				get id() {
+					return $$props.id;
+				},
+
+				get field() {
+					return field();
+				},
+
+				set field($$value) {
+					field($$value);
+				},
+
+				get options() {
+					return options();
+				},
+
+				set options($$value) {
+					options($$value);
+				},
+
+				children: wrap_snippet(Categories, ($$anchor, $$slotProps) => {
+					var fragment_1 = root_1$5();
+					var node = first_child(fragment_1);
+
+					add_svelte_meta(
+						() => ContentFieldOption(node, {
+							id: 'categories-multiple',
+							label: window.trans("Allow users to select multiple categories?"),
+
+							children: wrap_snippet(Categories, ($$anchor, $$slotProps) => {
+								var fragment_2 = root_2$4();
+								var input = first_child(fragment_2);
+
+								attribute_effect(
+									input,
+									() => ({
+										...{ ref: "multiple" },
+										type: 'checkbox',
+										class: 'mt-switch form-control',
+										id: 'categories-multiple',
+										name: 'multiple'
+									}),
+									void 0,
+									void 0,
+									void 0,
+									void 0,
+									true
+								);
+
+								validate_binding('bind:checked={options.multiple}', [], options, () => 'multiple', 30, 6);
+
+								var label = sibling(input);
+
+								label.textContent = window.trans("Allow users to select multiple categories?");
+
+								bind_checked(
+									input,
+									function get() {
+										return options().multiple;
+									},
+									function set($$value) {
+										$$ownership_validator.mutation('options', ['options', 'multiple'], options(options().multiple = $$value, true), 30, 20);
+									}
+								);
+
+								append($$anchor, fragment_2);
+							}),
+
+							$$slots: { default: true }
+						}),
+						'component',
+						Categories,
+						19,
+						2,
+						{ componentTag: 'ContentFieldOption' }
+					);
+
+					var node_1 = sibling(node, 2);
+
+					{
+						let $0 = user_derived(() => options().multiple ? true : false);
+
+						add_svelte_meta(
+							() => ContentFieldOption(node_1, {
+								id: 'categories-min',
+								label: window.trans("Minimum number of selections"),
+
+								get attrShow() {
+									return get$1($0);
+								},
+
+								children: wrap_snippet(Categories, ($$anchor, $$slotProps) => {
+									var input_1 = root_3$3();
+
+									attribute_effect(
+										input_1,
+										() => ({
+											...{ ref: "min" },
+											type: 'number',
+											name: 'min',
+											id: 'categories-min',
+											class: 'form-control w-25',
+											min: '0'
+										}),
+										void 0,
+										void 0,
+										void 0,
+										void 0,
+										true
+									);
+
+									validate_binding('bind:value={options.min}', [], options, () => 'min', 48, 6);
+
+									bind_value(
+										input_1,
+										function get() {
+											return options().min;
+										},
+										function set($$value) {
+											$$ownership_validator.mutation('options', ['options', 'min'], options(options().min = $$value, true), 48, 18);
+										}
+									);
+
+									append($$anchor, input_1);
+								}),
+
+								$$slots: { default: true }
+							}),
+							'component',
+							Categories,
+							36,
+							2,
+							{ componentTag: 'ContentFieldOption' }
+						);
+					}
+
+					var node_2 = sibling(node_1, 2);
+
+					{
+						let $0 = user_derived(() => options().multiple ? true : false);
+
+						add_svelte_meta(
+							() => ContentFieldOption(node_2, {
+								id: 'categories-max',
+								label: window.trans("Maximum number of selections"),
+
+								get attrShow() {
+									return get$1($0);
+								},
+
+								children: wrap_snippet(Categories, ($$anchor, $$slotProps) => {
+									var input_2 = root_4$3();
+
+									attribute_effect(
+										input_2,
+										() => ({
+											...{ ref: "max" },
+											type: 'number',
+											name: 'max',
+											id: 'categories-max',
+											class: 'form-control w-25',
+											min: '1'
+										}),
+										void 0,
+										void 0,
+										void 0,
+										void 0,
+										true
+									);
+
+									validate_binding('bind:value={options.max}', [], options, () => 'max', 64, 6);
+
+									bind_value(
+										input_2,
+										function get() {
+											return options().max;
+										},
+										function set($$value) {
+											$$ownership_validator.mutation('options', ['options', 'max'], options(options().max = $$value, true), 64, 18);
+										}
+									);
+
+									append($$anchor, input_2);
+								}),
+
+								$$slots: { default: true }
+							}),
+							'component',
+							Categories,
+							52,
+							2,
+							{ componentTag: 'ContentFieldOption' }
+						);
+					}
+
+					var node_3 = sibling(node_2, 2);
+
+					add_svelte_meta(
+						() => ContentFieldOption(node_3, {
+							id: 'categories-can_add',
+							label: window.trans("Allow users to create new categories?"),
+
+							children: wrap_snippet(Categories, ($$anchor, $$slotProps) => {
+								var fragment_3 = root_5$3();
+								var input_3 = first_child(fragment_3);
+
+								attribute_effect(
+									input_3,
+									() => ({
+										...{ ref: "can_add" },
+										type: 'checkbox',
+										class: 'mt-switch form-control',
+										id: 'categories-can_add',
+										name: 'can_add'
+									}),
+									void 0,
+									void 0,
+									void 0,
+									void 0,
+									true
+								);
+
+								validate_binding('bind:checked={options.can_add}', [], options, () => 'can_add', 78, 6);
+
+								var label_1 = sibling(input_3);
+
+								label_1.textContent = window.trans("Allow users to create new categories?");
+
+								bind_checked(
+									input_3,
+									function get() {
+										return options().can_add;
+									},
+									function set($$value) {
+										$$ownership_validator.mutation('options', ['options', 'can_add'], options(options().can_add = $$value, true), 78, 20);
+									}
+								);
+
+								append($$anchor, fragment_3);
+							}),
+
+							$$slots: { default: true }
+						}),
+						'component',
+						Categories,
+						68,
+						2,
+						{ componentTag: 'ContentFieldOption' }
+					);
+
+					var node_4 = sibling(node_3, 2);
+
+					add_svelte_meta(
+						() => ContentFieldOption(node_4, {
+							id: 'categories-category_set',
+							label: window.trans("Source Category Set"),
+							required: 1,
+
+							children: wrap_snippet(Categories, ($$anchor, $$slotProps) => {
+								var fragment_4 = comment();
+								var node_5 = first_child(fragment_4);
+
+								{
+									var consequent = ($$anchor) => {
+										var select = root_7();
+
+										attribute_effect(select, () => ({
+											...{ ref: "category_sets" },
+											name: 'category_set',
+											id: 'categories-category_set',
+											class: 'custom-select form-control html5-form form-select'
+										}));
+
+										add_svelte_meta(
+											() => each(select, 21, () => categorySets, index, ($$anchor, cs) => {
+												var option = root_8();
+												var text = child(option, true);
+
+												reset(option);
+
+												var option_value = {};
+
+												template_effect(() => {
+													set_text(text, get$1(cs).name);
+
+													if (option_value !== (option_value = get$1(cs).id)) {
+														option.value = (option.__value = get$1(cs).id) ?? '';
+													}
+												});
+
+												append($$anchor, option);
+											}),
+											'each',
+											Categories,
+											98,
+											8
+										);
+
+										reset(select);
+										validate_binding('bind:value={options.category_set}', [], options, () => 'category_set', 96, 8);
+
+										bind_select_value(
+											select,
+											function get() {
+												return options().category_set;
+											},
+											function set($$value) {
+												$$ownership_validator.mutation('options', ['options', 'category_set'], options(options().category_set = $$value, true), 96, 20);
+											}
+										);
+
+										append($$anchor, select);
+									};
+
+									var alternate = ($$anchor) => {
+										add_svelte_meta(
+											() => StatusMsg($$anchor, {
+												id: 'no-cateogry-set',
+												class: 'warning',
+												canClose: 0,
+
+												$$slots: {
+													msg: ($$anchor, $$slotProps) => {
+														var text_1 = text();
+
+														text_1.nodeValue = window.trans("There is no content type that can be selected. Please create new content type if you use Content Type field type.");
+														append($$anchor, text_1);
+													}
+												}
+											}),
+											'component',
+											Categories,
+											105,
+											6,
+											{ componentTag: 'StatusMsg' }
+										);
+									};
+
+									add_svelte_meta(
+										() => if_block(node_5, ($$render) => {
+											if (categorySets && categorySets.length > 0) $$render(consequent); else $$render(alternate, false);
+										}),
+										'if',
+										Categories,
+										89,
+										4
+									);
+								}
+
+								append($$anchor, fragment_4);
+							}),
+
+							$$slots: { default: true }
+						}),
+						'component',
+						Categories,
+						84,
+						2,
+						{ componentTag: 'ContentFieldOption' }
+					);
+
+					append($$anchor, fragment_1);
+				}),
+
+				$$slots: { default: true }
+			}),
+			'component',
+			Categories,
+			18,
+			0,
+			{ componentTag: 'ContentFieldOptionGroup' }
+		);
+	}
+
+	return pop($$exports);
+}
+
+Tags[FILENAME] = 'src/contenttype/elements/Tags.svelte';
+
+var root_2$3 = add_locations(from_html(`<input/><label for="tags-multiple" class="form-label"></label>`, 1), Tags[FILENAME], [[23, 4], [30, 6]]);
+var root_3$2 = add_locations(from_html(`<input/>`), Tags[FILENAME], [[40, 4]]);
+var root_4$2 = add_locations(from_html(`<input/>`), Tags[FILENAME], [[56, 4]]);
+var root_5$2 = add_locations(from_html(`<input/>`), Tags[FILENAME], [[71, 4]]);
+var root_6$1 = add_locations(from_html(`<input/><label for="tags-can_add" class="form-label"></label>`, 1), Tags[FILENAME], [[85, 4], [92, 6]]);
+var root_1$4 = add_locations(from_html(`<!> <!> <!> <!> <!>`, 1), Tags[FILENAME], []);
+
+function Tags($$anchor, $$props) {
+	check_target(new.target);
+	push($$props, true);
+
+	var $$ownership_validator = create_ownership_validator($$props);
+	var _a;
+	var _b;
+	var _c;
+
+	let field = prop($$props, 'field', 15);
+		prop($$props, 'gather', 11, null);
+		let options = prop($$props, 'options', 15);
+
+	if (strict_equals(options().multiple, "0")) {
+		$$ownership_validator.mutation('options', ['options', 'multiple'], options(options().multiple = 0, true), 6, 4);
+	}
+
+	if (strict_equals(options().can_add, "0")) {
+		$$ownership_validator.mutation('options', ['options', 'can_add'], options(options().can_add = 0, true), 9, 4);
+	}
+
+	// changeStateMultiple was removed because unused
+	strict_equals(_a = options().min, null, false) && strict_equals(_a, void 0, false)
+		? _a
+		: $$ownership_validator.mutation('options', ['options', 'min'], options(options().min = "", true), 12, 53);
+
+	strict_equals(_b = options().max, null, false) && strict_equals(_b, void 0, false)
+		? _b
+		: $$ownership_validator.mutation('options', ['options', 'max'], options(options().max = "", true), 13, 53);
+
+	strict_equals(_c = options().initial_value, null, false) && strict_equals(_c, void 0, false)
+		? _c
+		: $$ownership_validator.mutation('options', ['options', 'initial_value'], options(options().initial_value = "", true), 14, 63);
+
+	var $$exports = { ...legacy_api() };
+
+	{
+		$$ownership_validator.binding('field', ContentFieldOptionGroup, field);
+		$$ownership_validator.binding('options', ContentFieldOptionGroup, options);
+
+		add_svelte_meta(
+			() => ContentFieldOptionGroup($$anchor, {
+				type: 'tags',
+
+				get id() {
+					return $$props.id;
+				},
+
+				get field() {
+					return field();
+				},
+
+				set field($$value) {
+					field($$value);
+				},
+
+				get options() {
+					return options();
+				},
+
+				set options($$value) {
+					options($$value);
+				},
+
+				children: wrap_snippet(Tags, ($$anchor, $$slotProps) => {
+					var fragment_1 = root_1$4();
+					var node = first_child(fragment_1);
+
+					add_svelte_meta(
+						() => ContentFieldOption(node, {
+							id: 'tags-multiple',
+							label: window.trans("Allow users to input multiple values?"),
+
+							children: wrap_snippet(Tags, ($$anchor, $$slotProps) => {
+								var fragment_2 = root_2$3();
+								var input = first_child(fragment_2);
+
+								attribute_effect(
+									input,
+									() => ({
+										...{ ref: "multiple" },
+										type: 'checkbox',
+										class: 'mt-switch form-control',
+										id: 'tags-multiple',
+										name: 'multiple'
+									}),
+									void 0,
+									void 0,
+									void 0,
+									void 0,
+									true
+								);
+
+								validate_binding('bind:checked={options.multiple}', [], options, () => 'multiple', 29, 6);
+
+								var label = sibling(input);
+
+								label.textContent = window.trans("Allow users to select multiple values?");
+
+								bind_checked(
+									input,
+									function get() {
+										return options().multiple;
+									},
+									function set($$value) {
+										$$ownership_validator.mutation('options', ['options', 'multiple'], options(options().multiple = $$value, true), 29, 20);
+									}
+								);
+
+								append($$anchor, fragment_2);
+							}),
+
+							$$slots: { default: true }
+						}),
+						'component',
+						Tags,
+						18,
+						2,
+						{ componentTag: 'ContentFieldOption' }
+					);
+
+					var node_1 = sibling(node, 2);
+
+					{
+						let $0 = user_derived(() => options().multiple ? true : false);
+
+						add_svelte_meta(
+							() => ContentFieldOption(node_1, {
+								id: 'tags-min',
+								label: window.trans("Minimum number of selections"),
+
+								get attrShow() {
+									return get$1($0);
+								},
+
+								children: wrap_snippet(Tags, ($$anchor, $$slotProps) => {
+									var input_1 = root_3$2();
+
+									attribute_effect(
+										input_1,
+										() => ({
+											...{ ref: "min" },
+											type: 'number',
+											name: 'min',
+											id: 'tags-min',
+											class: 'form-control w-25',
+											min: '0'
+										}),
+										void 0,
+										void 0,
+										void 0,
+										void 0,
+										true
+									);
+
+									validate_binding('bind:value={options.min}', [], options, () => 'min', 47, 6);
+
+									bind_value(
+										input_1,
+										function get() {
+											return options().min;
+										},
+										function set($$value) {
+											$$ownership_validator.mutation('options', ['options', 'min'], options(options().min = $$value, true), 47, 18);
+										}
+									);
+
+									append($$anchor, input_1);
+								}),
+
+								$$slots: { default: true }
+							}),
+							'component',
+							Tags,
+							35,
+							2,
+							{ componentTag: 'ContentFieldOption' }
+						);
+					}
+
+					var node_2 = sibling(node_1, 2);
+
+					{
+						let $0 = user_derived(() => options().multiple ? true : false);
+
+						add_svelte_meta(
+							() => ContentFieldOption(node_2, {
+								id: 'tags-max',
+								label: window.trans("Maximum number of selections"),
+
+								get attrShow() {
+									return get$1($0);
+								},
+
+								children: wrap_snippet(Tags, ($$anchor, $$slotProps) => {
+									var input_2 = root_4$2();
+
+									attribute_effect(
+										input_2,
+										() => ({
+											...{ ref: "max" },
+											type: 'number',
+											name: 'max',
+											id: 'tags-max',
+											class: 'form-control w-25',
+											min: '1'
+										}),
+										void 0,
+										void 0,
+										void 0,
+										void 0,
+										true
+									);
+
+									validate_binding('bind:value={options.max}', [], options, () => 'max', 63, 6);
+
+									bind_value(
+										input_2,
+										function get() {
+											return options().max;
+										},
+										function set($$value) {
+											$$ownership_validator.mutation('options', ['options', 'max'], options(options().max = $$value, true), 63, 18);
+										}
+									);
+
+									append($$anchor, input_2);
+								}),
+
+								$$slots: { default: true }
+							}),
+							'component',
+							Tags,
+							51,
+							2,
+							{ componentTag: 'ContentFieldOption' }
+						);
+					}
+
+					var node_3 = sibling(node_2, 2);
+
+					add_svelte_meta(
+						() => ContentFieldOption(node_3, {
+							id: 'tags-initial_value',
+							label: window.trans("Initial Value"),
+
+							children: wrap_snippet(Tags, ($$anchor, $$slotProps) => {
+								var input_3 = root_5$2();
+
+								attribute_effect(
+									input_3,
+									() => ({
+										...{ ref: "initial_value" },
+										type: 'text',
+										name: 'initial_value',
+										id: 'tags-initial_value',
+										class: 'form-control'
+									}),
+									void 0,
+									void 0,
+									void 0,
+									void 0,
+									true
+								);
+
+								validate_binding('bind:value={options.initial_value}', [], options, () => 'initial_value', 77, 6);
+
+								bind_value(
+									input_3,
+									function get() {
+										return options().initial_value;
+									},
+									function set($$value) {
+										$$ownership_validator.mutation('options', ['options', 'initial_value'], options(options().initial_value = $$value, true), 77, 18);
+									}
+								);
+
+								append($$anchor, input_3);
+							}),
+
+							$$slots: { default: true }
+						}),
+						'component',
+						Tags,
+						67,
+						2,
+						{ componentTag: 'ContentFieldOption' }
+					);
+
+					var node_4 = sibling(node_3, 2);
+
+					add_svelte_meta(
+						() => ContentFieldOption(node_4, {
+							id: 'tags-can_add',
+							label: window.trans("Allow users to create new tags?"),
+
+							children: wrap_snippet(Tags, ($$anchor, $$slotProps) => {
+								var fragment_3 = root_6$1();
+								var input_4 = first_child(fragment_3);
+
+								attribute_effect(
+									input_4,
+									() => ({
+										...{ ref: "can_add" },
+										type: 'checkbox',
+										class: 'mt-switch form-control',
+										id: 'tags-can_add',
+										name: 'can_add'
+									}),
+									void 0,
+									void 0,
+									void 0,
+									void 0,
+									true
+								);
+
+								validate_binding('bind:checked={options.can_add}', [], options, () => 'can_add', 91, 6);
+
+								var label_1 = sibling(input_4);
+
+								label_1.textContent = window.trans("Allow users to create new tags?");
+
+								bind_checked(
+									input_4,
+									function get() {
+										return options().can_add;
+									},
+									function set($$value) {
+										$$ownership_validator.mutation('options', ['options', 'can_add'], options(options().can_add = $$value, true), 91, 20);
+									}
+								);
+
+								append($$anchor, fragment_3);
+							}),
+
+							$$slots: { default: true }
+						}),
+						'component',
+						Tags,
+						81,
+						2,
+						{ componentTag: 'ContentFieldOption' }
+					);
+
+					append($$anchor, fragment_1);
+				}),
+
+				$$slots: { default: true }
+			}),
+			'component',
+			Tags,
+			17,
+			0,
+			{ componentTag: 'ContentFieldOptionGroup' }
+		);
+	}
+
+	return pop($$exports);
+}
+
+List[FILENAME] = 'src/contenttype/elements/List.svelte';
+
+function List($$anchor, $$props) {
+	check_target(new.target);
+	push($$props, true);
+
+	var $$ownership_validator = create_ownership_validator($$props);
+
+	let field = prop($$props, 'field', 15);
+		prop($$props, 'gather', 11, null);
+		let options = prop($$props, 'options', 15);
+
+	var $$exports = { ...legacy_api() };
+
+	{
+		$$ownership_validator.binding('field', ContentFieldOptionGroup, field);
+		$$ownership_validator.binding('options', ContentFieldOptionGroup, options);
+
+		add_svelte_meta(
+			() => ContentFieldOptionGroup($$anchor, {
+				type: 'list',
+
+				get id() {
+					return $$props.id;
+				},
+
+				get field() {
+					return field();
+				},
+
+				set field($$value) {
+					field($$value);
+				},
+
+				get options() {
+					return options();
+				},
+
+				set options($$value) {
+					options($$value);
+				}
+			}),
+			'component',
+			List,
+			5,
+			0,
+			{ componentTag: 'ContentFieldOptionGroup' }
+		);
+	}
+
+	return pop($$exports);
+}
+
+Tables[FILENAME] = 'src/contenttype/elements/Tables.svelte';
+
+var root_2$2 = add_locations(from_html(`<input/>`), Tables[FILENAME], [[20, 4]]);
+var root_3$1 = add_locations(from_html(`<input/>`), Tables[FILENAME], [[35, 4]]);
+var root_4$1 = add_locations(from_html(`<input/><label for="tables-can_increase_decrease_rows" class="form-label"></label>`, 1), Tables[FILENAME], [[50, 4], [57, 6]]);
+var root_5$1 = add_locations(from_html(`<input/><label for="tables-can_increase_decrease_cols" class="form-label"></label>`, 1), Tables[FILENAME], [[66, 4], [73, 6]]);
+var root_1$3 = add_locations(from_html(`<!> <!> <!> <!>`, 1), Tables[FILENAME], []);
+
+function Tables($$anchor, $$props) {
+	check_target(new.target);
+	push($$props, true);
+
+	var $$ownership_validator = create_ownership_validator($$props);
+	var _a;
+	var _b;
+
+	let field = prop($$props, 'field', 15);
+		prop($$props, 'gather', 11, null);
+		let options = prop($$props, 'options', 15);
+
+	if (strict_equals(options().increase_decrease_rows, "0")) {
+		$$ownership_validator.mutation('options', ['options', 'increase_decrease_rows'], options(options().increase_decrease_rows = 0, true), 6, 4);
+	}
+
+	if (strict_equals(options().increase_decrease_cols, "0")) {
+		$$ownership_validator.mutation('options', ['options', 'increase_decrease_cols'], options(options().increase_decrease_cols = 0, true), 9, 4);
+	}
+
+	strict_equals(_a = options().initial_rows, null, false) && strict_equals(_a, void 0, false)
+		? _a
+		: $$ownership_validator.mutation('options', ['options', 'initial_rows'], options(options().initial_rows = 1, true), 11, 62);
+
+	strict_equals(_b = options().initial_cols, null, false) && strict_equals(_b, void 0, false)
+		? _b
+		: $$ownership_validator.mutation('options', ['options', 'initial_cols'], options(options().initial_cols = 1, true), 12, 62);
+
+	var $$exports = { ...legacy_api() };
+
+	{
+		$$ownership_validator.binding('field', ContentFieldOptionGroup, field);
+		$$ownership_validator.binding('options', ContentFieldOptionGroup, options);
+
+		add_svelte_meta(
+			() => ContentFieldOptionGroup($$anchor, {
+				type: 'table',
+
+				get id() {
+					return $$props.id;
+				},
+
+				get field() {
+					return field();
+				},
+
+				set field($$value) {
+					field($$value);
+				},
+
+				get options() {
+					return options();
+				},
+
+				set options($$value) {
+					options($$value);
+				},
+
+				children: wrap_snippet(Tables, ($$anchor, $$slotProps) => {
+					var fragment_1 = root_1$3();
+					var node = first_child(fragment_1);
+
+					add_svelte_meta(
+						() => ContentFieldOption(node, {
+							id: 'tables-initial_rows',
+							label: window.trans("Initial Rows"),
+
+							children: wrap_snippet(Tables, ($$anchor, $$slotProps) => {
+								var input = root_2$2();
+
+								attribute_effect(
+									input,
+									() => ({
+										...{ ref: "initial_rows" },
+										type: 'number',
+										name: 'initial_rows',
+										id: 'tables-initial_rows',
+										class: 'form-control w-25',
+										min: '1'
+									}),
+									void 0,
+									void 0,
+									void 0,
+									void 0,
+									true
+								);
+
+								validate_binding('bind:value={options.initial_rows}', [], options, () => 'initial_rows', 27, 6);
+
+								bind_value(
+									input,
+									function get() {
+										return options().initial_rows;
+									},
+									function set($$value) {
+										$$ownership_validator.mutation('options', ['options', 'initial_rows'], options(options().initial_rows = $$value, true), 27, 18);
+									}
+								);
+
+								append($$anchor, input);
+							}),
+
+							$$slots: { default: true }
+						}),
+						'component',
+						Tables,
+						16,
+						2,
+						{ componentTag: 'ContentFieldOption' }
+					);
+
+					var node_1 = sibling(node, 2);
+
+					add_svelte_meta(
+						() => ContentFieldOption(node_1, {
+							id: 'tables-initial_cols',
+							label: window.trans("Initial Cols"),
+
+							children: wrap_snippet(Tables, ($$anchor, $$slotProps) => {
+								var input_1 = root_3$1();
+
+								attribute_effect(
+									input_1,
+									() => ({
+										...{ ref: "initial_cols" },
+										type: 'number',
+										name: 'initial_cols',
+										id: 'tables-initial_cols',
+										class: 'form-control w-25',
+										min: '1'
+									}),
+									void 0,
+									void 0,
+									void 0,
+									void 0,
+									true
+								);
+
+								validate_binding('bind:value={options.initial_cols}', [], options, () => 'initial_cols', 42, 6);
+
+								bind_value(
+									input_1,
+									function get() {
+										return options().initial_cols;
+									},
+									function set($$value) {
+										$$ownership_validator.mutation('options', ['options', 'initial_cols'], options(options().initial_cols = $$value, true), 42, 18);
+									}
+								);
+
+								append($$anchor, input_1);
+							}),
+
+							$$slots: { default: true }
+						}),
+						'component',
+						Tables,
+						31,
+						2,
+						{ componentTag: 'ContentFieldOption' }
+					);
+
+					var node_2 = sibling(node_1, 2);
+
+					add_svelte_meta(
+						() => ContentFieldOption(node_2, {
+							id: 'tables-can_increase_decrease_rows',
+							label: window.trans("Allow users to increase/decrease rows?"),
+
+							children: wrap_snippet(Tables, ($$anchor, $$slotProps) => {
+								var fragment_2 = root_4$1();
+								var input_2 = first_child(fragment_2);
+
+								attribute_effect(
+									input_2,
+									() => ({
+										...{ ref: "increase_decrease_rows" },
+										type: 'checkbox',
+										class: 'mt-switch form-control',
+										id: 'tables-can_increase_decrease_rows',
+										name: 'increase_decrease_rows'
+									}),
+									void 0,
+									void 0,
+									void 0,
+									void 0,
+									true
+								);
+
+								validate_binding('bind:checked={options.increase_decrease_rows}', [], options, () => 'increase_decrease_rows', 56, 6);
+
+								var label = sibling(input_2);
+
+								label.textContent = window.trans("Allow users to increase/decrease rows?");
+
+								bind_checked(
+									input_2,
+									function get() {
+										return options().increase_decrease_rows;
+									},
+									function set($$value) {
+										$$ownership_validator.mutation('options', ['options', 'increase_decrease_rows'], options(options().increase_decrease_rows = $$value, true), 56, 20);
+									}
+								);
+
+								append($$anchor, fragment_2);
+							}),
+
+							$$slots: { default: true }
+						}),
+						'component',
+						Tables,
+						46,
+						2,
+						{ componentTag: 'ContentFieldOption' }
+					);
+
+					var node_3 = sibling(node_2, 2);
+
+					add_svelte_meta(
+						() => ContentFieldOption(node_3, {
+							id: 'tables-can_increase_decrease_cols',
+							label: window.trans("Allow users to increase/decrease cols?"),
+
+							children: wrap_snippet(Tables, ($$anchor, $$slotProps) => {
+								var fragment_3 = root_5$1();
+								var input_3 = first_child(fragment_3);
+
+								attribute_effect(
+									input_3,
+									() => ({
+										...{ ref: "increase_decrease_cols" },
+										type: 'checkbox',
+										class: 'mt-switch form-control',
+										id: 'tables-can_increase_decrease_cols',
+										name: 'increase_decrease_cols'
+									}),
+									void 0,
+									void 0,
+									void 0,
+									void 0,
+									true
+								);
+
+								validate_binding('bind:checked={options.increase_decrease_cols}', [], options, () => 'increase_decrease_cols', 72, 6);
+
+								var label_1 = sibling(input_3);
+
+								label_1.textContent = window.trans("Allow users to increase/decrease cols?");
+
+								bind_checked(
+									input_3,
+									function get() {
+										return options().increase_decrease_cols;
+									},
+									function set($$value) {
+										$$ownership_validator.mutation('options', ['options', 'increase_decrease_cols'], options(options().increase_decrease_cols = $$value, true), 72, 20);
+									}
+								);
+
+								append($$anchor, fragment_3);
+							}),
+
+							$$slots: { default: true }
+						}),
+						'component',
+						Tables,
+						62,
+						2,
+						{ componentTag: 'ContentFieldOption' }
+					);
+
+					append($$anchor, fragment_1);
+				}),
+
+				$$slots: { default: true }
+			}),
+			'component',
+			Tables,
+			15,
+			0,
+			{ componentTag: 'ContentFieldOptionGroup' }
+		);
+	}
+
+	return pop($$exports);
+}
+
+TextLabel[FILENAME] = 'src/contenttype/elements/TextLabel.svelte';
+
+var root_2$1 = add_locations(from_html(`<textarea></textarea>`), TextLabel[FILENAME], [[24, 4]]);
+
+function TextLabel($$anchor, $$props) {
+	check_target(new.target);
+	push($$props, true);
+
+	var $$ownership_validator = create_ownership_validator($$props);
+	var _a;
+
+	let field = prop($$props, 'field', 15);
+		prop($$props, 'gather', 11, null);
+		let options = prop($$props, 'options', 15);
+
+	strict_equals(_a = options().text, null, false) && strict_equals(_a, void 0, false)
+		? _a
+		: $$ownership_validator.mutation('options', ['options', 'text'], options(options().text = "", true), 6, 54);
+
+	onMount(() => {
+		// description, required, display field is hidden.
+		document.getElementById("text-label-description-field-" + $$props.id).style.display = "none";
+
+		document.getElementById("text-label-required-field-" + $$props.id).style.display = "none";
+		document.getElementById("text-label-display-field-" + $$props.id).style.display = "none";
+	});
+
+	var $$exports = { ...legacy_api() };
+
+	{
+		$$ownership_validator.binding('field', ContentFieldOptionGroup, field);
+		$$ownership_validator.binding('options', ContentFieldOptionGroup, options);
+
+		add_svelte_meta(
+			() => ContentFieldOptionGroup($$anchor, {
+				type: 'text-label',
+
+				get id() {
+					return $$props.id;
+				},
+
+				get field() {
+					return field();
+				},
+
+				set field($$value) {
+					field($$value);
+				},
+
+				get options() {
+					return options();
+				},
+
+				set options($$value) {
+					options($$value);
+				},
+
+				children: wrap_snippet(TextLabel, ($$anchor, $$slotProps) => {
+					add_svelte_meta(
+						() => ContentFieldOption($$anchor, {
+							id: 'text_label-text',
+							label: window.trans("__TEXT_LABEL_TEXT"),
+							hint: window.trans("This block is only visible in the administration screen for comments."),
+							showHint: 1,
+
+							children: wrap_snippet(TextLabel, ($$anchor, $$slotProps) => {
+								var textarea = root_2$1();
+
+								remove_textarea_child(textarea);
+
+								attribute_effect(textarea, () => ({
+									...{ ref: "text" },
+									name: 'text',
+									id: 'text_label-text',
+									class: 'form-control'
+								}));
+
+								validate_binding('bind:value={options.text}', [], options, () => 'text', 29, 6);
+
+								bind_value(
+									textarea,
+									function get() {
+										return options().text;
+									},
+									function set($$value) {
+										$$ownership_validator.mutation('options', ['options', 'text'], options(options().text = $$value, true), 29, 18);
+									}
+								);
+
+								append($$anchor, textarea);
+							}),
+
+							$$slots: { default: true }
+						}),
+						'component',
+						TextLabel,
+						16,
+						2,
+						{ componentTag: 'ContentFieldOption' }
+					);
+				}),
+
+				$$slots: { default: true }
+			}),
+			'component',
+			TextLabel,
+			15,
+			0,
+			{ componentTag: 'ContentFieldOptionGroup' }
+		);
+	}
+
+	return pop($$exports);
+}
+
+class ContentFieldTypes {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  static getCoreType(type) {
+    return !this.customTypes[type] && this.coreTypes[type];
+  }
+  static getCustomType(type) {
+    return this.customTypes[type];
+  }
+  static registerCustomType(type, mountFunction) {
+    this.customTypes[type] = mountFunction;
+  }
+}
+ContentFieldTypes.coreTypes = {
+  "content-type": ContentType,
+  "single-line-text": SingleLineText,
+  "multi-line-text": MultiLineText,
+  number: Number$1,
+  url: Url,
+  "date-and-time": DateTime,
+  "date-only": Date$1,
+  "time-only": Time,
+  "select-box": SelectBox,
+  "radio-button": RadioButton,
+  checkboxes: Checkboxes,
+  asset: Asset,
+  "asset-audio": AssetAudio,
+  "asset-video": AssetVideo,
+  "asset-image": AssetImage,
+  "embedded-text": EmbeddedText,
+  categories: Categories,
+  tags: Tags,
+  list: List,
+  tables: Tables,
+  "text-label": TextLabel
+};
+ContentFieldTypes.customTypes = {};
+
+Custom[FILENAME] = 'src/contenttype/elements/Custom.svelte';
+
+var root$2 = add_locations(from_html(`<div class="mt-custom-contentfield"></div>`), Custom[FILENAME], [[36, 0]]);
+
+function Custom($$anchor, $$props) {
+	check_target(new.target);
+	push($$props, true);
+
+	const $fieldsStore = () => (
+		validate_store($$props.fieldsStore),
+		store_get($$props.fieldsStore, '$fieldsStore', $$stores)
+	);
+
+	const [$$stores, $$cleanup] = setup_stores();
+	let gather = prop($$props, 'gather', 15);
+	let customContentFieldObject = tag(state(null), 'customContentFieldObject');
+	let target = tag(state(null), 'target');
+	let type = tag(state(null), 'type');
+	let field = tag(user_derived(() => $fieldsStore()[$$props.fieldIndex]), 'field');
+	let customContentFieldMountFunction = tag(user_derived(() => ContentFieldTypes.getCustomType(get$1(field).type)), 'customContentFieldMountFunction');
+
+	user_effect(() => {
+		if (strict_equals(get$1(field).type, get$1(type), false) && get$1(customContentFieldObject)) {
+			get$1(customContentFieldObject).destroy();
+			set(customContentFieldObject, null);
+			gather(null);
+		}
+
+		if (!get$1(customContentFieldObject) && get$1(customContentFieldMountFunction) && get$1(target)) {
+			set(
+				customContentFieldObject,
+				get$1(customContentFieldMountFunction)(
+					{
+						config: $$props.config,
+						fieldIndex: $$props.fieldIndex,
+						fieldsStore: $$props.fieldsStore,
+						optionsHtmlParams: $$props.optionsHtmlParams
+					},
+					get$1(target)
+				),
+				true
+			);
+
+			gather(strict_equals(get$1(customContentFieldObject), null) || strict_equals(get$1(customContentFieldObject), void 0) ? void 0 : get$1(customContentFieldObject).gather);
+		}
+
+		set(type, get$1(field).type, true);
+
+		return () => {
+			if (get$1(customContentFieldObject)) {
+				gather(null);
+				get$1(customContentFieldObject).destroy();
+				set(customContentFieldObject, null);
+			}
+
+			set(type, null);
+		};
+	});
+
+	var $$exports = { ...legacy_api() };
+	var div = root$2();
+
+	bind_this(div, ($$value) => set(target, $$value), () => get$1(target));
+	template_effect(() => set_attribute(div, 'id', `custom-content-field-block-${get$1(field).id ?? ''}`));
+	append($$anchor, div);
+
+	var $$pop = pop($$exports);
+
+	$$cleanup();
+
+	return $$pop;
+}
+
+SVG[FILENAME] = 'src/svg/elements/SVG.svelte';
+
+var root_1$2 = add_locations(from_svg(`<title> </title>`), SVG[FILENAME], [[10, 4]]);
+var root$1 = add_locations(from_svg(`<svg role="img"><!><use></use></svg>`), SVG[FILENAME], [[8, 0, [[12, 2]]]]);
+
+function SVG($$anchor, $$props) {
+	check_target(new.target);
+	push($$props, false);
+
+	let className = prop($$props, 'class', 8);
+	let href = prop($$props, 'href', 8);
+	let title = prop($$props, 'title', 8);
+	let style = prop($$props, 'style', 8, undefined);
+	var $$exports = { ...legacy_api() };
+	var svg = root$1();
+	var node = child(svg);
+
+	{
+		var consequent = ($$anchor) => {
+			var title_1 = root_1$2();
+			var text = child(title_1);
+			template_effect(() => set_text(text, title()));
+			append($$anchor, title_1);
+		};
+
+		add_svelte_meta(
+			() => if_block(node, ($$render) => {
+				if (title()) $$render(consequent);
+			}),
+			'if',
+			SVG,
+			9,
+			2
+		);
+	}
+
+	var use = sibling(node);
+
+	template_effect(() => {
+		set_class(svg, 0, clsx(className()));
+		set_style(svg, style());
+		set_xlink_attribute(use, 'xlink:href', href());
+	});
+
+	append($$anchor, svg);
+
+	return pop($$exports);
+}
+
+ContentField[FILENAME] = 'src/contenttype/elements/ContentField.svelte';
+
+var root_1$1 = add_locations(from_html(`<span> </span>`), ContentField[FILENAME], [[81, 22]]);
+
+var root = add_locations(from_html(`<div class="mt-collapse__container"><div class="col-auto p-0"><!></div> <div class="col text-wrap p-0"><!> <!></div> <div class="col-auto p-0"><a href="javascript:void(0)" class="d-inline-block duplicate-content-field"><!></a> <a href="javascript:void(0)" class="d-inline-block delete-content-field"><!></a> <a data-bs-toggle="collapse" class="d-inline-block"><!></a></div></div> <div><!> <!></div>`, 1), ContentField[FILENAME], [
+	[
+		66,
+		0,
+		[[67, 2], [74, 2], [83, 2, [[85, 4], [96, 4], [106, 4]]]]
+	],
+
+	[120, 0]
+]);
+
+function ContentField($$anchor, $$props) {
+	check_target(new.target);
+	push($$props, true);
+
+	var $$ownership_validator = create_ownership_validator($$props);
+
+	let field = prop($$props, 'field', 7),
+		fields = prop($$props, 'fields', 7),
+		parent = prop($$props, 'parent', 7),
+		gather = prop($$props, 'gather', 7);
+
+	let id = tag(user_derived(() => `field-options-${field().id}`), 'id');
+
+	user_effect(() => {
+		if (strict_equals(field().isNew, null)) {
+			$$ownership_validator.mutation('field', ['field', 'isNew'], field().isNew = false, 9, 8);
+		}
+
+		if (strict_equals(field().isShow, null)) {
+			$$ownership_validator.mutation('field', ['field', 'isShow'], field().isShow = "", 12, 8);
+		}
+
+		if (strict_equals(field().realId, null)) {
+			$$ownership_validator.mutation('field', ['field', 'realId'], field().realId = "", 15, 8);
+		}
+
+		if (strict_equals(field().options, null)) {
+			$$ownership_validator.mutation('field', ['field', 'options'], field().options = {}, 18, 8);
+		}
+	});
+
+	let gatherCore;
+	let gatherCustom;
+
+	user_effect(() => {
+		if (ContentFieldTypes.getCoreType(field().type)) {
+			gather(gatherCore);
+		} else {
+			gather(gatherCustom);
+		}
+	});
+
+	const deleteField = () => {
+		const label = field().label ? field().label : window.trans("No Name");
+
+		if (!confirm(window.trans("Do you want to delete [_1]([_2])?", label, field().typeLabel))) {
+			return;
+		}
+
+		fields(fields().slice(0, $$props.fieldIndex).concat(fields().slice($$props.fieldIndex + 1)));
+
+		// update is not needed in Svelte
+		const target = document.getElementsByClassName("mt-draggable__area")[0];
+
+		recalcHeight(target);
+	};
+
+	const duplicateField = () => {
+		const newItem = jQuery.extend({}, field());
+
+		newItem.options = $$props.gatheringData(parent(), $$props.fieldIndex);
+		newItem.id = Math.random().toString(36).slice(-8);
+
+		let label = field().label;
+
+		if (!label) {
+			label = jQuery("#content-field-block-" + field().id).find('[name="label"]').val();
+
+			if (strict_equals(label, "")) {
+				label = window.trans("No Name");
+			}
+		}
+
+		newItem.label = window.trans("Duplicate") + "-" + label;
+		newItem.options.label = newItem.label;
+		newItem.order = fields().length + 1;
+		newItem.isNew = true;
+		newItem.isShow = "show";
+		fields([...fields(), newItem]);
+
+		const target = document.getElementsByClassName("mt-draggable__area")[0];
+
+		recalcHeight(target);
+
+		// update is not needed in Svelte
+	};
+
+	var $$exports = { ...legacy_api() };
+	var fragment = root();
+	var div = first_child(fragment);
+	var div_1 = child(div);
+	var node = child(div_1);
+
+	add_svelte_meta(
+		() => SVG(node, {
+			title: window.trans("Move"),
+			class: 'mt-icon',
+			href: `${window.StaticURI ?? ''}/images/sprite.svg#ic_move`
+		}),
+		'component',
+		ContentField,
+		68,
+		4,
+		{ componentTag: 'SVG' }
+	);
+
+	var div_2 = sibling(div_1, 2);
+	var node_1 = child(div_2);
+
+	add_svelte_meta(
+		() => SVG(node_1, {
+			title: window.trans("ContentField"),
+			class: 'mt-icon--secondary',
+			href: `${window.StaticURI ?? ''}images/sprite.svg#ic_contentstype`
+		}),
+		'component',
+		ContentField,
+		75,
+		4,
+		{ componentTag: 'SVG' }
+	);
+
+	var text = sibling(node_1);
+	var node_2 = sibling(text);
+
+	{
+		var consequent = ($$anchor) => {
+			var span = root_1$1();
+			var text_1 = child(span);
+			template_effect(() => set_text(text_1, `(ID: ${field().realId ?? ''})`));
+			append($$anchor, span);
+		};
+
+		add_svelte_meta(
+			() => if_block(node_2, ($$render) => {
+				if (field().realId) $$render(consequent);
+			}),
+			'if',
+			ContentField,
+			81,
+			4
+		);
+	}
+
+	var div_3 = sibling(div_2, 2);
+	var a = child(div_3);
+
+	a.__click = duplicateField;
+
+	var node_3 = child(a);
+
+	add_svelte_meta(
+		() => SVG(node_3, {
+			title: window.trans("Duplicate"),
+			class: 'mt-icon--secondary',
+			href: `${window.StaticURI ?? ''}images/sprite.svg#ic_duplicate`
+		}),
+		'component',
+		ContentField,
+		89,
+		7,
+		{ componentTag: 'SVG' }
+	);
+
+	var a_1 = sibling(a, 2);
+
+	a_1.__click = deleteField;
+
+	var node_4 = child(a_1);
+
+	add_svelte_meta(
+		() => SVG(node_4, {
+			title: window.trans("Delete"),
+			class: 'mt-icon--secondary',
+			href: `${window.StaticURI ?? ''}images/sprite.svg#ic_trash`
+		}),
+		'component',
+		ContentField,
+		100,
+		7,
+		{ componentTag: 'SVG' }
+	);
+
+	var a_2 = sibling(a_1, 2);
+	var node_5 = child(a_2);
+
+	add_svelte_meta(
+		() => SVG(node_5, {
+			title: window.trans("Edit"),
+			class: 'mt-icon--secondary',
+			href: `${window.StaticURI ?? ''}images/sprite.svg#ic_collapse`
+		}),
+		'component',
+		ContentField,
+		112,
+		7,
+		{ componentTag: 'SVG' }
+	);
+
+	var div_4 = sibling(div, 2);
+
+	attribute_effect(div_4, () => ({
+		'data-is': field().type,
+		class: 'collapse mt-collapse__content',
+		id: get$1(id),
+		...{ fieldid: field().id, isnew: field().isNew },
+		[CLASS]: { show: strict_equals(field().isShow, "show") }
+	}));
+
+	var node_6 = child(div_4);
+
+	validate_binding('bind:options={field.options}', [], field, () => 'options');
+
+	add_svelte_meta(
+		() => component(node_6, () => ContentFieldTypes.getCoreType(field().type), ($$anchor, $$component) => {
+			$$ownership_validator.binding('field', $$component, field);
+			$$ownership_validator.binding('field', $$component, () => field().options);
+
+			$$component($$anchor, {
+				get config() {
+					return $$props.config;
+				},
+
+				get id() {
+					return get$1(id);
+				},
+
+				get optionsHtmlParams() {
+					return $$props.optionsHtmlParams;
+				},
+
+				get field() {
+					return field();
+				},
+
+				set field($$value) {
+					field($$value);
+				},
+
+				get gather() {
+					return gatherCore;
+				},
+
+				set gather($$value) {
+					gatherCore = $$value;
+				},
+
+				get options() {
+					return field().options;
+				},
+
+				set options($$value) {
+					$$ownership_validator.mutation('field', ['field', 'options'], field().options = $$value, 134, 18);
+				}
+			});
+		}),
+		'component',
+		ContentField,
+		128,
+		2,
+		{ componentTag: 'svelte:component' }
+	);
+
+	var node_7 = sibling(node_6, 2);
+
+	add_svelte_meta(
+		() => Custom(node_7, {
+			get config() {
+				return $$props.config;
+			},
+
+			get fieldIndex() {
+				return $$props.fieldIndex;
+			},
+
+			get fieldsStore() {
+				return $$props.fieldsStore;
+			},
+
+			get optionsHtmlParams() {
+				return $$props.optionsHtmlParams;
+			},
+
+			get gather() {
+				return gatherCustom;
+			},
+
+			set gather($$value) {
+				gatherCustom = $$value;
+			}
+		}),
+		'component',
+		ContentField,
+		137,
+		2,
+		{ componentTag: 'Custom' }
+	);
+	bind_this(div_4, ($$value) => parent($$value), () => parent());
+
+	template_effect(() => {
+		set_text(text, ` ${field().label ?? "" ?? ''} (${field().typeLabel ?? ''}) `);
+		set_attribute(a_2, 'href', `#field-options-${field().id ?? ''}`);
+		set_attribute(a_2, 'aria-expanded', strict_equals(field().isShow, "show") ? "true" : "false");
+		set_attribute(a_2, 'aria-controls', `field-options-${field().id ?? ''}`);
+	});
+
+	append($$anchor, fragment);
+
+	return pop($$exports);
+}
+
+delegate(['click']);
+
+ContentFields[FILENAME] = 'src/contenttype/elements/ContentFields.svelte';
+
+var root_3 = add_locations(from_html(`<option> </option>`), ContentFields[FILENAME], [[511, 26]]);
+
+var root_2 = add_locations(from_html(`<div id="name-field" class="form-group"><h3> <button type="button" class="btn btn-link" data-bs-toggle="modal" data-bs-target="#editDetail"></button></h3> <div id="editDetail" class="modal" data-role="dialog" aria-labelledby="editDetail" aria-hidden="true"><div class="modal-dialog modal-lg" data-role="document"><div class="modal-content"><div class="modal-header"><h4 class="modal-title"></h4> <button type="button" class="close btn-close" data-bs-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button></div> <div class="modal-body"><div class="col"><div id="name-field" class="form-group"><label for="name" class="form-control-label"> <span class="badge badge-danger"></span></label> <input type="text" name="name" id="name" class="form-control html5-form" required/></div></div> <div class="col"><div id="description-field" class="form-group"><label for="description" class="form-control-label"></label> <textarea name="description" id="description" class="form-control"></textarea></div></div> <div class="col"><div id="label-field" class="form-group"><label for="label_field" class="form-control-label"></label> <select id="label_field" name="label_field" class="custom-select form-control html5-form form-select"><option></option><!></select></div></div> <div class="col"><div id="unique_id-field" class="form-group"><label for="unique_id" class="form-control-label"></label> <input type="text" class="form-control-plaintext w-50" id="unieuq_id" readonly=""/></div></div> <div class="col"><div id="user_disp_option-field" class="form-group"><label for="user_disp_option"></label> <input type="checkbox" class="mt-switch form-control" id="user_disp_option" name="user_disp_option"/> <label for="user_disp_option" class="last-child"></label></div></div></div> <div class="modal-footer"><button type="button" class="btn btn-default" data-bs-dismiss="modal"></button></div></div></div></div></div>`), ContentFields[FILENAME], [
+	[
+		431,
+		8,
+
+		[
+			[432, 10, [[434, 12]]],
+
+			[
+				441,
+				10,
+
+				[
+					[
+						448,
+						12,
+
+						[
+							[
+								449,
+								14,
+
+								[
+									[450, 16, [[451, 18], [452, 18, [[458, 20]]]]],
+
+									[
+										461,
+										16,
+
+										[
+											[462, 18, [[463, 20, [[464, 22, [[466, 24]]], [470, 22]]]]],
+											[481, 18, [[482, 20, [[483, 22], [486, 22]]]]],
+											[493, 18, [[494, 20, [[495, 22], [499, 22, [[505, 24]]]]]]],
+											[518, 18, [[519, 20, [[520, 22], [523, 22]]]]],
+											[532, 18, [[533, 20, [[534, 22], [541, 22], [548, 22]]]]]
+										]
+									],
+
+									[556, 16, [[557, 18]]]
+								]
+							]
+						]
+					]
+				]
+			]
+		]
+	]
+]);
+
+var root_4 = add_locations(from_html(`<div id="name-field" class="form-group"><label for="name" class="form-control-label"> <span class="badge badge-danger"></span></label> <input type="text" name="name" id="name" class="form-control html5-form" required/></div>`), ContentFields[FILENAME], [[568, 8, [[569, 10, [[571, 12]]], [574, 10]]]]);
+var root_5 = add_locations(from_html(`<div class="mt-draggable__empty"><img width="240" height="120"/> <p></p></div>`), ContentFields[FILENAME], [[618, 8, [[619, 10], [625, 10]]]]);
+var root_6 = add_locations(from_html(`<div class="mt-contentfield" draggable="true" aria-grabbed="false" data-is="content-field" style="width: 100%;"><!></div>`), ContentFields[FILENAME], [[630, 8]]);
+
+var root_1 = add_locations(from_html(`<form name="content-type-form" method="POST"><input type="hidden" name="__mode" value="save"/> <input type="hidden" name="blog_id"/> <input type="hidden" name="magic_token"/> <input type="hidden" name="return_args"/> <input type="hidden" name="_type" value="content_type"/> <input type="hidden" name="id"/> <div class="row"><div class="col"><!></div></div></form> <form><fieldset id="content-fields" class="form-group"><legend class="h3"></legend> <div class="mt-collapse__all"><a data-bs-toggle="collapse" href="" class="d-inline-block"> <!></a></div> <div class="mt-draggable__area" style="height:400px;"><!> <!></div> <div class="mt-collapse__all"><a data-bs-toggle="collapse" href=".mt-collapse__content" class="d-inline-block"> <!></a></div></fieldset></form> <button type="button" class="btn btn-primary"></button>`, 1), ContentFields[FILENAME], [
+	[
+		419,
+		0,
+
+		[
+			[420, 2],
+			[421, 2],
+			[422, 2],
+			[423, 2],
+			[424, 2],
+			[425, 2],
+			[428, 2, [[429, 4]]]
+		]
+	],
+
+	[
+		589,
+		0,
+
+		[
+			[
+				590,
+				2,
+
+				[
+					[591, 4],
+					[592, 4, [[594, 6]]],
+					[610, 4],
+					[657, 4, [[658, 6]]]
+				]
+			]
+		]
+	],
+
+	[675, 0]
+]);
+
+function ContentFields($$anchor, $$props) {
+	check_target(new.target);
+	push($$props, true);
+
+	var $$ownership_validator = create_ownership_validator($$props);
+
+	const $fieldsStore = () => (
+		validate_store($$props.fieldsStore),
+		store_get($$props.fieldsStore, '$fieldsStore', $$stores)
+	);
+
+	const [$$stores, $$cleanup] = setup_stores();
+	let opts = prop($$props, 'opts', 7);
+	let isEmpty = tag_proxy(proxy($fieldsStore().length > 0 ? false : true), 'isEmpty');
+	let data = "";
+	let droppable = false;
+	const observer = opts().observer;
+	let dragged = null;
+	let draggedItem = null;
+	const placeholder = document.createElement("div");
+
+	placeholder.className = "placeholder";
+
+	let dragoverState = false;
+	let labelFields = [];
+	let labelField = opts().labelField;
+	let isExpanded = false;
+	const gathers = {};
+	const tags = [];
+
+	user_effect(() => {
+		const select = $$props.root.querySelector("#label_field");
+
+		if (!select) return;
+
+		jQuery(select).find("option").each(function (index, option) {
+			if (option.attributes.getNamedItem("selected")) {
+				select.selectedIndex = index;
+
+				return false;
+			}
+		});
+	});
+
+	// Drag start from content field list
+	observer.on("mtDragStart", function () {
+		droppable = true;
+	});
+
+	// Drag end from content field list
+	observer.on("mtDragEnd", function () {
+		droppable = false;
+		onDragEnd();
+	});
+
+	// Show detail modal
+	jQuery(document).on("show.bs.modal", "#editDetail", function () {
+		rebuildLabelFields();
+
+		// update is not needed in Svelte
+	});
+
+	// Hide detail modal
+	jQuery(document).on("hide.bs.modal", "#editDetail", function () {
+		var _a;
+
+		/* @ts-expect-error : mtValidate is not defined */
+		if (jQuery("#name-field > input").mtValidate("simple")) {
+			$$ownership_validator.mutation('opts', ['opts', 'name'], opts().name = (strict_equals(_a = jQuery("#name-field > input").val(), null) || strict_equals(_a, void 0) ? void 0 : _a.toString()) || "", 51, 8);
+			window.setDirty(true);
+
+			// update is not needed in Svelte
+		} else {
+			return false;
+		}
+	});
+
+	// Shown collaped block
+	jQuery(document).on("shown.bs.collapse", ".mt-collapse__content", function () {
+		const target = document.getElementsByClassName("mt-draggable__area")[0];
+
+		recalcHeight(target);
+		updateFieldsIsShowAll(); // need to update in Svelte
+		updateToggleAll();
+	});
+
+	// Hide collaped block
+	jQuery(document).on("hidden.bs.collapse", ".mt-collapse__content", function () {
+		const target = document.getElementsByClassName("mt-draggable__area")[0];
+
+		recalcHeight(target);
+		updateFieldsIsShowAll(); // need to update in Svelte
+		updateToggleAll();
+	});
+
+	// Cannot drag while focusing on input / textarea
+	jQuery(document).on("focus", ".mt-draggable__area input, .mt-draggable__area textarea", function () {
+		jQuery(this).closest(".mt-contentfield").attr("draggable", "false");
+	});
+
+	// Set draggable back to true while not focusing on input / textarea
+	jQuery(document).on("blur", ".mt-draggable__area input, .mt-draggable__area textarea", function () {
+		jQuery(this).closest(".mt-contentfield").attr("draggable", "true");
+	});
+
+	const onDragOver = (e) => {
+		// Allowed only for Content Field and Content Field Type.
+		if (droppable) {
+			const currentTarget = e.currentTarget;
+			const target = e.target;
+
+			if (strict_equals(target.className, "mt-draggable__area", false) && strict_equals(target.className, "mt-draggable", false) && strict_equals(target.className, "mt-contentfield", false)) {
+				e.preventDefault();
+
+				return;
+			}
+
+			// Highlight droppable area
+			if (!dragoverState) {
+				// replace with e.currentTarget in Svelte
+				currentTarget.classList.add("mt-draggable__area--dragover");
+
+				dragoverState = true;
+			}
+
+			if (dragged) {
+				if (strict_equals(target.className, "mt-contentfield")) {
+					// Inside the dragOver method
+					// comment out because unused
+					// self.over = e.target;
+					const targetRect = target.getBoundingClientRect();
+
+					const parent = target.parentNode;
+
+					if ((e.clientY - targetRect.top) / targetRect.height > 0.5) {
+						parent.insertBefore(placeholder, target.nextElementSibling);
+					} else {
+						parent.insertBefore(placeholder, target);
+					}
+				}
+
+				if (strict_equals(target.className, "mt-draggable__area")) {
+					const fieldElements = target.getElementsByClassName("mt-contentfield");
+
+					if (strict_equals(fieldElements.length, 0) || strict_equals(fieldElements.length, 1) && strict_equals(fieldElements[0], dragged)) {
+						target.appendChild(placeholder);
+					}
+				}
+			} else {
+				// Dragged from content field types
+				// replace with e.currentTarget in Svelte
+				currentTarget.appendChild(placeholder);
+			}
+
+			e.preventDefault();
+		}
+	};
+
+	const onDrop = (e) => {
+		var _a;
+		const currentTarget = e.currentTarget;
+
+		if (dragged) {
+			let pos = 0;
+			let children = null;
+
+			if (placeholder.parentNode) {
+				children = placeholder.parentNode.children;
+			}
+
+			if (!children) {
+				currentTarget.classList.remove("mt-draggable__area--dragover");
+				e.preventDefault();
+
+				return;
+			}
+
+			for (let i = 0; i < children.length; i++) {
+				if (strict_equals(children[i], placeholder)) break;
+
+				if (strict_equals(children[i], dragged, false) && children[i].classList.contains("mt-contentfield")) {
+					pos++;
+				}
+			}
+
+			if (draggedItem) {
+				_moveField(draggedItem, pos);
+			}
+
+			window.setDirty(true);
+
+			// update is not needed in Svelte
+		} else {
+			// Drag from field list
+			const fieldType = (strict_equals(_a = e.dataTransfer, null) || strict_equals(_a, void 0) ? void 0 : _a.getData("text")) || "";
+
+			const field = jQuery("[data-field-type='" + fieldType + "']");
+			const fieldTypeLabel = field.data("field-label");
+			const canDataLabel = field.data("can-data-label");
+			const newId = Math.random().toString(36).slice(-8);
+
+			const newField = {
+				type: fieldType,
+				typeLabel: fieldTypeLabel,
+				id: newId,
+				isNew: true,
+				isShow: "show",
+				canDataLabel,
+				options: {} // add in Svelte
+			};
+
+			$$props.fieldsStore.update((fields) => [...fields, newField]);
+			window.setDirty(true);
+
+			// update is not needed in Svelte
+			recalcHeight(document.getElementsByClassName("mt-draggable__area")[0]);
+		}
+
+		rebuildLabelFields();
+		currentTarget.classList.remove("mt-draggable__area--dragover");
+		e.preventDefault();
+	};
+
+	const onDragLeave = (e) => {
+		if (dragoverState) {
+			// replace with e.currentTarget in Svelte
+			e.currentTarget.classList.remove("mt-draggable__area--dragover");
+
+			dragoverState = false;
+		}
+	};
+
+	const onDragStart = (e, f) => {
+		dragged = e.target;
+		draggedItem = f;
+		e.dataTransfer.setData("text", f.id || "");
+		droppable = true;
+	};
+
+	const onDragEnd = () => {
+		if (placeholder.parentNode) {
+			placeholder.parentNode.removeChild(placeholder);
+		}
+
+		droppable = false;
+		dragged = null;
+		draggedItem = null;
+		dragoverState = false;
+
+		// update is not needed in Svelte
+	};
+
+	const stopSubmitting = (e) => {
+		// e.which is deprecate
+		if (strict_equals(e.key, "Enter")) {
+			e.preventDefault();
+
+			return false;
+		}
+
+		return true;
+	};
+
+	const canSubmit = () => {
+		if (strict_equals($fieldsStore().length, 0)) {
+			return true;
+		}
+
+		const invalidFields = $fieldsStore().filter(function (field) {
+			return opts().invalid_types[field.type];
+		});
+
+		return strict_equals(invalidFields.length, 0) ? true : false;
+	};
+
+	const submit = () => {
+		if (!canSubmit()) {
+			return;
+		}
+
+		if (!_validateFields()) {
+			return;
+		}
+
+		rebuildLabelFields();
+		window.setDirty(false);
+
+		const fieldOptions = [];
+
+		if ($fieldsStore()) {
+			for (let i = 0; i < $fieldsStore().length; i++) {
+				const c = tags[i];
+				const options = gatheringData(c, i);
+				const newData = {};
+
+				newData.type = $fieldsStore()[i].type;
+				newData.options = options;
+
+				if (!$fieldsStore()[i].isNew && options["id"].match(/^\d+$/)) {
+					newData.id = options["id"];
+				}
+
+				const innerField = $fieldsStore().filter(function (v) {
+					return strict_equals(v.id, newData.id);
+				});
+
+				if (innerField.length && innerField[0].order) {
+					newData.order = innerField[0].order;
+				} else {
+					newData.order = i + 1;
+				}
+
+				fieldOptions.push(newData);
+			}
+
+			data = JSON.stringify(fieldOptions);
+		} else {
+			data = "";
+		}
+
+		// bind:value={data} does not work
+		addInputData();
+
+		// update is not needed in Svelte
+		document.forms["content-type-form"].submit();
+	};
+
+	// recalcHeight was moved to Utils.ts
+	const rebuildLabelFields = () => {
+		var _a;
+		const newLabelFields = [];
+
+		for (let i = 0; i < $fieldsStore().length; i++) {
+			const required = jQuery("#content-field-block-" + $fieldsStore()[i].id).find('[name="required"]').prop("checked");
+
+			if (required && strict_equals($fieldsStore()[i].canDataLabel, 1)) {
+				let label = $fieldsStore()[i].label;
+				let id = $fieldsStore()[i].unique_id;
+
+				if (!label) {
+					label = (strict_equals(_a = jQuery("#content-field-block-" + $fieldsStore()[i].id).find('[name="label"]').val(), null) || strict_equals(_a, void 0) ? void 0 : _a.toString()) || "";
+
+					if (strict_equals(label, "")) {
+						label = window.trans("No Name");
+					}
+				}
+
+				if (!id) {
+					// new field
+					id = "id:" + $fieldsStore()[i].id;
+				}
+
+				newLabelFields.push({ value: id, label });
+			}
+		}
+
+		labelFields = newLabelFields;
+
+		// update is not needed in Svelte
+	};
+
+	// changeLabelFields was removed because unused
+	const toggleAll = () => {
+		isExpanded = !isExpanded;
+
+		const newIsShow = isExpanded ? "show" : "";
+
+		$$props.fieldsStore.update((fields) => fields.map((field) => {
+			field.isShow = newIsShow;
+
+			return field;
+		}));
+	};
+
+	const updateToggleAll = () => {
+		const collapseEls = document.querySelectorAll(".mt-collapse__content");
+		let isAllExpanded = true;
+
+		collapseEls.forEach((collapseEl) => {
+			if (collapseEl.classList.contains("show")) {
+				isAllExpanded = true;
+			} else {
+				isAllExpanded = false;
+			}
+		});
+
+		isExpanded = isAllExpanded ? true : false;
+	};
+
+	const _moveField = (item, pos) => {
+		$$props.fieldsStore.update((fields) => {
+			for (let i = 0; i < fields.length; i++) {
+				let field = fields[i];
+
+				if (strict_equals(field.id, item.id)) {
+					fields.splice(i, 1);
+
+					break;
+				}
+			}
+
+			fields.splice(pos, 0, item);
+
+			for (let i = 0; i < fields.length; i++) {
+				fields[i].order = i + 1;
+			}
+
+			return fields;
+		});
+	};
+
+	const _validateFields = () => {
+		/* @ts-expect-error : mtValidate is not defined */
+		const requiredFieldsAreValid = jQuery(".html5-form").mtValidate("simple");
+
+		const textFieldsInTableAreValid = jQuery(".values-option-table input[type=text]").mtValidate("simple");
+
+		/* @ts-expect-error : mtValidate is not defined */
+		const tableIsValid = jQuery(".values-option-table").mtValidate("selection-field-values-option");
+
+		/* @ts-expect-error : mtValidate is not defined */
+		const contentFieldBlockIsValid = jQuery(".content-field-block").mtValidate("content-field-block");
+
+		const uniqueFieldsAreValid = jQuery("input[data-mt-content-field-unique]").mtValidate("simple");
+		const res = requiredFieldsAreValid && textFieldsInTableAreValid && tableIsValid && contentFieldBlockIsValid && uniqueFieldsAreValid;
+
+		if (!res) {
+			jQuery(".mt-contentfield").each(function (_i, fld) {
+				const jqFld = jQuery(fld);
+
+				if (jqFld.find(".form-control.is-invalid").length > 0) {
+					/* @ts-expect-error : collapse is not defined */
+					jqFld.find(".collapse").collapse("show");
+				}
+			});
+		}
+
+		return res;
+	};
+
+	// copied from lib/MT/Template/ContextHandler.pm
+	const gatheringData = (c, index) => {
+		const data = {};
+		const flds = c.querySelectorAll("[data-is] [ref]");
+
+		Object.keys(flds).forEach(function (k) {
+			const f = flds[k];
+
+			if (strict_equals(f.type, "checkbox")) {
+				const val = f.checked ? 1 : 0;
+
+				if (f.name in data) {
+					if (Array.isArray(data[f.name])) {
+						data[f.name].push(val);
+
+						/* comented out because never used */
+						// } else {
+						//   const array = [];
+						//   array.push(data[f.name]);
+						//   array.push(val);
+					}
+				} else {
+					data[f.name] = val;
+				}
+			} else {
+				data[f.name] = f.value;
+			}
+		});
+
+		const fieldId = $fieldsStore()[index].id;
+
+		if (fieldId) {
+			const gather = gathers[fieldId];
+
+			if (gather) {
+				const customData = gather();
+
+				jQuery.extend(data, customData);
+			}
+		}
+
+		return data;
+	};
+
+	// create in Svelte
+	const updateFieldsIsShowAll = () => {
+		const collapseEls = document.querySelectorAll(".mt-collapse__content");
+
+		$$props.fieldsStore.update((fields) => fields.map((field, i) => {
+			if (collapseEls[i].classList.contains("show")) {
+				field.isShow = "show";
+			} else {
+				field.isShow = "";
+			}
+
+			return field;
+		}));
+	};
+
+	// create in Svelte
+	const addInputData = () => {
+		const form = document.forms.namedItem("content-type-form");
+		const inputId = form.querySelector('input[name="id"]');
+		const inputData = document.createElement("input");
+
+		inputData.setAttribute("type", "hidden");
+		inputData.setAttribute("name", "data");
+		inputData.setAttribute("value", data);
+		form.insertBefore(inputData, inputId.nextElementSibling);
+	};
+
+	var $$exports = { ...legacy_api() };
+	var fragment = root_1();
+	var form_1 = first_child(fragment);
+
+	set_attribute(form_1, 'action', window.CMSScriptURI);
+
+	var input = child(form_1);
+	var input_1 = sibling(input, 2);
+
+	var input_2 = sibling(input_1, 2);
+
+	var input_3 = sibling(input_2, 2);
+
+	var input_4 = sibling(input_3, 2);
+	var input_5 = sibling(input_4, 2);
+
+	var div = sibling(input_5, 2);
+	var div_1 = child(div);
+	var node = child(div_1);
+
+	{
+		var consequent = ($$anchor) => {
+			var div_2 = root_2();
+			var h3 = child(div_2);
+			var text = child(h3);
+			var button = sibling(text);
+
+			button.textContent = window.trans("Edit");
+
+			var div_3 = sibling(h3, 2);
+			var div_4 = child(div_3);
+			var div_5 = child(div_4);
+			var div_6 = child(div_5);
+			var h4 = child(div_6);
+
+			h4.textContent = window.trans("Content Type");
+
+			var div_7 = sibling(div_6, 2);
+			var div_8 = child(div_7);
+			var div_9 = child(div_8);
+			var label_1 = child(div_9);
+			var text_1 = child(label_1);
+
+			text_1.nodeValue = `${window.trans("Content Type Name") ?? ''} `;
+
+			var span = sibling(text_1);
+
+			span.textContent = window.trans("Required");
+
+			var input_6 = sibling(label_1, 2);
+
+			var div_10 = sibling(div_8, 2);
+			var div_11 = child(div_10);
+			var label_2 = child(div_11);
+
+			label_2.textContent = window.trans("Description");
+
+			var textarea = sibling(label_2, 2);
+
+			var div_12 = sibling(div_10, 2);
+			var div_13 = child(div_12);
+			var label_3 = child(div_13);
+
+			label_3.textContent = window.trans("Data Label Field");
+
+			var select_1 = sibling(label_3, 2);
+			var option_1 = child(select_1);
+
+			option_1.textContent = window.trans("Show input field to enter data label");
+			option_1.value = option_1.__value = '';
+
+			var node_1 = sibling(option_1);
+
+			add_svelte_meta(
+				() => each(node_1, 17, () => labelFields, index, ($$anchor, lf) => {
+					var option_2 = root_3();
+					var text_2 = child(option_2, true);
+
+					reset(option_2);
+
+					var option_2_value = {};
+
+					template_effect(() => {
+						set_text(text_2, get$1(lf).label);
+
+						if (option_2_value !== (option_2_value = get$1(lf).value)) {
+							option_2.value = (option_2.__value = get$1(lf).value) ?? '';
+						}
+					});
+
+					append($$anchor, option_2);
+				}),
+				'each',
+				ContentFields,
+				510,
+				24
+			);
+
+			var div_14 = sibling(div_12, 2);
+			var div_15 = child(div_14);
+			var label_4 = child(div_15);
+
+			label_4.textContent = window.trans("Unique ID");
+
+			var input_7 = sibling(label_4, 2);
+
+			var div_16 = sibling(div_14, 2);
+			var div_17 = child(div_16);
+			var label_5 = child(div_17);
+
+			label_5.textContent = window.trans("Allow users to change the display and sort of fields by display option");
+
+			var input_8 = sibling(label_5, 2);
+
+			var label_6 = sibling(input_8, 2);
+
+			label_6.textContent = window.trans("Allow users to change the display and sort of fields by display option");
+
+			var div_18 = sibling(div_7, 2);
+			var button_1 = child(div_18);
+
+			button_1.textContent = window.trans("close");
+
+			template_effect(() => {
+				set_text(text, `${opts().name ?? ''} `);
+				set_value(input_6, opts().name);
+				set_value(textarea, opts().description);
+				set_value(input_7, opts().unique_id);
+				set_checked(input_8, opts().user_disp_option ? true : false);
+			});
+
+			event('keypress', input_6, stopSubmitting);
+
+			bind_select_value(
+				select_1,
+				function get() {
+					return labelField;
+				},
+				function set($$value) {
+					labelField = $$value;
+				}
+			);
+
+			append($$anchor, div_2);
+		};
+
+		var alternate = ($$anchor) => {
+			var div_19 = root_4();
+			var label_7 = child(div_19);
+			var text_3 = child(label_7);
+
+			text_3.nodeValue = `${window.trans("Name") ?? ''} `;
+
+			var span_1 = sibling(text_3);
+
+			span_1.textContent = window.trans("Required");
+
+			var input_9 = sibling(label_7, 2);
+			template_effect(() => set_value(input_9, opts().name));
+			event('keypress', input_9, stopSubmitting);
+			append($$anchor, div_19);
+		};
+
+		add_svelte_meta(
+			() => if_block(node, ($$render) => {
+				if (opts().id) $$render(consequent); else $$render(alternate, false);
+			}),
+			'if',
+			ContentFields,
+			430,
+			6
+		);
+	}
+
+	var form_2 = sibling(form_1, 2);
+	var fieldset = child(form_2);
+	var legend = child(fieldset);
+
+	legend.textContent = window.trans("Content Fields");
+
+	var div_20 = sibling(legend, 2);
+	var a = child(div_20);
+
+	a.__click = toggleAll;
+
+	var text_4 = child(a);
+	var node_2 = sibling(text_4);
+
+	add_svelte_meta(
+		() => SVG(node_2, {
+			title: window.trans("Edit"),
+			class: 'mt-icon--secondary expand-all-icon',
+			href: `${window.StaticURI ?? ''}images/sprite.svg#ic_collapse`
+		}),
+		'component',
+		ContentFields,
+		602,
+		8,
+		{ componentTag: 'SVG' }
+	);
+
+	var div_21 = sibling(div_20, 2);
+	var node_3 = child(div_21);
+
+	{
+		var consequent_1 = ($$anchor) => {
+			var div_22 = root_5();
+			var img = child(div_22);
+
+			set_attribute(img, 'src', `${window.StaticURI ?? ''}images/dragdrop.gif`);
+			set_attribute(img, 'alt', window.trans("Drag and drop area"));
+
+			var p = sibling(img, 2);
+
+			p.textContent = window.trans("Please add a content field.");
+			append($$anchor, div_22);
+		};
+
+		add_svelte_meta(
+			() => if_block(node_3, ($$render) => {
+				if (isEmpty) $$render(consequent_1);
+			}),
+			'if',
+			ContentFields,
+			617,
+			6
+		);
+	}
+
+	var node_4 = sibling(node_3, 2);
+
+	add_svelte_meta(
+		() => each(node_4, 1, $fieldsStore, index, ($$anchor, field, fieldIndex) => {
+			const fieldId = tag(user_derived(() => get$1(field).id ?? ""), 'fieldId');
+
+			get$1(fieldId);
+
+			var div_23 = root_6();
+			var node_5 = child(div_23);
+
+			validate_binding('bind:gather={gathers[fieldId]}', [], () => (mark_store_binding(), gathers), () => get$1(fieldId), 651, 12);
+
+			add_svelte_meta(
+				() => ContentField(node_5, {
+					get config() {
+						return $$props.config;
+					},
+
+					fieldIndex,
+
+					get fieldsStore() {
+						return $$props.fieldsStore;
+					},
+
+					gatheringData,
+
+					get parent() {
+						return tags[fieldIndex];
+					},
+
+					get optionsHtmlParams() {
+						return $$props.optionsHtmlParams;
+					},
+
+					get field() {
+						return $fieldsStore()[fieldIndex];
+					},
+
+					set field($$value) {
+						store_mutate($$props.fieldsStore, untrack($fieldsStore)[fieldIndex] = $$value, untrack($fieldsStore));
+					},
+
+					get fields() {
+						mark_store_binding();
+
+						return $fieldsStore();
+					},
+
+					set fields($$value) {
+						store_set($$props.fieldsStore, $$value);
+					},
+
+					get gather() {
+						return gathers[get$1(fieldId)];
+					},
+
+					set gather($$value) {
+						gathers[get$1(fieldId)] = $$value;
+					}
+				}),
+				'component',
+				ContentFields,
+				643,
+				10,
+				{ componentTag: 'ContentField' }
+			);
+
+			reset(div_23);
+			validate_binding('bind:this={tags[fieldIndex]}', [], () => (mark_store_binding(), tags), () => fieldIndex, 641, 10);
+			bind_this(div_23, ($$value, fieldIndex) => tags[fieldIndex] = $$value, (fieldIndex) => tags?.[fieldIndex], () => [fieldIndex]);
+			template_effect(() => set_attribute(div_23, 'id', `content-field-block-${get$1(fieldId) ?? ''}`));
+
+			event('dragstart', div_23, (e) => {
+				onDragStart(e, get$1(field));
+			});
+
+			event('dragend', div_23, onDragEnd);
+			append($$anchor, div_23);
+		}),
+		'each',
+		ContentFields,
+		628,
+		6
+	);
+
+	var div_24 = sibling(div_21, 2);
+	var a_1 = child(div_24);
+
+	a_1.__click = toggleAll;
+
+	var text_5 = child(a_1);
+	var node_6 = sibling(text_5);
+
+	add_svelte_meta(
+		() => SVG(node_6, {
+			title: window.trans("Edit"),
+			class: 'mt-icon--secondary expand-all-icon',
+			href: `${window.StaticURI ?? ''}images/sprite.svg#ic_collapse`
+		}),
+		'component',
+		ContentFields,
+		666,
+		8,
+		{ componentTag: 'SVG' }
+	);
+
+	var button_2 = sibling(form_2, 2);
+
+	button_2.__click = submit;
+	button_2.textContent = window.trans("Save");
+
+	template_effect(
+		($0, $1, $2) => {
+			set_value(input_1, opts().blog_id);
+			set_value(input_2, opts().magic_token);
+			set_value(input_3, opts().return_args);
+			set_value(input_5, opts().id);
+			set_attribute(a, 'aria-expanded', isExpanded ? "true" : "false");
+			set_text(text_4, `${$0 ?? ''} `);
+			set_attribute(a_1, 'aria-expanded', isExpanded ? "true" : "false");
+			set_text(text_5, `${$1 ?? ''} `);
+			button_2.disabled = $2;
+		},
+		[
+			() => isExpanded ? window.trans("Close all") : window.trans("Edit all"),
+			() => isExpanded ? window.trans("Close all") : window.trans("Edit all"),
+			() => !canSubmit()
+		]
+	);
+
+	event('drop', div_21, onDrop);
+	event('dragover', div_21, onDragOver);
+	event('dragleave', div_21, onDragLeave);
+	append($$anchor, fragment);
+
+	var $$pop = pop($$exports);
+
+	$$cleanup();
+
+	return $$pop;
+}
+
+delegate(['click']);
+
+CustomElementField[FILENAME] = 'src/contenttype/elements/CustomElementField.svelte';
+
+function CustomElementField($$anchor, $$props) {
+	check_target(new.target);
+	push($$props, true);
+
+	const $fieldsStore = () => (
+		validate_store($$props.fieldsStore),
+		store_get($$props.fieldsStore, '$fieldsStore', $$stores)
+	);
+
+	const [$$stores, $$cleanup] = setup_stores();
+	let field = tag(state(proxy($fieldsStore()[$$props.fieldIndex])), 'field');
+	let options = tag(state(proxy(get$1(field).options || {})), 'options');
+	let id = tag(state(`field-options-${get$1(field).id}`), 'id');
+
+	user_effect(() => {
+		set(field, $fieldsStore()[$$props.fieldIndex], true);
+		set(options, get$1(field).options || {}, true);
+		set(id, `field-options-${get$1(field).id}`);
+	});
+
+	const initElement = (el) => {
+		const options = el.options;
+
+		el.options = new Proxy(options, {
+			set(_, property, value) {
+				options[property] = value;
+				store_mutate($$props.fieldsStore, untrack($fieldsStore)[$$props.fieldIndex].options[property] = value, untrack($fieldsStore));
+				$$props.updateOptions(options);
+
+				return value;
+			}
+		});
+	};
+
+	var $$exports = { ...legacy_api() };
+
+	add_svelte_meta(
+		() => ContentFieldOptionGroup($$anchor, {
+			get type() {
+				return $$props.type;
+			},
+
+			get id() {
+				return get$1(id);
+			},
+
+			get field() {
+				return get$1(field);
+			},
+
+			set field($$value) {
+				set(field, $$value, true);
+			},
+
+			get options() {
+				return get$1(options);
+			},
+
+			set options($$value) {
+				set(options, $$value, true);
+			},
+
+			children: wrap_snippet(CustomElementField, ($$anchor, $$slotProps) => {
+				var fragment_1 = comment();
+				var node = first_child(fragment_1);
+
+				{
+					validate_dynamic_element_tag(() => $$props.customElement);
+
+					element(
+						node,
+						() => $$props.customElement,
+						false,
+						($$element, $$anchor) => {
+							action($$element, ($$node) => initElement?.($$node));
+							attribute_effect($$element, ($0) => ({ 'data-options': $0 }), [() => JSON.stringify(get$1(options))]);
+						},
+						void 0,
+						[25, 2]
+					);
+				}
+
+				append($$anchor, fragment_1);
+			}),
+
+			$$slots: { default: true }
+		}),
+		'component',
+		CustomElementField,
+		24,
+		0,
+		{ componentTag: 'ContentFieldOptionGroup' }
+	);
+
+	var $$pop = pop($$exports);
+
+	$$cleanup();
+
+	return $$pop;
+}
+
+customElements.define("mt-content-field-option", class extends HTMLElement {
+  connectedCallback() {
+    const id = this.getAttribute("id") || "";
+    const attr = this.getAttribute("attr") || "";
+    const attrShow = this.getAttribute("attr-show");
+    const hint = this.getAttribute("hint") || "";
+    const label = this.getAttribute("label") || "";
+    const required = this.getAttribute("required") === "1";
+    const showHint = this.getAttribute("show-hint") === "1";
+    const showLabel = this.getAttribute("show-label") !== "0";
+    if (!id) {
+      console.error("ContentFieldOption: 'id' attribute missing");
+      return;
+    }
+    const wrapper = document.createElement("div");
+    wrapper.id = `${id}-field`;
+    wrapper.className = "form-group";
+    if (required) {
+      wrapper.classList.add("required");
+    }
+    if (attr) {
+      wrapper.setAttribute("attr", attr);
+    }
+    if (attrShow !== null) {
+      if (attrShow === "true") {
+        wrapper.style.display = "";
+      } else {
+        wrapper.hidden = true;
+        wrapper.style.display = "none";
+      }
+    }
+    if (label && showLabel) {
+      const labelElement = document.createElement("label");
+      labelElement.setAttribute("for", id);
+      labelElement.textContent = label;
+      if (required) {
+        const badge = document.createElement("span");
+        badge.className = "badge badge-danger";
+        badge.textContent = window.trans("Required");
+        labelElement.appendChild(badge);
+      }
+      wrapper.appendChild(labelElement);
+    }
+    while (this.firstChild) {
+      wrapper.appendChild(this.firstChild);
+    }
+    if (hint && showHint) {
+      const hintElement = document.createElement("small");
+      hintElement.id = `${id}-field-help`;
+      hintElement.className = "form-text text-muted";
+      hintElement.textContent = hint;
+      wrapper.appendChild(hintElement);
+    }
+    this.appendChild(wrapper);
+  }
+});
+
+var _a, _ContentTypeEditor_config_accessor_storage, _ContentTypeEditor_fieldsStore_accessor_storage, _ContentTypeEditor_optionsHtmlParams_accessor_storage, _ContentTypeEditor_opts_accessor_storage;
+class CustomElementFieldBase extends HTMLElement {
+  constructor() {
+    super(...arguments);
+    this.options = {};
+  }
+  connectedCallback() {
+    this.options = JSON.parse(this.getAttribute("data-options") || "{}");
+  }
+  disconnectedCallback() {
+  }
+}
+class ContentTypeEditor {
+  static get config() {
+    return __classPrivateFieldGet(_a, _a, "f", _ContentTypeEditor_config_accessor_storage);
+  }
+  static set config(value) {
+    __classPrivateFieldSet(_a, _a, value, "f", _ContentTypeEditor_config_accessor_storage);
+  }
+  static get fieldsStore() {
+    return __classPrivateFieldGet(_a, _a, "f", _ContentTypeEditor_fieldsStore_accessor_storage);
+  }
+  static set fieldsStore(value) {
+    __classPrivateFieldSet(_a, _a, value, "f", _ContentTypeEditor_fieldsStore_accessor_storage);
+  }
+  static get optionsHtmlParams() {
+    return __classPrivateFieldGet(_a, _a, "f", _ContentTypeEditor_optionsHtmlParams_accessor_storage);
+  }
+  static set optionsHtmlParams(value) {
+    __classPrivateFieldSet(_a, _a, value, "f", _ContentTypeEditor_optionsHtmlParams_accessor_storage);
+  }
+  static get opts() {
+    return __classPrivateFieldGet(_a, _a, "f", _ContentTypeEditor_opts_accessor_storage);
+  }
+  static set opts(value) {
+    __classPrivateFieldSet(_a, _a, value, "f", _ContentTypeEditor_opts_accessor_storage);
+  }
+  static registerCustomType(type, mountFunction) {
+    if (mountFunction.prototype instanceof CustomElementFieldBase) {
+      const customElement = `mt-content-type-custom-type-${type}`;
+      customElements.define(customElement, mountFunction);
+      mountFunction = (props, target) => {
+        let options;
+        const customElementField = mount(CustomElementField, {
+          props: {
+            ...props,
+            type,
+            customElement,
+            updateOptions: (_options) => {
+              options = _options;
+            }
+          },
+          target
+        });
+        return {
+          component: customElementField,
+          gather: () => {
+            return options;
+          },
+          destroy: () => {
+            customElementField.$destroy();
+          }
+        };
+      };
+    }
+    this.types.registerCustomType(type, mountFunction);
+  }
+  static mount(targetSelector, opts) {
+    const target = this.getContentFieldsTarget(targetSelector);
+    this.fieldsStore = writable(opts.fields);
+    this.opts = opts;
+    mount(ContentFields, {
+      props: {
+        config: this.config,
+        fieldsStore: this.fieldsStore,
+        optionsHtmlParams: this.optionsHtmlParams,
+        opts: this.opts,
+        root: target
+      },
+      target
+    });
+  }
+  static getContentFieldsTarget(selector) {
+    const target = document.querySelector(`[data-is="${selector}"]`);
+    if (!target) {
+      throw new Error("Target element is not found: " + selector);
+    }
+    return target;
+  }
+}
+_a = ContentTypeEditor;
+_ContentTypeEditor_config_accessor_storage = { value: {} };
+_ContentTypeEditor_fieldsStore_accessor_storage = { value: void 0 };
+_ContentTypeEditor_optionsHtmlParams_accessor_storage = { value: {} };
+_ContentTypeEditor_opts_accessor_storage = { value: void 0 };
+ContentTypeEditor.types = ContentFieldTypes;
+ContentTypeEditor.CustomElementFieldBase = CustomElementFieldBase;
+
+const getConfigName = (key) => {
+  const tmp = key.substring(6);
+  return tmp.substring(0, 1).toUpperCase() + tmp.substring(1);
+};
+if (!window.riot) {
+  window.riot = {};
+}
+window.riot.observable = observable;
+window.ContentTypeEditor = ContentTypeEditor;
+const scriptContenttype = document.getElementById("script-contenttype");
+if (scriptContenttype) {
+  for (const key in scriptContenttype.dataset) {
+    if (!key.startsWith("config")) {
+      continue;
+    }
+    const configName = getConfigName(key);
+    if (configName === "") {
+      continue;
+    }
+    ContentTypeEditor.config[configName] = scriptContenttype.dataset[key];
+  }
+  if ("optionsHtmlParams" in scriptContenttype.dataset) {
+    let optionsHtmlParams = {};
+    try {
+      optionsHtmlParams = JSON.parse(scriptContenttype.dataset["optionsHtmlParams"] || "{}");
+    } catch (error) {
+      console.log(error);
+    }
+    ContentTypeEditor.optionsHtmlParams = optionsHtmlParams;
+  }
+}
+//# sourceMappingURL=contenttype.js.map

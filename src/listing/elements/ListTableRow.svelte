@@ -1,11 +1,20 @@
 <script lang="ts">
   import type * as Listing from "../../@types/listing";
 
-  export let checked: boolean;
-  export let hasListActions: boolean;
-  export let hasMobilePulldownActions: boolean;
-  export let object: Array<string | number>;
-  export let store: Listing.ListStore;
+  type Props = {
+    checked: boolean;
+    hasListActions: boolean;
+    hasMobilePulldownActions: boolean;
+    object: Array<string | number>;
+    store: Listing.ListStore;
+  };
+  let {
+    checked,
+    hasListActions,
+    hasMobilePulldownActions,
+    object,
+    store,
+  }: Props = $props();
 
   const classes = (index: string): string => {
     const nameClass = store.showColumns[index].id;

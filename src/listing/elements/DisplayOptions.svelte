@@ -3,9 +3,12 @@
 
   import DisplayOptionsDetail from "./DisplayOptionsDetail.svelte";
 
-  export let changeLimit: (e: Event) => void;
-  export let disableUserDispOption: boolean;
-  export let store: Listing.ListStore;
+  type Props = {
+    changeLimit: (e: Event) => void;
+    disableUserDispOption: boolean;
+    store: Listing.ListStore;
+  };
+  let { changeLimit, disableUserDispOption, store }: Props = $props();
 </script>
 
 <div class="row">

@@ -41,10 +41,10 @@
     aria-labelledby={labelledby}
     aria-describedby={describedby}
     aria-modal="true"
-    on:introend={() => {
+    onintroend={() => {
       dispatch("open");
     }}
-    on:outroend={() => {
+    onoutroend={() => {
       setTimeout(() => {
         dispatch("close");
       }, 100);

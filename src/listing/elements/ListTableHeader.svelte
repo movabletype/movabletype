@@ -4,9 +4,12 @@
   import ListTableHeaderForMobile from "./ListTableHeaderForMobile.svelte";
   import ListTableHeaderForPc from "./ListTableHeaderForPc.svelte";
 
-  export let hasListActions: boolean;
-  export let hasMobilePulldownActions: boolean;
-  export let store: Listing.ListStore;
+  type Props = {
+    hasListActions: boolean;
+    hasMobilePulldownActions: boolean;
+    store: Listing.ListStore;
+  };
+  let { hasListActions, hasMobilePulldownActions, store }: Props = $props();
 
   const toggleAllRowsOnPage = (): void => {
     store.trigger("toggle_all_rows_on_page");

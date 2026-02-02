@@ -6,14 +6,14 @@
 
   import StatusMsg from "./StatusMsg.svelte";
 
-  // svelte-ignore unused-export-let
-  export let config: ContentType.ConfigSettings;
-  export let field: ContentType.Field;
-  // svelte-ignore unused-export-let
-  export let gather = null;
-  export let id: string;
-  export let options: ContentType.Options;
-  export let optionsHtmlParams: ContentType.OptionsHtmlParams;
+  let {
+    config,
+    field = $bindable(),
+    gather = $bindable(null),
+    id,
+    options = $bindable(),
+    optionsHtmlParams,
+  } : ContentType.ContentFieldProps = $props();
 
   const contentTypes: Array<{ id: string; name: string }> =
     optionsHtmlParams.content_type.content_types;

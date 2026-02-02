@@ -4,14 +4,14 @@
   import ContentFieldOption from "./ContentFieldOption.svelte";
   import ContentFieldOptionGroup from "./ContentFieldOptionGroup.svelte";
 
-  // svelte-ignore unused-export-let
-  export let config: ContentType.ConfigSettings;
-  export let field: ContentType.Field;
-  // svelte-ignore unused-export-let
-  export let gather = null;
-  export let id: string;
-  export let options: ContentType.Options;
-  export let optionsHtmlParams: ContentType.OptionsHtmlParams;
+  let {
+    config,
+    field = $bindable(),
+    gather = $bindable(null),
+    id,
+    options = $bindable(),
+    optionsHtmlParams,
+  } : ContentType.ContentFieldProps = $props();
 
   const textFilters: Array<{ filter_label: string; filter_key: string }> =
     optionsHtmlParams.multi_line_text.text_filters;

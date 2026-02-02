@@ -1,20 +1,19 @@
 <script lang="ts">
   import type * as ContentType from "../../@types/contenttype";
 
-  import { afterUpdate } from "svelte";
-
   import { addRow, deleteRow, validateTable } from "../SelectionCommonScript";
 
   import ContentFieldOption from "./ContentFieldOption.svelte";
   import ContentFieldOptionGroup from "./ContentFieldOptionGroup.svelte";
 
-  // svelte-ignore unused-export-let
-  export let config: ContentType.ConfigSettings;
-  export let field: ContentType.Field;
-  export let id: string;
-  export let options: ContentType.Options;
-  // svelte-ignore unused-export-let
-  export let optionsHtmlParams: ContentType.OptionsHtmlParams;
+  let {
+    config,
+    field = $bindable(),
+    gather = $bindable(null),
+    id,
+    options = $bindable(),
+    optionsHtmlParams,
+  }: ContentType.ContentFieldProps = $props();
 
   let refsTable: HTMLTableElement;
 
@@ -30,11 +29,13 @@
     ];
   }
 
-  afterUpdate(() => {
-    validateTable(refsTable);
+  $effect(() => {
+    if (refsTable) {
+      validateTable(refsTable);
+    }
   });
 
-  export const gather = (): object => {
+  gather = (): object => {
     return {
       values: options.values,
     };
@@ -94,7 +95,7 @@
                   class="form-check-input mt-3"
                   name={id + "-initial"}
                   checked={v.checked ? true : false}
-                  on:change={() => {
+                  onchange={() => {
                     enterInitial(index);
                   }}
                 /></td
@@ -119,7 +120,7 @@
               >
               <td
                 ><button
-                  on:click={() => {
+                  onclick={() => {
                     options.values = deleteRow(options.values, index);
                   }}
                   type="button"
@@ -137,7 +138,7 @@
       </table>
     </div>
     <button
-      on:click={() => {
+      onclick={() => {
         options.values = addRow(options.values);
       }}
       type="button"

@@ -50,7 +50,7 @@
 <button
   class="btn btn-primary"
   disabled={currentFilter.items.length === 0}
-  on:click={applyFilter}
+  onclick={applyFilter}
 >
   {window.trans("Apply")}
 </button>
@@ -58,12 +58,12 @@
   class="btn btn-default"
   disabled={currentFilter.items.length === 0 ||
     currentFilter.can_save?.toString() === "0"}
-  on:click={saveFilter}
+  onclick={saveFilter}
 >
   {window.trans("Save")}
 </button>
 {#if currentFilter.id && currentFilter.items.length > 0}
-  <button class="btn btn-default" on:click={saveAsFilter}>
+  <button class="btn btn-default" onclick={saveAsFilter}>
     {window.trans("Save As")}
   </button>
 {/if}

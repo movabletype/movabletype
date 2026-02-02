@@ -3,29 +3,34 @@
 
   import type * as ContentType from "../../@types/contenttype";
 
-  import { onMount } from "svelte";
-
   import { recalcHeight } from "../Utils";
 
   import ContentFieldOption from "./ContentFieldOption.svelte";
 
-  export let field: ContentType.Field;
-  export let id: string;
-  export let options: ContentType.Options;
-  export let type: string;
+  type Props = {
+    field: ContentType.Field;
+    id: string;
+    options: ContentType.Options;
+    type: string;
+  };
+  let {
+    field = $bindable(),
+    id,
+    options = $bindable(),
+    type,
+  }: Props = $props();
 
   if (!type) {
     console.error('ContentFieldOptionGroup: "type" attribute is required.');
   }
 
-  $: {
-    // Initialize
+  $effect(() => {
     if (!options.display) {
       options.display = "default";
     }
-  }
+  });
 
-  onMount(() => {
+  $effect(() => {
     const root = getRoot();
     if (!root) {
       return;
@@ -35,7 +40,7 @@
     Array.prototype.slice.call(elms).forEach(function (v) {
       if (
         v.hasAttribute("id") &&
-        !v.classList.contains("mt-custom-contentfield") // do not change id in Custom.svelte
+        !v.classList.contains("mt-custom-contentfield")
       ) {
         v.setAttribute("id", v.getAttribute("id") + "-" + id);
       }
@@ -166,7 +171,7 @@
 <slot />
 
 <div class="form-group-button">
-  <button type="button" class="btn btn-default" on:click={closePanel}>
+  <button type="button" class="btn btn-default" onclick={closePanel}>
     {window.trans("Close")}
   </button>
 </div>

@@ -4,13 +4,22 @@
   import ListFilterDetail from "./ListFilterDetail.svelte";
   import ListFilterHeader from "./ListFilterHeader.svelte";
 
-  export let filterTypes: Array<Listing.FilterType>;
-  export let listActionClient: Listing.ListActionClient;
-  export let localeCalendarHeader: Array<string>;
-  export let objectLabel: string;
-  export let store: Listing.ListStore;
+  type Props = {
+    filterTypes: Array<Listing.FilterType>;
+    listActionClient: Listing.ListActionClient;
+    localeCalendarHeader: Array<string>;
+    objectLabel: string;
+    store: Listing.ListStore;
+  };
+  let {
+    filterTypes,
+    listActionClient,
+    localeCalendarHeader,
+    objectLabel,
+    store,
+  }: Props = $props();
 
-  let currentFilter = store.currentFilter;
+  let currentFilter = $state(store.currentFilter);
   let validateErrorMessage: JQuery<HTMLElement>;
 
   const validateFilterName = (name: string): boolean => {
@@ -21,8 +30,8 @@
 
   /* @ts-expect-error : mtValidateRules is not defined */
   jQuery.mtValidateRules["[name=filter_name], .rename-filter-input"] =
-    function ($e: JQuery<HTMLElement>) {
-      const val = $e.val();
+    function (e: JQuery<HTMLElement>) {
+      const val = e.val();
       if (typeof val !== "string") {
         return this.raise(window.trans("Invalid type: [_1]", typeof val));
       }
@@ -89,14 +98,14 @@
   };
 
   const getItemValues = (): void => {
-    const $items = jQuery("#filter-detail .filteritem:not(.error)");
+    const items = jQuery("#filter-detail .filteritem:not(.error)");
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let vals: Array<any> = [];
-    $items.each(function () {
+    items.each(function () {
       let data: { type?: string; args?: object } | undefined = {};
       const fields: Array<{ type: string; args: object }> = [];
-      const $types = jQuery(this).find(".filtertype");
-      $types.each(function () {
+      const types = jQuery(this).find(".filtertype");
+      types.each(function () {
         const type = (jQuery(this)
           .attr("class")
           ?.match(/type-(\w+)/) || [])[1];
@@ -130,7 +139,7 @@
     currentFilter.items = vals;
   };
 
-  $: isAllpassFilter = currentFilter.id === store.allpassFilter.id;
+  let isAllpassFilter = $derived(currentFilter.id === store.allpassFilter.id);
 
   /* add "filter" argument for updating this output after changing "filter" */
   const isFilterItemSelected = (

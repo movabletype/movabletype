@@ -3,12 +3,22 @@
 
   import SVG from "../../svg/elements/SVG.svelte";
 
-  export let isTooNarrowWidth: boolean;
-  export let movePage: (e: Event) => void;
-  export let nextDisabledProp: { disabled?: string };
-  export let page: number;
-  export let previousDisabledProp: { disabled?: string };
-  export let store: Listing.ListStore;
+  type Props = {
+    isTooNarrowWidth: boolean;
+    movePage: (e: Event) => void;
+    nextDisabledProp: { disabled?: string };
+    page: number;
+    previousDisabledProp: { disabled?: string };
+    store: Listing.ListStore;
+  };
+  let {
+    isTooNarrowWidth,
+    movePage,
+    nextDisabledProp,
+    page,
+    previousDisabledProp,
+    store,
+  }: Props = $props();
 </script>
 
 <ul class="pagination__mobile d-md-none">
@@ -19,7 +29,7 @@
       class="page-link"
       {...previousDisabledProp}
       data-page={page - 1}
-      on:click={movePage}
+      onclick={movePage}
     >
       <SVG
         title={window.trans("Previous")}
@@ -36,7 +46,7 @@
         href="javascript:void(0);"
         class="page-link"
         data-page={page - 4}
-        on:click={movePage}
+        onclick={movePage}
       >
         {page - 4}
       </a>
@@ -50,7 +60,7 @@
         href="javascript:void(0);"
         class="page-link"
         data-page={page - 3}
-        on:click={movePage}
+        onclick={movePage}
       >
         {page - 3}
       </a>
@@ -64,7 +74,7 @@
         href="javascript:void(0);"
         class="page-link"
         data-page={page - 2}
-        on:click={movePage}
+        onclick={movePage}
       >
         {page - 2}
       </a>
@@ -78,7 +88,7 @@
         href="javascript:void(0);"
         class="page-link"
         data-page={page - 1}
-        on:click={movePage}
+        onclick={movePage}
       >
         {page - 1}
       </a>
@@ -100,7 +110,7 @@
         href="javascript:void(0);"
         class="page-link"
         data-page={page + 1}
-        on:click={movePage}
+        onclick={movePage}
       >
         {page + 1}
       </a>
@@ -114,7 +124,7 @@
         href="javascript:void(0);"
         class="page-link"
         data-page={page + 2}
-        on:click={movePage}
+        onclick={movePage}
       >
         {page + 2}
       </a>
@@ -128,7 +138,7 @@
         href="javascript:void(0);"
         class="page-link"
         data-page={page + 3}
-        on:click={movePage}
+        onclick={movePage}
       >
         {page + 3}
       </a>
@@ -142,7 +152,7 @@
         href="javascript:void(0);"
         class="page-link"
         data-page={page + 4}
-        on:click={movePage}
+        onclick={movePage}
       >
         {page + 4}
       </a>
@@ -156,7 +166,7 @@
       class="page-link"
       {...nextDisabledProp}
       data-page={page + 1}
-      on:click={movePage}
+      onclick={movePage}
     >
       <SVG
         title={window.trans("Next")}

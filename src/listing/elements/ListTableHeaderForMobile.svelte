@@ -1,9 +1,13 @@
 <script lang="ts">
   import type * as Listing from "../../@types/listing";
 
-  export let hasMobilePulldownActions: boolean;
-  export let store: Listing.ListStore;
-  export let toggleAllRowsOnPage: () => void;
+  type Props = {
+    hasMobilePulldownActions: boolean;
+    store: Listing.ListStore;
+    toggleAllRowsOnPage: () => void;
+  };
+  let { hasMobilePulldownActions, store, toggleAllRowsOnPage }: Props =
+    $props();
 </script>
 
 {#if store.count}
@@ -18,7 +22,7 @@
             class="form-check-input"
             id="select-all"
             checked={store.checkedAllRowsOnPage}
-            on:change={toggleAllRowsOnPage}
+            onchange={toggleAllRowsOnPage}
           />
           <label class="form-check-label" for="select-all">
             <span class="visually-hidden">
@@ -31,7 +35,7 @@
     <th scope="col">
       {#if hasMobilePulldownActions}
         <!-- svelte-ignore a11y-click-events-have-key-events a11y-no-static-element-interactions -->
-        <span on:click={toggleAllRowsOnPage}>
+        <span onclick={toggleAllRowsOnPage}>
           {window.trans("All")}
         </span>
       {/if}

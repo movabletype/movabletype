@@ -1,15 +1,25 @@
 <script lang="ts">
   import type * as Listing from "../../@types/listing";
 
-  export let buttonActions: Listing.ButtonActions;
-  export let doAction: (e: Event) => boolean | undefined;
-  export let listActions: Listing.ListActions;
-  export let hasPulldownActions: boolean;
-  export let moreListActions: Listing.MoreListActions;
+  type Props = {
+    buttonActions: Listing.ButtonActions;
+    doAction: (e: Event) => boolean | undefined;
+    listActions: Listing.ListActions;
+    hasPulldownActions: boolean;
+    moreListActions: Listing.MoreListActions;
+  };
+
+  let {
+    buttonActions,
+    doAction,
+    listActions,
+    hasPulldownActions,
+    moreListActions,
+  }: Props = $props();
 </script>
 
 {#each Object.entries(buttonActions) as [key, action]}
-  <button class="btn btn-default mr-2" data-action-id={key} on:click={doAction}>
+  <button class="btn btn-default mr-2" data-action-id={key} onclick={doAction}>
     {@html action.label}
   </button>
 {/each}
@@ -26,7 +36,7 @@
           class="dropdown-item"
           href="javascript:void(0);"
           data-action-id={key}
-          on:click={doAction}
+          onclick={doAction}
         >
           {@html action.label}
         </a>
@@ -44,7 +54,7 @@
           class="dropdown-item"
           href="javascript:void(0);"
           data-action-id={key}
-          on:click={doAction}
+          onclick={doAction}
         >
           {@html action.label}
         </a>

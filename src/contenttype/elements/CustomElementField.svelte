@@ -2,20 +2,34 @@
   import type * as ContentType from "../../@types/contenttype";
   import ContentFieldOptionGroup from "./ContentFieldOptionGroup.svelte";
 
-  // svelte-ignore unused-export-let
-  export let config: ContentType.ConfigSettings;
-  export let fieldIndex: number;
-  export let fieldsStore: ContentType.FieldsStore;
-  // svelte-ignore unused-export-let
-  export let optionsHtmlParams: ContentType.OptionsHtmlParams;
+  type Props = {
+    config: ContentType.ConfigSettings;
+    fieldIndex: number;
+    fieldsStore: ContentType.FieldsStore;
+    optionsHtmlParams: ContentType.OptionsHtmlParams;
+    type: string;
+    customElement: string;
+    updateOptions: (options: ContentType.Options) => void;
+  };
+  let {
+    config,
+    fieldIndex,
+    fieldsStore,
+    optionsHtmlParams,
+    type,
+    customElement,
+    updateOptions,
+  }: Props = $props();
 
-  export let type: string;
-  export let customElement: string;
-  export let updateOptions: (options: ContentType.Options) => void;
+  let field = $state($fieldsStore[fieldIndex]);
+  let options = $state(field.options || {});
+  let id = $state(`field-options-${field.id}`);
 
-  $: field = $fieldsStore[fieldIndex];
-  $: options = field.options || {};
-  $: id = `field-options-${field.id}`;
+  $effect(() => {
+    field = $fieldsStore[fieldIndex];
+    options = field.options || {};
+    id = `field-options-${field.id}`;
+  });
 
   const initElement = (
     el: HTMLElement & { options: ContentType.Options },

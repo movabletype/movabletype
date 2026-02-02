@@ -3,23 +3,42 @@
   import type { ContentType } from "src/@types/contenttype";
   import type { SearchTab } from "src/admin2025/buttons/search-button";
 
-  export let blogId: string;
-  export let magicToken: string;
-  export let contentTypes: ContentType[] = [];
-  export let searchTabs: SearchTab[] = [];
-  export let objectType: string;
-  export let isLoading: boolean = false;
-  let searchContentTypeId: string = "";
+  type Props = {
+    blogId: string;
+    magicToken: string;
+    contentTypes: ContentType[];
+    searchTabs: SearchTab[];
+    objectType: string;
+    isLoading: boolean;
+  };
+  let {
+    blogId,
+    magicToken,
+    contentTypes = [],
+    searchTabs = [],
+    objectType,
+    isLoading = false,
+  }: Props = $props();
+  export {
+    blogId,
+    magicToken,
+    contentTypes,
+    searchTabs,
+    objectType,
+    isLoading,
+  };
+
+  let searchContentTypeId: string = $derived("");
   let searchTextRef: HTMLInputElement | null = null;
 
-  $: {
+  $effect(() => {
     if (searchTextRef) {
       searchTextRef.focus();
     }
     if (!searchContentTypeId && contentTypes.length > 0) {
       searchContentTypeId = contentTypes[0].id;
     }
-  }
+  });
 
   const submit = (event: Event): void => {
     event.preventDefault();
@@ -95,7 +114,7 @@
         type="text"
         placeholder={window.trans("Select target and search text...")}
         bind:this={searchTextRef}
-        on:keydown={(event) => {
+        onkeydown={(event) => {
           if (event.key === "Enter" && !event.isComposing) {
             submit(event);
           }
@@ -104,7 +123,7 @@
     </div>
 
     <div class="submit-button">
-      <button type="button" class="btn btn-primary" on:click={submit}>
+      <button type="button" class="btn btn-primary" onclick={submit}>
         <SVG
           title={window.trans("Search")}
           class="mt-icon mt-icon--sm"

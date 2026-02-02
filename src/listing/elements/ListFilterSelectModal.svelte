@@ -3,11 +3,15 @@
 
   import SVG from "../../svg/elements/SVG.svelte";
 
-  export let listFilterTopCreateNewFilter: (filterLabel?: string) => void;
-  export let listFilterTopUpdate: () => void;
-  export let store: Listing.ListStore;
+  type Props = {
+    listFilterTopCreateNewFilter: (filterLabel?: string) => void;
+    listFilterTopUpdate: () => void;
+    store: Listing.ListStore;
+  };
+  let { listFilterTopCreateNewFilter, listFilterTopUpdate, store }: Props =
+    $props();
 
-  let isEditingFilter: { [key: string]: boolean } = {};
+  let isEditingFilter: { [key: string]: boolean } = $state({});
   let modal: HTMLDivElement;
 
   const applyFilter = (e: Event): void => {
@@ -108,20 +112,16 @@
                 >
                   {#if !isEditingFilter[filterId]}
                     <!-- svelte-ignore a11y-invalid-attribute -->
-                    <a href="#" on:click={applyFilter}>
+                    <a href="#" onclick={applyFilter}>
                       {filter.label}
                     </a>
                     <div class="float-end d-none d-md-block">
                       <!-- svelte-ignore a11y-invalid-attribute -->
-                      <a href="#" on:click={startEditingFilter}>
+                      <a href="#" onclick={startEditingFilter}>
                         [{window.trans("rename")}]
                       </a>
                       <!-- svelte-ignore a11y-invalid-attribute -->
-                      <a
-                        href="#"
-                        class="d-inline-block"
-                        on:click={removeFilter}
-                      >
+                      <a href="#" class="d-inline-block" onclick={removeFilter}>
                         <SVG
                           title={window.trans("Remove")}
                           class="mt-icon mt-icon--sm"
@@ -141,14 +141,14 @@
                         />
                         <button
                           class="btn btn-default form-control"
-                          on:click={renameFilter}
+                          onclick={renameFilter}
                         >
                           {window.trans("Save")}
                         </button>
-                        <!-- add filter.id to argument because Event object cannot be gotten in on:click function -->
+                        <!-- add filter.id to argument because Event object cannot be gotten in onclick function -->
                         <button
                           class="btn btn-default form-control"
-                          on:click={() => stopEditingFilter(filterId)}
+                          onclick={() => stopEditingFilter(filterId)}
                         >
                           {window.trans("Cancel")}
                         </button>
@@ -164,7 +164,7 @@
                 href="#"
                 id="new_filter"
                 class="icon-mini-left addnew create-new apply-link d-md-inline-block"
-                on:click={createNewFilter}
+                onclick={createNewFilter}
               >
                 <SVG
                   title={window.trans("Add")}
@@ -190,7 +190,7 @@
                     data-mt-list-filter-label={filter.label}
                   >
                     <!-- svelte-ignore a11y-invalid-attribute -->
-                    <a href="#" on:click={applyFilter}>
+                    <a href="#" onclick={applyFilter}>
                       {filter.label}
                     </a>
                   </li>

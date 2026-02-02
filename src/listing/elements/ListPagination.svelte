@@ -6,25 +6,25 @@
   import ListPaginationForMobile from "./ListPaginationForMobile.svelte";
   import ListPaginationForPc from "./ListPaginationForPc.svelte";
 
-  export let store: Listing.ListStore;
+  let { store }: { store: Listing.ListStore } = $props();
 
   let nextDisabledProp: { disabled?: string } = {};
   let isTooNarrowWidth: boolean;
   let previousDisabledProp: { disabled?: string } = {};
 
-  $: page = store.page || 0;
-  $: {
+  let page = $derived(store.page || 0);
+  $effect(() => {
     previousDisabledProp = {};
     if (page <= 1) {
       previousDisabledProp.disabled = "disabled";
     }
-  }
-  $: {
+  });
+  $effect(() => {
     nextDisabledProp = {};
     if (page >= store.pageMax) {
       nextDisabledProp.disabled = "disabled";
     }
-  }
+  });
 
   onMount(() => {
     checkTooNarrowWidth();
@@ -63,8 +63,8 @@
 </script>
 
 <svelte:window
-  on:resize={checkTooNarrowWidth}
-  on:orientationchange={checkTooNarrowWidth}
+  onresize={checkTooNarrowWidth}
+  onorientationchange={checkTooNarrowWidth}
 />
 
 <div class="col-auto mx-auto" class:w-100={isTooNarrowWidth}>

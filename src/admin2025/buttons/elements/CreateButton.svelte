@@ -4,17 +4,28 @@
   import { type ContentType } from "src/@types/contenttype";
   import { fetchContentTypes } from "src/utils/fetch-content-types";
 
-  export let blog_id: string;
-  export let magicToken: string;
-  export let open: boolean = false;
-  export let anchorRef: HTMLElement | null = null;
-  export let containerRef: HTMLElement | null = null;
-  let modalRef: HTMLElement | null = null;
-  let contentTypesFetched = false;
-  let isLoading = false;
-  let contentTypes: ContentType[] = [];
+  type Props = {
+    blog_id: string;
+    magicToken: string;
+    open: boolean;
+    anchorRef: HTMLElement;
+    containerRef: HTMLElement;
+  };
+  let {
+    blog_id,
+    magicToken,
+    open = false,
+    anchorRef,
+    containerRef,
+  }: Props = $props();
+  export { open };
 
-  $: {
+  let modalRef: HTMLElement | null = $state(null);
+  let contentTypesFetched = false;
+  let isLoading = $state(false);
+  let contentTypes: ContentType[] = $state([]);
+
+  $effect(() => {
     if (anchorRef) {
       // Adjust the top position of the modal
       if (modalRef) {
@@ -50,7 +61,7 @@
         anchorRef.classList.remove("open");
       }
     }
-  }
+  });
   const handleClose = (): void => {
     open = false;
   };
@@ -67,7 +78,7 @@
   };
 </script>
 
-<svelte:body on:click={clickEvent} />
+<svelte:body onclick={clickEvent} />
 
 {#if open}
   <div
@@ -81,7 +92,7 @@
         class="close"
         data-dismiss="modal"
         aria-label="Close"
-        on:click={handleClose}
+        onclick={handleClose}
       >
         <span aria-hidden="true">&times;</span>
       </button>

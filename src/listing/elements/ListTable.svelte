@@ -4,24 +4,36 @@
   import ListTableBody from "./ListTableBody.svelte";
   import ListTableHeader from "./ListTableHeader.svelte";
 
-  export let hasListActions: boolean;
-  export let hasMobilePulldownActions: boolean;
-  export let store: Listing.ListStore;
-  export let zeroStateLabel: string;
+  type Props = {
+    hasListActions: boolean;
+    hasMobilePulldownActions: boolean;
+    store: Listing.ListStore;
+    zeroStateLabel: string;
+  };
+  let {
+    hasListActions,
+    hasMobilePulldownActions,
+    store,
+    zeroStateLabel,
+  }: Props = $props();
+
+  let isLoading = $derived(store.isLoading);
+  let hasObjects = $derived(!!store.objects && store.objects.length > 0);
+  let columnsLength = $derived(store.columns.length);
 </script>
 
 <thead data-is="list-table-header">
   <ListTableHeader {hasListActions} {hasMobilePulldownActions} {store} />
 </thead>
-{#if store.isLoading}
+{#if isLoading}
   <tbody>
     <tr>
-      <td colspan={store.columns.length + 1}>
+      <td colspan={columnsLength + 1}>
         {window.trans("Loading...")}
       </td>
     </tr>
   </tbody>
-{:else if store.objects}
+{:else if hasObjects}
   <tbody data-is="list-table-body">
     <ListTableBody
       {hasListActions}

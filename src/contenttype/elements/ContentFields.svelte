@@ -1,20 +1,27 @@
 <script lang="ts">
   import type * as ContentType from "../../@types/contenttype";
 
-  import { afterUpdate } from "svelte";
-
   import { recalcHeight } from "../Utils";
 
   import ContentField from "./ContentField.svelte";
   import SVG from "../../svg/elements/SVG.svelte";
 
-  export let config: ContentType.ConfigSettings;
-  export let fieldsStore: ContentType.FieldsStore;
-  export let optionsHtmlParams: ContentType.OptionsHtmlParams;
-  export let opts: ContentType.ContentFieldsOpts;
-  export let root: Element;
+  type Props = {
+    config: ContentType.ConfigSettings;
+    fieldsStore: ContentType.FieldsStore;
+    optionsHtmlParams: ContentType.OptionsHtmlParams;
+    opts: ContentType.ContentFieldsOpts;
+    root: Element;
+  };
+  let {
+    config,
+    fieldsStore,
+    optionsHtmlParams,
+    opts,
+    root,
+  } : Props = $props();
 
-  $: isEmpty = $fieldsStore.length > 0 ? false : true;
+  let isEmpty: boolean = $state($fieldsStore.length > 0 ? false : true);
   let data = "";
   let droppable = false;
   const observer = opts.observer;
@@ -30,8 +37,10 @@
   const gathers: { [key: string]: (() => object) | undefined } = {};
   const tags: Array<HTMLDivElement> = [];
 
-  afterUpdate(() => {
+  $effect(() => {
     const select = root.querySelector("#label_field") as HTMLSelectElement;
+    if (!select) return;
+
     jQuery(select)
       .find("option")
       .each(function (index, option) {
@@ -560,7 +569,7 @@
                         id="name"
                         class="form-control html5-form"
                         value={opts.name}
-                        on:keypress={stopSubmitting}
+                        onkeypress={stopSubmitting}
                         required
                       />
                     </div>
@@ -664,7 +673,7 @@
             id="name"
             class="form-control html5-form"
             value={opts.name}
-            on:keypress={stopSubmitting}
+            onkeypress={stopSubmitting}
             required
           />
         </div>
@@ -680,7 +689,7 @@
       <!-- svelte-ignore a11y-invalid-attribute -->
       <a
         data-bs-toggle="collapse"
-        on:click={toggleAll}
+        onclick={toggleAll}
         href=""
         aria-expanded={isExpanded ? "true" : "false"}
         class="d-inline-block"
@@ -697,9 +706,9 @@
     <div
       class="mt-draggable__area"
       style="height:400px;"
-      on:drop={onDrop}
-      on:dragover={onDragOver}
-      on:dragleave={onDragLeave}
+      ondrop={onDrop}
+      ondragover={onDragOver}
+      ondragleave={onDragLeave}
     >
       {#if isEmpty}
         <div class="mt-draggable__empty">
@@ -719,17 +728,17 @@
           draggable="true"
           aria-grabbed="false"
           data-is="content-field"
-          on:dragstart={(e) => {
+          ondragstart={(e) => {
             onDragStart(e, field);
           }}
-          on:dragend={onDragEnd}
+          ondragend={onDragEnd}
           style="width: 100%;"
           id="content-field-block-{fieldId}"
           bind:this={tags[fieldIndex]}
         >
           <ContentField
             {config}
-            bind:field
+            bind:field={$fieldsStore[fieldIndex]}
             bind:fields={$fieldsStore}
             {fieldIndex}
             {fieldsStore}
@@ -744,7 +753,7 @@
     <div class="mt-collapse__all">
       <a
         data-bs-toggle="collapse"
-        on:click={toggleAll}
+        onclick={toggleAll}
         href=".mt-collapse__content"
         aria-expanded={isExpanded ? "true" : "false"}
         class="d-inline-block"
@@ -763,7 +772,7 @@
   type="button"
   class="btn btn-primary"
   disabled={!canSubmit()}
-  on:click={submit}>{window.trans("Save")}</button
+  onclick={submit}>{window.trans("Save")}</button
 >
 
 <!-- style was moved to edit_content_type.tmpl, because style did not work here -->

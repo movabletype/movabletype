@@ -1,20 +1,19 @@
 <script lang="ts">
   import type * as ContentType from "../../@types/contenttype";
 
-  import { afterUpdate } from "svelte";
-
   import { addRow, deleteRow, validateTable } from "../SelectionCommonScript";
 
   import ContentFieldOption from "./ContentFieldOption.svelte";
   import ContentFieldOptionGroup from "./ContentFieldOptionGroup.svelte";
 
-  // svelte-ignore unused-export-let
-  export let config: ContentType.ConfigSettings;
-  export let field: ContentType.Field;
-  export let id: string;
-  export let options: ContentType.Options;
-  // svelte-ignore unused-export-let
-  export let optionsHtmlParams: ContentType.OptionsHtmlParams;
+  let {
+    config,
+    field = $bindable(),
+    gather = $bindable(null),
+    id,
+    options = $bindable(),
+    optionsHtmlParams,
+  }: ContentType.ContentFieldProps = $props();
 
   if (options.can_add === "0") {
     options.can_add = 0;
@@ -41,11 +40,13 @@
     ];
   }
 
-  afterUpdate(() => {
-    validateTable(refsTable);
+  $effect(() => {
+    if (refsTable) {
+      validateTable(refsTable);
+    }
   });
 
-  export const gather = (): object => {
+  gather = (): object => {
     return {
       values: options.values,
     };
@@ -157,7 +158,7 @@
       id="select_box-multiple"
       name="multiple"
       bind:checked={options.multiple}
-      on:click={changeStateMultiple}
+      onclick={changeStateMultiple}
     /><label for="select_box-multiple" class="form-label"
       >{window.trans("Allow users to select multiple values?")}</label
     >
@@ -192,7 +193,7 @@
       class="form-control w-25"
       min="1"
       bind:value={options.max}
-      on:change={enterMax}
+      onchange={enterMax}
     />
   </ContentFieldOption>
 
@@ -223,7 +224,7 @@
                   type="checkbox"
                   class="form-check-input mt-3"
                   checked={v.checked ? true : false}
-                  on:change={(e) => {
+                  onchange={(e) => {
                     enterInitial(e, index);
                   }}
                 /></td
@@ -248,7 +249,7 @@
               >
               <td
                 ><button
-                  on:click={() => {
+                  onclick={() => {
                     options.values = deleteRow(options.values, index);
                   }}
                   type="button"
@@ -266,7 +267,7 @@
       </table>
     </div>
     <button
-      on:click={() => {
+      onclick={() => {
         options.values = addRow(options.values);
       }}
       type="button"

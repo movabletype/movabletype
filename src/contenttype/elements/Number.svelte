@@ -4,14 +4,14 @@
   import ContentFieldOptionGroup from "./ContentFieldOptionGroup.svelte";
   import ContentFieldOption from "./ContentFieldOption.svelte";
 
-  export let config: ContentType.ConfigSettings;
-  export let field: ContentType.Field;
-  // svelte-ignore unused-export-let
-  export let gather = null;
-  export let id: string;
-  export let options: ContentType.Options;
-  // svelte-ignore unused-export-let
-  export let optionsHtmlParams: ContentType.OptionsHtmlParams;
+  let {
+    config,
+    field = $bindable(),
+    gather = $bindable(null),
+    id,
+    options = $bindable(),
+    optionsHtmlParams,
+  } : ContentType.ContentFieldProps = $props();
 
   options.max_value ??= config.NumberFieldMaxValue;
   options.min_value ??= config.NumberFieldMinValue;

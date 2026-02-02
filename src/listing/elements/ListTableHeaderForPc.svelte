@@ -1,10 +1,14 @@
 <script lang="ts">
   import type * as Listing from "../../@types/listing";
 
-  export let hasListActions: boolean;
-  export let store: Listing.ListStore;
-  export let toggleAllRowsOnPage: () => void;
-  export let toggleSortColumn: (e: Event) => void;
+  type Props = {
+    hasListActions: boolean;
+    store: Listing.ListStore;
+    toggleAllRowsOnPage: () => void;
+    toggleSortColumn: (e: Event) => void;
+  };
+  let { hasListActions, store, toggleAllRowsOnPage, toggleSortColumn }: Props =
+    $props();
 
   const classProps = (column: Listing.ListColumn): object => {
     if (column.sortable && store.sortBy === column.id) {
@@ -32,7 +36,7 @@
           class="form-check-input"
           id="select-all"
           checked={store.checkedAllRowsOnPage}
-          on:change={toggleAllRowsOnPage}
+          onchange={toggleAllRowsOnPage}
         />
         <label class="form-check-label form-label" for="select-all">
           <span class="visually-hidden">
@@ -56,7 +60,7 @@
           <!-- svelte-ignore a11y-invalid-attribute -->
           <a
             href="javascript:void(0)"
-            on:click={toggleSortColumn}
+            onclick={toggleSortColumn}
             {...classProps(column)}
           >
             {@html column.label}

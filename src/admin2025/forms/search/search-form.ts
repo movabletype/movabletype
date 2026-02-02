@@ -1,6 +1,7 @@
 import { fetchContentTypes } from "src/utils/fetch-content-types";
 import SearchForm from "./SearchForm.svelte";
 import { type ContentType } from "src/@types/contenttype";
+import { mount } from "svelte";
 
 type SearchFormProps = {
   blogId: string;
@@ -38,7 +39,7 @@ export function svelteMountSearchForm(
     ...props,
   };
 
-  const app = new SearchForm({
+  const app = mount(SearchForm, {
     target: target,
     props: searchFormProps,
   });
@@ -51,7 +52,6 @@ export function svelteMountSearchForm(
     (event: MouseEvent) => {
       event.preventDefault();
       searchFormProps.isLoading = true;
-      app.$set(searchFormProps);
       fetchContentTypes({
         blogId: props.blogId,
         magicToken: props.magicToken,
@@ -60,20 +60,15 @@ export function svelteMountSearchForm(
           const contentTypes: ContentType[] = data.contentTypes.filter(
             (contentType) => contentType.can_search === 1,
           );
-          searchFormProps.contentTypes = contentTypes;
-          if (
-            searchFormProps.contentTypes.length > 0 &&
-            searchFormProps.objectType === ""
-          ) {
-            searchFormProps.objectType = "content_data";
+          app.contentTypes = contentTypes;
+          if (app.contentTypes.length > 0 && app.objectType === "") {
+            app.objectType = "content_data";
           }
-          searchFormProps.isLoading = false;
-          app.$set(searchFormProps);
+          app.isLoading = false;
         })
         .catch((error) => {
           console.error("Failed to fetch content types:", error);
-          searchFormProps.isLoading = false;
-          app.$set(searchFormProps);
+          app.isLoading = false;
         });
     },
     { once: true },

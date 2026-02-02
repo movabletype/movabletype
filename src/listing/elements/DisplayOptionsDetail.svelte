@@ -4,9 +4,12 @@
   import DisplayOptionsColumns from "./DisplayOptionsColumns.svelte";
   import DisplayOptionsLimit from "./DisplayOptionsLimit.svelte";
 
-  export let changeLimit: (e: Event) => void;
-  export let disableUserDispOption: boolean;
-  export let store: Listing.ListStore;
+  type Props = {
+    changeLimit: (e: Event) => void;
+    disableUserDispOption: boolean;
+    store: Listing.ListStore;
+  };
+  let { changeLimit, disableUserDispOption, store }: Props = $props();
 
   const resetColumns = (): void => {
     store.trigger("reset_columns");
@@ -31,7 +34,7 @@
         <a
           href="javascript:void(0);"
           id="reset-display-options"
-          on:click={resetColumns}
+          onclick={resetColumns}
         >
           {window.trans("Reset defaults")}
         </a>

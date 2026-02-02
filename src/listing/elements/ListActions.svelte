@@ -4,14 +4,26 @@
   import ListActionsForMobile from "./ListActionsForMobile.svelte";
   import ListActionsForPc from "./ListActionsForPc.svelte";
 
-  export let buttonActions: Listing.ButtonActions;
-  export let hasPulldownActions: boolean;
-  export let listActions: Listing.ListActions;
-  export let listActionClient: Listing.ListActionClient;
-  export let moreListActions: Listing.MoreListActions;
-  export let plural: string;
-  export let singular: string;
-  export let store: Listing.ListStore;
+  type Props = {
+    buttonActions: Listing.ButtonActions;
+    hasPulldownActions: boolean;
+    listActions: Listing.ListActions;
+    listActionClient: Listing.ListActionClient;
+    moreListActions: Listing.MoreListActions;
+    plural: string;
+    singular: string;
+    store: Listing.ListStore;
+  };
+  let {
+    buttonActions,
+    hasPulldownActions,
+    listActions,
+    listActionClient,
+    moreListActions,
+    plural,
+    singular,
+    store,
+  }: Props = $props();
 
   let selectedAction:
     | Listing.ButtonAction

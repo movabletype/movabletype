@@ -1,7 +1,8 @@
 <script lang="ts">
   import type * as Listing from "../../@types/listing";
 
-  import { afterUpdate, onMount } from "svelte";
+  import { onMount } from "svelte";
+  import { writable } from 'svelte/store';
 
   import DisplayOptions from "./DisplayOptions.svelte";
   import DisplayOptionsForMobile from "./DisplayOptionsForMobile.svelte";
@@ -11,35 +12,58 @@
   import ListPagination from "./ListPagination.svelte";
   import ListTable from "./ListTable.svelte";
 
-  export let buttonActions: Listing.ButtonActions;
-  export let disableUserDispOption: boolean;
-  export let filterTypes: Array<Listing.FilterType>;
-  export let hasListActions: boolean;
-  export let hasMobilePulldownActions: boolean;
-  export let hasPulldownActions: boolean;
-  export let listActionClient: Listing.ListActionClient;
-  export let listActions: Listing.ListActions;
-  export let localeCalendarHeader: Array<string>;
-  export let moreListActions: Listing.MoreListActions;
-  export let objectLabel: string;
-  export let objectType: string;
-  export let objectTypeForTableClass: string;
-  export let plural: string;
-  export let useActions: boolean;
-  export let useFilters: boolean;
-  export let singular: string;
-  export let store: Listing.ListStore;
-  export let zeroStateLabel: string;
+  type Props = {
+    buttonActions: Listing.ButtonActions;
+    disableUserDispOption: boolean;
+    filterTypes: Array<Listing.FilterType>;
+    hasListActions: boolean;
+    hasMobilePulldownActions: boolean;
+    hasPulldownActions: boolean;
+    listActionClient: Listing.ListActionClient;
+    listActions: Listing.ListActions;
+    localeCalendarHeader: Array<string>;
+    moreListActions: Listing.MoreListActions;
+    objectLabel: string;
+    objectType: string;
+    objectTypeForTableClass: string;
+    plural: string;
+    useActions: boolean;
+    useFilters: boolean;
+    singular: string;
+    store: Listing.ListStore;
+    zeroStateLabel: string;
+  };
 
+  let {
+    buttonActions,
+    disableUserDispOption,
+    filterTypes,
+    hasListActions,
+    hasMobilePulldownActions,
+    hasPulldownActions,
+    listActionClient,
+    listActions,
+    localeCalendarHeader,
+    moreListActions,
+    objectLabel,
+    objectType,
+    objectTypeForTableClass,
+    plural,
+    useActions,
+    useFilters,
+    singular,
+    store,
+    zeroStateLabel,
+  }: Props = $props();
   let callListReady = false;
 
-  $: hidden = store.count === 0;
+  let hidden = $derived(store.count === 0);
 
   onMount(() => {
     store.trigger("load_list");
   });
 
-  afterUpdate(() => {
+  $effect(() => {
     // update sub_fields not managed in the svelte lifecycle
     updateSubFields();
 

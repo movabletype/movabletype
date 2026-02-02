@@ -84,13 +84,13 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button class="btn btn-primary" on:click={saveFilter}>
+        <button class="btn btn-primary" onclick={saveFilter}>
           {window.trans("Save")}
         </button>
         <button
           class="btn btn-default"
           data-bs-dismiss="modal"
-          on:click={closeModal}
+          onclick={closeModal}
         >
           {window.trans("Cancel")}
         </button>

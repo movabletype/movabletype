@@ -7,19 +7,33 @@
   import Custom from "./Custom.svelte";
   import SVG from "../../svg/elements/SVG.svelte";
 
-  export let config: ContentType.ConfigSettings;
-  export let field: ContentType.Field;
-  export let fields: ContentType.Fields;
-  export let fieldIndex: number;
-  export let fieldsStore: ContentType.FieldsStore;
-  export let gatheringData: (c: HTMLDivElement, index: number) => object;
-  export let parent: HTMLDivElement;
-  export let gather: (() => object) | undefined;
-  export let optionsHtmlParams: ContentType.OptionsHtmlParams;
+  type Props = {
+    config: ContentType.ConfigSettings;
+    field: ContentType.Field;
+    fields: ContentType.Fields;
+    fieldIndex: number;
+    fieldsStore: ContentType.FieldsStore;
+    gatheringData: (c: HTMLDivElement, index: number) => object;
+    parent: HTMLDivElement;
+    gather: (() => object) | undefined;
+    optionsHtmlParams: ContentType.OptionsHtmlParams;
+  };
 
-  $: id = `field-options-${field.id}`;
+  let {
+    config,
+    field,
+    fields,
+    fieldIndex,
+    fieldsStore,
+    gatheringData,
+    parent,
+    gather,
+    optionsHtmlParams,
+  } : Props = $props();
 
-  $: {
+  let id = $derived(`field-options-${field.id}`);
+
+  $effect(() => {
     if (field.isNew === null) {
       field.isNew = false;
     }
@@ -35,17 +49,18 @@
     if (field.options === null) {
       field.options = {};
     }
-  }
+  });
 
   let gatherCore: (() => object) | undefined;
   let gatherCustom: (() => object) | undefined;
-  $: {
+
+  $effect(() => {
     if (ContentFieldTypes.getCoreType(field.type)) {
       gather = gatherCore;
     } else {
       gather = gatherCustom;
     }
-  }
+  });
 
   const deleteField = (): void => {
     const label = field.label ? field.label : window.trans("No Name");
@@ -112,7 +127,7 @@
     <!-- svelte-ignore a11y-invalid-attribute -->
     <a
       href="javascript:void(0)"
-      on:click={duplicateField}
+      onclick={duplicateField}
       class="d-inline-block duplicate-content-field"
       ><SVG
         title={window.trans("Duplicate")}
@@ -123,7 +138,7 @@
     <!-- svelte-ignore a11y-invalid-attribute -->
     <a
       href="javascript:void(0)"
-      on:click={deleteField}
+      onclick={deleteField}
       class="d-inline-block delete-content-field"
       ><SVG
         title={window.trans("Delete")}

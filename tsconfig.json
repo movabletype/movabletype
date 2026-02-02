@@ -20,7 +20,8 @@
       "@types/jquery",
       "@types/jqueryui",
       "@types/bootstrap",
-      "@testing-library/jest-dom"
+      "@testing-library/jest-dom",
+      "svelte"
     ],
     "noImplicitAny": false,
     "jsx": "preserve",

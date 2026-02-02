@@ -3,13 +3,18 @@
 
   import ListTableRow from "./ListTableRow.svelte";
 
-  export let hasListActions: boolean;
-  export let hasMobilePulldownActions: boolean;
-  export let store: Listing.ListStore;
-  export let zeroStateLabel: string;
-
-  $: count = store.count || 0;
-  $: objects = store.objects || [];
+  type Props = {
+    hasListActions: boolean;
+    hasMobilePulldownActions: boolean;
+    store: Listing.ListStore;
+    zeroStateLabel: string;
+  };
+  let {
+    hasListActions,
+    hasMobilePulldownActions,
+    store,
+    zeroStateLabel,
+  }: Props = $props();
 
   const clickRow = (e: Event): boolean | undefined => {
     store.trigger("reset_all_clicked_rows");
@@ -26,14 +31,14 @@
     const currentTarget = e.currentTarget as HTMLElement;
     /* @ts-expect-error : MT is not defined */
     if (MT.Util.isMobileView()) {
-      let $mobileColumn: JQuery<HTMLElement>;
+      let mobileColumn: JQuery<HTMLElement>;
       if (target.dataset.is === "list-table-column") {
-        $mobileColumn = jQuery(target);
+        mobileColumn = jQuery(target);
       } else {
-        $mobileColumn = jQuery(target).parents("[data-is=list-table-column]");
+        mobileColumn = jQuery(target).parents("[data-is=list-table-column]");
       }
-      if ($mobileColumn.length > 0 && $mobileColumn.find("a").length > 0) {
-        $mobileColumn.find("a")[0].click();
+      if (mobileColumn.length > 0 && mobileColumn.find("a").length > 0) {
+        mobileColumn.find("a")[0].click();
         store.trigger("click_row", currentTarget.dataset.index);
         return false;
       }
@@ -60,7 +65,7 @@
   };
 </script>
 
-{#if objects.length === 0}
+{#if !store.objects || store.objects.length === 0}
   <tr>
     <td colspan={store.columns.length + 1}>
       {window.trans("No [_1] could be found.", zeroStateLabel)}
@@ -70,10 +75,10 @@
 
 {#if store.pageMax > 1 && store.checkedAllRowsOnPage && !store.checkedAllRows}
   <tr style="background-color: #ffffff;">
-    <td colspan={objects.length + 1}>
+    <td colspan={store.columns.length + 1}>
       <!-- svelte-ignore a11y-invalid-attribute -->
-      <a href="javascript:void(0);" on:click={checkAllRows}>
-        {window.trans("Select all [_1] items", count.toString())}
+      <a href="javascript:void(0);" onclick={checkAllRows}>
+        {window.trans("Select all [_1] items", store.count.toString())}
       </a>
     </td>
   </tr>
@@ -81,17 +86,17 @@
 
 {#if store.pageMax > 1 && store.checkedAllRows}
   <tr class="success">
-    <td colspan={objects.length + 1}>
-      {window.trans("All [_1] items are selected", count.toString())}
+    <td colspan={store.columns.length + 1}>
+      {window.trans("All [_1] items are selected", store.count.toString())}
     </td>
   </tr>
 {/if}
 
-{#each objects as obj, index}
+{#each store.objects as obj, index}
   <!-- remove "object" property because it is not output in Riot.js -->
   <tr
     data-is="list-table-row"
-    on:click={clickRow}
+    onclick={clickRow}
     data-index={index}
     {...trProps(obj)}
   >

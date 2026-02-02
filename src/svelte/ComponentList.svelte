@@ -33,8 +33,8 @@
       event={new CustomEvent("message", {
         detail,
       })}
-      on:ready={onReady}
-      on:message
+      onready={onReady}
+      onmessage
     />
   {/each}
 
