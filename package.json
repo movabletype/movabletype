@@ -100,7 +100,7 @@
     "jquery-migrate": "3.5.2",
     "jquery-ui": "1.14.1",
     "jquery-ui-touch-punch": "github:movabletype/jquery-ui-touch-punch",
-    "jquery-validation": "1.20.0",
+    "jquery-validation": "1.22.0",
     "js-cookie": "3.0.1",
     "lru-cache": "^11.2.5",
     "mt-chart-api": "github:movabletype/mt-chart-api-sdk-js#v1.0.2",
