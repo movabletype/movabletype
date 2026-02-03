@@ -35,7 +35,7 @@ $app->get_ok({
     search    => 'movable',
     _type     => 'template',
 });
-$app->content_unlike(qr/Publish selected templates/i, "Publish templates button isn't present for global template search");
+$app->content_unlike(qr/Rebuild selected templates/i, "Rebuild templates button isn't present for global template search");
 $app->content_like(qr/Delete selected templates/i, "Delete templates button is present");
 $app->content_like(qr/Refresh template\(s\)/i,     "Refresh templates dropdown is present");
 $app->content_like(qr/Clone template\(s\)/i,       "Clone templates dropdown is present");
@@ -49,7 +49,7 @@ $app->get_ok({
     search    => 'index',
     _type     => 'template',
 });
-$app->content_like(qr/Publish selected templates/i, "Publish templates button is present");
+$app->content_like(qr/Rebuild selected templates/i, "Rebuild templates button is present");
 $app->content_like(qr/Delete selected templates/i,  "Delete templates button is present");
 $app->content_like(qr/Refresh template\(s\)/i,      "Refresh templates dropdown is present");
 $app->content_like(qr/Clone template\(s\)/i,        "Clone templates dropdown is present");
