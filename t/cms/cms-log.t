@@ -50,6 +50,86 @@ subtest 'show dialog' => sub {
     ok $form->find('button#export-log-download');
 };
 
+subtest 'show reset dialog' => sub {
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->login($author);
+
+    $app->get_ok({ __mode => 'list', blog_id => $website->id, _type => 'log' });
+    ok my $link = $app->wq_find('a[href*="dialog_reset_log"]');
+    my $query = URI->new($link->attr('href'))->query_form_hash;
+
+    $app->get_ok($query);
+    ok my $form = $app->wq_find('form#reset-log-form');
+    ok $form->find('button#reset-log-submit');
+};
+
+subtest 'reset' => sub {
+    my $blog = MT::Test::Permission->make_blog(
+        parent_id => $website->id,
+        name      => 'reset-test',
+    );
+
+    MT::Test::Permission->make_log(
+        blog_id     => $blog->id,
+        message     => 'old log',
+        created_on  => '20050130074500',
+        modified_on => '20050130074600',
+    );
+    MT::Test::Permission->make_log(
+        blog_id     => $blog->id,
+        message     => 'new log',
+        created_on  => '20050131074500',
+        modified_on => '20050131074600',
+    );
+
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->login($author);
+
+    my $log_class = MT->model('log');
+    my $count_logs = sub {
+        my $iter  = $log_class->load_iter({ blog_id => $blog->id });
+        my $count = 0;
+        while ( my $log = $iter->() ) {
+            next if ( $log->category || '' ) eq 'reset_log';
+            $count++;
+        }
+        return $count;
+    };
+
+    is $count_logs->(), 2,
+        'setup log count';
+
+    $app->post_ok({
+        __mode  => 'reset_log',
+        blog_id => $blog->id,
+        _type   => 'log',
+        type    => 'before',
+        origin  => '2005-01-31',
+    });
+
+    is $count_logs->(), 1,
+        'reset removed logs before date';
+
+    MT::Test::Permission->make_log(
+        blog_id     => $blog->id,
+        message     => 'another log',
+        created_on  => '20050201074500',
+        modified_on => '20050201074600',
+    );
+
+    is $count_logs->(), 2,
+        'setup log count for no-date reset';
+
+    $app->post_ok({
+        __mode  => 'reset_log',
+        blog_id => $blog->id,
+        _type   => 'log',
+    });
+
+    is $count_logs->(), 0,
+        'reset removed all logs without date';
+};
+
 subtest 'download' => sub {
     my @cases = ({
             set_data => sub {
