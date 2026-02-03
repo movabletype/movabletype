@@ -1335,7 +1335,7 @@ Pager = new Class(Object, {
               if(page -1 == 1) item.className = 'page-item first-last';
               var link = doc.createElement('a');
               link.href = 'javascript:void(0)';
-              link.onclick = function(){ return self.movePage(Number(page - 1)) };
+              link.onclick = function(e){ return self.movePage(Number(page - 1), e) };
               link.className = 'page-link';
               link.innerHTML = String(page - 1);
               item.appendChild(link);
@@ -1357,7 +1357,7 @@ Pager = new Class(Object, {
               if(page + 1 == page_max) item.className = 'page-item first-last';
               var link = doc.createElement('a');
               link.href = 'javascript:void(0)';
-              link.onclick = function(){ return self.movePage(Number(page + 1)) };
+              link.onclick = function(e){ return self.movePage(Number(page - 1), e) };
               link.className = 'page-link';
               link.innerHTML = String(page + 1);
               item.appendChild(link);
@@ -1405,14 +1405,14 @@ Pager = new Class(Object, {
             this.element.innerHTML = '';
         }
     },
-    movePage: function(nex_page){
+    movePage: function(nex_page, e){
       if (this.state.listTotal) {
           var offset = this.state.limit * (nex_page-1);
           if (offset >= this.state.listTotal) {
               return false;
           }
           this.navigate(offset);
-          return TC.stopEvent(e || window.event);
+          return TC.stopEvent(e);
       }
       return false;
     }
