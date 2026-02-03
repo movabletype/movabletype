@@ -5177,6 +5177,7 @@ use vars qw( @ISA %Lexicon );
 	'No content type could be found.' => 'コンテンツタイプが見つかりません',
 	'Publish Queue' => '公開キュー',
 	'Publish selected templates (a)' => '選択されたテンプレートを公開 (a)',
+	'Rebuild selected templates (a)' => '選択されたテンプレートを再構築 (a)',
 	'SSI' => 'SSI',
 	'Static' => 'スタティック',
 	'Uncached' => 'キャッシュしていない',
