@@ -255,6 +255,22 @@ sub reset {
     my $author    = $app->user;
     my $log_class = $app->model('log');
     my $args      = { 'reset' => 1, '_type' => 'log' };
+    my $created_on_terms;
+    my $type = $app->param('type') || '';
+    my $origin_date = $app->param('origin') || '';
+    if ( $type eq 'before' ) {
+        my $origin = $origin_date;
+        $origin =~ s!\D!!g;
+        if ($origin) {
+            $created_on_terms = {
+                op    => '<',
+                value => $origin . '000000'
+            };
+            if ( $origin =~ /^(\d{4})(\d{2})(\d{2})/ ) {
+                $origin_date = "$1-$2-$3";
+            }
+        }
+    }
     if ( my $blog_id = $app->param('blog_id') ) {
         my $blog_class = $app->model('blog');
         my $blog       = $blog_class->load($blog_id)
@@ -274,13 +290,17 @@ sub reset {
             unless $blogs;
 
         foreach my $blog (@$blogs) {
-            if ($log_class->remove( { blog_id => $blog->id, class => '*' } ) )
-            {
+            my %remove_terms = ( blog_id => $blog->id, class => '*' );
+            $remove_terms{created_on} = $created_on_terms if $created_on_terms;
+            if ( $log_class->remove( \%remove_terms ) ) {
+                my $msg = "Activity log for blog '[_1]' (ID:[_2]) reset by '[_3]'";
+                my @msg_args = ( $blog->name, $blog->id, $author->name );
+                if ( $created_on_terms ) {
+                    $msg = "Activity log before [_4] for blog '[_1]' (ID:[_2]) deleted by '[_3]'";
+                    push @msg_args, $origin_date;
+                }
                 $app->log(
-                    {   message => $app->translate(
-                            "Activity log for blog '[_1]' (ID:[_2]) reset by '[_3]'",
-                            $blog->name, $blog->id, $author->name
-                        ),
+                    {   message => $app->translate( $msg, @msg_args ),
                         level    => MT::Log::INFO(),
                         class    => 'system',
                         category => 'reset_log',
@@ -293,12 +313,17 @@ sub reset {
     }
     else {
         if ( $app->can_do('reset_system_log') ) {
-            if ( $log_class->remove( { class => '*' } ) ) {
+            my %remove_terms = ( class => '*' );
+            $remove_terms{created_on} = $created_on_terms if $created_on_terms;
+            if ( $log_class->remove( \%remove_terms ) ) {
+                my @msg_args = ( $author->name );
+                my $msg = "Activity log reset by '[_1]'";
+                if ( $created_on_terms ) {
+                    $msg = "Activity log before [_2] deleted by '[_1]'";
+                    push @msg_args, $origin_date;
+                }
                 $app->log(
-                    {   message => $app->translate(
-                            "Activity log reset by '[_1]'",
-                            $author->name
-                        ),
+                    {   message => $app->translate( $msg, @msg_args ),
                         level    => MT::Log::INFO(),
                         class    => 'system',
                         category => 'reset_log'
@@ -319,16 +344,17 @@ sub reset {
                 unless $blogs;
 
             foreach my $blog (@$blogs) {
-                if ($log_class->remove(
-                        { blog_id => $blog->id, class => '*' }
-                    )
-                    )
-                {
+                my %remove_terms = ( blog_id => $blog->id, class => '*' );
+                $remove_terms{created_on} = $created_on_terms if $created_on_terms;
+                if ( $log_class->remove( \%remove_terms ) ) {
+                    my @msg_args = ( $blog->name, $blog->id, $author->name );
+                    my $msg = "Activity log for blog '[_1]' (ID:[_2]) reset by '[_3]'";
+                    if ( $created_on_terms ) {
+                        $msg = "Activity log before [_4] for blog '[_1]' (ID:[_2]) deleted by '[_3]'";
+                        push @msg_args, $origin_date;
+                    }
                     $app->log(
-                        {   message => $app->translate(
-                                "Activity log for blog '[_1]' (ID:[_2]) reset by '[_3]'",
-                                $blog->name, $blog->id, $author->name
-                            ),
+                        {   message => $app->translate( $msg, @msg_args ),
                             level    => MT::Log::INFO(),
                             class    => 'system',
                             category => 'reset_log'
@@ -745,6 +771,20 @@ sub dialog_export_log {
     }
 
     $app->load_tmpl('dialog/export_log.tmpl', \%param);
+}
+
+sub dialog_reset_log {
+    my $app       = shift;
+    my $blog_id   = $app->param('blog_id');
+    my $list_pref = $app->list_pref('log');
+    my %param     = (%$list_pref);
+    $param{is_system} = ( $blog_id || 0 ) eq 0 ? 1 : 0;
+    if ($blog_id) {
+        my $blog = $app->model('blog')->load($blog_id);
+        $param{blog_name} = $blog->name if $blog;
+    }
+
+    $app->load_tmpl('dialog/reset_log.tmpl', \%param);
 }
 
 1;
