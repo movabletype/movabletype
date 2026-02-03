@@ -309,6 +309,7 @@ sub core_methods {
         'dialog_edit_image'          => "${pkg}Asset::dialog_edit_image",
         'dialog_list_deprecated_log' => "${pkg}Log::dialog_list_deprecated_log",
         'dialog_export_log'          => "${pkg}Log::dialog_export_log",
+        'dialog_reset_log'           => "${pkg}Log::dialog_reset_log",
 
         'issue_api_password'         => "${pkg}User::issue_api_password",
         'delete_api_password'        => "${pkg}User::delete_api_password",
@@ -809,16 +810,13 @@ sub core_content_actions {
                 class       => 'icon-action',
                 label       => 'Clear Activity Log',
                 icon        => 'ic_setting',
-                mode        => 'reset_log',
+                mode        => 'dialog_reset_log',
                 order       => 100,
-                confirm_msg => sub {
-                    MT->translate(
-                        'Are you sure you want to reset the activity log?');
-                },
                 permit_action => {
                     permit_action => 'reset_blog_log',
                     include_all   => 1,
                 },
+                dialog => 1,
             },
             'download_log' => {
                 class         => 'icon-download',
