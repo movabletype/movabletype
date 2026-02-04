@@ -278,7 +278,6 @@ sub test_data_api {
                         },
                     );
                 }
-+
                 cmp_deeply( $result, $expected_result, 'result' ) || note explain $result;
             }
 

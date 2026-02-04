@@ -2247,6 +2247,7 @@ BEGIN {
                 type    => 'ARRAY',
                 handler => \&TrustedHosts,
             },
+            'UsejQuery4' => { default => 0 },
             'GrantRoleSitesView' => { default => 'list' }, # DEPRECATED
             'DisableContentFieldPermission' => { default => undef },
             'CSVExportWithBOM' => { default => 1 },
