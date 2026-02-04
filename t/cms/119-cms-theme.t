@@ -17,6 +17,7 @@ name: my_website_theme
 label: My Website Theme
 class: website
 thumbnail: my_thumbnail.png
+author_link: https://theme.example.com/author
 elements:
     template_sGet:
         component: core
@@ -62,6 +63,7 @@ name: my_blog_theme
 label: My Blog Theme
 class: blog
 thumbnail: my_thumbnail.png
+author_link: https://theme.example.com/author
 elements:
     template_sGet:
         component: core
@@ -105,6 +107,7 @@ YAML
 id: old_theme
 name: OLD Theme
 label: Old theme
+author_link: old.example.com
 required_components:
     core: 1.0
 optional_components:
@@ -143,6 +146,24 @@ subtest 'Check applying a blog theme' => sub {
         $website->theme_id, 'MyBlogTheme',
         'Website\'s theme has correct theme_id.'
     );
+};
+
+subtest 'Check All Themes screen' => sub {
+    subtest 'System' => sub {
+        my $app = MT::Test::App->new('MT::App::CMS');
+        $app->login($admin);
+        $app->get_ok({
+            __mode  => 'list_theme',
+            blog_id => 0,
+        });
+        $app->has_no_permission_error;
+
+        my @author_links;
+        $app->wq_find('.theme-author a')->each(sub {
+            push @author_links, $_->attr('href');
+        });
+        ok !grep( { $_ =~ 'old.example.com' } @author_links ), 'The author_link field should only appear as a link if it is a full URL';
+    };
 };
 
 done_testing;

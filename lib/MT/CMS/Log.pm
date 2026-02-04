@@ -10,7 +10,6 @@ use warnings;
 
 use MT::Util
     qw( format_ts epoch2ts ts2epoch relative_date offset_time encode_url dirify encode_url );
-use MT::Util::Encode;
 use MT::I18N qw( const );
 
 sub view {
@@ -426,17 +425,10 @@ PERMCHECK: {
         $ts[4] + 1,
         @ts[ 3, 2, 1, 0 ];
     $file .= "log_$ts.csv";
-    $app->{no_print_body} = 1;
-    $app->set_header( "Content-Disposition" => "attachment; filename=$file" );
-    $app->send_http_header(
-        $enc
-        ? "text/csv; charset=$enc"
-        : 'text/csv'
-    );
 
     my %seen;
-    my $csv = "timestamp,ip,weblog,by,message\n";
-    while ( my $log = $iter->() ) {
+    my $log_iter = sub {
+        my $log = $iter->() or return;
 
         # columns:
         # date, ip address, weblog, by, log message
@@ -462,21 +454,15 @@ PERMCHECK: {
                 $app->user ? $app->user->preferred_language : undef
                 );
         }
-        push @col, $log->ip || '';
+        push @col, $log->ip;
+
         my $blog;
         if ( $log->blog_id ) {
             $blog = $seen{blogs}{ $log->blog_id }
                 ||= $blog_class->load( $log->blog_id );
         }
-        if ($blog) {
-            my $name = $blog->name;
-            $name =~ s/"/\\"/gs;
-            $name =~ s/[\r\n]+/ /gs;
-            push @col, '"' . $name . '"';
-        }
-        else {
-            push @col, '';
-        }
+        push @col, $blog ? $blog->name : undef;
+
         my $author_name;
         if (my $author_id = $log->author_id) {
             if (defined $seen{authors}{$author_id}) {
@@ -488,22 +474,22 @@ PERMCHECK: {
                 $author_name = MT->translate('*User deleted*');
             }
         }
-        if (defined $author_name && $author_name ne '') {
-            $author_name =~ s/"/\\"/gs;
-            $author_name =~ s/[\r\n]+/ /gs;
-            push @col, '"' . $author_name . '"';
-        } else {
-            push @col, '';
+        push @col, $author_name;
+
+        push @col, $log->message;
+
+        return \@col;
+    };
+
+    $app->csv_result(
+        $log_iter,
+        {
+            filename => $file,
+            headers  => [qw/timestamp ip weblog by message/],
+            encoding => $enc
         }
-        my $msg = $log->message;
-        $msg = '' unless defined $msg;
-        $msg =~ s/"/\\"/gs;
-        $msg =~ s/[\r\n]+/ /gs;
-        push @col, '"' . $msg . '"';
-        $csv .= ( join ',', @col ) . "\n";
-        $app->print( MT::Util::Encode::encode( $enc, $csv ) );
-        $csv = '';
-    }
+    );
+
 }
 
 sub apply_log_filter {
