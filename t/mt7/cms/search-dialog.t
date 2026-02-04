@@ -521,8 +521,13 @@ subtest 'content data' => sub {
 
         my @cds;
 
+        my $num = 1;
         for my $label ('label 0', 'NOT INTERESTED') {
+            my $datetime = sprintf('202207040102%02d', $num++);
             my $cd = MT::Test::Permission->make_content_data(
+                created_on      => $datetime,
+                modified_on     => $datetime,
+                authored_on     => $datetime,
                 blog_id         => $blog_id,
                 content_type_id => $ct_id,
                 identifier      => $label,
@@ -571,7 +576,7 @@ subtest 'content data' => sub {
                 search          => '',
             });
             my ($labels, $pager, $have_more) = search_result_cd($app);
-            is_deeply($labels, ['label 0', 'NOT INTERESTED']);
+            is_deeply($labels, ['NOT INTERESTED', 'label 0']);
             is $pager->{listTotal}, 2;
         };
 
