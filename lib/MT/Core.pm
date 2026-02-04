@@ -2249,6 +2249,8 @@ BEGIN {
             'UsejQuery4' => { default => 0 },
             'GrantRoleSitesView' => { default => 'list' }, # DEPRECATED
             'DisableContentFieldPermission' => { default => undef },
+            'CSVExportWithBOM' => { default => 1 },
+            'CSVExportEscapeFormula' => { default => 1 },
             'AllowNonAsciiFilename' => { default => 1 },
         },
         upgrade_functions => \&load_upgrade_fns,
