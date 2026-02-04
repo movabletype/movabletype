@@ -2006,6 +2006,7 @@ BEGIN {
             'ContentDataSearchMaxCharCount' => {
                 default => sub { $_[0]->SearchMaxCharCount },
             },
+            'DisableRegexpSearch' => { default => 0 },
             'CMSSearchLimit'     => { default => 125 },
             'SupportURL'         => undef,
             'NewsURL'            => undef,

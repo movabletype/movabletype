@@ -249,12 +249,14 @@ function toggleContentTypeDateTimeInputs() {
               <label class="form-check-label" for="case"><__trans phrase="Case Sensitive"></label>
             </div>
           </li>
-          <li class="list-inline-item">
-            <div class="form-check">
-              <input type="checkbox" id="is_regex" name="is_regex" value="1"<mt:if name="is_regex"> checked="checked"</mt:if> class="form-check-input cb" />
-              <label class="form-check-label" for="is_regex"><__trans phrase="Regex Match"></label>
-            </div>
-          </li>
+          <mt:unless name="disable_regexp_search">
+            <li class="list-inline-item">
+              <div class="form-check">
+                <input type="checkbox" id="is_regex" name="is_regex" value="1"<mt:if name="is_regex"> checked="checked"</mt:if> class="form-check-input cb" />
+                <label class="form-check-label" for="is_regex"><__trans phrase="Regex Match"></label>
+              </div>
+            </li>
+          </mt:unless>
           <li class="list-inline-item">
             <div class="form-check">
               <input type="checkbox" id="is_limited" name="is_limited" value="1"<mt:if name="is_limited"> checked="checked"</mt:if> class="form-check-input cb" onclick="toggleVisibility(this, 'limited-fields')" />
