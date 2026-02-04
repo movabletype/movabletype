@@ -13647,6 +13647,20 @@ li.nav-item, .mt-sharedPreviewNav .mt-sharedPreviewNav__rightNav li.mt-sharedPre
   margin-bottom: 2rem;
 }
 
+/* List Theme */
+.theme-thumbnail {
+  flex: 0 1 160px;
+}
+
+.theme-meta {
+  flex: 1 1;
+}
+
+@media (min-width: 768px) {
+  .theme-thumbnail {
+    flex: 0 1 180px;
+  }
+}
 .selector.scope {
   background-color: #333;
 }

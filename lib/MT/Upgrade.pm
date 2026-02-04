@@ -376,7 +376,6 @@ sub type_diff {
 
     my $class = MT->model($type) or return;
 
-    my $table = $class->datasource;
     my $defs  = $class->column_defs;
 
     my $ddl     = $class->driver->dbd->ddl_class;

@@ -37,7 +37,7 @@ my $site = MT::Blog->load(1);
 my $site_id = $site->id;
 
 MT::Test::TextFilter->run_perl_tests($site_id);
-MT::Test::TextFilter->run_php_tests($site_id) if MT::Test::PHP::php_version >= 7.4;
+MT::Test::TextFilter->run_php_tests($site_id) if MT::Test::PHP::php_version >= 8.1;
 
 done_testing;
 

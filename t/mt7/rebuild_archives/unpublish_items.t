@@ -118,7 +118,7 @@ $test_env->ls( $blog->archive_path );
 
 sub _year { substr( shift, 0, 4 ); }
 sub _date { join '-', unpack 'A4A2A2', substr( shift, 0, 8 ); }
-sub _time { join ':', unpack 'A2A2A2', substr( shift, 9, 6 ); }
+sub _time { join ':', unpack 'A2A2A2', substr( shift, 8, 6 ); }
 
 sub _slurp {
     my $file = shift;

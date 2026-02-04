@@ -325,7 +325,7 @@ sub process_scenarios {
         is($current_panel[0],       $panels[$j],       'panel is visible');
         is(scalar @current_panel,   1,                 'other panels are hidden');
         is(scalar @visible_options, $pages->[$j]->[0], 'right number of options');
-        $visible_options[$pages->[$j]->[1] - 1]->click();        
+        $visible_options[$pages->[$j]->[1] - 1]->click();
         $next_button->click();
         assert_no_browser_errors();
     }

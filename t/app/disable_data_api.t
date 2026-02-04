@@ -4,7 +4,6 @@ use FindBin;
 use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
-use JSON::PP;                      # to silence warnings
 BEGIN {
     eval qq{ use Plack::Test; 1 }
         or plan skip_all => 'Plack::Test is not installed';

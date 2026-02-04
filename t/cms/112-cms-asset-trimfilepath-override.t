@@ -8,13 +8,12 @@ use MT::Test::Env;
 
 our $test_env;
 BEGIN {
+    plan skip_all => 'Not for Win32 (illegal paths)' if $^O eq 'MSWin32';
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
 use File::Spec;
-use File::Path;
-
 use MT::Test;
 use MT::Test::Image;
 use MT::Test::App;

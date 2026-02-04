@@ -1482,6 +1482,9 @@ sub is_valid_url {
     use bytes;
     my ( $url, $stringent ) = @_;
 
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::warning(name => 'is_valid_url', since => '9.1.0');
+
     $url ||= "";
 
     # strip spaces
@@ -1494,12 +1497,12 @@ sub is_valid_url {
     $url =~ s,(https?);//,$1://,;
     $url =~ s,(https?)//,$1://,;
 
-    $url = "http://$url" unless ( $url =~ m,https?://, );
+    $url = "http://$url" unless ( $url =~ m,^[A-Za-z][A-Za-z0-9+\-.]*:, );
 
     my ( $scheme, $host, $path, $query, $fragment )
         = $url
         =~ m,(?:([^:/?#]+):)?(?://([^/?#]*))?([^?#]*)(?:\?([^#]*))?(?:#(.*))?,;
-    if ( $scheme && $host ) {
+    if ( defined $scheme && $scheme =~ m/^(?:https?)$/i && defined $host ) {
 
       # Note: no stringent checks; localhost is a legit hostname, for example.
         return $url;
@@ -1512,7 +1515,7 @@ sub is_valid_url {
 sub is_url {
     my ($url) = @_;
 
-    return $url =~ /^s?https?:\/\/[-_.!~*'()a-zA-Z0-9;\/?:\@&=+\$,%#]+$/;
+    return $url && $url =~ /^s?https?:\/\/[-_.!~*'()a-zA-Z0-9;\/?:\@&=+\$,%#]+$/;
 }
 
 sub mark_odd_rows {
@@ -2075,18 +2078,21 @@ sub translate_naughty_words {
     }
 }
 
+# Enable "allow_nonref" by default for compatibility with RFC 7159.
+# This behavior is the same as in 4.00 and later versions of JSON::XS.
 sub to_json {
     my ( $value, $args ) = @_;
-    if ( MT->config->JSONCanonicalization ) {
-        $args ||= {};
-        $args->{canonical} = 1;
-    }
+    $args ||= {};
+    $args->{canonical}    = 1 if MT->config->JSONCanonicalization;
+    $args->{allow_nonref} = 1 unless exists $args->{allow_nonref};
     require JSON;
     return JSON::to_json( $value, $args );
 }
 
 sub from_json {
     my ( $value, $args ) = @_;
+    $args ||= {};
+    $args->{allow_nonref} = 1 unless exists $args->{allow_nonref};
     require JSON;
     return JSON::from_json( $value, $args );
 }

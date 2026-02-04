@@ -116,15 +116,7 @@
 <mt:setvarblock name="html_head" append="1">
 <script>
 /* <![CDATA[ */
-    <mt:unless name="filter_key" eq="backup_templates">
-        <mt:if name="blog_id">
-var tableList = ["index", "archive", "ct", "module", "system", "widget-set", "widget"];
-        <mt:else>
-var tableList = ["module", "email", "system", "widget-set", "widget"];
-        </mt:if>
-    <mt:else>
-var tableList = ["backup"];
-    </mt:unless>
+let tableList = [];
 function showTable(name) {
     for (var i=0, len=tableList.length; i<len; i++) {
         var el = tableList[i] + "-listing"
@@ -148,6 +140,9 @@ function showTable(name) {
 }
 var tableSelect = [];
 function init() {
+    document.querySelectorAll('[id$="-listing"].listing').forEach((el) => {
+        tableList.push(el.id.replace('-listing', ''));
+    });
 <mt:loop name="template_type_loop">
     tableSelect.push(new TC.TableSelect( '<mt:var name="template_type" escape="js">-listing-table' ));
     tableSelect[tableSelect.length-1].rowSelect = true;

@@ -3,7 +3,6 @@ package MT::Test::ArchiveType;
 use strict;
 use warnings;
 use Test::More;
-use Encode;
 use MT::Test;
 use MT::Test::PHP;
 use MT::Test::Fixture::ArchiveType;
@@ -433,7 +432,7 @@ if ($ctx->_compile_source('evaluated template', $tmpl, $_var_compiled)) {
 ?>
 PHP
 
-            my $result = Encode::decode_utf8(MT::Test::PHP->run($test_script));
+            my $result = MT::Test::PHP->run($test_script);
             my $php_error = MT::Test::PHP->retrieve_php_logs($log);
 
             # those with $method_name have higher precedence

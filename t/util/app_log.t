@@ -94,3 +94,9 @@ is $logs[7]->author_id => $author2->id;
 is $logs[7]->message   => 'log 8';
 
 done_testing;
+
+END {
+    # to close filehandle (for Win32)
+    no warnings 'once';
+    undef $Log::Minimal::PRINT;
+}

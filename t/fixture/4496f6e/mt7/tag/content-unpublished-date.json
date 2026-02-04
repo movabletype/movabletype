@@ -61,7 +61,7 @@
       ],
       "rows" : [
          [
-            "__API_PASS__",
+            null,
             "MT",
             "melody",
             null,
@@ -234,7 +234,7 @@
             0,
             "0",
             0,
-            "",
+            "__TEST_ROOT__",
             "/",
             "ascend",
             "descend",
@@ -350,16 +350,16 @@
             1,
             null,
             "__NOW__",
-            "54ef7e2dc1cdf1b920216c9d433636e9011fb114",
+            "858a8db984fe6f51c195206c7d51bfe0f2ef5cb1",
             0,
             null,
             1,
-            "902e7158bcbbeb74b78c0731d273aaf0d09e6102",
+            "8353cacfa0632cbd1bb1f2ef16122cb47a7f0f25",
             null,
             null,
             "__NOW__",
             2,
-            "902e7158bcbbeb74b78c0731d273aaf0d09e6102",
+            "8353cacfa0632cbd1bb1f2ef16122cb47a7f0f25",
             "2017-05-30 19:01:00",
             201722
          ],
@@ -370,16 +370,16 @@
             1,
             null,
             "__NOW__",
-            "54ef7e2dc1cdf1b920216c9d433636e9011fb114",
+            "858a8db984fe6f51c195206c7d51bfe0f2ef5cb1",
             0,
             null,
             2,
-            "f509c9bd65fdc946400a21247b33a40186cb9e94",
+            "c1c8907d588bd18fe0a8b9f35dab18ac9079fd92",
             null,
             null,
             "__NOW__",
             2,
-            "f509c9bd65fdc946400a21247b33a40186cb9e94",
+            "c1c8907d588bd18fe0a8b9f35dab18ac9079fd92",
             null,
             201722
          ]
@@ -392,7 +392,7 @@
       ],
       "rows" : [
          [
-            "DataAPIDisableSite 0\nDefaultSupportedLanguages en_us,ja\nDisableDataAPI 0\nDisableNotificationPings 1\nHidePrivateRelatedContentData 1\nPluginAlias ContentType Information Widget=ContentInfoWidget\nPluginAlias Markdown=Markdown/Markdown.pl\nPluginAlias SmartyPants=Markdown/SmartyPants.pl\nPluginAlias Textile=Textile/textile2.pl\nPluginAlias WXR Importer=WXRImporter\nPluginAlias Widget Manager Upgrade Assistant=WidgetManager/WidgetManager.pl\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion blockeditor=1\nPluginSchemaVersion commonmark=1.0\nPluginSchemaVersion formattedtext=1.00\nPluginSchemaVersion tinymce6=1\nPluginSwitch BlockEditor=0\nPluginSwitch CommonMark=1\nPluginSwitch ContentInfoWidget=1\nPluginSwitch DashboardWidgetTemplate=1\nPluginSwitch FormattedText=1\nPluginSwitch FormattedTextForTinyMCE6=1\nPluginSwitch GoogleAnalyticsV4=1\nPluginSwitch Markdown/Markdown.pl=1\nPluginSwitch Markdown/SmartyPants.pl=1\nPluginSwitch Textile/textile2.pl=0\nPluginSwitch TinyMCE6=1\nPluginSwitch WXRImporter=1\nPluginSwitch WidgetManager/WidgetManager.pl=0\nSchemaVersion 9.0001\nTrimFilePath 1\n",
+            "DataAPIDisableSite 0\nDefaultSupportedLanguages en_us,ja\nDisableContentFieldPermission 1\nDisableDataAPI 0\nDisableNotificationPings 1\nHidePrivateRelatedContentData 1\nPluginAlias ContentType Information Widget=ContentInfoWidget\nPluginAlias Markdown=Markdown/Markdown.pl\nPluginAlias SmartyPants=Markdown/SmartyPants.pl\nPluginAlias Textile=Textile/textile2.pl\nPluginAlias WXR Importer=WXRImporter\nPluginAlias Widget Manager Upgrade Assistant=WidgetManager/WidgetManager.pl\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion blockeditor=1\nPluginSchemaVersion commonmark=1.0\nPluginSchemaVersion formattedtext=1.00\nPluginSchemaVersion tinymce6=1\nPluginSwitch BlockEditor=0\nPluginSwitch CommonMark=1\nPluginSwitch ContentInfoWidget=1\nPluginSwitch DashboardWidgetTemplate=1\nPluginSwitch FormattedText=1\nPluginSwitch FormattedTextForTinyMCE6=1\nPluginSwitch GoogleAnalyticsV4=1\nPluginSwitch Markdown/Markdown.pl=1\nPluginSwitch Markdown/SmartyPants.pl=1\nPluginSwitch Textile/textile2.pl=0\nPluginSwitch TinyMCE6=1\nPluginSwitch WXRImporter=1\nPluginSwitch WidgetManager/WidgetManager.pl=0\nSchemaVersion 9.0002\nTrimFilePath 1\n",
             1
          ]
       ]
@@ -425,7 +425,7 @@
             null,
             "__NOW__",
             "test content data",
-            "54ef7e2dc1cdf1b920216c9d433636e9011fb114",
+            "858a8db984fe6f51c195206c7d51bfe0f2ef5cb1",
             null,
             null
          ]
@@ -781,5 +781,5 @@
          ]
       ]
    },
-   "schema_version" : "WidgetManager 1.1; blockeditor 1; commonmark 1.0; core 9.0001; formattedtext 1.00; tinymce6 1"
+   "schema_version" : "WidgetManager 1.1; blockeditor 1; commonmark 1.0; core 9.0002; formattedtext 1.00; tinymce6 1"
 }

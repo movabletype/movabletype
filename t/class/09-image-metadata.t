@@ -50,7 +50,7 @@ for my $driver ( $test_env->image_drivers ) {
 
         # Remove 'Keywords' tag. (remove all tags)
         MT::Image->remove_metadata($tempfile);
-        
+
         SKIP: {
             my $img = MT::Image->new;
             skip( "no $driver for image $tempfile", 3 ) unless $img;

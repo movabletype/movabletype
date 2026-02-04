@@ -77,7 +77,7 @@ sub compile {
             $tmpl->errors([{ message => $msg, line => $line }]);
             $msg = MT->translate(
                 "Publish error in template '[_1]': [_2]",
-                $tmpl->name || $tmpl->{__file},
+                $tmpl->name || $tmpl->{__file} || '?',
                 $msg
             );
         }

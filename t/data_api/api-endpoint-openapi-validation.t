@@ -16,11 +16,12 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
+use MT::App::DataAPI;
 use MT::Test::DataAPI;
 
 $test_env->prepare_fixture('db_data');
 
-for my $version (qw/1 2 3 4 5/) {
+for my $version (1 .. MT::App::DataAPI::DEFAULT_VERSION) {
     my $suite = suite($version);
     test_data_api($suite);
 }

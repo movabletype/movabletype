@@ -21,7 +21,7 @@ BEGIN {
 $test_env->prepare_fixture('db_data');
 
 use HTTP::Request::Common;
- 
+
 my $useragent = Test::LWP::UserAgent->new();
 
 my $dummy_res = {

@@ -55,6 +55,7 @@ use_ok('MT::CMS::Theme');
 use_ok('MT::CMS::Filter');
 use_ok('MT::CMS::RebuildTrigger');
 use_ok('MT::CMS::Group');
+use_ok('MT::CMS::Deprecated::User');
 
 # Supporting applications
 use_ok('MT::App::Upgrader');
@@ -321,7 +322,7 @@ SKIP: {
     }
 }
 SKIP: {
-    if ( eval { require YAML::XS } ) {
+    if ( eval { require YAML::XS; YAML::XS->VERSION(v0.903.0) } ) {
         use_ok('MT::Util::YAML::XS');
     }
     else {
@@ -340,7 +341,7 @@ SKIP: {
     }
 }
 SKIP: {
-    if ( eval { require Log::Minimal } ) {
+    if ( eval { require Log::Minimal } ) {    ## no critic(TooMuchCode::ProhibitUnusedInclude)
         use_ok('MT::Util::Log::Minimal');
     }
     else {

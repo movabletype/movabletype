@@ -23,9 +23,9 @@ use JSON;
 $test_env->prepare_fixture(sub {
     MT::Test->init_db;
 
-    my $site = MT::Test::Permission->make_website(name => 'test website');
+    my $site = MT::Test::Permission->make_website(name => 'my test website');
 
-    my $blog = MT::Test::Permission->make_blog(parent_id => $site->id, name => 'test blog');
+    my $blog = MT::Test::Permission->make_blog(parent_id => $site->id, name => 'my test blog');
 
     my $ct  = MT::Test::Permission->make_content_type(blog_id => $blog->id, name => 'testct_a',);
     my $ct2 = MT::Test::Permission->make_content_type(blog_id => $blog->id, name => 'testct_b',);
@@ -55,8 +55,8 @@ $test_env->prepare_fixture(sub {
     );
 });
 
-my $site = MT->model('website')->load({ name => 'test website' });
-my $blog = MT->model('blog')->load({ name => 'test blog' });
+my $site = MT->model('website')->load({ name => 'my test website' });
+my $blog = MT->model('blog')->load({ name => 'my test blog' });
 my $ct   = MT->model('content_type')->load({ name => 'testct_a' });
 my $ct2  = MT->model('content_type')->load({ name => 'testct_b' });
 
@@ -131,7 +131,7 @@ subtest 'load_config' => sub {
     is($param->[0]->{event_label},    'Save',                                       'right value');
     is($param->[0]->{target},         MT::RebuildTrigger::TARGET_BLOG(),            'right value');
     is($param->[0]->{target_blog_id}, $blog->id,                                    'right value');
-    is($param->[0]->{blog_name},      'test blog',                                  'right value');
+    is($param->[0]->{blog_name},      'my test blog',                               'right value');
     is($param->[0]->{ct_id},          $ct->id,                                      'right value');
     is($param->[0]->{ct_name},        'testct_a',                                   'right value');
     is($param->[1]->{id},             '2',                                          'right value');
@@ -143,7 +143,7 @@ subtest 'load_config' => sub {
     is($param->[1]->{event_label},    'Publish',                                    'right value');
     is($param->[1]->{target},         MT::RebuildTrigger::TARGET_BLOG(),            'right value');
     is($param->[1]->{target_blog_id}, $blog->id,                                    'right value');
-    is($param->[1]->{blog_name},      'test blog',                                  'right value');
+    is($param->[1]->{blog_name},      'my test blog',                               'right value');
     is($param->[1]->{ct_id},          $ct->id,                                      'right value');
     is($param->[1]->{ct_name},        'testct_a',                                   'right value');
     is($param->[2]->{id},             '3',                                          'right value');
@@ -178,17 +178,18 @@ subtest 'config' => sub {
     $app->get_ok({ __mode => 'add_rebuild_trigger', blog_id => $blog->id, dialog => 1 });
     $app->get_ok({ __mode => 'add_rebuild_trigger', blog_id => $site->id, dialog => 1 });
 
-    $app->post_ok({ __mode => 'add_rebuild_trigger', blog_id => $site->id, json => 1, _type => 'site', offset => 0, search => 'test' });
+    # avoid searching just by a single word 'test' as the uppercased 'TEST' is a part of the TEST_ROOT template
+    $app->post_ok({ __mode => 'add_rebuild_trigger', blog_id => $site->id, json => 1, _type => 'site', offset => 0, search => 'my test' });
     ok $app->content !~ /site-_1/, 'not include pre_build';
     ok $app->content !~ /site-_2/, 'not include pre_build';
-    ok $app->content =~ /test blog/, 'include test blog';
-    ok $app->content !~ /First Website/, 'not include First Website';
+    ok $app->content =~ /my test blog/, 'include my test blog';
+    ok $app->content !~ /First Website/, 'not include First Website' or note $app->content;
     ok $app->content =~ /"pager":null/, 'page is null';
 
     $app->post_ok({ __mode => 'add_rebuild_trigger', blog_id => $site->id, json => 1, _type => 'site', offset => 0 });
     ok $app->content =~ /site-_1/,       'include pre_build selection';
     ok $app->content =~ /site-_2/,       'include pre_build selection';
-    ok $app->content =~ /test blog/,     'include test blog';
+    ok $app->content =~ /my test blog/,  'include my test blog';
     ok $app->content =~ /First Website/, 'include First Website';
     ok $app->content =~ /"listTotal":2/, 'right listTotal';
 

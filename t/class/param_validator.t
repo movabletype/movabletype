@@ -43,7 +43,7 @@ sub setup_app {
     delete $app->{init_request};
     $app->init_request(CGIObject => $cgi);
     $app->error('');
-    return $app;    
+    return $app;
 }
 
 subtest 'test id' => sub {

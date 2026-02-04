@@ -4,6 +4,7 @@ use FindBin;
 use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
+use utf8;
 our $test_env;
 BEGIN {
     $test_env = MT::Test::Env->new;

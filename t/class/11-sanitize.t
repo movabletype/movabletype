@@ -113,7 +113,7 @@ is(MT::Sanitize->sanitize('<p><i style="x:expression:alert(\'xss\')"', 'p,i'), '
 is(MT::Sanitize->sanitize('<? /* ?> */ readfile("/etc/passwd") ?>'), ' */ readfile("/etc/passwd") ?>', 'php cloaking attempt');
 
 is(MT::Sanitize->sanitize("<a href='
-javascript:alert(123)'>boo</a>", 'a href'), '<a>boo</a>', '<a>boo</a>'); 
+javascript:alert(123)'>boo</a>", 'a href'), '<a>boo</a>', '<a>boo</a>');
 
 ### Remove template engine tag from the attribute value
 is(MT::Sanitize->sanitize(q{<a href="<?php /*">*/ echo '">' . htmlspecialchars_decode("&lt;script&gt;alert('test')&lt;/script&gt;"); ?>test</a>}, 'a href'), q{<a>*/ echo '">' . htmlspecialchars_decode("&lt;script&gt;alert('test')&lt;/script&gt;"); ?>test</a>}, 'PHP tag in the attribute');

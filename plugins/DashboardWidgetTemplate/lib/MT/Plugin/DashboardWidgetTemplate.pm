@@ -117,6 +117,12 @@ sub template_param_edit_template {
         return unless $app->param('type') eq 'dashboard_widget';
 
         $param->{dashboard_widget_pinned} = 1;
+
+        my $placeholder = $tmpl->getElementsByName('page_title')->[0];
+        my $setvar      = $tmpl->createElement(
+            'setvar',
+            { name => 'page_title', value => plugin()->translate('Create Dashboard Widget'), });
+        $tmpl->insertAfter($setvar, $placeholder);
     }
     insert_before(
         $tmpl, 'has_outfile',

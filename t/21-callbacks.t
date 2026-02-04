@@ -43,7 +43,7 @@ my $plugin = MT::Plugin->new({name => "21-callbacks.t"});
 ### Test object callbacks
 
 my ($pre_save_called, $post_load_called);
-MT->add_callback('MT::Entry::pre_save', 1, $plugin, 
+MT->add_callback('MT::Entry::pre_save', 1, $plugin,
                  sub { my ($eh, $obj, $app_obj) = @_;
                        $pre_save_called = 1;
                        $obj->text(rot13($obj->text));

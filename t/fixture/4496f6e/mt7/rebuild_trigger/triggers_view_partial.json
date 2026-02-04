@@ -61,7 +61,7 @@
       ],
       "rows" : [
          [
-            "__API_PASS__",
+            null,
             "MT",
             "melody",
             null,
@@ -234,7 +234,7 @@
             0,
             "0",
             0,
-            "",
+            "__TEST_ROOT__",
             "/",
             "ascend",
             "descend",
@@ -297,7 +297,7 @@
             null,
             "__NOW__",
             null,
-            "test website",
+            "my test website",
             null,
             null,
             0,
@@ -372,7 +372,7 @@
             null,
             "__NOW__",
             null,
-            "test blog",
+            "my test blog",
             null,
             2,
             0,
@@ -500,16 +500,16 @@
             1,
             null,
             "__NOW__",
-            "e6684c329b8e08887229b1d1eeadb4213e8a591c",
+            "98fac4a3440341eeef450eb5b39c1dbef0fb03da",
             0,
             "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u00011-\u0000\u0000\u0000\ttest text",
             1,
-            "f8cd8685a30c2314d6d63317d8957ead6033a006",
+            "ee5e1dfaf01bcd6125f14750e7fb837c91c1fbc3",
             null,
             null,
             "__NOW__",
             2,
-            "f8cd8685a30c2314d6d63317d8957ead6033a006",
+            "ee5e1dfaf01bcd6125f14750e7fb837c91c1fbc3",
             null,
             201722
          ]
@@ -549,7 +549,7 @@
             null,
             null,
             "single_line_text",
-            "df15e7eab5cc654a743d50d82c9604bc341181dd"
+            "01a66004ad350991a87bedc3c35d63938b06e255"
          ]
       ]
    },
@@ -598,7 +598,7 @@
       ],
       "rows" : [
          [
-            "DataAPIDisableSite 0\nDefaultSupportedLanguages en_us,ja\nDisableDataAPI 0\nDisableNotificationPings 1\nHidePrivateRelatedContentData 1\nPluginAlias ContentType Information Widget=ContentInfoWidget\nPluginAlias Markdown=Markdown/Markdown.pl\nPluginAlias SmartyPants=Markdown/SmartyPants.pl\nPluginAlias Textile=Textile/textile2.pl\nPluginAlias WXR Importer=WXRImporter\nPluginAlias Widget Manager Upgrade Assistant=WidgetManager/WidgetManager.pl\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion blockeditor=1\nPluginSchemaVersion commonmark=1.0\nPluginSchemaVersion formattedtext=1.00\nPluginSchemaVersion tinymce6=1\nPluginSwitch BlockEditor=0\nPluginSwitch CommonMark=1\nPluginSwitch ContentInfoWidget=1\nPluginSwitch DashboardWidgetTemplate=1\nPluginSwitch FormattedText=1\nPluginSwitch FormattedTextForTinyMCE6=1\nPluginSwitch GoogleAnalyticsV4=1\nPluginSwitch Markdown/Markdown.pl=1\nPluginSwitch Markdown/SmartyPants.pl=1\nPluginSwitch Textile/textile2.pl=0\nPluginSwitch TinyMCE6=1\nPluginSwitch WXRImporter=1\nPluginSwitch WidgetManager/WidgetManager.pl=0\nSchemaVersion 9.0001\nTrimFilePath 1\n",
+            "DataAPIDisableSite 0\nDefaultSupportedLanguages en_us,ja\nDisableContentFieldPermission 1\nDisableDataAPI 0\nDisableNotificationPings 1\nHidePrivateRelatedContentData 1\nPluginAlias ContentType Information Widget=ContentInfoWidget\nPluginAlias Markdown=Markdown/Markdown.pl\nPluginAlias SmartyPants=Markdown/SmartyPants.pl\nPluginAlias Textile=Textile/textile2.pl\nPluginAlias WXR Importer=WXRImporter\nPluginAlias Widget Manager Upgrade Assistant=WidgetManager/WidgetManager.pl\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion blockeditor=1\nPluginSchemaVersion commonmark=1.0\nPluginSchemaVersion formattedtext=1.00\nPluginSchemaVersion tinymce6=1\nPluginSwitch BlockEditor=0\nPluginSwitch CommonMark=1\nPluginSwitch ContentInfoWidget=1\nPluginSwitch DashboardWidgetTemplate=1\nPluginSwitch FormattedText=1\nPluginSwitch FormattedTextForTinyMCE6=1\nPluginSwitch GoogleAnalyticsV4=1\nPluginSwitch Markdown/Markdown.pl=1\nPluginSwitch Markdown/SmartyPants.pl=1\nPluginSwitch Textile/textile2.pl=0\nPluginSwitch TinyMCE6=1\nPluginSwitch WXRImporter=1\nPluginSwitch WidgetManager/WidgetManager.pl=0\nSchemaVersion 9.0002\nTrimFilePath 1\n",
             1
          ]
       ]
@@ -626,12 +626,12 @@
             "__NOW__",
             null,
             "This is a sample.",
-            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002A\u0000\u0000\u0000\u0001H\u0000\u0000\u0000\u0006\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\u0010single_line_text\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(df15e7eab5cc654a743d50d82c9604bc341181dd\u0000\u0000\u0000\u0004name-\u0000\u0000\u0000\u000bsingle text\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00011",
+            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002A\u0000\u0000\u0000\u0001H\u0000\u0000\u0000\u0006\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\u0010single_line_text\u0000\u0000\u0000\u0004name-\u0000\u0000\u0000\u000bsingle text\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(01a66004ad350991a87bedc3c35d63938b06e255",
             1,
             null,
             "__NOW__",
             "testct_a",
-            "e6684c329b8e08887229b1d1eeadb4213e8a591c",
+            "98fac4a3440341eeef450eb5b39c1dbef0fb03da",
             null,
             null
          ],
@@ -646,7 +646,7 @@
             null,
             "__NOW__",
             "testct_b",
-            "3a831fb21fcbba6140e87a264aa7bad3917db312",
+            "0b6aa5b1730d19406796f260ee8ff918afbb5e12",
             null,
             null
          ],
@@ -661,7 +661,7 @@
             null,
             "__NOW__",
             "testct_c",
-            "60c255bddddfc94278b1af3b8803dd9f446595f6",
+            "ebd46354cdb17e0993d019e74d0981315e4b9cf3",
             null,
             null
          ]
@@ -3497,5 +3497,5 @@
          ]
       ]
    },
-   "schema_version" : "WidgetManager 1.1; blockeditor 1; commonmark 1.0; core 9.0001; formattedtext 1.00; tinymce6 1"
+   "schema_version" : "WidgetManager 1.1; blockeditor 1; commonmark 1.0; core 9.0002; formattedtext 1.00; tinymce6 1"
 }

@@ -6,20 +6,19 @@ use Test::More;
 use MT::Test::Env;
 our $test_env;
 BEGIN {
-    $test_env = MT::Test::Env->new;
-    $test_env->write_config({
-        PluginPath => File::Spec->catdir($test_env->root, 'plugins'),
-    });
+    plan skip_all => 'Not for Win32' if $^O eq 'MSWin32';
+
+    $test_env = MT::Test::Env->new(
+        PluginPath => 'TEST_ROOT/plugins',
+    );
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
 use MT::Util::PluginVersions;
 use ExtUtils::Manifest;
 use File::Copy qw(copy);
-use Path::Tiny;
+use Path::Tiny qw(path);
 use File::pushd;
-use Test::Differences;
-use File::Spec;
 
 $test_env->save_file('plugins/AddedPluginYaml/config.yaml', <<ADDED_PLUGIN_YAML);
 id: AddedPluginYaml

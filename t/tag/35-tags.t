@@ -1559,15 +1559,15 @@ http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-480x360-1.j
 
 === test 290
 --- template
-[<MTEntries lastn="10"><MTIfNonZero tag="MTEntryScoreCount" namespace="unit test"><MTEntryID> <MTEntryScoreHigh namespace="unit test">; </MTIfNonZero></MTEntries>]
+[<MTEntries lastn="10"><MTIfNonZero tag="MTEntryScoreCount" namespace="unit test"><MTEntryID> <MTEntryScoreHigh string_format="%.1f" namespace="unit test">; </MTIfNonZero></MTEntries>]
 --- expected
-[6 1; 5 5; 4 3; ]
+[6 1.0; 5 5.0; 4 3.0; ]
 
 === test 291
 --- template
-[<MTEntries lastn="10"><MTIfNonZero tag="MTEntryScoreCount" namespace="unit test"><MTEntryID> <MTEntryScoreLow namespace="unit test">; </MTIfNonZero></MTEntries>]
+[<MTEntries lastn="10"><MTIfNonZero tag="MTEntryScoreCount" namespace="unit test"><MTEntryID> <MTEntryScoreLow string_format="%.1f" namespace="unit test">; </MTIfNonZero></MTEntries>]
 --- expected
-[6 1; 5 3; 4 2; ]
+[6 1.0; 5 3.0; 4 2.0; ]
 
 === test 292
 --- template
@@ -1607,15 +1607,15 @@ http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-480x360-1.j
 
 === test 298
 --- template
-[<MTAssets lastn="10"><MTIfNonZero tag="MTAssetScoreCount" namespace="unit test"><MTAssetID> <MTAssetScoreHigh namespace="unit test">; </MTIfNonZero></MTAssets>]
+[<MTAssets lastn="10"><MTIfNonZero tag="MTAssetScoreCount" namespace="unit test"><MTAssetID> <MTAssetScoreHigh string_format="%.1f" namespace="unit test">; </MTIfNonZero></MTAssets>]
 --- expected
-[1 5; 7 7; 6 9; 5 8; 2 3; ]
+[1 5.0; 7 7.0; 6 9.0; 5 8.0; 2 3.0; ]
 
 === test 299
 --- template
-[<MTAssets lastn="10"><MTIfNonZero tag="MTAssetScoreCount" namespace="unit test"><MTAssetID> <MTAssetScoreLow namespace="unit test">; </MTIfNonZero></MTAssets>]
+[<MTAssets lastn="10"><MTIfNonZero tag="MTAssetScoreCount" namespace="unit test"><MTAssetID> <MTAssetScoreLow string_format="%.1f" namespace="unit test">; </MTIfNonZero></MTAssets>]
 --- expected
-[1 3; 7 7; 6 9; 5 8; 2 2; ]
+[1 3.0; 7 7.0; 6 9.0; 5 8.0; 2 2.0; ]
 
 === test 300
 --- template
@@ -3063,6 +3063,31 @@ FooBar
 <MTSetVarBlock name="foo">FooBar</MTSetVarBlock><MTGetVar name="foo" regex_replace="/Fo*/i","Bar">
 --- expected
 BarBar
+
+=== test 575-2
+--- template
+<MTSetVar name="foo" value="aあb"><MTVar name="foo" regex_replace="/あ/","い">
+--- expected
+aいb
+
+=== test 575-3
+--- template
+<MTSetVar name="foo" value="a b"><MTVar name="foo" regex_replace="/\s/","-">
+--- expected
+a-b
+
+=== test 575-4(wide space)
+--- skip_php
+--- template
+<MTSetVar name="foo" value="a　b"><MTVar name="foo" regex_replace="/\s/","-">
+--- expected
+a-b
+
+=== test 575-5(wide space with u option)
+--- template
+<MTSetVar name="foo" value="a　b"><MTVar name="foo" regex_replace="/\s/u","-">
+--- expected
+a-b
 
 === test 576
 --- template
@@ -5072,30 +5097,44 @@ path is required.
 --- expected
 <script src="/mt-static/foo/bar.js?v=VERSION_ID" type="text/javascript" async defer charset="utf-8"></script>
 
-=== test 919 stylesheet (MTC-25985)
+=== test 919 script (MTC-30989)
+--- skip_php
+--- template
+<MTApp:Script path="/foo/bar.js" version="1.0.0">
+--- expected
+<script src="/mt-static/foo/bar.js?v=1.0.0" charset="utf-8"></script>
+
+=== test 920 stylesheet (MTC-25985)
 --- skip_php
 --- template
 <MTApp:Stylesheet path="/foo/bar.css">
 --- expected
 <link rel="stylesheet" href="/mt-static/foo/bar.css?v=VERSION_ID">
 
-=== test 920 stylesheet (MTC-25985)
+=== test 921 stylesheet (MTC-25985)
 --- skip_php
 --- template
 <MTApp:Stylesheet path="foo/bar.css">
 --- expected
 <link rel="stylesheet" href="/mt-static/foo/bar.css?v=VERSION_ID">
 
-=== test 921 stylesheet (MTC-25985)
+=== test 922 stylesheet (MTC-25985)
 --- skip_php
 --- template
 <MTApp:Stylesheet path="foo/bar_%l.css">
 --- expected
 <link rel="stylesheet" href="/mt-static/foo/bar_en_us.css?v=VERSION_ID">
 
-=== test 922 stylesheet (MTC-25985)
+=== test 923 stylesheet (MTC-25985)
 --- skip_php
 --- template
 <MTApp:Stylesheet>
 --- expected_error
 path is required.
+
+=== test 924 stylesheet (MTC-30989)
+--- skip_php
+--- template
+<MTApp:Stylesheet path="/foo/bar.css" version="1.0.0">
+--- expected
+<link rel="stylesheet" href="/mt-static/foo/bar.css?v=1.0.0">

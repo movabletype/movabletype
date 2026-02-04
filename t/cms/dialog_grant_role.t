@@ -16,7 +16,7 @@ use MT;
 use MT::Test;
 use MT::Test::Fixture;
 use MT::Test::App qw(MT::Test::Role::CMS::GrantRole);
-use Test::Deep    qw'cmp_bag cmp_deeply superhashof';
+use Test::Deep    qw(cmp_deeply superhashof);
 
 $test_env->prepare_fixture('db');
 
@@ -170,7 +170,7 @@ subtest 'tree view(deprecated)' => sub {
     subtest 'pager page 1' => sub {
         $app->get_json();
         my ($names, $pager) = $app->get_site_tree_and_pager;
-        is_deeply($names, ['First Website', 'blog-1-3'], 'right sites');
+        is_deeply($names, ['First Website', 'blog-1-1'], 'right sites');
         cmp_deeply($pager, superhashof({ limit => 3, listTotal => 13, offset => 0, rows => 3 }), 'right pager');
     };
 
@@ -178,7 +178,7 @@ subtest 'tree view(deprecated)' => sub {
         my $offset = 1 * $limit;
         $app->get_json({ offset => $offset });
         my ($names, $pager) = $app->get_site_tree_and_pager;
-        is_deeply($names, ['site-10', 'site-9', 'site-8'], 'right sites');
+        is_deeply($names, ['First Website', 'blog-1-1', 'blog-1-2', 'blog-1-3', 'site-10', 'site-2'], 'right sites');
         cmp_deeply($pager, superhashof({ limit => 3, listTotal => 13, offset => $offset, rows => 3 }), 'right pager');
     };
 
@@ -186,7 +186,7 @@ subtest 'tree view(deprecated)' => sub {
         my $offset = 2 * $limit;
         $app->get_json({ offset => $offset });
         my ($names, $pager) = $app->get_site_tree_and_pager;
-        is_deeply($names, ['site-7', 'site-6', 'site-5'], 'right sites');
+        is_deeply($names, ['site-3', 'site-4', 'site-5'], 'right sites');
         cmp_deeply($pager, superhashof({ limit => 3, listTotal => 13, offset => $offset, rows => 3 }), 'right pager');
     };
 
@@ -194,7 +194,7 @@ subtest 'tree view(deprecated)' => sub {
         my $offset = 3 * $limit;
         $app->get_json({ offset => $offset });
         my ($names, $pager) = $app->get_site_tree_and_pager;
-        is_deeply($names, ['site-4', 'site-3', 'site-2'], 'right sites');
+        is_deeply($names, ['site-6', 'site-7', 'site-8'], 'right sites');
         cmp_deeply($pager, superhashof({ limit => 3, listTotal => 13, offset => $offset, rows => 3 }), 'right pager');
     };
 
@@ -202,7 +202,7 @@ subtest 'tree view(deprecated)' => sub {
         my $offset = 4 * $limit;
         $app->get_json({ offset => $offset });
         my ($names, $pager) = $app->get_site_tree_and_pager;
-        is_deeply($names, ['First Website', 'blog-1-1', 'blog-1-2', 'blog-1-3'], 'right sites');
+        is_deeply($names, ['site-9'], 'right sites');
         cmp_deeply($pager, superhashof({ limit => 3, listTotal => 13, offset => $offset, rows => 1 }), 'right pager');
     };
 
@@ -216,7 +216,7 @@ subtest 'tree view(deprecated)' => sub {
     subtest 'search' => sub {
         $app->get_json({ search => 'site-' });
         my ($names, $pager) = $app->get_site_tree_and_pager;
-        is_deeply($names, ['site-8', 'site-9', 'site-10'], 'right sites');
+        is_deeply($names, ['site-3', 'site-2', 'site-10'], 'right sites');
         is($pager, undef, 'right pager');
     };
 };

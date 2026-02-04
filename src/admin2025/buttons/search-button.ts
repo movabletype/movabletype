@@ -19,6 +19,10 @@ export function svelteMountSearchButton(
   let searchTabs: SearchTab[] = [];
   if (target.dataset.searchTabsJson) {
     const data = JSON.parse(target.dataset.searchTabsJson);
+    if (data.error) {
+      target.remove();
+      return;
+    }
     if (data.success) {
       searchTabs = data.data;
     }

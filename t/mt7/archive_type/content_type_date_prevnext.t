@@ -15,7 +15,6 @@ use MT::Test;
 use MT::Test::Fixture;
 use MT::Test::App;
 use File::Spec;
-use File::Path;
 use Web::Query;
 use URI;
 

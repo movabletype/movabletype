@@ -6,18 +6,66 @@ import ContentFieldTypes from "./ContentFieldTypes";
 
 import ContentFields from "./elements/ContentFields.svelte";
 
+import CustomElementField from "./elements/CustomElementField.svelte";
+
+import "./MtContentFieldOption";
+
+class CustomElementFieldBase extends HTMLElement {
+  options: ContentType.Options = {};
+  connectedCallback(): void {
+    this.options = JSON.parse(this.getAttribute("data-options") || "{}");
+  }
+  disconnectedCallback(): void {}
+}
+
 export default class ContentTypeEditor {
   static accessor config: ContentType.ConfigSettings = {};
   static accessor fieldsStore: ContentType.FieldsStore;
   static accessor optionsHtmlParams: ContentType.OptionsHtmlParams = {};
   static accessor opts: ContentType.ContentFieldsOpts;
   static readonly types = ContentFieldTypes;
+  static readonly CustomElementFieldBase = CustomElementFieldBase;
 
   static registerCustomType(
     type: string,
-    mountFunction: ContentType.CustomContentFieldMountFunction,
+    mountFunction:
+      | ContentType.CustomContentFieldMountFunction
+      | typeof CustomElementFieldBase,
   ): void {
-    this.types.registerCustomType(type, mountFunction);
+    if (mountFunction.prototype instanceof CustomElementFieldBase) {
+      const customElement = `mt-content-type-custom-type-${type}`;
+      customElements.define(
+        customElement,
+        mountFunction as typeof CustomElementFieldBase,
+      );
+      mountFunction = (props, target) => {
+        let options: ContentType.Options;
+        const customElementField = new CustomElementField({
+          props: {
+            ...props,
+            type,
+            customElement,
+            updateOptions: (_options: ContentType.Options) => {
+              options = _options;
+            },
+          },
+          target: target,
+        });
+        return {
+          component: customElementField,
+          gather: () => {
+            return options;
+          },
+          destroy: () => {
+            customElementField.$destroy();
+          },
+        };
+      };
+    }
+    this.types.registerCustomType(
+      type,
+      mountFunction as ContentType.CustomContentFieldMountFunction,
+    );
   }
 
   static mount(

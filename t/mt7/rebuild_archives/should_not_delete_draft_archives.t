@@ -15,8 +15,6 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use Test::Deep;
-
 use MT;
 use MT::Test;
 use MT::Test::Fixture;

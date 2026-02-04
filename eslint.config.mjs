@@ -37,7 +37,7 @@ export default [...compat.extends(
         },
 
         parser: tsParser,
-        ecmaVersion: 5,
+        ecmaVersion: 2022,
         sourceType: "commonjs",
 
         parserOptions: {
@@ -63,7 +63,7 @@ export default [...compat.extends(
 
     languageOptions: {
         parser: parser,
-        ecmaVersion: 5,
+        ecmaVersion: 2022,
         sourceType: "script",
 
         parserOptions: {

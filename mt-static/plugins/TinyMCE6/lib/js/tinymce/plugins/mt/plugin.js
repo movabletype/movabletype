@@ -229,7 +229,7 @@
             var blogId = $('[name=blog_id]').val() || 0
 
             editor.execCommand('mtSaveBookmark')
-            openDialog('dialog_asset_modal', '_type=asset&amp;edit_field=' + editor.id + '&amp;blog_id=' + blogId + '&amp;dialog_view=1&amp;filter=class&amp;filter_val=image&amp;can_multi=1&amp;require_type=image')
+            openDialog('dialog_asset_modal', '_type=asset&edit_field=' + editor.id + '&blog_id=' + blogId + '&dialog_view=1&filter=class&filter_val=image&can_multi=1&require_type=image')
 
             var dialogIframe = document.querySelector(
                 "#mt-dialog-iframe"
@@ -298,7 +298,7 @@
     }
 
     var openDialog = function (mode, param) {
-        var url = ScriptURI + '?' + '__mode=' + mode + '&amp;' + param
+        var url = ScriptURI + '?' + '__mode=' + mode + '&' + param
         $.fn.mtModal.open(url, { large: true })
         var modal_close = function (e) {
             if (e.keyCode == 27) {
@@ -360,7 +360,7 @@
             tooltip: 'insert_image',
             onAction: function () {
                 editor.execCommand('mtSaveBookmark')
-                openDialog('dialog_asset_modal', '_type=asset&amp;edit_field=' + id + '&amp;blog_id=' + blogId + '&amp;dialog_view=1&amp;filter=class&amp;filter_val=image&amp;can_multi=1&amp;require_type=image')
+                openDialog('dialog_asset_modal', '_type=asset&edit_field=' + id + '&blog_id=' + blogId + '&dialog_view=1&filter=class&filter_val=image&can_multi=1&require_type=image')
             }
         })
 
@@ -369,7 +369,7 @@
             tooltip: 'insert_file',
             onAction: function () {
                 editor.execCommand('mtSaveBookmark')
-                openDialog('dialog_asset_modal', '_type=asset&amp;edit_field=' + id + '&amp;blog_id=' + blogId + '&amp;dialog_view=1&amp;can_multi=1')
+                openDialog('dialog_asset_modal', '_type=asset&edit_field=' + id + '&blog_id=' + blogId + '&dialog_view=1&can_multi=1')
             }
         })
 

@@ -15,7 +15,6 @@ use MT::Test;
 use MT::Test::Fixture;
 use MT::Test::App;
 use File::Spec;
-use File::Path;
 use Test::Deep qw(cmp_bag);
 
 $test_env->prepare_fixture('db');

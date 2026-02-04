@@ -77,9 +77,6 @@ my $ukawa    = MT::Author->load({ name => 'ukawa' });
 
 my $admin = MT::Author->load(1);
 
-# Run
-my ($app, $out);
-
 subtest 'mode = apply_theme' => sub {
     my $app = MT::Test::App->new('MT::App::CMS');
     $app->login($admin);

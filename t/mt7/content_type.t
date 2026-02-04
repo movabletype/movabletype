@@ -15,6 +15,7 @@ use MT::Test;
 use MT::Test::Permission;
 
 use MT::ContentType;
+use Feature::Compat::Try;
 
 $test_env->prepare_fixture('db');
 
@@ -45,9 +46,17 @@ subtest 'forbid creating content_type with not unique unique_id' => sub {
     my $ct1 = MT::ContentType->new( blog_id => 1, name => 'ct1' );
     $ct1->save or die $ct1->errstr;
 
-    my $ct2 = MT::ContentType->new( blog_id => 1, name => 'ct2' );
-    $ct2->unique_id( $ct1->unique_id );
-    $ct2->save;
+    # wrap this test with a transaction to restore everything (cursor, etc.) to the correct state
+    my $ct2;
+    try {
+        MT::ContentType->begin_work;
+        $ct2 = MT::ContentType->new( blog_id => 1, name => 'ct2' );
+        $ct2->unique_id( $ct1->unique_id );
+        $ct2->save;
+        MT::ContentType->commit;
+    } catch ($e) {
+        MT::ContentType->rollback;
+    }
     ok( $ct2->errstr, 'unique_id column must be unique' );
 };
 

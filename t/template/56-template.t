@@ -266,4 +266,33 @@ __TMPL__
     is $html => '<div>Foo</div><div>Bar<div>InsideBar</div></div><div>Baz</div><div>Appended</div>', 'new node is inserted';
 };
 
+subtest 'stray non-ascii in tags' => sub {
+    # The expectations are the actual output since MTC-4386 to mt9.0.1 (at least)
+
+    subtest 'wide space for delimiter' => sub {
+        my $tmpl_str = qq!<MTVar\x{3000}name="foo" value="xxx">a<MTVar name="foo">b!;
+        my $tmpl = MT::Template->new_string(\$tmpl_str);
+        my $ret  = $tmpl->build;
+        is $tmpl->errstr,  qq!Publish error in template '?': <MTVar\x{3000}name="foo"> at line 1 is unrecognized.\n!;
+    };
+    subtest 'bare wide character for attribute value' => sub {
+        my $tmpl_str = qq!<MTVar name="foo" value=\x{3042}>a<MTVar name="foo">b!;
+        my $tmpl = MT::Template->new_string(\$tmpl_str);
+        my $ret  = $tmpl->build;
+        is $ret, "a\x{3042}b";
+    };
+    subtest 'wide character in attribute value' => sub {
+        my $tmpl_str = qq!<MTVar name="foo" value="\x{3042}">a<MTVar name="foo">b!;
+        my $tmpl = MT::Template->new_string(\$tmpl_str);
+        my $ret  = $tmpl->build;
+        is $ret, "a\x{3042}b";
+    };
+    subtest 'wide character for attribute name' => sub {
+        my $tmpl_str = qq!<MTVar name="foo" value="2" \x{3042}="a">a<MTVar name="foo">b!;
+        my $tmpl = MT::Template->new_string(\$tmpl_str);
+        my $ret  = $tmpl->build;
+        is $ret, "ab";
+    };
+};
+
 done_testing();

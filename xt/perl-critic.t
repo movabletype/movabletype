@@ -23,7 +23,7 @@ done_testing;
 
 sub _find {
     return if $File::Find::name =~ m!/(?:extlib|local|blib)/!;
-    if ( $File::Find::name =~ /\.(?:cgi|pl|pm)\z/ ) {
+    if ( $File::Find::name =~ /\.(?:cgi|pl|pm|t)\z/ ) {
         push @files, $File::Find::name;
     }
     if ( $File::Find::name =~ /\b(?:build|tools)\b/ ) {

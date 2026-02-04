@@ -68,7 +68,7 @@ sub publish_tests_for_create {
             },
             setup => sub {
                 my $data = shift;
-                my $site = MT::Website->load(1);
+                my $site = MT::Website->load($site_id);
                 remove_tree $site->archive_path;
             },
             complete => sub {
@@ -113,7 +113,7 @@ sub publish_tests_for_create {
             },
             setup => sub {
                 my $data = shift;
-                my $site = MT::Website->load(1);
+                my $site = MT::Website->load($site_id);
                 remove_tree $site->archive_path;
             },
             complete => sub {

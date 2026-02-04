@@ -35,7 +35,7 @@ binmode STDOUT, ':encoding(utf8)';
 
 # MTC-26702
 my $group = MT::Test::Permission->make_group;
-my $site  = MT::Blog->load( 1 ) or die; 
+my $site  = MT::Blog->load( 1 ) or die;
 my $role  = MT::Role->load or die;
 MT::Association->link( $group, $site, $role );
 

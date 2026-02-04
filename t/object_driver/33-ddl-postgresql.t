@@ -23,9 +23,10 @@ BEGIN {
 
 our $test_env;
 BEGIN {
-    local $ENV{MT_TEST_BACKEND} = 'postgresql';
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
+
+    plan skip_all => 'for PostgreSQL only' unless lc($test_env->driver) eq 'pg';
 }
 
 use MT::Test::DDL;
