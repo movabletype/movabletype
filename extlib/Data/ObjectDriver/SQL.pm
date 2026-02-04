@@ -3,6 +3,7 @@
 package Data::ObjectDriver::SQL;
 use strict;
 use warnings;
+use Scalar::Util 'blessed';
 
 use base qw( Class::Accessor::Fast );
 
@@ -10,7 +11,7 @@ __PACKAGE__->mk_accessors(qw(
     select distinct select_map select_map_reverse
     from joins where bind limit offset group order
     having where_values column_mutator index_hint
-    comment
+    comment as
 ));
 
 sub new {
@@ -33,10 +34,16 @@ sub new {
 sub add_select {
     my $stmt = shift;
     my($term, $col) = @_;
-    $col ||= $term;
     push @{ $stmt->select }, $term;
-    $stmt->select_map->{$term} = $col;
-    $stmt->select_map_reverse->{$col} = $term;
+    if (blessed($term) && $term->isa('Data::ObjectDriver::SQL')) {
+        my $alias = $col || $term->as || $term->as_sql;
+        $stmt->select_map->{$term} = $alias;
+        $stmt->select_map_reverse->{$alias} = $term;
+    } else {
+        $col ||= $term;
+        $stmt->select_map->{$term} = $col;
+        $stmt->select_map_reverse->{$col} = $term;
+    }
 }
 
 sub add_join {
@@ -60,12 +67,26 @@ sub add_index_hint {
 sub as_sql {
     my $stmt = shift;
     my $sql = '';
+    my @bind_for_select;
+
     if (@{ $stmt->select }) {
         $sql .= 'SELECT ';
         $sql .= 'DISTINCT ' if $stmt->distinct;
+        my $select_map = $stmt->select_map;
         $sql .= join(', ',  map {
-            my $alias = $stmt->select_map->{$_};
-            $alias && /(?:^|\.)\Q$alias\E$/ ? $_ : "$_ $alias";
+            my $col = $_;
+            my $alias = $select_map->{$col};
+            if (blessed($col) && $col->isa('Data::ObjectDriver::SQL')) {
+                push @bind_for_select, @{ $col->{bind} };
+                @{ $col->{bind} } = ();
+                $col->as_subquery($alias);
+            } else {
+                if ($alias) {
+                    /(?:^|\.)\Q$alias\E$/ ? $col : "$col $alias";
+                } else {
+                    $col;
+                }
+            }
         } @{ $stmt->select }) . "\n";
     }
     $sql .= 'FROM ';
@@ -91,8 +112,19 @@ sub as_sql {
         $sql .= ', ' if @from;
     }
 
+    my @bind_for_from;
+
     if (@from) {
-        $sql .= join ', ', map { $stmt->_add_index_hint($_) } @from;
+        $sql .= join ', ', map {
+            my $from = $_;
+            if (blessed($from) && $from->isa('Data::ObjectDriver::SQL')) {
+                push @bind_for_from, @{$from->{bind}};
+                @{$from->{bind}} = ();
+                $from->as_subquery;
+            } else {
+                $stmt->_add_index_hint($from);
+            }
+        } @from;
     }
 
     $sql .= "\n";
@@ -107,7 +139,20 @@ sub as_sql {
     if ($comment && $comment =~ /([ 0-9a-zA-Z.:;()_#&,]+)/) {
         $sql .= "-- $1" if $1;
     }
+
+    @{ $stmt->{bind} } = (@bind_for_select, @bind_for_from, @{ $stmt->{bind} });
+
     return $sql;
+}
+
+sub as_subquery {
+    my ($stmt, $alias) = @_;
+    my $subquery = '(' . $stmt->as_sql . ')';
+    $alias ||= $stmt->as;
+    if ($alias) {
+        $subquery .= ' '. $alias;
+    }
+    $subquery;
 }
 
 sub as_limit {
@@ -231,7 +276,11 @@ sub add_having {
 #    Carp::croak("Invalid/unsafe column name $col") unless $col =~ /^[\w\.]+$/;
 
     if (my $orig = $stmt->select_map_reverse->{$col}) {
-        $col = $orig;
+        if (blessed($orig) && $orig->isa('Data::ObjectDriver::SQL')) {
+            # do nothins
+        } else {
+            $col = $orig;
+        }
     }
 
     my($term, $bind) = $stmt->_mk_term($col, $val);
@@ -281,12 +330,17 @@ sub _mk_term {
             $term = "$c $op ? AND ?";
             push @bind, @{$val->{value}};
         } else {
-            if (ref $val->{value} eq 'SCALAR') {
-                $term = "$c $val->{op} " . ${$val->{value}};
+            my $value = $val->{value};
+            if (ref $value eq 'SCALAR') {
+                $term = "$c $val->{op} " . $$value;
+            } elsif (blessed($value) && $value->isa('Data::ObjectDriver::SQL')) {
+                local $value->{as} = undef;
+                $term = "$c $val->{op} ". $value->as_subquery;
+                push @bind, @{$value->{bind}};
             } else {
                 $term = "$c $val->{op} ?";
                 $term .= $stmt->as_escape($val->{escape}) if $val->{escape} && $op =~ /^(?:NOT\s+)?I?LIKE$/;
-                push @bind, $val->{value};
+                push @bind, $value;
             }
         }
     } elsif (ref($val) eq 'SCALAR') {

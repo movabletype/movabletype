@@ -6,7 +6,7 @@
         ]
     },
     "require": {
-        "adodb/adodb-php": "5.22.7",
+        "adodb/adodb-php": "5.22.11",
         "smarty/smarty": "4.5.5"
     },
     "require-dev": {
