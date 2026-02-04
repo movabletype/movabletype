@@ -846,6 +846,77 @@ sub json_error {
     return undef;
 }
 
+sub csv_result {
+    my $app          = shift;
+    my $row_iterator = shift;
+    my ($opt)        = @_;
+
+    if ( !defined $opt->{filename} || $opt->{filename} eq '' ) {
+        return $app->error( $app->translate("No filename") );
+    }
+    if (   !$opt->{headers}
+        || ref( $opt->{headers} ) ne 'ARRAY'
+        || !@{ $opt->{headers} } )
+    {
+        return $app->error( $app->translate("No headers") );
+    }
+
+    if ( !$row_iterator || ref($row_iterator) ne 'CODE' ) {
+        return $app->error( $app->translate("Invalid row iterator") );
+    }
+    my $encoding = $opt->{encoding} || 'UTF-8';
+    my $filename = $opt->{filename};
+    $filename .= '.csv' unless $filename =~ /\.csv$/i;
+    my $encoded_filename = MT::Util::encode_url($filename, 'UTF-8');
+
+    $app->{no_print_body} = 1;
+    $app->set_header(
+        'Content-Disposition' => "attachment; filename*=UTF-8''$encoded_filename" );
+    $app->send_http_header(
+        $encoding
+        ? "text/csv; charset=${encoding}"
+        : 'text/csv'
+    );
+    require File::Temp;
+    my ($fh) = File::Temp->new();
+    binmode $fh, ":encoding($encoding)";
+    print {$fh} "\x{FEFF}"
+      if MT->config->CSVExportWithBOM && ( $encoding || '' ) =~ /utf-?8/i;
+
+    require Text::CSV;
+    my $csv_options = { binary => 1 };
+
+    if ( MT->config->CSVExportEscapeFormula ) {
+        $csv_options->{callbacks} = {
+            before_print => sub {
+                my ( $csv_obj, $row ) = @_;
+                for my $i ( 0 .. $#$row ) {
+                    my $v = $row->[$i] // '';
+                    if ( $v =~ /^[=+\-@]/ ) {
+                        $v = "'$v";
+                    }
+                    $row->[$i] = $v;
+                }
+            }
+        };
+    }
+
+    my $csv = Text::CSV->new($csv_options);
+    $csv->say( $fh, $opt->{headers} );
+
+    while ( my $row = $row_iterator->() ) {
+        $csv->say( $fh, $row );
+    }
+
+    binmode $fh, ":raw";
+    seek $fh, 0, 0;
+    while ( read $fh, my $chunk, 8192 ) {
+        $app->print($chunk);
+    }
+
+    close $fh;
+}
+
 sub response_code {
     my $app = shift;
     $app->{response_code} = shift if @_;
