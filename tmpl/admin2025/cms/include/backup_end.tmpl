@@ -21,10 +21,10 @@
           <li class="list-item">
           <mt:if name="url">
             <a href="<mt:var name="url">" target="_blank" title="<__trans phrase="Download This File">">
-              <__trans phrase="Download: [_1]" params="<mt:var name="filename">">
+              <__trans phrase="Download: [_1]" params="<mt:var name="filename" escape="html">">
             </a>
           <mt:else>
-            <mt:var name="filename">
+            <mt:var name="filename" escape="html">
           </mt:if>
           </li>
         </mt:loop>
