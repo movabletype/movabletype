@@ -1,7 +1,9 @@
 version: 2
 updates:
   - package-ecosystem: npm
-    directory: /
+    directories:
+      - /
+      - /build/migration
     schedule:
       interval: monthly
     target-branch: develop
