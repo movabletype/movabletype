@@ -1,9 +1,9 @@
 /*!
- * jQuery Validation Plugin v1.20.0
+ * jQuery Validation Plugin v1.22.0
  *
  * https://jqueryvalidation.org/
  *
- * Copyright (c) 2023 Jörn Zaefferer
+ * Copyright (c) 2026 Jörn Zaefferer
  * Released under the MIT license
  */
 (function( factory ) {
@@ -288,11 +288,13 @@ $.extend( $.validator, {
 		errorElement: "label",
 		focusCleanup: false,
 		focusInvalid: true,
+		ariaDescribedByCleanup: false,
 		errorContainer: $( [] ),
 		errorLabelContainer: $( [] ),
 		onsubmit: true,
 		ignore: ":hidden",
 		ignoreTitle: false,
+		customElements: [],
 		onfocusin: function( element ) {
 			this.lastActive = element;
 
@@ -440,17 +442,17 @@ $.extend( $.validator, {
 					settings[ eventType ].call( validator, this, event );
 				}
 			}
-
+			var focusListeners = [ ":text", "[type='password']", "[type='file']", "select", "textarea", "[type='number']", "[type='search']",
+								"[type='tel']", "[type='url']", "[type='email']", "[type='datetime']", "[type='date']", "[type='month']",
+								"[type='week']", "[type='time']", "[type='datetime-local']", "[type='range']", "[type='color']",
+								"[type='radio']", "[type='checkbox']", "[contenteditable]", "[type='button']" ];
+			var clickListeners = [ "select", "option", "[type='radio']", "[type='checkbox']" ];
 			$( this.currentForm )
-				.on( "focusin.validate focusout.validate keyup.validate",
-					":text, [type='password'], [type='file'], select, textarea, [type='number'], [type='search'], " +
-					"[type='tel'], [type='url'], [type='email'], [type='datetime'], [type='date'], [type='month'], " +
-					"[type='week'], [type='time'], [type='datetime-local'], [type='range'], [type='color'], " +
-					"[type='radio'], [type='checkbox'], [contenteditable], [type='button']", delegate )
+				.on( "focusin.validate focusout.validate keyup.validate", focusListeners.concat( this.settings.customElements ).join( ", " ), delegate )
 
 				// Support: Chrome, oldIE
 				// "select" is provided as event.target when clicking a option
-				.on( "click.validate", "select, option, [type='radio'], [type='checkbox']", delegate );
+				.on( "click.validate", clickListeners.concat( this.settings.customElements ).join( ", " ), delegate );
 
 			if ( this.settings.invalidHandler ) {
 				$( this.currentForm ).on( "invalid-form.validate", this.settings.invalidHandler );
@@ -498,8 +500,10 @@ $.extend( $.validator, {
 					$.each( this.groups, function( name, testgroup ) {
 						if ( testgroup === group && name !== checkElement.name ) {
 							cleanElement = v.validationTargetFor( v.clean( v.findByName( name ) ) );
+
+							// Don't want to check fields if a user hasn't gotten to them yet
 							if ( cleanElement && cleanElement.name in v.invalid ) {
-								v.currentElements.push( cleanElement );
+								v.currentElements.pushStack( cleanElement );
 								result = v.check( cleanElement ) && result;
 							}
 						}
@@ -608,10 +612,76 @@ $.extend( $.validator, {
 		hideErrors: function() {
 			this.hideThese( this.toHide );
 		},
+		addErrorAriaDescribedBy: function( element, error, updateGroupMembers ) {
+			updateGroupMembers = ( updateGroupMembers === undefined ) ? false : updateGroupMembers;
+
+			var errorID, v, group,
+				describedBy = $( element ).attr( "aria-describedby" );
+				errorID = error.attr( "id" );
+
+			// Respect existing non-error aria-describedby
+			if ( !describedBy ) {
+				describedBy = errorID;
+			} else if ( !describedBy.match( new RegExp( "\\b" + this.escapeCssMeta( errorID ) + "\\b" ) ) ) {
+
+				// Add to end of list if not already present
+				describedBy += " " + errorID;
+			}
+
+			$( element ).attr( "aria-describedby", describedBy );
+
+			if ( updateGroupMembers ) {
+
+				// If this element is grouped, then assign to all elements in the same group
+				group = this.groups[ element.name ];
+				if ( group ) {
+					v = this;
+					$.each( v.groups, function( name, testgroup ) {
+						if ( testgroup === group ) {
+							v.addErrorAriaDescribedBy( $( "[name='" + v.escapeCssMeta( name ) + "']", v.currentForm ), error, false );
+						}
+					} );
+				}
+			}
+		},
+
+		removeErrorAriaDescribedBy: function( element, error ) {
+
+			var describedBy = $( element ).attr( "aria-describedby" ),
+				describedByIds = describedBy.split( " " ),
+				errorID = error.attr( "id" ),
+				ind = describedByIds.indexOf( errorID );
+
+			if ( ind > -1 ) {
+				describedByIds.splice( ind, 1 );
+			}
+
+			if ( describedByIds.length ) {
+				$( element ).attr( "aria-describedby", describedByIds.join( " " ) );
+			} else {
+				$( element ).removeAttr( "aria-describedby" );
+			}
+
+		},
 
 		hideThese: function( errors ) {
-			errors.not( this.containers ).text( "" );
-			this.addWrapper( errors ).hide();
+
+			for ( var i = 0; errors[ i ]; i++ ) {
+				var error = $( errors[ i ] ),
+					errorID = error.attr( "id" ) ? this.escapeCssMeta( error.attr( "id" ) ) : undefined,
+					element = ( errorID ) ? this.elements().filter( '[aria-describedby~="' + errorID + '"]' ) : [];
+
+				if ( this.settings.ariaDescribedByCleanup && element.length ) {
+					this.removeErrorAriaDescribedBy( element, error );
+				}
+
+				if ( !error.is( this.containers ) ) {
+					error.text( "" );
+				}
+
+				this.addWrapper( error ).hide();
+			}
+
 		},
 
 		valid: function() {
@@ -647,14 +717,29 @@ $.extend( $.validator, {
 
 		elements: function() {
 			var validator = this,
-				rulesCache = {};
+				rulesCache = {},
+				selectors = [ "input", "select", "textarea", "[contenteditable]" ],
+				formId = this.currentForm.id,
+				elements;
 
 			// Select all valid inputs inside the form (no submit or reset buttons)
-			return $( this.currentForm )
-			.find( "input, select, textarea, [contenteditable]" )
+			elements = $( this.currentForm )
+			.find( selectors.concat( this.settings.customElements ).join( ", " ) )
 			.not( ":submit, :reset, :image, :disabled" )
-			.not( this.settings.ignore )
-			.filter( function() {
+			.not( this.settings.ignore );
+
+			// If the form has an ID, also include elements outside the form that have
+			// a form attribute pointing to this form
+			if ( formId ) {
+				elements = elements.add(
+					$( selectors.concat( this.settings.customElements ).join( ", " ) )
+					.filter( "[form='" + validator.escapeCssMeta( formId ) + "']" )
+					.not( ":submit, :reset, :image, :disabled" )
+					.not( this.settings.ignore )
+				);
+			}
+
+			return elements.filter( function() {
 				var name = this.name || $( this ).attr( "name" ); // For contenteditable
 				var isContentEditable = typeof $( this ).attr( "contenteditable" ) !== "undefined" && $( this ).attr( "contenteditable" ) !== "false";
 
@@ -916,6 +1001,7 @@ $.extend( $.validator, {
 
 		defaultShowErrors: function() {
 			var i, elements, error;
+
 			for ( i = 0; this.errorList[ i ]; i++ ) {
 				error = this.errorList[ i ];
 				if ( this.settings.highlight ) {
@@ -923,19 +1009,23 @@ $.extend( $.validator, {
 				}
 				this.showLabel( error.element, error.message );
 			}
+
 			if ( this.errorList.length ) {
 				this.toShow = this.toShow.add( this.containers );
 			}
+
 			if ( this.settings.success ) {
 				for ( i = 0; this.successList[ i ]; i++ ) {
 					this.showLabel( this.successList[ i ] );
 				}
 			}
+
 			if ( this.settings.unhighlight ) {
 				for ( i = 0, elements = this.validElements(); elements[ i ]; i++ ) {
 					this.settings.unhighlight.call( this, elements[ i ], this.settings.errorClass, this.settings.validClass );
 				}
 			}
+
 			this.toHide = this.toHide.not( this.toShow );
 			this.hideErrors();
 			this.addWrapper( this.toShow ).show();
@@ -952,12 +1042,17 @@ $.extend( $.validator, {
 		},
 
 		showLabel: function( element, message ) {
-			var place, group, errorID, v,
+			var place,
 				error = this.errorsFor( element ),
 				elementID = this.idOrName( element ),
 				describedBy = $( element ).attr( "aria-describedby" );
 
 			if ( error.length ) {
+
+				// Non-label error exists but is not currently associated with element via aria-describedby
+				if ( error.closest( "label[for='" + this.escapeCssMeta( elementID ) + "']" ).length === 0 && ( describedBy === undefined || describedBy.split( " " ).indexOf( error.attr( "id" ) ) === -1 ) ) {
+					this.addErrorAriaDescribedBy( element, error, true );
+				}
 
 				// Refresh error/success class
 				error.removeClass( this.settings.validClass ).addClass( this.settings.errorClass );
@@ -1003,32 +1098,10 @@ $.extend( $.validator, {
 					// If the error is a label, then associate using 'for'
 					error.attr( "for", elementID );
 
-					// If the element is not a child of an associated label, then it's necessary
-					// to explicitly apply aria-describedby
+				// If the element is not a child of an associated label, then it's necessary
+				// to explicitly apply aria-describedby
 				} else if ( error.parents( "label[for='" + this.escapeCssMeta( elementID ) + "']" ).length === 0 ) {
-					errorID = error.attr( "id" );
-
-					// Respect existing non-error aria-describedby
-					if ( !describedBy ) {
-						describedBy = errorID;
-					} else if ( !describedBy.match( new RegExp( "\\b" + this.escapeCssMeta( errorID ) + "\\b" ) ) ) {
-
-						// Add to end of list if not already present
-						describedBy += " " + errorID;
-					}
-					$( element ).attr( "aria-describedby", describedBy );
-
-					// If this element is grouped, then assign to all elements in the same group
-					group = this.groups[ element.name ];
-					if ( group ) {
-						v = this;
-						$.each( v.groups, function( name, testgroup ) {
-							if ( testgroup === group ) {
-								$( "[name='" + v.escapeCssMeta( name ) + "']", v.currentForm )
-									.attr( "aria-describedby", error.attr( "id" ) );
-							}
-						} );
-					}
+					this.addErrorAriaDescribedBy( element, error, true );
 				}
 			}
 			if ( !message && this.settings.success ) {
@@ -1052,6 +1125,9 @@ $.extend( $.validator, {
 				selector = selector + ", #" + this.escapeCssMeta( describer )
 					.replace( /\s+/g, ", #" );
 			}
+
+			// There may be hidden error elements not currently associated via aria-describedby (if ariaDescribedByCleanup is true)
+			selector = selector + ", #" + name + "-error";
 
 			return this
 				.errors()
@@ -1089,7 +1165,20 @@ $.extend( $.validator, {
 		},
 
 		findByName: function( name ) {
-			return $( this.currentForm ).find( "[name='" + this.escapeCssMeta( name ) + "']" );
+			var formId = this.currentForm.id,
+				selector = "[name='" + this.escapeCssMeta( name ) + "']",
+				elements = $( this.currentForm ).find( selector );
+
+			// If the form has an ID, also include elements outside the form that have
+			// a form attribute pointing to this form
+			if ( formId ) {
+				elements = elements.add(
+					$( selector )
+					.filter( "[form='" + this.escapeCssMeta( formId ) + "']" )
+				);
+			}
+
+			return elements;
 		},
 
 		getLength: function( value, element ) {
@@ -1501,7 +1590,7 @@ $.extend( $.validator, {
 
 		// https://jqueryvalidation.org/number-method/
 		number: function( value, element ) {
-			return this.optional( element ) || /^(?:-?\d+|-?\d{1,3}(?:,\d{3})+)?(?:\.\d+)?$/.test( value );
+			return this.optional( element ) || /^(?:-?\d+|-?\d{1,3}(?:,\d{3})+)?(?:-?\.\d+)?$/.test( value );
 		},
 
 		// https://jqueryvalidation.org/digits-method/
@@ -1612,11 +1701,12 @@ $.extend( $.validator, {
 
 			param = typeof param === "string" && { url: param } || param;
 			optionDataString = $.param( $.extend( { data: value }, param.data ) );
-			if ( previous.old === optionDataString ) {
+			if ( previous.valid !== null && previous.old === optionDataString ) {
 				return previous.valid;
 			}
 
 			previous.old = optionDataString;
+			previous.valid = null;
 			validator = this;
 			this.startRequest( element );
 			data = {};
