@@ -189,6 +189,9 @@ subtest 'Yearly, authored_on' => sub {
     $res = $app->get($query_param);
     ok !$app->generic_error, "list has no generic error";
 
+    sleep 2;
+    $test_env->clear_mt_cache;
+
     $res = $app->post({
         %$query_param,
         __mode          => 'itemset_action',
@@ -243,6 +246,9 @@ subtest 'Yearly, cf_date' => sub {
     my $query_param = $uri->query_form_hash;
     $res = $app->get($query_param);
     ok !$app->generic_error, "list has no generic error";
+
+    sleep 2;
+    $test_env->clear_mt_cache;
 
     $res = $app->post({
         %$query_param,
