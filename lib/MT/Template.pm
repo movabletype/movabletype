@@ -742,6 +742,9 @@ sub _sync_from_disk {
                 );
             }
         }
+    } else {
+        require MT::Util::Deprecated;
+        MT::Util::Deprecated::warning(name => "Disabling SafeMode", since => '9.2.0');
     }
     unless ( File::Spec->file_name_is_absolute($lfile) ) {
         if ( $tmpl->blog_id ) {
@@ -793,6 +796,9 @@ sub _sync_to_disk {
                 );
             }
         }
+    } else {
+        require MT::Util::Deprecated;
+        MT::Util::Deprecated::warning(name => "Disabling SafeMode", since => '9.2.0');
     }
     unless ( File::Spec->file_name_is_absolute($lfile) ) {
         if ( $tmpl->blog_id ) {
