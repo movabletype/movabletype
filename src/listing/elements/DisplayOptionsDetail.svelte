@@ -31,7 +31,7 @@
     </fieldset>
     {#if !disableUserDispOption}
       <div class="actions-bar actions-bar-bottom">
-        <!-- svelte-ignore a11y-invalid-attribute -->
+        <!-- svelte-ignore a11y_invalid_attribute -->
         <a
           href="javascript:void(0);"
           id="reset-display-options"

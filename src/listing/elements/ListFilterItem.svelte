@@ -161,7 +161,7 @@
                 </a>
               {/if}
               {#if !filterTypeHash[loopItem.type].singleton && item.args.items.length > 1}
-                <!-- svelte-ignore a11y-invalid-attribute -->
+                <!-- svelte-ignore a11y_invalid_attribute -->
                 <a href="javascript:void(0);" onclick={removeFilterItemContent}>
                   <SVG
                     title={window.trans("Remove")}
@@ -191,7 +191,7 @@
           />
         {/key}
         {#if !filterTypeHash[item.type].singleton}
-          <!-- svelte-ignore a11y-invalid-attribute -->
+          <!-- svelte-ignore a11y_invalid_attribute -->
           <a
             href="javascript:void(0);"
             class="d-inline-block"

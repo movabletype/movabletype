@@ -74,7 +74,7 @@
 {#if $reactiveStore.pageMax > 1 && $reactiveStore.checkedAllRowsOnPage && !$reactiveStore.checkedAllRows}
   <tr style="background-color: #ffffff;">
     <td colspan={$reactiveStore.columns.length + 1}>
-      <!-- svelte-ignore a11y-invalid-attribute -->
+      <!-- svelte-ignore a11y_invalid_attribute -->
       <a href="javascript:void(0);" onclick={checkAllRows}>
         {window.trans(
           "Select all [_1] items",

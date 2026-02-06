@@ -50,7 +50,7 @@
     </button>
     <div class="dropdown-menu">
       {#each Object.entries(buttonActionsForMobile()) as [key, action]}
-        <!-- svelte-ignore a11y-invalid-attribute -->
+        <!-- svelte-ignore a11y_invalid_attribute -->
         <a
           class="dropdown-item"
           href="javascript:void(0);"
@@ -62,7 +62,7 @@
       {/each}
 
       {#each Object.entries(listActionsForMobile()) as [key, action]}
-        <!-- svelte-ignore a11y-invalid-attribute -->
+        <!-- svelte-ignore a11y_invalid_attribute -->
         <a
           class="dropdown-item"
           href="javascript:void(0);"
@@ -78,7 +78,7 @@
       {/if}
 
       {#each Object.entries(moreListActionsForMobile()) as [key, action]}
-        <!-- svelte-ignore a11y-invalid-attribute -->
+        <!-- svelte-ignore a11y_invalid_attribute -->
         <a
           class="dropdown-item"
           href="javascript:void(0);"

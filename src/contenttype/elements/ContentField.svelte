@@ -124,7 +124,7 @@
     {#if field.realId}<span>(ID: {field.realId})</span>{/if}
   </div>
   <div class="col-auto p-0">
-    <!-- svelte-ignore a11y-invalid-attribute -->
+    <!-- svelte-ignore a11y_invalid_attribute -->
     <a
       href="javascript:void(0)"
       onclick={duplicateField}
@@ -135,7 +135,7 @@
         href="{window.StaticURI}images/sprite.svg#ic_duplicate"
       /></a
     >
-    <!-- svelte-ignore a11y-invalid-attribute -->
+    <!-- svelte-ignore a11y_invalid_attribute -->
     <a
       href="javascript:void(0)"
       onclick={deleteField}

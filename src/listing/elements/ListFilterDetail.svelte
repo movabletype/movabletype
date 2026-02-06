@@ -65,7 +65,7 @@
           <div class="dropdown-menu">
             {#each filterTypes as filterType}
               {#if filterType.editable}
-                <!-- svelte-ignore a11y-invalid-attribute -->
+                <!-- svelte-ignore a11y_invalid_attribute -->
                 <a
                   class:disabled={isFilterItemSelected(
                     currentFilter,

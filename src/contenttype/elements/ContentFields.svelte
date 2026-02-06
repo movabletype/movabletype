@@ -688,7 +688,7 @@
   <fieldset id="content-fields" class="form-group">
     <legend class="h3">{window.trans("Content Fields")}</legend>
     <div class="mt-collapse__all">
-      <!-- svelte-ignore a11y-invalid-attribute -->
+      <!-- svelte-ignore a11y_invalid_attribute -->
       <a
         data-bs-toggle="collapse"
         onclick={toggleAll}
@@ -704,7 +704,7 @@
         />
       </a>
     </div>
-    <!-- svelte-ignore a11y-no-static-element-interactions -->
+    <!-- svelte-ignore a11y_no_static_element_interactions -->
     <div
       class="mt-draggable__area"
       style="height:400px;"

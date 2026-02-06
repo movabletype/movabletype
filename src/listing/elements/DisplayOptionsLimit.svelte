@@ -13,7 +13,7 @@
 </script>
 
 <div class="field-header">
-  <!-- svelte-ignore a11y-label-has-associated-control -->
+  <!-- svelte-ignore a11y_label_has_associated_control -->
   <label class="form-label">{window.trans("Show")}</label>
 </div>
 <div class="field-content">

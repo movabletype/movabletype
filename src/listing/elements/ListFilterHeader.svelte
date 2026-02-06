@@ -36,7 +36,7 @@
         {window.trans("Filter:")}
       </li>
       <li class="list-inline-item">
-        <!-- svelte-ignore a11y-invalid-attribute -->
+        <!-- svelte-ignore a11y_invalid_attribute -->
         <a
           href="#"
           id="opener"
@@ -52,7 +52,7 @@
       </li>
       <li class="list-inline-item">
         {#if isAllpassFilter === false}
-          <!-- svelte-ignore a11y-invalid-attribute -->
+          <!-- svelte-ignore a11y_invalid_attribute -->
           <a href="#" id="allpass-filter" onclick={resetFilter}>
             [ {window.trans("Reset Filter")} ]
           </a>

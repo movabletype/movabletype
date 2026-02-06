@@ -112,16 +112,16 @@
                   data-mt-list-filter-label={filter.label}
                 >
                   {#if !isEditingFilter[filterId]}
-                    <!-- svelte-ignore a11y-invalid-attribute -->
+                    <!-- svelte-ignore a11y_invalid_attribute -->
                     <a href="#" onclick={applyFilter}>
                       {filter.label}
                     </a>
                     <div class="float-end d-none d-md-block">
-                      <!-- svelte-ignore a11y-invalid-attribute -->
+                      <!-- svelte-ignore a11y_invalid_attribute -->
                       <a href="#" onclick={startEditingFilter}>
                         [{window.trans("rename")}]
                       </a>
-                      <!-- svelte-ignore a11y-invalid-attribute -->
+                      <!-- svelte-ignore a11y_invalid_attribute -->
                       <a href="#" class="d-inline-block" onclick={removeFilter}>
                         <SVG
                           title={window.trans("Remove")}
@@ -160,7 +160,7 @@
               {/if}
             {/each}
             <li class="filter line d-none d-md-block">
-              <!-- svelte-ignore a11y-invalid-attribute -->
+              <!-- svelte-ignore a11y_invalid_attribute -->
               <a
                 href="#"
                 id="new_filter"
@@ -190,7 +190,7 @@
                     data-mt-list-filter-id={filter.id}
                     data-mt-list-filter-label={filter.label}
                   >
-                    <!-- svelte-ignore a11y-invalid-attribute -->
+                    <!-- svelte-ignore a11y_invalid_attribute -->
                     <a href="#" onclick={applyFilter}>
                       {filter.label}
                     </a>

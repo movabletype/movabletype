@@ -24,7 +24,7 @@
 
 <ul class="pagination__mobile d-md-none">
   <li class="page-item" class:me-auto={isTooNarrowWidth}>
-    <!-- svelte-ignore a11y-invalid-attribute -->
+    <!-- svelte-ignore a11y_invalid_attribute -->
     <a
       href="javascript:void(0);"
       class="page-link"
@@ -42,7 +42,7 @@
 
   {#if page - 4 >= 1 && $reactiveStore.pageMax - page < 1}
     <li class="page-item" class:me-auto={isTooNarrowWidth}>
-      <!-- svelte-ignore a11y-invalid-attribute -->
+      <!-- svelte-ignore a11y_invalid_attribute -->
       <a
         href="javascript:void(0);"
         class="page-link"
@@ -56,7 +56,7 @@
 
   {#if page - 3 >= 1 && $reactiveStore.pageMax - page < 2}
     <li class="page-item" class:me-auto={isTooNarrowWidth}>
-      <!-- svelte-ignore a11y-invalid-attribute -->
+      <!-- svelte-ignore a11y_invalid_attribute -->
       <a
         href="javascript:void(0);"
         class="page-link"
@@ -70,7 +70,7 @@
 
   {#if page - 2 >= 1}
     <li class="page-item" class:me-auto={isTooNarrowWidth}>
-      <!-- svelte-ignore a11y-invalid-attribute -->
+      <!-- svelte-ignore a11y_invalid_attribute -->
       <a
         href="javascript:void(0);"
         class="page-link"
@@ -84,7 +84,7 @@
 
   {#if page - 1 >= 1}
     <li class="page-item" class:me-auto={isTooNarrowWidth}>
-      <!-- svelte-ignore a11y-invalid-attribute -->
+      <!-- svelte-ignore a11y_invalid_attribute -->
       <a
         href="javascript:void(0);"
         class="page-link"
@@ -97,7 +97,7 @@
   {/if}
 
   <li class="page-item active" class:me-auto={isTooNarrowWidth}>
-    <!-- svelte-ignore a11y-missing-attribute -->
+    <!-- svelte-ignore a11y_missing_attribute -->
     <a class="page-link">
       {page}
       <span class="visually-hidden">(current)</span>
@@ -106,7 +106,7 @@
 
   {#if page + 1 <= $reactiveStore.pageMax}
     <li class="page-item" class:me-auto={isTooNarrowWidth}>
-      <!-- svelte-ignore a11y-invalid-attribute -->
+      <!-- svelte-ignore a11y_invalid_attribute -->
       <a
         href="javascript:void(0);"
         class="page-link"
@@ -120,7 +120,7 @@
 
   {#if page + 2 <= $reactiveStore.pageMax}
     <li class="page-item" class:me-auto={isTooNarrowWidth}>
-      <!-- svelte-ignore a11y-invalid-attribute -->
+      <!-- svelte-ignore a11y_invalid_attribute -->
       <a
         href="javascript:void(0);"
         class="page-link"
@@ -134,7 +134,7 @@
 
   {#if page + 3 <= $reactiveStore.pageMax && page <= 2}
     <li class="page-item" class:me-auto={isTooNarrowWidth}>
-      <!-- svelte-ignore a11y-invalid-attribute -->
+      <!-- svelte-ignore a11y_invalid_attribute -->
       <a
         href="javascript:void(0);"
         class="page-link"
@@ -148,7 +148,7 @@
 
   {#if page + 4 <= $reactiveStore.pageMax && page <= 1}
     <li class="page-item" class:me-auto={isTooNarrowWidth}>
-      <!-- svelte-ignore a11y-invalid-attribute -->
+      <!-- svelte-ignore a11y_invalid_attribute -->
       <a
         href="javascript:void(0);"
         class="page-link"
@@ -161,7 +161,7 @@
   {/if}
 
   <li class="page-item">
-    <!-- svelte-ignore a11y-invalid-attribute -->
+    <!-- svelte-ignore a11y_invalid_attribute -->
     <a
       href="javascript:void(0);"
       class="page-link"

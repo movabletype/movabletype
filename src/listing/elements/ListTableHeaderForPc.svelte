@@ -59,7 +59,7 @@
         class="text-truncate"
       >
         {#if column.sortable}
-          <!-- svelte-ignore a11y-invalid-attribute -->
+          <!-- svelte-ignore a11y_invalid_attribute -->
           <a
             href="javascript:void(0)"
             onclick={toggleSortColumn}
