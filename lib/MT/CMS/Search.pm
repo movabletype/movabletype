@@ -781,13 +781,13 @@ sub search_replace {
         $param->{time_fields}      = \@time_fields;
 
         if ( $selected_content_type && $param->{date_time_field_id} ) {
-            my $field_data = $selected_content_type->get_field(
-                $param->{date_time_field_id} );
-            if ( $field_data->{type} eq 'time_only' ) {
-                $param->{show_datetime_fields_type} = 'time';
-            }
-            else {
-                $param->{show_datetime_fields_type} = 'date';
+            if (my $field_data = $selected_content_type->get_field($param->{date_time_field_id})) {
+                if ( $field_data->{type} eq 'time_only' ) {
+                    $param->{show_datetime_fields_type} = 'time';
+                }
+                else {
+                    $param->{show_datetime_fields_type} = 'date';
+                }
             }
         }
         else {
@@ -1022,31 +1022,31 @@ sub do_search_replace {
         }
         if ($is_dateranged) {
             if ($content_type && $date_time_field_id) {
-                my $field_data
-                    = $content_type->get_field($date_time_field_id);
-                my $datetime_term;
-                if ( $field_data->{type} eq 'time_only' ) {
-                    $datetime_term
-                        = ( $timefrom gt $timeto )
-                        ? [ "19700101${timeto}", "19700101${timefrom}" ]
-                        : [ "19700101${timefrom}", "19700101${timeto}" ];
+                if (my $field_data = $content_type->get_field($date_time_field_id)) {
+                    my $datetime_term;
+                    if ( $field_data->{type} eq 'time_only' ) {
+                        $datetime_term
+                            = ( $timefrom gt $timeto )
+                            ? [ "19700101${timeto}", "19700101${timefrom}" ]
+                            : [ "19700101${timefrom}", "19700101${timeto}" ];
+                    }
+                    else {
+                        $datetime_term
+                            = ( $datefrom gt $dateto )
+                            ? [ "${dateto}000000", "${datefrom}235959" ]
+                            : [ "${datefrom}000000", "${dateto}235959" ];
+                    }
+                    my $join = $app->model('content_field_index')->join_on(
+                        undef,
+                        {   content_data_id  => \'= cd_id',
+                            content_field_id => $date_time_field_id,
+                            value_datetime   => $datetime_term,
+                        },
+                        { range_incl => { value_datetime => 1 } },
+                    );
+                    $args{joins} ||= [];
+                    push @{ $args{joins} }, $join;
                 }
-                else {
-                    $datetime_term
-                        = ( $datefrom gt $dateto )
-                        ? [ "${dateto}000000", "${datefrom}235959" ]
-                        : [ "${datefrom}000000", "${dateto}235959" ];
-                }
-                my $join = $app->model('content_field_index')->join_on(
-                    undef,
-                    {   content_data_id  => \'= cd_id',
-                        content_field_id => $date_time_field_id,
-                        value_datetime   => $datetime_term,
-                    },
-                    { range_incl => { value_datetime => 1 } },
-                );
-                $args{joins} ||= [];
-                push @{ $args{joins} }, $join;
             }
             else {
                 $args{range_incl}{$date_col} = 1;
