@@ -879,7 +879,8 @@ sub rebuild_pages {
         require MT::ContentData;
         my $content_data = MT::ContentData->load($content_data_id);
         return $app->permission_denied
-            unless $perms->can_edit_content_data( $content_data, $app->user );
+            if !$perms->can_edit_content_data( $content_data, $app->user )
+            && !$perms->can_republish_content_data( $content_data, $app->user );
         $app->rebuild_content_data(
             ContentData       => $content_data,
             BuildDependencies => 1,
