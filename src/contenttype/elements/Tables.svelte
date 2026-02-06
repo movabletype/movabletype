@@ -7,9 +7,9 @@
   let {
     config,
     field = $bindable(),
-    gather = $bindable(null),
+    gather = $bindable(),
     id,
-    options = $bindable(),
+    options,
     optionsHtmlParams,
   }: ContentType.ContentFieldProps = $props();
 
@@ -24,7 +24,7 @@
   options.initial_cols ??= 1;
 </script>
 
-<ContentFieldOptionGroup type="table" bind:field {id} bind:options>
+<ContentFieldOptionGroup type="table" bind:field {id} {options}>
   <ContentFieldOption
     id="tables-initial_rows"
     label={window.trans("Initial Rows")}
@@ -36,7 +36,7 @@
       id="tables-initial_rows"
       class="form-control w-25"
       min="1"
-      bind:value={options.initial_rows}
+      value={options.initial_rows}
     />
   </ContentFieldOption>
 
@@ -51,7 +51,7 @@
       id="tables-initial_cols"
       class="form-control w-25"
       min="1"
-      bind:value={options.initial_cols}
+      value={options.initial_cols}
     />
   </ContentFieldOption>
 
@@ -65,7 +65,7 @@
       class="mt-switch form-control"
       id="tables-can_increase_decrease_rows"
       name="increase_decrease_rows"
-      bind:checked={options.increase_decrease_rows}
+      checked={options.increase_decrease_rows}
     /><label for="tables-can_increase_decrease_rows" class="form-label">
       {window.trans("Allow users to increase/decrease rows?")}
     </label>
@@ -81,7 +81,7 @@
       class="mt-switch form-control"
       id="tables-can_increase_decrease_cols"
       name="increase_decrease_cols"
-      bind:checked={options.increase_decrease_cols}
+      checked={options.increase_decrease_cols}
     /><label for="tables-can_increase_decrease_cols" class="form-label">
       {window.trans("Allow users to increase/decrease cols?")}
     </label>

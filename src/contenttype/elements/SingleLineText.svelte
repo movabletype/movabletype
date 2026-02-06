@@ -7,9 +7,9 @@
   let {
     config,
     field = $bindable(),
-    gather = $bindable(null),
+    gather = $bindable(),
     id,
-    options = $bindable(),
+    options,
     optionsHtmlParams,
   }: ContentType.ContentFieldProps = $props();
 
@@ -18,7 +18,7 @@
   options.initial_value ??= "";
 </script>
 
-<ContentFieldOptionGroup type="single-line-text" bind:field {id} bind:options>
+<ContentFieldOptionGroup type="single-line-text" bind:field {id} {options}>
   <ContentFieldOption
     id="single_line_text-min_length"
     label={window.trans("Min Length")}
@@ -30,7 +30,7 @@
       id="single_line_text-min_length"
       class="form-control w-25"
       min="0"
-      bind:value={options.min_length}
+      value={options.min_length}
     />
   </ContentFieldOption>
 
@@ -45,7 +45,7 @@
       id="single_line_text-max_length"
       class="form-control w-25"
       min="1"
-      bind:value={options.max_length}
+      value={options.max_length}
     />
   </ContentFieldOption>
 
@@ -59,7 +59,7 @@
       name="initial_value"
       id="single_line_text-initial_value"
       class="form-control"
-      bind:value={options.initial_value}
+      value={options.initial_value}
     />
   </ContentFieldOption>
 </ContentFieldOptionGroup>

@@ -7,9 +7,9 @@
   let {
     config,
     field = $bindable(),
-    gather = $bindable(null),
+    gather = $bindable(),
     id,
-    options = $bindable(),
+    options,
     optionsHtmlParams,
   }: ContentType.ContentFieldProps = $props();
 
@@ -29,7 +29,7 @@
   options.initial_value ??= "";
 </script>
 
-<ContentFieldOptionGroup type="multi-line-text" bind:field {id} bind:options>
+<ContentFieldOptionGroup type="multi-line-text" bind:field {id} {options}>
   <ContentFieldOption
     id="multi_line_text-initial_value"
     label={window.trans("Initial Value")}
@@ -39,7 +39,7 @@
       name="initial_value"
       id="multi_line_text-initial_value"
       class="form-control"
-      bind:value={options.initial_value}
+      value={options.initial_value}
     ></textarea>
   </ContentFieldOption>
 
@@ -53,7 +53,7 @@
       name="input_format"
       id="multi_line_text-input_format"
       class="custom-select form-control form-select"
-      bind:value={options.input_format}
+      value={options.input_format}
     >
       {#each textFilters as filter}
         <option value={filter.filter_key}>{filter.filter_label}</option>
@@ -72,7 +72,7 @@
       class="mt-switch form-control"
       id="multi_line_text-full_rich_text"
       name="full_rich_text"
-      bind:checked={options.full_rich_text}
+      checked={options.full_rich_text}
     /><label for="multi_line_text-full_rich_text" class="form-label">
       {window.trans("Use all rich text decoration buttons")}
     </label>

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { untrack } from "svelte";
   import type * as ContentType from "../../@types/contenttype";
 
   import ContentFieldTypes from "../ContentFieldTypes";
@@ -28,14 +29,18 @@
   );
 
   $effect(() => {
-    if (field.type !== type && customContentFieldObject) {
-      customContentFieldObject.destroy();
+    const currentFieldType = field.type;
+    const currentType = untrack(() => type);
+    const currentObject = untrack(() => customContentFieldObject);
+
+    if (currentFieldType !== currentType && currentObject) {
+      currentObject.destroy();
       customContentFieldObject = null;
       gather = null;
     }
 
     if (
-      !customContentFieldObject &&
+      !untrack(() => customContentFieldObject) &&
       customContentFieldMountFunction &&
       target
     ) {
@@ -51,12 +56,12 @@
       gather = customContentFieldObject?.gather;
     }
 
-    type = field.type;
+    type = currentFieldType;
 
     return () => {
-      if (customContentFieldObject) {
+      if (untrack(() => customContentFieldObject)) {
         gather = null;
-        customContentFieldObject.destroy();
+        customContentFieldObject?.destroy();
         customContentFieldObject = null;
       }
       type = null;

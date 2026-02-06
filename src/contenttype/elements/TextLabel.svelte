@@ -1,23 +1,21 @@
 <script lang="ts">
   import type * as ContentType from "../../@types/contenttype";
 
-  import { onMount } from "svelte";
-
   import ContentFieldOption from "./ContentFieldOption.svelte";
   import ContentFieldOptionGroup from "./ContentFieldOptionGroup.svelte";
 
   let {
     config,
     field = $bindable(),
-    gather = $bindable(null),
+    gather = $bindable(),
     id,
-    options = $bindable(),
+    options,
     optionsHtmlParams,
   }: ContentType.ContentFieldProps = $props();
 
   options.text ??= "";
 
-  onMount(() => {
+  $effect(() => {
     // description, required, display field is hidden.
     (
       document.getElementById(
@@ -33,7 +31,7 @@
   });
 </script>
 
-<ContentFieldOptionGroup type="text-label" bind:field {id} bind:options>
+<ContentFieldOptionGroup type="text-label" bind:field {id} {options}>
   <ContentFieldOption
     id="text_label-text"
     label={window.trans("__TEXT_LABEL_TEXT")}
@@ -47,7 +45,7 @@
       name="text"
       id="text_label-text"
       class="form-control"
-      bind:value={options.text}
+      value={options.text}
     ></textarea>
   </ContentFieldOption>
 </ContentFieldOptionGroup>

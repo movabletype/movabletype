@@ -7,16 +7,16 @@
   let {
     config,
     field = $bindable(),
-    gather = $bindable(null),
+    gather = $bindable(),
     id,
-    options = $bindable(),
+    options,
     optionsHtmlParams,
   }: ContentType.ContentFieldProps = $props();
 
   options.initial_value ??= "";
 </script>
 
-<ContentFieldOptionGroup type="date-only" bind:field {id} bind:options>
+<ContentFieldOptionGroup type="date-only" bind:field {id} {options}>
   <ContentFieldOption
     id="date_only-initial-date_value"
     label={window.trans("Initial Value")}
@@ -28,7 +28,7 @@
       name="initial_value"
       id="initial_value"
       class="form-control date-field w-25"
-      bind:value={options.initial_value}
+      value={options.initial_value}
       placeholder="YYYY-MM-DD"
     />
   </ContentFieldOption>

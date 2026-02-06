@@ -9,9 +9,9 @@
   let {
     config,
     field = $bindable(),
-    gather = $bindable(null),
+    gather = $bindable(),
     id,
-    options = $bindable(),
+    options,
     optionsHtmlParams,
   }: ContentType.ContentFieldProps = $props();
 
@@ -30,15 +30,17 @@
 
   // <mt:include name="content_field_type_options/selection_common_script.tmpl">
   // copied some functions from selection_common_script.tmpl below
-  if (!options.values) {
-    options.values = [
-      {
-        checked: "",
-        label: "",
-        value: "",
-      },
-    ];
-  }
+  $effect(() => {
+    if (!options.values) {
+      options.values = [
+        {
+          checked: "",
+          label: "",
+          value: "",
+        },
+      ];
+    }
+  });
 
   $effect(() => {
     if (refsTable) {
@@ -102,7 +104,7 @@
   };
 </script>
 
-<ContentFieldOptionGroup type="checkboxes" bind:field {id} bind:options>
+<ContentFieldOptionGroup type="checkboxes" bind:field {id} {options}>
   <ContentFieldOption
     id="checkboxes-min"
     label={window.trans("Minimum number of selections")}
@@ -114,7 +116,7 @@
       id="checkboxes-min"
       class="form-control w-25"
       min="0"
-      bind:value={options.min}
+      value={options.min}
     />
   </ContentFieldOption>
 
@@ -129,7 +131,7 @@
       id="checkboxes-max"
       class="form-control w-25"
       min="1"
-      bind:value={options.max}
+      value={options.max}
       onchange={enterMax}
     />
   </ContentFieldOption>

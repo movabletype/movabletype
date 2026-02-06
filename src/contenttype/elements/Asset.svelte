@@ -7,9 +7,9 @@
   let {
     config,
     field = $bindable(),
-    gather = $bindable(null),
+    gather = $bindable(),
     id,
-    options = $bindable(),
+    options,
     optionsHtmlParams,
   }: ContentType.ContentFieldProps = $props();
 
@@ -27,7 +27,7 @@
   options.max ??= "";
 </script>
 
-<ContentFieldOptionGroup type="asset" bind:field {id} bind:options>
+<ContentFieldOptionGroup type="asset" bind:field {id} {options}>
   <ContentFieldOption
     id="asset-multiple"
     label={window.trans("Allow users to select multiple assets?")}
@@ -39,7 +39,7 @@
       class="mt-switch form-control"
       id="asset-multiple"
       name="multiple"
-      bind:checked={options.multiple}
+      checked={options.multiple}
     /><label for="asset-multiple" class="form-label">
       {window.trans("Allow users to select multiple assets?")}
     </label>
@@ -57,7 +57,7 @@
       id="asset-min"
       class="form-control w-25"
       min="0"
-      bind:value={options.min}
+      value={options.min}
     />
   </ContentFieldOption>
 
@@ -73,7 +73,7 @@
       id="asset-max"
       class="form-control w-25"
       min="1"
-      bind:value={options.max}
+      value={options.max}
     />
   </ContentFieldOption>
 
@@ -87,7 +87,7 @@
       class="mt-switch form-control"
       id="asset-allow_upload"
       name="allow_upload"
-      bind:checked={options.allow_upload}
+      checked={options.allow_upload}
     /><label for="asset-allow_upload" class="form-label">
       {window.trans("Allow users to upload a new asset?")}
     </label>

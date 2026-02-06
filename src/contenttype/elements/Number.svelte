@@ -7,9 +7,9 @@
   let {
     config,
     field = $bindable(),
-    gather = $bindable(null),
+    gather = $bindable(),
     id,
-    options = $bindable(),
+    options,
     optionsHtmlParams,
   }: ContentType.ContentFieldProps = $props();
 
@@ -37,7 +37,7 @@
   });
 </script>
 
-<ContentFieldOptionGroup type="number" bind:field {id} bind:options>
+<ContentFieldOptionGroup type="number" bind:field {id} {options}>
   <ContentFieldOption id="number-min_value" label={window.trans("Min Value")}>
     <input
       {...{ ref: "min_value" }}
@@ -45,7 +45,7 @@
       name="min_value"
       id="number-min_value"
       class="form-control html5-form w-25"
-      bind:value={options.min_value}
+      value={options.min_value}
       min={config.NumberFieldMinValue}
       max={config.NumberFieldMaxValue}
     />
@@ -58,7 +58,7 @@
       name="max_value"
       id="number-max_value"
       class="form-control html5-form w-25"
-      bind:value={options.max_value}
+      value={options.max_value}
       min={config.NumberFieldMinValue}
       max={config.NumberFieldMaxValue}
     />
@@ -76,7 +76,7 @@
       class="form-control html5-form w-25"
       min="0"
       max={config.NumberFieldDecimalPlaces}
-      bind:value={options.decimal_places}
+      value={options.decimal_places}
     />
   </ContentFieldOption>
 
@@ -90,7 +90,7 @@
       name="initial_value"
       id="number-initial_value"
       class="form-control html5-form w-25"
-      bind:value={options.initial_value}
+      value={options.initial_value}
       min={options.min_value}
       max={options.max_value}
     />

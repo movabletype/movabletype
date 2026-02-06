@@ -9,9 +9,9 @@
   let {
     config,
     field = $bindable(),
-    gather = $bindable(null),
+    gather = $bindable(),
     id,
-    options = $bindable(),
+    options,
     optionsHtmlParams,
   }: ContentType.ContentFieldProps = $props();
 
@@ -30,15 +30,17 @@
 
   // <mt:include name="content_field_type_options/selection_common_script.tmpl">
   // copoied some functions from selection_common_script.tmpl below
-  if (!options.values) {
-    options.values = [
-      {
-        checked: "",
-        label: "",
-        value: "",
-      },
-    ];
-  }
+  $effect(() => {
+    if (!options.values) {
+      options.values = [
+        {
+          checked: "",
+          label: "",
+          value: "",
+        },
+      ];
+    }
+  });
 
   $effect(() => {
     if (refsTable) {
@@ -146,7 +148,7 @@
   };
 </script>
 
-<ContentFieldOptionGroup type="select-box" bind:field {id} bind:options>
+<ContentFieldOptionGroup type="select-box" bind:field {id} {options}>
   <ContentFieldOption
     id="select_box-multiple"
     label={window.trans("Allow users to select multiple values?")}
@@ -223,7 +225,7 @@
                 ><input
                   type="checkbox"
                   class="form-check-input mt-3"
-                  checked={v.checked ? true : false}
+                  bind:group={v.checked}
                   onchange={(e) => {
                     enterInitial(e, index);
                   }}

@@ -6,11 +6,11 @@
   let {
     config,
     field = $bindable(),
-    gather = $bindable(null),
+    gather = $bindable(),
     id,
-    options = $bindable(),
+    options,
     optionsHtmlParams,
   }: ContentType.ContentFieldProps = $props();
 </script>
 
-<ContentFieldOptionGroup type="list" bind:field {id} bind:options />
+<ContentFieldOptionGroup type="list" bind:field {id} {options} />

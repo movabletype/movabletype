@@ -7,9 +7,9 @@
   let {
     config,
     field = $bindable(),
-    gather = $bindable(null),
+    gather = $bindable(),
     id,
-    options = $bindable(),
+    options,
     optionsHtmlParams,
   }: ContentType.ContentFieldProps = $props();
 
@@ -29,7 +29,7 @@
   options.preivew_height ??= 80;
 </script>
 
-<ContentFieldOptionGroup type="asset-image" bind:field {id} bind:options>
+<ContentFieldOptionGroup type="asset-image" bind:field {id} {options}>
   <ContentFieldOption
     id="asset_image-multiple"
     label={window.trans("Allow users to select multiple image assets?")}
@@ -41,7 +41,7 @@
       class="mt-switch form-control"
       id="asset_image-multiple"
       name="multiple"
-      bind:checked={options.multiple}
+      checked={options.multiple}
     /><label for="asset_image-multiple" class="form-label">
       {window.trans("Allow users to select multiple image assets?")}
     </label>
@@ -59,7 +59,7 @@
       id="asset_image-min"
       class="form-control w-25"
       min="0"
-      bind:value={options.min}
+      value={options.min}
     />
   </ContentFieldOption>
 
@@ -75,7 +75,7 @@
       id="asset_image-max"
       class="form-control w-25"
       min="1"
-      bind:value={options.max}
+      value={options.max}
     />
   </ContentFieldOption>
 
@@ -89,7 +89,7 @@
       class="mt-switch form-control"
       id="asset_image-allow_upload"
       name="allow_upload"
-      bind:checked={options.allow_upload}
+      checked={options.allow_upload}
     /><label for="asset_image-allow_upload" class="form-label">
       {window.trans("Allow users to upload a new image asset?")}
     </label>
@@ -105,7 +105,7 @@
       class="form-control w-25"
       id="asset_image-preview_width"
       name="preview_width"
-      bind:value={options.preview_width}
+      value={options.preview_width}
     />
   </ContentFieldOption>
 
@@ -119,7 +119,7 @@
       class="form-control w-25"
       id="asset_image-preview_height"
       name="preview_height"
-      bind:value={options.preview_height}
+      value={options.preview_height}
     />
   </ContentFieldOption>
 </ContentFieldOptionGroup>

@@ -7,16 +7,16 @@
   let {
     config,
     field = $bindable(),
-    gather = $bindable(null),
+    gather = $bindable(),
     id,
-    options = $bindable(),
+    options,
     optionsHtmlParams,
   }: ContentType.ContentFieldProps = $props();
 
   options.initial_value ??= "";
 </script>
 
-<ContentFieldOptionGroup type="url" {id} bind:field bind:options>
+<ContentFieldOptionGroup type="url" {id} bind:field {options}>
   <ContentFieldOption
     id="url-initial_value"
     label={window.trans("Initial Value")}
@@ -27,7 +27,7 @@
       name="initial_value"
       id="url-initial_value"
       class="form-control"
-      bind:value={options.initial_value}
+      value={options.initial_value}
     />
   </ContentFieldOption>
 </ContentFieldOptionGroup>

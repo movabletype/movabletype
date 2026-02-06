@@ -9,9 +9,9 @@
   let {
     config,
     field = $bindable(),
-    gather = $bindable(null),
+    gather = $bindable(),
     id,
-    options = $bindable(),
+    options,
     optionsHtmlParams,
   }: ContentType.ContentFieldProps = $props();
 
@@ -32,7 +32,7 @@
   // changeStateMultiple was removed because unused
 </script>
 
-<ContentFieldOptionGroup type="categories" bind:field {id} bind:options>
+<ContentFieldOptionGroup type="categories" bind:field {id} {options}>
   <ContentFieldOption
     id="categories-multiple"
     label={window.trans("Allow users to select multiple categories?")}
@@ -44,7 +44,7 @@
       class="mt-switch form-control"
       id="categories-multiple"
       name="multiple"
-      bind:checked={options.multiple}
+      checked={options.multiple}
     /><label for="categories-multiple" class="form-label">
       {window.trans("Allow users to select multiple categories?")}
     </label>
@@ -62,7 +62,7 @@
       id="categories-min"
       class="form-control w-25"
       min="0"
-      bind:value={options.min}
+      value={options.min}
     />
   </ContentFieldOption>
 
@@ -78,7 +78,7 @@
       id="categories-max"
       class="form-control w-25"
       min="1"
-      bind:value={options.max}
+      value={options.max}
     />
   </ContentFieldOption>
 
@@ -92,7 +92,7 @@
       class="mt-switch form-control"
       id="categories-can_add"
       name="can_add"
-      bind:checked={options.can_add}
+      checked={options.can_add}
     /><label for="categories-can_add" class="form-label">
       {window.trans("Allow users to create new categories?")}
     </label>
@@ -110,7 +110,7 @@
         name="category_set"
         id="categories-category_set"
         class="custom-select form-control html5-form form-select"
-        bind:value={options.category_set}
+        value={options.category_set}
       >
         {#each categorySets as cs}
           <option value={cs.id}>

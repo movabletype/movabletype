@@ -9,9 +9,9 @@
   let {
     config,
     field = $bindable(),
-    gather = $bindable(null),
+    gather = $bindable(),
     id,
-    options = $bindable(),
+    options,
     optionsHtmlParams,
   }: ContentType.ContentFieldProps = $props();
 
@@ -32,7 +32,7 @@
   options.max ??= "";
 </script>
 
-<ContentFieldOptionGroup type="content-type" bind:field {id} bind:options>
+<ContentFieldOptionGroup type="content-type" bind:field {id} {options}>
   <ContentFieldOption
     id="content_type-multiple"
     label={window.trans("Allow users to select multiple values?")}
@@ -44,7 +44,7 @@
       class="mt-switch form-control"
       id="content_type-multiple"
       name="multiple"
-      bind:checked={options.multiple}
+      checked={options.multiple}
     /><label for="content_type-multiple" class="form-label">
       {window.trans("Allow users to select multiple values?")}
     </label>
@@ -62,7 +62,7 @@
       id="content_type-min"
       class="form-control w-25"
       min="0"
-      bind:value={options.min}
+      value={options.min}
     />
   </ContentFieldOption>
 
@@ -78,7 +78,7 @@
       id="content_type-max"
       class="form-control w-25"
       min="1"
-      bind:value={options.max}
+      value={options.max}
     />
   </ContentFieldOption>
 
@@ -94,7 +94,7 @@
         name="source"
         id="content_type-source"
         class="custom-select form-control html5-form form-select"
-        bind:value={options.source}
+        value={options.source}
       >
         {#each contentTypes as ct}
           <option value={ct.id}>

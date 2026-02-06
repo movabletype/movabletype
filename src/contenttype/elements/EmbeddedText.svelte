@@ -7,16 +7,16 @@
   let {
     config,
     field = $bindable(),
-    gather = $bindable(null),
+    gather = $bindable(),
     id,
-    options = $bindable(),
+    options,
     optionsHtmlParams,
   }: ContentType.ContentFieldProps = $props();
 
   options.initial_value ??= "";
 </script>
 
-<ContentFieldOptionGroup type="embedded-text" bind:field {id} bind:options>
+<ContentFieldOptionGroup type="embedded-text" bind:field {id} {options}>
   <ContentFieldOption
     id="embedded_text-initial_value"
     label={window.trans("Initial Value")}
@@ -27,7 +27,7 @@
       name="initial_value"
       id="embeddedded_text-initial_value"
       class="form-control"
-      bind:value={options.initial_value}
+      value={options.initial_value}
     ></textarea>
   </ContentFieldOption>
 </ContentFieldOptionGroup>

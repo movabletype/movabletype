@@ -7,9 +7,9 @@
   let {
     config,
     field = $bindable(),
-    gather = $bindable(null),
+    gather = $bindable(),
     id,
-    options = $bindable(),
+    options,
     optionsHtmlParams,
   }: ContentType.ContentFieldProps = $props();
 
@@ -28,7 +28,7 @@
   options.initial_value ??= "";
 </script>
 
-<ContentFieldOptionGroup type="tags" bind:field {id} bind:options>
+<ContentFieldOptionGroup type="tags" bind:field {id} {options}>
   <ContentFieldOption
     id="tags-multiple"
     label={window.trans("Allow users to input multiple values?")}
@@ -40,7 +40,7 @@
       class="mt-switch form-control"
       id="tags-multiple"
       name="multiple"
-      bind:checked={options.multiple}
+      checked={options.multiple}
     /><label for="tags-multiple" class="form-label">
       {window.trans("Allow users to select multiple values?")}
     </label>
@@ -58,7 +58,7 @@
       id="tags-min"
       class="form-control w-25"
       min="0"
-      bind:value={options.min}
+      value={options.min}
     />
   </ContentFieldOption>
 
@@ -74,7 +74,7 @@
       id="tags-max"
       class="form-control w-25"
       min="1"
-      bind:value={options.max}
+      value={options.max}
     />
   </ContentFieldOption>
 
@@ -88,7 +88,7 @@
       name="initial_value"
       id="tags-initial_value"
       class="form-control"
-      bind:value={options.initial_value}
+      value={options.initial_value}
     />
   </ContentFieldOption>
 
@@ -102,7 +102,7 @@
       class="mt-switch form-control"
       id="tags-can_add"
       name="can_add"
-      bind:checked={options.can_add}
+      checked={options.can_add}
     /><label for="tags-can_add" class="form-label">
       {window.trans("Allow users to create new tags?")}
     </label>

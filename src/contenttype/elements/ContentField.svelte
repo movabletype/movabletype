@@ -10,7 +10,6 @@
   type Props = {
     config: ContentType.ConfigSettings;
     field: ContentType.Field;
-    fields: ContentType.Fields;
     fieldIndex: number;
     fieldsStore: ContentType.FieldsStore;
     gatheringData: (c: HTMLDivElement, index: number) => object;
@@ -21,13 +20,12 @@
 
   let {
     config,
-    field,
-    fields,
+    field = $bindable(),
     fieldIndex,
     fieldsStore,
     gatheringData,
     parent,
-    gather,
+    gather = $bindable(),
     optionsHtmlParams,
   }: Props = $props();
 
@@ -75,7 +73,9 @@
     ) {
       return;
     }
-    fields = fields.slice(0, fieldIndex).concat(fields.slice(fieldIndex + 1));
+    fieldsStore.update((fs) =>
+      fs.slice(0, fieldIndex).concat(fs.slice(fieldIndex + 1)),
+    );
     // update is not needed in Svelte
     const target = document.getElementsByClassName("mt-draggable__area")[0];
     recalcHeight(target);
@@ -96,10 +96,10 @@
     }
     newItem.label = window.trans("Duplicate") + "-" + label;
     newItem.options.label = newItem.label;
-    newItem.order = fields.length + 1;
+    newItem.order = fieldsStore.length + 1;
     newItem.isNew = true;
     newItem.isShow = "show";
-    fields = [...fields, newItem];
+    fieldsStore.update((fs) => [...fs, newItem]);
     const target = document.getElementsByClassName("mt-draggable__area")[0];
     recalcHeight(target);
     // update is not needed in Svelte
@@ -174,7 +174,7 @@
     bind:field
     bind:gather={gatherCore}
     {id}
-    bind:options={field.options}
+    options={field.options}
     {optionsHtmlParams}
   />
   <Custom

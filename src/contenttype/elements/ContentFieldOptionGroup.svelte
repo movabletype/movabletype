@@ -1,4 +1,6 @@
 <script lang="ts">
+  import type { Snippet, SvelteComponent } from "svelte";
+
   // copied from lib/MT/Template/ContextHandlers.pm
 
   import type * as ContentType from "../../@types/contenttype";
@@ -12,13 +14,9 @@
     id: string;
     options: ContentType.Options;
     type: string;
+    children?: Snippet;
   };
-  let {
-    field = $bindable(),
-    id,
-    options = $bindable(),
-    type,
-  }: Props = $props();
+  let { field = $bindable(), id, options, type, children }: Props = $props();
 
   if (!type) {
     console.error('ContentFieldOptionGroup: "type" attribute is required.');
@@ -122,7 +120,7 @@
     id="{type}-description"
     class="form-control"
     aria-describedby="{type}-description-field-help"
-    bind:value={options.description}
+    value={options.description}
   />
 </ContentFieldOption>
 
@@ -137,7 +135,7 @@
     class="mt-switch form-control"
     id="{type}-required"
     name="required"
-    bind:checked={options.required}
+    checked={options.required}
   />
   <label for="{type}-required">
     {window.trans("Is this field required?")}
@@ -168,7 +166,7 @@
   </select>
 </ContentFieldOption>
 
-<slot />
+{@render children?.()}
 
 <div class="form-group-button">
   <button type="button" class="btn btn-default" onclick={closePanel}>

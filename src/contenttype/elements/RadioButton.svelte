@@ -9,9 +9,9 @@
   let {
     config,
     field = $bindable(),
-    gather = $bindable(null),
+    gather = $bindable(),
     id,
-    options = $bindable(),
+    options,
     optionsHtmlParams,
   }: ContentType.ContentFieldProps = $props();
 
@@ -19,15 +19,17 @@
 
   // <mt:include name="content_field_type_options/selection_common_script.tmpl">
   // copied some functions from selection_common_script.tmpl below
-  if (!options.values) {
-    options.values = [
-      {
-        checked: "",
-        label: "",
-        value: "",
-      },
-    ];
-  }
+  $effect(() => {
+    if (!options.values) {
+      options.values = [
+        {
+          checked: "",
+          label: "",
+          value: "",
+        },
+      ];
+    }
+  });
 
   $effect(() => {
     if (refsTable) {
@@ -60,7 +62,7 @@
   };
 </script>
 
-<ContentFieldOptionGroup type="radio-button" bind:field {id} bind:options>
+<ContentFieldOptionGroup type="radio-button" bind:field {id} {options}>
   <ContentFieldOption
     id="radio_button-values"
     required={1}
@@ -94,7 +96,7 @@
                   type="radio"
                   class="form-check-input mt-3"
                   name={id + "-initial"}
-                  checked={v.checked ? true : false}
+                  bind:group={v.checked}
                   onchange={() => {
                     enterInitial(index);
                   }}

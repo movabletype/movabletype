@@ -15,6 +15,14 @@
   };
   let { config, fieldsStore, optionsHtmlParams, opts, root }: Props = $props();
 
+  let fields = $state<ContentType.Fields>($fieldsStore);
+
+  $effect(() => {
+    const unsubscribe = fieldsStore.subscribe((value) => {
+      fields = value;
+    });
+    return unsubscribe;
+  });
   let isEmpty: boolean = $state($fieldsStore.length > 0 ? false : true);
   let data = "";
   let droppable = false;
@@ -24,9 +32,9 @@
   const placeholder = document.createElement("div");
   placeholder.className = "placeholder";
   let dragoverState = false;
-  let labelFields: Array<{ value: string; label: string }> = [];
+  let labelFields: Array<{ value: string; label: string }> = $state([]);
   let labelField = opts.labelField;
-  let isExpanded = false;
+  let isExpanded = $state(false);
 
   const gathers: { [key: string]: (() => object) | undefined } = {};
   const tags: Array<HTMLDivElement> = [];
@@ -314,7 +322,7 @@
       data = "";
     }
 
-    // bind:value={data} does not work
+    // value={data} does not work
     addInputData();
 
     // update is not needed in Svelte
@@ -590,7 +598,7 @@
                         id="label_field"
                         name="label_field"
                         class="custom-select form-control html5-form form-select"
-                        bind:value={labelField}
+                        value={labelField}
                       >
                         <option value=""
                           >{window.trans(
@@ -684,7 +692,7 @@
       <a
         data-bs-toggle="collapse"
         onclick={toggleAll}
-        href=""
+        href=".mt-collapse__content"
         aria-expanded={isExpanded ? "true" : "false"}
         class="d-inline-block"
       >
@@ -715,7 +723,7 @@
           <p>{window.trans("Please add a content field.")}</p>
         </div>
       {/if}
-      {#each $fieldsStore as field, fieldIndex}
+      {#each fields as field, fieldIndex}
         {@const fieldId = field.id ?? ""}
         <div
           class="mt-contentfield"
@@ -732,8 +740,7 @@
         >
           <ContentField
             {config}
-            bind:field={$fieldsStore[fieldIndex]}
-            bind:fields={$fieldsStore}
+            bind:field={fields[fieldIndex]}
             {fieldIndex}
             {fieldsStore}
             {gatheringData}
