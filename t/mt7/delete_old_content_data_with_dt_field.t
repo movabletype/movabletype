@@ -22,7 +22,6 @@ use MT;
 use MT::Test;
 use MT::Test::Fixture;
 use MT::Test::App;
-use File::Path qw(rmtree);
 
 $test_env->prepare_fixture('db');
 
