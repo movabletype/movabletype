@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Snippet, SvelteComponent } from "svelte";
+  import type { Snippet } from "svelte";
 
   // copied from lib/MT/Template/ContextHandlers.pm
 

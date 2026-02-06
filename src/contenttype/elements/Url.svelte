@@ -5,12 +5,12 @@
   import ContentFieldOption from "./ContentFieldOption.svelte";
 
   let {
-    config,
+    config: _config,
     field = $bindable(),
     gather = $bindable(),
     id,
     options,
-    optionsHtmlParams,
+    optionsHtmlParams: _optionsHtmlParams,
   }: ContentType.ContentFieldProps = $props();
 
   options.initial_value ??= "";

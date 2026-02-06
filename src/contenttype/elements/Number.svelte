@@ -10,7 +10,7 @@
     gather = $bindable(),
     id,
     options,
-    optionsHtmlParams,
+    optionsHtmlParams: _optionsHtmlParams,
   }: ContentType.ContentFieldProps = $props();
 
   options.max_value ??= config.NumberFieldMaxValue;

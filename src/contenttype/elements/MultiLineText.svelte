@@ -5,7 +5,7 @@
   import ContentFieldOptionGroup from "./ContentFieldOptionGroup.svelte";
 
   let {
-    config,
+    config: _config,
     field = $bindable(),
     gather = $bindable(),
     id,

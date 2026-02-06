@@ -12,10 +12,10 @@
     updateOptions: (options: ContentType.Options) => void;
   };
   let {
-    config,
+    config: _config,
     fieldIndex,
     fieldsStore,
-    optionsHtmlParams,
+    optionsHtmlParams: _optionsHtmlParams,
     type,
     customElement,
     updateOptions,
