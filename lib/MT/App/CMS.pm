@@ -901,6 +901,7 @@ sub core_list_actions {
         'entry' => {
             'set_draft' => {
                 label         => "Unpublish Entries",
+                js_message    => 'unpublish',
                 order         => 200,
                 code          => "${pkg}Entry::draft_entries",
                 mobile        => 1,
@@ -994,6 +995,7 @@ sub core_list_actions {
         'page' => {
             'set_draft' => {
                 label         => "Unpublish Pages",
+                js_message    => 'unpublish',
                 order         => 200,
                 code          => "${pkg}Entry::draft_entries",
                 mobile        => 1,
@@ -1040,6 +1042,7 @@ sub core_list_actions {
                 label         => "Batch Edit Pages",
                 code          => "${pkg}Entry::open_batch_editor",
                 order         => 500,
+                no_prompt     => 1,
                 permit_action => {
                     permit_action => 'open_batch_page_editor_via_list',
                     include_all   => 1,

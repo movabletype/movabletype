@@ -1312,6 +1312,7 @@ sub list_actions {
         },
         'set_draft' => {
             label     => "Unpublish Contents",
+            js_message => 'unpublish',
             order     => 200,
             code      => '$Core::MT::CMS::ContentData::draft_content_data',
             mobile    => 1,
