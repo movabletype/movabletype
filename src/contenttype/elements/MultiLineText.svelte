@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { onMount } from "svelte";
   import type * as ContentType from "../../@types/contenttype";
 
   import ContentFieldOption from "./ContentFieldOption.svelte";
@@ -18,18 +17,14 @@
   const textFilters: Array<{ filter_label: string; filter_key: string }> =
     optionsHtmlParams.multi_line_text.text_filters;
 
-  onMount(() => {
-    if (field.isNew) {
-      options.full_rich_text = 1;
-    }
-
-    if (options.full_rich_text === "0") {
-      options.full_rich_text = 0;
-    }
-
-    // changeStateFullRichText was removed because unused
-
-    options.initial_value ??= "";
+  let displayOptions = $derived({
+    ...options,
+    initial_value: options.initial_value ?? "",
+    full_rich_text: field.isNew
+      ? true
+      : options.full_rich_text === 1 ||
+        options.full_rich_text === "1" ||
+        options.full_rich_text === true,
   });
 </script>
 
@@ -43,7 +38,10 @@
       name="initial_value"
       id="multi_line_text-initial_value"
       class="form-control"
-      value={options.initial_value}
+      value={displayOptions.initial_value}
+      onchange={(e) => {
+        options.initial_value = e.currentTarget.value;
+      }}
     ></textarea>
   </ContentFieldOption>
 
@@ -57,7 +55,7 @@
       name="input_format"
       id="multi_line_text-input_format"
       class="custom-select form-control form-select"
-      value={options.input_format}
+      bind:value={options.input_format}
     >
       {#each textFilters as filter}
         <option value={filter.filter_key}>{filter.filter_label}</option>
@@ -69,14 +67,16 @@
     id="multi_line_text-full_rich_text"
     label={window.trans("Use all rich text decoration buttons")}
   >
-    <!-- onclick was removed and bind is used -->
     <input
       {...{ ref: "full_rich_text" }}
       type="checkbox"
       class="mt-switch form-control"
       id="multi_line_text-full_rich_text"
       name="full_rich_text"
-      checked={options.full_rich_text}
+      checked={displayOptions.full_rich_text}
+      onchange={(e) => {
+        options.full_rich_text = e.currentTarget.checked ? 1 : 0;
+      }}
     /><label for="multi_line_text-full_rich_text" class="form-label">
       {window.trans("Use all rich text decoration buttons")}
     </label>

@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { onMount } from "svelte";
   import type * as ContentType from "../../@types/contenttype";
 
   import { addRow, deleteRow, validateTable } from "../SelectionCommonScript";
@@ -16,17 +15,18 @@
     optionsHtmlParams: _optionsHtmlParams,
   }: ContentType.ContentFieldProps = $props();
 
-  onMount(() => {
-    if (options.can_add === "0") {
-      options.can_add = 0;
-    }
-
-    if (options.multiple === "0") {
-      options.multiple = 0;
-    }
-
-    options.min ??= "";
-    options.max ??= "";
+  let displayOptions = $derived({
+    ...options,
+    multiple:
+      options.multiple === 1 ||
+      options.multiple === "1" ||
+      options.multiple === true,
+    can_add:
+      options.can_add === 1 ||
+      options.can_add === "1" ||
+      options.can_add === true,
+    min: options.min ?? "",
+    max: options.max ?? "",
   });
 
   let refsTable: HTMLTableElement;
@@ -102,8 +102,7 @@
 
   // added in Svelte
   const refreshView = (): void => {
-    // eslint-disable-next-line no-self-assign
-    options = options;
+    options = { ...options };
   };
 </script>
 
@@ -119,7 +118,10 @@
       id="checkboxes-min"
       class="form-control w-25"
       min="0"
-      value={options.min}
+      value={displayOptions.min}
+      onchange={(e) => {
+        options.min = e.currentTarget.value;
+      }}
     />
   </ContentFieldOption>
 
@@ -134,7 +136,7 @@
       id="checkboxes-max"
       class="form-control w-25"
       min="1"
-      value={options.max}
+      value={displayOptions.max}
       onchange={enterMax}
     />
   </ContentFieldOption>

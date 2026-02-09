@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { onMount } from "svelte";
   import type * as ContentType from "../../@types/contenttype";
 
   import ContentFieldOption from "./ContentFieldOption.svelte";
@@ -14,9 +13,10 @@
     optionsHtmlParams: _optionsHtmlParams,
   }: ContentType.ContentFieldProps = $props();
 
-  onMount(() => {
-    options.initial_date ??= "";
-    options.initial_time ??= "";
+  let displayOptions = $derived({
+    ...options,
+    initial_date: options.initial_date ?? "",
+    initial_time: options.initial_time ?? "",
   });
 </script>
 
@@ -31,7 +31,10 @@
       name="initial_date"
       id="date_and_time-initial_date"
       class="form-control date-field w-25"
-      value={options.initial_date}
+      value={displayOptions.initial_date}
+      onchange={(e) => {
+        options.initial_date = e.currentTarget.value;
+      }}
       placeholder="YYYY-MM-DD"
     />
   </ContentFieldOption>
@@ -46,7 +49,10 @@
       name="initial_time"
       id="date_and_time-initial_time"
       class="form-control time-field w-25"
-      value={options.initial_time}
+      value={displayOptions.initial_time}
+      onchange={(e) => {
+        options.initial_time = e.currentTarget.value;
+      }}
       placeholder="HH:mm:ss"
     />
   </ContentFieldOption>

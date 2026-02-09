@@ -57,8 +57,7 @@
 
   // added in Svelte
   const refreshView = (): void => {
-    // eslint-disable-next-line no-self-assign
-    options = options;
+    options = { ...options };
   };
 </script>
 
@@ -96,14 +95,13 @@
                   type="radio"
                   class="form-check-input mt-3"
                   name={id + "-initial"}
-                  bind:group={v.checked}
+                  checked={v.checked ? true : false}
                   onchange={() => {
                     enterInitial(index);
                   }}
                 /></td
               >
-              <td
-                ><!-- oninput was removed and bind is used -->
+              <td>
                 <input
                   type="text"
                   class="form-control required"
@@ -111,8 +109,7 @@
                   bind:value={v.label}
                 /></td
               >
-              <td
-                ><!-- oninput was removed and bind is used -->
+              <td>
                 <input
                   type="text"
                   class="form-control required"

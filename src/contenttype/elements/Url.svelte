@@ -3,7 +3,6 @@
 
   import ContentFieldOptionGroup from "./ContentFieldOptionGroup.svelte";
   import ContentFieldOption from "./ContentFieldOption.svelte";
-  import { onMount } from "svelte";
 
   let {
     config: _config,
@@ -14,8 +13,9 @@
     optionsHtmlParams: _optionsHtmlParams,
   }: ContentType.ContentFieldProps = $props();
 
-  onMount(() => {
-    options.initial_value ??= "";
+  let displayOptions = $derived({
+    ...options,
+    initial_value: options.initial_value ?? "",
   });
 </script>
 
@@ -30,7 +30,10 @@
       name="initial_value"
       id="url-initial_value"
       class="form-control"
-      value={options.initial_value}
+      value={displayOptions.initial_value}
+      onchange={(e) => {
+        options.initial_value = e.currentTarget.value;
+      }}
     />
   </ContentFieldOption>
 </ContentFieldOptionGroup>

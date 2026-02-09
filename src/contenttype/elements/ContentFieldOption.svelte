@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount, type Snippet } from "svelte";
+  import { type Snippet } from "svelte";
 
   // copied from lib/MT/Template/ContextHandlers.pm
   type Props = {
@@ -24,12 +24,6 @@
     showLabel = 1,
     children,
   }: Props = $props();
-
-  onMount(() => {
-    if (!id) {
-      console.error("ContentFieldOption 'id' attribute missing");
-    }
-  });
 
   let attrProp = $derived(attr ? { attr: attr } : {});
 

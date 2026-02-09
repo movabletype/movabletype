@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { onMount } from "svelte";
   import type * as ContentType from "../../@types/contenttype";
 
   import ContentFieldOption from "./ContentFieldOption.svelte";
@@ -14,10 +13,11 @@
     optionsHtmlParams: _optionsHtmlParams,
   }: ContentType.ContentFieldProps = $props();
 
-  onMount(() => {
-    options.min_length ??= 0;
-    options.max_length ??= 255;
-    options.initial_value ??= "";
+  let displayOptions = $derived({
+    ...options,
+    min_length: options.min_length ?? 0,
+    max_length: options.max_length ?? 255,
+    initial_value: options.initial_value ?? "",
   });
 </script>
 
@@ -33,7 +33,10 @@
       id="single_line_text-min_length"
       class="form-control w-25"
       min="0"
-      value={options.min_length}
+      value={displayOptions.min_length}
+      onchange={(e) => {
+        options.min_length = e.currentTarget.value;
+      }}
     />
   </ContentFieldOption>
 
@@ -48,7 +51,10 @@
       id="single_line_text-max_length"
       class="form-control w-25"
       min="1"
-      value={options.max_length}
+      value={displayOptions.max_length}
+      onchange={(e) => {
+        options.max_length = e.currentTarget.value;
+      }}
     />
   </ContentFieldOption>
 
@@ -62,7 +68,10 @@
       name="initial_value"
       id="single_line_text-initial_value"
       class="form-control"
-      value={options.initial_value}
+      value={displayOptions.initial_value}
+      onchange={(e) => {
+        options.initial_value = e.currentTarget.value;
+      }}
     />
   </ContentFieldOption>
 </ContentFieldOptionGroup>

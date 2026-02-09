@@ -3,7 +3,6 @@ import type * as Listing from "../@types/listing";
 
 export type ReactiveStoreData = Omit<
   Listing.ListData,
-  // 37個のメソッドを除外
   | "addFilterItem"
   | "addFilterItemContent"
   | "checkAllRows"

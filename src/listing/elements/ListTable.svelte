@@ -15,9 +15,6 @@
 
   const { reactiveStore } = getContext<ListStoreContext>("listStore");
   let isLoading = $derived($reactiveStore.isLoading || false);
-  let hasObjects = $derived(
-    $reactiveStore.objects && $reactiveStore.objects.length > 0,
-  );
   let columnsLength = $derived($reactiveStore.columns.length || 0);
 </script>
 
@@ -32,7 +29,7 @@
       </td>
     </tr>
   </tbody>
-{:else if hasObjects}
+{:else}
   <tbody data-is="list-table-body">
     <ListTableBody
       {hasListActions}

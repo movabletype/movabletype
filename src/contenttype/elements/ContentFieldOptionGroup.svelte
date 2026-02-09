@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount, type Snippet } from "svelte";
+  import { type Snippet } from "svelte";
 
   // copied from lib/MT/Template/ContextHandlers.pm
 
@@ -23,12 +23,6 @@
     type,
     children,
   }: Props = $props();
-
-  onMount(() => {
-    if (!type) {
-      console.error('ContentFieldOptionGroup: "type" attribute is required.');
-    }
-  });
 
   $effect(() => {
     if (!options.display) {
@@ -102,7 +96,6 @@
   label={window.trans("Label")}
   required={1}
 >
-  <!-- oninput was removed and bind is used -->
   <input
     type="text"
     {...{ ref: "label" }}
@@ -128,7 +121,7 @@
     id="{type}-description"
     class="form-control"
     aria-describedby="{type}-description-field-help"
-    value={options.description}
+    bind:value={options.description}
   />
 </ContentFieldOption>
 
@@ -136,14 +129,13 @@
   id="{type}-required"
   label={window.trans("Is this field required?")}
 >
-  <!-- onclick was removed and bind is used -->
   <input
     {...{ ref: "required" }}
     type="checkbox"
     class="mt-switch form-control"
     id="{type}-required"
     name="required"
-    checked={options.required}
+    bind:checked={options.required}
   />
   <label for="{type}-required">
     {window.trans("Is this field required?")}
@@ -159,13 +151,15 @@
     "Choose the display options for this content field in the listing screen.",
   )}
 >
-  <!-- selected was removed and bind is used -->
   <select
     {...{ ref: "display" }}
     name="display"
     id="{type}-display"
     class="custom-select form-control form-select"
     bind:value={options.display}
+    onchange={(e) => {
+      options.display = e.currentTarget.value;
+    }}
   >
     <option value="force">{window.trans("Force")}</option>
     <option value="default">{window.trans("Default")}</option>

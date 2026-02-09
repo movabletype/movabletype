@@ -24,7 +24,7 @@
     });
     return unsubscribe;
   });
-  let isEmpty: boolean = $state($fieldsStore.length > 0 ? false : true);
+  let isEmpty: boolean = $derived($fieldsStore.length > 0 ? false : true);
   let data = "";
   let droppable = false;
   // svelte-ignore state_referenced_locally
@@ -444,7 +444,6 @@
       jQuery(".mt-contentfield").each(function (_i, fld) {
         const jqFld = jQuery(fld);
         if (jqFld.find(".form-control.is-invalid").length > 0) {
-          /* @ts-expect-error : collapse is not defined */
           jqFld.find(".collapse").collapse("show");
         }
       });
@@ -493,14 +492,15 @@
   // create in Svelte
   const updateFieldsIsShowAll = (): void => {
     const collapseEls = document.querySelectorAll(".mt-collapse__content");
-    fieldsStore.update((fields: ContentType.Fields) =>
-      fields.map((field: ContentType.Field, i: number) => {
+    fieldsStore.update((storeFields: ContentType.Fields) =>
+      storeFields.map((storeField: ContentType.Field, i: number) => {
+        storeField = { ...fields[i] };
         if (collapseEls[i].classList.contains("show")) {
-          field.isShow = "show";
+          storeField.isShow = "show";
         } else {
-          field.isShow = "";
+          storeField.isShow = "";
         }
-        return field;
+        return storeField;
       }),
     );
   };

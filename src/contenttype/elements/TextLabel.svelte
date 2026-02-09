@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { onMount } from "svelte";
   import type * as ContentType from "../../@types/contenttype";
 
   import ContentFieldOption from "./ContentFieldOption.svelte";
@@ -14,8 +13,9 @@
     optionsHtmlParams: _optionsHtmlParams,
   }: ContentType.ContentFieldProps = $props();
 
-  onMount(() => {
-    options.text ??= "";
+  let displayOptions = $derived({
+    ...options,
+    text: options.text ?? "",
   });
 
   $effect(() => {
@@ -48,7 +48,10 @@
       name="text"
       id="text_label-text"
       class="form-control"
-      value={options.text}
+      value={displayOptions.text}
+      onchange={(e) => {
+        options.text = e.currentTarget.value;
+      }}
     ></textarea>
   </ContentFieldOption>
 </ContentFieldOptionGroup>

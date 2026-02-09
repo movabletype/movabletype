@@ -6,6 +6,7 @@
 
   import Custom from "./Custom.svelte";
   import SVG from "../../svg/elements/SVG.svelte";
+  import ContentType from "./ContentType.svelte";
 
   type Props = {
     config: ContentType.ConfigSettings;
@@ -96,7 +97,7 @@
     }
     newItem.label = window.trans("Duplicate") + "-" + label;
     newItem.options.label = newItem.label;
-    newItem.order = fieldsStore.length + 1;
+    newItem.order = $fieldsStore.length + 1;
     newItem.isNew = true;
     newItem.isShow = "show";
     fieldsStore.update((fs) => [...fs, newItem]);

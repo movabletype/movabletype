@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { onMount } from "svelte";
   import type * as ContentType from "../../@types/contenttype";
 
   import ContentFieldOption from "./ContentFieldOption.svelte";
@@ -20,17 +19,18 @@
   const categorySets: Array<{ id: string; name: string }> =
     optionsHtmlParams.categories.category_sets;
 
-  onMount(() => {
-    if (options.multiple === "0") {
-      options.multiple = 0;
-    }
-
-    if (options.can_add === "0") {
-      options.can_add = 0;
-    }
-
-    options.min ??= "";
-    options.max ??= "";
+  let displayOptions = $derived({
+    ...options,
+    multiple:
+      options.multiple === 1 ||
+      options.multiple === "1" ||
+      options.multiple === true,
+    can_add:
+      options.can_add === 1 ||
+      options.can_add === "1" ||
+      options.can_add === true,
+    min: options.min ?? "",
+    max: options.max ?? "",
   });
 </script>
 
@@ -39,14 +39,16 @@
     id="categories-multiple"
     label={window.trans("Allow users to select multiple categories?")}
   >
-    <!-- onclick was removed and bind is used -->
     <input
       {...{ ref: "multiple" }}
       type="checkbox"
       class="mt-switch form-control"
       id="categories-multiple"
       name="multiple"
-      checked={options.multiple}
+      checked={displayOptions.multiple}
+      onchange={(e) => {
+        options.multiple = e.currentTarget.checked ? 1 : 0;
+      }}
     /><label for="categories-multiple" class="form-label">
       {window.trans("Allow users to select multiple categories?")}
     </label>
@@ -55,7 +57,7 @@
   <ContentFieldOption
     id="categories-min"
     label={window.trans("Minimum number of selections")}
-    attrShow={options.multiple ? true : false}
+    attrShow={displayOptions.multiple}
   >
     <input
       {...{ ref: "min" }}
@@ -64,14 +66,17 @@
       id="categories-min"
       class="form-control w-25"
       min="0"
-      value={options.min}
+      value={displayOptions.min}
+      onchange={(e) => {
+        options.min = e.currentTarget.value;
+      }}
     />
   </ContentFieldOption>
 
   <ContentFieldOption
     id="categories-max"
     label={window.trans("Maximum number of selections")}
-    attrShow={options.multiple ? true : false}
+    attrShow={displayOptions.multiple}
   >
     <input
       {...{ ref: "max" }}
@@ -80,7 +85,10 @@
       id="categories-max"
       class="form-control w-25"
       min="1"
-      value={options.max}
+      value={displayOptions.max}
+      onchange={(e) => {
+        options.max = e.currentTarget.value;
+      }}
     />
   </ContentFieldOption>
 
@@ -94,7 +102,10 @@
       class="mt-switch form-control"
       id="categories-can_add"
       name="can_add"
-      checked={options.can_add}
+      checked={displayOptions.can_add}
+      onchange={(e) => {
+        options.can_add = e.currentTarget.checked ? 1 : 0;
+      }}
     /><label for="categories-can_add" class="form-label">
       {window.trans("Allow users to create new categories?")}
     </label>
@@ -106,7 +117,6 @@
     required={1}
   >
     {#if categorySets && categorySets.length > 0}
-      <!-- selected was removed and bind is used -->
       <select
         {...{ ref: "category_sets" }}
         name="category_set"
@@ -121,13 +131,17 @@
         {/each}
       </select>
     {:else}
-      <StatusMsg id="no-cateogry-set" class="warning" canClose={0}>
-        <svelte:fragment slot="msg">
-          {window.trans(
-            "There is no content type that can be selected. Please create new content type if you use Content Type field type.",
-          )}
-        </svelte:fragment>
-      </StatusMsg>
+      {#snippet statusMsgContent()}
+        {window.trans(
+          "There is no category set that can be selected. Please create a category set if you use the Categories field type.",
+        )}
+      {/snippet}
+      <StatusMsg
+        id="no-category-set"
+        class="warning"
+        canClose={0}
+        msg={statusMsgContent}
+      />
     {/if}
   </ContentFieldOption>
 </ContentFieldOptionGroup>

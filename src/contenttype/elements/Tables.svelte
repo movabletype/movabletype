@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { onMount } from "svelte";
   import type * as ContentType from "../../@types/contenttype";
 
   import ContentFieldOption from "./ContentFieldOption.svelte";
@@ -14,16 +13,12 @@
     optionsHtmlParams: _optionsHtmlParams,
   }: ContentType.ContentFieldProps = $props();
 
-  onMount(() => {
-    if (options.increase_decrease_rows === "0") {
-      options.increase_decrease_rows = 0;
-    }
-    if (options.increase_decrease_cols === "0") {
-      options.increase_decrease_cols = 0;
-    }
-
-    options.initial_rows ??= 1;
-    options.initial_cols ??= 1;
+  let displayOptions = $derived({
+    ...options,
+    increase_decrease_rows: options.increase_decrease_rows ?? false,
+    increase_decrease_cols: options.increase_decrease_cols ?? false,
+    initial_rows: options.initial_rows ?? 1,
+    initial_cols: options.initial_cols ?? 1,
   });
 </script>
 
@@ -39,7 +34,10 @@
       id="tables-initial_rows"
       class="form-control w-25"
       min="1"
-      value={options.initial_rows}
+      value={displayOptions.initial_rows}
+      onchange={(e) => {
+        options.initial_rows = e.currentTarget.value;
+      }}
     />
   </ContentFieldOption>
 
@@ -54,7 +52,10 @@
       id="tables-initial_cols"
       class="form-control w-25"
       min="1"
-      value={options.initial_cols}
+      value={displayOptions.initial_cols}
+      onchange={(e) => {
+        options.initial_cols = e.currentTarget.value;
+      }}
     />
   </ContentFieldOption>
 
@@ -68,7 +69,10 @@
       class="mt-switch form-control"
       id="tables-can_increase_decrease_rows"
       name="increase_decrease_rows"
-      checked={options.increase_decrease_rows}
+      checked={displayOptions.increase_decrease_rows}
+      onchange={(e) => {
+        options.increase_decrease_rows = e.currentTarget.checked;
+      }}
     /><label for="tables-can_increase_decrease_rows" class="form-label">
       {window.trans("Allow users to increase/decrease rows?")}
     </label>
@@ -84,7 +88,10 @@
       class="mt-switch form-control"
       id="tables-can_increase_decrease_cols"
       name="increase_decrease_cols"
-      checked={options.increase_decrease_cols}
+      checked={displayOptions.increase_decrease_cols}
+      onchange={(e) => {
+        options.increase_decrease_cols = e.currentTarget.checked;
+      }}
     /><label for="tables-can_increase_decrease_cols" class="form-label">
       {window.trans("Allow users to increase/decrease cols?")}
     </label>

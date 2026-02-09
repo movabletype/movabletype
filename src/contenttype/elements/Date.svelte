@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { onMount } from "svelte";
   import type * as ContentType from "../../@types/contenttype";
 
   import ContentFieldOption from "./ContentFieldOption.svelte";
@@ -14,8 +13,9 @@
     optionsHtmlParams: _optionsHtmlParams,
   }: ContentType.ContentFieldProps = $props();
 
-  onMount(() => {
-    options.initial_value ??= "";
+  let displayOptions = $derived({
+    ...options,
+    initial_value: options.initial_value ?? "",
   });
 </script>
 
@@ -31,7 +31,10 @@
       name="initial_value"
       id="initial_value"
       class="form-control date-field w-25"
-      value={options.initial_value}
+      value={displayOptions.initial_value}
+      onchange={(e) => {
+        options.initial_value = e.currentTarget.value;
+      }}
       placeholder="YYYY-MM-DD"
     />
   </ContentFieldOption>

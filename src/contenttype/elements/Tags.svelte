@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { onMount } from "svelte";
   import type * as ContentType from "../../@types/contenttype";
 
   import ContentFieldOption from "./ContentFieldOption.svelte";
@@ -14,20 +13,13 @@
     optionsHtmlParams: _optionsHtmlParams,
   }: ContentType.ContentFieldProps = $props();
 
-  onMount(() => {
-    if (options.multiple === "0") {
-      options.multiple = 0;
-    }
-
-    if (options.can_add === "0") {
-      options.can_add = 0;
-    }
-
-    // changeStateMultiple was removed because unused
-
-    options.min ??= "";
-    options.max ??= "";
-    options.initial_value ??= "";
+  let displayOptions = $derived({
+    ...options,
+    multiple: options.multiple ?? false,
+    can_add: options.can_add ?? false,
+    min: options.min ?? "",
+    max: options.max ?? "",
+    initial_value: options.initial_value ?? "",
   });
 </script>
 
@@ -43,7 +35,10 @@
       class="mt-switch form-control"
       id="tags-multiple"
       name="multiple"
-      checked={options.multiple}
+      checked={displayOptions.multiple}
+      onchange={(e) => {
+        options.multiple = e.currentTarget.checked;
+      }}
     /><label for="tags-multiple" class="form-label">
       {window.trans("Allow users to select multiple values?")}
     </label>
@@ -52,7 +47,7 @@
   <ContentFieldOption
     id="tags-min"
     label={window.trans("Minimum number of selections")}
-    attrShow={options.multiple ? true : false}
+    attrShow={displayOptions.multiple}
   >
     <input
       {...{ ref: "min" }}
@@ -61,14 +56,14 @@
       id="tags-min"
       class="form-control w-25"
       min="0"
-      value={options.min}
+      value={displayOptions.min}
     />
   </ContentFieldOption>
 
   <ContentFieldOption
     id="tags-max"
     label={window.trans("Maximum number of selections")}
-    attrShow={options.multiple ? true : false}
+    attrShow={displayOptions.multiple}
   >
     <input
       {...{ ref: "max" }}
@@ -77,7 +72,10 @@
       id="tags-max"
       class="form-control w-25"
       min="1"
-      value={options.max}
+      value={displayOptions.max}
+      onchange={(e) => {
+        options.max = e.currentTarget.value;
+      }}
     />
   </ContentFieldOption>
 
@@ -91,7 +89,10 @@
       name="initial_value"
       id="tags-initial_value"
       class="form-control"
-      value={options.initial_value}
+      value={displayOptions.initial_value}
+      onchange={(e) => {
+        options.initial_value = e.currentTarget.value;
+      }}
     />
   </ContentFieldOption>
 
@@ -105,7 +106,10 @@
       class="mt-switch form-control"
       id="tags-can_add"
       name="can_add"
-      checked={options.can_add}
+      checked={displayOptions.can_add}
+      onchange={(e) => {
+        options.can_add = e.currentTarget.checked;
+      }}
     /><label for="tags-can_add" class="form-label">
       {window.trans("Allow users to create new tags?")}
     </label>

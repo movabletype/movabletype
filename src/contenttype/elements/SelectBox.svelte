@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { onMount } from "svelte";
   import type * as ContentType from "../../@types/contenttype";
 
   import { addRow, deleteRow, validateTable } from "../SelectionCommonScript";
@@ -16,17 +15,18 @@
     optionsHtmlParams: _optionsHtmlParams,
   }: ContentType.ContentFieldProps = $props();
 
-  onMount(() => {
-    if (options.can_add === "0") {
-      options.can_add = 0;
-    }
-
-    if (options.multiple === "0") {
-      options.multiple = 0;
-    }
-
-    options.min ??= "";
-    options.max ??= "";
+  let displayOptions = $derived({
+    ...options,
+    multiple:
+      options.multiple === 1 ||
+      options.multiple === "1" ||
+      options.multiple === true,
+    can_add:
+      options.can_add === 1 ||
+      options.can_add === "1" ||
+      options.can_add === true,
+    min: options.min ?? "",
+    max: options.max ?? "",
   });
 
   let refsTable: HTMLTableElement;
@@ -146,8 +146,7 @@
 
   // added in Svelte
   const refreshView = (): void => {
-    // eslint-disable-next-line no-self-assign
-    options = options;
+    options = { ...options };
   };
 </script>
 
@@ -162,7 +161,7 @@
       class="mt-switch form-control form-check-input"
       id="select_box-multiple"
       name="multiple"
-      bind:checked={options.multiple}
+      checked={displayOptions.multiple}
       onclick={changeStateMultiple}
     /><label for="select_box-multiple" class="form-label"
       >{window.trans("Allow users to select multiple values?")}</label
@@ -172,7 +171,7 @@
   <ContentFieldOption
     id="select_box-min"
     label={window.trans("Minimum number of selections")}
-    attrShow={options.multiple ? true : false}
+    attrShow={displayOptions.multiple ? true : false}
   >
     <input
       {...{ ref: "min" }}
@@ -181,14 +180,17 @@
       id="select_box-min"
       class="form-control w-25"
       min="0"
-      bind:value={options.min}
+      value={displayOptions.min}
+      onchange={(e) => {
+        options.min = e.currentTarget.value;
+      }}
     />
   </ContentFieldOption>
 
   <ContentFieldOption
     id="select_box-max"
     label={window.trans("Maximum number of selections")}
-    attrShow={options.multiple ? true : false}
+    attrShow={displayOptions.multiple ? true : false}
   >
     <input
       {...{ ref: "max" }}
@@ -197,7 +199,7 @@
       id="select_box-max"
       class="form-control w-25"
       min="1"
-      bind:value={options.max}
+      value={displayOptions.max}
       onchange={enterMax}
     />
   </ContentFieldOption>
@@ -228,7 +230,7 @@
                 ><input
                   type="checkbox"
                   class="form-check-input mt-3"
-                  bind:group={v.checked}
+                  checked={v.checked}
                   onchange={(e) => {
                     enterInitial(e, index);
                   }}
