@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onMount } from "svelte";
   import type * as ContentType from "../../@types/contenttype";
 
   import ContentFieldOption from "./ContentFieldOption.svelte";
@@ -13,20 +14,23 @@
     optionsHtmlParams,
   }: ContentType.ContentFieldProps = $props();
 
+  // svelte-ignore state_referenced_locally
   const textFilters: Array<{ filter_label: string; filter_key: string }> =
     optionsHtmlParams.multi_line_text.text_filters;
 
-  if (field.isNew) {
-    options.full_rich_text = 1;
-  }
+  onMount(() => {
+    if (field.isNew) {
+      options.full_rich_text = 1;
+    }
 
-  if (options.full_rich_text === "0") {
-    options.full_rich_text = 0;
-  }
+    if (options.full_rich_text === "0") {
+      options.full_rich_text = 0;
+    }
 
-  // changeStateFullRichText was removed because unused
+    // changeStateFullRichText was removed because unused
 
-  options.initial_value ??= "";
+    options.initial_value ??= "";
+  });
 </script>
 
 <ContentFieldOptionGroup type="multi-line-text" bind:field {id} {options}>

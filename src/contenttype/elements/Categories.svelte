@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onMount } from "svelte";
   import type * as ContentType from "../../@types/contenttype";
 
   import ContentFieldOption from "./ContentFieldOption.svelte";
@@ -15,21 +16,22 @@
     optionsHtmlParams,
   }: ContentType.ContentFieldProps = $props();
 
+  // svelte-ignore state_referenced_locally
   const categorySets: Array<{ id: string; name: string }> =
     optionsHtmlParams.categories.category_sets;
 
-  if (options.multiple === "0") {
-    options.multiple = 0;
-  }
+  onMount(() => {
+    if (options.multiple === "0") {
+      options.multiple = 0;
+    }
 
-  if (options.can_add === "0") {
-    options.can_add = 0;
-  }
+    if (options.can_add === "0") {
+      options.can_add = 0;
+    }
 
-  options.min ??= "";
-  options.max ??= "";
-
-  // changeStateMultiple was removed because unused
+    options.min ??= "";
+    options.max ??= "";
+  });
 </script>
 
 <ContentFieldOptionGroup type="categories" bind:field {id} {options}>

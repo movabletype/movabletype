@@ -3,6 +3,7 @@
 
   import ContentFieldOptionGroup from "./ContentFieldOptionGroup.svelte";
   import ContentFieldOption from "./ContentFieldOption.svelte";
+  import { onMount } from "svelte";
 
   let {
     config: _config,
@@ -13,7 +14,9 @@
     optionsHtmlParams: _optionsHtmlParams,
   }: ContentType.ContentFieldProps = $props();
 
-  options.initial_value ??= "";
+  onMount(() => {
+    options.initial_value ??= "";
+  });
 </script>
 
 <ContentFieldOptionGroup type="url" {id} bind:field {options}>

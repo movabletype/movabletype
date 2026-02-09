@@ -3,6 +3,7 @@
 
   import ContentFieldOption from "./ContentFieldOption.svelte";
   import ContentFieldOptionGroup from "./ContentFieldOptionGroup.svelte";
+  import { onMount } from "svelte";
 
   let {
     config: _config,
@@ -13,18 +14,20 @@
     optionsHtmlParams: _optionsHtmlParams,
   }: ContentType.ContentFieldProps = $props();
 
-  if (options.multiple === "0") {
-    options.multiple = 0;
-  }
+  onMount(() => {
+    if (options.multiple === "0") {
+      options.multiple = 0;
+    }
 
-  if (options.allow_upload === "0") {
-    options.allow_upload = 0;
-  }
+    if (options.allow_upload === "0") {
+      options.allow_upload = 0;
+    }
 
-  options.min ??= "";
-  options.max ??= "";
+    options.min ??= "";
+    options.max ??= "";
 
-  // changeStateMultiple was removed because unused
+    // changeStateMultiple was removed because unused
+  });
 </script>
 
 <ContentFieldOptionGroup type="asset-video" bind:field {id} {options}>

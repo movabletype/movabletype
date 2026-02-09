@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { onMount } from "svelte";
+
   // copied from lib/MT/Template/ContextHandlers.pm
   type Props = {
     id: string;
@@ -21,9 +23,11 @@
     showLabel = 1,
   }: Props = $props();
 
-  if (!id) {
-    console.error("ConetntFieldOption 'id' attribute missing");
-  }
+  onMount(() => {
+    if (!id) {
+      console.error("ConetntFieldOption 'id' attribute missing");
+    }
+  });
 
   let attrProp = $derived(attr ? { attr: attr } : {});
 

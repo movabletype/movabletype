@@ -49,8 +49,8 @@
     }
   });
 
-  let gatherCore: (() => object) | undefined;
-  let gatherCustom: (() => object) | undefined;
+  let gatherCore = $state<(() => object) | undefined>(undefined);
+  let gatherCustom = $state<(() => object) | undefined>(undefined);
 
   $effect(() => {
     if (ContentFieldTypes.getCoreType(field.type)) {

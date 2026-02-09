@@ -48,6 +48,7 @@
   let activeStarredSites: number[] = $state([]);
 
   let sites: Site[] = $state([]);
+  // svelte-ignore state_referenced_locally
   let starredSites: number[] = $state(initialStarredSites); // copy to local variable
   let totalCount = $state(0);
   let page = $state(1);

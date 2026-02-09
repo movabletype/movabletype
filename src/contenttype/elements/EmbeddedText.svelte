@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onMount } from "svelte";
   import type * as ContentType from "../../@types/contenttype";
 
   import ContentFieldOption from "./ContentFieldOption.svelte";
@@ -13,7 +14,9 @@
     optionsHtmlParams: _optionsHtmlParams,
   }: ContentType.ContentFieldProps = $props();
 
-  options.initial_value ??= "";
+  onMount(() => {
+    options.initial_value ??= "";
+  });
 </script>
 
 <ContentFieldOptionGroup type="embedded-text" bind:field {id} {options}>

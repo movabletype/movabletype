@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onMount } from "svelte";
   import type * as ContentType from "../../@types/contenttype";
 
   import ContentFieldOption from "./ContentFieldOption.svelte";
@@ -13,15 +14,17 @@
     optionsHtmlParams: _optionsHtmlParams,
   }: ContentType.ContentFieldProps = $props();
 
-  if (options.increase_decrease_rows === "0") {
-    options.increase_decrease_rows = 0;
-  }
-  if (options.increase_decrease_cols === "0") {
-    options.increase_decrease_cols = 0;
-  }
+  onMount(() => {
+    if (options.increase_decrease_rows === "0") {
+      options.increase_decrease_rows = 0;
+    }
+    if (options.increase_decrease_cols === "0") {
+      options.increase_decrease_cols = 0;
+    }
 
-  options.initial_rows ??= 1;
-  options.initial_cols ??= 1;
+    options.initial_rows ??= 1;
+    options.initial_cols ??= 1;
+  });
 </script>
 
 <ContentFieldOptionGroup type="table" bind:field {id} {options}>

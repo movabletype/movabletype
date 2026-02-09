@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Snippet } from "svelte";
+  import { onMount, type Snippet } from "svelte";
 
   // copied from lib/MT/Template/ContextHandlers.pm
 
@@ -18,9 +18,11 @@
   };
   let { field = $bindable(), id, options, type, children }: Props = $props();
 
-  if (!type) {
-    console.error('ContentFieldOptionGroup: "type" attribute is required.');
-  }
+  onMount(() => {
+    if (!type) {
+      console.error('ContentFieldOptionGroup: "type" attribute is required.');
+    }
+  });
 
   $effect(() => {
     if (!options.display) {

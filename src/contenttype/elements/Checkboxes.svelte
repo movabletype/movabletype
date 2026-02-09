@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onMount } from "svelte";
   import type * as ContentType from "../../@types/contenttype";
 
   import { addRow, deleteRow, validateTable } from "../SelectionCommonScript";
@@ -15,16 +16,18 @@
     optionsHtmlParams: _optionsHtmlParams,
   }: ContentType.ContentFieldProps = $props();
 
-  if (options.can_add === "0") {
-    options.can_add = 0;
-  }
+  onMount(() => {
+    if (options.can_add === "0") {
+      options.can_add = 0;
+    }
 
-  if (options.multiple === "0") {
-    options.multiple = 0;
-  }
+    if (options.multiple === "0") {
+      options.multiple = 0;
+    }
 
-  options.min ??= "";
-  options.max ??= "";
+    options.min ??= "";
+    options.max ??= "";
+  });
 
   let refsTable: HTMLTableElement;
 

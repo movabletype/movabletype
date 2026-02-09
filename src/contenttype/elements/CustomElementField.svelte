@@ -21,15 +21,9 @@
     updateOptions,
   }: Props = $props();
 
-  let field = $state($fieldsStore[fieldIndex]);
-  let options = $state(field.options || {});
-  let id = $state(`field-options-${field.id}`);
-
-  $effect(() => {
-    field = $fieldsStore[fieldIndex];
-    options = field.options || {};
-    id = `field-options-${field.id}`;
-  });
+  let field = $derived($fieldsStore[fieldIndex]);
+  let options = $derived(field.options || {});
+  let id = $derived(`field-options-${field.id}`);
 
   const initElement = (
     el: HTMLElement & { options: ContentType.Options },

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onMount } from "svelte";
   import type * as ContentType from "../../@types/contenttype";
 
   import ContentFieldOption from "./ContentFieldOption.svelte";
@@ -13,18 +14,20 @@
     optionsHtmlParams: _optionsHtmlParams,
   }: ContentType.ContentFieldProps = $props();
 
-  if (options.multiple === "0") {
-    options.multiple = 0;
-  }
+  onMount(() => {
+    if (options.multiple === "0") {
+      options.multiple = 0;
+    }
 
-  if (options.allow_upload === "0") {
-    options.allow_upload = 0;
-  }
+    if (options.allow_upload === "0") {
+      options.allow_upload = 0;
+    }
 
-  // changeStateMultiple was removed because unused
+    // changeStateMultiple was removed because unused
 
-  options.min ??= "";
-  options.max ??= "";
+    options.min ??= "";
+    options.max ??= "";
+  });
 </script>
 
 <ContentFieldOptionGroup type="asset" bind:field {id} {options}>

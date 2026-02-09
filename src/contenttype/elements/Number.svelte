@@ -3,6 +3,7 @@
 
   import ContentFieldOptionGroup from "./ContentFieldOptionGroup.svelte";
   import ContentFieldOption from "./ContentFieldOption.svelte";
+  import { onMount } from "svelte";
 
   let {
     config,
@@ -13,10 +14,12 @@
     optionsHtmlParams: _optionsHtmlParams,
   }: ContentType.ContentFieldProps = $props();
 
-  options.max_value ??= config.NumberFieldMaxValue;
-  options.min_value ??= config.NumberFieldMinValue;
-  options.decimal_places ??= 0;
-  options.initial_value ??= "";
+  onMount(() => {
+    options.max_value ??= config.NumberFieldMaxValue;
+    options.min_value ??= config.NumberFieldMinValue;
+    options.decimal_places ??= 0;
+    options.initial_value ??= "";
+  });
 
   // jQuery(document).ready(function () {...}) is deprecated
   jQuery(function () {

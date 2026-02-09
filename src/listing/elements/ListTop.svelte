@@ -61,15 +61,34 @@
   }: Props = $props();
   let callListReady = false;
 
+  // svelte-ignore state_referenced_locally
   const reactiveStore: Writable<ReactiveStoreData> = writable(
     createReactiveStoreData(store),
   );
+  // svelte-ignore state_referenced_locally
   setContext("listStore", { store, reactiveStore });
 
   let hidden = $derived($reactiveStore.count === 0);
 
   onMount(() => {
     store.trigger("load_list");
+
+    store.on(
+      "refresh_view",
+      (args?: { moveToPagination?: boolean; notCallListReady?: boolean }) => {
+        if (!args) args = {};
+
+        update();
+
+        if (args.moveToPagination) {
+          window.document.body.scrollTop = window.document.body.scrollHeight;
+        }
+        if (!args.notCallListReady) {
+          // trigger a "listReady" event in afterUpdate() after the DOM has been updated
+          callListReady = true;
+        }
+      },
+    );
   });
 
   $effect(() => {
@@ -81,23 +100,6 @@
       jQuery(window).trigger("listReady");
     }
   });
-
-  store.on(
-    "refresh_view",
-    (args?: { moveToPagination?: boolean; notCallListReady?: boolean }) => {
-      if (!args) args = {};
-
-      update();
-
-      if (args.moveToPagination) {
-        window.document.body.scrollTop = window.document.body.scrollHeight;
-      }
-      if (!args.notCallListReady) {
-        // trigger a "listReady" event in afterUpdate() after the DOM has been updated
-        callListReady = true;
-      }
-    },
-  );
 
   const changeLimit = (e: Event): void => {
     store.trigger("update_limit", (e.target as HTMLSelectElement)?.value);

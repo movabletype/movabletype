@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onMount } from "svelte";
   import type * as ContentType from "../../@types/contenttype";
 
   import ContentFieldOption from "./ContentFieldOption.svelte";
@@ -13,8 +14,10 @@
     optionsHtmlParams: _optionsHtmlParams,
   }: ContentType.ContentFieldProps = $props();
 
-  options.initial_date ??= "";
-  options.initial_time ??= "";
+  onMount(() => {
+    options.initial_date ??= "";
+    options.initial_time ??= "";
+  });
 </script>
 
 <ContentFieldOptionGroup type="date-and-time" bind:field {id} {options}>

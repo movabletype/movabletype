@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onMount } from "svelte";
   import type * as ContentType from "../../@types/contenttype";
 
   import ContentFieldOption from "./ContentFieldOption.svelte";
@@ -13,9 +14,11 @@
     optionsHtmlParams: _optionsHtmlParams,
   }: ContentType.ContentFieldProps = $props();
 
-  options.min_length ??= 0;
-  options.max_length ??= 255;
-  options.initial_value ??= "";
+  onMount(() => {
+    options.min_length ??= 0;
+    options.max_length ??= 255;
+    options.initial_value ??= "";
+  });
 </script>
 
 <ContentFieldOptionGroup type="single-line-text" bind:field {id} {options}>

@@ -5,6 +5,7 @@
 
   import ContentField from "./ContentField.svelte";
   import SVG from "../../svg/elements/SVG.svelte";
+  import { onMount } from "svelte";
 
   type Props = {
     config: ContentType.ConfigSettings;
@@ -26,6 +27,7 @@
   let isEmpty: boolean = $state($fieldsStore.length > 0 ? false : true);
   let data = "";
   let droppable = false;
+  // svelte-ignore state_referenced_locally
   const observer = opts.observer;
   let dragged: EventTarget | null = null;
   let draggedItem: ContentType.Field | null = null;
@@ -33,6 +35,7 @@
   placeholder.className = "placeholder";
   let dragoverState = false;
   let labelFields: Array<{ value: string; label: string }> = $state([]);
+  // svelte-ignore state_referenced_locally
   let labelField = opts.labelField;
   let isExpanded = $state(false);
 
@@ -53,76 +56,78 @@
       });
   });
 
-  // Drag start from content field list
-  observer.on("mtDragStart", function () {
-    droppable = true;
-  });
+  onMount(() => {
+    // Drag start from content field list
+    observer.on("mtDragStart", function () {
+      droppable = true;
+    });
 
-  // Drag end from content field list
-  observer.on("mtDragEnd", function () {
-    droppable = false;
-    onDragEnd();
-  });
+    // Drag end from content field list
+    observer.on("mtDragEnd", function () {
+      droppable = false;
+      onDragEnd();
+    });
 
-  // Show detail modal
-  jQuery(document).on("show.bs.modal", "#editDetail", function () {
-    rebuildLabelFields();
-    // update is not needed in Svelte
-  });
-
-  // Hide detail modal
-  jQuery(document).on("hide.bs.modal", "#editDetail", function () {
-    /* @ts-expect-error : mtValidate is not defined */
-    if (jQuery("#name-field > input").mtValidate("simple")) {
-      opts.name = jQuery("#name-field > input").val()?.toString() || "";
-      window.setDirty(true);
+    // Show detail modal
+    jQuery(document).on("show.bs.modal", "#editDetail", function () {
+      rebuildLabelFields();
       // update is not needed in Svelte
-    } else {
-      return false;
-    }
+    });
+
+    // Hide detail modal
+    jQuery(document).on("hide.bs.modal", "#editDetail", function () {
+      /* @ts-expect-error : mtValidate is not defined */
+      if (jQuery("#name-field > input").mtValidate("simple")) {
+        opts.name = jQuery("#name-field > input").val()?.toString() || "";
+        window.setDirty(true);
+        // update is not needed in Svelte
+      } else {
+        return false;
+      }
+    });
+
+    // Shown collaped block
+    jQuery(document).on(
+      "shown.bs.collapse",
+      ".mt-collapse__content",
+      function () {
+        const target = document.getElementsByClassName("mt-draggable__area")[0];
+        recalcHeight(target);
+        updateFieldsIsShowAll(); // need to update in Svelte
+        updateToggleAll();
+      },
+    );
+
+    // Hide collaped block
+    jQuery(document).on(
+      "hidden.bs.collapse",
+      ".mt-collapse__content",
+      function () {
+        const target = document.getElementsByClassName("mt-draggable__area")[0];
+        recalcHeight(target);
+        updateFieldsIsShowAll(); // need to update in Svelte
+        updateToggleAll();
+      },
+    );
+
+    // Cannot drag while focusing on input / textarea
+    jQuery(document).on(
+      "focus",
+      ".mt-draggable__area input, .mt-draggable__area textarea",
+      function () {
+        jQuery(this).closest(".mt-contentfield").attr("draggable", "false");
+      },
+    );
+
+    // Set draggable back to true while not focusing on input / textarea
+    jQuery(document).on(
+      "blur",
+      ".mt-draggable__area input, .mt-draggable__area textarea",
+      function () {
+        jQuery(this).closest(".mt-contentfield").attr("draggable", "true");
+      },
+    );
   });
-
-  // Shown collaped block
-  jQuery(document).on(
-    "shown.bs.collapse",
-    ".mt-collapse__content",
-    function () {
-      const target = document.getElementsByClassName("mt-draggable__area")[0];
-      recalcHeight(target);
-      updateFieldsIsShowAll(); // need to update in Svelte
-      updateToggleAll();
-    },
-  );
-
-  // Hide collaped block
-  jQuery(document).on(
-    "hidden.bs.collapse",
-    ".mt-collapse__content",
-    function () {
-      const target = document.getElementsByClassName("mt-draggable__area")[0];
-      recalcHeight(target);
-      updateFieldsIsShowAll(); // need to update in Svelte
-      updateToggleAll();
-    },
-  );
-
-  // Cannot drag while focusing on input / textarea
-  jQuery(document).on(
-    "focus",
-    ".mt-draggable__area input, .mt-draggable__area textarea",
-    function () {
-      jQuery(this).closest(".mt-contentfield").attr("draggable", "false");
-    },
-  );
-
-  // Set draggable back to true while not focusing on input / textarea
-  jQuery(document).on(
-    "blur",
-    ".mt-draggable__area input, .mt-draggable__area textarea",
-    function () {
-      jQuery(this).closest(".mt-contentfield").attr("draggable", "true");
-    },
-  );
 
   const onDragOver = (e: DragEvent): void => {
     // Allowed only for Content Field and Content Field Type.
