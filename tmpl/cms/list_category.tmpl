@@ -255,13 +255,13 @@ function fixInteractions( options ) {
   if ( opts.sortable ) {
     jQuery('.col-auto').css('visibility', 'visible');
     jQuery('#root').sortable('enable')
-                   .children().attr('draggable', true)
+                   .children().attr('draggable', 'true')
                               .css('cursor', 'move');
   }
   else {
     jQuery('.col-auto').css('visibility', 'hidden');
     jQuery('#root').sortable('disable')
-                   .children().attr('draggable', false)
+                   .children().attr('draggable', 'false')
                               .css('cursor', 'default');
   }
 }
