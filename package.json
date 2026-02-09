@@ -28,7 +28,7 @@
     "copy-bootstrap": "cp -rf node_modules/bootstrap/dist/* mt-static/bootstrap/",
     "copy-bootstrap5": "cp -rf node_modules/bootstrap5/dist/* mt-static/bootstrap5/",
     "copy-jquery-ui": "cp -f node_modules/jquery-ui/dist/*.js mt-static/jqueryui/",
-    "copy-jquery-ui-touch-punch": "cp -rf node_modules/jquery-ui-touch-punch/jquery.ui.touch-punch.* mt-static/jqueryui/",
+    "copy-jquery-ui-touch-punch": "cp -rf node_modules/jquery-ui-touch-punch/jquery.ui.touch-punch.* mt-static/jqueryui/ && terser mt-static/jqueryui/jquery.ui.touch-punch.js -o mt-static/jqueryui/jquery.ui.touch-punch.min.js",
     "copy-popper": "cp -rf node_modules/popper.js/dist/umd/* mt-static/popper/",
     "copy-riot": "cd node_modules/riot && cp -f LICENSE.txt riot.js riot.min.js riot+compiler.js riot+compiler.min.js ../../mt-static/riot/",
     "rename-riot-compiler": "cd mt-static/riot && mv riot+compiler.js riot-compiler.js && mv riot+compiler.min.js riot-compiler.min.js",
