@@ -104,6 +104,10 @@
     recalcHeight(target);
     // update is not needed in Svelte
   };
+
+  let ContentFieldComponent = $derived(
+    ContentFieldTypes.getCoreType(field.type),
+  );
 </script>
 
 <div class="mt-collapse__container">
@@ -168,15 +172,16 @@
   {...{ fieldid: field.id, isnew: field.isNew }}
   bind:this={parent}
 >
-  <svelte:component
-    this={ContentFieldTypes.getCoreType(field.type)}
-    {config}
-    bind:field
-    bind:gather={gatherCore}
-    {id}
-    options={field.options}
-    {optionsHtmlParams}
-  />
+  {#if ContentFieldComponent}
+    <ContentFieldComponent
+      {config}
+      bind:field
+      bind:gather={gatherCore}
+      {id}
+      options={field.options}
+      {optionsHtmlParams}
+    />
+  {/if}
   <Custom
     {config}
     {fieldIndex}
