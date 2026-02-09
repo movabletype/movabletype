@@ -8,7 +8,7 @@
     field = $bindable(),
     gather = $bindable(),
     id,
-    options,
+    options = $bindable(),
     optionsHtmlParams: _optionsHtmlParams,
   }: ContentType.ContentFieldProps = $props();
 </script>

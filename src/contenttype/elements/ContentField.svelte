@@ -178,7 +178,7 @@
       bind:field
       bind:gather={gatherCore}
       {id}
-      options={field.options}
+      bind:options={field.options}
       {optionsHtmlParams}
     />
   {/if}

@@ -39,8 +39,8 @@
   let labelField = opts.labelField;
   let isExpanded = $state(false);
 
-  const gathers: { [key: string]: (() => object) | undefined } = {};
-  const tags: Array<HTMLDivElement> = [];
+  let gathers: { [key: string]: (() => object) | undefined } = $state({});
+  let tags: Array<HTMLDivElement> = $state([]);
 
   $effect(() => {
     const select = root.querySelector("#label_field") as HTMLSelectElement;

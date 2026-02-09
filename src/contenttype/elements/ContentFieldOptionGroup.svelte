@@ -16,7 +16,13 @@
     type: string;
     children?: Snippet;
   };
-  let { field = $bindable(), id, options, type, children }: Props = $props();
+  let {
+    field = $bindable(),
+    id,
+    options = $bindable(),
+    type,
+    children,
+  }: Props = $props();
 
   onMount(() => {
     if (!type) {
