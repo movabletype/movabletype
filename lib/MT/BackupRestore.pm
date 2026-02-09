@@ -1054,7 +1054,7 @@ sub cb_restore_objects {
                 }
             }
         }
-        $content_data->data( \%new_data );
+        $content_data->data( \%new_data ) if %new_data;
 
         if ( my $raw_convert_breaks = $content_data->convert_breaks ) {
             if ( my $convert_breaks
