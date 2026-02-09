@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount } from "svelte";
+  import { onMount, type Snippet } from "svelte";
 
   // copied from lib/MT/Template/ContextHandlers.pm
   type Props = {
@@ -11,6 +11,7 @@
     required?: number;
     showHint?: number;
     showLabel?: number;
+    children?: Snippet;
   };
   let {
     id,
@@ -21,11 +22,12 @@
     required = 0,
     showHint = 0,
     showLabel = 1,
+    children,
   }: Props = $props();
 
   onMount(() => {
     if (!id) {
-      console.error("ConetntFieldOption 'id' attribute missing");
+      console.error("ContentFieldOption 'id' attribute missing");
     }
   });
 
@@ -67,7 +69,7 @@
     </label>
   {/if}
 
-  <slot />
+  {@render children?.()}
 
   {#if hint && showHint}
     <small id="{id}-field-help" class="form-text text-muted">
