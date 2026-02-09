@@ -42,7 +42,7 @@
   };
 </script>
 
-<ContentFieldOptionGroup {type} bind:field {id} {options}>
+<ContentFieldOptionGroup {type} bind:field {id} bind:options>
   <svelte:element
     this={customElement}
     data-options={JSON.stringify(options)}

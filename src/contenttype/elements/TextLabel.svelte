@@ -34,7 +34,7 @@
   });
 </script>
 
-<ContentFieldOptionGroup type="text-label" bind:field {id} {options}>
+<ContentFieldOptionGroup type="text-label" bind:field {id} bind:options>
   <ContentFieldOption
     id="text_label-text"
     label={window.trans("__TEXT_LABEL_TEXT")}

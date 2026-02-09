@@ -151,7 +151,7 @@
   };
 </script>
 
-<ContentFieldOptionGroup type="select-box" bind:field {id} {options}>
+<ContentFieldOptionGroup type="select-box" bind:field {id} bind:options>
   <ContentFieldOption
     id="select_box-multiple"
     label={window.trans("Allow users to select multiple values?")}

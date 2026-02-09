@@ -32,7 +32,7 @@
   });
 </script>
 
-<ContentFieldOptionGroup type="asset-image" bind:field {id} {options}>
+<ContentFieldOptionGroup type="asset-image" bind:field {id} bind:options>
   <ContentFieldOption
     id="asset_image-multiple"
     label={window.trans("Allow users to select multiple image assets?")}

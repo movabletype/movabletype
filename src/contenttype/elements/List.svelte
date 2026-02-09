@@ -13,4 +13,4 @@
   }: ContentType.ContentFieldProps = $props();
 </script>
 
-<ContentFieldOptionGroup type="list" bind:field {id} {options} />
+<ContentFieldOptionGroup type="list" bind:field {id} bind:options />

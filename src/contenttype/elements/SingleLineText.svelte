@@ -21,7 +21,7 @@
   });
 </script>
 
-<ContentFieldOptionGroup type="single-line-text" bind:field {id} {options}>
+<ContentFieldOptionGroup type="single-line-text" bind:field {id} bind:options>
   <ContentFieldOption
     id="single_line_text-min_length"
     label={window.trans("Min Length")}

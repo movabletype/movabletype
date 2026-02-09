@@ -62,7 +62,7 @@
   };
 </script>
 
-<ContentFieldOptionGroup type="radio-button" bind:field {id} {options}>
+<ContentFieldOptionGroup type="radio-button" bind:field {id} bind:options>
   <ContentFieldOption
     id="radio_button-values"
     required={1}

@@ -40,7 +40,7 @@
   });
 </script>
 
-<ContentFieldOptionGroup type="number" bind:field {id} {options}>
+<ContentFieldOptionGroup type="number" bind:field {id} bind:options>
   <ContentFieldOption id="number-min_value" label={window.trans("Min Value")}>
     <input
       {...{ ref: "min_value" }}

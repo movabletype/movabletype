@@ -19,7 +19,7 @@
   });
 </script>
 
-<ContentFieldOptionGroup type="date-only" bind:field {id} {options}>
+<ContentFieldOptionGroup type="date-only" bind:field {id} bind:options>
   <ContentFieldOption
     id="date_only-initial-date_value"
     label={window.trans("Initial Value")}

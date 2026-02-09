@@ -20,7 +20,7 @@
   });
 </script>
 
-<ContentFieldOptionGroup type="date-and-time" bind:field {id} {options}>
+<ContentFieldOptionGroup type="date-and-time" bind:field {id} bind:options>
   <ContentFieldOption
     id="date_and_time-initial-date_value"
     label={window.trans("Initial Value (Date)")}

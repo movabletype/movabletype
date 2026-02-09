@@ -19,7 +19,7 @@
   });
 </script>
 
-<ContentFieldOptionGroup type="embedded-text" bind:field {id} {options}>
+<ContentFieldOptionGroup type="embedded-text" bind:field {id} bind:options>
   <ContentFieldOption
     id="embedded_text-initial_value"
     label={window.trans("Initial Value")}

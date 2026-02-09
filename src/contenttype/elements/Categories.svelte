@@ -34,7 +34,7 @@
   });
 </script>
 
-<ContentFieldOptionGroup type="categories" bind:field {id} {options}>
+<ContentFieldOptionGroup type="categories" bind:field {id} bind:options>
   <ContentFieldOption
     id="categories-multiple"
     label={window.trans("Allow users to select multiple categories?")}
