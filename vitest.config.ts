@@ -1,6 +1,8 @@
 import { defineConfig, type ViteUserConfig } from "vitest/config";
 import { createHttpServer } from "./src/tests/helpers/server";
 import type { AddressInfo } from "net";
+import { fileURLToPath } from "url";
+import { resolve } from "path";
 
 export default defineConfig(async (): Promise<ViteUserConfig> => {
   const server = await createHttpServer();
@@ -8,6 +10,7 @@ export default defineConfig(async (): Promise<ViteUserConfig> => {
   process.env.JSDOM_SERVER_PORT = port.toString();
 
   const { svelte } = await import("@sveltejs/vite-plugin-svelte");
+  const __dirname = fileURLToPath(new URL(".", import.meta.url));
 
   return {
     plugins: [
@@ -18,7 +21,7 @@ export default defineConfig(async (): Promise<ViteUserConfig> => {
     resolve: {
       conditions: ["browser"],
       alias: {
-        src: "/Users/rmasco/work/sixapart/movabletype-repo/origin-movabletype/src",
+        src: resolve(__dirname, "src"),
       },
     },
     test: {
