@@ -1,10 +1,14 @@
 <script lang="ts">
   import type * as Listing from "../../@types/listing";
 
-  export let buttonActions: Listing.ButtonActions;
-  export let doAction: (e: Event) => boolean | undefined;
-  export let listActions: Listing.ListActions;
-  export let moreListActions: Listing.MoreListActions;
+  type Props = {
+    buttonActions: Listing.ButtonActions;
+    doAction: (e: Event) => boolean | undefined;
+    listActions: Listing.ListActions;
+    moreListActions: Listing.MoreListActions;
+  };
+  let { buttonActions, doAction, listActions, moreListActions }: Props =
+    $props();
 
   const buttonActionsForMobile = (): Listing.ButtonActions => {
     return _getActionsForMobile(buttonActions);
