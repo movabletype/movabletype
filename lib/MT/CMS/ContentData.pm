@@ -911,8 +911,8 @@ sub save {
         $content_data->label($data_label);
     }
 
-    $app->run_callbacks( 'cms_pre_save.content_data',
-        $app, $content_data, $orig );
+    $app->run_callbacks( 'cms_pre_save.content_data', $app, $content_data, $orig )
+        or return $app->error($app->translate("Saving [_1] failed: [_2]", $content_type->name, $app->errstr));
 
     $content_data->save
         or return $app->error(
