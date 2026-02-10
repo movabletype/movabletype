@@ -71,7 +71,6 @@
     "@testing-library/svelte": "^5.2.9",
     "@testing-library/user-event": "^14.6.1",
     "@tsconfig/svelte": "^5.0.5",
-    "@types/bootstrap": "^5.2.10",
     "@types/jquery": "^3.5.30",
     "@types/jqueryui": "^1.12.22",
     "@types/node": "^25.2.0",
