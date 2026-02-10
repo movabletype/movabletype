@@ -102,7 +102,10 @@
     name="label"
     id="{type}-label"
     class="form-control html5-form"
-    bind:value={field.label}
+    value={field.label}
+    oninput={(e) => {
+      field.label = e.currentTarget.value;
+    }}
     required
     data-mt-content-field-unique
   />
@@ -121,7 +124,10 @@
     id="{type}-description"
     class="form-control"
     aria-describedby="{type}-description-field-help"
-    bind:value={options.description}
+    value={options.description}
+    oninput={(e) => {
+      options.description = e.currentTarget.value;
+    }}
   />
 </ContentFieldOption>
 
@@ -135,7 +141,10 @@
     class="mt-switch form-control"
     id="{type}-required"
     name="required"
-    bind:checked={options.required}
+    checked={options.required}
+    onchange={(e) => {
+      options.required = e.currentTarget.checked;
+    }}
   />
   <label for="{type}-required">
     {window.trans("Is this field required?")}
@@ -156,7 +165,7 @@
     name="display"
     id="{type}-display"
     class="custom-select form-control form-select"
-    bind:value={options.display}
+    value={options.display}
     onchange={(e) => {
       options.display = e.currentTarget.value;
     }}
