@@ -52,7 +52,7 @@ my %delXAttr = (
 # "mdls" tags (ref PH)
 %Image::ExifTool::MacOS::MDItem = (
     WRITE_PROC => \&Image::ExifTool::DummyWriteProc,
-    VARS => { NO_ID => 1 },
+    VARS => { ID_FMT => 'none' },
     GROUPS => { 0 => 'File', 1 => 'MacOS', 2 => 'Other' },
     NOTES => q{
         MDItem tags are extracted using the "mdls" utility.  They are extracted if
@@ -245,7 +245,7 @@ my %delXAttr = (
 %Image::ExifTool::MacOS::XAttr = (
     WRITE_PROC => \&Image::ExifTool::DummyWriteProc,
     GROUPS => { 0 => 'File', 1 => 'MacOS', 2 => 'Other' },
-    VARS => { NO_ID => 1 }, # (id's are too long)
+    VARS => { ID_FMT => 'none' }, # (id's are too long)
     NOTES => q{
         XAttr tags are extracted using the "xattr" utility.  They are extracted if
         any "XAttr*" tag or the MacOS group is specifically requested, or by setting
@@ -528,7 +528,6 @@ sub ExtractMDItemTags($$)
     $$et{INDENT} =~ s/\| $//;
 }
 
-        
 #------------------------------------------------------------------------------
 # Read MacOS XAttr value
 # Inputs: 0) ExifTool object ref, 1) file name
@@ -732,7 +731,7 @@ This module is used by Image::ExifTool
 This module contains definitions required by Image::ExifTool to extract
 MDItem* and XAttr* tags on MacOS systems using the "mdls" and "xattr"
 utilities respectively.  It also reads metadata directly from the MacOS "_."
-sidecar files that are used on some filesystems to store file attributes. 
+sidecar files that are used on some filesystems to store file attributes.
 Writable tags use "xattr", "setfile" or "osascript" for writing.
 
 =head1 AUTHOR

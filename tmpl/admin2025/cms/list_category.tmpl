@@ -250,13 +250,13 @@ function fixInteractions( options ) {
   if ( opts.sortable ) {
     jQuery('.col-auto').css('visibility', 'visible');
     jQuery('#root').sortable('enable')
-                   .children().attr('draggable', true)
+                   .children().attr('draggable', 'true')
                               .css('cursor', 'move');
   }
   else {
     jQuery('.col-auto').css('visibility', 'hidden');
     jQuery('#root').sortable('disable')
-                   .children().attr('draggable', false)
+                   .children().attr('draggable', 'false')
                               .css('cursor', 'default');
   }
 }
@@ -628,7 +628,7 @@ function initMoving() {
 
         $item.attr('class', ('pcat-'+place));
         $item.addClass('sortable-item mt-draggable');
-        $item.attr({ draggrable: true, 'aria-grabbed': false });
+        $item.attr({ draggable: true, 'aria-grabbed': false });
         initItem($item);
 <mt:if name="object_type" eq="category">
         jQuery.mtValidateRules['#new-label'] = function ($e) {

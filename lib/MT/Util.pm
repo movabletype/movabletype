@@ -33,7 +33,7 @@ our @EXPORT_OK
     weaken log_time make_string_csv browser_language sanitize_embed
     extract_url_path break_up_text dir_separator deep_do deep_copy
     realpath canonicalize_path clear_site_stats_widget_cache check_fast_cgi
-    encode_json build_upload_destination is_asset_from_url
+    encode_json build_upload_destination asset_from_url
     date_for_listing is_within_a_directory );
 
 push @EXPORT_OK, @MT::Util::Deprecated::EXPORT_OK;
@@ -1482,6 +1482,9 @@ sub is_valid_url {
     use bytes;
     my ( $url, $stringent ) = @_;
 
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::warning(name => 'is_valid_url', since => '9.1.0');
+
     $url ||= "";
 
     # strip spaces
@@ -1494,12 +1497,12 @@ sub is_valid_url {
     $url =~ s,(https?);//,$1://,;
     $url =~ s,(https?)//,$1://,;
 
-    $url = "http://$url" unless ( $url =~ m,https?://, );
+    $url = "http://$url" unless ( $url =~ m,^[A-Za-z][A-Za-z0-9+\-.]*:, );
 
     my ( $scheme, $host, $path, $query, $fragment )
         = $url
         =~ m,(?:([^:/?#]+):)?(?://([^/?#]*))?([^?#]*)(?:\?([^#]*))?(?:#(.*))?,;
-    if ( $scheme && $host ) {
+    if ( defined $scheme && $scheme =~ m/^(?:https?)$/i && defined $host ) {
 
       # Note: no stringent checks; localhost is a legit hostname, for example.
         return $url;
@@ -1512,7 +1515,7 @@ sub is_valid_url {
 sub is_url {
     my ($url) = @_;
 
-    return $url =~ /^s?https?:\/\/[-_.!~*'()a-zA-Z0-9;\/?:\@&=+\$,%#]+$/;
+    return $url && $url =~ /^s?https?:\/\/[-_.!~*'()a-zA-Z0-9;\/?:\@&=+\$,%#]+$/;
 }
 
 sub mark_odd_rows {

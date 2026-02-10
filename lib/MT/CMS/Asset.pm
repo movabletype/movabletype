@@ -1395,6 +1395,9 @@ sub _set_start_upload_params {
     $param->{trim_file_path}  = 1;
     $param->{max_upload_size} = $app->config->CGIMaxUpload;
 
+    my $allow_non_ascii_filename       = $app->config->AllowNonAsciiFilename;
+    $param->{allow_non_ascii_filename} = $allow_non_ascii_filename;
+
     $param;
 }
 
@@ -1452,7 +1455,17 @@ sub _upload_file_compat {
         );
     }
 
-    if (   $app->param('auto_rename_non_ascii')
+    if (   !$app->config->AllowNonAsciiFilename
+        && $basename =~ m/[^\x20-\x7E]/ )
+    {
+        return $eh->(
+            $app, %param,
+            error => $app->translate("Non-ASCII characters are not allowed in filenames. Please rename the file using only ASCII characters.")
+        );
+    }
+
+    if (   $app->config->AllowNonAsciiFilename
+        && $app->param('auto_rename_non_ascii')
         && $basename =~ m/[^\x20-\x7E]/ )
     {
         # Auto-rename
@@ -2039,6 +2052,14 @@ sub _upload_file {
             error => $app->translate( "Invalid filename '[_1]'", $basename )
         );
     }
+    if (   !$app->config->AllowNonAsciiFilename
+        && $basename =~ m/[^\x20-\x7E]/ )
+    {
+        return $eh->(
+            $app, %param,
+            error => $app->translate("Non-ASCII characters are not allowed in filenames. Please rename the file using only ASCII characters.")
+        );
+    }
     $basename
         = MT::Util::Encode::is_utf8($basename)
         ? $basename
@@ -2219,7 +2240,8 @@ sub _upload_file {
             }
 
             # Rename non-ascii filename automatically if option provided.
-            if (   $app->param('auto_rename_non_ascii')
+            if (   $app->config->AllowNonAsciiFilename
+                && $app->param('auto_rename_non_ascii')
                 && $path_info->{basename} =~ m/[^\x20-\x7E]/ )
             {
                 # Auto-rename
@@ -2282,7 +2304,8 @@ sub _upload_file {
 
         # Rename non-ascii filename automatically if option provided.
         my $path_info = { basename => $stem };
-        if (   $app->param('auto_rename_non_ascii')
+        if (   $app->config->AllowNonAsciiFilename
+            && $app->param('auto_rename_non_ascii')
             && $path_info->{basename} =~ m/[^\x20-\x7E]/ )
         {
             # Auto-rename

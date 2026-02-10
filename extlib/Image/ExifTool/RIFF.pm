@@ -30,7 +30,7 @@ use strict;
 use vars qw($VERSION $AUTOLOAD);
 use Image::ExifTool qw(:DataAccess :Utils);
 
-$VERSION = '1.71';
+$VERSION = '1.73';
 
 sub ConvertTimecode($);
 sub ProcessSGLT($$$);
@@ -391,7 +391,7 @@ my %code2charset = (
     smpl => { #16
         Name => 'Sampler',
         SubDirectory => { TagTable => 'Image::ExifTool::RIFF::Sampler' },
-    },        
+    },
     inst => { #16
         Name => 'Instrument',
         SubDirectory => { TagTable => 'Image::ExifTool::RIFF::Instrument' },
@@ -546,11 +546,11 @@ my %code2charset = (
    'id3 ' => {
         Name => 'ID3',
         SubDirectory => { TagTable => 'Image::ExifTool::ID3::Main' },
-    },        
+    },
    'ID3 ' => { # (NC)
         Name => 'ID3-2',
         SubDirectory => { TagTable => 'Image::ExifTool::ID3::Main' },
-    },        
+    },
 #
 # WebP-specific tags
 #
@@ -851,6 +851,7 @@ my %code2charset = (
         Name => 'DateCreated',
         Groups => { 2 => 'Time' },
         ValueConv => '$_=$val; s/-/:/g; $_',
+        PrintConv => '$self->ConvertDateTime($val)',
     },
     ICRP => 'Cropped',
     IDIM => 'Dimensions',
@@ -2031,6 +2032,7 @@ sub ProcessRIFF($$)
     my $validate = $et->Options('Validate');
     my $ee = $et->Options('ExtractEmbedded');
     my $hash = $$et{ImageDataHash};
+    my $base = 0;
 
     # verify this is a valid RIFF file
     return 0 unless $raf->Read($buff, 12) == 12;
@@ -2042,7 +2044,8 @@ sub ProcessRIFF($$)
         return 0 unless $buff =~ /^(LA0[234]|OFR |LPAC|wvpk)/ and $raf->Read($buf2, 1024);
         $type = $riffType{$1};
         $buff .= $buf2;
-        return 0 unless $buff =~ /WAVE(.{4})?fmt /sg and $raf->Seek(pos($buff) - 4, 0);
+        return 0 unless $buff =~ /WAVE(.{4})?(junk|fmt )/sg and $raf->Seek(pos($buff) - 4, 0);
+        $base = pos($buff) - 16;
     }
     $$raf{NoBuffer} = 1 if $et->Options('FastScan'); # disable buffering in FastScan mode
     $mime = $riffMimeType{$type} if $type;
@@ -2159,7 +2162,7 @@ sub ProcessRIFF($$)
                 DataPos => 0,   # (relative to Base)
                 Start   => 0,
                 Size    => $len,
-                Base    => $pos,
+                Base    => $pos + $base,
             );
             if ($setGroups) {
                 delete $$et{SET_GROUP0};

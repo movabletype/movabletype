@@ -11,7 +11,7 @@ package Image::ExifTool::Plot;
 use strict;
 use vars qw($VERSION);
 
-$VERSION = '1.03';
+$VERSION = '1.05';
 
 # default plot settings (lower-case settings may be overridden by the user)
 my %defaults = (
@@ -201,7 +201,7 @@ sub AddPoints($$$)
             $$data{$name}[$xmax - $xmin] = $val if $xmax >= $xmin;
             next;
         }
-        if ($docNum and $num{$name} < $docNum) {
+        if ($docNum and defined $num{$name} and $num{$name} < $docNum) {
             $num{$name} = $docNum; # keep documents synchronized if some tags are missing
         } else {
             $num{$name} = $xmax unless defined $num{$name};
@@ -321,7 +321,6 @@ sub Draw($$)
         foreach (0 .. (($multi[$plotNum] || 1) - 1)) {
             push @{$$self{Name}}, shift(@names);
         }
-warn "@{$$self{Name}}\n";
         undef $min; undef $max;
         foreach ($scat .. (@{$$self{Name}} - 1)) {
             my $dat = $$self{Data}{$$self{Name}[$_]};
@@ -462,7 +461,7 @@ warn "@{$$self{Name}}\n";
             $mark = $markerData{$m[0]};
             $mark or $markID{$mark} = '', next; # skip 'none' or unrecognized marker name
             if ($fill and $fill ne 'none') {
-                my $op = $m[3] || ($$cols[$i] eq 'none' ? 50 : 20); 
+                my $op = $m[3] || ($$cols[$i] eq 'none' ? 50 : 20);
                 $mark .= qq( fill="$fill" style="fill-opacity: $op%");
             } else {
                 $mark .= ' fill="none"';
@@ -574,7 +573,7 @@ warn "@{$$self{Name}}\n";
         $xsclr = int($xscl * 100 + 0.5) / 100;
         if ($style =~ /\bf/) {
             my @m = split /-/, $$marks[0];
-            my $op = $m[3] || ($style =~ /\bl/ ? 20 : 50); 
+            my $op = $m[3] || ($style =~ /\bl/ ? 20 : 50);
             $fill = " fill='$$cols[0]'";
             $fill .= " style='fill-opacity: $op%'" if $$cols[0] ne 'none';
         }

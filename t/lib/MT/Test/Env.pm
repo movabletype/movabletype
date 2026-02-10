@@ -178,7 +178,7 @@ sub write_config {
         LoggerModule           => 'Test',
         LoggerPath             => 'TEST_ROOT/log',
         LoggerFileName         => 'TEST_ROOT/.test.log',
-        LoggerLevel            => 'DEBUG',
+        LoggerLevel            => $ENV{MT_TEST_LOGGER_LEVEL} || 'DEBUG',
         MailTransfer           => 'debug',
         MailTransferEncoding   => '8bit',
         DBIRaiseError          => 1,
@@ -409,6 +409,7 @@ sub _connect_info_mysql {
     if (my $go_dsn = $ENV{GO_PROVE_MYSQLD}) {
         my ($sock) = $go_dsn =~ /unix\((.*?)\)/;
         $ENV{MT_TEST_DSN} = "dbi:mysql:mysql_socket=$sock;user=root";
+        $self->{database_is_ready} = 1;
     }
     if (my $dsn = $ENV{MT_TEST_DSN} || $ENV{PERL_TEST_MYSQLPOOL_DSN}) {
         my $dbh = DBI->connect($dsn) or die $DBI::errstr;

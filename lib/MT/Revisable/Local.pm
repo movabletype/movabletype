@@ -119,8 +119,7 @@ sub save_revision {
     $revision->set_values(
         {   $obj_id     => $obj->id,
             $datasource => MT::Serialize->serialize( \$packed_obj ),
-            changed     => join ',',
-            @$changed_cols,
+            changed     => (join ',', @$changed_cols) || ',',  # to save oracle
         }
     );
     $revision->rev_number( ++$current_revision );

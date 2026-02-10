@@ -129,16 +129,16 @@ $test_env->prepare_fixture(
             },
         );
 
-        $cd1->authored_on('201706011930');
-        $cd1->modified_on('201706011930');
+        $cd1->authored_on('20170601193000');
+        $cd1->modified_on('20170601193000');
         $cd1->save or die $cd1->errstr;
 
-        $cd2->authored_on('201706021930');
-        $cd2->modified_on('201705311930');
+        $cd2->authored_on('20170602193000');
+        $cd2->modified_on('20170531193000');
         $cd2->save or die $cd2->errstr;
 
-        $cd3->authored_on('201706031930');
-        $cd3->modified_on('201705301930');
+        $cd3->authored_on('20170603193000');
+        $cd3->modified_on('20170530193000');
         $cd3->save or die $cd3->errstr;
     }
 );

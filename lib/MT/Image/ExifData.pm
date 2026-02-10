@@ -76,7 +76,29 @@ sub _require_module {
 1;
 
 __DATA__
-# Generated from Image::ExifTool 12.76
+# Generated from Image::ExifTool 13.44
+ACDSeeRegion
+ACDSeeRegionALGArea
+ACDSeeRegionALGAreaH
+ACDSeeRegionALGAreaW
+ACDSeeRegionALGAreaX
+ACDSeeRegionALGAreaY
+ACDSeeRegionAppliedToDimensions
+ACDSeeRegionAppliedToDimensionsH
+ACDSeeRegionAppliedToDimensionsUnit
+ACDSeeRegionAppliedToDimensionsW
+ACDSeeRegionDLYArea
+ACDSeeRegionDLYAreaH
+ACDSeeRegionDLYAreaW
+ACDSeeRegionDLYAreaX
+ACDSeeRegionDLYAreaY
+ACDSeeRegionName
+ACDSeeRegionNameAssignType
+ACDSeeRegionType
+AIPromptInformation
+AIPromptWriterName
+AISystemUsed
+AISystemVersionUsed
 About
 AboutCvTerm
 AboutCvTermCvId
@@ -174,6 +196,7 @@ AutoTone
 AutoToneDigest
 AutoToneDigestNoSat
 AutoWhiteVersion
+AuxiliaryImageType
 BackgroundAlpha
 BaseRenditionIsHDR
 BaseURL
@@ -889,7 +912,15 @@ DigitalSourceType
 DigitalZoomRatio
 Director
 DirectorPhotography
+DirectoryItem
+DirectoryItemLabel
+DirectoryItemLength
+DirectoryItemMime
+DirectoryItemPadding
+DirectoryItemSemantic
+DirectoryItemURI
 DisableAutoCreation
+DisableSuggestedAction
 DiscNumber
 DishType
 DisplayName
@@ -956,6 +987,7 @@ EventDay
 EventEarliestDate
 EventEnd
 EventEndDayOfYear
+EventEventType
 EventFieldNotes
 EventFieldNumber
 EventHabitat
@@ -1271,7 +1303,9 @@ Group
 HDRCapacityMax
 HDRCapacityMin
 HDREditMode
+HDRGainMapVersion
 HDRPMakerNote
+HDRPlusMakerNote
 HalftoneHints
 HasAlternative
 HasCorrection
@@ -1284,7 +1318,6 @@ HasSettings
 HasTranslation
 HasVisibleOverprint
 HasVisibleTransparency
-HdrPlusMakernote
 Headline
 HierarchicalKeywords
 HierarchicalKeywords1
@@ -1337,6 +1370,7 @@ HumanObservationEventDate
 HumanObservationEventID
 HumanObservationEventRemarks
 HumanObservationEventTime
+HumanObservationEventType
 HumanObservationFieldNotes
 HumanObservationFieldNumber
 HumanObservationHabitat
@@ -1412,6 +1446,7 @@ ImageSupplier
 ImageSupplierID
 ImageSupplierImageID
 ImageSupplierName
+ImageTitle
 ImageType
 ImageUniqueID
 IncrementalTemperature
@@ -1468,6 +1503,9 @@ IssueTeaser
 IssueType
 ItemSubType
 JPEGHandling
+JXLDecodeSpeed
+JXLDistance
+JXLEffort
 JobName
 JobRef
 JobRefId
@@ -1606,6 +1644,7 @@ LocationCreatedCity
 LocationCreatedCountryCode
 LocationCreatedCountryName
 LocationCreatedGPSAltitude
+LocationCreatedGPSAltitudeRef
 LocationCreatedGPSLatitude
 LocationCreatedGPSLongitude
 LocationCreatedIdentifier
@@ -1619,6 +1658,7 @@ LocationShownCity
 LocationShownCountryCode
 LocationShownCountryName
 LocationShownGPSAltitude
+LocationShownGPSAltitudeRef
 LocationShownGPSLatitude
 LocationShownGPSLongitude
 LocationShownIdentifier
@@ -1678,6 +1718,7 @@ MachineObservationEventDate
 MachineObservationEventID
 MachineObservationEventRemarks
 MachineObservationEventTime
+MachineObservationEventType
 MachineObservationFieldNotes
 MachineObservationFieldNumber
 MachineObservationHabitat
@@ -1705,6 +1746,7 @@ MakerNoteFLIR
 MakerNoteFujiFilm
 MakerNoteGE
 MakerNoteGE2
+MakerNoteGoogle
 MakerNoteHP
 MakerNoteHP2
 MakerNoteHP4
@@ -1762,9 +1804,11 @@ MakerNotePentax4
 MakerNotePentax5
 MakerNotePentax6
 MakerNotePhaseOne
-MakerNoteReconyx
-MakerNoteReconyx2
-MakerNoteReconyx3
+MakerNoteReconyxHyperFire
+MakerNoteReconyxHyperFire2
+MakerNoteReconyxHyperFire4K
+MakerNoteReconyxMicroFire
+MakerNoteReconyxUltraFire
 MakerNoteRicoh
 MakerNoteRicoh2
 MakerNoteRicohPentax
@@ -2062,11 +2106,15 @@ ModificationDate
 ModifyDate
 MoireFilter
 MorePermissions
+MotionPhoto
+MotionPhotoPresentationTimestampUs
+MotionPhotoVersion
 Multishot
 NPages
 Name
 NationalCatalogNumber
 NativeDigest
+NativeFormat
 Near
 NegativeCacheLargePreviewSize
 NegativeCacheMaximumSize
@@ -2095,6 +2143,7 @@ OccurrenceAssociatedReferences
 OccurrenceAssociatedSequences
 OccurrenceAssociatedTaxa
 OccurrenceBehavior
+OccurrenceCaste
 OccurrenceCatalogNumber
 OccurrenceDegreeOfEstablishment
 OccurrenceDetails
@@ -2118,6 +2167,7 @@ OccurrenceRemarks
 OccurrenceReproductiveCondition
 OccurrenceSex
 OccurrenceStatus
+OccurrenceVitality
 OffSaleDate
 OffSaleDateA-platform
 OffSaleDateDate
@@ -2346,6 +2396,7 @@ ParametricShadowSplit
 ParametricShadows
 ParentID
 ParentMEID
+ParentMeasurementID
 ParentMediaEventID
 ParentReference1
 ParentReference2
@@ -2387,6 +2438,7 @@ PerspectiveY
 Photographer
 PhotographicSensitivity
 PicasawebGPhotoId
+Pick
 PickLabel
 PipelineVersion
 PitchAngle
@@ -2412,6 +2464,7 @@ PlanningRefName
 PlanningRefRole
 PlateNames
 Platform
+PointColors
 PortraitNote
 PortraitRequest
 PortraitVersion
@@ -2503,6 +2556,7 @@ RatingRegionCity
 RatingRegionCountryCode
 RatingRegionCountryName
 RatingRegionGPSAltitude
+RatingRegionGPSAltitudeRef
 RatingRegionGPSLatitude
 RatingRegionGPSLongitude
 RatingRegionIdentifier
@@ -2573,6 +2627,7 @@ RegionDescription
 RegionExtensions
 RegionFocusUsage
 RegionInfo
+RegionInfoACDSee
 RegionInfoDateRegionsValid
 RegionInfoMP
 RegionInfoRegions
@@ -2770,6 +2825,7 @@ SDRContrast
 SDRHighlights
 SDRShadows
 SDRWhites
+SEAL
 SEMInfo
 SamplePageRange
 Saturation
@@ -2857,6 +2913,7 @@ Software
 SortName
 Source
 SourceCount
+SourceModified
 SourcePhotosCount
 SpatialFrequencyResponse
 SpatialFrequencyResponseColumns
@@ -2887,6 +2944,7 @@ Status
 StereoMode
 Stitched
 StitchingSoftware
+StoredFormat
 StorylineIdentifier
 StreamReady
 StreamType
@@ -2967,9 +3025,11 @@ TaxonClass
 TaxonConceptID
 TaxonCultivarEpithet
 TaxonFamily
+TaxonGenericName
 TaxonGenus
 TaxonHigherClassification
 TaxonID
+TaxonInfragenericEpithet
 TaxonInfraspecificEpithet
 TaxonKingdom
 TaxonNameAccordingTo
@@ -2991,8 +3051,12 @@ TaxonScientificName
 TaxonScientificNameAuthorship
 TaxonScientificNameID
 TaxonSpecificEpithet
+TaxonSubFamily
+TaxonSubTribe
 TaxonSubgenus
+TaxonSuperFamily
 TaxonTaxonomicStatus
+TaxonTribe
 TaxonVerbatimTaxonRank
 TaxonVernacularName
 Teaser

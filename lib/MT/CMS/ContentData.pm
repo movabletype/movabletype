@@ -911,8 +911,8 @@ sub save {
         $content_data->label($data_label);
     }
 
-    $app->run_callbacks( 'cms_pre_save.content_data',
-        $app, $content_data, $orig );
+    $app->run_callbacks( 'cms_pre_save.content_data', $app, $content_data, $orig )
+        or return $app->error($app->translate("Saving [_1] failed: [_2]", $content_type->name, $app->errstr));
 
     $content_data->save
         or return $app->error(
@@ -1312,6 +1312,7 @@ sub list_actions {
         },
         'set_draft' => {
             label     => "Unpublish Contents",
+            js_message => 'unpublish',
             order     => 200,
             code      => '$Core::MT::CMS::ContentData::draft_content_data',
             mobile    => 1,
@@ -1767,7 +1768,6 @@ sub _build_content_data_preview {
     my $archive_url;
     if ($tmpl_map) {
         $tmpl         = MT::Template->load( $tmpl_map->template_id );
-        $file_ext     = $blog->file_extension || '';
         $archive_file = $content_data->archive_file;
         my $base_url = $blog->archive_url;
         $base_url .= '/' unless $base_url =~ m|/$|;
@@ -1778,7 +1778,7 @@ sub _build_content_data_preview {
         $archive_file = File::Spec->catfile( $blog_path, $archive_file );
         my $path;
         ( $orig_file, $path ) = File::Basename::fileparse($archive_file);
-        $file_ext = '.' . $file_ext if $file_ext ne '';
+        ( $file_ext ) = $orig_file =~ /(\.[^.]*)$/;
         $archive_file
             = File::Spec->catfile( $path, $preview_basename . $file_ext );
     }

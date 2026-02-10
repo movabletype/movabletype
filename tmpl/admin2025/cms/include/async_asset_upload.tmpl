@@ -224,6 +224,7 @@ h1.dialog-title {
 
   <fieldset class="mb-3">
     <legend class="h3"><__trans phrase="Upload Options"></legend>
+<mt:if name="allow_non_ascii_filename">
     <mtapp:setting
         id="auto_rename_non_ascii"
         label="<__trans phrase="Rename filename">"
@@ -235,6 +236,9 @@ h1.dialog-title {
         </div>
       </div>
     </mtapp:setting>
+<mt:else>
+    <input type="hidden" name="auto_rename_non_ascii" value="0" />
+</mt:if>
     <mtapp:setting
         id="operation_if_exists"
         show_label="1"

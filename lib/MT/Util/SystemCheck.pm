@@ -26,6 +26,7 @@ sub check_mt {
     $param->{version}                   = MT->version_id;
     $param->{mt_home}                   = $ENV{MT_HOME};
     $param->{current_working_directory} = _mt_getcwd();
+    $param->{schema_version}            = MT->schema_version;
 
     $param;
 }

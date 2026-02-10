@@ -14,14 +14,14 @@ use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::Import;
 
-$VERSION = '1.10';
+$VERSION = '1.11';
 
-sub ProcessJSON($$);
+sub ProcessJSON($$;$);
 sub ProcessTag($$$$%);
 
 %Image::ExifTool::JSON::Main = (
     GROUPS => { 0 => 'JSON', 1 => 'JSON', 2 => 'Other' },
-    VARS => { NO_ID => 1 },
+    VARS => { ID_FMT => 'none' },
     PROCESS_PROC => \&ProcessJSON,
     NOTES => q{
         Other than a few tags in the table below, JSON tags have not been
@@ -71,6 +71,7 @@ sub FoundTag($$$$%)
         $name = Image::ExifTool::MakeTagName($name);
         my $desc = Image::ExifTool::MakeDescription($name);
         $desc =~ s/^C2 PA/C2PA/;    # hack to get "C2PA" correct
+        $et->VPrint(0, $$et{INDENT}, "[adding $tag]\n");
         AddTagToTable($tagTablePtr, $tag, {
             Name => $name,
             Description => $desc,
@@ -112,12 +113,12 @@ sub ProcessTag($$$$%)
 
 #------------------------------------------------------------------------------
 # Extract meta information from a JSON file
-# Inputs: 0) ExifTool object reference, 1) dirInfo reference
+# Inputs: 0) ExifTool object reference, 1) dirInfo reference, 2) tag table ref
 # Returns: 1 on success, 0 if this wasn't a recognized JSON file
-sub ProcessJSON($$)
+sub ProcessJSON($$;$)
 {
     local $_;
-    my ($et, $dirInfo) = @_;
+    my ($et, $dirInfo, $tagTablePtr) = @_;
     my $raf = $$dirInfo{RAF};
     my $structOpt = $et->Options('Struct');
     my (%database, $key, $tag, $dataPt);
@@ -149,7 +150,7 @@ sub ProcessJSON($$)
 
     $et->SetFileType() unless $dataPt;
 
-    my $tagTablePtr = GetTagTable('Image::ExifTool::JSON::Main');
+    $tagTablePtr or $tagTablePtr = GetTagTable('Image::ExifTool::JSON::Main');
 
     # remove any old tag definitions in case they change flags
     foreach $key (TagTableKeys($tagTablePtr)) {

@@ -11,7 +11,7 @@ use warnings;
 sub cms_pre_load_filtered_list {
     my ( $cb, $app, $filter, $load_options, $cols ) = @_;
     if ( !$app->param('relatedAssets') ) {
-        $load_options->{terms}{parent} = [ \'IS NULL', 0, '' ];
+        $load_options->{terms}{parent} = [ \'IS NULL', 0 ];
     }
     $load_options->{args}{no_class} = 1;
     return 1;

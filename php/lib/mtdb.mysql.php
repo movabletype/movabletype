@@ -42,7 +42,7 @@ class MTDatabasemysql extends MTDatabase {
                 $this->conn->pdoParameters = $pdo_params;
             }
             $this->conn->Connect($dsn, $user, $password, $dbname);
-        } elseif (extension_loaded('mysqli')) {
+        } else {
             $this->conn = ADONewConnection('mysqli');
             if ( !empty($sock) ) {
                 // Connection by unix socket
@@ -62,17 +62,6 @@ class MTDatabasemysql extends MTDatabase {
                 if (!empty($options['mysql_ssl_ca_file'])) {
                     $this->conn->ssl_ca = $options['mysql_ssl_ca_file'];
                 }
-            }
-            $this->conn->Connect($dsn, $user, $password, $dbname);
-        } else {
-            $this->conn = ADONewConnection('mysql');
-            if ( !empty($sock) ) {
-                // Connection by unix socket
-                $dsn = ":$sock";
-            } else {
-                if (!empty($port))
-                    $host .= ":$port";
-                $dsn = "$host";
             }
             $this->conn->Connect($dsn, $user, $password, $dbname);
         }
