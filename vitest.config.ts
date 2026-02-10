@@ -17,6 +17,9 @@ export default defineConfig(async (): Promise<ViteUserConfig> => {
     ],
     resolve: {
       conditions: ["browser"],
+      alias: {
+        src: "/Users/rmasco/work/sixapart/movabletype-repo/origin-movabletype/src",
+      },
     },
     test: {
       watch: false,
