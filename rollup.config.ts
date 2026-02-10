@@ -50,7 +50,6 @@ const srcConfig = (inputFile, output = {}) => {
       // Watch the `public` directory and refresh the
       // browser on changes when not in production
       !production && livereload(defaultOutputDir),
-      typescript({ sourceMap: !production }),
     ],
   };
 };
@@ -76,7 +75,6 @@ const mtStaticConfig = (inputfile) => {
       // Watch the `public` directory and refresh the
       // browser on changes when not in production
       !production && livereload(mtStaticOutputDir),
-      typescript({ sourceMap: !production }),
     ],
   };
 };
