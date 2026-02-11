@@ -225,7 +225,7 @@
   };
 
   const update = (): void => {
-    // eslint-disable-next-line no-self-assign
+     
     currentFilter = $reactiveStore.currentFilter;
   };
 </script>
