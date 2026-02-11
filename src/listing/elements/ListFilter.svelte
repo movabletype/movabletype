@@ -225,7 +225,6 @@
   };
 
   const update = (): void => {
-     
     currentFilter = $reactiveStore.currentFilter;
   };
 </script>
