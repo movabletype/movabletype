@@ -137,7 +137,7 @@ subtest '$opt = { date_field => "modified_on" }' => sub {
         $cd2->id, '$cd1->next({ date_field => "modified_on" }) is $cd2' );
 
     ok( $cd2->previous( { date_field => "modified_on" } ),
-        '$cd2->previous({ by_modified_on }) exists'
+        '$cd2->previous({ date_field => "modified_on" }) exists'
     );
     is( $cd2->previous( { date_field => "modified_on" } )->id,
         $cd1->id, '$cd2->previous({ date_field => "modified_on" }) is $cd1' );

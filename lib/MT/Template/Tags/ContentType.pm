@@ -1350,16 +1350,11 @@ sub _hdlr_contents_count {
         $count = scalar @{$contents};
     }
     else {
-        my $by = $args->{by_modified_on} ? 'modified_on' : 'authored_on';
-
         my %terms = (
             blog_id => $ctx->stash('blog_id'),
             status  => MT::ContentStatus::RELEASE(),
         );
-        my %args = (
-            sort      => $by,
-            direction => 'descend',
-        );
+        my %args;
 
         $ctx->set_content_type_load_context( $args, $cond, \%terms, \%args )
             or return;
