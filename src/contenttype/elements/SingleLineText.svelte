@@ -4,19 +4,21 @@
   import ContentFieldOption from "./ContentFieldOption.svelte";
   import ContentFieldOptionGroup from "./ContentFieldOptionGroup.svelte";
 
-  // svelte-ignore unused-export-let
-  export let config: ContentType.ConfigSettings;
-  export let field: ContentType.Field;
-  // svelte-ignore unused-export-let
-  export let gather = null;
-  export let id: string;
-  export let options: ContentType.Options;
-  // svelte-ignore unused-export-let
-  export let optionsHtmlParams: ContentType.OptionsHtmlParams;
+  let {
+    config: _config,
+    field = $bindable(),
+    gather = $bindable(),
+    id,
+    options = $bindable(),
+    optionsHtmlParams: _optionsHtmlParams,
+  }: ContentType.ContentFieldProps = $props();
 
-  options.min_length ??= 0;
-  options.max_length ??= 255;
-  options.initial_value ??= "";
+  let displayOptions = $derived({
+    ...options,
+    min_length: options.min_length ?? 0,
+    max_length: options.max_length ?? 255,
+    initial_value: options.initial_value ?? "",
+  });
 </script>
 
 <ContentFieldOptionGroup type="single-line-text" bind:field {id} bind:options>
@@ -31,7 +33,10 @@
       id="single_line_text-min_length"
       class="form-control w-25"
       min="0"
-      bind:value={options.min_length}
+      value={displayOptions.min_length}
+      onchange={(e) => {
+        options.min_length = e.currentTarget.value;
+      }}
     />
   </ContentFieldOption>
 
@@ -46,7 +51,10 @@
       id="single_line_text-max_length"
       class="form-control w-25"
       min="1"
-      bind:value={options.max_length}
+      value={displayOptions.max_length}
+      onchange={(e) => {
+        options.max_length = e.currentTarget.value;
+      }}
     />
   </ContentFieldOption>
 
@@ -60,7 +68,10 @@
       name="initial_value"
       id="single_line_text-initial_value"
       class="form-control"
-      bind:value={options.initial_value}
+      value={displayOptions.initial_value}
+      onchange={(e) => {
+        options.initial_value = e.currentTarget.value;
+      }}
     />
   </ContentFieldOption>
 </ContentFieldOptionGroup>

@@ -10,6 +10,8 @@ import CustomElementField from "./elements/CustomElementField.svelte";
 
 import "./MtContentFieldOption";
 
+import { mount as svelteMount } from "svelte";
+
 class CustomElementFieldBase extends HTMLElement {
   options: ContentType.Options = {};
   connectedCallback(): void {
@@ -40,7 +42,7 @@ export default class ContentTypeEditor {
       );
       mountFunction = (props, target) => {
         let options: ContentType.Options;
-        const customElementField = new CustomElementField({
+        const customElementField = svelteMount(CustomElementField, {
           props: {
             ...props,
             type,
@@ -77,7 +79,7 @@ export default class ContentTypeEditor {
     this.fieldsStore = writable(opts.fields);
     this.opts = opts;
 
-    new ContentFields({
+    svelteMount(ContentFields, {
       props: {
         config: this.config,
         fieldsStore: this.fieldsStore,

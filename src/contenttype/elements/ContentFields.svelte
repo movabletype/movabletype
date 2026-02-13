@@ -1,37 +1,51 @@
 <script lang="ts">
   import type * as ContentType from "../../@types/contenttype";
 
-  import { afterUpdate } from "svelte";
-
   import { recalcHeight } from "../Utils";
 
   import ContentField from "./ContentField.svelte";
   import SVG from "../../svg/elements/SVG.svelte";
+  import { onMount } from "svelte";
 
-  export let config: ContentType.ConfigSettings;
-  export let fieldsStore: ContentType.FieldsStore;
-  export let optionsHtmlParams: ContentType.OptionsHtmlParams;
-  export let opts: ContentType.ContentFieldsOpts;
-  export let root: Element;
+  type Props = {
+    config: ContentType.ConfigSettings;
+    fieldsStore: ContentType.FieldsStore;
+    optionsHtmlParams: ContentType.OptionsHtmlParams;
+    opts: ContentType.ContentFieldsOpts;
+    root: Element;
+  };
+  let { config, fieldsStore, optionsHtmlParams, opts, root }: Props = $props();
 
-  $: isEmpty = $fieldsStore.length > 0 ? false : true;
+  let fields = $state<ContentType.Fields>($fieldsStore);
+
+  $effect(() => {
+    const unsubscribe = fieldsStore.subscribe((value) => {
+      fields = value;
+    });
+    return unsubscribe;
+  });
+  let isEmpty: boolean = $derived($fieldsStore.length > 0 ? false : true);
   let data = "";
   let droppable = false;
+  // svelte-ignore state_referenced_locally
   const observer = opts.observer;
   let dragged: EventTarget | null = null;
   let draggedItem: ContentType.Field | null = null;
   const placeholder = document.createElement("div");
   placeholder.className = "placeholder";
   let dragoverState = false;
-  let labelFields: Array<{ value: string; label: string }> = [];
+  let labelFields: Array<{ value: string; label: string }> = $state([]);
+  // svelte-ignore state_referenced_locally
   let labelField = opts.labelField;
-  let isExpanded = false;
+  let isExpanded = $state(false);
 
-  const gathers: { [key: string]: (() => object) | undefined } = {};
-  const tags: Array<HTMLDivElement> = [];
+  let gathers: { [key: string]: (() => object) | undefined } = $state({});
+  let tags: Array<HTMLDivElement> = $state([]);
 
-  afterUpdate(() => {
+  $effect(() => {
     const select = root.querySelector("#label_field") as HTMLSelectElement;
+    if (!select) return;
+
     jQuery(select)
       .find("option")
       .each(function (index, option) {
@@ -42,76 +56,78 @@
       });
   });
 
-  // Drag start from content field list
-  observer.on("mtDragStart", function () {
-    droppable = true;
-  });
+  onMount(() => {
+    // Drag start from content field list
+    observer.on("mtDragStart", function () {
+      droppable = true;
+    });
 
-  // Drag end from content field list
-  observer.on("mtDragEnd", function () {
-    droppable = false;
-    onDragEnd();
-  });
+    // Drag end from content field list
+    observer.on("mtDragEnd", function () {
+      droppable = false;
+      onDragEnd();
+    });
 
-  // Show detail modal
-  jQuery(document).on("show.bs.modal", "#editDetail", function () {
-    rebuildLabelFields();
-    // update is not needed in Svelte
-  });
-
-  // Hide detail modal
-  jQuery(document).on("hide.bs.modal", "#editDetail", function () {
-    /* @ts-expect-error : mtValidate is not defined */
-    if (jQuery("#name-field > input").mtValidate("simple")) {
-      opts.name = jQuery("#name-field > input").val()?.toString() || "";
-      window.setDirty(true);
+    // Show detail modal
+    jQuery(document).on("show.bs.modal", "#editDetail", function () {
+      rebuildLabelFields();
       // update is not needed in Svelte
-    } else {
-      return false;
-    }
+    });
+
+    // Hide detail modal
+    jQuery(document).on("hide.bs.modal", "#editDetail", function () {
+      /* @ts-expect-error : mtValidate is not defined */
+      if (jQuery("#name-field > input").mtValidate("simple")) {
+        opts.name = jQuery("#name-field > input").val()?.toString() || "";
+        window.setDirty(true);
+        // update is not needed in Svelte
+      } else {
+        return false;
+      }
+    });
+
+    // Shown collaped block
+    jQuery(document).on(
+      "shown.bs.collapse",
+      ".mt-collapse__content",
+      function () {
+        const target = document.getElementsByClassName("mt-draggable__area")[0];
+        recalcHeight(target);
+        updateFieldsIsShowAll(); // need to update in Svelte
+        updateToggleAll();
+      },
+    );
+
+    // Hide collaped block
+    jQuery(document).on(
+      "hidden.bs.collapse",
+      ".mt-collapse__content",
+      function () {
+        const target = document.getElementsByClassName("mt-draggable__area")[0];
+        recalcHeight(target);
+        updateFieldsIsShowAll(); // need to update in Svelte
+        updateToggleAll();
+      },
+    );
+
+    // Cannot drag while focusing on input / textarea
+    jQuery(document).on(
+      "focus",
+      ".mt-draggable__area input, .mt-draggable__area textarea",
+      function () {
+        jQuery(this).closest(".mt-contentfield").attr("draggable", "false");
+      },
+    );
+
+    // Set draggable back to true while not focusing on input / textarea
+    jQuery(document).on(
+      "blur",
+      ".mt-draggable__area input, .mt-draggable__area textarea",
+      function () {
+        jQuery(this).closest(".mt-contentfield").attr("draggable", "true");
+      },
+    );
   });
-
-  // Shown collaped block
-  jQuery(document).on(
-    "shown.bs.collapse",
-    ".mt-collapse__content",
-    function () {
-      const target = document.getElementsByClassName("mt-draggable__area")[0];
-      recalcHeight(target);
-      updateFieldsIsShowAll(); // need to update in Svelte
-      updateToggleAll();
-    },
-  );
-
-  // Hide collaped block
-  jQuery(document).on(
-    "hidden.bs.collapse",
-    ".mt-collapse__content",
-    function () {
-      const target = document.getElementsByClassName("mt-draggable__area")[0];
-      recalcHeight(target);
-      updateFieldsIsShowAll(); // need to update in Svelte
-      updateToggleAll();
-    },
-  );
-
-  // Cannot drag while focusing on input / textarea
-  jQuery(document).on(
-    "focus",
-    ".mt-draggable__area input, .mt-draggable__area textarea",
-    function () {
-      jQuery(this).closest(".mt-contentfield").attr("draggable", "false");
-    },
-  );
-
-  // Set draggable back to true while not focusing on input / textarea
-  jQuery(document).on(
-    "blur",
-    ".mt-draggable__area input, .mt-draggable__area textarea",
-    function () {
-      jQuery(this).closest(".mt-contentfield").attr("draggable", "true");
-    },
-  );
 
   const onDragOver = (e: DragEvent): void => {
     // Allowed only for Content Field and Content Field Type.
@@ -311,7 +327,7 @@
       data = "";
     }
 
-    // bind:value={data} does not work
+    // value={data} does not work
     addInputData();
 
     // update is not needed in Svelte
@@ -428,7 +444,6 @@
       jQuery(".mt-contentfield").each(function (_i, fld) {
         const jqFld = jQuery(fld);
         if (jqFld.find(".form-control.is-invalid").length > 0) {
-          /* @ts-expect-error : collapse is not defined */
           jqFld.find(".collapse").collapse("show");
         }
       });
@@ -477,14 +492,15 @@
   // create in Svelte
   const updateFieldsIsShowAll = (): void => {
     const collapseEls = document.querySelectorAll(".mt-collapse__content");
-    fieldsStore.update((fields: ContentType.Fields) =>
-      fields.map((field: ContentType.Field, i: number) => {
+    fieldsStore.update((storeFields: ContentType.Fields) =>
+      storeFields.map((storeField: ContentType.Field, i: number) => {
+        storeField = { ...fields[i] };
         if (collapseEls[i].classList.contains("show")) {
-          field.isShow = "show";
+          storeField.isShow = "show";
         } else {
-          field.isShow = "";
+          storeField.isShow = "";
         }
-        return field;
+        return storeField;
       }),
     );
   };
@@ -560,7 +576,7 @@
                         id="name"
                         class="form-control html5-form"
                         value={opts.name}
-                        on:keypress={stopSubmitting}
+                        onkeypress={stopSubmitting}
                         required
                       />
                     </div>
@@ -587,7 +603,7 @@
                         id="label_field"
                         name="label_field"
                         class="custom-select form-control html5-form form-select"
-                        bind:value={labelField}
+                        value={labelField}
                       >
                         <option value=""
                           >{window.trans(
@@ -664,7 +680,7 @@
             id="name"
             class="form-control html5-form"
             value={opts.name}
-            on:keypress={stopSubmitting}
+            onkeypress={stopSubmitting}
             required
           />
         </div>
@@ -677,13 +693,12 @@
   <fieldset id="content-fields" class="form-group">
     <legend class="h3">{window.trans("Content Fields")}</legend>
     <div class="mt-collapse__all">
-      <!-- svelte-ignore a11y-invalid-attribute -->
+      <!-- svelte-ignore a11y_invalid_attribute -->
       <a
         data-bs-toggle="collapse"
-        on:click={toggleAll}
-        href=""
+        onclick={toggleAll}
+        href=".mt-collapse__content"
         aria-expanded={isExpanded ? "true" : "false"}
-        aria-controls=""
         class="d-inline-block"
       >
         {isExpanded ? window.trans("Close all") : window.trans("Edit all")}
@@ -694,13 +709,13 @@
         />
       </a>
     </div>
-    <!-- svelte-ignore a11y-no-static-element-interactions -->
+    <!-- svelte-ignore a11y_no_static_element_interactions -->
     <div
       class="mt-draggable__area"
       style="height:400px;"
-      on:drop={onDrop}
-      on:dragover={onDragOver}
-      on:dragleave={onDragLeave}
+      ondrop={onDrop}
+      ondragover={onDragOver}
+      ondragleave={onDragLeave}
     >
       {#if isEmpty}
         <div class="mt-draggable__empty">
@@ -713,25 +728,24 @@
           <p>{window.trans("Please add a content field.")}</p>
         </div>
       {/if}
-      {#each $fieldsStore as field, fieldIndex}
+      {#each fields as field, fieldIndex}
         {@const fieldId = field.id ?? ""}
         <div
           class="mt-contentfield"
           draggable="true"
           aria-grabbed="false"
           data-is="content-field"
-          on:dragstart={(e) => {
+          ondragstart={(e) => {
             onDragStart(e, field);
           }}
-          on:dragend={onDragEnd}
+          ondragend={onDragEnd}
           style="width: 100%;"
           id="content-field-block-{fieldId}"
           bind:this={tags[fieldIndex]}
         >
           <ContentField
             {config}
-            bind:field
-            bind:fields={$fieldsStore}
+            bind:field={fields[fieldIndex]}
             {fieldIndex}
             {fieldsStore}
             {gatheringData}
@@ -745,10 +759,9 @@
     <div class="mt-collapse__all">
       <a
         data-bs-toggle="collapse"
-        on:click={toggleAll}
+        onclick={toggleAll}
         href=".mt-collapse__content"
         aria-expanded={isExpanded ? "true" : "false"}
-        aria-controls=""
         class="d-inline-block"
       >
         {isExpanded ? window.trans("Close all") : window.trans("Edit all")}
@@ -765,7 +778,7 @@
   type="button"
   class="btn btn-primary"
   disabled={!canSubmit()}
-  on:click={submit}>{window.trans("Save")}</button
+  onclick={submit}>{window.trans("Save")}</button
 >
 
 <!-- style was moved to edit_content_type.tmpl, because style did not work here -->

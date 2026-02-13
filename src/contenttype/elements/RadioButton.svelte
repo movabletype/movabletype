@@ -1,40 +1,43 @@
 <script lang="ts">
   import type * as ContentType from "../../@types/contenttype";
 
-  import { afterUpdate } from "svelte";
-
   import { addRow, deleteRow, validateTable } from "../SelectionCommonScript";
 
   import ContentFieldOption from "./ContentFieldOption.svelte";
   import ContentFieldOptionGroup from "./ContentFieldOptionGroup.svelte";
 
-  // svelte-ignore unused-export-let
-  export let config: ContentType.ConfigSettings;
-  export let field: ContentType.Field;
-  export let id: string;
-  export let options: ContentType.Options;
-  // svelte-ignore unused-export-let
-  export let optionsHtmlParams: ContentType.OptionsHtmlParams;
+  let {
+    config: _config,
+    field = $bindable(),
+    gather = $bindable(),
+    id,
+    options = $bindable(),
+    optionsHtmlParams: _optionsHtmlParams,
+  }: ContentType.ContentFieldProps = $props();
 
   let refsTable: HTMLTableElement;
 
   // <mt:include name="content_field_type_options/selection_common_script.tmpl">
   // copied some functions from selection_common_script.tmpl below
-  if (!options.values) {
-    options.values = [
-      {
-        checked: "",
-        label: "",
-        value: "",
-      },
-    ];
-  }
-
-  afterUpdate(() => {
-    validateTable(refsTable);
+  $effect(() => {
+    if (!options.values) {
+      options.values = [
+        {
+          checked: "",
+          label: "",
+          value: "",
+        },
+      ];
+    }
   });
 
-  export const gather = (): object => {
+  $effect(() => {
+    if (refsTable) {
+      validateTable(refsTable);
+    }
+  });
+
+  gather = (): object => {
     return {
       values: options.values,
     };
@@ -54,8 +57,7 @@
 
   // added in Svelte
   const refreshView = (): void => {
-    // eslint-disable-next-line no-self-assign
-    options = options;
+    options = { ...options };
   };
 </script>
 
@@ -94,13 +96,12 @@
                   class="form-check-input mt-3"
                   name={id + "-initial"}
                   checked={v.checked ? true : false}
-                  on:change={() => {
+                  onchange={() => {
                     enterInitial(index);
                   }}
                 /></td
               >
-              <td
-                ><!-- oninput was removed and bind is used -->
+              <td>
                 <input
                   type="text"
                   class="form-control required"
@@ -108,8 +109,7 @@
                   bind:value={v.label}
                 /></td
               >
-              <td
-                ><!-- oninput was removed and bind is used -->
+              <td>
                 <input
                   type="text"
                   class="form-control required"
@@ -119,7 +119,7 @@
               >
               <td
                 ><button
-                  on:click={() => {
+                  onclick={() => {
                     options.values = deleteRow(options.values, index);
                   }}
                   type="button"
@@ -137,7 +137,7 @@
       </table>
     </div>
     <button
-      on:click={() => {
+      onclick={() => {
         options.values = addRow(options.values);
       }}
       type="button"

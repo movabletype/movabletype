@@ -3,23 +3,34 @@
   import { portal } from "svelte-portal";
   import { isOuterClick } from "../outerClick";
   import { modalOverlay } from "../../svelte/action";
-  import { ContentType } from "src/@types/contenttype";
-  import { SearchTab } from "../search-button";
+  import type { ContentType } from "src/@types/contenttype";
+  import type { SearchTab } from "../search-button";
   import SearchForm from "../../forms/search/SearchForm.svelte";
   import { fetchContentTypes } from "src/utils/fetch-content-types";
 
-  export let blogId: string;
-  export let magicToken: string;
-  export let open: boolean = false;
-  export let anchorRef: HTMLElement;
-  export let searchTabs: SearchTab[];
-  export let objectType;
+  type Props = {
+    blogId: string;
+    magicToken: string;
+    open: boolean;
+    anchorRef: HTMLElement;
+    searchTabs: SearchTab[];
+    objectType: string;
+  };
+  let {
+    blogId,
+    magicToken,
+    open = false,
+    anchorRef,
+    searchTabs,
+    objectType,
+  }: Props = $props();
+  export { blogId, magicToken, open, anchorRef, searchTabs, objectType };
 
-  let contentTypes: ContentType[] = [];
+  let contentTypes: ContentType[] = $state([]);
   let contentTypesFetched = false;
-  let isLoading = false;
+  let isLoading = $state(false);
 
-  $: {
+  $effect(() => {
     if (anchorRef) {
       if (open) {
         anchorRef.classList.add("open");
@@ -46,13 +57,13 @@
         anchorRef.classList.remove("open");
       }
     }
-  }
+  });
 
   const handleClose = (): void => {
     open = false;
   };
 
-  let modalRef: HTMLElement | null = null;
+  let modalRef: HTMLElement | null = $state(null);
   const clickEvent = (e: MouseEvent): void => {
     const eventTarget = e.target as Node;
     if (open && isOuterClick([anchorRef, modalRef], eventTarget)) {
@@ -61,11 +72,11 @@
   };
 
   let searchTextRef: HTMLInputElement | null = null;
-  $: {
+  $effect(() => {
     if (open && searchTextRef) {
-      searchTextRef.focus();
+      // searchTextRef.focus();
     }
-  }
+  });
 
   onMount(async () => {
     if (objectType) {
@@ -80,14 +91,14 @@
   });
 </script>
 
-<svelte:body on:click={clickEvent} />
+<svelte:body onclick={clickEvent} />
 
 {#if open}
-  <!-- svelte-ignore a11y-click-events-have-key-events -->
-  <!-- svelte-ignore a11y-no-static-element-interactions -->
+  <!-- svelte-ignore a11y_click_events_have_key_events -->
+  <!-- svelte-ignore a11y_no_static_element_interactions -->
   <div
     class="search-button-modal-overlay"
-    on:click={handleClose}
+    onclick={handleClose}
     use:portal={"body"}
     use:modalOverlay
   ></div>
@@ -102,7 +113,7 @@
         class="close"
         data-dismiss="modal"
         aria-label="Close"
-        on:click={handleClose}
+        onclick={handleClose}
       >
         <span aria-hidden="true">&times;</span>
       </button>

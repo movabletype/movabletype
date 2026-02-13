@@ -4,25 +4,22 @@
   import ContentFieldOption from "./ContentFieldOption.svelte";
   import ContentFieldOptionGroup from "./ContentFieldOptionGroup.svelte";
 
-  // svelte-ignore unused-export-let
-  export let config: ContentType.ConfigSettings;
-  export let field: ContentType.Field;
-  // svelte-ignore unused-export-let
-  export let gather = null;
-  export let id: string;
-  export let options: ContentType.Options;
-  // svelte-ignore unused-export-let
-  export let optionsHtmlParams: ContentType.OptionsHtmlParams;
+  let {
+    config: _config,
+    field = $bindable(),
+    gather = $bindable(),
+    id,
+    options = $bindable(),
+    optionsHtmlParams: _optionsHtmlParams,
+  }: ContentType.ContentFieldProps = $props();
 
-  if (options.increase_decrease_rows === "0") {
-    options.increase_decrease_rows = 0;
-  }
-  if (options.increase_decrease_cols === "0") {
-    options.increase_decrease_cols = 0;
-  }
-
-  options.initial_rows ??= 1;
-  options.initial_cols ??= 1;
+  let displayOptions = $derived({
+    ...options,
+    increase_decrease_rows: options.increase_decrease_rows ?? false,
+    increase_decrease_cols: options.increase_decrease_cols ?? false,
+    initial_rows: options.initial_rows ?? 1,
+    initial_cols: options.initial_cols ?? 1,
+  });
 </script>
 
 <ContentFieldOptionGroup type="table" bind:field {id} bind:options>
@@ -37,7 +34,10 @@
       id="tables-initial_rows"
       class="form-control w-25"
       min="1"
-      bind:value={options.initial_rows}
+      value={displayOptions.initial_rows}
+      onchange={(e) => {
+        options.initial_rows = e.currentTarget.value;
+      }}
     />
   </ContentFieldOption>
 
@@ -52,7 +52,10 @@
       id="tables-initial_cols"
       class="form-control w-25"
       min="1"
-      bind:value={options.initial_cols}
+      value={displayOptions.initial_cols}
+      onchange={(e) => {
+        options.initial_cols = e.currentTarget.value;
+      }}
     />
   </ContentFieldOption>
 
@@ -66,7 +69,10 @@
       class="mt-switch form-control"
       id="tables-can_increase_decrease_rows"
       name="increase_decrease_rows"
-      bind:checked={options.increase_decrease_rows}
+      checked={displayOptions.increase_decrease_rows}
+      onchange={(e) => {
+        options.increase_decrease_rows = e.currentTarget.checked;
+      }}
     /><label for="tables-can_increase_decrease_rows" class="form-label">
       {window.trans("Allow users to increase/decrease rows?")}
     </label>
@@ -82,7 +88,10 @@
       class="mt-switch form-control"
       id="tables-can_increase_decrease_cols"
       name="increase_decrease_cols"
-      bind:checked={options.increase_decrease_cols}
+      checked={displayOptions.increase_decrease_cols}
+      onchange={(e) => {
+        options.increase_decrease_cols = e.currentTarget.checked;
+      }}
     /><label for="tables-can_increase_decrease_cols" class="form-label">
       {window.trans("Allow users to increase/decrease cols?")}
     </label>

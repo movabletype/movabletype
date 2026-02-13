@@ -5,17 +5,27 @@
   import { isOuterClick } from "../outerClick";
   import { modalOverlay } from "../../svelte/action";
   import { fetchSites } from "src/utils/fetch-sites";
-  import { Site } from "src/@types/site";
+  import type { Site } from "src/@types/site";
 
-  export let magicToken: string;
-  export let limit: number = 50;
-  export let open: boolean = false;
-  export let anchorRef: HTMLElement;
-  export let initialStarredSites: number[];
+  type Props = {
+    magicToken: string;
+    limit?: number;
+    open?: boolean;
+    anchorRef: HTMLElement;
+    initialStarredSites: number[];
+  };
 
+  let {
+    magicToken,
+    limit = 50,
+    open = false,
+    anchorRef,
+    initialStarredSites,
+  }: Props = $props();
+  export { magicToken, limit, open, anchorRef, initialStarredSites };
   let sitesFetched = false;
 
-  $: {
+  $effect(() => {
     if (anchorRef) {
       if (open) {
         anchorRef.classList.add("open");
@@ -27,24 +37,25 @@
         anchorRef.classList.remove("open");
       }
     }
-  }
+  });
 
   const handleClose = (): void => {
     open = false;
   };
 
-  let starredSiteStore: Record<number, Site> = {};
-  let siteStore: Site[] = [];
-  let activeStarredSites: number[] = [];
+  let starredSiteStore: Record<number, Site> = $state({});
+  let siteStore: Site[] = $state([]);
+  let activeStarredSites: number[] = $state([]);
 
-  let sites: Site[] = [];
-  let starredSites: number[] = initialStarredSites; // copy to local variable
-  let totalCount = 0;
-  let page = 1;
-  let pageMax = 1;
+  let sites: Site[] = $state([]);
+  // svelte-ignore state_referenced_locally
+  let starredSites: number[] = $state(initialStarredSites); // copy to local variable
+  let totalCount = $state(0);
+  let page = $state(1);
+  let pageMax = $state(1);
   let siteType: "parent_sites" | "parent_and_child_sites" | "child_sites_only" =
-    "parent_and_child_sites";
-  let filterSiteName = "";
+    $derived("parent_and_child_sites");
+  let filterSiteName = $derived("");
   let items: Array<{
     type: string;
     args: {
@@ -52,9 +63,9 @@
       option?: string;
       value?: string;
     };
-  }> = [];
-  let loading = false;
-  let modalRef: HTMLElement | null = null;
+  }> = $state([]);
+  let loading = $state(false);
+  let modalRef: HTMLElement | null = $derived(null);
 
   const nextPage = (): void => {
     page++;
@@ -262,7 +273,7 @@
     }
   };
 
-  let tableBodyRef: HTMLElement | null = null;
+  let tableBodyRef: HTMLElement | null = $state(null);
   const initSortable = async (): Promise<void> => {
     await tick();
     if (!tableBodyRef) {
@@ -327,21 +338,21 @@
     });
   };
 
-  $: {
+  $effect(() => {
     if (sites && sites.length > 0 && open && !loading) {
       initSortable();
     }
-  }
+  });
 </script>
 
-<svelte:body on:click={clickEvent} />
+<svelte:body onclick={clickEvent} />
 
 {#if open}
-  <!-- svelte-ignore a11y-click-events-have-key-events -->
-  <!-- svelte-ignore a11y-no-static-element-interactions -->
+  <!-- svelte-ignore a11y_click_events_have_key_events -->
+  <!-- svelte-ignore a11y_no_static_element_interactions -->
   <div
     class="site-list-button-modal-overlay"
-    on:click={handleClose}
+    onclick={handleClose}
     use:portal={"body"}
     use:modalOverlay
   ></div>
@@ -362,7 +373,7 @@
                 class="close"
                 data-dismiss="modal"
                 aria-label="Close"
-                on:click={handleClose}
+                onclick={handleClose}
               >
                 <span aria-hidden="true">&times;</span>
               </button>
@@ -373,14 +384,14 @@
             <div class="prev-next">
               <button
                 type="button"
-                on:click={firstPage}
-                on:keydown={(e) => e.key === "Enter" && firstPage()}
+                onclick={firstPage}
+                onkeydown={(e) => e.key === "Enter" && firstPage()}
                 disabled={page <= 1}>&lt;&lt;</button
               >
               <button
                 type="button"
-                on:click={prevPage}
-                on:keydown={(e) => e.key === "Enter" && prevPage()}
+                onclick={prevPage}
+                onkeydown={(e) => e.key === "Enter" && prevPage()}
                 disabled={page <= 1}>&lt;</button
               >
               <span class="page-num"
@@ -388,14 +399,14 @@
               >
               <button
                 type="button"
-                on:click={nextPage}
-                on:keydown={(e) => e.key === "Enter" && nextPage()}
+                onclick={nextPage}
+                onkeydown={(e) => e.key === "Enter" && nextPage()}
                 disabled={page === pageMax}>&gt;</button
               >
               <button
                 type="button"
-                on:click={lastPage}
-                on:keydown={(e) => e.key === "Enter" && lastPage()}
+                onclick={lastPage}
+                onkeydown={(e) => e.key === "Enter" && lastPage()}
                 disabled={page === pageMax}>&gt;&gt;</button
               >
             </div>
@@ -403,7 +414,7 @@
               <div class="site-type-filter">
                 <select
                   bind:value={siteType}
-                  on:change={filterApply}
+                  onchange={filterApply}
                   class="custom-select form-control form-select"
                 >
                   <option value="parent_sites"
@@ -422,9 +433,9 @@
                   type="text"
                   placeholder={window.trans("Filter by site name")}
                   bind:value={filterSiteName}
-                  on:keydown={(e) => e.key === "Enter" && filterApply()}
+                  onkeydown={(e) => e.key === "Enter" && filterApply()}
                 />
-                <button on:click={filterApply}>
+                <button onclick={filterApply}>
                   <SVG
                     title={window.trans("Search")}
                     class="mt-icon"
@@ -439,7 +450,7 @@
                 class="close"
                 data-dismiss="modal"
                 aria-label="Close"
-                on:click={handleClose}
+                onclick={handleClose}
               >
                 <span aria-hidden="true">&times;</span>
               </button>
@@ -484,7 +495,7 @@
                         <span class="site-list-table-action-buttons-mobile">
                           {#if starredSites.includes(Number(site.id))}
                             <button
-                              on:click={(ev) => removeStarredSite(ev, site)}
+                              onclick={(ev) => removeStarredSite(ev, site)}
                               aria-label={window.trans(
                                 "Remove from starred sites",
                               )}
@@ -494,7 +505,7 @@
                             >
                           {:else}
                             <button
-                              on:click={(ev) => addStarredSite(ev, site)}
+                              onclick={(ev) => addStarredSite(ev, site)}
                               aria-label={window.trans("Add to starred sites")}
                               aria-pressed="false"
                               title={window.trans("Add to starred sites")}
@@ -545,7 +556,7 @@
                       <span class="site-list-table-action-buttons">
                         {#if starredSites.includes(Number(site.id))}
                           <button
-                            on:click={(ev) => removeStarredSite(ev, site)}
+                            onclick={(ev) => removeStarredSite(ev, site)}
                             aria-label={window.trans(
                               "Remove from starred sites",
                             )}
@@ -555,7 +566,7 @@
                           >
                         {:else}
                           <button
-                            on:click={(ev) => addStarredSite(ev, site)}
+                            onclick={(ev) => addStarredSite(ev, site)}
                             aria-label={window.trans("Add to starred sites")}
                             aria-pressed="false"
                             title={window.trans("Add to starred sites")}

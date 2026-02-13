@@ -4,17 +4,19 @@
   import ContentFieldOptionGroup from "./ContentFieldOptionGroup.svelte";
   import ContentFieldOption from "./ContentFieldOption.svelte";
 
-  // svelte-ignore unused-export-let
-  export let config: ContentType.ConfigSettings;
-  export let field: ContentType.Field;
-  // svelte-ignore unused-export-let
-  export let gather = null;
-  export let id: string;
-  export let options: ContentType.Options;
-  // svelte-ignore unused-export-let
-  export let optionsHtmlParams: ContentType.OptionsHtmlParams;
+  let {
+    config: _config,
+    field = $bindable(),
+    gather = $bindable(),
+    id,
+    options = $bindable(),
+    optionsHtmlParams: _optionsHtmlParams,
+  }: ContentType.ContentFieldProps = $props();
 
-  options.initial_value ??= "";
+  let displayOptions = $derived({
+    ...options,
+    initial_value: options.initial_value ?? "",
+  });
 </script>
 
 <ContentFieldOptionGroup type="url" {id} bind:field bind:options>
@@ -28,7 +30,10 @@
       name="initial_value"
       id="url-initial_value"
       class="form-control"
-      bind:value={options.initial_value}
+      value={displayOptions.initial_value}
+      onchange={(e) => {
+        options.initial_value = e.currentTarget.value;
+      }}
     />
   </ContentFieldOption>
 </ContentFieldOptionGroup>

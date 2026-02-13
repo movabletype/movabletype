@@ -6,30 +6,32 @@
 
   import StatusMsg from "./StatusMsg.svelte";
 
-  // svelte-ignore unused-export-let
-  export let config: ContentType.ConfigSettings;
-  export let field: ContentType.Field;
-  // svelte-ignore unused-export-let
-  export let gather = null;
-  export let id: string;
-  export let options: ContentType.Options;
-  export let optionsHtmlParams: ContentType.OptionsHtmlParams;
+  let {
+    config: _config,
+    field = $bindable(),
+    gather = $bindable(),
+    id,
+    options = $bindable(),
+    optionsHtmlParams,
+  }: ContentType.ContentFieldProps = $props();
 
+  // svelte-ignore state_referenced_locally
   const contentTypes: Array<{ id: string; name: string }> =
     optionsHtmlParams.content_type.content_types;
 
-  if (options.multiple === "0") {
-    options.multiple = 0;
-  }
-
-  if (options.can_add === "0") {
-    options.can_add = 0;
-  }
-
-  // changeStateMultiple was removed because unused
-
-  options.min ??= "";
-  options.max ??= "";
+  let displayOptions = $derived({
+    ...options,
+    multiple:
+      options.multiple === 1 ||
+      options.multiple === "1" ||
+      options.multiple === true,
+    can_add:
+      options.can_add === 1 ||
+      options.can_add === "1" ||
+      options.can_add === true,
+    min: options.min ?? "",
+    max: options.max ?? "",
+  });
 </script>
 
 <ContentFieldOptionGroup type="content-type" bind:field {id} bind:options>
@@ -37,14 +39,16 @@
     id="content_type-multiple"
     label={window.trans("Allow users to select multiple values?")}
   >
-    <!-- onclick was removed and bind is used -->
     <input
       {...{ ref: "multiple" }}
       type="checkbox"
       class="mt-switch form-control"
       id="content_type-multiple"
       name="multiple"
-      bind:checked={options.multiple}
+      checked={displayOptions.multiple}
+      onchange={(e) => {
+        options.multiple = e.currentTarget.checked ? 1 : 0;
+      }}
     /><label for="content_type-multiple" class="form-label">
       {window.trans("Allow users to select multiple values?")}
     </label>
@@ -53,7 +57,7 @@
   <ContentFieldOption
     id="content_type-min"
     label={window.trans("Minimum number of selections")}
-    attrShow={options.multiple ? true : false}
+    attrShow={displayOptions.multiple}
   >
     <input
       {...{ ref: "min" }}
@@ -62,14 +66,17 @@
       id="content_type-min"
       class="form-control w-25"
       min="0"
-      bind:value={options.min}
+      value={displayOptions.min}
+      onchange={(e) => {
+        options.min = e.currentTarget.value;
+      }}
     />
   </ContentFieldOption>
 
   <ContentFieldOption
     id="content_type-max"
     label={window.trans("Maximum number of selections")}
-    attrShow={options.multiple ? true : false}
+    attrShow={displayOptions.multiple}
   >
     <input
       {...{ ref: "max" }}
@@ -78,7 +85,10 @@
       id="content_type-max"
       class="form-control w-25"
       min="1"
-      bind:value={options.max}
+      value={displayOptions.max}
+      onchange={(e) => {
+        options.max = e.currentTarget.value;
+      }}
     />
   </ContentFieldOption>
 
@@ -103,13 +113,17 @@
         {/each}
       </select>
     {:else}
-      <StatusMsg id="no-content-type" class="warning" canClose={0}>
-        <svelte:fragment slot="msg">
-          {window.trans(
-            "There is no content type that can be selected. Please create a content type if you use the Content Type field type.",
-          )}
-        </svelte:fragment>
-      </StatusMsg>
+      {#snippet statusMsgContent()}
+        {window.trans(
+          "There is no content type that can be selected. Please create a content type if you use the Content Type field type.",
+        )}
+      {/snippet}
+      <StatusMsg
+        id="no-content-type"
+        class="warning"
+        canClose={0}
+        msg={statusMsgContent}
+      />
     {/if}
   </ContentFieldOption>
 </ContentFieldOptionGroup>

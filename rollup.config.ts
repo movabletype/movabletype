@@ -1,5 +1,5 @@
 // rollup.config.js
-import { readdirSync } from "node:fs";
+import { existsSync, readdirSync } from "node:fs";
 import resolve from "@rollup/plugin-node-resolve";
 import commonjs from "@rollup/plugin-commonjs";
 import esbuild from "rollup-plugin-esbuild";
@@ -7,6 +7,8 @@ import livereload from "rollup-plugin-livereload";
 import sveltePreprocess from "svelte-preprocess";
 import typescript from "@rollup/plugin-typescript";
 import svelte from "rollup-plugin-svelte";
+import { resolve as pathResolve, dirname } from "path";
+import { fileURLToPath } from "node:url";
 
 const production = !process.env.ROLLUP_WATCH;
 const defaultOutputDir = "mt-static/js/build";
@@ -18,6 +20,20 @@ const mtStaticInputFiles = [
     .filter((file) => file.endsWith(".ts"))
     .map((file) => `src/mt-static/plugins/DashboardWidgetTemplate/js/${file}`),
 ];
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
+const resolveSrc = () => ({
+  name: "resolve-src",
+  resolveId(source) {
+    if (source.startsWith("src/")) {
+      const base = pathResolve(__dirname, source);
+      for (const ext of ["", ".ts", ".js", ".svelte"]) {
+        if (existsSync(base + ext)) return base + ext;
+      }
+    }
+    return null;
+  },
+});
 
 const srcConfig = (inputFile, output = {}) => {
   return {
@@ -46,11 +62,12 @@ const srcConfig = (inputFile, output = {}) => {
           dev: !production,
         },
       }),
-
       // Watch the `public` directory and refresh the
       // browser on changes when not in production
       !production && livereload(defaultOutputDir),
-      typescript({ sourceMap: !production }),
+
+      // Resolve "src/" imports instead of @rollup/plugin-typescript (outDir issue)
+      resolveSrc(),
     ],
   };
 };
@@ -76,7 +93,9 @@ const mtStaticConfig = (inputfile) => {
       // Watch the `public` directory and refresh the
       // browser on changes when not in production
       !production && livereload(mtStaticOutputDir),
-      typescript({ sourceMap: !production }),
+
+      // Resolve "src/" imports instead of @rollup/plugin-typescript (outDir issue)
+      resolveSrc(),
     ],
   };
 };

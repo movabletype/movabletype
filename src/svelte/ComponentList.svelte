@@ -1,18 +1,34 @@
 <script lang="ts">
+  import type { Snippet } from "svelte";
   import type { UIComponent } from "../ui";
   import HtmlElement from "./HtmlElement.svelte";
-  export let namespace;
-  export let detail;
-  let components: UIComponent[] = [];
+
+  type Props = {
+    namespace: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    detail: any;
+    prepend?: Snippet;
+    append?: Snippet;
+    onmessage?: (e: MessageEvent) => void;
+  };
+  let { namespace, detail, prepend, append, onmessage }: Props = $props();
+
+  let components: UIComponent[] = $state([]);
   let readiedCount = 0;
-  const componentsPromise = window.MT.UI.Component.getAll(namespace);
-  componentsPromise.then((_components) => {
-    components = _components;
+
+  $effect(() => {
+    window.MT.UI.Component.getAll(namespace).then((_components) => {
+      components = _components;
+    });
   });
 
   let container: HTMLDivElement;
   const onReady = (): void => {
     if (++readiedCount !== components.length) {
+      return;
+    }
+
+    if (!container) {
       return;
     }
 
@@ -25,7 +41,7 @@
 </script>
 
 <div class="d-flex flex-column" bind:this={container}>
-  <slot name="prepend" />
+  {@render prepend?.()}
 
   {#each components as c}
     <HtmlElement
@@ -33,10 +49,10 @@
       event={new CustomEvent("message", {
         detail,
       })}
-      on:ready={onReady}
-      on:message
+      onready={onReady}
+      {onmessage}
     />
   {/each}
 
-  <slot name="append" />
+  {@render append?.()}
 </div>

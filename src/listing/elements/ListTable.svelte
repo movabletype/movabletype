@@ -1,32 +1,39 @@
 <script lang="ts">
-  import type * as Listing from "../../@types/listing";
+  import { getContext } from "svelte";
+  import type { ListStoreContext } from "../listStoreContext";
 
   import ListTableBody from "./ListTableBody.svelte";
   import ListTableHeader from "./ListTableHeader.svelte";
 
-  export let hasListActions: boolean;
-  export let hasMobilePulldownActions: boolean;
-  export let store: Listing.ListStore;
-  export let zeroStateLabel: string;
+  type Props = {
+    hasListActions: boolean;
+    hasMobilePulldownActions: boolean;
+    zeroStateLabel: string;
+  };
+  let { hasListActions, hasMobilePulldownActions, zeroStateLabel }: Props =
+    $props();
+
+  const { reactiveStore } = getContext<ListStoreContext>("listStore");
+  let isLoading = $derived($reactiveStore.isLoading || false);
+  let columnsLength = $derived($reactiveStore.columns.length || 0);
 </script>
 
 <thead data-is="list-table-header">
-  <ListTableHeader {hasListActions} {hasMobilePulldownActions} {store} />
+  <ListTableHeader {hasListActions} {hasMobilePulldownActions} />
 </thead>
-{#if store.isLoading}
+{#if isLoading}
   <tbody>
     <tr>
-      <td colspan={store.columns.length + 1}>
+      <td colspan={columnsLength + 1}>
         {window.trans("Loading...")}
       </td>
     </tr>
   </tbody>
-{:else if store.objects}
+{:else}
   <tbody data-is="list-table-body">
     <ListTableBody
       {hasListActions}
       {hasMobilePulldownActions}
-      {store}
       {zeroStateLabel}
     />
   </tbody>

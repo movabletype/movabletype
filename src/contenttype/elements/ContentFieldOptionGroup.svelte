@@ -1,31 +1,36 @@
 <script lang="ts">
+  import { type Snippet } from "svelte";
+
   // copied from lib/MT/Template/ContextHandlers.pm
 
   import type * as ContentType from "../../@types/contenttype";
-
-  import { onMount } from "svelte";
 
   import { recalcHeight } from "../Utils";
 
   import ContentFieldOption from "./ContentFieldOption.svelte";
 
-  export let field: ContentType.Field;
-  export let id: string;
-  export let options: ContentType.Options;
-  export let type: string;
+  type Props = {
+    field: ContentType.Field;
+    id: string;
+    options: ContentType.Options;
+    type: string;
+    children?: Snippet;
+  };
+  let {
+    field = $bindable(),
+    id,
+    options = $bindable(),
+    type,
+    children,
+  }: Props = $props();
 
-  if (!type) {
-    console.error('ContentFieldOptionGroup: "type" attribute is required.');
-  }
-
-  $: {
-    // Initialize
+  $effect(() => {
     if (!options.display) {
       options.display = "default";
     }
-  }
+  });
 
-  onMount(() => {
+  $effect(() => {
     const root = getRoot();
     if (!root) {
       return;
@@ -35,7 +40,7 @@
     Array.prototype.slice.call(elms).forEach(function (v) {
       if (
         v.hasAttribute("id") &&
-        !v.classList.contains("mt-custom-contentfield") // do not change id in Custom.svelte
+        !v.classList.contains("mt-custom-contentfield")
       ) {
         v.setAttribute("id", v.getAttribute("id") + "-" + id);
       }
@@ -91,14 +96,16 @@
   label={window.trans("Label")}
   required={1}
 >
-  <!-- oninput was removed and bind is used -->
   <input
     type="text"
     {...{ ref: "label" }}
     name="label"
     id="{type}-label"
     class="form-control html5-form"
-    bind:value={field.label}
+    value={field.label}
+    oninput={(e) => {
+      field.label = e.currentTarget.value;
+    }}
     required
     data-mt-content-field-unique
   />
@@ -117,7 +124,10 @@
     id="{type}-description"
     class="form-control"
     aria-describedby="{type}-description-field-help"
-    bind:value={options.description}
+    value={options.description}
+    oninput={(e) => {
+      options.description = e.currentTarget.value;
+    }}
   />
 </ContentFieldOption>
 
@@ -125,14 +135,16 @@
   id="{type}-required"
   label={window.trans("Is this field required?")}
 >
-  <!-- onclick was removed and bind is used -->
   <input
     {...{ ref: "required" }}
     type="checkbox"
     class="mt-switch form-control"
     id="{type}-required"
     name="required"
-    bind:checked={options.required}
+    checked={options.required}
+    onchange={(e) => {
+      options.required = e.currentTarget.checked;
+    }}
   />
   <label for="{type}-required">
     {window.trans("Is this field required?")}
@@ -148,13 +160,15 @@
     "Choose the display options for this content field in the listing screen.",
   )}
 >
-  <!-- selected was removed and bind is used -->
   <select
     {...{ ref: "display" }}
     name="display"
     id="{type}-display"
     class="custom-select form-control form-select"
-    bind:value={options.display}
+    value={options.display}
+    onchange={(e) => {
+      options.display = e.currentTarget.value;
+    }}
   >
     <option value="force">{window.trans("Force")}</option>
     <option value="default">{window.trans("Default")}</option>
@@ -163,10 +177,10 @@
   </select>
 </ContentFieldOption>
 
-<slot />
+{@render children?.()}
 
 <div class="form-group-button">
-  <button type="button" class="btn btn-default" on:click={closePanel}>
+  <button type="button" class="btn btn-default" onclick={closePanel}>
     {window.trans("Close")}
   </button>
 </div>

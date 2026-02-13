@@ -1,4 +1,5 @@
 import SearchButton from "./elements/SearchButton.svelte";
+import { mount } from "svelte";
 
 type SearchButtonProps = {
   blogId: string;
@@ -28,7 +29,7 @@ export function svelteMountSearchButton(
     }
   }
 
-  const app = new SearchButton({
+  const app = mount(SearchButton, {
     target: target,
     props: {
       searchTabs: searchTabs,
@@ -40,10 +41,9 @@ export function svelteMountSearchButton(
   props.anchorRef.addEventListener("click", (event: MouseEvent) => {
     event.preventDefault();
     if (props.anchorRef.classList.contains("open")) {
-      props.open = false;
+      app.open = false;
     } else {
-      props.open = true;
+      app.open = true;
     }
-    app.$set(props);
   });
 }

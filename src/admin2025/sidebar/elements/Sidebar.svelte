@@ -3,10 +3,15 @@
   import { portal } from "svelte-portal";
   import { setGlobalCollapsedDomAttribute } from "../utils";
 
-  export let buttonRef: HTMLButtonElement;
-  export let collapsed = false;
-  export let isStored = false;
-  let mouseOver = false;
+  type Props = {
+    buttonRef: HTMLButtonElement;
+    collapsed?: boolean;
+    isStored?: boolean;
+  };
+  let { buttonRef, collapsed = false, isStored = false }: Props = $props();
+  export { buttonRef, collapsed, isStored };
+
+  let mouseOver = $state(false);
 
   const addContentWrapperClass = (
     className: string,
@@ -30,7 +35,7 @@
     addContentWrapperClass("mouseover", mouseOver);
   };
 
-  $: {
+  $effect(() => {
     handleCollapse();
     mouseOver = false;
     handleMouseEnterLeave();
@@ -46,9 +51,10 @@
         setGlobalCollapsedDomAttribute(false);
       }
     }
-  }
+  });
 
   const handleMouseEnter = (): void => {
+    console.log("enter");
     if (collapsed) {
       mouseOver = true;
       handleMouseEnterLeave();
@@ -59,6 +65,7 @@
   };
 
   const handleMouseLeave = (): void => {
+    console.log("leave");
     mouseOver = false;
     handleMouseEnterLeave();
   };
@@ -77,11 +84,11 @@
   });
 </script>
 
-<!-- svelte-ignore a11y-no-static-element-interactions -->
-<!-- svelte-ignore a11y-mouse-events-have-key-events -->
+<!-- svelte-ignore a11y_no_static_element_interactions -->
+<!-- svelte-ignore a11y_mouse_events_have_key_events -->
 <div
   class="mt-primaryNavigation-overlay"
   use:portal={"body"}
-  on:mouseenter={handleMouseEnter}
+  onmouseenter={handleMouseEnter}
   style={`display: ${collapsed ? "block" : "none"}`}
 ></div>

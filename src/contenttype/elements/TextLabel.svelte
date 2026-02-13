@@ -1,24 +1,24 @@
 <script lang="ts">
   import type * as ContentType from "../../@types/contenttype";
 
-  import { onMount } from "svelte";
-
   import ContentFieldOption from "./ContentFieldOption.svelte";
   import ContentFieldOptionGroup from "./ContentFieldOptionGroup.svelte";
 
-  // svelte-ignore unused-export-let
-  export let config: ContentType.ConfigSettings;
-  export let field: ContentType.Field;
-  // svelte-ignore unused-export-let
-  export let gather = null;
-  export let id: string;
-  export let options: ContentType.Options;
-  // svelte-ignore unused-export-let
-  export let optionsHtmlParams: ContentType.OptionsHtmlParams;
+  let {
+    config: _config,
+    field = $bindable(),
+    gather = $bindable(),
+    id,
+    options = $bindable(),
+    optionsHtmlParams: _optionsHtmlParams,
+  }: ContentType.ContentFieldProps = $props();
 
-  options.text ??= "";
+  let displayOptions = $derived({
+    ...options,
+    text: options.text ?? "",
+  });
 
-  onMount(() => {
+  $effect(() => {
     // description, required, display field is hidden.
     (
       document.getElementById(
@@ -48,7 +48,10 @@
       name="text"
       id="text_label-text"
       class="form-control"
-      bind:value={options.text}
+      value={displayOptions.text}
+      onchange={(e) => {
+        options.text = e.currentTarget.value;
+      }}
     ></textarea>
   </ContentFieldOption>
 </ContentFieldOptionGroup>

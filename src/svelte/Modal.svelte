@@ -1,15 +1,25 @@
 <script lang="ts">
-  import { createEventDispatcher } from "svelte";
+  import { createEventDispatcher, type Snippet } from "svelte";
   import { fade, fly } from "svelte/transition";
   import { quintOut } from "svelte/easing";
   import { setModalContext } from "./context";
 
-  const dispatch = createEventDispatcher();
+  type Props = {
+    open: boolean;
+    className: string;
+    describedby: string;
+    labelledby: string;
+    children?: Snippet;
+  };
+  let {
+    open = true,
+    className = "",
+    describedby = "",
+    labelledby = "",
+    children,
+  }: Props = $props();
 
-  export let open = true;
-  export let className = "";
-  export let describedby = "";
-  export let labelledby = "";
+  const dispatch = createEventDispatcher();
 
   const modalOpen = (): void => {
     document.body.classList.add("modal-open");
@@ -18,13 +28,13 @@
     document.body.classList.remove("modal-open");
   };
 
-  $: {
+  $effect(() => {
     if (open) {
       modalOpen();
     } else {
       modalClose();
     }
-  }
+  });
 
   setModalContext({
     closeModal() {
@@ -41,10 +51,10 @@
     aria-labelledby={labelledby}
     aria-describedby={describedby}
     aria-modal="true"
-    on:introend={() => {
+    onintroend={() => {
       dispatch("open");
     }}
-    on:outroend={() => {
+    onoutroend={() => {
       setTimeout(() => {
         dispatch("close");
       }, 100);
@@ -58,11 +68,11 @@
       out:fly={{ y: -50, duration: 300, easing: quintOut }}
     >
       <div class="modal-content">
-        <slot />
+        {@render children?.()}
       </div>
     </div>
   </div>
-  <div class="modal-backdrop show" transition:fade={{ duration: 150 }} />
+  <div class="modal-backdrop show" transition:fade={{ duration: 150 }}></div>
 {/if}
 
 <style>
