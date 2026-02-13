@@ -352,10 +352,6 @@ sub core_methods {
         'select_edit_content_type' =>
             "${pkg}ContentType::select_edit_content_type",
 
-        'validate_content_fields' => {
-            code     => " ${pkg}ContentType::validate_content_fields",
-            app_mode => 'JSON',
-        },
         'dialog_content_data_modal' =>
             "${pkg}ContentType::dialog_content_data_modal",
         'dialog_list_content_data' => {
