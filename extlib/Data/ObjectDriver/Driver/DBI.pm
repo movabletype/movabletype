@@ -642,9 +642,19 @@ sub bulk_insert {
     # pass this directly to the backend DBD
     my $dbh = $driver->rw_handle($class->properties->{db});
     my $tbl  = $driver->table_for($class);
-    my @db_cols =  map {$dbd->db_column_name($tbl, $_) } @{$cols};
 
-    return $dbd->bulk_insert($dbh, $tbl, \@db_cols, $data);
+    my @db_cols;
+    my %attrs;
+    my $col_defs = $class->properties->{column_defs};
+    for my $col (@$cols) {
+        my $db_col = $dbd->db_column_name($tbl, $col);
+        push @db_cols, $db_col;
+        my $type = $col_defs->{$col} || 'char';
+        my $attr = $dbd->bind_param_attributes($type) or next;
+        $attrs{$db_col} = $attr;
+    }
+
+    return $dbd->bulk_insert($dbh, $tbl, \@db_cols, $data, \%attrs);
 }
 
 sub begin_work {

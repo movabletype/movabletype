@@ -707,6 +707,10 @@ The list of name of indexes which to use.
 
 Returns the SQL fully representing the SQL statement C<$sql>.
 
+=head2 C<$sql-E<gt>as_subquery($alias)>
+
+Returns a string representation of C<$sql> as a subquery. C<$alias> is optional.
+
 =head2 C<$sql-E<gt>as_sql_having()>
 
 Returns the SQL representing the C<HAVING> portion of C<$sql>'s C<GROUP ...
@@ -724,6 +728,10 @@ Returns the SQL for the C<LIMIT ... OFFSET> clause of the statement.
 
 Returns the SQL representing the aggregation clause of type C<$set> for the SQL
 statement C<$sql>. Reasonable values of C<$set> are C<ORDER> and C<GROUP>.
+
+=head2 C<$sql-E<gt>as_escape()>
+
+Returns a string representing the C<ESCAPE> clause for C<LIKE> predicates.
 
 =head1 DIAGNOSTICS
 
