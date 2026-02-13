@@ -502,7 +502,6 @@ sub _get_categories_for_rebuild {
 
     my %categories_for_rebuild;
     for my $field_id (@field_ids) {
-        my $field_hash = $ct->get_field($field_id);
         my %rebuild_ids;
         $rebuild_ids{$_} = 1 for @{ $old_categories->{$field_id} || [] };
         $rebuild_ids{$_} = 0 for @{ $cd->data->{$field_id}       || [] };
@@ -1733,11 +1732,10 @@ sub _rebuild_content_archive_type {
             $ct_map{$map->template_id} ||= MT->model('content_type')->load($template->content_type_id);
         }
 
-        my $ts
-            = $content_data
-            && $map->dt_field_id ? $content_data->data->{ $map->dt_field_id }
-            : exists $param{Timestamp} ? $param{Timestamp}
-            :                            undef;
+        my $ts =
+              exists $param{Timestamp}           ? $param{Timestamp}
+            : $content_data && $map->dt_field_id ? $content_data->data->{ $map->dt_field_id }
+            :                                      undef;
 
         if ($content_data && $map->cat_field_id && !$param{Category}) {
             my $cat = $content_data->data->{$map->cat_field_id};
