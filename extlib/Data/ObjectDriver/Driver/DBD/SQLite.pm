@@ -46,13 +46,18 @@ sub bulk_insert {
 
     my $cols = shift;
     my $rows_ref = shift;
+    my $attrs = shift || {};
 
     my $sql = "INSERT INTO $table("  . join(',', @{$cols}) . ") VALUES (" . join(',',  map {'?'} @{$cols}) .  ")\n";
 
     my $sth = $dbh->prepare($sql);
 
     foreach my $row (@{$rows_ref}) {
-	$sth->execute(@{$row});
+        my $i = 1;
+        for (my $j = 0; $j < @$cols; $j++) {
+            $sth->bind_param($i++, $row->[$j], $attrs->{$cols->[$j]});
+        }
+        $sth->execute;
     }
 
     # For now just write all data, at some point we need to lookup the
