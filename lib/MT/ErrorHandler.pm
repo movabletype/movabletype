@@ -19,10 +19,10 @@ sub error {
         $msg .= "\n" if ( $msg ne '' ) && ( $msg !~ /\n$/ );
     }
     if ( ref($class) ) {
-        $class->{_errstr} = $msg;
+        $class->{_errstr} = MT::ErrorHandler::Exception->new($msg, @_);
     }
     else {
-        $ERROR = $msg;
+        $ERROR = MT::ErrorHandler::Exception->new($msg, @_);
     }
     return;
 }
@@ -41,6 +41,57 @@ sub clear_error {
         delete $class->{_errstr};
     } else {
         undef $ERROR;
+    }
+}
+
+package MT::ErrorHandler::Exception;
+use strict;
+use warnings;
+use Scalar::Util;
+use overload
+    'bool'   => \&_stringify,
+    '~~'     => \&_stringify,
+    '""'     => \&_stringify,
+    '0+'     => \&_stringify,
+    fallback => 1,
+    ;
+
+sub _stringify {
+    my $self = shift;
+    $self->{finalized}++;
+    $self->{message};
+}
+*TO_JSON = \&_stringify;
+
+sub new {
+    my $class   = shift;
+    my $message = shift;
+    return          unless defined $message;
+    return $message unless $ENV{MT_USE_EXCEPTION_OBJECT};
+
+    my %extra;
+    if (ref $_[-1] eq 'HASH') {
+        %extra = %{ pop @_ };
+    }
+    if (Scalar::Util::blessed $message && $message->isa('MT::ErrorHandler::Exception')) {
+        $extra{ignorable} = 1 if $message->{ignorable};
+    }
+    my @traces;
+    my $i = 1;
+    while ($i < 10) {
+        my ($package, $file, $line) = caller($i++) or last;
+        push @traces, "  at $file line $line";
+    }
+    bless { %extra, message => "$message", traces => \@traces }, $class;
+}
+
+sub DESTROY {
+    my $self = shift;
+    return if $self->{finalized} or $self->{ignorable};
+    if ($self && defined $self->{message}) {
+        if ($ENV{MT_WARN_UNRESOLVED_ERROR}) {
+            warn "Unresolved error: " . $self->{message} . (join "\n", @{ $self->{traces} // [] });
+        }
     }
 }
 
