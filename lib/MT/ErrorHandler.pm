@@ -14,7 +14,7 @@ sub new { bless {}, shift }
 
 sub error {
     my $class = shift;
-    my $msg = @_ ? $_[0] : '';
+    my $msg   = @_ ? shift : '';
     if (defined $msg && !ref $msg) {
         $msg .= "\n" if ( $msg ne '' ) && ( $msg !~ /\n$/ );
     }
