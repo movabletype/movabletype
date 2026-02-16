@@ -16,12 +16,11 @@ sub error {
     my $class = shift;
     my $msg   = @_ ? shift : '';
     if (defined $msg && !ref $msg) {
-        $msg .= "\n" if ( $msg ne '' ) && ( $msg !~ /\n$/ );
+        $msg .= "\n" if ($msg ne '') && ($msg !~ /\n$/);
     }
-    if ( ref($class) ) {
+    if (ref($class)) {
         $class->{_errstr} = MT::ErrorHandler::Exception->new($msg, @_);
-    }
-    else {
+    } else {
         $ERROR = MT::ErrorHandler::Exception->new($msg, @_);
     }
     return;
@@ -29,11 +28,10 @@ sub error {
 
 sub trans_error {
     my $obj = shift;
-    return $obj->error(
-        $obj->can('translate') ? $obj->translate(@_) : MT->translate(@_) );
+    return $obj->error($obj->can('translate') ? $obj->translate(@_) : MT->translate(@_));
 }
 
-sub errstr { ref( $_[0] ) ? $_[0]->{_errstr} : $ERROR }
+sub errstr { ref($_[0]) ? $_[0]->{_errstr} : $ERROR }
 
 sub clear_error {
     my $class = shift;
