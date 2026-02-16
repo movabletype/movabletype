@@ -23,7 +23,8 @@ use MT::Test;
 use MT::Test::App;
 use MT::Test::Permission;
 
-MT::Test->init_db;
+$test_env->prepare_fixture('db');
+
 MT->instance;
 my $uri = MT->config->AdminCGIPath . MT->config->DataAPIScript;
 
