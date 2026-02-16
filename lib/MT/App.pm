@@ -2960,6 +2960,16 @@ sub show_error {
 
     my $error = $param->{error} || $app->translate('Unknown error occurred.');
 
+    require Scalar::Util;
+    if (!Scalar::Util::blessed($error) or !$error->isa('MT::ErrorHandler::Exception')) {
+        # truly unexpected exception
+        require MT::Util::Log;
+        MT::Util::Log::init();
+        MT::Util::Log->error(Carp::longmess($error));
+        # hide it unless you are debugging
+        $error = $app->translate('Unknown error occurred.') unless $MT::DebugMode;
+    }
+
     if ($MT::DebugMode) {
         if ($@) {
 
