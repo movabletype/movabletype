@@ -663,7 +663,8 @@ sub run_callbacks {
 
     $CallbacksEnabled{$_} = 1 for @methods;
     if ( !$filter_value ) {
-        return $class->error($first_error);
+        # callback errors are almost always ignored
+        return $class->error(MT::ErrorHandler::Exception->new($first_error, { ignorable => 1 }));
     }
     else {
         return $filter_value;
