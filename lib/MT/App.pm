@@ -2961,7 +2961,7 @@ sub show_error {
     my $error = $param->{error} || $app->translate('Unknown error occurred.');
 
     require Scalar::Util;
-    if (!Scalar::Util::blessed($error) or !$error->isa('MT::ErrorHandler::Exception')) {
+    if ($ENV{MT_USE_EXCEPTION_OBJECT} and (!Scalar::Util::blessed($error) or !$error->isa('MT::ErrorHandler::Exception'))) {
         # truly unexpected exception
         require MT::Util::Log;
         MT::Util::Log::init();
