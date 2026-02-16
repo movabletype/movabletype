@@ -853,6 +853,8 @@ sub json_error {
         if defined $status;
     $app->send_http_header("application/json");
     $app->{no_print_body} = 1;
+    require Scalar::Util;
+    $error = "$error" if Scalar::Util::blessed($error) && $error->isa('MT::ErrorHandler::Exception');
     $app->print_encode( MT::Util::to_json( { error => $error } ) );
     return undef;
 }
