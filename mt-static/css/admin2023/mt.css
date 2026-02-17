@@ -4087,7 +4087,7 @@ fieldset:disabled .btn__mobile {
 }
 
 .navbar, .mt-sharedPreviewNav {
-  --bs-navbar-padding-x: 1rem
+  --bs-navbar-padding-x: 1rem;
   --bs-navbar-padding-y: 1rem;
   --bs-navbar-color: rgba(0, 0, 0, 0.55);
   --bs-navbar-hover-color: rgba(0, 0, 0, 0.7);
