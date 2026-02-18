@@ -64,7 +64,7 @@ sub _stringify {
 sub new {
     my $class   = shift;
     my $message = shift;
-    return          unless defined $message;
+    return          unless defined $message && $message ne '';
     return $message unless $ENV{MT_USE_EXCEPTION_OBJECT};
 
     my %extra;
