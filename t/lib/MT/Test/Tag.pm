@@ -77,6 +77,7 @@ sub run_perl_tests {
             ( my $method_name = $archive_type ) =~ tr|A-Z-|a-z_|;
 
             if ( my $error = $ctx->errstr ) {
+                my $dummy = $tmpl->errstr ? 1 : 0;
                 my $expected_error_method = "expected";
                 my @extra_error_methods   = (
                     "expected_todo_error_$method_name",

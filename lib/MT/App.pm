@@ -853,6 +853,8 @@ sub json_error {
         if defined $status;
     $app->send_http_header("application/json");
     $app->{no_print_body} = 1;
+    require Scalar::Util;
+    $error = "$error" if Scalar::Util::blessed($error) && $error->isa('MT::ErrorHandler::Exception');
     $app->print_encode( MT::Util::to_json( { error => $error } ) );
     return undef;
 }
@@ -2957,6 +2959,16 @@ sub show_error {
     }
 
     my $error = $param->{error} || $app->translate('Unknown error occurred.');
+
+    require Scalar::Util;
+    if ($ENV{MT_USE_EXCEPTION_OBJECT} and (!Scalar::Util::blessed($error) or !$error->isa('MT::ErrorHandler::Exception'))) {
+        # truly unexpected exception
+        require MT::Util::Log;
+        MT::Util::Log::init();
+        MT::Util::Log->error(Carp::longmess($error));
+        # hide it unless you are debugging
+        $error = $app->translate('Unknown error occurred.') unless $MT::DebugMode;
+    }
 
     if ($MT::DebugMode) {
         if ($@) {
