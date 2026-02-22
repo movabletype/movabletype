@@ -113,8 +113,8 @@ sub main {
         require MT::BasicAuthor;
         my $a = MT::BasicAuthor->load( { name => $name } )
             or die "Not found user $name:" . MT::BasicAuthor->errstr;
-        if ( MT->config->RequireStrictUpgradePermission
-            && !$a->can_do('upgrade_system') )
+        if ( MT->config->RequireUpgradePermission
+            && !$a->is_superuser )
         {
             die "No permissions. Please contact your Movable Type administrator for assistance with upgrading Movable Type.";
         }

@@ -243,9 +243,7 @@ sub upgrade {
 
     my $author = $app->user;
     if ( $author ) {
-        my $has_permission = $app->{cfg}->RequireStrictUpgradePermission
-            ? $author->can_do('upgrade_system')
-            : $author->is_superuser;
+        my $has_permission = $app->{cfg}->RequireUpgradePermission ? $author->is_superuser : 1;
 
         unless ( $has_permission ) {
             return $app->errtrans(
