@@ -911,8 +911,8 @@ sub save {
         $content_data->label($data_label);
     }
 
-    $app->run_callbacks( 'cms_pre_save.content_data',
-        $app, $content_data, $orig );
+    $app->run_callbacks( 'cms_pre_save.content_data', $app, $content_data, $orig )
+        or return $app->error($app->translate("Saving [_1] failed: [_2]", $content_type->name, $app->errstr));
 
     $content_data->save
         or return $app->error(
@@ -1312,6 +1312,7 @@ sub list_actions {
         },
         'set_draft' => {
             label     => "Unpublish Contents",
+            js_message => 'unpublish',
             order     => 200,
             code      => '$Core::MT::CMS::ContentData::draft_content_data',
             mobile    => 1,
@@ -1767,7 +1768,6 @@ sub _build_content_data_preview {
     my $archive_url;
     if ($tmpl_map) {
         $tmpl         = MT::Template->load( $tmpl_map->template_id );
-        $file_ext     = $blog->file_extension || '';
         $archive_file = $content_data->archive_file;
         my $base_url = $blog->archive_url;
         $base_url .= '/' unless $base_url =~ m|/$|;
@@ -1778,7 +1778,7 @@ sub _build_content_data_preview {
         $archive_file = File::Spec->catfile( $blog_path, $archive_file );
         my $path;
         ( $orig_file, $path ) = File::Basename::fileparse($archive_file);
-        $file_ext = '.' . $file_ext if $file_ext ne '';
+        ( $file_ext ) = $orig_file =~ /(\.[^.]*)$/;
         $archive_file
             = File::Spec->catfile( $path, $preview_basename . $file_ext );
     }
@@ -2232,10 +2232,8 @@ sub build_content_data_table {
         $row->{author_name}
             = $author ? $author->name : $app->translate('(user deleted)');
         $row->{id} = $content_data->id;
-        $row->{label}
-            = defined $content_data->label && $content_data->label ne ''
-            ? $content_data->label
-            : $app->translate('(No Label)');
+        my $label = $content_data->label;
+        $row->{label} = defined $label && $label ne '' ? $label : $app->translate('(No Label)');
         my $ds = 'content_data.content_data_' . $content_data->content_type_id;
         $list_properties{$ds} ||= MT::ListProperty->list_properties($ds);
         $row->{label_html}   = $list_properties{$ds}{label}->html($content_data, $app);
@@ -2247,8 +2245,12 @@ sub build_content_data_table {
             %highlight_fields = map { $_ => 1 } @$fields;
             $content_data->{__search_result_fields_index} = \%highlight_fields;
             $row->{preview_data_show} = !!grep { $_ =~ /^__field:(\d*)/ } @$fields;
-            $row->{label_html} =~ s/class="label"/data-search-highlight="1" class="label"/ if $highlight_fields{label};
-            $row->{search_highlight}{identifier} = 1 if $highlight_fields{identifier};
+            if ($highlight_fields{label} && ($label // '') =~ $content_data->{__search_term}) {
+                $row->{label_html} =~ s/class="label"/data-search-highlight="1" class="label"/;
+            }
+            if ($highlight_fields{identifier} && $row->{identifier} =~ $content_data->{__search_term}) {
+                $row->{search_highlight}{identifier} = 1;
+            }
         }
 
         $row->{preview_data} = $content_data->preview_data;

@@ -813,7 +813,8 @@ sub error {
                 data    => $data,
             }
         );
-        @args = join( ' ', reverse(@_) );
+        # too bad but this error is usually discarded
+        @args = MT::ErrorHandler::Exception->new(join( ' ', reverse(@_) ), { ignorable => 1 });
     }
 
     return $app->SUPER::error(@args);

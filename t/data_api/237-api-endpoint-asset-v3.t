@@ -18,6 +18,8 @@ use MT::Test::DataAPI;
 use MT::Test::Permission;
 use MT::Test::Image;
 use File::Basename;
+use Encode;
+use utf8;
 
 use MT::App::DataAPI;
 my $app = MT::App::DataAPI->new;
@@ -94,6 +96,11 @@ for my $ext (qw/ jpg png gif /) {
     );
 }
 
+File::Path::mkpath $blog->archive_path unless -d $blog->archive_path;
+my $non_ascii_filename = Encode::encode($^O eq 'MSWin32' ? 'cp932' : 'utf-8' => 'テスト.jpg');
+my $non_ascii_image = $test_env->path($non_ascii_filename);
+MT::Test::Image->write(file => $non_ascii_image);
+
 my $suite = suite();
 test_data_api($suite);
 
@@ -138,6 +145,17 @@ sub suite {
             },
             code  => 403,
             error => 'Do not have permission to upload.',
+        },
+
+        # AllowNonAsciiFilename = 0
+        {
+            path   => '/v3/assets/upload',
+            method => 'POST',
+            params => { site_id => 1 },
+            config => { AllowNonAsciiFilename => 0 },
+            upload => [ 'file', $non_ascii_image ],
+            code   => 500,
+            error  => qr/Non-ASCII characters are not allowed in filenames./,
         },
 
         # upload_asset_v3 - normal tests.
@@ -455,7 +473,7 @@ sub suite {
                 my @assets = $app->model('asset')->load(
                     {   class   => '*',
                         blog_id => 1,
-                        parent  => [ \'IS NULL', 0, '' ],
+                        parent  => [ \'IS NULL', 0 ],
                     },
                     { sort => 'created_on', direction => 'descend', },
                 );

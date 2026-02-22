@@ -57,7 +57,7 @@ use vars qw($VERSION $AUTOLOAD @formatSize @formatName %formatNumber %intFormat
 use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::MakerNotes;
 
-$VERSION = '4.57';
+$VERSION = '4.61';
 
 sub ProcessExif($$$);
 sub WriteExif($$$);
@@ -402,7 +402,7 @@ my %opcodeInfo = (
             THM => 'THM - DCF thumbnail file',
         },
     },
-    0x2 => { #5
+    0x2 => { #5 (not in the EXIF spec)
         Name => 'InteropVersion',
         Description => 'Interoperability Version',
         Protected => 1,
@@ -1598,6 +1598,7 @@ my %opcodeInfo = (
             2 => 'Sony Compressed RAW', # (lossy, ref IB)
             3 => 'Sony Lossless Compressed RAW', #IB
             4 => 'Sony Lossless Compressed RAW 2', #JR (ILCE-1)
+            6 => 'Sony Compressed RAW HQ', # ILCE-7M5
         },
     },
     # 0x7001 - int16u[1] (in SubIFD of Sony ARW images) - values: 0,1
@@ -2029,7 +2030,7 @@ my %opcodeInfo = (
         OffsetPair => -1,
     },
     0x8782 => 'T88Options', #20
-    0x87ac => 'ImageLayer',
+    0x87ac => 'ImageLayer', # Defined in the Mixed Raster Content part of RFC 2301
     0x87af => { #30
         Name => 'GeoTiffDirectory',
         Format => 'undef',
@@ -2081,7 +2082,7 @@ my %opcodeInfo = (
     0x8822 => {
         Name => 'ExposureProgram',
         Groups => { 2 => 'Camera' },
-        Notes => 'the value of 9 is not standard EXIF, but is used by the Canon EOS 7D',
+        Notes => 'the value of 9 is not standard EXIF, but is used by some Canon models',
         Writable => 'int16u',
         PrintConv => {
             0 => 'Not Defined',
@@ -4209,6 +4210,8 @@ my %opcodeInfo = (
         },
     },
     # 0xc7d6 - int8u: 1 (SubIFD1 of Nikon Z6/Z7 NEF)
+    0xc7d7 => { Name => 'ZIFMetadata',    Binary => 1 },
+    0xc7d8 => { Name => 'ZIFAnnotations', Binary => 1 },
     0xc7e9 => { # DNG 1.5
         Name => 'DepthFormat',
         Writable => 'int16u',
@@ -4350,6 +4353,7 @@ my %opcodeInfo = (
         Writable => 'undef',
         WriteGroup => 'IFD0',
         Protected => 1,
+        Binary => 1,
     },
     0xcd40 => { # DNG 1.7
         Name => 'ProfileGainTableMap2',
@@ -6188,10 +6192,15 @@ sub ProcessExif($$$)
     my $isExif = ($tagTablePtr eq \%Image::ExifTool::Exif::Main);
 
     # warn for incorrect maker notes in CR3 files
-    if ($$dirInfo{DirName} eq 'MakerNotes' and $$et{FileType} eq 'CR3' and
-        $$dirInfo{Parent} and $$dirInfo{Parent} eq 'ExifIFD')
-    {
-        $et->Warn("MakerNotes shouldn't exist ExifIFD of CR3 image", 1);
+    if ($dirName eq 'MakerNotes') {
+        if ($$et{FileType} eq 'CR3' and $$dirInfo{Parent} and $$dirInfo{Parent} eq 'ExifIFD') {
+            $et->Warn("MakerNotes shouldn't exist ExifIFD of CR3 image", 1);
+        }
+        if ($$dirInfo{TagInfo} and $$dirInfo{TagInfo}{MakerNotes} and
+            $$et{ExifByteOrder} and $$et{ExifByteOrder} ne GetByteOrder())
+        {
+            $et->FoundTag(MakerNoteByteOrder => GetByteOrder());
+        }
     }
     # set flag to calculate image data hash if requested
     $doHash = 1 if $$et{ImageDataHash} and (($$et{FILE_TYPE} eq 'TIFF' and not $base and not $inMakerNotes) or
@@ -6278,7 +6287,7 @@ sub ProcessExif($$$)
         $dirSize = 2 + 12 * $numEntries;
         $dirEnd = $dirStart + $dirSize;
     }
-    $verbose > 0 and $et->VerboseDir($dirName, $numEntries);
+    $verbose > 0 and $et->VerboseDir($dirName, $numEntries, undef, GetByteOrder());
     my $bytesFromEnd = $dataLen - $dirEnd;
     if ($bytesFromEnd < 4) {
         unless ($bytesFromEnd==2 or $bytesFromEnd==0) {
@@ -6359,9 +6368,10 @@ sub ProcessExif($$$)
                     $et->Warn("Bad format ($format) for $dir entry $index", $inMakerNotes);
                     ++$warnCount;
                 }
-                # assume corrupted IFD if this is our first entry (except Sony ILCE-7M2 firmware 1.21)
-                return 0 unless $index or $$et{Model} eq 'ILCE-7M2';
-                next;
+                # assume corrupted IFD if this is our first entry (except Sony ILCE which have an empty first entry)
+                next if $index or $$et{Model} =~ /^ILCE/;
+                # $et->Warn(sprintf('Format code 0x%x encountered -- Possibly corrupted IFD'));
+                return 0;
             }
         }
         my $formatStr = $formatName[$format];   # get name of this format

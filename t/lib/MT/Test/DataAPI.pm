@@ -278,11 +278,11 @@ sub test_data_api {
                         },
                     );
                 }
-+
                 cmp_deeply( $result, $expected_result, 'result' ) || note explain $result;
             }
 
             if ( exists $data->{error} ) {
+                my $dummy = $app->_app->errstr ? 1 : 0;
                 $result = $format->{unserialize}->($body) if !defined $result;
                 if ( ref $data->{error} eq ref qr// ) {
                     like( $result->{error}{message},

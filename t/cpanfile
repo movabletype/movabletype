@@ -12,8 +12,8 @@
 # that this module is not installed...
 requires 'File::Spec', '0.8';
 
-requires 'DBI', '1.21';
-requires 'DBD::mysql';
+requires 'DBI', '1.643';
+requires 'DBD::mysql', '4.044';
 
 # TODO: These are installed by carton install.
 #feature 'mssqlserver', 'MSSQLServer support' => sub {
@@ -26,13 +26,11 @@ requires 'DBD::mysql';
 ## recommends
 
 requires 'Digest::SHA';
-requires 'Plack';
+requires 'Plack', '1.0034';
 requires 'CGI::PSGI';
 requires 'CGI::Parse::PSGI';
-requires 'XMLRPC::Transport::HTTP::Plack';
 requires 'HTML::Entities';
 requires 'HTML::Parser';
-requires 'SOAP::Lite', '0.5';
 requires 'File::Temp';
 requires 'Scalar::Util';
 requires 'List::Util';
@@ -41,10 +39,10 @@ requires 'List::Util';
 # on CI services.
 #requires 'Image::Magick';
 
-requires 'GD';
-requires 'Imager';
-requires 'Storable';
-requires 'Crypt::DSA';
+requires 'GD', '2.72';
+requires 'Imager', '1.006';
+requires 'IPC::Run';
+requires 'Storable', '3.05';
 
 # TODO: libdb-dev is needed for installing Cache::File.
 #requires 'Cache::File';
@@ -52,24 +50,22 @@ requires 'Crypt::DSA';
 requires 'MIME::Base64';
 requires 'Email::MIME';
 requires 'Cache::Memcached';
-requires 'Archive::Tar';
+requires 'Archive::Tar', '2.28';
 requires 'IO::Compress::Gzip';
 requires 'IO::Uncompress::Gunzip';
-requires 'Archive::Zip', '!=1.66, !=1.67, !=1.68';
+requires 'Archive::Zip', '1.61, !=1.66, !=1.67, !=1.68';
 requires 'XML::SAX';
 requires 'Digest::SHA1';
 requires 'Net::SMTP', '2.32';
 requires 'Authen::SASL';
-requires 'Net::SMTP::SSL';
-requires 'Net::SMTP::TLS';
-requires 'IO::Socket::SSL';
-requires 'Net::SSLeay';
-requires 'Safe';
-requires 'Digest::MD5';
+requires 'IO::Socket::SSL', '1.35';
+requires 'Net::SSLeay', '1.25';
+requires 'Safe', '2.27';
+requires 'Digest::MD5', '2.25';
 requires 'Text::Balanced';
 requires 'XML::Parser';
 requires 'Time::HiRes';
-requires 'Mozilla::CA';
+requires 'Mozilla::CA', '20240730';
 requires 'XML::SAX::ExpatXS';
 requires 'XML::SAX::Expat';
 requires 'XML::LibXML::SAX';
@@ -99,8 +95,8 @@ on 'test' => sub {
     requires 'DateTime';
     requires 'DateTime::TimeZone';
     requires 'Devel::GlobalDestruction';
-    requires 'DBD::SQLite';
-    requires 'DBI', '1.633';
+    requires 'DBD::SQLite', '1.66';
+    requires 'DBI', '1.643';
     requires 'DBIx::QueryLog';
     requires 'Feature::Compat::Try';
     requires 'File::pushd';
@@ -127,7 +123,7 @@ on 'test' => sub {
     requires 'Mojolicious';
     requires 'Net::Server::SS::PreFork' unless $^O eq 'MSWin32';
     requires 'Net::SFTP';
-    requires 'Parallel::ForkManager';
+    requires 'Parallel::ForkManager', '1.0.0';
     requires 'Path::Tiny';
     requires 'Perl::Critic::Pulp';
     requires 'Perl::Critic::TooMuchCode';

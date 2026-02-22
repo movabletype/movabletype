@@ -844,17 +844,12 @@ BEGIN {
                             = $prop->datasource->has_column('author_id')
                             ? 'author_id'
                             : 'created_by';
-                        my %author_id
-                            = map { ( $_->$col ) ? ( $_->$col => 1 ) : () }
-                            @$objs;
+                        my %nickname = map { ($_->$col || 0) => '' } @$objs;
                         my @authors = MT->model('author')
-                            ->load( { id => [ keys %author_id ] } );
-                        my %nickname = map {
-                                  $_->id => defined $_->nickname
-                                ? $_->nickname
-                                : ''
-                        } @authors;
-                        $nickname{0} = '';    # fallback
+                            ->load( { id => [ keys %nickname ] } );
+                        for my $author (@authors) {
+                            $nickname{$author->id} = $author->nickname // '';
+                        }
                         return sort {
                             $nickname{ $a->$col || 0 }
                                 cmp $nickname{ $b->$col || 0 }
@@ -1932,8 +1927,8 @@ BEGIN {
             'CheckScript'             => { default => 'mt-check.cgi', },
             'DataAPIScript'           => { default => 'mt-data-api.cgi', },
             'PublishCharset'          => { default => 'utf-8', },
-            'SafeMode'                => { default => 1, },
-            'AllowFileInclude'        => { default => 0, },
+            'SafeMode'                => { default => 1, deprecated => '9.2.0' },
+            'AllowFileInclude'        => { default => 0, deprecated => '9.2.0' },
             'AllowTestModifier'       => { default => 0 },
             'GlobalSanitizeSpec'      => {
                 default =>
@@ -2011,6 +2006,7 @@ BEGIN {
             'ContentDataSearchMaxCharCount' => {
                 default => sub { $_[0]->SearchMaxCharCount },
             },
+            'DisableRegexpSearch' => { default => 0 },
             'CMSSearchLimit'     => { default => 125 },
             'SupportURL'         => undef,
             'NewsURL'            => undef,
@@ -2251,8 +2247,12 @@ BEGIN {
                 type    => 'ARRAY',
                 handler => \&TrustedHosts,
             },
+            'UsejQuery4' => { default => 0 },
             'GrantRoleSitesView' => { default => 'list' }, # DEPRECATED
             'DisableContentFieldPermission' => { default => undef },
+            'CSVExportWithBOM' => { default => 1 },
+            'CSVExportEscapeFormula' => { default => 1 },
+            'AllowNonAsciiFilename' => { default => 1 },
             'RequireUpgradePermission' => { default => 1 },
         },
         upgrade_functions => \&load_upgrade_fns,

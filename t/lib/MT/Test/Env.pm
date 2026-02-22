@@ -191,6 +191,7 @@ sub write_config {
         BuilderModule          => $ENV{MT_TEST_BUILDER} || 'MT::Builder',
         DisableObjectCache     => $ENV{MT_TEST_DISABLE_OBJECT_CACHE} || 0,
         exists $ENV{MT_TEST_ADMIN_THEME_ID} ? (AdminThemeId => $ENV{MT_TEST_ADMIN_THEME_ID}) : (),
+        exists $ENV{MT_TEST_DISABLE_REGEXP_SEARCH} ? (DisableRegexpSearch => $ENV{MT_TEST_DISABLE_REGEXP_SEARCH}) : (),
     );
 
     if ($extra) {
@@ -409,6 +410,7 @@ sub _connect_info_mysql {
     if (my $go_dsn = $ENV{GO_PROVE_MYSQLD}) {
         my ($sock) = $go_dsn =~ /unix\((.*?)\)/;
         $ENV{MT_TEST_DSN} = "dbi:mysql:mysql_socket=$sock;user=root";
+        $self->{database_is_ready} = 1;
     }
     if (my $dsn = $ENV{MT_TEST_DSN} || $ENV{PERL_TEST_MYSQLPOOL_DSN}) {
         my $dbh = DBI->connect($dsn) or die $DBI::errstr;

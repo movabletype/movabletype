@@ -92,6 +92,7 @@ sub core_backup_instructions {
         'cf_idx'              => { 'skip' => 1 },
         'content_field_index' => { 'skip' => 1 },
         'log'                 => { 'skip' => 1 },
+        'deletefileinfo'      => { 'skip' => 1 },
     };
 }
 
@@ -1040,7 +1041,7 @@ sub cb_restore_objects {
             my $new_field = $all_objects->{"MT::ContentField#$old_field_id"}
                 or next;
             $new_data{ $new_field->id } = $old_data->{$old_field_id};
-            my $field_data = $content_type->get_field( $new_field->id );
+            my $field_data = $content_type->get_field( $new_field->id ) or next;
             my $field_type_registry
                 = MT->registry( 'content_field_types', $field_data->{type} );
             if ( my $handler

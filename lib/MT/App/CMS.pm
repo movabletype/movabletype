@@ -306,13 +306,13 @@ sub core_methods {
         'dialog_select_website'      => "${pkg}Website::dialog_select_website",
         'dialog_select_sysadmin'     => "${pkg}User::dialog_select_sysadmin",
         'dialog_grant_role'          => "${pkg}User::dialog_grant_role",
-        'dialog_select_assoc_type'   => "${pkg}User::dialog_select_assoc_type",
         'dialog_select_author'       => "${pkg}User::dialog_select_author",
         'dialog_api_password'        => "${pkg}User::dialog_api_password",
         'dialog_list_asset'          => "${pkg}Asset::dialog_list_asset",
         'dialog_edit_image'          => "${pkg}Asset::dialog_edit_image",
         'dialog_list_deprecated_log' => "${pkg}Log::dialog_list_deprecated_log",
         'dialog_export_log'          => "${pkg}Log::dialog_export_log",
+        'dialog_reset_log'           => "${pkg}Log::dialog_reset_log",
 
         'issue_api_password'         => "${pkg}User::issue_api_password",
         'delete_api_password'        => "${pkg}User::delete_api_password",
@@ -833,16 +833,13 @@ sub core_content_actions {
                 class       => 'icon-action',
                 label       => 'Clear Activity Log',
                 icon        => 'ic_setting',
-                mode        => 'reset_log',
+                mode        => 'dialog_reset_log',
                 order       => 100,
-                confirm_msg => sub {
-                    MT->translate(
-                        'Are you sure you want to reset the activity log?');
-                },
                 permit_action => {
                     permit_action => 'reset_blog_log',
                     include_all   => 1,
                 },
+                dialog => 1,
             },
             'download_log' => {
                 class         => 'icon-download',
@@ -926,6 +923,7 @@ sub core_list_actions {
         'entry' => {
             'set_draft' => {
                 label         => "Unpublish Entries",
+                js_message    => 'unpublish',
                 order         => 200,
                 code          => "${pkg}Entry::draft_entries",
                 mobile        => 1,
@@ -1019,6 +1017,7 @@ sub core_list_actions {
         'page' => {
             'set_draft' => {
                 label         => "Unpublish Pages",
+                js_message    => 'unpublish',
                 order         => 200,
                 code          => "${pkg}Entry::draft_entries",
                 mobile        => 1,
@@ -1065,6 +1064,7 @@ sub core_list_actions {
                 label         => "Batch Edit Pages",
                 code          => "${pkg}Entry::open_batch_editor",
                 order         => 500,
+                no_prompt     => 1,
                 permit_action => {
                     permit_action => 'open_batch_page_editor_via_list',
                     include_all   => 1,
@@ -2883,11 +2883,8 @@ sub is_authorized {
         { author_id => $user->id },
         '-and',
         { blog_id => \@blog_ids },
-        '-and',
-        [   { permissions => \'IS NOT NULL' },
-            '-or',
-            { permissions => { not => '' } },
-        ]
+        '-and_not',
+        { permissions => [\'IS NULL', ''] },
     ];
     my @perms = MT->model('permission')->load($terms);
     if (@perms) {
@@ -2906,10 +2903,10 @@ sub is_authorized {
                 return 1;
             }
         }
-        return $app->permission_denied();
+        return $app->errtrans('Permission denied');
     }
     else {
-        return $app->permission_denied();
+        return $app->errtrans('Permission denied');
     }
 
 }

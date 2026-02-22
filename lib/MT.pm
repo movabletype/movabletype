@@ -39,14 +39,14 @@ our $plugins_installed;
 BEGIN {
     $plugins_installed = 0;
 
-    ( $VERSION, $SCHEMA_VERSION ) = ( '9.000005', '9.0002' );
+    ( $VERSION, $SCHEMA_VERSION ) = ( '9.001000', '9.0002' );
     (   $PRODUCT_NAME, $PRODUCT_CODE,   $PRODUCT_VERSION,
         $VERSION_ID,   $RELEASE_NUMBER, $PORTAL_URL,
         $RELEASE_VERSION_ID
         )
         = (
         '__PRODUCT_NAME__',   '__PRODUCT_CODE__',
-        '9.0.5',              '__PRODUCT_VERSION_ID__',
+        '9.1.0',              '__PRODUCT_VERSION_ID__',
         '__RELEASE_NUMBER__', '__PORTAL_URL__',
         '__RELEASE_VERSION_ID__',
         );
@@ -663,7 +663,8 @@ sub run_callbacks {
 
     $CallbacksEnabled{$_} = 1 for @methods;
     if ( !$filter_value ) {
-        return $class->error($first_error);
+        # callback errors are almost always ignored
+        return $class->error(MT::ErrorHandler::Exception->new($first_error, { ignorable => 1 }));
     }
     else {
         return $filter_value;
