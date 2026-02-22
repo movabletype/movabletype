@@ -913,6 +913,17 @@ sub upgrade {
     return $app->redirect( $app->path . $upgrade_script );
 }
 
+sub upgrade_denied {
+    my $app = shift;
+    require MT::Auth;
+    MT::Auth->invalidate_credentials({ app => $app });
+    return $app->show_login({
+        error => $app->translate(
+            "Please contact your Movable Type administrator for assistance with upgrading Movable Type."
+        ),
+    });
+}
+
 sub recover_profile_password {
     my $app = shift;
     $app->validate_magic or return;

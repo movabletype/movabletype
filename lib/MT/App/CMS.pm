@@ -211,6 +211,10 @@ sub core_methods {
             code           => sub { $_[0]->SUPER::logout(@_) },
             requires_login => 0,
         },
+        'upgrade_denied' => {
+            code           => "${pkg}Tools::upgrade_denied",
+            requires_login => 0,
+        },
         'start_recover' => {
             code           => "${pkg}Tools::start_recover",
             requires_login => 0,
@@ -733,8 +737,28 @@ sub init_request {
     }
 
     if ( $app->{upgrade_required} ) {
-        $app->{requires_login} = 0;
-        $app->mode('upgrade');
+        require MT::Auth;
+        my $ctx = MT::Auth->fetch_credentials( { app => $app } );
+        if ( $ctx && $ctx->{username} ) {
+            my $author = MT::Author->load(
+                {
+                    name => $ctx->{username},
+                    type => MT::Author::AUTHOR(),
+                }
+            );
+            if ( $author && !$author->is_superuser ) {
+                $app->user($author);
+                $app->mode('upgrade_denied');
+            }
+            else {
+                $app->{requires_login} = 0;
+                $app->mode('upgrade');
+            }
+        }
+        else {
+            $app->{requires_login} = 0;
+            $app->mode('upgrade');
+        }
     }
 
     # Check ImageDriver here because GD cannot be loaded

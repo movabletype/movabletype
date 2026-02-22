@@ -695,6 +695,7 @@ use vars qw( @ISA %Lexicon );
 	'Invalid session.' => 'セッションが不正です。',
 	'Movable Type has been upgraded to version [_1].' => 'Movable Typeをバージョン[_1]にアップグレードしました。',
 	'No permissions. Please contact your Movable Type administrator for assistance with upgrading Movable Type.' => '権限がありません。Movable Typeのアップグレードを管理者に依頼してください。',
+	'Please contact your Movable Type administrator for assistance with upgrading Movable Type.' => 'Movable Typeのアップグレードを管理者に依頼してください。',
 	'You must supply a password.' => 'パスワードを設定してください。',
 	q{Invalid email address '[_1]'} => q{'[_1]'は、メールアドレスのフォーマットが正しくありません},
 	q{The 'Website Root' provided below is not allowed} => q{指定された'ウェブサイトパス'は許可されていません。},
