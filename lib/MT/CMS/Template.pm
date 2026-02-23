@@ -1245,7 +1245,7 @@ sub list {
         elsif ( $tmpl_type eq 'ct' ) {
             $app->param( 'filter_key', 'contenttype_templates' );
         }
-        my $tmpl_param = {};
+        my $tmpl_param = { object_loop => [] };
         unless ( exists( $types{$tmpl_type}->{type} )
             && 'ARRAY' eq ref( $types{$tmpl_type}->{type} )
             && 0 == scalar( @{ $types{$tmpl_type}->{type} } ) )
