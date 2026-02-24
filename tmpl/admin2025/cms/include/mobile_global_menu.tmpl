@@ -16,7 +16,7 @@
       <mtapp:svgicon id="ic_menuhamburger" title="Open mobile global menu" data-role="img">
     </a>
     <div class="mt-mobileGlobalMenu__dropdownMenu dropdown-menu" aria-labelledby="mobileGlobalMenu__dropdownMenuButton">
-      <h1 class="mt-productHeader__logo">
+      <div class="mt-productHeader__logo">
         <a href="<mt:var name="mt_url">?__mode=dashboard" title="<__trans phrase="Dashboard">">
         <mt:if name="scope_type" eq="system">
           <img src="<mt:var name="static_uri">images/admin2025/logo-mark-mono.svg" alt="Movable Type" width="32" height="32">
@@ -40,7 +40,7 @@
             </a>
           </mt:if>
         </div>
-      </h1>
+      </div>
 
       <ul>
         <mt:loop name="system_menu_actions">
