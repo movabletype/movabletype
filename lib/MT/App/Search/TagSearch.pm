@@ -69,7 +69,12 @@ sub _process_lucene_query {
     my ($search_string) = @_;
 
     require Lucene::QueryParser;
-    my $lucene_struct = Lucene::QueryParser::parse_query($search_string);
+    my $lucene_struct = eval { Lucene::QueryParser::parse_query($search_string); };
+    if ($@) {
+        warn $@ if $MT::DebugMode;
+        my $term = bless { query => "TERM", term => $search_string, type => "NORMAL" }, 'Lucene::QueryParser::Term';
+        $lucene_struct = bless [$term], 'Lucene::QueryParser::TopLevel';
+    }
 
     my @or_tags;
     for my $term (@$lucene_struct) {
