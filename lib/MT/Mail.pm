@@ -157,18 +157,11 @@ sub send {
         ( $id ? ( id => $id ) : () )
         );
 
-    if ( $xfer eq 'sendmail' ) {
-        return $class->_send_mt_sendmail( \%hdrs, $body, $mgr );
-    }
-    elsif ( $xfer eq 'smtp' ) {
-        return $class->_send_mt_smtp( \%hdrs, $body, $mgr );
-    }
-    elsif ( $xfer eq 'debug' ) {
-        return $class->_send_mt_debug( \%hdrs, $body, $mgr );
-    }
-    else {
-        return $class->error(
-            MT->translate( "Unknown MailTransfer method '[_1]'", $xfer ) );
+    my $xfer_method = $class->can("_send_mt_$xfer");
+    if ($xfer_method) {
+        return $class->$xfer_method(\%hdrs, $body, $mgr);
+    } else {
+        return $class->error(MT->translate("Unknown MailTransfer method '[_1]'", $xfer));
     }
 }
 
