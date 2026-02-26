@@ -171,6 +171,32 @@ for my $data (@suite) {
     }
 }
 
+subtest 'lucene special character alone (MTC-7525)' => sub {
+    my $blog      = MT::Test::Permission->make_blog(name => 'sql_wildcards');
+    my $timestamp = '20250615000000';                                           # 2025-06-15 00:00:00
+    my @special_chars = ('"', '!', '-', '+');
+
+    for my $special_char (@special_chars) {
+        MT::Test::Permission->make_entry(
+            authored_on => $timestamp++,
+            blog_id     => $blog->id,
+            title       => 'test'. $special_char,
+            status      => MT::Entry::RELEASE(),
+        );
+    }
+
+    for my $special_char (@special_chars) {
+        subtest 'test for search='. $special_char => sub {
+            my $app = MT::Test::App->new('MT::App::Search');
+            $app->get_ok({ IncludeBlogs => $blog->id, search => $special_char });
+            is_deeply(found_titles($app), ['test'. $special_char]);
+            $app->content_unlike(qr/Invalid query:/, 'No technical error message exposed');
+        }
+    }
+
+    $blog->remove;
+};
+
 subtest 'No error occurs when there is no blog (bugid:113059)' => sub {
     MT->model('blog')->remove_all;
     %MT::mt_inst = ();
@@ -188,3 +214,9 @@ sub _create_qr_for_undefined_error {
     qr/$err/;
 }
 
+sub found_titles {
+    my ($app) = @_;
+    my @found_titles = $app->wq_find('.search-results-container h2 a')->text;
+    note explain(\@found_titles);
+    return \@found_titles;
+}

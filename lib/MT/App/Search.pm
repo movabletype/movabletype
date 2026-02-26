@@ -1112,7 +1112,8 @@ sub query_parse {
     my $lucene_struct = eval { Lucene::QueryParser::parse_query($search); };
     if ($@) {
         warn $@ if $MT::DebugMode;
-        return;
+        my $term = bless { query => "TERM", term => $search, type => "NORMAL" }, 'Lucene::QueryParser::Term';
+        $lucene_struct = bless [$term], 'Lucene::QueryParser::TopLevel';
     }
     my ( $terms, $joins )
         = $app->_query_parse_core( $lucene_struct, \%columns, $filter_types );

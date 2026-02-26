@@ -136,7 +136,8 @@ sub query_parse {
     my $lucene_struct = eval { Lucene::QueryParser::parse_query($search); };
     if ($@) {
         warn $@ if $MT::DebugMode;
-        return;
+        my $term = bless { query => "TERM", term => $search, type => "NORMAL" }, 'Lucene::QueryParser::Term';
+        $lucene_struct = bless [$term], 'Lucene::QueryParser::TopLevel';
     }
 
     my $terms = $app->_query_parse_terms( $lucene_struct, $filter_types,
@@ -747,7 +748,8 @@ sub _join_content_field {
     my $lucene_struct = eval { Lucene::QueryParser::parse_query($val) };
     if ($@) {
         warn $@ if $MT::DebugMode;
-        return;
+        my $term = bless { query => "TERM", term => $val, type => "NORMAL" }, 'Lucene::QueryParser::Term';
+        $lucene_struct = bless [$term], 'Lucene::QueryParser::TopLevel';
     }
     if ( 'PROHIBITED' eq $term->{type} ) {
         $_->{type} = 'PROHIBITED' foreach @$lucene_struct;
