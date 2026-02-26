@@ -49,11 +49,13 @@ sub send {
     # Sender MUST occur with multi-address from
     $hdrs{Sender} = $hdrs{From}[0] if (ref $hdrs{From} eq 'ARRAY' && scalar(@{ $hdrs{From} }) > 1);
 
-    my $xfer = $conf->MailTransfer;
-    return $class->_send_mt_sendmail(\%hdrs, $body) if $xfer eq 'sendmail';
-    return $class->_send_mt_smtp(\%hdrs, $body)     if $xfer eq 'smtp';
-    return $class->_send_mt_debug(\%hdrs, $body)    if $xfer eq 'debug';
-    return $class->error(MT->translate("Unknown MailTransfer method '[_1]'", $xfer));
+    my $xfer        = $conf->MailTransfer;
+    my $xfer_method = $class->can("_send_mt_$xfer");
+    if ($xfer_method) {
+        return $class->$xfer_method(\%hdrs, $body);
+    } else {
+        return $class->error(MT->translate("Unknown MailTransfer method '[_1]'", $xfer));
+    }
 }
 
 sub fix_xfer_enc {
