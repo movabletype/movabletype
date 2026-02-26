@@ -1968,6 +1968,7 @@ BEGIN {
                 default => sub { $_[0]->SearchResultDisplay }
             },
             'SearchExcerptWords'    => { default => 40, },
+            'SearchEscapeUnderscore' => { default => 0 },
             'SearchDefaultTemplate' => { default => 'default.tmpl', },
             'ContentDataSearchDefaultTemplate' =>
                 { default => 'content_data_default.tmpl' },

@@ -589,19 +589,28 @@ sub _get_not_ids_common {
 sub _get_normal_ids_for_actual_fields {
     my $app = shift;
     my ( $value, $orig_terms ) = @_;
+
+    my $like;
+    my $escape_char = '!';
+    if ($app->config->SearchEscapeUnderscore) {
+        $value =~ s/($escape_char|_|%)/$escape_char$1/g;
+    } else {
+        $value =~ s/($escape_char|%)/$escape_char$1/g;
+    }
+    $like = { like => "%$value%", escape => $escape_char };
     my $args = {
         fetchonly => { id => 1 },
         joins     => [
             MT->model('content_field_index')->join_on(
                 undef,
                 [   { content_data_id => \'= cd_id' },
-                    [   { value_varchar => { like => "%$value%" } },
+                    [   { value_varchar => $like },
                         '-or',
-                        { value_text => { like => "%$value%" } },
+                        { value_text => $like },
                         '-or',
-                        { value_float => { like => "%$value%" } },
+                        { value_float => $like },
                         '-or',
-                        { value_double => { like => "%$value%" } },
+                        { value_double => $like },
                     ],
                 ],
                 {   join => MT->model('content_field')->join_on(
@@ -628,6 +637,12 @@ sub _get_normal_ids_for_reference_fields {
     my $app = shift;
     my ( $value, $orig_terms ) = @_;
 
+    my $escape_char = '!';
+    my $escape_underscore = $app->param('escape_underscore');
+    if ($app->config->SearchEscapeUnderscore || $escape_underscore) {
+        $value =~ s/($escape_char|_|%)/$escape_char$1/g;
+    }
+
     my %content_data_ids;
     my $registry = $app->registry('content_field_types');
     for my $type ( keys %$registry ) {
@@ -636,7 +651,7 @@ sub _get_normal_ids_for_reference_fields {
             unless $type_registry->{data_type} eq 'integer'
             && $type_registry->{search_class}
             && $type_registry->{search_columns};
-        my @terms = map { +( '-or', +{ $_ => +{ like => "%$value%" } } ) }
+        my @terms = map { +( '-or', +{ $_ => +{ like => "%$value%", escape => $escape_char } } ) }
             @{ $type_registry->{search_columns} };
         shift @terms;
         my $args = {
@@ -715,22 +730,6 @@ sub _get_normal_ids_for_content_type_field {
 sub _filter_terms {
     my $app = shift;
     +{ status => MT::ContentStatus::RELEASE() };
-}
-
-sub _get_rvalue {
-    my $app = shift;
-
-    my $val = $_[1];
-    $val =~ s/\\([^\\])/$1/g;
-    $val =~ s/%/\\%/;
-
-    my %rvalues = (
-        REQUIREDlike_sql   => \"LIKE '%$val%'",
-        NORMALlike_sql     => \"LIKE '%$val%'",
-        PROHIBITEDlike_sql => \"NOT LIKE '%$val%'",
-    );
-
-    $rvalues{ $_[0] } || $app->SUPER::_get_rvalue(@_);
 }
 
 sub _join_content_field {

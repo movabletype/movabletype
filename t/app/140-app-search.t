@@ -21,155 +21,192 @@ use JSON;
 
 $test_env->prepare_fixture('db_data');
 
-my $blog  = MT->model('blog')->load(1);
-my $entry = MT->model('entry')->load({
-    blog_id => $blog->id,
-    status  => MT::Entry::RELEASE(),
-});
+subtest 'basic cases' => sub {
+    my $blog  = MT->model('blog')->load(1);
+    my $entry = MT->model('entry')->load({
+        blog_id => $blog->id,
+        status  => MT::Entry::RELEASE(),
+    });
 
-my $template = MT->model('template')->load({name => 'Search Results', blog_id => $blog->id});
-my $text = $template->text;
-$text =~ s!(<\$mt:Include module="Entry Summary" )!$1 parent="2"!;
-$template->text($text);
-$template->save;
+    my @suite = ({
+            label  => 'Found an entry',
+            params => {
+                search       => $entry->title,
+                IncludeBlogs => $blog->id,
+                limit        => 20,
+            },
+            expected => qr/id="entry-@{[ $entry->id ]}"/,
+        },
+        {
+            label  => 'Not found',
+            params => {
+                search       => 'Search word for no matching',
+                IncludeBlogs => $blog->id,
+                limit        => 20,
+            },
+            expected => qr/No results found/,
+        },
+        {
+            label  => 'No blog was specified',
+            params => {
+                search => $entry->title,
+                limit  => 20,
+            },
+            expected => qr/id="entry-@{[ $entry->id ]}"/,
+        },
+        {
+            label  => 'Only "IncludeBlogs=all" is specified',
+            params => {
+                IncludeBlogs => 'all',
+                search       => $entry->title,
+                limit        => 20,
+            },
+            expected => qr/id="entry-@{[ $entry->id ]}"/,
+        },
+        {
+            label  => 'No error occurs without search string (MTC-26732)',
+            params => {
+                IncludeBlogs => $blog->id,
+                limit        => 20,
+            },
+            expected   => qr|<h1[^>]*>Instructions</h1>|,
+            unexpected => _create_qr_for_undefined_error(),
+        },
+        {
+            label  => 'No error occurs with empty search string (MTC-26732)',
+            params => {
+                search       => '',
+                IncludeBlogs => $blog->id,
+                limit        => 20,
+            },
+            expected   => qr|<h1[^>]*>Instructions</h1>|,
+            unexpected => _create_qr_for_undefined_error(),
+        },
+        {
+            label  => 'No uuv with bogus SearchMaxResults',
+            params => {
+                search           => $entry->title,
+                IncludeBlogs     => $blog->id,
+                limit            => 20,
+                SearchMaxResults => 'test',
+            },
+            generic_error => 1,
+            no_warnings   => 1,
+        },
+        {
+            label  => 'No uuv with bogus SearchMaxResults and valid tags',
+            params => {
+                IncludeBlogs     => $blog->id,
+                limit            => 20,
+                tag              => 'rain',
+                SearchMaxResults => 'test',
+            },
+            generic_error => 1,
+            no_warnings   => 1,
+        },
+        {
+            label  => 'No uuv with if-modified-since and valid tags',
+            params => {
+                IncludeBlogs => $blog->id,
+                limit        => 20,
+                tag          => 'rain',
+            },
+            headers     => { if_modified_since => HTTP::Date::time2str(time) },
+            expected    => qr/id="entry-@{[ $entry->id ]}"/,
+            no_warnings => 1,
+        },
+        {
+            label  => 'No uuv with format=js',
+            params => {
+                IncludeBlogs => $blog->id,
+                search       => $entry->title,
+                limit        => 20,
+                format       => 'js',
+            },
+            headers     => { if_modified_since => HTTP::Date::time2str(time) },
+            expected    => qr/id=\\"entry-@{[ $entry->id ]}\\"/,
+            no_warnings => 1,
+        },
+    );
 
-my @suite = ({
-        label  => 'Found an entry',
-        params => {
-            search       => $entry->title,
-            IncludeBlogs => $blog->id,
-            limit        => 20,
-        },
-        expected => qr/id="entry-@{[ $entry->id ]}"/,
-    },
-    {
-        label  => 'Not found',
-        params => {
-            search       => 'Search word for no matching',
-            IncludeBlogs => $blog->id,
-            limit        => 20,
-        },
-        expected => qr/No results found/,
-    },
-    {
-        label  => 'No blog was specified',
-        params => {
-            search => $entry->title,
-            limit  => 20,
-        },
-        expected => qr/id="entry-@{[ $entry->id ]}"/,
-    },
-    {
-        label  => 'Only "IncludeBlogs=all" is specified',
-        params => {
-            IncludeBlogs => 'all',
-            search       => $entry->title,
-            limit        => 20,
-        },
-        expected => qr/id="entry-@{[ $entry->id ]}"/,
-    },
-    {
-        label  => 'No error occurs without search string (MTC-26732)',
-        params => {
-            IncludeBlogs => $blog->id,
-            limit        => 20,
-        },
-        expected   => qr|<h1[^>]*>Instructions</h1>|,
-        unexpected => _create_qr_for_undefined_error(),
-    },
-    {
-        label  => 'No error occurs with empty search string (MTC-26732)',
-        params => {
-            search       => '',
-            IncludeBlogs => $blog->id,
-            limit        => 20,
-        },
-        expected   => qr|<h1[^>]*>Instructions</h1>|,
-        unexpected => _create_qr_for_undefined_error(),
-    },
-    {
-        label  => 'No uuv with bogus SearchMaxResults',
-        params => {
-            search           => $entry->title,
-            IncludeBlogs     => $blog->id,
-            limit            => 20,
-            SearchMaxResults => 'test',
-        },
-        generic_error => 1,
-        no_warnings   => 1,
-    },
-    {
-        label  => 'No uuv with bogus SearchMaxResults and valid tags',
-        params => {
-            IncludeBlogs     => $blog->id,
-            limit            => 20,
-            tag              => 'rain',
-            SearchMaxResults => 'test',
-        },
-        generic_error => 1,
-        no_warnings   => 1,
-    },
-    {
-        label  => 'No uuv with if-modified-since and valid tags',
-        params => {
-            IncludeBlogs => $blog->id,
-            limit        => 20,
-            tag          => 'rain',
-        },
-        headers     => { if_modified_since => HTTP::Date::time2str(time) },
-        expected    => qr/id="entry-@{[ $entry->id ]}"/,
-        no_warnings => 1,
-    },
-    {
-        label  => 'No uuv with format=js',
-        params => {
-            IncludeBlogs => $blog->id,
-            search       => $entry->title,
-            limit        => 20,
-            format       => 'js',
-        },
-        headers     => { if_modified_since => HTTP::Date::time2str(time) },
-        expected    => qr/id=\\"entry-@{[ $entry->id ]}\\"/,
-        no_warnings => 1,
-    },
-);
+    my $json_encoder = JSON->new->canonical;
 
-my $json_encoder = JSON->new->canonical;
+    for my $data (@suite) {
 
-for my $data (@suite) {
+        subtest $data->{label} => sub {
+            # We should run the fresh instance.
+            local %MT::mt_inst;
 
-    # We should run the fresh instance.
-    local %MT::mt_inst;
+            my $params_str = $json_encoder->encode($data->{params});
 
-    my $params_str = $json_encoder->encode($data->{params});
+            my $app = MT::Test::App->new('MT::App::Search');
+            my @warnings;
+            local $SIG{__WARN__} = sub { push @warnings, @_ };
+            local %ENV = %ENV;
+            if ($data->{headers}) {
+                $ENV{ 'HTTP_' . uc $_ } = $data->{headers}{$_} for keys %{ $data->{headers} };
+            }
+            $app->get_ok($data->{params});
 
-    my $app = MT::Test::App->new('MT::App::Search');
-    my @warnings;
-    local $SIG{__WARN__} = sub { push @warnings, @_ };
-    local %ENV = %ENV;
-    if ($data->{headers}) {
-        $ENV{'HTTP_' . uc $_} = $data->{headers}{$_} for keys %{$data->{headers}};
+            if ($data->{expected}) {
+                $app->content_like($data->{expected});
+            }
+            if ($data->{unexpected}) {
+                $app->content_unlike($data->{unexpected});
+            }
+            if ($data->{generic_error}) {
+                ok $app->generic_error, "showed an error message: " . $app->generic_error;
+            }
+            if ($data->{no_warnings}) {
+                ok !@warnings, "no warnings" or note explain \@warnings;
+            }
+
+            unless ($data->{expected} || $data->{unexpected} || $data->{generic_error} || $data->{no_warnings}) {
+                die 'no test';
+            }
+        };
     }
-    $app->get_ok($data->{params});
+};
 
-    note($data->{label});
-    if ($data->{expected}) {
-        $app->content_like($data->{expected});
-    }
-    if ($data->{unexpected}) {
-        $app->content_unlike($data->{unexpected});
-    }
-    if ($data->{generic_error}) {
-        ok $app->generic_error, "showed an error message: " . $app->generic_error;
-    }
-    if ($data->{no_warnings}) {
-        ok !@warnings, "no warnings" or note explain \@warnings;
+subtest 'search by special-ish characters' => sub {
+    my $blog      = MT::Test::Permission->make_blog(name => 'sql_wildcards');
+    my $timestamp = '20250615000000';                                           # 2025-06-15 00:00:00
+
+    for my $label ('A Windy Day', 'PERCENT%INCLUDED', 'UNDERSCORE_INCLUDED') {
+        MT::Test::Permission->make_entry(
+            authored_on => $timestamp++,
+            blog_id     => $blog->id,
+            title       => $label,
+            status      => MT::Entry::RELEASE(),
+        );
     }
 
-    unless ($data->{expected} || $data->{unexpected} || $data->{generic_error} || $data->{no_warnings}) {
-        die 'no test';
-    }
-}
+    subtest 'underscore in search as wildcard works' => sub {
+        my $app = MT::Test::App->new('MT::App::Search');
+        $app->get_ok({ IncludeBlogs => $blog->id, search => 'A Windy D_y' });
+        is_deeply(found_titles($app), ['A Windy Day']);
+    };
+
+    subtest 'percent in search as wildcard does not work' => sub {
+        my $app = MT::Test::App->new('MT::App::Search');
+        $app->get_ok({ IncludeBlogs => $blog->id, search => 'A Windy D%' });
+        is_deeply(found_titles($app), []);
+    };
+
+    subtest 'underscore alone' => sub {
+        my $app = MT::Test::App->new('MT::App::Search');
+        $app->get_ok({ IncludeBlogs => $blog->id, search => '_' });
+        is_deeply(found_titles($app), ['UNDERSCORE_INCLUDED', 'PERCENT%INCLUDED', 'A Windy Day']);
+    };
+
+    subtest 'percent alone' => sub {
+        my $app = MT::Test::App->new('MT::App::Search');
+        $app->get_ok({ IncludeBlogs => $blog->id, search => '%' });
+        is_deeply(found_titles($app), ['PERCENT%INCLUDED']);
+    };
+
+    $blog->remove;
+};
 
 subtest 'lucene special character alone (MTC-7525)' => sub {
     my $blog      = MT::Test::Permission->make_blog(name => 'sql_wildcards');
