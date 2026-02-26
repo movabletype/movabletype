@@ -202,8 +202,7 @@ sub _send_mt_smtp {
         my @mechs = MT->config->SMTPAuthSASLMechanism || do {
             my $m = $smtp->supports('AUTH', 500, ["Command unknown: 'AUTH'"]) || '';
             # XXX: Do we still need to omit DIGEST-MD5?
-            $m =~ s/DIGEST-MD5//;
-            split /\s+/, $m;
+            grep !/^(?:DIGEST-MD5|XOAUTH2)$/, split /\s+/, $m;
         };
         my $authenticated;
         for my $mech (@mechs) {
