@@ -360,6 +360,142 @@ sub _send_mt_smtp {
     1;
 }
 
+sub _send_mt_smtp_oauth {
+    my $class = shift;
+    my ($hdrs, $body, $mgr) = @_;
+    $hdrs->{To} = $mgr->DebugEmailAddress if (is_valid_email($mgr->DebugEmailAddress || ''));
+
+    my $provider = $mgr->MailSMTPOAuthProvider
+        or return $class->error(MT->translate("MailSMTPOAuthProvider is required."));
+
+    my $reg = MT->registry('xoauth2_providers', $provider)
+        or return $class->error(MT->translate("MailSMTPOAuthProvider is invalid: [_1]", $provider));
+
+    my $params_handler = $reg->{params_handler}
+        or return $class->error(MT->translate("params_handler for [_1] is not registered.", $provider));
+    my $refresh_handler = $reg->{refresh_handler}
+        or return $class->error(MT->translate("refresh_handler for [_1] is not registered.", $provider));
+
+    my $params = MT->handler_to_coderef($params_handler)->();
+    my $email  = $params->{email}
+        or return $class->error(MT->translate("params_handler for [_1] returns no email.", $provider));
+
+    # SMTP Configuration
+    my $host = $reg->{host};
+
+    my $auth            = $reg->{auth} || '';
+    my $ssl_verify_mode = $auth ? (($mgr->SSLVerifyNone || $mgr->SMTPSSLVerifyNone) ? 0 : 1) : undef;
+    my $port            = $reg->{port};
+
+    # Check required modules;
+    my @modules = (@{ $SMTPModules{Core} }, @{ $SMTPModules{Auth} }, @{ $SMTPModules{SSLorTLS} });
+
+    $class->can_use(\@modules) or return;
+
+    # bugid: 111227
+    # Do not use IO::Socket::INET6 on Windows environment for avoiding an error.
+    if ($^O eq 'MSWin32' && $Net::SMTPS::ISA[0] eq 'IO::Socket::INET6') {
+        shift @Net::SMTPS::ISA;
+        require IO::Socket::INET;
+        unshift @Net::SMTPS::ISA, 'IO::Socket::INET';
+    }
+
+    my %args = (
+        Port    => $port,
+        Timeout => $mgr->SMTPTimeout,
+    );
+    $args{Debug} = 1 if $MT::DebugMode;
+    if ($auth) {
+        $args{doSSL}               = $auth;
+        $args{SSL_verify_mode}     = $ssl_verify_mode;
+        $args{SSL_version}         = MT->config->SSLVersion || MT->config->SMTPSSLVersion || 'SSLv23:!SSLv3:!SSLv2';
+        $args{SSL_ca_file}         = Mozilla::CA::SSL_ca_file() if eval { require Mozilla::CA; 1 };
+        $args{SSL_verifycn_name}   = $host;
+        $args{SSL_verifycn_scheme} = 'smtp';
+    }
+
+    # Overwrite the arguments of Net::SMTPS.
+    my $smtp_opts = $mgr->SMTPOptions;
+    if (ref($smtp_opts) eq 'HASH' && %$smtp_opts) {
+        %args = (%args, %$smtp_opts);
+    }
+
+    # Make a smtp object
+    my $smtp = Net::SMTPS->new($host, %args)
+        or return $class->error(MT->translate('Error connecting to SMTP server [_1]:[_2]', $host, $port));
+
+    require Authen::SASL;
+    Authen::SASL->import('Perl');    # force Authen::SASL::Perl
+
+    my $retry = 2;
+    my $success;
+    my $error;
+    while ($retry--) {
+        my $token = $params->{access_token}
+            or return $class->error(MT->translate("params_handler for [_1] returns no access_token.", $provider));
+        my $sasl = Authen::SASL->new(
+            mechanism => "XOAUTH2",
+            callback  => {
+                user     => $email,
+                pass     => $token,
+                authname => $email,
+            },
+            debug => $MT::DebugMode,
+        );
+
+        if (eval { $smtp->auth($sasl) }) {
+            $success = 1;
+            last;
+        } else {
+            $error = $smtp->message;
+            if ($refresh_handler && $smtp->code == 535) {
+                if (my $res = MT->handler_to_coderef($refresh_handler)->()) {
+                    if ($res->{access_token}) {
+                        $params->{access_token} = $res->{access_token};
+                    } elsif ($res->{error}) {
+                        $error = $res->{error};
+                        last;
+                    }
+                }
+            }
+        }
+        sleep 1;
+    }
+    return $class->error(MT->translate("Mail authentication failed: [_1]", $error || $smtp->message)) unless $success;
+
+    # Set sender header if smtp user id is valid email
+    $hdrs->{Sender} = $email if MT::Util::is_valid_email($email);
+
+    $class->_dedupe_headers($hdrs);
+
+    # Sending mail (XXX: better to use sender as ->mail only takes a scalar?)
+    $smtp->mail($email);
+
+    my ($hdr, @recipients) = $class->_render_headers($hdrs, 'hide_bcc');
+
+    $smtp->recipient($_) for @recipients;
+
+    my $_check_smtp_err = sub {
+        # status 4xx or 5xx is not send message.
+        die scalar $smtp->message() if $smtp->status() =~ /^[45]$/;
+    };
+
+    eval {
+        $smtp->data();
+        $smtp->datasend($hdr);
+        $_check_smtp_err->();
+        $smtp->datasend("\n");
+        $smtp->datasend($body);
+        $_check_smtp_err->();
+        $smtp->dataend();
+        $smtp->quit;
+    };
+    if ($@) {
+        return $class->error($@);
+    }
+    1;
+}
+
 sub _lc {
     my $field = shift;
     my $lc_field = lc $field;
