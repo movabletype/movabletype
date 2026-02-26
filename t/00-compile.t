@@ -665,6 +665,8 @@ use_ok('MT::DataAPI::Resource::v7::StatisticsYearMonth');
 
 use_ok('MT::App::Search::Common');
 
+use_ok('MT::ContentData::Validator');
+
 SKIP: {
     my @modules
         = qw( parent Plack CGI::PSGI CGI::Parse::PSGI );
