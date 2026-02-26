@@ -1250,6 +1250,88 @@ sub make_list_props {
                 base  => '__virtual.modified_by',
                 order => $order + 500,
             },
+            invalid_fields => {
+                base    => '__virtual.single_select',
+                bulk_html => sub {
+                    my ($prop, $objs) = @_;
+                    require MT::ContentData::Validator;
+                    my $app = MT->app;
+                    my @out;
+                    for my $obj (@{$objs}) {
+                        my $errors = MT::ContentData::Validator::verify_content_data($app, $obj->content_type, $obj);
+                        if ($errors) {
+                            push @out, scalar(@{$errors});
+                        } else {
+                            push @out, 0;
+                        }
+                    }
+                    return @out;
+                },
+                bulk_sort => sub {
+                    my ($prop, $objs) = @_;
+                    require MT::ContentData::Validator;
+                    my $app = MT->app;
+                    sort {
+                        scalar @{MT::ContentData::Validator::verify_content_data($app, $a->content_type, $a) || []}
+                        <=>
+                        scalar @{MT::ContentData::Validator::verify_content_data($app, $b->content_type, $b) || []}
+                    } @{$objs};
+                },
+                display => 'optional',
+            filter_tmpl => sub {
+                my $label_value = MT->translate('Invalid fields');
+                return <<"__FILTER_TMPL__";
+<mt:setvar name="label" value="${label_value}">
+<mt:var name="filter_form_single_select">
+__FILTER_TMPL__
+            },
+                label           => 'Invalid Fields',
+                label_via_param => sub {
+                    my $prop = shift;
+                    my ($app, $val) = @_;
+                    if ($val) {
+                        return MT->translate('Has Invalid Fields');
+                    } else {
+                        return MT->translate('No Invalid Fields');
+                    }
+                },
+                order => $order + 600,
+                single_select_options => [{
+                        label => MT->translate('exists'),
+                        value => 1,
+                    },
+                    {
+                        label => MT->translate('none'),
+                        value => 0,
+                    },
+                ],
+                singleton => 1,
+                terms => sub {
+                    my $prop = shift;
+                    my ( $args, $db_terms, $db_args ) = @_;
+
+                    require MT::ContentData::Validator;
+                    my $app = MT->app;
+
+                    my $filter;
+                    if ($args->{value}) {
+                        $filter = sub { MT::ContentData::Validator::verify_content_data($app, $_[0]->content_type, $_[0]) };
+                    } else {
+                        $filter = sub { !MT::ContentData::Validator::verify_content_data($app, $_[0]->content_type, $_[0]) };
+                    }
+
+                    my @id;
+
+                    require MT::ContentData;
+                    my $iter = MT::ContentData->load_iter($db_terms, $db_args);
+                    while (my $cd = $iter->()) {
+                        push @id, $cd->id if $filter->($cd);
+                    }
+
+                    return { id => @id ? \@id : 0 };
+                },
+                # view_sort => [],
+            },
             %{$field_list_props},
         };
         MT::__merge_hash( $props->{$key}, $common_list_props );
@@ -2319,6 +2401,35 @@ sub load_by_id_or_name {
         $cd = $class->load( { name => $id_or_name, blog_id => $blog_id } );
     }
     $cd;
+}
+
+sub system_filters {
+    return {
+        has_invalid_fields => {
+            items => [
+                {
+                    type => 'invalid_fields',
+                    args => {
+                        value => 1,
+                    },
+                }
+            ],
+            label => 'Has Invalid Fields',
+            order => 100,
+        },
+        no_invalid_fields => {
+            items => [
+                {
+                    type => 'invalid_fields',
+                    args => {
+                        value => 0,
+                    },
+                }
+            ],
+            label => 'No Invalid Fields',
+            order => 200,
+        },
+    };
 }
 
 1;
