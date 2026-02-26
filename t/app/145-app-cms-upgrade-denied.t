@@ -45,9 +45,6 @@ sub setup_upgrade_test {
     $config->save or die $config->errstr;
 }
 
-use constant TEST_USERNAME => 'restricted_user';
-use constant TEST_PASSWORD => 'test1234';
-
 subtest 'Superuser: redirected to upgrade' => sub {
     setup_upgrade_test();
     my $app =
@@ -57,15 +54,17 @@ subtest 'Superuser: redirected to upgrade' => sub {
 };
 
 subtest 'Non-superuser: upgrade denied' => sub {
+    my $test_name = 'restricted_user';
+    my $test_pass = 'test1234';
     setup_upgrade_test();
     my $author = MT::Test::Permission->make_author(
-        name     => TEST_USERNAME,
-        password => TEST_PASSWORD,
+        name     => $test_name,
+        password => $test_pass,
         nickname => 'Test User',
     );
     my $app =
       MT::Test::App->new( app_class => 'MT::App::CMS', no_redirect => 1 );
-    $app->post_ok( { username => TEST_USERNAME, password => TEST_PASSWORD } );
+    $app->post_ok( { username => $test_name, password => $test_pass } );
     $app->content_like(
 qr/Please contact your Movable Type administrator for assistance with upgrading Movable Type\./
     );
