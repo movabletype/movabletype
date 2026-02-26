@@ -1341,6 +1341,20 @@ $.mtValidateRules = {
             return false;
         }
     },
+    '.ss-validator': function ($e) {
+        // deprecated (MTC-31157)
+        var contentFieldId = $e.data('mtContentFieldId');
+        if (!contentFieldId) {
+            return true;
+        }
+        if (window.ssValidateError && window.ssValidateError[contentFieldId]) {
+            this.error = true;
+            this.errstr = window.ssValidateError[contentFieldId];
+            return false;
+        } else {
+            return true;
+        }
+    }
 };
 
 $.mtValidateAddRules = function ( rules ) {
