@@ -9,7 +9,7 @@
 </div>
 <div class="row down-column">
   <div class="col-12 down-column-contents">
-    <canvas id="graph" style="width: 99%;"></canvas>
+    <canvas id="graph" style="width: 99%; height: 200px;"></canvas>
   </div>
 </div>
 <div class="mt-5 stats_provider text-right text-muted">Provider:<mt:var name="stats_provider" escape="html"></div>
@@ -108,10 +108,13 @@
           scales: {
             x: {
               ticks: {
-                callback: function(val, index) {
-                  return index % 2 === 0 ? '': this.getLabelForValue(val);
+                padding: 13,
+                maxRotation: 0,
+                autoSkipPadding: 24,
+                color: '#999',
+                font: {
+                  size: 13,
                 },
-                padding: 11,
               },
               grid: {
                 tickLength: -8,
@@ -127,7 +130,13 @@
               grid: {
                 drawTicks: false,
               },
-            }
+            },
+          },
+          layout: {
+            padding: {
+              left: 32,
+              right: 32,
+            },
           },
           plugins: {
             legend: {
