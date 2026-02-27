@@ -159,7 +159,7 @@ document.addEventListener('DOMContentLoaded', () => {
   <mt:if name="zero_state">
   var zeroStateLabel = '<mt:var name="zero_state" escape="js">';
   <mt:else>
-  var zeroStateLabel = '<mt:var name="object_label" lower_case="1" escape="js">';
+  var zeroStateLabel = '<mt:var name="object_label" escape="js">';
   </mt:if>
 
   var buttonActions = {};
@@ -184,7 +184,8 @@ document.addEventListener('DOMContentLoaded', () => {
   var listActions = {};
   <mt:loop name="list_actions">
   listActions['<mt:var name="key">'] = {
-    type:'core'
+    type:'core',
+    js_message: '<__trans phrase="<mt:var name="js_message">" escape="js">'
     <mt:if name="action_mode">,mode:'<mt:var name="action_mode">'</mt:if>
     <mt:if name="input">,input:'<mt:var name="input_label" escape="js">'</mt:if>
     <mt:if name="continue_prompt">,continue_prompt:"<mt:var name="continue_prompt" escape="js">"</mt:if>
@@ -202,7 +203,8 @@ document.addEventListener('DOMContentLoaded', () => {
   var moreListActions = {};
   <mt:loop name="more_list_actions">
   moreListActions['<mt:var name="key">'] = {
-    type:'core'
+    type:'core',
+    js_message: '<__trans phrase="<mt:var name="js_message">" escape="js">'
     <mt:if name="action_mode">,mode:'<mt:var name="action_mode">'</mt:if>
     <mt:if name="input">,input:'<mt:var name="input_label" escape="js">'</mt:if>
     <mt:if name="continue_prompt">,continue_prompt:"<mt:var name="continue_prompt" escape="js">"</mt:if>
@@ -244,13 +246,13 @@ document.addEventListener('DOMContentLoaded', () => {
   <mt:if name="action_label">
     var singular = '<mt:var name="action_label">';
   <mt:else>
-    var singular = '<mt:var name="object_label" lower_case="1" escape="js">';
+    var singular = '<mt:if name="object_type" eq="content_data"><mt:var name="object_label" escape="js"><mt:else><mt:var name="object_label" lower_case="1" escape="js"></mt:if>';
   </mt:if>
 
   <mt:if name="action_label_plural">
   var plural = '<mt:var name="action_label_plural">';
   <mt:else>
-  var plural = '<mt:var name="object_label_plural" lower_case="1" escape="js">';
+  var plural = '<mt:if name="object_type" eq="content_data"><mt:var name="object_label_plural" escape="js"><mt:else><mt:var name="object_label_plural" lower_case="1" escape="js"></mt:if>';
   </mt:if>
 
   var objectLabel = '<mt:var name="object_label" escape="js">';

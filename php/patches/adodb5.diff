@@ -1,5 +1,5 @@
 diff --git a/php/vendor/adodb/adodb-php/adodb-active-record.inc.php b/php/vendor/adodb/adodb-php/adodb-active-record.inc.php
-index 5fbe7b90ae..e199688edf 100644
+index 5fbe7b90ae..a1cab3cd92 100644
 --- a/php/vendor/adodb/adodb-php/adodb-active-record.inc.php
 +++ b/php/vendor/adodb/adodb-php/adodb-active-record.inc.php
 @@ -1156,12 +1156,23 @@ global $_ADODB_ACTIVE_DBS;
@@ -36,27 +36,6 @@ index 5fbe7b90ae..e199688edf 100644
  		return $false;
  	}
  
-@@ -1199,7 +1210,19 @@ global $_ADODB_ACTIVE_DBS;
- 	foreach($rows as $row) {
- 
- 		$obj = new $class($table,$primkeyArr,$db);
--		if ($obj->ErrorNo()){
-+
-+		$has_error = false;
-+		if ($db->databaseType == 'mssqlnative') {
-+			if ($obj->ErrorMsg()) {
-+				if ($obj->ErrorNo())
-+					$has_error = true;
-+			}
-+		}
-+		else {
-+			if ($obj->ErrorNo())
-+				$has_error = true;
-+		}
-+		if ($has_error){
- 			$db->_errorMsg = $obj->ErrorMsg();
- 			return $false;
- 		}
 diff --git a/php/vendor/adodb/adodb-php/drivers/adodb-mssqlnative.inc.php b/php/vendor/adodb/adodb-php/drivers/adodb-mssqlnative.inc.php
 index f7e1bcc167..82100b7edc 100644
 --- a/php/vendor/adodb/adodb-php/drivers/adodb-mssqlnative.inc.php

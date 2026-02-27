@@ -29,7 +29,7 @@ sub _find_module {
         $Module = $config;
     }
     else {
-        for my $candidate (qw(YAML::XS YAML::Syck YAML::PP YAML::Tiny)) {
+        for my $candidate (qw(YAML::XS YAML::Syck YAML::Tiny)) {
             if (eval "require $candidate; 1") {
                 $Module = "MT::Util::$candidate";
                 last if eval "require $Module; 1";

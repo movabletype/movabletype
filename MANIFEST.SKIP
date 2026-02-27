@@ -340,6 +340,7 @@ plugins/Loupe
 mt-static/plugins/Loupe
 plugins/mixiComment
 mt-static/plugins/mixiComment
+#!include ~/manifest/plugins/manifest.skip
 
 # 'Extras'
 ^extras/

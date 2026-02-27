@@ -63,7 +63,7 @@ t/selenium/evidence/
 *.swo
 /mt.pid
 
-/node_modules/
+node_modules/
 yarn-error.log
 yarn.lock
 
@@ -92,3 +92,5 @@ CHECKSUMS
 PLUGIN_VERSIONS
 
 *.bak
+
+/local/

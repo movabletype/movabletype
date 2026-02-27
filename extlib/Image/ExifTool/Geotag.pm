@@ -18,6 +18,9 @@
 #               2024/04/23 - PH Added ability to read more OpenTracks GPS tags
 #               2024/08/28 - PH Added support for new Google Takeout JSON format
 #               2024/11/26 - PH Also write GPSMeasureMode and GPSDOP
+#               2024/11/05 - PH Added support for Google Maps "Export timeline data"
+#                               JSON format
+#               2025/09/22 - PH Added ability to read Columbus CSV  log files
 #
 # References:   1) http://www.topografix.com/GPX/1/1/
 #               2) http://www.gpsinformation.org/dale/nmea.htm#GSA
@@ -32,7 +35,7 @@ use vars qw($VERSION);
 use Image::ExifTool qw(:Public);
 use Image::ExifTool::GPS;
 
-$VERSION = '1.81';
+$VERSION = '1.83';
 
 sub JITTER() { return 2 }       # maximum time jitter
 
@@ -273,6 +276,7 @@ sub LoadTrackLog($$;$)
             } elsif (((/\b(GPS)?Date/i and /\b(GPS)?(Date)?Time/i) or /\bTime\(seconds\)/i) and /\Q$csvDelim/) {
                 chomp;
                 @csvHeadings = split /\Q$csvDelim/;
+                my $isColumbus = ($csvHeadings[0] and $csvHeadings[0] eq 'INDEX'); # (Columbus GPS logger)
                 $format = 'CSV';
                 # convert recognized headings to our parameter names
                 foreach (@csvHeadings) {
@@ -304,7 +308,7 @@ sub LoadTrackLog($$;$)
                     } elsif (/^(Pos)?Lon/i) {
                         $param = 'lon';
                         /ref$/i and $param .= 'ref';
-                    } elsif (/^(Pos)?Alt/i) {
+                    } elsif (/^(Pos)?(Alt|Height)/i) {
                         $param = 'alt';
                     } elsif (/^Speed/i) {
                         $param = 'speed';
@@ -312,6 +316,9 @@ sub LoadTrackLog($$;$)
                         if (m{\((mph|km/h|m/s)\)}) {
                             $scaleSpeed = $otherConv{$1};
                             $xtra = " in $1";
+                        } elsif ($isColumbus) { # (Columbus GPS logger)
+                            $scaleSpeed = $otherConv{'km/h'};
+                            $xtra = " in km/h";
                         } else {
                             $xtra = ' in knots';
                         }
@@ -539,12 +546,16 @@ DoneFix:    $isDate = 1;
                         $date = Time::Local::timegm(0,0,0,$1,$2-1,$3);
                     } elsif ($val =~ /(\d{4}).*?(\d{2}).*?(\d{2})/) {
                         $date = Time::Local::timegm(0,0,0,$3,$2-1,$1);
+                    } elsif ($val =~ /^(\d{2})(\d{2})(\d{2})$/) { # (Columbus GPS logger)
+                        $date = Time::Local::timegm(0,0,0,$3,$2-1,$1+2000);
                     }
                 } elsif ($param eq 'time') {
                     if ($val =~ /^(\d{1,2}):(\d{2}):(\d{2}(\.\d+)?).*?(([-+])(\d{1,2}):?(\d{2}))?/) {
                         $secs = (($1 * 60) + $2) * 60 + $3;
                         # adjust for time zone if specified
                         $secs += ($7 * 60 + $8) * ($6 eq '-' ? 60 : -60) if $5;
+                    } elsif ($val =~ /^(\d{2})(\d{2})(\d{2})$/) { # (Columbus GPS logger)
+                        $secs = (($1 * 60) + $2) * 60 + $3;
                     }
                 } elsif ($param eq 'lat' or $param eq 'lon') {
                     $$fix{$param} = Image::ExifTool::GPS::ToDegrees($val, 1);
@@ -1258,7 +1269,7 @@ Category:       foreach $category (qw{pos track alt orient atemp err dop}) {
             my $tag = ($$nvHash{WantGroup} ? "$$nvHash{WantGroup}:" : '') . 'Geolocate';
             # pass along any regular expressions to qualify geolocation search
             my $parms = join ',', grep m(/), split /\s*,\s*/, $geoloc;
-            $parms and $parms = ",$parms,both"; 
+            $parms and $parms = ",$parms,both";
             $et->SetNewValue($tag => "$$fix{lat},$$fix{lon}$parms");
             # (the Geolocate tag will be restored to its original value
             # by RestoreNewValues before the next file in batch processing)
@@ -1334,6 +1345,23 @@ Category:       foreach $category (qw{pos track alt orient atemp err dop}) {
             if (defined $dop) {
                 $et->SetNewValue(GPSMeasureMode => $mm, %opts);
                 $et->SetNewValue(GPSDOP => $dop, %opts);
+                # also set GPSHPositioningError if specified
+                my $hposErr = $$et{OPTIONS}{GeoHPosErr};
+                if ($hposErr) {
+                    $hposErr =~ s/gpsdop/GPSDOP/i;
+                    my $GPSDOP = $dop;
+                    local $SIG{'__WARN__'} = \&Image::ExifTool::SetWarning;
+                    undef $Image::ExifTool::evalWarning;
+                    #### eval GeoHPosErr ($GPSDOP)
+                    $hposErr = eval $hposErr;
+                    my $err = Image::ExifTool::GetWarning() || $@;
+                    if ($err) {
+                        $err = Image::ExifTool::CleanWarning($err);
+                        $et->Warn("Error calculating GPSHPositioningError: $err", 1);
+                    } else {
+                        $et->SetNewValue(GPSHPositioningError => $hposErr, %opts);
+                    }
+                }
             }
         }
         unless ($xmp) {
@@ -1545,9 +1573,10 @@ This module is used by Image::ExifTool
 
 This module loads GPS track logs, interpolates to determine position based
 on time, and sets new GPS values for geotagging images.  Currently supported
-formats are GPX, NMEA RMC/GGA/GLL, KML, IGC, Garmin XML and TCX, Magellan
-PMGNTRK, Honeywell PTNTHPR, Bramor gEO, Winplus Beacon text, Google Takeout
-JSON, GPS/IMU CSV, DJI CSV, ExifTool CSV log files.
+formats are GPX, NMEA RMC/GGA/GLL/GSA/ZDA, KML, IGC, Garmin XML and TCX,
+Magellan PMGNTRK, Honeywell PTNTHPR, Bramor gEO, Winplus Beacon text,
+GPS/IMU CSV, DJI/Columbus/ExifTool CSV format and 3 different Google JSON
+formats.
 
 Methods in this module should not be called directly.  Instead, the Geotag
 feature is accessed by writing the values of the ExifTool Geotag, Geosync

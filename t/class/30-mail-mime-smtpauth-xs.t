@@ -12,4 +12,4 @@ $ENV{MT_TEST_SMTPUSER}       = 'mt';
 $ENV{MT_TEST_SMTPPASSWORD}   = 'test';
 
 my $file = File::Spec->canonpath("$FindBin::Bin/30-mail-smtp.t");
-do $file or die "$file: $!";
+do $file or die "$file: $! $@";

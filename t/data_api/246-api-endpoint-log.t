@@ -26,6 +26,8 @@ my $author = MT->model('author')->load(1);
 $author->email('melody@example.com');
 $author->save;
 
+binmode STDOUT, ':encoding(utf8)';
+
 # test.
 my $suite = suite();
 test_data_api($suite);
