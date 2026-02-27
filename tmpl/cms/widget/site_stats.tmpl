@@ -96,6 +96,7 @@
       }
 
       Chart.defaults.font.size = 14;
+      Chart.defaults.elements.point.hoverRadius = 5;
       const ctx = document.getElementById('graph');
       new Chart(ctx, {
         type: 'line',
@@ -105,6 +106,11 @@
         },
         options: {
           maintainAspectRatio: false,
+          animation: false,
+          interaction: {
+            intersect: false,
+            mode: 'index',
+          },
           scales: {
             x: {
               ticks: {
