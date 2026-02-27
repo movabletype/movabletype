@@ -1493,41 +1493,6 @@ sub _validate_content_fields {
     @errors ? \@errors : undef;
 }
 
-sub validate_content_fields {
-    my $app = shift;
-
-    # TODO: permission check
-
-    my $blog_id         = $app->blog ? $app->blog->id : undef;
-    my $content_type_id = $app->param('content_type_id') || 0;
-    my $content_type    = MT::ContentType->load( { id => $content_type_id } );
-
-    return $app->json_error( $app->translate('Invalid request.') )
-        unless $blog_id && $content_type;
-
-    my $content_field_types = $app->registry('content_field_types');
-    my $data                = {};
-    my $data_is_updated;
-    foreach my $f ( @{ $content_type->fields } ) {
-        my $content_field_type = $content_field_types->{ $f->{type} };
-        $data->{ $f->{id} }
-            = _get_form_data( $app, $content_field_type, $f );
-        $data_is_updated->{ $f->{id} } = 1;
-    }
-
-    my $invalid_count = 0;
-    my %invalid_fields;
-    if ( my $errors = _validate_content_fields( $app, $content_type, $data, $data_is_updated ) )
-    {
-        $invalid_count  = scalar @{$errors};
-        %invalid_fields = map { $_->{field_id} => $_->{error} } @{$errors};
-    }
-
-    $app->json_result(
-        { invalidCount => $invalid_count, invalidFields => \%invalid_fields }
-    );
-}
-
 sub _get_form_data {
     my ( $app, $content_field_type, $form_data ) = @_;
 
