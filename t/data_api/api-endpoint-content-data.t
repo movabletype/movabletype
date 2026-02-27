@@ -2698,7 +2698,7 @@ sub normal_tests_for_delete {
 
 sub restriction_tests_for_list {
     test_data_api(
-        {   note   => 'restrict sitei_id = 1',
+        {   note   => 'restrict site_id = 1',
             path   => "/v4/sites/$site_id/contentTypes/$content_type_id/data",
             method => 'GET',
             setup        => sub {
