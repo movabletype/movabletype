@@ -462,8 +462,8 @@ sub _send_mt_smtp_oauth {
     }
     return $class->error(MT->translate("Mail authentication failed: [_1]", $error || $smtp->message)) unless $success;
 
-    # Set sender header if smtp user id is valid email
-    $hdrs->{Sender} = $email if MT::Util::is_valid_email($email);
+    # This seems unnecessary for SMTP OAuth
+    # $hdrs->{Sender} = $email if MT::Util::is_valid_email($email);
 
     $class->_dedupe_headers($hdrs);
 
