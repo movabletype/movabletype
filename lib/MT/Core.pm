@@ -1113,21 +1113,22 @@ BEGIN {
                         while ( my ( $count, $id ) = $iter->() ) {
                             $map{$id} = $count;
                         }
-                        my $op
-                            = $args->{option} eq 'equal'         ? '=='
-                            : $args->{option} eq 'not_equal'     ? '!='
-                            : $args->{option} eq 'greater_than'  ? '<'
-                            : $args->{option} eq 'greater_equal' ? '<='
-                            : $args->{option} eq 'less_than'     ? '>'
-                            : $args->{option} eq 'less_equal'    ? '>='
-                            :                                      '';
-                        return @$objs unless $op;
-                        my $val     = $args->{value};
-                        my $sub     = eval "sub { $val $op shift }";
+
+                        my $val = $args->{value};
+                        return @$objs unless defined($val) && $val =~ m/\A[0-9]+\z/;
+
+                        my %comparators = (
+                            equal         => sub { $val == $_[0] },
+                            not_equal     => sub { $val != $_[0] },
+                            greater_than  => sub { $val < $_[0] },
+                            greater_equal => sub { $val <= $_[0] },
+                            less_than     => sub { $val > $_[0] },
+                            less_equal    => sub { $val >= $_[0] },
+                        );
+                        my $cmp = $comparators{ $args->{option} }
+                            or return @$objs;
                         my $ref_col = $prop->ref_column;
-                        return
-                            grep { $sub->( $map{ $_->$ref_col } || 0 ) }
-                            @$objs;
+                        return grep { $cmp->($map{ $_->$ref_col } || 0) } @$objs;
                     },
                 },
             },
