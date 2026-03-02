@@ -318,8 +318,8 @@ sub _send_mt_smtp_oauth {
     require Authen::SASL;
     Authen::SASL->import('Perl');    # force Authen::SASL::Perl
 
-    # If SMTP user ID is valid email address, it's more suitable for Sender header.
-    $hdrs->{Sender} = $email if $email && $hdrs->{From} ne $email && is_valid_email($email);
+    # This seems unnecessary for SMTP OAuth
+    # $hdrs->{Sender} = $email if $email && $hdrs->{From} ne $email && is_valid_email($email);
 
     my $retry = 2;
     my $success;
