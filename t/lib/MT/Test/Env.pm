@@ -384,7 +384,7 @@ sub _drop_existing_tables {
         local $SIG{__WARN__};
         DBI->connect($dsn, $info->{DBUser}, $info->{DBPassword}, { PrintError => 0 });
     } or return;
-    my $rows = $dbh->table_info->fetchall_arryref;
+    my $rows = $dbh->table_info->fetchall_arrayref;
     for my $row (@$rows) {
         my ($catalog, $schema, $table, $type) = @$row;
         next unless $type  =~ /table/i;    # ignore indices/sequences
