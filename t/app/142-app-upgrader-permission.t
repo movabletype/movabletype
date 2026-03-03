@@ -27,9 +27,6 @@ use MT::Theme;
 
 $test_env->fix_mysql_create_table_sql;
 
-use constant TEST_USERNAME => 'restricted_user';
-use constant TEST_PASSWORD => 'test1234';
-
 sub setup_upgrade_test {
     my %args          = @_;
     my $require_admin = $args{require_admin} || 0;
@@ -61,10 +58,15 @@ sub setup_upgrade_test {
 }
 
 subtest 'Upgrade permission check' => sub {
+    my $test_user_name = 'restricted_user';
+    my $test_password  = 'test1234';
 
     subtest 'Superuser: allowed when RequireUpgradePermission=1' => sub {
         setup_upgrade_test( require_admin => 1 );
-        my $app = MT::Test::App->new('MT::App::Upgrader');
+        my $app = MT::Test::App->new(
+            app_class   => 'MT::App::Upgrader',
+            no_redirect => 1
+        );
         my $res = $app->post(
             {
                 __mode   => 'upgrade',
@@ -72,13 +74,16 @@ subtest 'Upgrade permission check' => sub {
                 password => 'Nelson',
             }
         );
-        ok( $res->decoded_content !~ /No permissions\./,
-            "Superuser should be allowed" );
+        like $res->decoded_content => qr/Upgrading database/,
+          "Superuser should see upgrade runner";
     };
 
     subtest 'Superuser: allowed when RequireUpgradePermission=0' => sub {
         setup_upgrade_test( require_admin => 0 );
-        my $app = MT::Test::App->new('MT::App::Upgrader');
+        my $app = MT::Test::App->new(
+            app_class   => 'MT::App::Upgrader',
+            no_redirect => 1
+        );
         my $res = $app->post(
             {
                 __mode   => 'upgrade',
@@ -86,52 +91,56 @@ subtest 'Upgrade permission check' => sub {
                 password => 'Nelson',
             }
         );
-        ok( $res->decoded_content !~ /No permissions\./,
-            "Superuser should be allowed" );
+        like $res->decoded_content => qr/Upgrading database/,
+          "Superuser should see upgrade runner";
     };
 
     subtest 'Non-superuser: allowed when RequireUpgradePermission=0' => sub {
         setup_upgrade_test( require_admin => 0 );
         my $author = MT::Test::Permission->make_author(
-            name     => TEST_USERNAME,
-            password => TEST_PASSWORD,
+            name     => $test_user_name,
+            password => $test_password,
             nickname => 'Test User',
         );
         ok( !$author->is_superuser, "author is not superuser" );
 
-        my $app = MT::Test::App->new('MT::App::Upgrader');
+        my $app = MT::Test::App->new(
+            app_class   => 'MT::App::Upgrader',
+            no_redirect => 1
+        );
         my $res = $app->post(
             {
                 __mode   => 'upgrade',
-                username => TEST_USERNAME,
-                password => TEST_PASSWORD,
+                username => $test_user_name,
+                password => $test_password,
             }
         );
-        ok(
-            $res->decoded_content !~ /No permissions\./,
-            "Non-superuser should be allowed"
-        );
+        like $res->decoded_content => qr/Upgrading database/,
+          "Non-superuser should see upgrade runner";
     };
 
     subtest 'Non-superuser: denied when RequireUpgradePermission=1' => sub {
         setup_upgrade_test( require_admin => 1 );
         my $author = MT::Test::Permission->make_author(
-            name     => TEST_USERNAME,
-            password => TEST_PASSWORD,
+            name     => $test_user_name,
+            password => $test_password,
             nickname => 'Test User',
         );
         ok( !$author->is_superuser, "author is not superuser" );
 
-        my $app = MT::Test::App->new('MT::App::Upgrader');
+        my $app = MT::Test::App->new(
+            app_class   => 'MT::App::Upgrader',
+            no_redirect => 1
+        );
         my $res = $app->post(
             {
                 __mode   => 'upgrade',
-                username => TEST_USERNAME,
-                password => TEST_PASSWORD,
+                username => $test_user_name,
+                password => $test_password,
             }
         );
-        ok( $res->decoded_content =~ /No permissions\./,
-            "Non-superuser should be denied" );
+        like $app->last_location => qr/__mode=upgrade_pending/,
+          "Non-superuser should be redirected to upgrade_pending";
     };
 };
 

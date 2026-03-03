@@ -53,9 +53,10 @@ subtest 'Superuser: redirected to upgrade' => sub {
     like $app->last_location => qr/mt-upgrade\.cgi/, "redirected to mt-upgrade";
 };
 
-subtest 'Non-superuser: upgrade denied' => sub {
+subtest 'Non-superuser: upgrade pending' => sub {
     my $test_name = 'restricted_user';
     my $test_pass = 'test1234';
+
     setup_upgrade_test();
     my $author = MT::Test::Permission->make_author(
         name     => $test_name,
@@ -65,9 +66,8 @@ subtest 'Non-superuser: upgrade denied' => sub {
     my $app =
       MT::Test::App->new( app_class => 'MT::App::CMS', no_redirect => 1 );
     $app->post_ok( { username => $test_name, password => $test_pass } );
-    $app->content_like(
-qr/Please contact your Movable Type administrator for assistance with upgrading Movable Type\./
-    );
+    $app->content_like( qr/Upgrade Pending/,
+        "Non-superuser should see upgrade_pending page" );
 };
 
 subtest 'Not logged in: redirected to upgrade' => sub {

@@ -211,8 +211,8 @@ sub core_methods {
             code           => sub { $_[0]->SUPER::logout(@_) },
             requires_login => 0,
         },
-        'upgrade_denied' => {
-            code           => "${pkg}Tools::upgrade_denied",
+        'upgrade_pending' => {
+            code           => "${pkg}Tools::upgrade_pending",
             requires_login => 0,
         },
         'start_recover' => {
@@ -748,7 +748,7 @@ sub init_request {
             );
             if ( $author && !$author->is_superuser ) {
                 $app->user($author);
-                $app->mode('upgrade_denied');
+                $app->mode('upgrade_pending');
             }
             else {
                 $app->{requires_login} = 0;

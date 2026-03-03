@@ -698,7 +698,6 @@ use vars qw( @ISA %Lexicon );
 	'Invalid session.' => 'セッションが不正です。',
 	'Movable Type has been upgraded to version [_1].' => 'Movable Typeをバージョン[_1]にアップグレードしました。',
 	'No permissions. Please contact your Movable Type administrator for assistance with upgrading Movable Type.' => '権限がありません。Movable Typeのアップグレードを管理者に依頼してください。',
-	'Please contact your Movable Type administrator for assistance with upgrading Movable Type.' => 'Movable Typeのアップグレードを管理者に依頼してください。',
 	'You must supply a password.' => 'パスワードを設定してください。',
 	q{Invalid email address '[_1]'} => q{'[_1]'は、メールアドレスのフォーマットが正しくありません},
 	q{The 'Website Root' provided below is not allowed} => q{指定された'ウェブサイトパス'は許可されていません。},
@@ -5772,6 +5771,10 @@ use vars qw( @ISA %Lexicon );
 	'To create a new configuration file using the Wizard, remove the current configuration file and then refresh this page' => 'ウィザードで新しく構成ファイルを作るときは、現在の構成ファイルを別の場所に移動してこのページを更新してください。',
 	q{<strong>Error: '[_1]' could not be found.</strong>  Please move your static files to the directory first or correct the setting if it is incorrect.} => q{エラー: '[_1]'が見つかりませんでした。ファイルをmt-staticディレクトリに移動するか、設定を修正してください。},
 	q{The [_1] directory is in the main Movable Type directory which this wizard script resides, but due to your web server's configuration, the [_1] directory is not accessible in this location and must be moved to a web-accessible location (e.g., your web document root directory).} => q{[_1]ディレクトリは、Movable Typeのメインディレクトリ(このウィザード自身も含まれている)以下で見つかりました。しかし現在のサーバーの構成上、[_1]ディレクトリにはWebブラウザからアクセスできません。ウェブサイトのルートディレクトリの下など、Webブラウザからアクセスできる場所に移動してください。},
+
+## tmpl/cms/upgrade_pending.tmpl
+	'Upgrade Pending' => 'アップグレードの準備ができました',
+	'A new version of Movable Type has been installed. Please wait until an administrator completes the upgrade.' => 'Movable Typeの新しいバージョンがインストールされました。管理者がアップグレードを完了するまでお待ちください。',
 
 ## tmpl/cms/include/content_data_table.tmpl
 	'Unpublish' => '公開取り消し',

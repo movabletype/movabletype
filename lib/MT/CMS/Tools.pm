@@ -913,15 +913,14 @@ sub upgrade {
     return $app->redirect( $app->path . $upgrade_script );
 }
 
-sub upgrade_denied {
+sub upgrade_pending {
     my $app = shift;
-    require MT::Auth;
-    MT::Auth->invalidate_credentials({ app => $app });
-    return $app->show_login({
-        error => $app->translate(
-            "Please contact your Movable Type administrator for assistance with upgrading Movable Type."
-        ),
-    });
+    return $app->build_page(
+        'upgrade_pending.tmpl',
+        {
+            upgrade_pending => $app->{upgrade_required}
+        }
+    );
 }
 
 sub recover_profile_password {

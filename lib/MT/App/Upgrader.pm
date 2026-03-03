@@ -246,8 +246,10 @@ sub upgrade {
         my $has_permission = $app->{cfg}->RequireUpgradePermission ? $author->is_superuser : 1;
 
         unless ( $has_permission ) {
-            return $app->errtrans(
-                "No permissions. Please contact your Movable Type administrator for assistance with upgrading Movable Type."
+            return $app->redirect(
+                ($app->config->AdminCGIPath || $app->config->CGIPath)
+                . $app->config->AdminScript
+                . $app->uri_params(mode => 'upgrade_pending')
             );
         }
     }
