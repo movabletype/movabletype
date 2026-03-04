@@ -1645,48 +1645,28 @@ sub irregular_tests_for_update {
     $cd->status( MT::ContentStatus::RELEASE() );
     $cd->save or die;
     test_data_api(
-        {   note => 'unpublished permissions and published content_data',
+        {   note => 'content_type edit_own_published permission',
             path => "/v4/sites/$site_id/contentTypes/$content_type_id/data/"
                 . $cd->id,
             method       => 'PUT',
-            params       => { content_data => {} },
+            params       => { content_data => {}, },
             restrictions => {
                 0        => ['edit_all_content_data'],
                 $site_id => [
                     'edit_all_content_data',
                     'edit_all_content_data_' . $content_type->unique_id,
-                    'edit_own_published_content_data_'
-                        . $content_type->unique_id,
+
+                    # 'edit_own_published_content_data_'
+                    #    . $content_type->unique_id,
                     'edit_all_published_content_data_'
                         . $content_type->unique_id,
-
-                    # 'edit_own_unpublished_content_data_'
-                    # . $content_type->unique_id,
-                    # 'edit_all_unpublished_content_data_'
-                    # . $content_type->unique_id,
+                    'edit_own_unpublished_content_data_'
+                        . $content_type->unique_id,
+                    'edit_all_unpublished_content_data_'
+                        . $content_type->unique_id,
                 ],
             },
-            callbacks => [
-                {   name =>
-                        'MT::App::DataAPI::data_api_save_permission_filter.content_data',
-                    count => 1,
-                },
-                {   name =>
-                        'MT::App::DataAPI::data_api_save_filter.content_data',
-                    count => 1,
-                },
-                {   name =>
-                        'MT::App::DataAPI::data_api_pre_save.content_data',
-                    count => 1,
-                },
-                {   name =>
-                        'MT::App::DataAPI::data_api_post_save.content_data',
-                    count => 1,
-                },
-            ],
-            result => sub {
-                $cd = MT->model('content_data')->load( $cd->id );
-            },
+            code => 403,
         }
     );
 
@@ -1711,6 +1691,31 @@ sub irregular_tests_for_update {
 
                     #  'edit_own_unpublished_content_data_'
                     # . $content_type->unique_id,
+                    'edit_all_unpublished_content_data_'
+                        . $content_type->unique_id,
+                ],
+            },
+            code => 403,
+        }
+    );
+    test_data_api(
+        {   note => 'content_type edit_all published permission',
+            path => "/v4/sites/$site_id/contentTypes/$content_type_id/data/"
+                . $cd->id,
+            method       => 'PUT',
+            params       => { content_data => {}, },
+            restrictions => {
+                0        => ['edit_all_content_data'],
+                $site_id => [
+                    'edit_all_content_data',
+                    'edit_all_content_data_' . $content_type->unique_id,
+                    'edit_own_published_content_data_'
+                        . $content_type->unique_id,
+
+                    # 'edit_all_published_content_data_'
+                    # . $content_type->unique_id,
+                    'edit_own_unpublished_content_data_'
+                        . $content_type->unique_id,
                     'edit_all_unpublished_content_data_'
                         . $content_type->unique_id,
                 ],
@@ -1962,34 +1967,6 @@ sub normal_tests_for_update {
         }
     );
 
-    $cd->status( MT::ContentStatus::RELEASE() );
-    $cd->save or die;
-    test_data_api(
-        {   note => 'content_type edit_all published permission',
-            path => "/v4/sites/$site_id/contentTypes/$content_type_id/data/"
-                . $cd->id,
-            method       => 'PUT',
-            params       => { content_data => {}, },
-            restrictions => {
-                0        => ['edit_all_content_data'],
-                $site_id => [
-                    'edit_all_content_data',
-                    'edit_all_content_data_' . $content_type->unique_id,
-                    'edit_own_published_content_data_'
-                        . $content_type->unique_id,
-
-                    # 'edit_all_published_content_data_'
-                    # . $content_type->unique_id,
-                    'edit_own_unpublished_content_data_'
-                        . $content_type->unique_id,
-                    'edit_all_unpublished_content_data_'
-                        . $content_type->unique_id,
-                ],
-            },
-            code => 403,
-        }
-    );
-
     $cd->author_id(1);
     $cd->status( MT::ContentStatus::HOLD() );
     $cd->save or die;
@@ -2042,28 +2019,48 @@ sub normal_tests_for_update {
     $cd->status( MT::ContentStatus::RELEASE() );
     $cd->save or die;
     test_data_api(
-        {   note => 'content_type edit_own_published permission',
+        {   note => 'unpublished permissions and published content_data',
             path => "/v4/sites/$site_id/contentTypes/$content_type_id/data/"
                 . $cd->id,
             method       => 'PUT',
-            params       => { content_data => {}, },
+            params       => { content_data => {} },
             restrictions => {
                 0        => ['edit_all_content_data'],
                 $site_id => [
                     'edit_all_content_data',
                     'edit_all_content_data_' . $content_type->unique_id,
-
-                    # 'edit_own_published_content_data_'
-                    #    . $content_type->unique_id,
+                    'edit_own_published_content_data_'
+                        . $content_type->unique_id,
                     'edit_all_published_content_data_'
                         . $content_type->unique_id,
-                    'edit_own_unpublished_content_data_'
-                        . $content_type->unique_id,
-                    'edit_all_unpublished_content_data_'
-                        . $content_type->unique_id,
+
+                    # 'edit_own_unpublished_content_data_'
+                    # . $content_type->unique_id,
+                    # 'edit_all_unpublished_content_data_'
+                    # . $content_type->unique_id,
                 ],
             },
-            code => 403,
+            callbacks => [
+                {   name =>
+                        'MT::App::DataAPI::data_api_save_permission_filter.content_data',
+                    count => 1,
+                },
+                {   name =>
+                        'MT::App::DataAPI::data_api_save_filter.content_data',
+                    count => 1,
+                },
+                {   name =>
+                        'MT::App::DataAPI::data_api_pre_save.content_data',
+                    count => 1,
+                },
+                {   name =>
+                        'MT::App::DataAPI::data_api_post_save.content_data',
+                    count => 1,
+                },
+            ],
+            result => sub {
+                $cd = MT->model('content_data')->load( $cd->id );
+            },
         }
     );
 
@@ -2224,8 +2221,7 @@ sub irregular_tests_for_delete {
     $cd->status( MT::ContentStatus::RELEASE() );
     $cd->save or die $cd->errstr;
     test_data_api(
-        {   note =>
-                'remove published content data with unpublished permission',
+        {   note => 'content_type edit_own_published permission',
             path => "/v4/sites/$site_id/contentTypes/$content_type_id/data/"
                 . $cd->id,
             method       => 'DELETE',
@@ -2234,31 +2230,19 @@ sub irregular_tests_for_delete {
                 $site_id => [
                     'edit_all_content_data',
                     'edit_all_content_data_' . $content_type->unique_id,
-                    'edit_own_published_content_data_'
-                        . $content_type->unique_id,
+
+                    # 'edit_own_published_content_data_'
+                    #   . $content_type->unique_id,
+
                     'edit_all_published_content_data_'
                         . $content_type->unique_id,
-
-                    # 'edit_own_unpublished_content_data_'
-                    # . $content_type->unique_id,
-                    # 'edit_all_unpublished_content_data_'
-                    # . $content_type->unique_id,
+                    'edit_own_unpublished_content_data_'
+                        . $content_type->unique_id,
+                    'edit_all_unpublished_content_data_'
+                        . $content_type->unique_id,
                 ],
             },
-            callbacks => [
-                {   name =>
-                        'MT::App::DataAPI::data_api_delete_permission_filter.content_data',
-                    count => 1,
-                },
-                {   name =>
-                        'MT::App::DataAPI::data_api_post_delete.content_data',
-                    count => 1,
-                },
-            ],
-            result   => sub {$cd},
-            complete => sub {
-                ok( !MT->model('content_data')->load( $cd->id ) );
-            },
+            code => 403,
         }
     );
 
@@ -2339,6 +2323,34 @@ sub irregular_tests_for_delete {
 
                     # 'edit_own_unpublished_content_data_'
                     # . $content_type->unique_id,
+                    'edit_all_unpublished_content_data_'
+                        . $content_type->unique_id,
+                ],
+            },
+            code => 403,
+        }
+    );
+
+    $cd->status( MT::ContentStatus::RELEASE() );
+    $cd->save or die $cd->errstr;
+    test_data_api(
+        {   note => 'content_data edit_all_published permission',
+            path => "/v4/sites/$site_id/contentTypes/$content_type_id/data/"
+                . $cd->id,
+            method       => 'DELETE',
+            restrictions => {
+                0        => ['edit_all_content_data'],
+                $site_id => [
+                    'edit_all_content_data',
+                    'edit_all_content_data_' . $content_type->unique_id,
+
+                    'edit_own_published_content_data_'
+                        . $content_type->unique_id,
+
+                    # 'edit_all_published_content_data_'
+                    # . $content_type->unique_id,
+                    'edit_own_unpublished_content_data_'
+                        . $content_type->unique_id,
                     'edit_all_unpublished_content_data_'
                         . $content_type->unique_id,
                 ],
@@ -2485,7 +2497,8 @@ sub normal_tests_for_delete {
         status          => MT::ContentStatus::RELEASE(),
     );
     test_data_api(
-        {   note => 'content_type edit_own_published permission',
+        {   note =>
+                'remove published content data with unpublished permission',
             path => "/v4/sites/$site_id/contentTypes/$content_type_id/data/"
                 . $cd->id,
             method       => 'DELETE',
@@ -2494,51 +2507,31 @@ sub normal_tests_for_delete {
                 $site_id => [
                     'edit_all_content_data',
                     'edit_all_content_data_' . $content_type->unique_id,
-
-                    # 'edit_own_published_content_data_'
-                    #   . $content_type->unique_id,
-
-                    'edit_all_published_content_data_'
-                        . $content_type->unique_id,
-                    'edit_own_unpublished_content_data_'
-                        . $content_type->unique_id,
-                    'edit_all_unpublished_content_data_'
-                        . $content_type->unique_id,
-                ],
-            },
-            code => 403,
-        }
-    );
-
-    $cd = MT::Test::Permission->make_content_data(
-        blog_id         => $site_id,
-        author_id       => 2,
-        content_type_id => $content_type_id,
-        status          => MT::ContentStatus::RELEASE(),
-    );
-    test_data_api(
-        {   note => 'content_data edit_all_published permission',
-            path => "/v4/sites/$site_id/contentTypes/$content_type_id/data/"
-                . $cd->id,
-            method       => 'DELETE',
-            restrictions => {
-                0        => ['edit_all_content_data'],
-                $site_id => [
-                    'edit_all_content_data',
-                    'edit_all_content_data_' . $content_type->unique_id,
-
                     'edit_own_published_content_data_'
                         . $content_type->unique_id,
+                    'edit_all_published_content_data_'
+                        . $content_type->unique_id,
 
-                    # 'edit_all_published_content_data_'
+                    # 'edit_own_unpublished_content_data_'
                     # . $content_type->unique_id,
-                    'edit_own_unpublished_content_data_'
-                        . $content_type->unique_id,
-                    'edit_all_unpublished_content_data_'
-                        . $content_type->unique_id,
+                    # 'edit_all_unpublished_content_data_'
+                    # . $content_type->unique_id,
                 ],
             },
-            code => 403,
+            callbacks => [
+                {   name =>
+                        'MT::App::DataAPI::data_api_delete_permission_filter.content_data',
+                    count => 1,
+                },
+                {   name =>
+                        'MT::App::DataAPI::data_api_post_delete.content_data',
+                    count => 1,
+                },
+            ],
+            result   => sub {$cd},
+            complete => sub {
+                ok( !MT->model('content_data')->load( $cd->id ) );
+            },
         }
     );
 
