@@ -1666,7 +1666,27 @@ sub irregular_tests_for_update {
                     # . $content_type->unique_id,
                 ],
             },
-            code => 403,
+            callbacks => [
+                {   name =>
+                        'MT::App::DataAPI::data_api_save_permission_filter.content_data',
+                    count => 1,
+                },
+                {   name =>
+                        'MT::App::DataAPI::data_api_save_filter.content_data',
+                    count => 1,
+                },
+                {   name =>
+                        'MT::App::DataAPI::data_api_pre_save.content_data',
+                    count => 1,
+                },
+                {   name =>
+                        'MT::App::DataAPI::data_api_post_save.content_data',
+                    count => 1,
+                },
+            ],
+            result => sub {
+                $cd = MT->model('content_data')->load( $cd->id );
+            },
         }
     );
 
@@ -1966,27 +1986,7 @@ sub normal_tests_for_update {
                         . $content_type->unique_id,
                 ],
             },
-            callbacks => [
-                {   name =>
-                        'MT::App::DataAPI::data_api_save_permission_filter.content_data',
-                    count => 1,
-                },
-                {   name =>
-                        'MT::App::DataAPI::data_api_save_filter.content_data',
-                    count => 1,
-                },
-                {   name =>
-                        'MT::App::DataAPI::data_api_pre_save.content_data',
-                    count => 1,
-                },
-                {   name =>
-                        'MT::App::DataAPI::data_api_post_save.content_data',
-                    count => 1,
-                },
-            ],
-            result => sub {
-                $cd = MT->model('content_data')->load( $cd->id );
-            },
+            code => 403,
         }
     );
 
@@ -2063,27 +2063,7 @@ sub normal_tests_for_update {
                         . $content_type->unique_id,
                 ],
             },
-            callbacks => [
-                {   name =>
-                        'MT::App::DataAPI::data_api_save_permission_filter.content_data',
-                    count => 1,
-                },
-                {   name =>
-                        'MT::App::DataAPI::data_api_save_filter.content_data',
-                    count => 1,
-                },
-                {   name =>
-                        'MT::App::DataAPI::data_api_pre_save.content_data',
-                    count => 1,
-                },
-                {   name =>
-                        'MT::App::DataAPI::data_api_post_save.content_data',
-                    count => 1,
-                },
-            ],
-            result => sub {
-                $cd = MT->model('content_data')->load( $cd->id );
-            },
+            code => 403,
         }
     );
 
@@ -2265,7 +2245,20 @@ sub irregular_tests_for_delete {
                     # . $content_type->unique_id,
                 ],
             },
-            code => 403,
+            callbacks => [
+                {   name =>
+                        'MT::App::DataAPI::data_api_delete_permission_filter.content_data',
+                    count => 1,
+                },
+                {   name =>
+                        'MT::App::DataAPI::data_api_post_delete.content_data',
+                    count => 1,
+                },
+            ],
+            result   => sub {$cd},
+            complete => sub {
+                ok( !MT->model('content_data')->load( $cd->id ) );
+            },
         }
     );
 
@@ -2513,10 +2506,7 @@ sub normal_tests_for_delete {
                         . $content_type->unique_id,
                 ],
             },
-            result   => sub {$cd},
-            complete => sub {
-                ok( !MT->model('content_data')->load( $cd->id ) );
-            },
+            code => 403,
         }
     );
 
@@ -2548,20 +2538,7 @@ sub normal_tests_for_delete {
                         . $content_type->unique_id,
                 ],
             },
-            callbacks => [
-                {   name =>
-                        'MT::App::DataAPI::data_api_delete_permission_filter.content_data',
-                    count => 1,
-                },
-                {   name =>
-                        'MT::App::DataAPI::data_api_post_delete.content_data',
-                    count => 1,
-                },
-            ],
-            result   => sub {$cd},
-            complete => sub {
-                ok( !MT->model('content_data')->load( $cd->id ) );
-            },
+            code => 403,
         }
     );
 
