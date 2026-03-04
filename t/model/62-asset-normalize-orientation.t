@@ -9,8 +9,6 @@ use MT::Test::Env;
 BEGIN {
     eval { require Test::MockModule }
         or plan skip_all => 'Test::MockModule is not installed';
-    eval { require Test::MockObject }
-        or plan skip_all => 'Test::MockObject is not installed';
 }
 
 our $test_env;
