@@ -664,6 +664,7 @@ sub init_plugins {
 sub init_request {
     my $app = shift;
     $app->SUPER::init_request(@_);
+    delete $app->{upgrade_required};
     $app->{requires_login} = 1
         unless exists $app->{requires_login};   # by default, we require login
 
@@ -751,6 +752,8 @@ sub init_request {
                 && $app->config->RequireUpgradePermission )
             {
                 $app->user($author);
+                $app->session_user( $author, $ctx->{session_id},
+                    permanent => $ctx->{permanent} );
                 $app->mode('upgrade_pending');
             }
             else {
