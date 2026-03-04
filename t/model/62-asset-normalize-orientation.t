@@ -189,14 +189,8 @@ sub _run {
                     $k . ' is called ' . $expected->{$k} . ' time(s)' );
             }
 
-            my $fixed_orientation
-                = Image::ExifTool::ImageInfo($file)->{Orientation};
-            ok( !$fixed_orientation
-                    || $fixed_orientation eq 'Horizontal (normal)',
-                'Orientation is cleared'
-            );
-
-            done_testing();
+            my $fixed_orientation = Image::ExifTool::ImageInfo($file)->{Orientation};
+            is( $fixed_orientation => 'Horizontal (normal)', 'Orientation is set to normal');
         };
     }
 }
