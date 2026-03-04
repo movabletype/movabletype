@@ -171,12 +171,12 @@ sub _run {
             is( $asset->image_width,  $expected->{width},  'Updated width' );
             is( $asset->image_height, $expected->{height}, 'Updated height' );
             if ( $expected->{rotate} == 0 ) {
-                is( $counter{rotate} || 0, 0, 'rotate is not colled' );
+                is( $counter{rotate} || 0, 0, 'rotate is not called' );
             }
             else {
                 is( $counter{rotate} || 0,
                     $expected->{rotate},
-                    'rotate is colled (Degrees:' . $expected->{rotate} . ')'
+                    'rotate is called (Degrees:' . $expected->{rotate} . ')'
                 );
             }
             for my $k (qw(put flipHorizontal flipVertical)) {
