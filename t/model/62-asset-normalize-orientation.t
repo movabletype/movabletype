@@ -137,19 +137,18 @@ sub _run {
 
             my $image_obj        = MT::Image->new( Filename => $file );
             my $image_module     = Test::MockModule->new( ref $image_obj );
-            my @manipulated_data = ( '', @$expected{qw(width height)} );
             $image_module->mock(
                 'flipHorizontal',
                 sub {
                     $counter{flipHorizontal}++;
-                    @manipulated_data;
+                    $image_module->original('flipHorizontal')->(@_);
                 }
             );
             $image_module->mock(
                 'flipVertical',
                 sub {
                     $counter{flipVertical}++;
-                    @manipulated_data;
+                    $image_module->original('flipVertical')->(@_);
                 }
             );
             $image_module->mock(
@@ -157,7 +156,7 @@ sub _run {
                 sub {
                     my ( $self, %params ) = @_;
                     $counter{rotate} += $params{Degrees};
-                    @manipulated_data;
+                    $image_module->original('rotate')->(@_);
                 }
             );
 
