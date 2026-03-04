@@ -2155,7 +2155,7 @@ sub can_save {
         return 0
             unless $perms->can_edit_content_data( $original, $app->user );
         return 0
-	    if ( ( $obj->status != $original->status )
+	    if ( ( $obj && $obj->status != $original->status )
 	    || ( !$obj && $original->status ne $app->param('status') ) )
             && !( $perms->can_edit_content_data( $original, $app->user, 1 ) );
     }
