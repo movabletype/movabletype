@@ -90,7 +90,7 @@ subtest 'delimiters appear in export data by chance' => sub {
 
     my $SEP     = $MT::ImportExport::SEP;
     my $SUB_SEP = $MT::ImportExport::SUB_SEP;
-    my $TAB    = $MT::ImportExport::TAB;
+    my $TAB     = $MT::ImportExport::TAB;
 
     for my $sep ($SEP, $SUB_SEP) {
 
