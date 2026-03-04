@@ -27,6 +27,7 @@ sub authorize_url {
         scope           => 'https://www.googleapis.com/auth/analytics https://www.googleapis.com/auth/analytics.readonly',
         access_type     => 'offline',
         prompt          => 'select_account consent',
+        state           => $app->current_magic,
     );
 
     $uri->as_string;
