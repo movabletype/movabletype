@@ -207,8 +207,6 @@ for my $driver ( $test_env->image_drivers ) {
             or plan skip_all => "Cannot load MT::Image::$driver";
 
         _run();
-
-        done_testing();
     };
 }
 
