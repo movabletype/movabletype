@@ -17,9 +17,9 @@ use MT::I18N qw( const guess_encoding );
 use MT::Util qw( encode_html first_n_words );
 use MT::Util::Encode;
 
-our $SEP         = ('-' x 8);
-our $SUB_SEP     = ('-' x 5);
-our $TAB         = "\t";
+our $SEP     = ('-' x 8);
+our $SUB_SEP = ('-' x 5);
+our $TAB     = "\t";
 
 sub do_import {
     shift->import_contents(@_);
