@@ -240,7 +240,15 @@ sub prepare_image {
             my $item = $spec->{image}{$name};
             if (ref $item eq 'HASH') {
                 my $blog_id = _find_blog_id($objs, $item);
-                my $file    = "$image_dir/$name";
+                my $site = _find_blog($objs, $blog_id);
+                my ($file, $path);
+                if ($site) {
+                    $file = File::Spec->catfile($site->site_path, "images/$name");
+                    $path = "%r/images/$name";
+                } else {
+                    $file = File::Spec->catfile(MT->instance->support_directory_path, "images/$name");
+                    $path = "%s/images/$name";
+                }
                 my $dir     = File::Basename::dirname($file);
                 File::Path::mkpath($dir) unless -d $dir;
                 MT::Test::Image->write(file => $file);
@@ -248,8 +256,8 @@ sub prepare_image {
                 my %args = (
                     class        => 'image',
                     blog_id      => $blog_id,
-                    url          => "%s/images/$name",
-                    file_path    => $file,
+                    url          => $path,
+                    file_path    => $path,
                     file_ext     => $info->{FileTypeExtension},
                     image_width  => $info->{ImageWidth},
                     image_height => $info->{ImageHeight},
@@ -1161,6 +1169,17 @@ sub _find_blog_id {
         return $site->id;
     }
     $arg->{blog_id} // $objs->{blog_id};
+}
+
+sub _find_blog {
+    my ($objs, $blog_id) = @_;
+    for my $site (values %{ $objs->{website} || {} }) {
+        return $site if $site->id == $blog_id;
+    }
+    for my $site (values %{ $objs->{blog} || {} }) {
+        return $site if $site->id == $blog_id;
+    }
+    MT::Blog->load($blog_id);
 }
 
 sub _find_author_id {
