@@ -18,6 +18,7 @@ name: my_website_theme
 label: My Website Theme
 class: website
 thumbnail: my_thumbnail.png
+author_link: https://theme.example.com/author
 elements:
     template_set:
         component: core
@@ -63,6 +64,7 @@ name: my_blog_theme
 label: My Blog Theme
 class: blog
 thumbnail: my_thumbnail.png
+author_link: https://theme.example.com/author
 elements:
     template_set:
         component: core
@@ -106,6 +108,7 @@ YAML
 id: old_theme
 name: OLD Theme
 label: Old theme
+author_link: old.example.com
 required_components:
     core: 1.0
 optional_components:
@@ -170,6 +173,13 @@ subtest 'Check All Themes screen' => sub {
             my $theme_label = $theme->name || $theme->label->();
             $app->content_like(qr/\Q${theme_label}\E/, $theme_label);
         }
+
+        my @author_links;
+        $app->wq_find('.theme-author a')->each(sub {
+            push @author_links, $_->attr('href');
+        });
+        ok grep( { $_ eq 'https://theme.example.com/author' } @author_links );
+        ok !grep( { $_ =~ 'old.example.com' } @author_links ), 'The author_link field should only appear as a link if it is a full URL';
     };
 
     subtest 'Parente Site' => sub {

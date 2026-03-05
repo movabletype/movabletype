@@ -68,6 +68,7 @@ sub bulk_insert {
     my $table    = shift;
     my $cols     = shift;
     my $rows_ref = shift;
+    my $attrs    = shift || {};
 
     my $sql = "INSERT INTO $table("
               . join(',', @$cols)
@@ -76,7 +77,11 @@ sub bulk_insert {
               .  ")";
     my $sth = $dbh->prepare($sql);
     foreach my $row (@{ $rows_ref || []}) {
-        $sth->execute(@$row);
+        my $i = 1;
+        for (my $j = 0; $j < @$cols; $j++) {
+            $sth->bind_param($i++, $row->[$j], $attrs->{$cols->[$j]});
+        }
+        $sth->execute;
     }
     return 1;
 }

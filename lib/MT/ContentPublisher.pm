@@ -1733,11 +1733,10 @@ sub _rebuild_content_archive_type {
             $ct_map{$map->template_id} ||= MT->model('content_type')->load($template->content_type_id);
         }
 
-        my $ts
-            = $content_data
-            && $map->dt_field_id ? $content_data->data->{ $map->dt_field_id }
-            : exists $param{Timestamp} ? $param{Timestamp}
-            :                            undef;
+        my $ts =
+              exists $param{Timestamp}           ? $param{Timestamp}
+            : $content_data && $map->dt_field_id ? $content_data->data->{ $map->dt_field_id }
+            :                                      undef;
 
         if ($content_data && $map->cat_field_id && !$param{Category}) {
             my $cat = $content_data->data->{$map->cat_field_id};

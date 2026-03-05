@@ -255,6 +255,22 @@ sub reset {
     my $author    = $app->user;
     my $log_class = $app->model('log');
     my $args      = { 'reset' => 1, '_type' => 'log' };
+    my $created_on_terms;
+    my $type = $app->param('type') || '';
+    my $origin_date = $app->param('origin') || '';
+    if ( $type eq 'before' ) {
+        my $origin = $origin_date;
+        $origin =~ s!\D!!g;
+        if ($origin) {
+            $created_on_terms = {
+                op    => '<',
+                value => $origin . '000000'
+            };
+            if ( $origin =~ /^(\d{4})(\d{2})(\d{2})/ ) {
+                $origin_date = "$1-$2-$3";
+            }
+        }
+    }
     if ( my $blog_id = $app->param('blog_id') ) {
         my $blog_class = $app->model('blog');
         my $blog       = $blog_class->load($blog_id)
@@ -274,13 +290,17 @@ sub reset {
             unless $blogs;
 
         foreach my $blog (@$blogs) {
-            if ($log_class->remove( { blog_id => $blog->id, class => '*' } ) )
-            {
+            my %remove_terms = ( blog_id => $blog->id, class => '*' );
+            $remove_terms{created_on} = $created_on_terms if $created_on_terms;
+            if ( $log_class->remove( \%remove_terms ) ) {
+                my $msg = "Activity log for blog '[_1]' (ID:[_2]) reset by '[_3]'";
+                my @msg_args = ( $blog->name, $blog->id, $author->name );
+                if ( $created_on_terms ) {
+                    $msg = "Activity log before [_4] for blog '[_1]' (ID:[_2]) deleted by '[_3]'";
+                    push @msg_args, $origin_date;
+                }
                 $app->log(
-                    {   message => $app->translate(
-                            "Activity log for blog '[_1]' (ID:[_2]) reset by '[_3]'",
-                            $blog->name, $blog->id, $author->name
-                        ),
+                    {   message => $app->translate( $msg, @msg_args ),
                         level    => MT::Log::INFO(),
                         class    => 'system',
                         category => 'reset_log',
@@ -293,12 +313,17 @@ sub reset {
     }
     else {
         if ( $app->can_do('reset_system_log') ) {
-            if ( $log_class->remove( { class => '*' } ) ) {
+            my %remove_terms = ( class => '*' );
+            $remove_terms{created_on} = $created_on_terms if $created_on_terms;
+            if ( $log_class->remove( \%remove_terms ) ) {
+                my @msg_args = ( $author->name );
+                my $msg = "Activity log reset by '[_1]'";
+                if ( $created_on_terms ) {
+                    $msg = "Activity log before [_2] deleted by '[_1]'";
+                    push @msg_args, $origin_date;
+                }
                 $app->log(
-                    {   message => $app->translate(
-                            "Activity log reset by '[_1]'",
-                            $author->name
-                        ),
+                    {   message => $app->translate( $msg, @msg_args ),
                         level    => MT::Log::INFO(),
                         class    => 'system',
                         category => 'reset_log'
@@ -319,16 +344,17 @@ sub reset {
                 unless $blogs;
 
             foreach my $blog (@$blogs) {
-                if ($log_class->remove(
-                        { blog_id => $blog->id, class => '*' }
-                    )
-                    )
-                {
+                my %remove_terms = ( blog_id => $blog->id, class => '*' );
+                $remove_terms{created_on} = $created_on_terms if $created_on_terms;
+                if ( $log_class->remove( \%remove_terms ) ) {
+                    my @msg_args = ( $blog->name, $blog->id, $author->name );
+                    my $msg = "Activity log for blog '[_1]' (ID:[_2]) reset by '[_3]'";
+                    if ( $created_on_terms ) {
+                        $msg = "Activity log before [_4] for blog '[_1]' (ID:[_2]) deleted by '[_3]'";
+                        push @msg_args, $origin_date;
+                    }
                     $app->log(
-                        {   message => $app->translate(
-                                "Activity log for blog '[_1]' (ID:[_2]) reset by '[_3]'",
-                                $blog->name, $blog->id, $author->name
-                            ),
+                        {   message => $app->translate( $msg, @msg_args ),
                             level    => MT::Log::INFO(),
                             class    => 'system',
                             category => 'reset_log'
@@ -473,26 +499,13 @@ PERMCHECK: {
         $ts[4] + 1,
         @ts[ 3, 2, 1, 0 ];
     $file .= "log_$ts.csv";
-    $app->{no_print_body} = 1;
-    $app->set_header( "Content-Disposition" => "attachment; filename=$file" );
-    $app->send_http_header(
-        $enc
-        ? "text/csv; charset=$enc"
-        : 'text/csv'
-    );
-
-    require File::Temp;
-    my ($fh) = File::Temp->new();
-
-    require Text::CSV;
-    my $csv = Text::CSV->new({ binary => 1 });
-    $csv->say($fh, [qw/timestamp ip weblog by message metadata/]);
 
     my %seen;
-    while ( my $log = $iter->() ) {
+    my $log_iter = sub {
+        my $log = $iter->() or return;
 
         # columns:
-        # date, ip address, weblog, by, log message
+        # date, ip address, weblog, by, log message, log metadata
         my @col;
         my $ts = $log->created_on;
         if ($blog_view) {
@@ -515,20 +528,15 @@ PERMCHECK: {
                 $app->user ? $app->user->preferred_language : undef
                 );
         }
-        push @col, $log->ip || '';
+        push @col, $log->ip;
+
         my $blog;
         if ( $log->blog_id ) {
             $blog = $seen{blogs}{ $log->blog_id }
                 ||= $blog_class->load( $log->blog_id );
         }
-        if ($blog) {
-            my $name = $blog->name;
-            $name =~ s/[\r\n]+/ /gs;
-            push @col, MT::Util::Encode::encode( $enc, $name );
-        }
-        else {
-            push @col, '';
-        }
+        push @col, $blog ? $blog->name : undef;
+
         my $author_name;
         if (my $author_id = $log->author_id) {
             if (defined $seen{authors}{$author_id}) {
@@ -540,32 +548,23 @@ PERMCHECK: {
                 $author_name = MT->translate('*User deleted*');
             }
         }
-        if (defined $author_name && $author_name ne '') {
-            $author_name =~ s/[\r\n]+/ /gs;
-            push @col, MT::Util::Encode::encode( $enc, $author_name );
-        } else {
-            push @col, '';
+        push @col, $author_name;
+
+        push @col, $log->message;
+
+        push @col, $log->metadata;
+
+        return \@col;
+    };
+
+    $app->csv_result(
+        $log_iter,
+        {
+            filename => $file,
+            headers  => [qw/timestamp ip weblog by message metadata/],
+            encoding => $enc
         }
-        my $msg = $log->message;
-        $msg = '' unless defined $msg;
-        $msg =~ s/[\r\n]+/ /gs;
-        push @col, MT::Util::Encode::encode( $enc, $msg );
-
-        if (my $metadata = $log->metadata) {
-            push @col, MT::Util::Encode::encode( $enc, $metadata );
-        } else {
-            push @col, '';
-        }
-
-        $csv->say($fh, \@col);
-    }
-
-    seek $fh, 0, 0;
-    while ( read $fh, my $chunk, 8192 ) {
-        $app->print($chunk);
-    }
-
-    close $fh;
+    );
 }
 
 sub apply_log_filter {
@@ -745,6 +744,20 @@ sub dialog_export_log {
     }
 
     $app->load_tmpl('dialog/export_log.tmpl', \%param);
+}
+
+sub dialog_reset_log {
+    my $app       = shift;
+    my $blog_id   = $app->param('blog_id');
+    my $list_pref = $app->list_pref('log');
+    my %param     = (%$list_pref);
+    $param{is_system} = ( $blog_id || 0 ) eq 0 ? 1 : 0;
+    if ($blog_id) {
+        my $blog = $app->model('blog')->load($blog_id);
+        $param{blog_name} = $blog->name if $blog;
+    }
+
+    $app->load_tmpl('dialog/reset_log.tmpl', \%param);
 }
 
 1;
