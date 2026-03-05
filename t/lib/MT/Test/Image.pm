@@ -10,6 +10,11 @@ use File::Basename;
 
 sub tempfile {
     my ( $class, %args ) = @_;
+
+    if ($args{DIR} && !-d $args{DIR}) {
+        mkpath($args{DIR});
+    }
+
     my ( $fh, $filename ) = File::Temp::tempfile(%args);
 
     $class->write( %args, fh => $fh, type => $args{SUFFIX} );
