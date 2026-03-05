@@ -28,7 +28,7 @@
             "This is a test template.",
             "tmpl",
             "test.tmpl",
-            "__MT_HOME__/t/test.tmpl",
+            "%r/test.tmpl",
             null,
             1,
             "Template",
@@ -47,7 +47,7 @@
             "This is a test template.",
             "tmpl",
             "test.tmpl",
-            "__MT_HOME__/t/test.tmpl",
+            "%r/test.tmpl",
             null,
             2,
             "Template",
@@ -411,16 +411,16 @@
             1,
             null,
             "__NOW__",
-            "80addf5d1982416e37589ac1be935b6f36a8967f",
+            "7e6642063669d7548fcbd77e7cd97de58b303fa9",
             0,
-            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u00011A\u0000\u0000\u0000\u0001-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u00012A\u0000\u0000\u0000\u0001-\u0000\u0000\u0000\u00012",
+            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u00012A\u0000\u0000\u0000\u0001-\u0000\u0000\u0000\u00012\u0000\u0000\u0000\u00011A\u0000\u0000\u0000\u0001-\u0000\u0000\u0000\u00011",
             1,
-            "31602f035131c28cced32799eaf49aee73ac5a03",
+            "160864d02e2e7ce5a83596869a7fda4eb3ff4f5a",
             null,
             null,
             "__NOW__",
             2,
-            "31602f035131c28cced32799eaf49aee73ac5a03",
+            "160864d02e2e7ce5a83596869a7fda4eb3ff4f5a",
             null,
             201722
          ]
@@ -460,7 +460,7 @@
             null,
             null,
             "asset",
-            "12bc2eee3421f46560ca4007198aedc3552a686c"
+            "8f13dff747857d940533b762792d15757968a687"
          ],
          [
             1,
@@ -477,7 +477,7 @@
             null,
             null,
             "asset_audio",
-            "414e2cdc4e7d634748ccc54bdf5367997ebf8cf3"
+            "ddf376a879dc83257667b6601cefcac643345495"
          ]
       ]
    },
@@ -571,12 +571,12 @@
             "__NOW__",
             null,
             "This is a sample.",
-            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002A\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(12bc2eee3421f46560ca4007198aedc3552a686c\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0002\u0000\u0000\u0000\bmultiple-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0005asset\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\u0005assetH\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00012\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(414e2cdc4e7d634748ccc54bdf5367997ebf8cf3\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0002\u0000\u0000\u0000\bmultiple-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u000basset_audio\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00012\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\u000basset_audio",
+            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002A\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(8f13dff747857d940533b762792d15757968a687\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0005asset\u0000\u0000\u0000\bmultiple-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\u0005asset\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00011H\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00012\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\u000basset_audio\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u000basset_audio\u0000\u0000\u0000\bmultiple-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(ddf376a879dc83257667b6601cefcac643345495\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00012",
             1,
             null,
             "__NOW__",
             "Sample Content Type 0",
-            "80addf5d1982416e37589ac1be935b6f36a8967f",
+            "7e6642063669d7548fcbd77e7cd97de58b303fa9",
             null,
             null
          ]
