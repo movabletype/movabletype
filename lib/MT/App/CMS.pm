@@ -664,7 +664,6 @@ sub init_plugins {
 sub init_request {
     my $app = shift;
     $app->SUPER::init_request(@_);
-    delete $app->{upgrade_required};
     $app->{requires_login} = 1
         unless exists $app->{requires_login};   # by default, we require login
 
@@ -737,7 +736,7 @@ sub init_request {
         }
     }
 
-    if ( $app->{upgrade_required} ) {
+    if ( $mode ne 'logout' && $app->{upgrade_required} ) {
         require MT::Auth;
         my $ctx = MT::Auth->fetch_credentials( { app => $app } );
         if ( $ctx && $ctx->{username} ) {
