@@ -1262,7 +1262,7 @@ sub make_list_props {
                         if ($errors) {
                             push @out, scalar(@{$errors});
                         } else {
-                            push @out, 0;
+                            push @out, MT->translate('none');
                         }
                     }
                     return @out;
@@ -1278,14 +1278,14 @@ sub make_list_props {
                     } @{$objs};
                 },
                 display => 'optional',
-            filter_tmpl => sub {
-                my $label_value = MT->translate('Invalid fields');
-                return <<"__FILTER_TMPL__";
+                filter_tmpl => sub {
+                    my $label_value = MT->translate('__INVALID_FIELDS__');
+                    return <<"__FILTER_TMPL__";
 <mt:setvar name="label" value="${label_value}">
 <mt:var name="filter_form_single_select">
 __FILTER_TMPL__
-            },
-                label           => 'Invalid Fields',
+                },
+                label           => MT->translate('__BROKEN__'),
                 label_via_param => sub {
                     my $prop = shift;
                     my ($app, $val) = @_;

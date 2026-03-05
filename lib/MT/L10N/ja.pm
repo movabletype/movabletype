@@ -1251,6 +1251,11 @@ use vars qw( @ISA %Lexicon );
 	q{[_1] '[_4]' (ID:[_2]) deleted by '[_3]'} => q{[_3]が[_1] '[_4]' (ID:[_2])を削除しました},
 	q{[_1] '[_4]' (ID:[_2]) edited by user '[_3]'} => q{[_3]が[_1] '[_4]' (ID:[_2])を変更しました},
 	q{[_1] '[_6]' (ID:[_2]) edited and its status changed from [_3] to [_4] by user '[_5]'} => q{[_5]が[_1] '[_6]' (ID:[_2]) の公開状態を[_3]から[_4]に変更しました},
+	'__BROKEN__' => '要修正',
+	'__INVALID_FIELDS__' => '要修正のフィールド',
+	'exists' => '存在する',
+	'Has Invalid Fields' => '要修正のフィールドが存在する',
+	'No Invalid Fields' => '修正する必要がない',
 
 ## lib/MT/CMS/ContentType.pm
 	'Cannot load content field data (ID: [_1])' => 'コンテンツフィールド (ID: [_1]) をロードできません',
