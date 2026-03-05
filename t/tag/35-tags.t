@@ -1322,7 +1322,9 @@ image/jpeg
 --- template
 <MTAssets lastn='1'><$MTAssetFilePath$></MTAssets>
 --- expected fix_path
-CURRENT_WORKING_DIRECTORY/t/images/test.jpg
+TEST_ROOT/site/images/test.jpg
+--- expected_php_todo fix_path
+TEST_ROOT/site/images/test.jpg
 
 === test 255
 --- template
