@@ -881,7 +881,7 @@ sub normalize_orientation {
 
         # Update and write metadata.
         if ($has_metadata) {
-            $new_exif->SetNewValue('Orientation');
+            $new_exif->SetNewValue('Orientation', 1, Type => 'ValueConv');
             $new_exif->SetNewValue('Thumbnail*');
             if (exists $exif_tool->GetInfo('ExifImageWidth')->{ExifImageWidth}
                 )

@@ -372,7 +372,7 @@ sub find_phrases {
     }
 
     for my $dir (@dirs) {
-        next unless -d $dir;
+        next unless $dir && -d $dir;
         finddepth({
                 no_chdir    => 1,
                 follow_fast => $self->parent ? 0 : 1,
