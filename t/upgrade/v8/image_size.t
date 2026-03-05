@@ -26,7 +26,7 @@ sub create_image {
         class       => 'image',
         blog_id     => 0,
         url         => 'http://narnia.na/nana/images/test.jpg',
-        file_path   => File::Spec->catfile($ENV{MT_HOME}, "t", 'images', 'test.jpg'),
+        file_path   => File::Spec->catfile('%s', 'images', 'test.jpg'),
         file_name   => 'test.jpg',
         file_ext    => 'jpg',
         mime_type   => 'image/jpeg',
