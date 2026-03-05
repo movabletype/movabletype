@@ -313,7 +313,8 @@ sub filtered_list {
     my $props = MT::ListProperty->list_properties($ds) || {};
 
     for my $item (@$filteritems) {
-        my $prop = $props->{ $item->{type} };
+        my $prop = $props->{ $item->{type} }
+            or return $app->error(MT->translate('Invalid type'), 400);
         if ($prop->has('validate_item')) {
             $prop->validate_item($item)
                 or return $app->error(
@@ -321,7 +322,7 @@ sub filtered_list {
                     'Invalid filter terms: [_1]',
                     $prop->errstr
                 ),
-                400,
+                400
                 );
         }
     }
