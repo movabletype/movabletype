@@ -1549,6 +1549,8 @@ sub clone_with_children {
     if ( ( !exists $classes->{'MT::Template'} )
         || $classes->{'MT::Template'} )
     {
+        my %content_type_template_ids;
+
         my $state = MT->translate("Cloning templates for blog...");
         $callback->( $state, "tmpls" );
         require MT::Template;
@@ -1562,6 +1564,12 @@ sub clone_with_children {
                 'tmpls'
             ) if $counter && ( $$counter % 100 == 0 );
             my $tmpl_id = $tmpl->id;
+
+            if ($tmpl->content_type_id) {
+                $content_type_template_ids{ $tmpl->id } = 1;
+                return;
+            }
+
             $$counter++;
             delete $new_tmpl->{column_values}->{id};
             delete $new_tmpl->{changed_cols}->{id};
@@ -1623,6 +1631,9 @@ sub clone_with_children {
                     . MT->translate( "[_1] records processed...", $counter ),
                 'tmplmaps'
             ) if $counter && ( $counter % 100 == 0 );
+
+            next if $content_type_template_ids{ $map->template_id };
+
             $counter++;
             my $new_map = $map->clone();
             delete $new_map->{column_values}->{id};

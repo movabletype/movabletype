@@ -1173,6 +1173,13 @@ sub dialog_select_sysadmin {
 sub dialog_grant_role {
     my $app = shift;
 
+    my $sites_view = $app->config->GrantRoleSitesView;
+
+    if ($sites_view eq 'tree') {
+        require MT::CMS::Deprecated::User;
+        return MT::CMS::Deprecated::User::dialog_grant_role_tree($app);
+    }
+
     my $author_id = $app->param('author_id');
     my $blog_id   = $app->param('blog_id');
     my $role_id   = $app->param('role_id');
@@ -1203,8 +1210,6 @@ PERMCHECK: {
 
     my $type = $app->param('_type') || '';  # user, author, group, site
 
-    my $sites_view = $app->config->GrantRoleSitesView;
-
     my $pre_build = sub {
         my ($param) = @_;
 
@@ -1230,26 +1235,6 @@ PERMCHECK: {
             my $id = $obj->{parent_id};
             $obj->{parent_site_label} = $id && $labels{ $id } ? $labels{ $id } : '-';
         }
-
-        # for previous admin theme
-        if ($sites_view eq 'tree') {
-            my $loop = $param->{object_loop};
-            my @has_child_sites    = grep { $_->{has_child}; } @$loop;
-            my %has_child_site_ids = map { $_->{id} => 1 } @has_child_sites;
-            my @new_object_loop;
-            my %seen;
-            foreach my $data (@$loop) {
-
-                # If you have has_child, it is created after the search,
-                # so remove the retrieved object
-                if ( !$data->{has_child} && $has_child_site_ids{$data->{id}} ) {
-                    next;
-                }
-                next if $seen{$data->{id}}++;
-                push @new_object_loop, $data;
-            }
-            $param->{object_loop} = \@new_object_loop;
-        }
         return scalar(@{$param->{object_loop}});
     };
 
@@ -1257,30 +1242,6 @@ PERMCHECK: {
         my ( $obj, $row ) = @_;
         $row->{label} = $row->{name};
         $row->{description} = $row->{nickname} if exists $row->{nickname};
-
-        # for previous admin theme
-        if ($sites_view eq 'tree') {
-            my $type = $app->param('type') || '';
-            if ( $type && $type eq 'site' ) {
-                if (   !$app->param('search')
-                    && UNIVERSAL::isa( $obj, 'MT::Website' )
-                    && $obj->has_blog() )
-                {
-                    $row->{has_child} = 1;
-                    my $child_blogs = $obj->blogs();
-                    my $child_sites = [];
-                    push @$child_sites,
-                        {
-                        id          => $_->id,
-                        label       => $_->name,
-                        description => $_->description
-                        } foreach @{$child_blogs};
-                    $row->{child_obj}       = $child_sites;
-                    $row->{child_obj_count} = scalar @{$child_blogs};
-                }
-            }
-        }
-
         $row->{disabled} = 1
             if UNIVERSAL::isa( $obj, 'MT::Role' )
             && $obj->has('administer_site')
@@ -1301,40 +1262,8 @@ PERMCHECK: {
         }
         if (UNIVERSAL::isa($obj, 'MT::Blog')) {
             $row->{label_html} = $blog_list_props->{name}->html($obj, $app, { no_link => 1 });
-
-            # for previous admin theme
-            if ($sites_view eq 'tree' && $obj->is_blog()) {
-                if (my $parent = $obj->website) {
-                    # replace row only if the blog has a valid parent
-                    $row->{has_child} = 1;
-                    my $child_blogs = [$obj];
-                    my $child_sites = [];
-                    foreach (@{$child_blogs}) {
-                        push @$child_sites, {
-                            id          => $_->id,
-                            label       => $_->name,
-                            description => $_->description
-                        };
-                    }
-                    $row->{child_obj}       = $child_sites;
-                    $row->{child_obj_count} = scalar @{$child_blogs};
-                    $row->{id}              = $parent->id;
-                    $row->{label}           = $parent->name;
-                    $row->{description}     = $parent->description;
-                }
-            }
         }
     };
-
-    my ($dialog_template, $panel_loop_template);
-
-    if ($sites_view eq 'tree') {
-        $dialog_template     = 'dialog/create_association.tmpl';
-        $panel_loop_template = 'include/listing_panel.tmpl';
-    } elsif ($sites_view eq 'list') {
-        $dialog_template     = 'dialog/create_association_list.tmpl';
-        $panel_loop_template = 'include/grant_role.tmpl';
-    }
 
     if ( $app->param('search') || $app->param('json') ) {
         my $params = {
@@ -1361,7 +1290,7 @@ PERMCHECK: {
                     params       => $params,
                     author_terms => $author_terms,
                     group_terms  => $group_terms,
-                    template     => $panel_loop_template,
+                    template     => 'include/grant_role.tmpl',
                     $no_limit ? ( no_limit => 1 ) : (),
                     pre_build => $pre_build,
                 }
@@ -1389,7 +1318,7 @@ PERMCHECK: {
                     type     => $type,
                     code     => $hasher,
                     params   => $params,
-                    template => $panel_loop_template,
+                    template => 'include/grant_role.tmpl',
                     $app->param('search') ? ( no_limit  => 1 )          : (),
                     pre_build => $pre_build,
                 }
@@ -1576,7 +1505,7 @@ PERMCHECK: {
         $params->{build_compose_menus} = 0;
         $params->{build_user_menus}    = 0;
 
-        $app->load_tmpl( $dialog_template, $params );
+        $app->load_tmpl( 'dialog/create_association_list.tmpl', $params );
     }
 }
 

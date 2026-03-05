@@ -487,8 +487,8 @@ sub edit {
             || ( $content_data_id ? $content_data->label : '' );
     }
 
-    $param->{can_publish_post} = 1
-        if $perm->can_republish_content_data( $content_data, $user, $ct_unique_id );
+    $param->{can_publish_content_data} = 1
+        if $perm->has('manage_content_data') || $perm->has("publish_content_data:${ct_unique_id}");
 
     ## Load text filters if user displays them
     my $filters = MT->all_text_filters;
@@ -908,8 +908,8 @@ sub save {
         $content_data->label($data_label);
     }
 
-    $app->run_callbacks( 'cms_pre_save.content_data',
-        $app, $content_data, $orig );
+    $app->run_callbacks( 'cms_pre_save.content_data', $app, $content_data, $orig )
+        or return $app->error($app->translate("Saving [_1] failed: [_2]", $content_type->name, $app->errstr));
 
     $content_data->save
         or return $app->error(

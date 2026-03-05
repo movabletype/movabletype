@@ -276,7 +276,7 @@
 
           function openDialog(mode, param) {
               createSessionHistoryFallback(location.href);
-              var url = ScriptURI + '?' + '__mode=' + mode + '&amp;' + param;
+              var url = ScriptURI + '?' + '__mode=' + mode + '&' + param;
               $.fn.mtModal.open(url, { large: true });
               var modal_close = function(e){
                 if (e.keyCode == 27){
@@ -525,7 +525,7 @@
                   ed.execCommand('mtSaveBookmark');
                   openDialog(
                       'dialog_asset_modal',
-                      '_type=asset&amp;edit_field=' + id + '&amp;blog_id=' + blogId + '&amp;dialog_view=1&amp;filter=class&amp;filter_val=image&amp;can_multi=1&amp;require_type=image'
+                      '_type=asset&edit_field=' + id + '&blog_id=' + blogId + '&dialog_view=1&filter=class&filter_val=image&can_multi=1&require_type=image'
                   );
               }
           });
@@ -537,7 +537,7 @@
                   ed.execCommand('mtSaveBookmark');
                   openDialog(
                       'dialog_asset_modal',
-                      '_type=asset&amp;edit_field=' + id + '&amp;blog_id=' + blogId + '&amp;dialog_view=1&amp;can_multi=1'
+                      '_type=asset&edit_field=' + id + '&blog_id=' + blogId + '&dialog_view=1&can_multi=1'
                   );
               }
           });

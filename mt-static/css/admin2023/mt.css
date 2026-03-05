@@ -4087,8 +4087,8 @@ fieldset:disabled .btn__mobile {
 }
 
 .navbar, .mt-sharedPreviewNav {
-  --bs-navbar-padding-x: 0;
-  --bs-navbar-padding-y: 0.5rem;
+  --bs-navbar-padding-x: 1rem;
+  --bs-navbar-padding-y: 1rem;
   --bs-navbar-color: rgba(0, 0, 0, 0.55);
   --bs-navbar-hover-color: rgba(0, 0, 0, 0.7);
   --bs-navbar-disabled-color: rgba(0, 0, 0, 0.3);
@@ -6123,7 +6123,7 @@ fieldset:disabled .btn__mobile {
   vertical-align: text-top !important;
 }
 
-.float-start, .mt-sharedPreviewNav .mt-sharedPreviewNav__leftNav, .float-left {
+.float-start, .float-left {
   float: left !important;
 }
 
@@ -6844,7 +6844,7 @@ fieldset:disabled .btn__mobile {
   margin-right: 2rem !important;
 }
 
-.me-auto, .mr-auto {
+.me-auto, .mr-auto, .mt-sharedPreviewNav .mt-sharedPreviewNav__leftNav {
   margin-right: auto !important;
 }
 
@@ -6908,7 +6908,7 @@ fieldset:disabled .btn__mobile {
   margin-left: 2rem !important;
 }
 
-.ms-auto, .mt-sharedPreviewNav .mt-sharedPreviewNav__leftNav, .ml-auto {
+.ms-auto, .ml-auto {
   margin-left: auto !important;
 }
 
