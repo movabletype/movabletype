@@ -19,6 +19,7 @@ use MT::Util qw(ts2epoch epoch2ts);
 use MT::Util::Captcha;
 
 $test_env->prepare_fixture('db_data');
+$test_env->prepare_asset_files;
 
 my $switch = MT->config->PluginSwitch;
 $switch->{Awesome} = 1;
