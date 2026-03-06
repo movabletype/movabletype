@@ -1222,16 +1222,32 @@ sub load_objs {
     $objs{blog_id} = $all_sites[0]->id if @all_sites == 1;
 
     if ($spec->{image}) {
-        my $image_dir  = "$ENV{MT_TEST_ROOT}/images";
-        my @file_paths = map { "$image_dir/$_" } keys %{ $spec->{image} };
-        my @images     = MT->model('image')->load({ file_path => \@file_paths });
+        my @file_paths;
+        for my $key (keys %{ $spec->{image} }) {
+            my $blog_id = _find_blog_id($spec->{image}{$key});
+            my $site    = _find_blog($blog_id);
+            if ($site) {
+                push @file_paths, "%r/images/$key";
+            } else {
+                push @file_paths, "%s/images/$key";
+            }
+        }
+        my @images = MT->model('image')->load({ file_path => \@file_paths });
         $objs{image}{ basename($_->file_path) } = $_ for @images;
     }
 
     if ($spec->{asset}) {
-        my $asset_dir  = "$ENV{MT_TEST_ROOT}/assets";
-        my @file_paths = map { "$asset_dir/$_" } keys %{ $spec->{asset} };
-        my @assets     = MT->model('asset')->load({ file_path => \@file_paths });
+        my @file_paths;
+        for my $key (keys %{ $spec->{image} }) {
+            my $blog_id = _find_blog_id($spec->{image}{$key});
+            my $site    = _find_blog($blog_id);
+            if ($site) {
+                push @file_paths, "%r/$key";
+            } else {
+                push @file_paths, "%s/$key";
+            }
+        }
+        my @assets = MT->model('asset')->load({ file_path => \@file_paths });
         $objs{ $_->class }{ basename($_->file_path) } = $_ for @assets;
     }
 
