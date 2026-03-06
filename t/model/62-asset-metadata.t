@@ -35,6 +35,8 @@ my $cfg = MT->config;
 
 my $ignore_orientation = 1;
 
+my $site = MT::Blog->load(1);
+
 for my $driver ( $test_env->image_drivers ) {
     subtest $driver => sub {
         for my $file_ext (qw(jpg webp)) {
@@ -43,10 +45,11 @@ for my $driver ( $test_env->image_drivers ) {
                 is( $cfg->ImageDriver, $driver, 'Set ImageDriver' );
 
                 my ( $guard, $tempfile ) = MT::Test::Image->tempfile(
-                    DIR    => $test_env->root,
+                    DIR    => $site->site_path,
                     SUFFIX => ".$file_ext",
                 );
                 close $guard;
+                my $basename = basename($tempfile);
 
                 ok( -s $tempfile, ".$file_ext file exists." );
 
@@ -54,8 +57,8 @@ for my $driver ( $test_env->image_drivers ) {
                     blog_id   => 1,
                     class     => 'image',
                     file_ext  => $file_ext,
-                    file_name => basename($tempfile),
-                    file_path => $tempfile,
+                    file_name => $basename,
+                    file_path => File::Spec->catfile('%r', $basename),
                 );
                 ok( $image, 'Create MT::Asset::Image record.' );
 

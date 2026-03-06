@@ -15,7 +15,7 @@ BEGIN {
 }
 my $test_root = $test_env->root;
 
-use File::Copy;
+use File::Copy::Recursive qw(rcopy);
 use File::Temp qw( tempfile );
 
 plan tests => 72;
@@ -34,14 +34,14 @@ $test_env->prepare_fixture('db_data');
 my $mt = MT->new or die MT->errstr;
 isa_ok( $mt, 'MT', 'Is MT' );
 
-my ( $guard, $tempfile ) = MT::Test::Image->tempfile(
-    DIR    => $test_env->root,
-    SUFFIX => '.jpg',
-);
-
 {
     ### Cases for MT::Asset::Image
     my $blog = MT::Blog->load( { id => 1 } );
+
+    my ( $guard, $tempfile ) = MT::Test::Image->tempfile(
+        DIR    => $blog->site_path,
+        SUFFIX => '.jpg',
+    );
 
     # object validation
     my $asset = MT::Asset->load( { id => 1 } );
@@ -157,10 +157,9 @@ my ( $guard, $tempfile ) = MT::Test::Image->tempfile(
     );
 
     # copy original image file
-    my $orig_file
-        = File::Spec->catfile( $ENV{MT_HOME}, "t", 'images', 'test.jpg' );
-    my $copy_file = $test_env->path('test_.jpg');
-    copy( $orig_file, $copy_file );
+    my $orig_file = File::Spec->catfile($ENV{MT_HOME},    "t", 'images', 'test.jpg');
+    my $copy_file = File::Spec->catfile($blog->site_path, 'test_.jpg');
+    rcopy($orig_file, $copy_file);
 
     # Object creation
     use Data::Dumper;
@@ -224,7 +223,7 @@ my ( $guard, $tempfile ) = MT::Test::Image->tempfile(
         'metadata - URL'
     );
     is( $meta_f->{Location},
-        File::Spec->canonpath("$ENV{MT_HOME}/t/test.tmpl"),
+        File::Spec->canonpath(File::Spec->catfile($blog->site_path, "test.tmpl")),
         'metadata - Location'
     );
     is( $meta_f->{name},      "test.tmpl",  'metadata - name' );
@@ -233,10 +232,11 @@ my ( $guard, $tempfile ) = MT::Test::Image->tempfile(
     is( $meta_f->{mime_type}, 'text/plain', 'metadata - mime_type' );
     is( $meta_f->{duration},  undef,        'metadata - duration' );
 
-    # copy original image file
-    my $orig_file_f = File::Spec->catfile( $ENV{MT_HOME}, "t", 'test.tmpl' );
-    my $copy_file_f = $test_env->path('test_.tmpl');
-    copy( $orig_file, $copy_file );
+    # make sure file exists
+    my $copy_file_f = File::Spec->catfile($blog->site_path, 'test_.tmpl');
+    open my $fh, '>', $copy_file_f;
+    print $fh "test\n";
+    close $fh;
 
     # Object creation
     my $img_pkg_f = MT::Asset->class_handler('File');

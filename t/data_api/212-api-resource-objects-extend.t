@@ -30,6 +30,7 @@ use MT::App::DataAPI;
 use MT::DataAPI::Resource;
 
 $test_env->prepare_fixture('db_data');
+$test_env->prepare_asset_files;
 
 my $app = MT::App::DataAPI->new;
 MT->set_instance($app);
