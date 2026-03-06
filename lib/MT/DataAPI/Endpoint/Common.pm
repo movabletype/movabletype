@@ -313,6 +313,9 @@ sub filtered_list {
     my $props = MT::ListProperty->list_properties($ds) || {};
 
     for my $item (@$filteritems) {
+        return $app->error(MT->translate('Invalid type'), 400)
+            unless ref $item eq 'HASH' && $item->{type};
+
         my $prop = $props->{ $item->{type} }
             or return $app->error(MT->translate('Invalid type'), 400);
         if ($prop->has('validate_item')) {
