@@ -26,7 +26,7 @@ my $admin = $mt->model('author')->load(1);
 my $blog  = $mt->model('blog')->load(1);
 
 my ($guard, $tempfile) = MT::Test::Image->tempfile(
-    DIR    => $test_env->root,
+    DIR    => $blog->site_path,
     SUFFIX => '.jpg',
 );
 my $asset = MT::Test::Permission->make_asset(

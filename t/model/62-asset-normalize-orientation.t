@@ -24,11 +24,15 @@ use File::Temp;
 use File::Copy;
 use Image::ExifTool;
 
+$test_env->prepare_fixture('db');
+
 my ( $guard, $src_file ) = MT::Test::Image->tempfile(
     DIR    => $test_env->root,
     SUFFIX => '.jpg',
 );
 close $guard;
+
+my $site = MT::Blog->load(1);
 
 my $src_image = MT::Image->new( Filename => $src_file );
 $src_image->_init_image_size;
@@ -42,7 +46,7 @@ sub _create_image_with_orientation {
     );
     my ( $fh, $file ) = File::Temp::tempfile(
         SUFFIX => '.jpg',
-        DIR    => $test_env->root,
+        DIR    => $site->site_path,
     );
     close($fh);
     copy( $src_file, $file );
@@ -161,6 +165,7 @@ sub _run {
             );
 
             my $asset = MT::Asset::Image->new;
+            $asset->blog_id(1);
             $asset->file_path($file);
             $asset->file_ext('jpg');
             $asset->image_width( $image_obj->{width} );

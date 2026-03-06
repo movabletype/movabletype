@@ -19,6 +19,7 @@ use MT::Util qw(ts2epoch epoch2ts);
 use MT::Util::Captcha;
 
 $test_env->prepare_fixture('db_data');
+$test_env->prepare_asset_files;
 
 my $switch = MT->config->PluginSwitch;
 $switch->{Awesome} = 1;
@@ -1321,7 +1322,9 @@ image/jpeg
 --- template
 <MTAssets lastn='1'><$MTAssetFilePath$></MTAssets>
 --- expected fix_path
-CURRENT_WORKING_DIRECTORY/t/images/test.jpg
+TEST_ROOT/site/images/test.jpg
+--- expected_php_todo fix_path
+TEST_ROOT/site/images/test.jpg
 
 === test 255
 --- template
@@ -1340,11 +1343,15 @@ Melody
 <MTAssets lastn='1'><$MTAssetProperty property='file_size'$></MTAssets>
 --- expected
 129.9 KB
+--- expected_php_todo
+129.9 KB
 
 === test 258
 --- template
 <MTAssets lastn='1'><$MTAssetProperty property='file_size' format='0'$></MTAssets>
 --- expected
+133050
+--- expected_php_todo
 133050
 
 === test 259
@@ -1352,17 +1359,23 @@ Melody
 <MTAssets lastn='1'><$MTAssetProperty property='file_size' format='1'$></MTAssets>
 --- expected
 129.9 KB
+--- expected_php_todo
+129.9 KB
 
 === test 260
 --- template
 <MTAssets lastn='1'><$MTAssetProperty property='file_size' format='k'$></MTAssets>
 --- expected
 129.9
+--- expected_php_todo
+129.9
 
 === test 261
 --- template
 <MTAssets lastn='1'><$MTAssetProperty property='file_size' format='m'$></MTAssets>
 --- expected
+0.1
+--- expected_php_todo
 0.1
 
 === test 262

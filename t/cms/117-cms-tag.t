@@ -73,7 +73,7 @@ $test_env->prepare_fixture(sub {
         class        => 'image',
         blog_id      => $website->id,
         url          => 'http://narnia.na/nana/images/test.jpg',
-        file_path    => File::Spec->catfile($ENV{MT_HOME}, "t", 'images', 'test.jpg'),
+        file_path    => File::Spec->catfile('%r', 'images', 'test.jpg'),
         file_name    => 'test.jpg',
         file_ext     => 'jpg',
         image_width  => 640,
