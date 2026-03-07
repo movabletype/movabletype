@@ -226,6 +226,54 @@ sub suite {
                 };
             },
         },
+        {    # Filtered by type.
+            path   => '/v2/sites/2/templates',
+            method => 'GET',
+            params => {
+                items => [ {
+                    type => 'type',
+                    args => {
+                        value => 'custom',
+                    },
+                } ],
+            },
+            result => sub {
+                my @tmpl = $app->model('template')->load(
+                    {   blog_id => 2,
+                        type    => 'custom',
+                    },
+                    {   sort      => 'name',
+                        direction => 'ascend',
+                        limit     => 10,
+                    },
+                );
+
+                $app->user($author);
+
+                return +{
+                    totalResults => scalar @tmpl,
+                    items => MT::DataAPI::Resource->from_object( \@tmpl ),
+                };
+            },
+        },
+        {    # Filtered by type (not match).
+            path   => '/v2/sites/2/templates',
+            method => 'GET',
+            params => {
+                items => [ {
+                    type => 'type',
+                    args => {
+                        value => 'email',
+                    },
+                } ],
+            },
+            result => sub {
+                +{
+                    totalResults => 0,
+                    items        => [],
+                };
+            },
+        },
         {    # Search name.
             path   => '/v2/sites/2/templates',
             method => 'GET',
