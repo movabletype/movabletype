@@ -196,6 +196,13 @@ our %Requirements = (
         tags  => ["ImageDriver"],
         url   => "http://www.graphicsmagick.org/perl.html",
     },
+    "Hash::Util" => {
+        dropped_in => ["amazonlinux2023"],
+        label      => "This module is shipped with perl. If missing, your perl distribution is incomplete and needs an extra package.",
+        perl_core  => 0.11,
+        perl_only  => 1,
+        url        => "https://metacpan.org/pod/Hash::Util",
+    },
     "HTML::Entities" => {
         label    => "HTML::Entities is required by CGI.pm",
         required => 1,
@@ -214,13 +221,6 @@ our %Requirements = (
         pinned => 1,
         tags   => ["HTTP"],
         url    => "https://metacpan.org/pod/HTTP::Request",
-    },
-    "Hash::Util" => {
-        dropped_in => ["amazonlinux2023"],
-        label      => "This module is shipped with perl. If missing, your perl distribution is incomplete and needs an extra package.",
-        perl_core  => 0.11,
-        perl_only  => 1,
-        url        => "https://metacpan.org/pod/Hash::Util",
     },
     "I18N::LangTags::List" => {
         dropped_in => ["amazonlinux2023"],
@@ -452,19 +452,19 @@ our %Requirements = (
         tags       => ["System", "DateTime"],
         url        => "https://metacpan.org/pod/Time::HiRes",
     },
-    "URI" => {
-        extlib  => 5.34,
-        label   => "This module is sometimes used to parse URI.",
-        tags    => ["HTTP", "URI"],
-        url     => "https://metacpan.org/pod/URI",
-        version => 5.12,
-    },
     "Unicode::UCD" => {
         dropped_in => ["amazonlinux2023"],
         label      => "This module is shipped with perl. If missing, your perl distribution is incomplete and needs an extra package.",
         perl_core  => 0.43,
         perl_only  => 1,
         url        => "https://metacpan.org/pod/Unicode::UCD",
+    },
+    "URI" => {
+        extlib  => 5.34,
+        label   => "This module is sometimes used to parse URI.",
+        tags    => ["HTTP", "URI"],
+        url     => "https://metacpan.org/pod/URI",
+        version => 5.12,
     },
     "WWW::Form::UrlEncoded::XS" => {
         label => "This module is optional; It parses the query string faster.",
@@ -582,7 +582,7 @@ our %ExtLibOnly = (
         used_in => ["MT::Util::UniqueID"],
     },
     "Data::ObjectDriver" => {
-        extlib  => 0.26,
+        extlib  => 0.27,
         url     => "https://metacpan.org/pod/Data::ObjectDriver",
         used_in => ["MT::Object"],
     },
@@ -760,7 +760,7 @@ our %ExtLibOnly = (
     "Text::CSV" => {
         extlib  => 2.06,
         url     => "https://metacpan.org/pod/Text::CSV",
-        used_in => ["MT::CMS::Log"],
+        used_in => ["MT::App"],
     },
     "Time::Local" => {
         extlib    => 1.35,

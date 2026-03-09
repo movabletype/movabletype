@@ -600,6 +600,11 @@ sub save {
         or return $app->permission_denied();
 
     my $content_data_id = $app->param('id');
+    my $content_data =
+      $content_data_id
+      ? MT::ContentData->load($content_data_id)
+      : MT::ContentData->new();
+
     if ( !$content_data_id ) {
         return $app->permission_denied()
             unless $perms->can_do('create_new_content_data')
@@ -608,8 +613,10 @@ sub save {
     }
     else {
         return $app->permission_denied()
-            unless $perms->can_edit_content_data( $content_data_id,
-            $app->user );
+            unless $perms->can_edit_content_data( $content_data, $app->user );
+        return $app->permission_denied()
+	    if ( $content_data->status ne $app->param('status') )
+	    && !( $perms->can_edit_content_data( $content_data, $app->user, 1 ) );
     }
 
     my $convert_breaks = {};
@@ -621,11 +628,6 @@ sub save {
         }
         $data ||= {};
     }
-
-    my $content_data =
-      $content_data_id
-      ? MT::ContentData->load($content_data_id)
-      : MT::ContentData->new();
 
     my $org_data = $content_data->data;
     my $org_convert_breaks = MT::Serialize->unserialize( $content_data->convert_breaks );
@@ -911,8 +913,8 @@ sub save {
         $content_data->label($data_label);
     }
 
-    $app->run_callbacks( 'cms_pre_save.content_data',
-        $app, $content_data, $orig );
+    $app->run_callbacks( 'cms_pre_save.content_data', $app, $content_data, $orig )
+        or return $app->error($app->translate("Saving [_1] failed: [_2]", $content_type->name, $app->errstr));
 
     $content_data->save
         or return $app->error(
@@ -2066,7 +2068,7 @@ sub _update_content_data_status {
         return $app->permission_denied
             unless $app_author->is_superuser
             || $app_author->permissions( $content_data->id )
-            ->can_edit_content_data( $content_data, $app_author );
+            ->can_edit_content_data( $content_data, $app_author, 1 );
 
         if (   $app->config('DeleteFilesAtRebuild')
             && $content_data->status == MT::ContentStatus::RELEASE() )
@@ -2152,6 +2154,10 @@ sub can_save {
 
         return 0
             unless $perms->can_edit_content_data( $original, $app->user );
+        return 0
+	    if ( ( $obj && $obj->status != $original->status )
+	    || ( !$obj && $original->status ne $app->param('status') ) )
+            && !( $perms->can_edit_content_data( $original, $app->user, 1 ) );
     }
     else {
         my $user         = $app->user         or return 0;

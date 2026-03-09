@@ -240,7 +240,15 @@ sub prepare_image {
             my $item = $spec->{image}{$name};
             if (ref $item eq 'HASH') {
                 my $blog_id = _find_blog_id($objs, $item);
-                my $file    = "$image_dir/$name";
+                my $site = _find_blog($objs, $blog_id);
+                my ($file, $path);
+                if ($site) {
+                    $file = File::Spec->catfile($site->site_path, "images/$name");
+                    $path = "%r/images/$name";
+                } else {
+                    $file = File::Spec->catfile(MT->instance->support_directory_path, "images/$name");
+                    $path = "%s/images/$name";
+                }
                 my $dir     = File::Basename::dirname($file);
                 File::Path::mkpath($dir) unless -d $dir;
                 MT::Test::Image->write(file => $file);
@@ -248,8 +256,8 @@ sub prepare_image {
                 my %args = (
                     class        => 'image',
                     blog_id      => $blog_id,
-                    url          => "%s/images/$name",
-                    file_path    => $file,
+                    url          => $path,
+                    file_path    => $path,
                     file_ext     => $info->{FileTypeExtension},
                     image_width  => $info->{ImageWidth},
                     image_height => $info->{ImageHeight},
@@ -1163,6 +1171,17 @@ sub _find_blog_id {
     $arg->{blog_id} // $objs->{blog_id};
 }
 
+sub _find_blog {
+    my ($objs, $blog_id) = @_;
+    for my $site (values %{ $objs->{website} || {} }) {
+        return $site if $site->id == $blog_id;
+    }
+    for my $site (values %{ $objs->{blog} || {} }) {
+        return $site if $site->id == $blog_id;
+    }
+    MT::Blog->load($blog_id);
+}
+
 sub _find_author_id {
     my ($objs, $arg) = @_;
     if (my $author_name = delete $arg->{author}) {
@@ -1203,16 +1222,32 @@ sub load_objs {
     $objs{blog_id} = $all_sites[0]->id if @all_sites == 1;
 
     if ($spec->{image}) {
-        my $image_dir  = "$ENV{MT_TEST_ROOT}/images";
-        my @file_paths = map { "$image_dir/$_" } keys %{ $spec->{image} };
-        my @images     = MT->model('image')->load({ file_path => \@file_paths });
+        my @file_paths;
+        for my $key (keys %{ $spec->{image} }) {
+            my $blog_id = _find_blog_id($spec->{image}{$key});
+            my $site    = _find_blog($blog_id);
+            if ($site) {
+                push @file_paths, "%r/images/$key";
+            } else {
+                push @file_paths, "%s/images/$key";
+            }
+        }
+        my @images = MT->model('image')->load({ file_path => \@file_paths });
         $objs{image}{ basename($_->file_path) } = $_ for @images;
     }
 
     if ($spec->{asset}) {
-        my $asset_dir  = "$ENV{MT_TEST_ROOT}/assets";
-        my @file_paths = map { "$asset_dir/$_" } keys %{ $spec->{asset} };
-        my @assets     = MT->model('asset')->load({ file_path => \@file_paths });
+        my @file_paths;
+        for my $key (keys %{ $spec->{image} }) {
+            my $blog_id = _find_blog_id($spec->{image}{$key});
+            my $site    = _find_blog($blog_id);
+            if ($site) {
+                push @file_paths, "%r/$key";
+            } else {
+                push @file_paths, "%s/$key";
+            }
+        }
+        my @assets = MT->model('asset')->load({ file_path => \@file_paths });
         $objs{ $_->class }{ basename($_->file_path) } = $_ for @assets;
     }
 

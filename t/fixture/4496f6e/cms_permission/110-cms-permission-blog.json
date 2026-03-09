@@ -481,7 +481,7 @@
       ],
       "rows" : [
          [
-            "__API_PASS__",
+            null,
             "MT",
             "melody",
             null,
@@ -512,7 +512,7 @@
             null
          ],
          [
-            "__API_PASS__",
+            null,
             "MT",
             "ichiro_aikawa",
             null,
@@ -543,7 +543,7 @@
             null
          ],
          [
-            "__API_PASS__",
+            null,
             "MT",
             "jiro_ichikawa",
             null,
@@ -574,7 +574,7 @@
             null
          ],
          [
-            "__API_PASS__",
+            null,
             "MT",
             "saburo_ukawa",
             null,
@@ -605,7 +605,7 @@
             null
          ],
          [
-            "__API_PASS__",
+            null,
             "MT",
             "shiro_egawa",
             null,
@@ -636,7 +636,7 @@
             null
          ],
          [
-            "__API_PASS__",
+            null,
             "MT",
             "goro_ogawa",
             null,
@@ -667,7 +667,7 @@
             null
          ],
          [
-            "__API_PASS__",
+            null,
             "MT",
             "ichiro_kagawa",
             null,
@@ -698,7 +698,7 @@
             null
          ],
          [
-            "__API_PASS__",
+            null,
             "MT",
             "jiro_kikkawa",
             null,
@@ -729,7 +729,7 @@
             null
          ],
          [
-            "__API_PASS__",
+            null,
             "MT",
             "saburo_kumekawa",
             null,
@@ -760,7 +760,7 @@
             null
          ],
          [
-            "__API_PASS__",
+            null,
             "MT",
             "shiro_kemikawa",
             null,
@@ -791,7 +791,7 @@
             null
          ],
          [
-            "__API_PASS__",
+            null,
             "MT",
             "goro_koishikawa",
             null,
@@ -822,7 +822,7 @@
             null
          ],
          [
-            "__API_PASS__",
+            null,
             "MT",
             "ichiro_sagawa",
             null,
@@ -853,7 +853,7 @@
             null
          ],
          [
-            "__API_PASS__",
+            null,
             "MT",
             "jiro_shiki",
             null,
@@ -884,7 +884,7 @@
             null
          ],
          [
-            "__API_PASS__",
+            null,
             "MT",
             "saburo_suda",
             null,
@@ -915,7 +915,7 @@
             null
          ],
          [
-            "__API_PASS__",
+            null,
             "MT",
             "shiro_seta",
             null,
@@ -946,7 +946,7 @@
             null
          ],
          [
-            "__API_PASS__",
+            null,
             "MT",
             "goro_soneda",
             null,
@@ -977,7 +977,7 @@
             null
          ],
          [
-            "__API_PASS__",
+            null,
             "MT",
             "ichiro_taneda",
             null,
@@ -1008,7 +1008,7 @@
             null
          ],
          [
-            "__API_PASS__",
+            null,
             "MT",
             "saburo_tsuda",
             null,
@@ -1039,7 +1039,7 @@
             null
          ],
          [
-            "__API_PASS__",
+            null,
             "MT",
             "shiro_tezuka",
             null,
@@ -1070,7 +1070,7 @@
             null
          ],
          [
-            "__API_PASS__",
+            null,
             "MT",
             "goro_toda",
             null,
@@ -1101,7 +1101,7 @@
             null
          ],
          [
-            "__API_PASS__",
+            null,
             "MT",
             "ichiro_namegawa",
             null,
@@ -1132,7 +1132,7 @@
             null
          ],
          [
-            "__API_PASS__",
+            null,
             "MT",
             "jiro_niyagawa",
             null,
@@ -1163,7 +1163,7 @@
             null
          ],
          [
-            "__API_PASS__",
+            null,
             "MT",
             "saburo_nunota",
             null,
@@ -1194,7 +1194,7 @@
             null
          ],
          [
-            "__API_PASS__",
+            null,
             "MT",
             "shiro_negoro",
             null,
@@ -1225,7 +1225,7 @@
             null
          ],
          [
-            "__API_PASS__",
+            null,
             "MT",
             "goro_noda",
             null,
@@ -1256,7 +1256,7 @@
             null
          ],
          [
-            "__API_PASS__",
+            null,
             "MT",
             "ichiro_hada",
             null,
@@ -1287,7 +1287,7 @@
             null
          ],
          [
-            "__API_PASS__",
+            null,
             "MT",
             "jiro_hida",
             null,
@@ -1460,7 +1460,7 @@
             0,
             "0",
             0,
-            "",
+            "__TEST_ROOT__",
             "/",
             "ascend",
             "descend",
@@ -1929,7 +1929,7 @@
       ],
       "rows" : [
          [
-            "DataAPIDisableSite 0\nDefaultSupportedLanguages en_us,ja\nDisableDataAPI 0\nDisableNotificationPings 1\nHidePrivateRelatedContentData 1\nPluginAlias ContentType Information Widget=ContentInfoWidget\nPluginAlias Markdown=Markdown/Markdown.pl\nPluginAlias SmartyPants=Markdown/SmartyPants.pl\nPluginAlias Textile=Textile/textile2.pl\nPluginAlias WXR Importer=WXRImporter\nPluginAlias Widget Manager Upgrade Assistant=WidgetManager/WidgetManager.pl\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion blockeditor=1\nPluginSchemaVersion commonmark=1.0\nPluginSchemaVersion formattedtext=1.00\nPluginSchemaVersion tinymce6=1\nPluginSwitch BlockEditor=0\nPluginSwitch CommonMark=1\nPluginSwitch ContentInfoWidget=1\nPluginSwitch DashboardWidgetTemplate=1\nPluginSwitch FormattedText=1\nPluginSwitch FormattedTextForTinyMCE6=1\nPluginSwitch GoogleAnalyticsV4=1\nPluginSwitch Markdown/Markdown.pl=1\nPluginSwitch Markdown/SmartyPants.pl=1\nPluginSwitch Textile/textile2.pl=0\nPluginSwitch TinyMCE6=1\nPluginSwitch WXRImporter=1\nPluginSwitch WidgetManager/WidgetManager.pl=0\nSchemaVersion 9.0001\nTrimFilePath 1\n",
+            "DataAPIDisableSite 0\nDefaultSupportedLanguages en_us,ja\nDisableContentFieldPermission 1\nDisableDataAPI 0\nDisableNotificationPings 1\nHidePrivateRelatedContentData 1\nPluginAlias ContentType Information Widget=ContentInfoWidget\nPluginAlias Markdown=Markdown/Markdown.pl\nPluginAlias SmartyPants=Markdown/SmartyPants.pl\nPluginAlias Textile=Textile/textile2.pl\nPluginAlias WXR Importer=WXRImporter\nPluginAlias Widget Manager Upgrade Assistant=WidgetManager/WidgetManager.pl\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion blockeditor=1\nPluginSchemaVersion commonmark=1.0\nPluginSchemaVersion formattedtext=1.00\nPluginSchemaVersion tinymce6=1\nPluginSwitch BlockEditor=0\nPluginSwitch CommonMark=1\nPluginSwitch ContentInfoWidget=1\nPluginSwitch DashboardWidgetTemplate=1\nPluginSwitch FormattedText=1\nPluginSwitch FormattedTextForTinyMCE6=1\nPluginSwitch GoogleAnalyticsV4=1\nPluginSwitch Markdown/Markdown.pl=1\nPluginSwitch Markdown/SmartyPants.pl=1\nPluginSwitch Textile/textile2.pl=0\nPluginSwitch TinyMCE6=1\nPluginSwitch WXRImporter=1\nPluginSwitch WidgetManager/WidgetManager.pl=0\nSchemaVersion 9.0002\nTrimFilePath 1\n",
             1
          ]
       ]
@@ -9640,5 +9640,5 @@
          ]
       ]
    },
-   "schema_version" : "WidgetManager 1.1; blockeditor 1; commonmark 1.0; core 9.0001; formattedtext 1.00; tinymce6 1"
+   "schema_version" : "WidgetManager 1.1; blockeditor 1; commonmark 1.0; core 9.0002; formattedtext 1.00; tinymce6 1"
 }

@@ -15,7 +15,7 @@ function smarty_function_mtassetfilepath($args, &$ctx) {
 
     $blog_site_path = $blog->site_path();
     $blog_site_path = preg_replace('/\/$/', '', $blog_site_path);
-    $asset_file = preg_replace('/^%a/', $blog_site_path, $asset_file);
+    $asset_file = preg_replace('/^%r/', $blog_site_path, $asset_file);
 
     require_once('MTUtil.php');
     $support_directory_path = support_directory_path();
@@ -25,7 +25,7 @@ function smarty_function_mtassetfilepath($args, &$ctx) {
     if (!$blog_archive_path) $blog_archive_path = $blog_site_path;
     if ($blog_archive_path) {
         $blog_archive_path = preg_replace('/\/$/', '', $blog_archive_path);
-        $asset_file = preg_replace('/^%r/', $blog_archive_path, $asset_file);
+        $asset_file = preg_replace('/^%a/', $blog_archive_path, $asset_file);
     }
 
     return $asset_file;
