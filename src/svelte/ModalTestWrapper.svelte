@@ -25,8 +25,8 @@
   {className}
   {describedby}
   {labelledby}
-  on:open={onopen}
-  on:close={onclose}
+  onOpen={onopen}
+  onClose={onclose}
 >
   <div class="test-content">{content}</div>
 </Modal>

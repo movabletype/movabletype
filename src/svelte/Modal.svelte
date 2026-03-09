@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { createEventDispatcher, type Snippet } from "svelte";
+  import type { Snippet } from "svelte";
   import { fade, fly } from "svelte/transition";
   import { quintOut } from "svelte/easing";
   import { setModalContext } from "./context";
@@ -9,6 +9,8 @@
     className: string;
     describedby: string;
     labelledby: string;
+    onOpen?: () => void;
+    onClose?: () => void;
     children?: Snippet;
   };
   let {
@@ -16,10 +18,10 @@
     className = "",
     describedby = "",
     labelledby = "",
+    onOpen,
+    onClose,
     children,
   }: Props = $props();
-
-  const dispatch = createEventDispatcher();
 
   const modalOpen = (): void => {
     document.body.classList.add("modal-open");
@@ -52,11 +54,11 @@
     aria-describedby={describedby}
     aria-modal="true"
     onintroend={() => {
-      dispatch("open");
+      onOpen?.();
     }}
     onoutroend={() => {
       setTimeout(() => {
-        dispatch("close");
+        onClose?.();
       }, 100);
     }}
     transition:fade

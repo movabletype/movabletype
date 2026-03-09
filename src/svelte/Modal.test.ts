@@ -69,6 +69,41 @@ describe("Modal Component", () => {
     });
   });
 
+  describe("Callbacks", () => {
+    it("should call onOpen callback after introend", async () => {
+      const onopen = vi.fn();
+      render(ModalTestWrapper, {
+        props: { open: true, onopen },
+      });
+      await tick();
+
+      const modal = document.querySelector(".modal.show");
+      modal?.dispatchEvent(new Event("introend"));
+      await tick();
+
+      expect(onopen).toHaveBeenCalled();
+    });
+
+    it("should call onClose callback after outroend", async () => {
+      vi.useFakeTimers();
+      const onclose = vi.fn();
+      render(ModalTestWrapper, {
+        props: { open: true, onclose },
+      });
+      await tick();
+
+      const modal = document.querySelector(".modal");
+      modal?.dispatchEvent(new Event("outroend"));
+      await tick();
+
+      vi.advanceTimersByTime(100);
+      await tick();
+
+      expect(onclose).toHaveBeenCalled();
+      vi.useRealTimers();
+    });
+  });
+
   describe("Accessibility", () => {
     it("should have role dialog", async () => {
       render(ModalTestWrapper, {
