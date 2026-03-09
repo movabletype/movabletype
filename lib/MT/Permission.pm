@@ -622,7 +622,7 @@ sub can_view_feedback {
 
 sub can_edit_content_data {
     my $self = shift;
-    my ( $content_data, $author ) = @_;
+    my ( $content_data, $author, $status ) = @_;
 
     die unless $author->isa('MT::Author');
 
@@ -653,8 +653,7 @@ sub can_edit_content_data {
 
     my $own_content_data = $content_data->author_id == $author->id;
 
-    require MT::ContentStatus;
-    if ( $content_data->status == MT::ContentStatus::RELEASE() ) {
+    if ($status) {
         return 1
             if $self->can_do(
             'edit_all_published_content_data_' . $content_type->unique_id );

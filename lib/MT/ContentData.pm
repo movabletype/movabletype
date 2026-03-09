@@ -1315,20 +1315,15 @@ sub _make_label_html {
     }
 
     my $label = MT::Util::encode_html($obj->label || MT->translate('No Label'), 1);
-    my $edit_link;
-    if ( $app->user->permissions( $obj->blog_id )
-        ->can_edit_content_data( $obj, $app->user ) )
-    {
-        $edit_link = $app->uri(
-            mode => 'view',
-            args => {
-                _type           => 'content_data',
-                id              => $obj->id,
-                blog_id         => $obj->blog_id,
-                content_type_id => $obj->content_type_id,
-            },
-        );
-    }
+    my $edit_link = $app->uri(
+        mode => 'view',
+        args => {
+            _type           => 'content_data',
+            id              => $obj->id,
+            blog_id         => $obj->blog_id,
+            content_type_id => $obj->content_type_id,
+        },
+    );
 
     my $permalink  = MT::Util::encode_html( $obj->permalink );
     my $static_uri = MT->static_path;
@@ -1346,24 +1341,14 @@ sub _make_label_html {
         }
         : '';
 
-    if ($edit_link) {
-        return qq{
-            <span class="icon status $lc_status_class">
-              <a href="$edit_link" class="d-inline-block">$status_img</a>
-            </span>
-            <a class="label" href="$edit_link">$label</a>
-            $view_link
-        };
-    }
-    else {
-        return qq{
-            <span class="icon status $lc_status_class">
-              $status_img
-            </span>
-            $label
-            $view_link
-        };
-    }
+
+    return qq{
+        <span class="icon status $lc_status_class">
+            <a href="$edit_link" class="d-inline-block">$status_img</a>
+        </span>
+        <a class="label" href="$edit_link">$label</a>
+        $view_link
+    };
 }
 
 sub _make_field_list_props {
