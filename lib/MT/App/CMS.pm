@@ -719,8 +719,12 @@ sub init_request {
     }
 
     if ( $mode ne 'logout' && $app->{upgrade_required} ) {
-        require MT::Auth;
-        my $ctx = MT::Auth->fetch_credentials( { app => $app } );
+        my $driver = MT::Object->driver;
+        my $ctx;
+        if ($driver && $driver->table_exists('MT::Author')) {
+            require MT::Auth;
+            $ctx = MT::Auth->fetch_credentials({ app => $app });
+        }
         if ( $ctx && $ctx->{username} ) {
             my $author = MT::Author->load(
                 {
