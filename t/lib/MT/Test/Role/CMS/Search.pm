@@ -134,7 +134,9 @@ sub apply_opts {
     my ($self, $form, $opts) = @_;
     for my $key (%$opts) {
         my @input = $form->find_input($key) or next;
+        $input[0]->readonly(0);
         if ($input[0]->type eq 'checkbox') {
+            $input[0]->readonly(0);
             if (ref($opts->{$key}) eq 'ARRAY') {
                 my %flags = map { $_ => 1 } @{ $opts->{$key} };
                 for my $elem (@input) {
@@ -146,6 +148,7 @@ sub apply_opts {
             }
         } else {
             next unless _validate($self, $key, $opts);
+            $input[0]->readonly(0);
             $input[0]->value($opts->{$key});
         }
     }
@@ -195,31 +198,20 @@ sub found_ids {
 }
 
 my $TitleContainerSelectors = {
-    admin2023 => {
-        content_data => 'td.id a.label',
-        template     => 'td:nth-of-type(2) a',
-        entry        => 'td.title > span.title',
-        asset        => 'td:nth-of-type(3) a',
-        blog         => 'td:nth-of-type(2) a',
-        website      => 'td:nth-of-type(2) a',
-        author       => 'td:nth-of-type(2) a',
-    },
-    mt7 => {
-        content_data => 'td.id strong',
-        template     => 'td:nth-of-type(2) a',
-        entry        => 'td.title strong',
-        asset        => 'td:nth-of-type(3) a',
-        blog         => 'td:nth-of-type(2) a',
-        website      => 'td:nth-of-type(2) a',
-        author       => 'td:nth-of-type(2) a',
-    },
+    content_data => 'td.id a.label',
+    template     => 'td:nth-of-type(2) a',
+    entry        => 'td.title > span.title',
+    asset        => 'td:nth-of-type(3) a',
+    blog         => 'td:nth-of-type(2) a',
+    website      => 'td:nth-of-type(2) a',
+    author       => 'td:nth-of-type(2) a',
 };
 
 sub found_titles {
     my $self = shift;
     my @titles;
     my $type     = $self->current_tab or return [];
-    my $selector = $TitleContainerSelectors->{MT->config('AdminThemeId') || 'mt7'}{$type};
+    my $selector = $TitleContainerSelectors->{$type};
     my $found    = $self->found or return [];
     $found->each(sub {
         my ($i, $row) = @_;

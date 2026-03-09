@@ -51,11 +51,15 @@ sub _is_object {
 
     # Ignore object columns that have undefined values.
     my ( %got_values, %expected_values );
-    while ( my ( $field, $value ) = each %{ $got->{column_values} } ) {
-        $got_values{$field} = $value if defined $value;
-    }
     while ( my ( $field, $value ) = each %{ $expected->{column_values} } ) {
         $expected_values{$field} = $value if defined $value;
+    }
+    while ( my ( $field, $value ) = each %{ $got->{column_values} } ) {
+        if (!exists $expected_values{$field}) {
+            note "unexpected $field is ignored" if defined $value;
+            next;
+        }
+        $got_values{$field} = $value if defined $value;
     }
 
     if ( !eq_deeply( \%got_values, \%expected_values ) ) {

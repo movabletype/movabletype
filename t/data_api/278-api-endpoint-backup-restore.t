@@ -21,6 +21,7 @@ use File::Path;
 use MT::Test::DataAPI;
 
 $test_env->prepare_fixture('db_data');
+$test_env->prepare_asset_files;
 
 use MT::App::DataAPI;
 my $app = MT::App::DataAPI->new;
