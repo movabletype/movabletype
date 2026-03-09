@@ -10,6 +10,10 @@ use MT;
 use base qw(MT::Util::Log);
 use Log::Minimal;
 use Test::More ();
+use MT::Util::Encode;
+use Term::Encoding qw(term_encoding);
+
+my $enc = term_encoding() || 'utf8';
 
 sub new {
     my ( $self, $logger_level, $log_file ) = @_;
@@ -18,7 +22,7 @@ sub new {
 
     $Log::Minimal::PRINT = sub {
         my ( $time, $type, $message, $trace, $raw_message ) = @_;
-        Test::More::note $message unless $ENV{MT_TEST_RUN_APP_AS_CGI};
+        Test::More::note MT::Util::Encode::encode_if_flagged($enc, $message) unless $ENV{MT_TEST_RUN_APP_AS_CGI};
         open my $fh, '>>:utf8', $log_file or die "$log_file: $!";
         print $fh $message, "\n";
     };
