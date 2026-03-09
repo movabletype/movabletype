@@ -1251,11 +1251,6 @@ use vars qw( @ISA %Lexicon );
 	q{[_1] '[_4]' (ID:[_2]) deleted by '[_3]'} => q{[_3]が[_1] '[_4]' (ID:[_2])を削除しました},
 	q{[_1] '[_4]' (ID:[_2]) edited by user '[_3]'} => q{[_3]が[_1] '[_4]' (ID:[_2])を変更しました},
 	q{[_1] '[_6]' (ID:[_2]) edited and its status changed from [_3] to [_4] by user '[_5]'} => q{[_5]が[_1] '[_6]' (ID:[_2]) の公開状態を[_3]から[_4]に変更しました},
-	'__BROKEN__' => '要修正',
-	'__INVALID_FIELDS__' => '要修正のフィールド',
-	'exists' => '存在する',
-	'Has Invalid Fields' => '要修正のフィールドが存在する',
-	'No Invalid Fields' => '修正する必要がない',
 
 ## lib/MT/CMS/ContentType.pm
 	'Cannot load content field data (ID: [_1])' => 'コンテンツフィールド (ID: [_1]) をロードできません',
@@ -1745,6 +1740,13 @@ use vars qw( @ISA %Lexicon );
 	'[_1] ( id:[_2] ) does not exists.' => '[_1] ( id:[_2] ) が見つかりません。',
 	'basename is too long.' => '出力ファイルが長すぎます。',
 	'record does not exist.' => 'ブログがありません。',
+	'__BROKEN__' => '要修正',
+	'__INVALID_FIELDS__' => '要修正のフィールド',
+	'exists' => '存在する',
+	'not exists' => '存在しない',
+	'Has Invalid Fields' => '要修正のフィールドが存在する',
+	'No Invalid Fields' => '要修正のフィールドが存在しない',
+	'"[_1]" is required field.' => '"[_1]"は必須フィールドです。',
 
 ## lib/MT/ContentField.pm
 	'Cannot load content field data_type [_1]' => 'コンテンツフィールドのdata_typeが見つかりません ([_1])',
@@ -1798,7 +1800,7 @@ use vars qw( @ISA %Lexicon );
 	'Invalid [_1] in "[_2]" field.' => '"[_2]"フィールドの値は不正な[_1]です。',
 	'Invalid values in "[_1]" field: [_2]' => '"[_1]"フィールドの値が不正です: [_2]',
 	'Only 1 [_1] can be selected in "[_2]" field.' => '"[_2]”フィールドはひとつだけ選択できます',
-	'[_1] greater than or equal to [_2] must be selected in "[_3]" field.' => '"[_3]"フィールドの[_1]は[_2]個以下である必要があります。',
+	'[_1] greater than or equal to [_2] must be selected in "[_3]" field.' => '"[_3]"フィールドの[_1]は[_2]個以上である必要があります。',
 	'[_1] less than or equal to [_2] must be selected in "[_3]" field.' => '"[_3]"フィールドの[_1]は[_2]個以下である必要があります。',
 	'is not selected' => 'が選択されていない',
 	'is selected' => 'が選択されている',

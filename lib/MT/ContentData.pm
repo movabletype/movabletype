@@ -1299,7 +1299,7 @@ __FILTER_TMPL__
                         value => 1,
                     },
                     {
-                        label => MT->translate('none'),
+                        label => MT->translate('not exists'),
                         value => 0,
                     },
                 ],
