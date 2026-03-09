@@ -3,7 +3,7 @@ package MT::Test::Emoji;
 use strict;
 use warnings;
 use Exporter 'import';
-use Test::Requires '5.014'; ## Unicode 6.0 aka SUSHI/BEER
+use Test::Requires '5.014'; ## no critic(Modules::ProhibitUseQuotedVersion)  ## Unicode 6.0 aka SUSHI/BEER
 use Acme::RandomEmoji qw/random_emoji/;
 use charnames ();
 

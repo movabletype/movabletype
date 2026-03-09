@@ -12,7 +12,7 @@ use Test::TCP;
 my $PHPVersion;
 
 sub php_version {
-    return if $ENV{MT_TEST_SKIP_PHP};
+    return 0 if $ENV{MT_TEST_SKIP_PHP};
     return $PHPVersion if defined $PHPVersion;
     my $php_version_string = `php --version 2>&1` or return $PHPVersion = 0;
     ($PHPVersion) = $php_version_string =~ /^PHP (\d+\.\d+)/im;
@@ -45,7 +45,7 @@ sub run {
     my $command = _make_php_command();
     IPC::Run3::run3 $command, \$script, \my $result, $stderr, { binmode_stdin => 1 } or die $?;
     $result =~ s/^(\r\n|\r|\n|\s)+|(\r\n|\r|\n|\s)+\z//g;
-    Encode::decode_utf8($result);
+    $result = Encode::decode_utf8($result);
 
     return $result;
 }
@@ -102,7 +102,7 @@ INI
 my $PHP_DAEMON;
 
 sub daemon {
-    my ($class, $template, $blog_id, $extra, $text) = @_;
+    my ($class, $template, $blog_id, $extra) = @_;
 
     $PHP_DAEMON ||= Test::TCP->new(
         code => sub {
@@ -123,15 +123,6 @@ sub daemon {
     my $sock_addr          = sockaddr_in($port, $packed_remote_host);
     connect($sock, $sock_addr) or die "Cannot connect to 127.0.0.1:$port: $!";
 
-    if ($text) {
-        $extra = <<"PHP" . $extra;
-\$text = <<<__TMPL__
-$text
-__TMPL__
-;
-PHP
-    }
-
     my $old_handle = select $sock;
     $| = 1;
     select $old_handle;
@@ -143,7 +134,7 @@ PHP
     close $sock;
 
     $result =~ s/^(\r\n|\r|\n|\s)+|(\r\n|\r|\n|\s)+\z//g;
-    Encode::decode_utf8($result);
+    $result = Encode::decode_utf8($result);
 
     return $result;
 }
