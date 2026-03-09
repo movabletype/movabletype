@@ -36,6 +36,7 @@ use MT;
 use MT::Test::Selenium;
 
 $test_env->prepare_fixture('db_data');
+$test_env->prepare_asset_files;
 
 my $author = MT->model('author')->load(1) or die MT->model('author')->errstr;
 $author->set_password('Nelson');

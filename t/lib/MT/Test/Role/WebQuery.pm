@@ -20,7 +20,10 @@ sub _trim {
 
 sub _find_text {
     my ( $self, $selector ) = @_;
-    my @elems = eval { $self->wq_find($selector) } or return;
+    my @elems = eval { $self->wq_find($selector) };
+    # ignore hidden messages
+    @elems = grep {($_->attr('style') // '') !~ /display:\s*none/} @elems;
+    return unless @elems;
     return wantarray ? (map { $_->text } @elems) : $elems[0]->text;
 }
 
@@ -87,6 +90,12 @@ sub has_invalid_request {
     my ($self, $message) = @_;
     my $error = $self->_concatenated_error // '';
     ok $error =~ /Invalid Request/i, $message || 'has invalid request';
+}
+
+sub has_no_invalid_request {
+    my ($self, $message) = @_;
+    my $error = $self->_concatenated_error // '';
+    ok $error !~ /Invalid Request/i, $message || 'has no invalid request';
 }
 
 1;

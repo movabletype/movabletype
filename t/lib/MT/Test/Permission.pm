@@ -242,7 +242,7 @@ sub make_asset {
 
     my $values = {
         url         => 'http://narnia.na/nana/files/test.tmpl',
-        file_path   => File::Spec->catfile( $ENV{MT_HOME}, "t", 'test.tmpl' ),
+        file_path   => File::Spec->catfile('%r', 'test.tmpl'),
         file_name   => 'test.tmpl',
         file_ext    => 'tmpl',
         mime_type   => 'text/plain',

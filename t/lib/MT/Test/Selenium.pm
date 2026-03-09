@@ -27,6 +27,7 @@ use MT::Util qw(encode_js);
 use Selenium::Waiter;
 use constant DEBUG => $ENV{MT_TEST_SELENIUM_DEBUG} ? 1 : $ENV{TRAVIS} ? 1 : 0;
 use constant MY_HOST => $ENV{TRAVIS} ? $ENV{HOSTNAME} : '127.0.0.1';
+use constant NON_HEADLESS => $ENV{MT_TEST_SELENIUM_NON_HEADLESS} ? 1 : 0;
 use Test::FailWarnings -allow_from => [qw(Selenium::CanStartBinary::FindBinary)];  ## no critic(TooMuchCode::ProhibitUnusedImport)
 
 with qw(
@@ -39,7 +40,8 @@ our %EXTRA = (
     "Selenium::Chrome" => {
         'goog:chromeOptions' => {
             args => [
-                'headless', ( DEBUG ? ('enable-logging') : () ),
+                ( NON_HEADLESS ? () : ('headless') ),
+                ( DEBUG ? ('enable-logging') : () ),
                 'window-size=1280,800', 'no-sandbox', 'disable-dev-shm-usage',
                 'host-rules=MAP * '. MY_HOST,
             ],
@@ -62,7 +64,8 @@ our %EXTRA = (
     "Selenium::Remote::Driver" => {
         'goog:chromeOptions' => {
             args => [
-                'headless', ( DEBUG ? 'enable-logging' : () ),
+                ( NON_HEADLESS ? () : ('headless') ),
+                ( DEBUG ? 'enable-logging' : () ),
                 'window-size=1280,800', 'no-sandbox', 'disable-dev-shm-usage',
                 'host-rules=MAP * '. MY_HOST,
             ],
