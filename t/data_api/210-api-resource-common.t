@@ -22,6 +22,7 @@ BEGIN {
 use MT::Test;
 use MT::App::DataAPI;
 use MT::DataAPI::Resource;
+use MT::Test::Image;
 
 $test_env->prepare_fixture('db_data');
 
@@ -38,6 +39,8 @@ my $version;
 $mock_app_api->mock( 'current_api_version',
     sub { $version = $_[1] if $_[1]; $version } );
 MT::App::DataAPI->current_api_version(1);
+
+my ($guard, $image) = MT::Test::Image->write(file => $test_env->path('site/images/test.jpg'));
 
 subtest 'from_object with $fields_specified' => sub {
     my @suite = (

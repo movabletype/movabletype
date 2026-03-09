@@ -28,7 +28,7 @@
             "This is a test template.",
             "tmpl",
             "test.tmpl",
-            "__MT_HOME__/t/test.tmpl",
+            "%r/test.tmpl",
             null,
             1,
             "Template",
@@ -47,7 +47,7 @@
             "This is a test template.",
             "tmpl",
             "test.tmpl",
-            "__MT_HOME__/t/test.tmpl",
+            "%r/test.tmpl",
             null,
             2,
             "Template",
@@ -66,7 +66,7 @@
             "This is a test template.",
             "tmpl",
             "test.tmpl",
-            "__MT_HOME__/t/test.tmpl",
+            "%r/test.tmpl",
             null,
             3,
             "Template",
@@ -85,7 +85,7 @@
             "This is a test template.",
             "tmpl",
             "test.tmpl",
-            "__MT_HOME__/t/test.tmpl",
+            "%r/test.tmpl",
             null,
             4,
             "Template",
@@ -160,7 +160,7 @@
       ],
       "rows" : [
          [
-            "__API_PASS__",
+            "kxdge10y",
             "MT",
             "melody",
             null,
@@ -331,7 +331,7 @@
             0,
             "0",
             0,
-            "",
+            "__TEST_ROOT__",
             "/",
             "ascend",
             "descend",
@@ -447,16 +447,16 @@
             1,
             null,
             "__NOW__",
-            "651381eae347ae9b53511a30d1cf08260cb9565b",
+            "18e45d87ceec4811a9d10a4919b4292d781e72a0",
             0,
-            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0004\u0000\u0000\u0000\u00014A\u0000\u0000\u0000\u0001-\u0000\u0000\u0000\u00014\u0000\u0000\u0000\u00012A\u0000\u0000\u0000\u0001-\u0000\u0000\u0000\u00012\u0000\u0000\u0000\u00011A\u0000\u0000\u0000\u0001-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u00013A\u0000\u0000\u0000\u0001-\u0000\u0000\u0000\u00013",
+            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0004\u0000\u0000\u0000\u00011A\u0000\u0000\u0000\u0001-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u00013A\u0000\u0000\u0000\u0001-\u0000\u0000\u0000\u00013\u0000\u0000\u0000\u00012A\u0000\u0000\u0000\u0001-\u0000\u0000\u0000\u00012\u0000\u0000\u0000\u00014A\u0000\u0000\u0000\u0001-\u0000\u0000\u0000\u00014",
             1,
-            "8478583cebdc11d6e9d98205a31da117a72a8755",
+            "fe4b07112c3910c6c3a14c8a9c58bffa5c60c348",
             null,
             null,
             "__NOW__",
             2,
-            "8478583cebdc11d6e9d98205a31da117a72a8755",
+            "fe4b07112c3910c6c3a14c8a9c58bffa5c60c348",
             null,
             201722
          ]
@@ -496,7 +496,7 @@
             null,
             null,
             "asset",
-            "a18c6581d3cf1b5419594fbc9d5f491ab40b6fe8"
+            "eaf2ba06d94fcbfe4854400abbacc94d0b5892db"
          ],
          [
             1,
@@ -513,7 +513,7 @@
             null,
             null,
             "asset_audio",
-            "3697580b3e60a48387ca2287a590f32b4e5f4935"
+            "6dad2a1ea34d1f186965b4e46c60766ca1f093c6"
          ],
          [
             1,
@@ -530,7 +530,7 @@
             null,
             null,
             "asset_video",
-            "7db1431f3865694ebc1d679e096c8f1520e44606"
+            "d45f52f12d81732c81e2e4e1f147f7284d54654d"
          ],
          [
             1,
@@ -547,7 +547,7 @@
             null,
             null,
             "asset_image",
-            "3124ae0b60500871d7c8860cb2c6b1e31ac12f76"
+            "af29dba2472ccabe03e33447adda9233510441c0"
          ]
       ]
    },
@@ -675,12 +675,12 @@
             "__NOW__",
             null,
             "This is a sample.",
-            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002A\u0000\u0000\u0000\u0004H\u0000\u0000\u0000\u0005\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(a18c6581d3cf1b5419594fbc9d5f491ab40b6fe8\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0002\u0000\u0000\u0000\bmultiple-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0005asset\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\u0005assetH\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\u000basset_audio\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00012\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00012\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0002\u0000\u0000\u0000\bmultiple-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u000basset_audio\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(3697580b3e60a48387ca2287a590f32b4e5f4935H\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\nasset_vieo\u0000\u0000\u0000\bmultiple-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(7db1431f3865694ebc1d679e096c8f1520e44606\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00013\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00013\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\u000basset_videoH\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\u000basset_image\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00014\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(3124ae0b60500871d7c8860cb2c6b1e31ac12f76\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0002\u0000\u0000\u0000\bmultiple-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u000basset_image\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00014",
+            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002A\u0000\u0000\u0000\u0004H\u0000\u0000\u0000\u0005\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(eaf2ba06d94fcbfe4854400abbacc94d0b5892db\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\u0005asset\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0002\u0000\u0000\u0000\bmultiple-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0005asset\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00011H\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\u000basset_audio\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00012\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0002\u0000\u0000\u0000\bmultiple-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u000basset_audio\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00012\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(6dad2a1ea34d1f186965b4e46c60766ca1f093c6H\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00013\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\nasset_vieo\u0000\u0000\u0000\bmultiple-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\u000basset_video\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00013\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(d45f52f12d81732c81e2e4e1f147f7284d54654dH\u0000\u0000\u0000\u0005\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(af29dba2472ccabe03e33447adda9233510441c0\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00014\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0002\u0000\u0000\u0000\bmultiple-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u000basset_image\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\u000basset_image\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00014",
             1,
             null,
             "__NOW__",
             "Sample Content Type 0",
-            "651381eae347ae9b53511a30d1cf08260cb9565b",
+            "18e45d87ceec4811a9d10a4919b4292d781e72a0",
             null,
             null
          ]

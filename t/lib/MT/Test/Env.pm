@@ -110,7 +110,7 @@ sub _load_envfile {
             next if /^(?:#|\s*$)/;
             s/(?:^\s*|\s*$)//g;
             my ($key, $value) = split /\s*=\s*/, $_, 2;
-            $ENV{ uc $key } = $value;
+            $ENV{ uc $key } //= $value;
         }
     }
 }
@@ -151,6 +151,9 @@ sub write_config {
 
     require MT;
 
+    my $tmpdir = File::Spec->catdir($ENV{MT_TEST_ROOT}, 'tmpdir');
+    mkpath($tmpdir) unless -d $tmpdir;
+
     # common directives
     my %config = (
         PluginPath => [qw(
@@ -163,7 +166,7 @@ sub write_config {
             MT_HOME/t/themes/
             MT_HOME/themes/
         )],
-        TempDir                => File::Spec->tmpdir,
+        TempDir                => $tmpdir,
         DefaultLanguage        => $default_language,
         StaticWebPath          => '/mt-static/',
         StaticFilePath         => 'TEST_ROOT/mt-static',
@@ -175,7 +178,7 @@ sub write_config {
         LoggerModule           => 'Test',
         LoggerPath             => 'TEST_ROOT/log',
         LoggerFileName         => 'TEST_ROOT/.test.log',
-        LoggerLevel            => 'DEBUG',
+        LoggerLevel            => $ENV{MT_TEST_LOGGER_LEVEL} || 'DEBUG',
         MailTransfer           => 'debug',
         MailTransferEncoding   => '8bit',
         DBIRaiseError          => 1,
@@ -366,7 +369,31 @@ sub connect_info {
         }
         # TODO: $self->{dsn} = "dbi:$driver:...";
     }
+    if (!$self->{database_is_ready}) {
+        $self->_drop_existing_tables(\%connect_info);
+    }
     %connect_info;
+}
+
+sub _drop_existing_tables {
+    my ($self, $info) = @_;
+    return unless $ENV{MT_TEST_DROP_EXISTING_TABLES};
+
+    my $dsn = $self->{dsn} or return;
+    my $dbh = do {
+        local $SIG{__WARN__};
+        DBI->connect($dsn, $info->{DBUser}, $info->{DBPassword}, { PrintError => 0 });
+    } or return;
+    my $rows = $dbh->table_info->fetchall_arrayref;
+    for my $row (@$rows) {
+        my ($catalog, $schema, $table, $type) = @$row;
+        next unless $type  =~ /table/i;    # ignore indices/sequences
+        next unless $table =~ /\bmt_/i;
+        $table =~ s/^.*\.//g;
+        $table =~ s/"//g;
+        $dbh->do("DROP TABLE $table") or die $dbh->errstr;
+    }
+    $self->{database_is_ready} = 1;
 }
 
 sub _connect_info_mysql {
@@ -382,6 +409,7 @@ sub _connect_info_mysql {
     if (my $go_dsn = $ENV{GO_PROVE_MYSQLD}) {
         my ($sock) = $go_dsn =~ /unix\((.*?)\)/;
         $ENV{MT_TEST_DSN} = "dbi:mysql:mysql_socket=$sock;user=root";
+        $self->{database_is_ready} = 1;
     }
     if (my $dsn = $ENV{MT_TEST_DSN} || $ENV{PERL_TEST_MYSQLPOOL_DSN}) {
         my $dbh = DBI->connect($dsn) or die $DBI::errstr;
@@ -412,6 +440,7 @@ sub _connect_info_mysql {
         if ($ENV{TEST_VERBOSE}) {
             $self->show_mysql_db_variables;
         }
+        $self->{database_is_ready} = 1;
     } else {
         $self->{dsn} = "dbi:mysql:host=$info{DBHost};dbname=$info{Database};user=$info{DBUser}";
         my $dbh = do { local $SIG{__WARN__}; DBI->connect($self->{dsn}, undef, undef, { PrintError => 0 }) };
@@ -473,6 +502,7 @@ sub _connect_info_pg {
             $info{DBPassword} = $opts{password};
         }
         $self->{dsn} = "dbi:Pg:" . (join ";", map { "$_=$opts{$_}" } keys %opts);
+        $self->{database_is_ready} = 1;
     } else {
         $self->{dsn} = "dbi:Pg:host=$info{DBHost};dbname=$info{Database};user=$info{DBUser}";
         my $dbh = DBI->connect($self->{dsn});
@@ -491,6 +521,7 @@ sub _connect_info_sqlite {
 
     my $database = $self->path("mt.db");
     $self->{dsn} = "dbi:SQLite:$database";
+    $self->{database_is_ready} = 1 unless -f $database;
 
     return (
         ObjectDriver => "DBI::sqlite",
@@ -1000,7 +1031,6 @@ sub load_schema_and_fixture {
     my ($s, $m, $h, $d, $mo, $y) = gmtime;
     my $now      = sprintf("%04d%02d%02d%02d%02d%02d", $y + 1900, $mo + 1, $d, $h, $m, $s);
     my @pool     = ('a' .. 'z', 0 .. 9);
-    my $api_pass = join '', map { $pool[rand @pool] } 1 .. 8;
     my $salt     = join '', map { $pool[rand @pool] } 1 .. 16;
 
     # Tentative password; update it later when necessary
@@ -1010,7 +1040,6 @@ sub load_schema_and_fixture {
     $fixture =~ s/\b__MT_HOME__\b/$MT_HOME/g;
     $fixture =~ s/\b__TEST_ROOT__\b/$root/g;
     $fixture =~ s/\b__NOW__\b/$now/g;
-    $fixture =~ s/\b__API_PASS__\b/$api_pass/g;
     $fixture =~ s/\b__AUTHOR_PASS__\b/$author_pass/g;
     require JSON;
     $fixture = eval { JSON::decode_json($fixture) };
@@ -1291,8 +1320,6 @@ sub save_fixture {
                         if ($now - $t < Time::Seconds::ONE_DAY()) {
                             $value = '__NOW__';
                         }
-                    } elsif ($key eq 'author_api_password') {
-                        $value = '__API_PASS__';
                     } elsif ($key eq 'author_password') {
                         $value = '__AUTHOR_PASS__';
                     } elsif ($key =~ /^(?:role|permission)_permissions$/) {
@@ -1363,6 +1390,41 @@ sub test_schema {
         if (eval { require Text::Diff }) {
             diag Text::Diff::diff(\$generated_schema, \$saved_schema, { STYLE => 'Unified' });
         }
+    }
+}
+
+sub prepare_asset_files {
+    my ($self, %args) = @_;
+
+    require MT::Test::Image;
+    my @assets = MT->model('asset')->load({ class => '*', %args });
+    for my $asset (@assets) {
+        # too bad some of the old tests assume some of the test files do not exist
+        my $raw_file_path = $asset->column('file_path') or next;
+        $raw_file_path =~ s!^\%[ras]/!!;
+        my $test_file = File::Spec->catfile($ENV{MT_HOME}, "t", $raw_file_path);
+        next unless -e $test_file;
+
+        my $file_path = $asset->file_path;
+        my $parent    = dirname($file_path);
+        mkpath $parent unless -d $parent;
+        my $asset_type = $asset->class_type;
+        if ($asset_type eq 'image') {
+            $self->{__asset_guard}{$file_path} = MT::Test::Image->write(file => $file_path);
+        } elsif ($asset_type eq 'file') {
+            open my $fh, '>', $file_path;
+            print $fh "test\n";
+            close $fh;
+            $self->{__asset_guard}{$file_path} = 1;
+        }
+    }
+}
+
+sub remove_asset_files {
+    my $self  = shift;
+    my @paths = values %{ delete $self->{__asset_guard} || {} };
+    for my $path (@paths) {
+        unlink $path if -e $path;
     }
 }
 

@@ -61,7 +61,7 @@
       ],
       "rows" : [
          [
-            "__API_PASS__",
+            "olthqad0",
             "MT",
             "melody",
             null,
@@ -232,7 +232,7 @@
             0,
             "0",
             0,
-            "",
+            "__TEST_ROOT__",
             "/",
             "ascend",
             "descend",
@@ -359,7 +359,7 @@
             null,
             "__NOW__",
             "test content type 01",
-            "bc830d870f88db827d9555c7e81680cee6e28ac2",
+            "fdc4007d9d55665eed4fd1f3f894ffd5b1172739",
             null,
             null
          ],
@@ -374,7 +374,7 @@
             null,
             "__NOW__",
             "test content type 02",
-            "ab315eb32049d174b2d35f3a4c4b7112732fc1bd",
+            "b8f94413798abac04072bf2dbeca99ac9c0b464f",
             null,
             null
          ]

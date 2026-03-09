@@ -113,7 +113,7 @@ sub list_messages {
     my $ua = LWP::UserAgent->new;
     my $res = $ua->get("http://localhost:$ui_port/api/v1/messages");
     unless ($res->is_success) {
-        diag $res->status_line;
+        Test::More::diag $res->status_line;
         return;
     }
     decode_json($res->decoded_content)->{messages};
@@ -125,7 +125,7 @@ sub delete_messages {
     my $ua = LWP::UserAgent->new;
     my $res = $ua->delete("http://localhost:$ui_port/api/v1/messages");
     unless ($res->is_success) {
-        diag $res->status_line;
+        Test::More::diag $res->status_line;
         return;
     }
     1;
@@ -137,7 +137,7 @@ sub get_raw_message {
     my $ua = LWP::UserAgent->new;
     my $res = $ua->get("http://localhost:$ui_port/api/v1/message/$id/raw");
     unless ($res->is_success) {
-        diag $res->status_line;
+        Test::More::diag $res->status_line;
         return;
     }
     $res->decoded_content;
