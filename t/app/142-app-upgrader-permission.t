@@ -61,7 +61,7 @@ sub setup_upgrade_test {
 
 subtest 'Upgrade permission check' => sub {
     my $test_user_name = 'restricted_user';
-    my $test_password  = 'test1234';
+    my $test_password  = 'pass';
 
     subtest 'Superuser: allowed when RequireUpgradePermission=1' => sub {
         setup_upgrade_test( require_admin => 1 );
@@ -101,7 +101,6 @@ subtest 'Upgrade permission check' => sub {
         setup_upgrade_test( require_admin => 0 );
         my $author = MT::Test::Permission->make_author(
             name     => $test_user_name,
-            password => $test_password,
             nickname => 'Test User',
         );
         ok( !$author->is_superuser, "author is not superuser" );
@@ -125,7 +124,6 @@ subtest 'Upgrade permission check' => sub {
         setup_upgrade_test( require_admin => 1 );
         my $author = MT::Test::Permission->make_author(
             name     => $test_user_name,
-            password => $test_password,
             nickname => 'Test User',
         );
         ok( !$author->is_superuser, "author is not superuser" );

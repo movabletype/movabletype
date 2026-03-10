@@ -70,12 +70,11 @@ subtest 'Superuser: redirected to upgrade' => sub {
 
 subtest 'Non-superuser: redirected to upgrade when RequireUpgradePermission=0' => sub {
     my $test_name = 'restricted_user';
-    my $test_pass = 'test1234';
+    my $test_pass = 'pass';
 
     setup_upgrade_test( require_admin => 0 );
     my $author = MT::Test::Permission->make_author(
         name     => $test_name,
-        password => $test_pass,
         nickname => 'Test User',
     );
     my $app =
@@ -86,12 +85,11 @@ subtest 'Non-superuser: redirected to upgrade when RequireUpgradePermission=0' =
 
 subtest 'Non-superuser: upgrade pending when RequireUpgradePermission=1' => sub {
     my $test_name = 'restricted_user';
-    my $test_pass = 'test1234';
+    my $test_pass = 'pass';
 
     setup_upgrade_test( require_admin => 1 );
     my $author = MT::Test::Permission->make_author(
         name     => $test_name,
-        password => $test_pass,
         nickname => 'Test User',
     );
     my $app =
