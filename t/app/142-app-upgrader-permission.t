@@ -34,8 +34,10 @@ sub setup_upgrade_test {
     MT::Test->init_db;
 
     my $cfg = MT->config;
-    $cfg->MTVersion(9.000001);
-    $cfg->SchemaVersion(9.0000);
+    my $version = MT->version_number;
+    my $schema  = MT->schema_version - 0.0001;
+    $cfg->MTVersion($version);
+    $cfg->SchemaVersion($schema);
     $cfg->RequireUpgradePermission($require_admin);
     $cfg->save_config;
 
@@ -45,10 +47,10 @@ sub setup_upgrade_test {
     my @new_lines;
     foreach my $line (@lines) {
         if ( $line =~ /^MTVersion/ ) {
-            $line = 'MTVersion 9.000001';
+            $line = "MTVersion $version";
         }
         elsif ( $line =~ /^SchemaVersion/ ) {
-            $line = 'SchemaVersion 9.0000';
+            $line = "SchemaVersion $schema";
         }
         push @new_lines, $line;
     }
