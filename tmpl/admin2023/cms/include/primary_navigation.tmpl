@@ -155,7 +155,7 @@ function stopPropagation(e) {
 </mt:if>
     <div class="mt-primaryNavigation__header--invert">
       <div class="col-10">
-        <h1 class="mt-productHeader__logo">
+        <div class="mt-productHeader__logo">
 <mt:if name="scope_type" ne="user">
           <a href="<mt:var name="mt_url">?__mode=dashboard" title="<__trans phrase="Dashboard">">
 </mt:if>
@@ -166,7 +166,7 @@ function stopPropagation(e) {
           <span class="mt-productHeader__name">
             <mt:var name="product_header_name">
           </span>
-        </h1>
+        </div>
       </div>
 <mt:if name="scope_type" ne="user">
       <div class="col-2">
