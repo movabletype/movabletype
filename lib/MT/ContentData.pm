@@ -1268,11 +1268,18 @@ sub make_list_props {
                 },
                 bulk_sort => sub {
                     my ($prop, $objs) = @_;
+                    return @{$objs} unless @{$objs};
+
+                    my $content_type = $objs->[0]->content_type;
                     my $app = MT->app;
+                    my %cache;
+                    for my $obj (@{$objs}) {
+                        my $errors = scalar @{verify_content_data($app, $content_type, $obj) || []};
+                        $cache{$obj->id} = $errors || 0;
+                    }
+
                     sort {
-                        scalar @{verify_content_data($app, $a->content_type, $a) || []}
-                        <=>
-                        scalar @{verify_content_data($app, $b->content_type, $b) || []}
+                        $cache{$a->id} <=> $cache{$b->id};
                     } @{$objs};
                 },
                 display => 'optional',
