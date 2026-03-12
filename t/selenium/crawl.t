@@ -34,6 +34,7 @@ use URI::QueryParam;
 my $encoder = JSON::XS->new->canonical;
 
 $test_env->prepare_fixture('db_data');
+$test_env->prepare_asset_files;
 
 my $s      = MT::Test::Selenium->new($test_env, { rebootable => 1 });
 my $author = MT->model('author')->load(1);
