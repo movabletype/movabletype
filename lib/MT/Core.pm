@@ -1210,7 +1210,7 @@ BEGIN {
                 },
                 pack => {
                     view          => [],
-                    validate_item => \&MT::Filter::pack_validate_item,
+                    validate_item => '$Core::MT::Filter::pack_validate_item',
                     terms         => \&MT::Filter::pack_terms,
                     grep          => \&MT::Filter::pack_grep,
                     requires_grep => \&MT::Filter::pack_requires_grep,
