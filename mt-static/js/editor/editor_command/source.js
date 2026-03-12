@@ -180,6 +180,8 @@ MT.EditorCommand.Source.prototype.commands['default'] = {
     }
 };
 
+MT.EditorCommand.Source.prototype.commands['commonmark'] =
+MT.EditorCommand.Source.prototype.commands['gfm'] =
 MT.EditorCommand.Source.prototype.commands['markdown'] =
 MT.EditorCommand.Source.prototype.commands['markdown_with_smartypants'] = {
     bold: function(command, userInterface, argument, text) {
