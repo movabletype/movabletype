@@ -1747,6 +1747,7 @@ use vars qw( @ISA %Lexicon );
 	'Has Invalid Fields' => '要修正のフィールドが存在する',
 	'No Invalid Fields' => '要修正のフィールドが存在しない',
 	'"[_1]" is required field.' => '"[_1]"は必須フィールドです。',
+	'Please correct the following problem.' => '以下の問題を解消してください。',
 
 ## lib/MT/ContentField.pm
 	'Cannot load content field data_type [_1]' => 'コンテンツフィールドのdata_typeが見つかりません ([_1])',
