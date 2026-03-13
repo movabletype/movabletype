@@ -16,7 +16,7 @@ BEGIN {
 use MT::Test;
 use MT::Test::Permission;
 use MT::Test::App;
-use MT::ContentData::Validator;
+use MT::ContentData;
 
 $test_env->prepare_fixture('db');
 
@@ -89,7 +89,7 @@ subtest 'Prepare validation tests' => sub {
             content_type_id => $content_type_id,
         });
         my $obj = $items[0];
-        my $errors = MT::ContentData::Validator::verify_content_data($app, $obj->content_type, $obj);
+        my $errors = MT::ContentData::verify_content_data($app, $obj->content_type, $obj);
         is $errors, undef, "Verified.";
     };
 };
@@ -288,7 +288,7 @@ subtest 'Verify uninitialized fields.' => sub {
             content_type_id => $content_type_id,
         });
         my $obj = $items[0];
-        my $errors = MT::ContentData::Validator::verify_content_data($app, $obj->content_type, $obj);
+        my $errors = MT::ContentData::verify_content_data($app, $obj->content_type, $obj);
         is $errors, undef, "Verified.";
     };
 };
@@ -322,7 +322,7 @@ subtest 'Verify content data including required fields' => sub {
             content_type_id => $content_type_id,
         });
         my $obj = $items[0];
-        my $errors = MT::ContentData::Validator::verify_content_data($app, $obj->content_type, $obj);
+        my $errors = MT::ContentData::verify_content_data($app, $obj->content_type, $obj);
         ok @{ $errors }, "Exists errors.";
 
         my $fields = $obj->content_type->fields;
