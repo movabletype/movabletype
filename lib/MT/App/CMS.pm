@@ -3258,7 +3258,7 @@ sub build_blog_selector {
                         || @perms > 0 )
                     ? 1
                     : 0;
-
+                next unless $fav_data->{fav_website_can_link};
                 push @website_data, \%$fav_data;
             }
         }
