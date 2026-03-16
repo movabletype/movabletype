@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../lib"; # t/lib
+use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
@@ -27,7 +27,8 @@ done_testing;
 sub suite {
     return +[
         map {
-            +(  {   path   => "/v$_/sites/1/unknown-endpoint",
+            +({
+                    path   => "/v$_/sites/1/unknown-endpoint",
                     params => { suppressResponseCodes => 1, },
                     method => 'GET',
                     result => +{
@@ -37,15 +38,14 @@ sub suite {
                         }
                     },
                 },
-                {   path   => "/v$_/sites/999999",
+                {
+                    path   => "/v$_/sites/999999",
                     params => { suppressResponseCodes => 1, },
                     method => 'GET',
-                    result => +{
-                        "error" =>
-                            { "message" => "Site not found", "code" => 404 }
-                    },
+                    result => +{ "error" => { "message" => "Site not found", "code" => 404 } },
                 },
-                {   path   => "/v$_/sites/1/unknown-endpoint",
+                {
+                    path   => "/v$_/sites/1/unknown-endpoint",
                     params => {
                         suppressResponseCodes => 1,
                         'X-MT-Requested-Via'  => 'IFRAME',
@@ -58,15 +58,57 @@ sub suite {
                         }
                     },
                 },
-                {   path   => "/version",
+                {
+                    path   => "/version",
                     method => 'GET',
                     result => +{
-			endpointVersion => 'v' . $app->DEFAULT_VERSION(),
-			apiVersion      => $app->API_VERSION(),
-		    }
+                        endpointVersion => 'v' . $app->DEFAULT_VERSION(),
+                        apiVersion      => $app->API_VERSION(),
+                    }
                 },
-                )
+                {
+                    path   => "/v$_/sites/1/entries",
+                    method => 'GET',
+                    params => {
+                        items => ['invalid-item'],
+                    },
+                    code   => 400,
+                    result => +{
+                        "error" => {
+                            "message" => "Invalid type",
+                            "code"    => 400
+                        }
+                    },
+                },
+                {
+                    path   => "/v$_/sites/1/entries",
+                    method => 'GET',
+                    params => {
+                        items => [{ args => {} }],
+                    },
+                    code   => 400,
+                    result => +{
+                        "error" => {
+                            "message" => "Invalid type",
+                            "code"    => 400
+                        }
+                    },
+                },
+                {
+                    path   => "/v$_/sites/1/entries",
+                    method => 'GET',
+                    params => {
+                        items => [{ type => 'invalid_type', args => {} }],
+                    },
+                    code   => 400,
+                    result => +{
+                        "error" => {
+                            "message" => "Invalid type",
+                            "code"    => 400
+                        }
+                    },
+                },
+            )
         } qw/ 1 2 3 /,
     ];
 }
-
