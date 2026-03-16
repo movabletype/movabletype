@@ -349,6 +349,11 @@ sub list_props {
             col_class       => 'string',
             view_filter     => [ 'website', 'blog' ],
             category_class  => 'category',
+            validate_item   => sub {
+                my $prop = shift;
+                my ($item) = @_;
+                return $prop->validate_scalar_filter($item->{args});
+            },
             terms           => sub {
                 my ( $prop, $args, $db_terms, $db_args ) = @_;
                 my $blog_id = MT->app->blog->id;
