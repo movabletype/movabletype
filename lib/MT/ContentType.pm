@@ -534,23 +534,24 @@ sub _eval_if_mssql_server_or_oracle {
     $using_mssql_server_or_oracle ? eval { $sub->() } : $sub->();
 }
 
-# class method
-sub all_permissions {
-    my $class = shift;
+{
+    my $cache;
 
-    my $cache_key = 'MT::ContentType::all_permissions';
-    my $cache = MT->request->{__stash}{$cache_key};
-    return $cache if $cache;
+    # class method
+    sub all_permissions {
+        my $class = shift;
+        return $cache if $cache;
 
-    my $driver = $class->driver;
-    return {} unless $driver && $driver->table_exists($class);
-    my %ret;
-    my @content_types
-        = _eval_if_mssql_server_or_oracle( sub { @{ $class->load_all } } );
-    for my $content_type (@content_types) {
-        %ret = (%ret, %{ $content_type->permissions }) if $content_type->blog;
+        my $driver = $class->driver;
+        return {} unless $driver && $driver->table_exists($class);
+
+        my %ret;
+        my @content_types = _eval_if_mssql_server_or_oracle(sub { @{ $class->load_all } });
+        for my $content_type (@content_types) {
+            %ret = (%ret, %{ $content_type->permissions }) if $content_type->blog;
+        }
+        return $cache = \%ret;
     }
-    return MT->request->{__stash}{$cache_key} = \%ret;
 }
 
 sub _post_save {
