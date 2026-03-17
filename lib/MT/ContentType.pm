@@ -78,6 +78,7 @@ sub list_props {
         },
         category_set => {
             base                  => '__virtual.single_select',
+            validate_item         => \&_cs_validate_item,
             terms                 => \&_cs_terms,
             single_select_options => \&_cs_single_select_options,
             label                 => 'Category Set',
@@ -126,6 +127,12 @@ sub list_props {
             display => 'none',
         },
     };
+}
+
+sub _cs_validate_item {
+    my $prop   = shift;
+    my ($item) = @_;
+    return $prop->validate_scalar_filter($item->{args});
 }
 
 sub _cs_terms {

@@ -1904,6 +1904,7 @@ use vars qw( @ISA %Lexicon );
 	'Database Socket' => 'データベースソケット',
 	'Date Created' => '作成日',
 	'Date Modified' => '更新日',
+    'The condition must be specified with a string or a number.' => '条件は文字列、または数値で指定してください。',
 	'Days must be a number.' => '日数には数値を指定してください。',
 	'Edit All Entries' => 'すべての記事の編集',
 	'Entries List' => '記事の一覧',
