@@ -131,7 +131,12 @@ sub list_props {
             display => 'none',
         },
         type => {
-            auto  => 1,
+            auto          => 1,
+            validate_item => sub {
+                my $prop = shift;
+                my ($item) = @_;
+                return $prop->validate_scalar_filter($item->{args});
+            },
             terms => sub {
                 my $prop = shift;
                 my ( $args, $db_terms, $db_args ) = @_;
