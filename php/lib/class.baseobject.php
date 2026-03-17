@@ -209,18 +209,13 @@ abstract class BaseObject extends ADOdb_Active_Record
             return false;
 
         $bind_join = [];
-        $join = '';
+        $join_array = [];
         if (isset($extra['join'])) {
             $joins = $extra['join'];
             $keys = array_keys($joins);
-            foreach($keys as $key) {
-                $table = $key;
-                $cond = $joins[$key]['condition'];
-                $type = '';
-                if (isset($joins[$key]['type']))
-                    $type = $joins[$key]['type'];
-                $join .= ' ' . strtolower($type) . ' JOIN ' . $table . ' ON ' . $cond;
-                $bind_join = array_merge($bind_join, isset($joins[$key]['bind']) ? $joins[$key]['bind'] : []);
+            foreach($joins as $table => $props) {
+                $join_array[] = strtoupper($props['type'] ?? '') . ' JOIN '. $table. ' ON '. $props['condition'];
+                $bind_join = array_merge($bind_join, isset($props['bind']) ? $props['bind'] : []);
             }
         }
 
@@ -235,13 +230,25 @@ abstract class BaseObject extends ADOdb_Active_Record
         }
 
         $bind = array_merge($bind_join, $bindarr ? $bindarr : []);
-        
-        $objs = $db->GetActiveRecordsClass(get_class($this),
-                                          $this->_table . $join,
-                                          $whereOrderBy,
-                                          $bind,
-                                          $pkeysArr,
-                                          $extra);
+
+        $sql = join(' ', [
+            'SELECT',
+            isset($extra['distinct']) && $extra['distinct'] ? 'DISTINCT' : '',
+            $this->_table. '.*',
+            'FROM '. $this->_table,
+            join(' ', $join_array),
+            'WHERE',
+            $whereOrderBy,
+        ]);
+        $rs = $db->SelectLimit($sql, $extra['limit'] ?? -1, $extra['offset'] ?? -1, $bind);
+        $objs = [];
+        while (!$rs->EOF) {
+            $obj = new static();
+            $obj->Set($rs->fields);
+            $objs[] = $obj;
+            $rs->MoveNext();
+        }
+
         $ret_objs = array();
         $unique_arr = array();
         if ($objs) {
