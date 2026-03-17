@@ -276,6 +276,12 @@ sub list_props {
     return +{
         id           => { base => '__virtual.id' },
         archive_type => {
+            auto          => 1,
+            validate_item => sub {
+                my $prop = shift;
+                my ($item) = @_;
+                return $prop->validate_scalar_filter($item->{args});
+            },
             terms => sub {
                 my $prop = shift;
                 my ( $args, $db_terms, $db_args ) = @_;
