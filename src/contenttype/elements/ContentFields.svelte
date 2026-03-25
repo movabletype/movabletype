@@ -25,22 +25,44 @@
   let dragoverState = false;
   let labelFields: Array<{ value: string; label: string }> = [];
   let labelField = opts.labelField;
+  let stashLabelField: string | null = null;
   let isExpanded = false;
 
   const gathers: { [key: string]: (() => object) | undefined } = {};
   const tags: Array<HTMLDivElement> = [];
 
   afterUpdate(() => {
-    const select = root.querySelector("#label_field") as HTMLSelectElement;
-    jQuery(select)
-      .find("option")
-      .each(function (index, option) {
-        if (option.attributes.getNamedItem("selected")) {
-          select.selectedIndex = index;
-          return false;
-        }
-      });
+    if (labelField !== "") {
+      const canSelect = _getSelectableLabelFields().some(
+        (item) => item.value === labelField,
+      );
+      if (!canSelect) {
+        stashLabelField = labelField;
+        labelField = "";
+      } else {
+        // Non-default field was selected, so reset stash
+        stashLabelField = null;
+      }
+    } else if (stashLabelField !== null) {
+      const canSelect = _getSelectableLabelFields().some(
+        (item) => item.value === stashLabelField,
+      );
+      if (canSelect) {
+        labelField = stashLabelField;
+        stashLabelField = null;
+      }
+    }
+
+    if (_needsRebuildLabelFields()) {
+      rebuildLabelFields();
+    }
   });
+
+  const _needsRebuildLabelFields = (): boolean => {
+    const select = root.querySelector("#label_field") as HTMLSelectElement;
+    const cond = '[value="' + labelField + '"]';
+    return jQuery(select).find("option" + cond).length === 0;
+  };
 
   // Drag start from content field list
   observer.on("mtDragStart", function () {
@@ -322,7 +344,10 @@
 
   // recalcHeight was moved to Utils.ts
 
-  const rebuildLabelFields = (): void => {
+  const _getSelectableLabelFields = (): Array<{
+    value: string;
+    label: string;
+  }> => {
     const newLabelFields: Array<{ value: string; label: string }> = [];
     for (let i = 0; i < $fieldsStore.length; i++) {
       const required = jQuery("#content-field-block-" + $fieldsStore[i].id)
@@ -351,7 +376,12 @@
         });
       }
     }
-    labelFields = newLabelFields;
+    return newLabelFields;
+    // update is not needed in Svelte
+  };
+
+  const rebuildLabelFields = (): void => {
+    labelFields = _getSelectableLabelFields();
     // update is not needed in Svelte
   };
 
