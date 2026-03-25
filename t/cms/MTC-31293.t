@@ -10,10 +10,11 @@ our $test_env;
 BEGIN {
     $test_env = MT::Test::Env->new(
         DefaultLanguage => 'en_US',
-        AdminThemeId => 'admin2023',
     );
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
+
+plan skip_all => 'only for admin2023' unless MT->config->AdminThemeId eq 'admin2023';
 
 use MT::Test;
 use MT::Test::Permission;
