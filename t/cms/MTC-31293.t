@@ -19,7 +19,6 @@ plan skip_all => 'only for admin2023' unless MT->config->AdminThemeId eq 'admin2
 use MT::Test;
 use MT::Test::Permission;
 use MT::Test::App;
-use Data::Dumper;
 
 $test_env->prepare_fixture('db');
 
@@ -29,149 +28,167 @@ my $create_post = MT::Test::Permission->make_role(name => 'Create Post', permiss
 
 
 subtest 'access to dashboard with perms' => sub {
-    my $user = MT::Test::Permission->make_author(name => 'user',  nickname => 'user');
-
-    MT::Association->link($user => $create_post => $parent);
-    MT::Association->link($user => $create_post => $child);
-
+    my $user = create_user('with_both_perms', [ $parent, $child ]);
     my $app = MT::Test::App->new('MT::App::CMS');
     $app->login($user);
 
-    # access_to_dashbboard( $app, $site, $perm_err, [link_parent, link_child] );
-    # when $site is undef, acess to system dashboard.
-    # If only 2 args are given, tests are skipped (access only).
-    # link_*
-    #   0 ... not display
-    #   1 ... display but no link
-    #   2 ... link
-    access_to_dashboard( $app, undef,   0, [2, 2] );
-    access_to_dashboard( $app, $parent, 0, [2, 2] );
-    access_to_dashboard( $app, $child,  0, [0, 0] );
+    my $ret;
+    $ret = access_to_dashboard( $app );
+    is_deeply $ret, { parent => 'linked', child => 'linked' }, 'system';
+    $ret = access_to_dashboard( $app, $parent );
+    is_deeply $ret, { parent => 'linked', child => 'linked' }, 'parent';
+    $ret = access_to_dashboard( $app, $child );
+    is_deeply $ret, { parent => 'hidden', child => 'hidden' }, 'child';
 };
 
-
-subtest 'access to dashboard without parent perm' => sub {
-    my $user = MT::Test::Permission->make_author(name => 'user',  nickname => 'user');
-
-    MT::Association->link($user => $create_post => $parent);
-    MT::Association->link($user => $create_post => $child);
-
+subtest 'access to dashboard with child perm first' => sub {
+    my $user = create_user('with_child_perm', [$child]);
     my $app = MT::Test::App->new('MT::App::CMS');
     $app->login($user);
 
-    access_to_dashboard( $app, undef   );
+    my $ret;
+    $ret = access_to_dashboard( $app );
+    is_deeply $ret, { parent => 'not_linked', child => 'linked' }, 'system';
+    $ret = access_to_dashboard( $app, $parent );
+    is_deeply $ret, { parent => 'not_linked', child => 'linked' }, 'parent';
+    $ret = access_to_dashboard( $app, $child );
+    is_deeply $ret, { parent => 'hidden', child => 'hidden' }, 'child';
+};
+
+subtest 'access to dashboard without parent perm later' => sub {
+    my $user = create_user('without_parent_perm_later', [ $parent, $child ]);
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->login($user);
+
+    # access sites first
+    access_to_dashboard( $app );
     access_to_dashboard( $app, $parent );
-    access_to_dashboard( $app, $child  );
+    access_to_dashboard( $app, $child );
 
     MT::Association->unlink($user => $create_post => $parent);
 
-    access_to_dashboard( $app, undef,   0, [2, 2] );
-    access_to_dashboard( $app, $parent, 0, [1, 2] );
-    access_to_dashboard( $app, $child,  0, [0, 0] );
+    my $ret;
+    $ret = access_to_dashboard( $app );
+    is_deeply $ret, { parent => 'linked', child => 'linked' }, 'system';
+    $ret = access_to_dashboard( $app, $parent );
+    is_deeply $ret, { parent => 'not_linked', child => 'linked' }, 'parent';
+    $ret = access_to_dashboard( $app, $child );
+    is_deeply $ret, { parent => 'hidden', child => 'hidden' }, 'child';
 };
 
-
-subtest 'access to dashboard without child perm' => sub {
-    my $user = MT::Test::Permission->make_author(name => 'user',  nickname => 'user');
-
-    MT::Association->link($user => $create_post => $parent);
-    MT::Association->link($user => $create_post => $child);
-
+subtest 'access to dashboard with parent perm first' => sub {
+    my $user = create_user('with_parent_perm', [$parent]);
     my $app = MT::Test::App->new('MT::App::CMS');
     $app->login($user);
 
-    access_to_dashboard( $app, undef   );
+    my $ret;
+    $ret = access_to_dashboard( $app );
+    is_deeply $ret, { parent => 'linked', child => 'hidden' }, 'system';
+    $ret = access_to_dashboard( $app, $parent );
+    is_deeply $ret, { parent => 'hidden', child => 'hidden' }, 'parent';
+    $ret = access_to_dashboard( $app, $child );
+    is_deeply $ret, { error => 'Permission denied' }, 'child';
+};
+
+subtest 'access to dashboard without child perm later' => sub {
+    my $user = create_user('without_child_perms_later', [ $parent, $child ]);
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->login($user);
+
+    # access sites first
+    access_to_dashboard( $app );
     access_to_dashboard( $app, $parent );
-    access_to_dashboard( $app, $child  );
+    access_to_dashboard( $app, $child );
 
     MT::Association->unlink($user => $create_post => $child);
 
-    access_to_dashboard( $app, undef,   0, [2, 0] );
-    access_to_dashboard( $app, $parent, 0, [0, 0] );
-    access_to_dashboard( $app, $child,  1 );
+    my $ret;
+    $ret = access_to_dashboard( $app );
+    is_deeply $ret, { parent => 'linked', child => 'hidden' }, 'system';
+    $ret = access_to_dashboard( $app, $parent );
+    is_deeply $ret, { parent => 'hidden', child => 'hidden' }, 'parent';
+    $ret = access_to_dashboard( $app, $child );
+    is_deeply $ret, { error => 'Permission denied' }, 'child';
 };
 
-
-subtest 'access to dashboard without any perms' => sub {
-    my $user = MT::Test::Permission->make_author(name => 'user',  nickname => 'user');
-
-    MT::Association->link($user => $create_post => $parent);
-    MT::Association->link($user => $create_post => $child);
-
+subtest 'access to dashboard without any perms first' => sub {
+    my $user = create_user('without_any_perms_first', []);
     my $app = MT::Test::App->new('MT::App::CMS');
     $app->login($user);
 
-    access_to_dashboard( $app, undef   );
+    my $ret;
+    $ret = access_to_dashboard( $app );
+    is_deeply $ret, { parent => 'hidden', child => 'hidden' }, 'system';
+    $ret = access_to_dashboard( $app, $parent );
+    is_deeply $ret, { error => 'Permission denied' }, 'parent';
+    $ret = access_to_dashboard( $app, $child );
+    is_deeply $ret, { error => 'Permission denied' }, 'child';
+};
+
+subtest 'access to dashboard without any perms later' => sub {
+    my $user = create_user('without_any_perms_later', [ $parent, $child ]);
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->login($user);
+
+    # access sites first
+    access_to_dashboard( $app );
     access_to_dashboard( $app, $parent );
-    access_to_dashboard( $app, $child  );
+    access_to_dashboard( $app, $child );
 
     MT::Association->unlink($user => $create_post => $parent);
     MT::Association->unlink($user => $create_post => $child);
 
-    access_to_dashboard( $app, undef,   0, [0, 0] );
-    access_to_dashboard( $app, $parent, 1 );
-    access_to_dashboard( $app, $child,  1 );
+    my $ret;
+    $ret = access_to_dashboard( $app );
+    is_deeply $ret, { parent => 'hidden', child => 'hidden' }, 'system';
+    $ret = access_to_dashboard( $app, $parent );
+    is_deeply $ret, { error => 'Permission denied' }, 'parent';
+    $ret = access_to_dashboard( $app, $child );
+    is_deeply $ret, { error => 'Permission denied' }, 'child';
 };
 
 
 
 done_testing;
 
+sub create_user {
+    my ( $name, $sites ) = @_;
+    my $user = MT::Test::Permission->make_author(name => $name,  nickname => $name);
+    for my $site ( @{ $sites // [] } ) {
+        MT::Association->link($user => $create_post => $site);
+    }
+    return $user;
+}
 
 sub access_to_dashboard {
-    my ( $app, $site, $perm_err, $link_tests ) = @_;
+    my ( $app, $site ) = @_;
 
     $app->get_ok({
         __mode => 'dashboard',
         ($site ? (blog_id => $site->id) : ()),
     });
 
-    return if @_ == 2;
+    return { error => $app->generic_error } if $app->generic_error;
 
-    if ( $perm_err ) {
-        $app->has_permission_error('denied ' . ($site ? $site->name : 'system'));
-        if ( $link_tests ) {
-            ok 0, "we have link tests but perm error";
-        }
-        return;
-    }
-    else {
-        $app->has_no_permission_error('perm to ' . ($site ? $site->name : 'system'));
-    }
-
-    test_link( $app, $link_tests );
-}
-
-
-sub test_link {
-    my ( $app, $link_tests ) = @_;
-    my ( $link_parent, $link_child ) = @$link_tests;
-    my $exp_link_num = scalar(grep { $_ == 2 } @$link_tests);
-
+    my $ret   = {};
     my $elems = $app->wq_find('.mt-primaryNavigation__sites');
-    my $html  = $elems->as_html;
     my @links = map { $_->as_html } $elems->find('a');
 
-    is scalar(@links), $exp_link_num, "expected link num $exp_link_num";
-
-    if ( $link_parent == 2 ) {
-        ok( (grep { qr/parent/ } @links)[0], 'parent link' );
-    }
-    elsif ( $link_parent == 1 ) {
-        like $html, qr/>\s*parent\s*</, 'parent name only';
-    }
-    else {
-        unlike $html, qr/>\s*parent\s*</, 'no parent';
+    for my $link ( @links ) {
+        $link =~ qr{>\s*(\w+)\s*</a>};
+        $ret->{$1} = 'linked';
     }
 
-    if ( $link_child == 2 ) {
-        ok( (grep { qr/child/ } @links)[0], 'child link' );
-    }
-    elsif ( $link_child == 1 ) {
-        like $html, qr/>\s*child\s*</, 'child name only';
-    }
-    else {
-        unlike $html, qr/>\s*child\s*</, 'no child';
+    my $html = $elems->as_html;
+    for my $name ( qw/parent child/ ) {
+        next if $ret->{$name};
+        if ( $html =~ qr/>\s*$name\s*</ ) {
+            $ret->{$name} = 'not_linked';
+        }
+        else {
+            $ret->{$name} = 'hidden';
+        }
     }
 
+    return $ret;
 }
