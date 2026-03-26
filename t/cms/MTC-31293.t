@@ -14,8 +14,6 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-plan skip_all => 'only for admin2023' unless MT->config->AdminThemeId eq 'admin2023';
-
 use MT::Test;
 use MT::Test::Permission;
 use MT::Test::App;
