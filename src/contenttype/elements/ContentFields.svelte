@@ -32,9 +32,9 @@
   const tags: Array<HTMLDivElement> = [];
 
   afterUpdate(() => {
-    if (labelField != "") {
+    if (labelField !== "") {
       const canSelect = _getSelectableLabelFields()
-        .some((item) => item.value == labelField);
+        .some((item) => item.value === labelField);
       if (!canSelect) {
         stashLabelField = labelField;
         labelField = "";
@@ -42,9 +42,9 @@
         // Non-default field was selected, so reset stash
         stashLabelField = null;
       }
-    } else if (stashLabelField != null) {
+    } else if (stashLabelField !== null) {
       const canSelect = _getSelectableLabelFields()
-        .some((item) => item.value == stashLabelField);
+        .some((item) => item.value === stashLabelField);
       if (canSelect) {
         labelField = stashLabelField;
         stashLabelField = null;
@@ -59,7 +59,7 @@
   const _needsRebuildLabelFields = (): boolean => {
     const select = root.querySelector("#label_field") as HTMLSelectElement;
     const cond = '[value="' + labelField + '"]';
-    return jQuery(select).find("option" + cond).length == 0;
+    return jQuery(select).find("option" + cond).length === 0;
   };
 
   // Drag start from content field list
