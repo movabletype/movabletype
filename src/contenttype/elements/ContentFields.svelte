@@ -33,8 +33,9 @@
 
   afterUpdate(() => {
     if (labelField !== "") {
-      const canSelect = _getSelectableLabelFields()
-        .some((item) => item.value === labelField);
+      const canSelect = _getSelectableLabelFields().some(
+        (item) => item.value === labelField,
+      );
       if (!canSelect) {
         stashLabelField = labelField;
         labelField = "";
@@ -43,8 +44,9 @@
         stashLabelField = null;
       }
     } else if (stashLabelField !== null) {
-      const canSelect = _getSelectableLabelFields()
-        .some((item) => item.value === stashLabelField);
+      const canSelect = _getSelectableLabelFields().some(
+        (item) => item.value === stashLabelField,
+      );
       if (canSelect) {
         labelField = stashLabelField;
         stashLabelField = null;
@@ -341,7 +343,10 @@
 
   // recalcHeight was moved to Utils.ts
 
-  const _getSelectableLabelFields = (): Array<{ value: string; label: string }> => {
+  const _getSelectableLabelFields = (): Array<{
+    value: string;
+    label: string;
+  }> => {
     const newLabelFields: Array<{ value: string; label: string }> = [];
     for (let i = 0; i < $fieldsStore.length; i++) {
       const required = jQuery("#content-field-block-" + $fieldsStore[i].id)
