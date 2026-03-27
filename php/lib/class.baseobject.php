@@ -242,6 +242,7 @@ abstract class BaseObject extends ADOdb_Active_Record
         ]);
 
         $objs = [];
+        $rows = [];
 
     	$save = $db->SetFetchMode(ADODB_FETCH_NUM);
 
