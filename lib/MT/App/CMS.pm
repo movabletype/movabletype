@@ -680,7 +680,7 @@ sub init_request {
             die $app->translate("Invalid request");
         }
         if ( $blog_id > 0
-            && !$app->model('blog')->load( { id => $blog_id } ) )
+            && !$app->model('blog')->load({ id => $blog_id }, { fetchonly => [qw(id)] }))
         {
             die $app->translate("Invalid request");
         }
