@@ -240,13 +240,33 @@ abstract class BaseObject extends ADOdb_Active_Record
             'WHERE',
             $whereOrderBy,
         ]);
-        $rs = $db->SelectLimit($sql, $extra['limit'] ?? -1, $extra['offset'] ?? -1, $bind);
+
         $objs = [];
-        while (!$rs->EOF) {
+
+    	$save = $db->SetFetchMode(ADODB_FETCH_NUM);
+
+        if(isset($extra['limit'])) {
+            if(isset($extra['offset'])) {
+                $rs = $db->SelectLimit($sql, $extra['limit'], $extra['offset'], $bind);
+            } else {
+                $rs = $db->SelectLimit($sql, $extra['limit'], -1, $bind);
+            }
+            if ($rs) {
+                while (!$rs->EOF) {
+                    $rows[] = $rs->fields;
+                    $rs->MoveNext();
+                }
+            }
+        } else {
+            $rows = $db->GetAll($sql, $bind);
+        }
+
+        $db->SetFetchMode($save);
+
+        foreach($rows as $row) {
             $obj = new static();
-            $obj->Set($rs->fields);
+            $obj->Set($row);
             $objs[] = $obj;
-            $rs->MoveNext();
         }
 
         $ret_objs = array();
