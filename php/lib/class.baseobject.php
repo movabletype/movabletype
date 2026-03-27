@@ -242,8 +242,7 @@ abstract class BaseObject extends ADOdb_Active_Record
         ]);
 
         $objs = [];
-
-    	$save = $db->SetFetchMode(ADODB_FETCH_NUM);
+        $rows = [];
 
         if(isset($extra['limit'])) {
             if(isset($extra['offset'])) {
@@ -260,8 +259,6 @@ abstract class BaseObject extends ADOdb_Active_Record
         } else {
             $rows = $db->GetAll($sql, $bind);
         }
-
-        $db->SetFetchMode($save);
 
         foreach($rows as $row) {
             $obj = new static();
