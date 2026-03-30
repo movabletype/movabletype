@@ -1740,6 +1740,14 @@ use vars qw( @ISA %Lexicon );
 	'[_1] ( id:[_2] ) does not exists.' => '[_1] ( id:[_2] ) が見つかりません。',
 	'basename is too long.' => '出力ファイルが長すぎます。',
 	'record does not exist.' => 'ブログがありません。',
+	'__BROKEN__' => '要修正',
+	'__INVALID_FIELDS__' => '要修正のフィールド',
+	'exists' => '存在する',
+	'not exists' => '存在しない',
+	'Has Invalid Fields' => '要修正のフィールドが存在する',
+	'No Invalid Fields' => '要修正のフィールドが存在しない',
+	'"[_1]" is required field.' => '"[_1]"は必須フィールドです。',
+	'Please correct the following problem.' => '以下の問題を解消してください。',
 
 ## lib/MT/ContentField.pm
 	'Cannot load content field data_type [_1]' => 'コンテンツフィールドのdata_typeが見つかりません ([_1])',
@@ -1793,7 +1801,7 @@ use vars qw( @ISA %Lexicon );
 	'Invalid [_1] in "[_2]" field.' => '"[_2]"フィールドの値は不正な[_1]です。',
 	'Invalid values in "[_1]" field: [_2]' => '"[_1]"フィールドの値が不正です: [_2]',
 	'Only 1 [_1] can be selected in "[_2]" field.' => '"[_2]”フィールドはひとつだけ選択できます',
-	'[_1] greater than or equal to [_2] must be selected in "[_3]" field.' => '"[_3]"フィールドの[_1]は[_2]個以下である必要があります。',
+	'[_1] greater than or equal to [_2] must be selected in "[_3]" field.' => '"[_3]"フィールドの[_1]は[_2]個以上である必要があります。',
 	'[_1] less than or equal to [_2] must be selected in "[_3]" field.' => '"[_3]"フィールドの[_1]は[_2]個以下である必要があります。',
 	'is not selected' => 'が選択されていない',
 	'is selected' => 'が選択されている',

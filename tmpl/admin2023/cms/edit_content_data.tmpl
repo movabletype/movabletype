@@ -82,6 +82,20 @@
   </mtapp:statusmsg>
 </mt:if>
 
+<mt:if name="verify_error_msgs">
+  <mtapp:statusmsg
+     id="verify_error_msgs"
+     class="error"
+     can_close="1">
+    <__trans phrase="Please correct the following problem.">
+    <ul style="margin: 0.5em auto 0">
+    <mt:loop name="verify_error_msgs">
+      <li><$mt:var name="__value__"$></li>
+    </mt:loop>
+    </ul>
+  </mtapp:statusmsg>
+</mt:if>
+
 <mt:unless name="new_object">
   <mt:if name="use_revision">
   <mtapp:statusmsg
