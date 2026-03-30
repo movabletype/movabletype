@@ -108,6 +108,7 @@ sub assert_no_errors {
         diag(explain($extra));
         diag sprintf("<%s> %s", $_->{source}, $_->{message})  for grep { $_->{source} } @logs;
         $s->screenshot_full('test_number_' . $num) if $ENV{MT_TEST_CAPTURE_SCREENSHOT};
+        note $s->content;
     } else {
         note($summary);
         note(explain($extra));
