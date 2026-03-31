@@ -12,15 +12,17 @@ BEGIN {
 }
 use MT::Test;
 
-MT::Test->init_db;
+$test_env->prepare_fixture('db');
 is(MT->config('DefaultAccessAllowed'), 1); # core default
 my $mgr = MT->config;
 $mgr->set('DefaultAccessAllowed', 0, 1);   # write explicitly into DB
 is(MT->config('DefaultAccessAllowed'), 0); # value retrieved
-MT::Test->init_db;
+
+$test_env->prepare_fixture('db');
 is(MT->config('DefaultAccessAllowed'), 1); # core default again
 $mgr->set('DefaultAccessAllowed', 0, 0);
-MT::Test->init_db;
+
+$test_env->prepare_fixture('db');
 is(MT->config('DefaultAccessAllowed'), 0); # file value is prefered
 
 done_testing;

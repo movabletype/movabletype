@@ -17,7 +17,8 @@ use MT::Test;
 use MT::Test::Permission;
 use MT::Test::App;
 
-MT::Test->init_db;
+$test_env->prepare_fixture('db');
+
 MT->instance;
 
 my $website = MT::Test::Permission->make_website(name => 'my website');

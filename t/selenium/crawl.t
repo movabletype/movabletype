@@ -34,6 +34,7 @@ use URI::QueryParam;
 my $encoder = JSON::XS->new->canonical;
 
 $test_env->prepare_fixture('db_data');
+$test_env->prepare_asset_files;
 
 my $s      = MT::Test::Selenium->new($test_env, { rebootable => 1 });
 my $author = MT->model('author')->load(1);
@@ -107,6 +108,7 @@ sub assert_no_errors {
         diag(explain($extra));
         diag sprintf("<%s> %s", $_->{source}, $_->{message})  for grep { $_->{source} } @logs;
         $s->screenshot_full('test_number_' . $num) if $ENV{MT_TEST_CAPTURE_SCREENSHOT};
+        note $s->content;
     } else {
         note($summary);
         note(explain($extra));

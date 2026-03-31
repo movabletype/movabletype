@@ -308,6 +308,7 @@ sub core_methods {
         'dialog_edit_image'          => "${pkg}Asset::dialog_edit_image",
         'dialog_list_deprecated_log' => "${pkg}Log::dialog_list_deprecated_log",
         'dialog_export_log'          => "${pkg}Log::dialog_export_log",
+        'dialog_reset_log'           => "${pkg}Log::dialog_reset_log",
 
         'issue_api_password'         => "${pkg}User::issue_api_password",
         'delete_api_password'        => "${pkg}User::delete_api_password",
@@ -679,7 +680,7 @@ sub init_request {
             die $app->translate("Invalid request");
         }
         if ( $blog_id > 0
-            && !$app->model('blog')->load( { id => $blog_id } ) )
+            && !$app->model('blog')->load({ id => $blog_id }, { fetchonly => [qw(id)] }))
         {
             die $app->translate("Invalid request");
         }
@@ -808,16 +809,13 @@ sub core_content_actions {
                 class       => 'icon-action',
                 label       => 'Clear Activity Log',
                 icon        => 'ic_setting',
-                mode        => 'reset_log',
+                mode        => 'dialog_reset_log',
                 order       => 100,
-                confirm_msg => sub {
-                    MT->translate(
-                        'Are you sure you want to reset the activity log?');
-                },
                 permit_action => {
                     permit_action => 'reset_blog_log',
                     include_all   => 1,
                 },
+                dialog => 1,
             },
             'download_log' => {
                 class         => 'icon-download',
@@ -2861,11 +2859,8 @@ sub is_authorized {
         { author_id => $user->id },
         '-and',
         { blog_id => \@blog_ids },
-        '-and',
-        [   { permissions => \'IS NOT NULL' },
-            '-or',
-            { permissions => { not => '' } },
-        ]
+        '-and_not',
+        { permissions => [\'IS NULL', ''] },
     ];
     my @perms = MT->model('permission')->load($terms);
     if (@perms) {
@@ -2884,10 +2879,10 @@ sub is_authorized {
                 return 1;
             }
         }
-        return $app->permission_denied();
+        return $app->errtrans('Permission denied');
     }
     else {
-        return $app->permission_denied();
+        return $app->errtrans('Permission denied');
     }
 
 }
@@ -3262,7 +3257,7 @@ sub build_blog_selector {
                         || @perms > 0 )
                     ? 1
                     : 0;
-
+                next unless $fav_data->{fav_website_can_link};
                 push @website_data, \%$fav_data;
             }
         }

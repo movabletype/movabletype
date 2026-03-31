@@ -384,7 +384,7 @@ sub _drop_existing_tables {
         local $SIG{__WARN__};
         DBI->connect($dsn, $info->{DBUser}, $info->{DBPassword}, { PrintError => 0 });
     } or return;
-    my $rows = $dbh->table_info->fetchall_arryref;
+    my $rows = $dbh->table_info->fetchall_arrayref;
     for my $row (@$rows) {
         my ($catalog, $schema, $table, $type) = @$row;
         next unless $type  =~ /table/i;    # ignore indices/sequences
@@ -1390,6 +1390,41 @@ sub test_schema {
         if (eval { require Text::Diff }) {
             diag Text::Diff::diff(\$generated_schema, \$saved_schema, { STYLE => 'Unified' });
         }
+    }
+}
+
+sub prepare_asset_files {
+    my ($self, %args) = @_;
+
+    require MT::Test::Image;
+    my @assets = MT->model('asset')->load({ class => '*', %args });
+    for my $asset (@assets) {
+        # too bad some of the old tests assume some of the test files do not exist
+        my $raw_file_path = $asset->column('file_path') or next;
+        $raw_file_path =~ s!^\%[ras]/!!;
+        my $test_file = File::Spec->catfile($ENV{MT_HOME}, "t", $raw_file_path);
+        next unless -e $test_file;
+
+        my $file_path = $asset->file_path;
+        my $parent    = dirname($file_path);
+        mkpath $parent unless -d $parent;
+        my $asset_type = $asset->class_type;
+        if ($asset_type eq 'image') {
+            $self->{__asset_guard}{$file_path} = MT::Test::Image->write(file => $file_path);
+        } elsif ($asset_type eq 'file') {
+            open my $fh, '>', $file_path;
+            print $fh "test\n";
+            close $fh;
+            $self->{__asset_guard}{$file_path} = 1;
+        }
+    }
+}
+
+sub remove_asset_files {
+    my $self  = shift;
+    my @paths = values %{ delete $self->{__asset_guard} || {} };
+    for my $path (@paths) {
+        unlink $path if -e $path;
     }
 }
 

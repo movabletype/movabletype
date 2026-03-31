@@ -23,6 +23,7 @@ use Test::Deep 'cmp_bag';
 use MT::Test::Fixture::SearchReplace;
 
 $test_env->prepare_fixture('search_replace');
+$test_env->prepare_asset_files;
 
 my $objs    = MT::Test::Fixture::SearchReplace->load_objs;
 my $author  = MT->model('author')->load(1);
