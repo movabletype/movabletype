@@ -1509,7 +1509,7 @@ sub unpack_revision {
             $obj->{__tags}             = [ map { $_->name } @tags ];
             $obj->{__tag_objects}      = \@tags;
             $obj->{__missing_tags_rev} = 1
-                if scalar(@tags) != scalar(@$lookups);
+                if scalar(@tags) != scalar(@$rev_tags);
         }
         else {
             $obj->{__tags}        = [];
@@ -1529,7 +1529,7 @@ sub unpack_revision {
                 [ map { $_->[0] } @$rev_cats ] );
             @cats = sort { $a->label cmp $b->label } grep {defined} @$cats;
             $obj->{__missing_cats_rev} = 1
-                if scalar(@cats) != scalar(@$cats);
+                if scalar(@cats) != scalar(@$rev_cats);
         }
         $obj->cache_property( 'category',   undef, $cat );
         $obj->cache_property( 'categories', undef, \@cats );
