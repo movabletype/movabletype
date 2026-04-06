@@ -1,7 +1,7 @@
 <script lang="ts">
   import type * as ContentType from "../../@types/contenttype";
 
-  import { afterUpdate } from "svelte";
+  import { afterUpdate, tick } from "svelte";
 
   import { recalcHeight } from "../Utils";
 
@@ -274,7 +274,7 @@
     return invalidFields.length === 0 ? true : false;
   };
 
-  const submit = (): void => {
+  const submit = async (): Promise<void> => {
     if (!canSubmit()) {
       return;
     }
@@ -284,6 +284,7 @@
     }
 
     rebuildLabelFields();
+    await tick();
     window.setDirty(false);
     const fieldOptions: Array<ContentType.SubmitFieldOption> = [];
     if ($fieldsStore) {
