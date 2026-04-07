@@ -1405,9 +1405,9 @@ Pager = new Class(Object, {
             this.element.innerHTML = '';
         }
     },
-    movePage: function(nex_page, e){
+    movePage: function(next_page, e){
       if (this.state.listTotal) {
-          var offset = this.state.limit * (nex_page-1);
+          var offset = this.state.limit * (next_page-1);
           if (offset >= this.state.listTotal) {
               return false;
           }
