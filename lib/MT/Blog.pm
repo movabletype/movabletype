@@ -777,7 +777,7 @@ sub site_url {
     else {
         my $url = '';
         if ( $blog->is_blog() ) {
-            if ( my $website = $blog->website() ) {
+            if ( my $website = MT->model('website')->load({ id => $blog->parent_id }, { fetchonly => [qw(site_url)] }) ) {
                 $url = $website->column('site_url');
             }
             else {

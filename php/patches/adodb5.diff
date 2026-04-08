@@ -1,25 +1,8 @@
 diff --git a/php/vendor/adodb/adodb-php/adodb-active-record.inc.php b/php/vendor/adodb/adodb-php/adodb-active-record.inc.php
-index 5fbe7b90ae..a1cab3cd92 100644
+index ea1d4ed351..403450a2b6 100644
 --- a/php/vendor/adodb/adodb-php/adodb-active-record.inc.php
 +++ b/php/vendor/adodb/adodb-php/adodb-active-record.inc.php
-@@ -1156,12 +1156,23 @@ global $_ADODB_ACTIVE_DBS;
- 	$save = $db->SetFetchMode(ADODB_FETCH_NUM);
- 
- 	$qry = "select * from ".$table;
-+	// Separate table name if table name was already joined other table.
-+	if (preg_match('/^(.+)\sJOIN\s.+ON/i', $table)) {
-+		$matches = preg_split('/\s/i', $table);
-+		$tblname = trim($matches[0]);
-+		$qry = "$tblname.* from ".$table;
-+		$table = $tblname;
-+	} else
-+		$qry = "* from ".$table;
-+
-+	if (isset($extra['distinct']))
-+		$qry = "distinct " . $qry;
-+	$qry = "select " . $qry;
- 
- 	if (!empty($whereOrderBy)) {
+@@ -1144,7 +1144,6 @@ global $_ADODB_ACTIVE_DBS;
  		$qry .= ' WHERE '.$whereOrderBy;
  	}
  	if(isset($extra['limit'])) {
@@ -27,7 +10,7 @@ index 5fbe7b90ae..a1cab3cd92 100644
  		if(isset($extra['offset'])) {
  			$rs = $db->SelectLimit($qry, $extra['limit'], $extra['offset'],$bindarr);
  		} else {
-@@ -1180,7 +1191,7 @@ global $_ADODB_ACTIVE_DBS;
+@@ -1163,7 +1162,7 @@ global $_ADODB_ACTIVE_DBS;
  
  	$false = false;
  
@@ -70,7 +53,7 @@ index f7e1bcc167..82100b7edc 100644
  
  /*--------------------------------------------------------------------------------------
 diff --git a/php/vendor/adodb/adodb-php/drivers/adodb-pdo.inc.php b/php/vendor/adodb/adodb-php/drivers/adodb-pdo.inc.php
-index d3ce12d08d..f004e6a9f8 100644
+index d254895e8a..962224fb67 100644
 --- a/php/vendor/adodb/adodb-php/drivers/adodb-pdo.inc.php
 +++ b/php/vendor/adodb/adodb-php/drivers/adodb-pdo.inc.php
 @@ -159,6 +159,9 @@ class ADODB_pdo extends ADOConnection {

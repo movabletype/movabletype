@@ -78,6 +78,7 @@ sub list_props {
         },
         category_set => {
             base                  => '__virtual.single_select',
+            validate_item         => \&_cs_validate_item,
             terms                 => \&_cs_terms,
             single_select_options => \&_cs_single_select_options,
             label                 => 'Category Set',
@@ -126,6 +127,12 @@ sub list_props {
             display => 'none',
         },
     };
+}
+
+sub _cs_validate_item {
+    my $prop   = shift;
+    my ($item) = @_;
+    return $prop->validate_scalar_filter($item->{args});
 }
 
 sub _cs_terms {
@@ -491,7 +498,7 @@ sub field_permissions {
 sub permission_group {
     my $obj  = shift;
     my $name = $obj->name;
-    my $site = $obj->blog or return MT->translate( '[_1]', $name );
+    my $site = MT->model('blog')->load({ id => $obj->blog_id }, { fetchonly => [qw/name id/] }) or return MT->translate('[_1]', $name);
     return MT->translate( '"[_1]" (Site: "[_2]" ID: [_3])',
         $name, $site->name, $site->id );
 }
@@ -548,7 +555,7 @@ sub all_permissions {
     my @content_types
         = _eval_if_mssql_server_or_oracle( sub { @{ $class->load_all } } );
     for my $content_type (@content_types) {
-        %ret = (%ret, %{ $content_type->permissions }) if $content_type->blog;
+        %ret = (%ret, %{ $content_type->permissions }) if MT->model('blog')->load({ id => $content_type->blog_id }, { fetchonly => [qw/id/] });
     }
     return MT->request->{__stash}{$cache_key} = \%ret;
 }
