@@ -309,6 +309,27 @@ sub filtered_list {
         $filteritems = [];
     }
 
+    require MT::ListProperty;
+    my $props = MT::ListProperty->list_properties($ds) || {};
+
+    for my $item (@$filteritems) {
+        return $app->error(MT->translate('Invalid type'), 400)
+            unless ref $item eq 'HASH' && $item->{type};
+
+        my $prop = $props->{ $item->{type} }
+            or return $app->error(MT->translate('Invalid type'), 400);
+        if ($prop->has('validate_item')) {
+            $prop->validate_item($item)
+                or return $app->error(
+                MT->translate(
+                    'Invalid filter terms: [_1]',
+                    $prop->errstr
+                ),
+                400
+                );
+        }
+    }
+
     my $filter = MT->model('filter')->new;
     $filter->set_values(
         {   object_ds => $ds,
@@ -340,9 +361,6 @@ sub filtered_list {
         }
         $query_builder->( $app, $search, \@fields, $filter );
     }
-
-    require MT::ListProperty;
-    my $props = MT::ListProperty->list_properties($ds) || {};
 
     for my $key ( split ',', ( $app->param('filterKeys') || '' ) ) {
         my $value = $app->param($key);
