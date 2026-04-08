@@ -33,11 +33,16 @@
           <a class="revision-number" href="javascript:void(0);" onclick="javascript:<$mt:var name="rev_js"$>;"><mt:date ts="$created_on" format="%Y-%m-%d %H:%M:%S"></a>
         </mt:if>
       </span></td>
-      <td class="note"><span class="revision-note">
+      <td class="note">
         <mt:if name="is_broken">
-        <__trans phrase="*Deleted due to data breakage*">
+          <span class="revision-note"><__trans phrase="*Deleted due to data breakage*">
         <mt:else>
-          <mt:var name="description" escape="html">
+          <span class="revision-note" data-rev-number="<mt:var name="rev_number">" <mt:unless name="description">style="color: gray;"</mt:unless>>
+          <mt:if name="description">
+            <mt:var name="description" escape="html">
+          <mt:else>
+            [<__trans phrase="Add Change Note">]
+          </mt:if>
         </mt:if>
       </span></td>
     <mt:if name="object_type" like="(entry|page|content_data)">
@@ -74,3 +79,120 @@
 </div>
 
 </div>
+
+<script>
+jQuery(function($) {
+
+  jQuery('.revision-note')
+    .hover(
+      function(e) {
+        jQuery(this).css({
+          color: '#06c',
+          textDecoration: 'underline'
+        });
+      },
+      function(e) {
+        const color = jQuery(this).text().trim() == '[<__trans phrase="Add Change Note">]' ? 'gray' : '';
+        jQuery(this).css({
+          color: color,
+          textDecoration: ''
+        });
+      }
+    )
+    .on('click', function (e) {
+      const $el   = jQuery(this);
+      const num   = $el.data('revNumber');
+      const token = '<mt:var name="magic_token">';
+
+      if ($el.data('editing'))
+        return;
+      $el.data('editing', true);
+
+      let $status = $el.next('.save-status');
+      if (!$status.length) {
+        $status = jQuery('<span class="save-status">').css({ marginLeft: '8px', fontSize: '0.9em' });
+        $el.after($status);
+      }
+
+      let originalText = $el.text().trim();
+      if (originalText == '[<__trans phrase="Add Change Note">]') {
+        originalText = '';
+      }
+
+      let $editor = $el.next('.note-editor');
+      if (!$editor.length) {
+        $editor = jQuery('<span class="note-editor"></span>');
+        $editor.css('display', 'inline-flex').css('white-space', 'nowrap').css('gap', '4px');
+        $el.text('');
+        $el.after($editor);
+      }
+      const $input     = jQuery('<input type="text" class="form-control form-control-sm">').val(originalText);
+      const $updateBtn = jQuery('<button type="button" class="btn btn-sm btn-primary">更新</button>');
+      const $cancelBtn = jQuery('<button type="button" class="btn btn-sm btn-secondary">キャンセル</button>');
+
+      $editor.append($input, $updateBtn, $cancelBtn);
+      $input.focus();
+
+      const finishEditing = function (newText) {
+        $editor.remove();
+        if ( newText == '' ) {
+          $el.text('[<__trans phrase="Add Change Note">]').css('color', 'gray');
+        }
+        else {
+          $el.text(newText);
+        }
+        $el.data('editing', false);
+      };
+
+      $updateBtn.on('click', function(e) {
+        e.preventDefault();
+        let newText = $input.val();
+
+        $editor.remove();
+
+        if ( newText == originalText ) {
+          finishEditing(newText);
+          return;
+        }
+
+        $status.text('<__trans phrase="Saving...">').removeClass('alert-success alert-danger').css('color', 'gray');
+
+        jQuery.ajax({
+          type: 'POST',
+          contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+          url: '<mt:var name="script_url">',
+          dataType: 'json',
+          data: {
+            __mode: 'js_save_rev',
+            _type: '<mt:var name="object_type">',
+            id: <mt:var name="object_id">,
+            r: num,
+            'revision-note': newText,
+            magic_token: '<mt:var name="magic_token">'
+          },
+          success: function(data) {
+            finishEditing(newText);
+            $status.text('<__trans phrase="Your changes have been saved.">').css('color', 'green');
+            $status.fadeOut(2000, function() {
+                jQuery(this).text('').show();
+            });
+          },
+          error: function(xhr, status) {
+            finishEditing(originalText);
+            $status.text('<__trans phrase="Failed to save">').css('color', 'red');
+            $status.fadeOut(3000, function() {
+                jQuery(this).text('').show();
+            });
+          }
+        });
+        return false;
+      });
+
+      $cancelBtn.on('click', function() {
+        $editor.remove();
+        finishEditing(originalText);
+      });
+
+    });
+});
+</script>

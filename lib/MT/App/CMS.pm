@@ -328,6 +328,10 @@ sub core_methods {
             code     => "${pkg}Tools::login_json",
             app_mode => 'JSON',
         },
+        'js_save_rev'     => {
+            code     => "${pkg}Revision::js_save_rev",
+            app_mode => 'JSON',
+        },
 
         # declared in MT::App
         'update_widget_prefs' =>
