@@ -218,10 +218,15 @@ sub list_props {
             display => 'none',
         },
         class => {
-            label   => 'Type',
-            col     => 'class',
-            display => 'none',
-            base    => '__virtual.single_select',
+            label         => 'Type',
+            col           => 'class',
+            display       => 'none',
+            base          => '__virtual.single_select',
+            validate_item => sub {
+                my $prop = shift;
+                my ($item) = @_;
+                return $prop->validate_scalar_filter($item->{args});
+            },
             terms   => sub {
                 my $prop = shift;
                 my ( $args, $db_terms, $db_args ) = @_;
@@ -494,6 +499,11 @@ __FILTER_TMPL__
                     $content_data->id,
                     ( $content_data->label || MT->translate('No Label') )
                 );
+            },
+            validate_item => sub {
+                my $prop = shift;
+                my ($item) = @_;
+                return $prop->validate_scalar_filter($item->{args});
             },
             terms => sub {
                 my $prop = shift;

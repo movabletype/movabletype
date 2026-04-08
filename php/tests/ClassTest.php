@@ -25,13 +25,13 @@ class ClassTest extends TestCase {
         $this->assertEquals('Comment', get_class($comments[0]));
         $this->assertEquals($comment->id, $comments[0]->id);
 
-        $trackback = MockData::makeTrackback();
+        $trackback = Mockdata::makeTrackback();
 
         $trackback2 = $entry->trackback();
         $this->assertEquals('Trackback', get_class($trackback2));
         $this->assertEquals($trackback->id, $trackback2->id);
 
-        $ping = MockData::makeTbping(['entry_id' => $entry->id, 'trackback_id' => $trackback->id]);
+        $ping = Mockdata::makeTbping(['entry_id' => $entry->id, 'trackback_id' => $trackback->id]);
         $pings = $entry->pings();
         $this->assertEquals('TBPing', get_class($pings[0]));
         $this->assertEquals($ping->id, $pings[0]->id);
@@ -47,9 +47,9 @@ class ClassTest extends TestCase {
 
     public function testObjectAsset() {
 
-        $entry = MockData::makeEntry();
-        $asset = MockData::makeAsset();
-        $oasset = MockData::makeObjectAsset(['object_ds' => 'entry']);
+        $entry = Mockdata::makeEntry();
+        $asset = Mockdata::makeAsset();
+        $oasset = Mockdata::makeObjectAsset(['object_ds' => 'entry']);
 
         $oasset2 = new ObjectAsset();
         $oasset2->LoadByIntId($oasset->id);
@@ -67,8 +67,8 @@ class ClassTest extends TestCase {
 
     public function testObjectScore() {
 
-        $entry = MockData::makeEntry();
-        $oscore = MockData::makeObjectScore(['object_ds' => 'entry']);
+        $entry = Mockdata::makeEntry();
+        $oscore = Mockdata::makeObjectScore(['object_ds' => 'entry']);
         $oscore2 = new ObjectScore();
         $oscore2->LoadByIntId($oscore->id);
         $this->assertEquals('ObjectScore', get_class($oscore2));
@@ -82,7 +82,7 @@ class ClassTest extends TestCase {
     public function testObjectTag() {
 
         $entry = Mockdata::makeEntry(['status' => 2]);
-        $otag = MockData::makeObjectTag(['object_datasource' => 'entry', 'tag_id' => 1]);
+        $otag = Mockdata::makeObjectTag(['object_datasource' => 'entry', 'tag_id' => 1]);
 
         $otag2 = new ObjectTag();
         $otag2->LoadByIntId($otag->id);
@@ -99,9 +99,9 @@ class ClassTest extends TestCase {
 
     public function testPage() {
 
-        $page = MockData::makePage();
-        $folder = MockData::makeFolder(['blog_id' => 1]);
-        $placement = MockData::makeObjectPlacement(['blog_id' => 1, 'category_id' => $folder->id]);
+        $page = Mockdata::makePage();
+        $folder = Mockdata::makeFolder(['blog_id' => 1]);
+        $placement = Mockdata::makeObjectPlacement(['blog_id' => 1, 'category_id' => $folder->id]);
 
         $folder2 = $page->folder();
         $this->assertEquals('Folder', get_class($folder2));
@@ -110,7 +110,7 @@ class ClassTest extends TestCase {
 
     public function testTemplate() {
 
-        $template = MockData::makeTemplate(['type' => 'index', 'name' => 'mytemplate']);
+        $template = Mockdata::makeTemplate(['type' => 'index', 'name' => 'mytemplate']);
 
         $blog = $template->blog();
         $this->assertEquals('Website', get_class($blog));
@@ -119,16 +119,16 @@ class ClassTest extends TestCase {
 
     public function testCategory() {
 
-        $category = MockData::makeCategory();
-        $trackback = MockData::makeTrackback(['category_id' => $category->id]);
+        $category = Mockdata::makeCategory();
+        $trackback = Mockdata::makeTrackback(['category_id' => $category->id]);
         $trackback2 = $category->trackback();
         $this->assertEquals('Trackback', get_class($trackback2));
         $this->assertEquals($trackback2->id, $trackback->id);
 
-        $ct = MockData::makeContentType();
-        $cf = MockData::makeContentField();
-        $cd = MockData::makeContentData();
-        $ocat = MockData::makeObjectCategory(['object_ds' => 'content_data']);
+        $ct = Mockdata::makeContentType();
+        $cf = Mockdata::makeContentField();
+        $cd = Mockdata::makeContentData();
+        $ocat = Mockdata::makeObjectCategory(['object_ds' => 'content_data']);
         $count = $category->content_data_count(['content_type_id' => $ct->id, 'content_field_name' => $cf->name]);
         $this->assertEquals(1, $count);
     }
