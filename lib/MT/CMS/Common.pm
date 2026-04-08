@@ -1594,7 +1594,11 @@ sub filtered_list {
     my $props = MT::ListProperty->list_properties($ds);
     if ( !$forward_params{validated} ) {
         for my $item (@$filteritems) {
-            my $prop = $props->{ $item->{type} };
+            return $app->json_error(MT->translate('Invalid type'))
+                unless ref $item eq 'HASH' && $item->{type};
+
+            my $prop = $props->{ $item->{type} }
+                or return $app->json_error(MT->translate('Invalid type'));
             if ( $prop->has('validate_item') ) {
                 $prop->validate_item($item)
                     or return $app->json_error(
