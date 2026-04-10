@@ -5,7 +5,6 @@ import commonjs from "@rollup/plugin-commonjs";
 import esbuild from "rollup-plugin-esbuild";
 import livereload from "rollup-plugin-livereload";
 import sveltePreprocess from "svelte-preprocess";
-import typescript from "@rollup/plugin-typescript";
 import svelte from "rollup-plugin-svelte";
 import { resolve as pathResolve, dirname } from "path";
 import { fileURLToPath } from "node:url";
