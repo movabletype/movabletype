@@ -8,10 +8,12 @@
         </div>
     <mt:else>
         <mt:if name="show_label">
+        <mt:if name="label">
         <label <mt:if name="label_for"> for="<$mt:var name="label_for">"</mt:if> class="form-label">
             <mt:var name="label">
             <mt:if name="required"><span class="badge badge-danger"><__trans phrase="Required"></span></mt:if>
         </label>
+        </mt:if>
         </mt:if>
     </mt:if>
     <$mt:var name="insides">
