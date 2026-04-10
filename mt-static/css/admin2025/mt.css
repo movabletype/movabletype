@@ -11976,6 +11976,7 @@ li {
   border: none;
 }
 .mt-primaryNavigation__toggle_bar .mt-primaryNavigation__toggle_icon_wrapper .mt-primaryNavigation__toggle_icon_border {
+  display: block;
   border-radius: 50%;
   box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.25);
   width: 24px;
@@ -11984,6 +11985,7 @@ li {
 }
 .mt-primaryNavigation__toggle_bar .mt-primaryNavigation__toggle_icon_wrapper .mt-primaryNavigation__toggle_icon {
   top: 0;
+  display: block;
   -webkit-mask-position: center;
           mask-position: center;
   -webkit-mask-repeat: no-repeat;
