@@ -1272,8 +1272,10 @@ sub remove_marked_files {
         if ( MT->model('fileinfo')->exist( { blog_id => $info->blog_id, file_path => $file } ) ) {
             next;
         }
+        MT->run_callbacks( 'pre_delete_archive_file', $file, undef, undef );
         $fmgr->delete($file);
         MT::Util::Log->info("Removed $file");
+        MT->run_callbacks( 'post_delete_archive_file', $file, undef, undef );
     }
     MT::Util::Log->info('--- End removing marked files');
 }
