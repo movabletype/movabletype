@@ -64,7 +64,7 @@ subtest 'update revision note' => sub {
     is $obj_id, $entry->id, 'object id';
 
     my $elems = $app->wq_find('.revision-note');
-    is trim($elems->first->text), '[Add Change Note]', 'revision note is empty (Add change note)';
+    is extract_text($elems), '', 'revision note is empty';
     my $rev_id = $elems->first->data('rev-number');
 
     my $res = $app->js_post_ok({
@@ -73,7 +73,7 @@ subtest 'update revision note' => sub {
         blog_id         => $website->id,
         r               => $rev_id,
         id              => $entry->id,
-        'revision-note' => 'FOOBAR',
+        'revision-note' => 'first',
     });
 
     is_deeply MT::Util::from_json($res->content), { error => undef, result => { success => 1 } }, 'success';
@@ -85,13 +85,11 @@ subtest 'update revision note' => sub {
         id      => $entry->id,
     });
     $elems = $app->wq_find('.revision-note');
-
-    is trim($elems->first->text), 'FOOBAR', 'updated';
-
+    is extract_text($elems), 'first', 'updated';
     my $log = MT::Log->load(
         { class => 'MT::Entry::Revision', category => 'edit' },
         { sort  => 'id', direction => 'descend', limit => 1 });
-    is $log->metadata, ' => FOOBAR', 'log';
+    is $log->metadata, ' => first', 'log';
 };
 
 subtest 'update revision note again' => sub {
@@ -105,7 +103,7 @@ subtest 'update revision note again' => sub {
     });
     my $elems = $app->wq_find('.revision-note');
 
-    is trim($elems->first->text), 'FOOBAR', 'revision note';
+    is extract_text($elems), 'first', 'note';
     my $rev_id = $elems->first->data('rev-number');
 
     my $res = $app->js_post_ok({
@@ -114,7 +112,7 @@ subtest 'update revision note again' => sub {
         blog_id         => $website->id,
         r               => $rev_id,
         id              => $entry->id,
-        'revision-note' => 'FUGAHOGE',
+        'revision-note' => 'second',
     });
 
     is_deeply MT::Util::from_json($res->content), { error => undef, result => { success => 1 } }, 'success';
@@ -127,12 +125,12 @@ subtest 'update revision note again' => sub {
     });
     $elems = $app->wq_find('.revision-note');
 
-    is trim($elems->first->text), 'FUGAHOGE', 'updated';
+    is extract_text($elems), 'second', 'updated';
 
     my $log = MT::Log->load(
         { class => 'MT::Entry::Revision', category => 'edit' },
         { sort  => 'id', direction => 'descend', limit => 1 });
-    is $log->metadata, 'FOOBAR => FUGAHOGE', 'log';
+    is $log->metadata, 'first => second', 'log';
 };
 
 subtest 'error' => sub {
@@ -147,5 +145,15 @@ subtest 'error' => sub {
 
     is_deeply MT::Util::from_json($res->content), { error => "Invalid request." }, 'error';
 };
+
+sub extract_text {
+    my ( $elems ) = @_;
+    return trim($elems->contents->filter(sub {
+        my ( $idx, $elem ) = @_;
+        return unless $elem->get(0)->isTextNode;
+        return $elem;
+    })->text);
+}
+
 
 done_testing;
