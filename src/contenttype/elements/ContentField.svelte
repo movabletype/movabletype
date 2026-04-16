@@ -16,7 +16,16 @@
   export let parent: HTMLDivElement;
   export let gather: (() => object) | undefined;
   export let optionsHtmlParams: ContentType.OptionsHtmlParams;
+  export let labelField;
+  export let isLabelField: Boolean;
 
+  $: {
+    if (labelField.match(/^id:/)) {
+      isLabelField = labelField === ('id:' + field.id);
+    } else {
+      isLabelField = labelField === field.unique_id;
+    }
+  }
   $: id = `field-options-${field.id}`;
 
   $: {
@@ -49,6 +58,15 @@
 
   const deleteField = (): void => {
     const label = field.label ? field.label : window.trans("No Name");
+    if (isLabelField) {
+      alert(
+        window.trans(
+          '"[_1]" cannot delete because using as data label field.',
+          label,
+        ),
+      );
+      return;
+    }
     if (
       !confirm(
         window.trans(
