@@ -40,6 +40,53 @@
     });
   });
 
+  const _alertOnChangedToDefaultLabelField = (oldId: string): void => {
+    let content = window.trans(
+      'Data label field have been changed to "[_2]" from "[_1]"',
+      _getLabelFromValue(oldId),
+      window.trans("Show input field to enter data label"),
+    );
+    let cls = "warning";
+    jQuery("#msg-block").append(
+      jQuery("<div />")
+        .attr("class", "alert alert-dismissible alert-" + cls)
+        .append(
+          jQuery(
+            '<button class="btn-close" data-bs-dismiss="alert" aria-label="Close" />',
+          ).append('<span aria-hidden="true">&times;</span>'),
+        )
+        .append(content),
+    );
+    alert(content);
+  };
+
+  const _getLabelFromValue = (value: string): string => {
+    var label: string | undefined;
+    if (value.match(/^id:/)) {
+      const id = value.match(/^id:(.*)/)?.[1];
+      if (id) {
+        label =
+          jQuery("#content-field-block-" + id)
+            .find('[name="label"]')
+            .val()
+            ?.toString() || "";
+        if (label === "") {
+          label = window.trans("No Name");
+        }
+      }
+    } else {
+      label = $fieldsStore.find(
+        (f) => value === f.unique_id
+      )?.label;
+    }
+
+    if (!label) {
+      label = "(" + window.trans("Deleted") + ")";
+    }
+
+    return label;
+  };
+
   // Drag start from content field list
   observer.on("mtDragStart", function () {
     droppable = true;
@@ -355,7 +402,9 @@
         labelFields.length === 0 ||
         labelFields.every((lf) => lf.value !== labelField)
       ) {
+        const stash = labelField;
         labelField = "";
+        _alertOnChangedToDefaultLabelField(stash);
       }
     }
 

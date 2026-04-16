@@ -122,6 +122,54 @@
       })
     })
 
+    _alertOnChangedToDefaultLabelField(oldId) {
+      const content = trans(
+        'Data label field have been changed to "[_2]" from "[_1]"',
+        self._getLabelFromValue(oldId),
+        trans('Show input field to enter data label')
+      )
+      const cls = 'warning'
+      jQuery('#msg-block').append(jQuery('<div />')
+        .attr('class', 'alert alert-dismissible alert-' + cls )
+        .append(
+          jQuery('<button class="close" data-dismiss="alert" aria-label="Close" />')
+            .append('<span aria-hidden="true">&times;</span>')
+        )
+        .append(content)
+      )
+      alert(content)
+    }
+
+    _getLabelFromValue(value) {
+      var label
+      if (value.match(/^id:/)) {
+        const id = value.match(/^id:(.*)/)?.[1]
+        if (id) {
+          label =
+            jQuery("#content-field-block-" + id)
+              .find('[name="label"]')
+              .val()
+          if (label == '') {
+            label = trans('No Name')
+          }
+        }
+      } else {
+        const field = self.fields.find(
+          (f) => value === f.unique_id
+        )
+
+        if (field) {
+          label = field.label
+        }
+      }
+
+      if (!label) {
+        label = "(" + window.trans("Deleted") + ")"
+      }
+
+      return label
+    }
+
     // Drag start from content field list
     self.observer.on('mtDragStart', function() {
       self.droppable = true
@@ -419,7 +467,9 @@
           self.labelFields.length === 0 ||
           self.labelFields.every((lf) => lf.value !== self.labelField)
         ) {
-          self.labelField = "";
+          const stash = self.labelField
+          self.labelField = ""
+          self._alertOnChangedToDefaultLabelField(stash)
         }
       }
 
