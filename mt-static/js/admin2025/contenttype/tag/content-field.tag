@@ -13,7 +13,19 @@
   <script>
     deleteField(e) {
       item = e.item
+      const labelField = this.parent.labelField
       var label = item.label ? item.label : trans('No Name');
+      const isLabelField = labelField.match(/^id:/) ?
+        (labelField == ('id:' + item.id)) : (labelField == item.unique_id)
+      if (isLabelField) {
+        alert(
+          trans(
+            '"[_1]" cannot delete because using as data label field.',
+            label
+          )
+        )
+        return
+      }
       if( !confirm( trans('Do you want to delete [_1]([_2])?', label, item.typeLabel) ) ){
         return;
       }
