@@ -37,12 +37,18 @@
         <mt:if name="is_broken">
           <span class="revision-note"><__trans phrase="*Deleted due to data breakage*">
         <mt:else>
-          <span class="revision-note" data-rev-number="<mt:var name="rev_number">" <mt:unless name="description">style="color: gray;"</mt:unless>>
+          <span class="revision-note" data-rev-number="<mt:var name="rev_number">">
           <mt:if name="description">
             <mt:var name="description" escape="html">
-          <mt:else>
-            [<__trans phrase="Add Change Note">]
-          </mt:if>
+          </mt:if><button
+            type="button"
+            id="revision-edit-<mt:var name="rev_number">"
+            class="btn btn-default btn-sm edit-btn"
+            style="margin-left: 4px;">
+            <svg role="img" class="mt-icon mt-icon--sm">
+                <title><__trans phrase="edit"></title><use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_edit"></use>
+            </svg>
+          </button>
         </mt:if>
       </span></td>
     <mt:if name="object_type" like="(entry|page|content_data)">
@@ -84,25 +90,13 @@
 jQuery(function($) {
 
   jQuery('.revision-note')
-    .hover(
-      function(e) {
-        jQuery(this).css({
-          color: '#06c',
-          textDecoration: 'underline'
-        });
-      },
-      function(e) {
-        const color = jQuery(this).text().trim() == '[<__trans phrase="Add Change Note">]' ? 'gray' : '';
-        jQuery(this).css({
-          color: color,
-          textDecoration: ''
-        });
-      }
-    )
     .on('click', function (e) {
+      e.stopPropagation();
+
       const $el   = jQuery(this);
       const num   = $el.data('revNumber');
       const token = '<mt:var name="magic_token">';
+      const $btn  = jQuery('#revision-edit-' + num);
 
       if ($el.data('editing'))
         return;
@@ -114,10 +108,9 @@ jQuery(function($) {
         $el.after($status);
       }
 
-      let originalText = $el.text().trim();
-      if (originalText == '[<__trans phrase="Add Change Note">]') {
-        originalText = '';
-      }
+      let originalText = $el.contents().filter(function () {
+        return this.nodeType == Node.TEXT_NODE;
+      }).text().trim();
 
       let $editor = $el.next('.note-editor');
       if (!$editor.length) {
@@ -135,12 +128,8 @@ jQuery(function($) {
 
       const finishEditing = function (newText) {
         $editor.remove();
-        if ( newText == '' ) {
-          $el.text('[<__trans phrase="Add Change Note">]').css('color', 'gray');
-        }
-        else {
-          $el.text(newText);
-        }
+        $el.text(newText);
+        $el.append($btn);
         $el.data('editing', false);
       };
 
@@ -148,13 +137,12 @@ jQuery(function($) {
         e.preventDefault();
         let newText = $input.val();
 
-        $editor.remove();
-
         if ( newText == originalText ) {
           finishEditing(newText);
           return;
         }
 
+        $editor.remove();
         $status.text('<__trans phrase="Saving...">').removeClass('alert-success alert-danger').css('color', 'gray');
 
         jQuery.ajax({
