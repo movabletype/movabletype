@@ -147,13 +147,14 @@ subtest 'error' => sub {
 };
 
 sub extract_text {
-    my ( $elems ) = @_;
-    return trim($elems->contents->filter(sub {
-        my ( $idx, $elem ) = @_;
-        return unless $elem->get(0)->isTextNode;
-        return $elem;
-    })->text);
+    my ($elems) = @_;
+    return trim(
+        $elems->contents->filter(sub {
+            my ($idx, $elem) = @_;
+            return unless $elem->get(0)->isTextNode;
+            return $elem;
+        })->text
+    );
 }
-
 
 done_testing;
