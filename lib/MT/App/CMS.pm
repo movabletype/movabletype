@@ -2763,11 +2763,8 @@ sub is_authorized {
         { author_id => $user->id },
         '-and',
         { blog_id => \@blog_ids },
-        '-and',
-        [   { permissions => \'IS NOT NULL' },
-            '-or',
-            { permissions => { not => '' } },
-        ]
+        '-and_not',
+        { permissions => [\'IS NULL', ''] },
     ];
     my @perms = MT->model('permission')->load($terms);
     if (@perms) {
@@ -2786,10 +2783,10 @@ sub is_authorized {
                 return 1;
             }
         }
-        return $app->permission_denied();
+        return $app->errtrans('Permission denied');
     }
     else {
-        return $app->permission_denied();
+        return $app->errtrans('Permission denied');
     }
 
 }
