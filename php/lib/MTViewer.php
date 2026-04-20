@@ -243,7 +243,7 @@ class MTViewer extends Smarty {
         }
     }
 
-    function error($err, $error_type = E_USER_WARNING) {
+    function error($err, $error_type = E_USER_ERROR) {
         trigger_error($err, $error_type);
         return '';
     }

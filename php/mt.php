@@ -571,7 +571,7 @@ class MT {
                 $msg = "<b>Error:</b> ". $e->getMessage() ."<br>\n" .
                        "<pre>".$e->getTraceAsString()."</pre>";
 
-                return trigger_error( $msg, E_USER_WARNING);
+                return trigger_error( $msg, E_USER_ERROR);
             }
             header( "503 Service Unavailable" );
             return false;
@@ -627,7 +627,7 @@ class MT {
             // 404!
             $this->http_error = 404;
             header("HTTP/1.1 404 Not found");
-            return $ctx->error($this->translate("Page not found - [_1]", $path));
+            return $ctx->error($this->translate("Page not found - [_1]", $path), E_USER_ERROR);
         }
         $ctx->stash('_fileinfo', $data);
 
@@ -696,7 +696,7 @@ class MT {
                     // 404
                     $this->http_error = 404;
                     header("HTTP/1.1 404 Not Found");
-                    return $ctx->error($this->translate("Page not found - [_1]", $at));
+                    return $ctx->error($this->translate("Page not found - [_1]", $at), E_USER_ERROR);
                 }
                 $archiver->template_params($ctx);
             }
