@@ -12,6 +12,7 @@
   export let id: string;
   export let options: ContentType.Options;
   export let optionsHtmlParams: ContentType.OptionsHtmlParams;
+  export let isLabelField: boolean;
 
   const textFilters: Array<{ filter_label: string; filter_key: string }> =
     optionsHtmlParams.multi_line_text.text_filters;
@@ -29,7 +30,13 @@
   options.initial_value ??= "";
 </script>
 
-<ContentFieldOptionGroup type="multi-line-text" bind:field {id} bind:options>
+<ContentFieldOptionGroup
+  type="multi-line-text"
+  bind:field
+  {id}
+  bind:options
+  bind:isLabelField
+>
   <ContentFieldOption
     id="multi_line_text-initial_value"
     label={window.trans("Initial Value")}

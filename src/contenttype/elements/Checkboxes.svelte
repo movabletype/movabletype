@@ -15,6 +15,7 @@
   export let options: ContentType.Options;
   // svelte-ignore unused-export-let
   export let optionsHtmlParams: ContentType.OptionsHtmlParams;
+  export let isLabelField: boolean;
 
   if (options.can_add === "0") {
     options.can_add = 0;
@@ -101,7 +102,13 @@
   };
 </script>
 
-<ContentFieldOptionGroup type="checkboxes" bind:field {id} bind:options>
+<ContentFieldOptionGroup
+  type="checkboxes"
+  bind:field
+  {id}
+  bind:options
+  bind:isLabelField
+>
   <ContentFieldOption
     id="checkboxes-min"
     label={window.trans("Minimum number of selections")}

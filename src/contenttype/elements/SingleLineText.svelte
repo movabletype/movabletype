@@ -13,13 +13,20 @@
   export let options: ContentType.Options;
   // svelte-ignore unused-export-let
   export let optionsHtmlParams: ContentType.OptionsHtmlParams;
+  export let isLabelField: boolean;
 
   options.min_length ??= 0;
   options.max_length ??= 255;
   options.initial_value ??= "";
 </script>
 
-<ContentFieldOptionGroup type="single-line-text" bind:field {id} bind:options>
+<ContentFieldOptionGroup
+  type="single-line-text"
+  bind:field
+  {id}
+  bind:options
+  bind:isLabelField
+>
   <ContentFieldOption
     id="single_line_text-min_length"
     label={window.trans("Min Length")}

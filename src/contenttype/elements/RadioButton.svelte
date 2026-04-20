@@ -15,6 +15,7 @@
   export let options: ContentType.Options;
   // svelte-ignore unused-export-let
   export let optionsHtmlParams: ContentType.OptionsHtmlParams;
+  export let isLabelField: boolean;
 
   let refsTable: HTMLTableElement;
 
@@ -59,7 +60,13 @@
   };
 </script>
 
-<ContentFieldOptionGroup type="radio-button" bind:field {id} bind:options>
+<ContentFieldOptionGroup
+  type="radio-button"
+  bind:field
+  {id}
+  bind:options
+  bind:isLabelField
+>
   <ContentFieldOption
     id="radio_button-values"
     required={1}

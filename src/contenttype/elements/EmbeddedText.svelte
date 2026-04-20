@@ -13,11 +13,18 @@
   export let options: ContentType.Options;
   // svelte-ignore unused-export-let
   export let optionsHtmlParams: ContentType.OptionsHtmlParams;
+  export let isLabelField: boolean;
 
   options.initial_value ??= "";
 </script>
 
-<ContentFieldOptionGroup type="embedded-text" bind:field {id} bind:options>
+<ContentFieldOptionGroup
+  type="embedded-text"
+  bind:field
+  {id}
+  bind:options
+  bind:isLabelField
+>
   <ContentFieldOption
     id="embedded_text-initial_value"
     label={window.trans("Initial Value")}

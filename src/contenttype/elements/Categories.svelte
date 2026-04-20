@@ -14,6 +14,7 @@
   export let id: string;
   export let options: ContentType.Options;
   export let optionsHtmlParams: ContentType.OptionsHtmlParams;
+  export let isLabelField: boolean;
 
   const categorySets: Array<{ id: string; name: string }> =
     optionsHtmlParams.categories.category_sets;
@@ -32,7 +33,13 @@
   // changeStateMultiple was removed because unused
 </script>
 
-<ContentFieldOptionGroup type="categories" bind:field {id} bind:options>
+<ContentFieldOptionGroup
+  type="categories"
+  bind:field
+  {id}
+  bind:options
+  bind:isLabelField
+>
   <ContentFieldOption
     id="categories-multiple"
     label={window.trans("Allow users to select multiple categories?")}

@@ -13,6 +13,7 @@
   export let options: ContentType.Options;
   // svelte-ignore unused-export-let
   export let optionsHtmlParams: ContentType.OptionsHtmlParams;
+  export let isLabelField: boolean;
 
   if (options.multiple === "0") {
     options.multiple = 0;
@@ -28,7 +29,13 @@
   // changeStateMultiple was removed because unused
 </script>
 
-<ContentFieldOptionGroup type="asset-video" bind:field {id} bind:options>
+<ContentFieldOptionGroup
+  type="asset-video"
+  bind:field
+  {id}
+  bind:options
+  bind:isLabelField
+>
   <ContentFieldOption
     id="asset_video-multiple"
     label={window.trans("Allow users to select multiple video assets?")}

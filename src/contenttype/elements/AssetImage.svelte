@@ -13,6 +13,7 @@
   export let options: ContentType.Options;
   // svelte-ignore unused-export-let
   export let optionsHtmlParams: ContentType.OptionsHtmlParams;
+  export let isLabelField: boolean;
 
   if (options.multiple === "0") {
     options.multiple = 0;
@@ -30,7 +31,13 @@
   options.preivew_height ??= 80;
 </script>
 
-<ContentFieldOptionGroup type="asset-image" bind:field {id} bind:options>
+<ContentFieldOptionGroup
+  type="asset-image"
+  bind:field
+  {id}
+  bind:options
+  bind:isLabelField
+>
   <ContentFieldOption
     id="asset_image-multiple"
     label={window.trans("Allow users to select multiple image assets?")}

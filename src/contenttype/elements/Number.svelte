@@ -12,6 +12,7 @@
   export let options: ContentType.Options;
   // svelte-ignore unused-export-let
   export let optionsHtmlParams: ContentType.OptionsHtmlParams;
+  export let isLabelField: boolean;
 
   options.max_value ??= config.NumberFieldMaxValue;
   options.min_value ??= config.NumberFieldMinValue;
@@ -37,7 +38,13 @@
   });
 </script>
 
-<ContentFieldOptionGroup type="number" bind:field {id} bind:options>
+<ContentFieldOptionGroup
+  type="number"
+  bind:field
+  {id}
+  bind:options
+  bind:isLabelField
+>
   <ContentFieldOption id="number-min_value" label={window.trans("Min Value")}>
     <input
       {...{ ref: "min_value" }}

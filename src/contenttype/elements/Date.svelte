@@ -13,11 +13,18 @@
   export let options: ContentType.Options;
   // svelte-ignore unused-export-let
   export let optionsHtmlParams: ContentType.OptionsHtmlParams;
+  export let isLabelField: boolean;
 
   options.initial_value ??= "";
 </script>
 
-<ContentFieldOptionGroup type="date-only" bind:field {id} bind:options>
+<ContentFieldOptionGroup
+  type="date-only"
+  bind:field
+  {id}
+  bind:options
+  bind:isLabelField
+>
   <ContentFieldOption
     id="date_only-initial-date_value"
     label={window.trans("Initial Value")}

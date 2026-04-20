@@ -13,6 +13,7 @@
   export let options: ContentType.Options;
   // svelte-ignore unused-export-let
   export let optionsHtmlParams: ContentType.OptionsHtmlParams;
+  export let isLabelField: boolean;
 
   if (options.multiple === "0") {
     options.multiple = 0;
@@ -29,7 +30,13 @@
   options.initial_value ??= "";
 </script>
 
-<ContentFieldOptionGroup type="tags" bind:field {id} bind:options>
+<ContentFieldOptionGroup
+  type="tags"
+  bind:field
+  {id}
+  bind:options
+  bind:isLabelField
+>
   <ContentFieldOption
     id="tags-multiple"
     label={window.trans("Allow users to input multiple values?")}

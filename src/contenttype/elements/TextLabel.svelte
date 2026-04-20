@@ -15,6 +15,7 @@
   export let options: ContentType.Options;
   // svelte-ignore unused-export-let
   export let optionsHtmlParams: ContentType.OptionsHtmlParams;
+  export let isLabelField: boolean;
 
   options.text ??= "";
 
@@ -34,7 +35,13 @@
   });
 </script>
 
-<ContentFieldOptionGroup type="text-label" bind:field {id} bind:options>
+<ContentFieldOptionGroup
+  type="text-label"
+  bind:field
+  {id}
+  bind:options
+  bind:isLabelField
+>
   <ContentFieldOption
     id="text_label-text"
     label={window.trans("__TEXT_LABEL_TEXT")}

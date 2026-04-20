@@ -13,6 +13,7 @@
   export let id: string;
   export let options: ContentType.Options;
   export let type: string;
+  export let isLabelField: boolean;
 
   if (!type) {
     console.error('ContentFieldOptionGroup: "type" attribute is required.');
@@ -137,6 +138,13 @@
   <label for="{type}-required">
     {window.trans("Is this field required?")}
   </label>
+  {#if isLabelField}
+    <div class="small form-text text-body-secondary hint">
+      {window.trans(
+        "Unchecking this required, data label field will reset to default.",
+      )}
+    </div>
+  {/if}
 </ContentFieldOption>
 
 <ContentFieldOption

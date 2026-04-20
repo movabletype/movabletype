@@ -13,6 +13,7 @@
   export let options: ContentType.Options;
   // svelte-ignore unused-export-let
   export let optionsHtmlParams: ContentType.OptionsHtmlParams;
+  export let isLabelField: boolean;
 
   if (options.multiple === "0") {
     options.multiple = 0;
@@ -28,7 +29,13 @@
   options.max ??= "";
 </script>
 
-<ContentFieldOptionGroup type="asset-audio" bind:field {id} bind:options>
+<ContentFieldOptionGroup
+  type="asset-audio"
+  bind:field
+  {id}
+  bind:options
+  bind:isLabelField
+>
   <ContentFieldOption
     id="asset_audio-multiple"
     label={window.trans("Allow users to select multiple assets?")}

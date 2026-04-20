@@ -14,6 +14,7 @@
   export let id: string;
   export let options: ContentType.Options;
   export let optionsHtmlParams: ContentType.OptionsHtmlParams;
+  export let isLabelField: boolean;
 
   const contentTypes: Array<{ id: string; name: string }> =
     optionsHtmlParams.content_type.content_types;
@@ -32,7 +33,13 @@
   options.max ??= "";
 </script>
 
-<ContentFieldOptionGroup type="content-type" bind:field {id} bind:options>
+<ContentFieldOptionGroup
+  type="content-type"
+  bind:field
+  {id}
+  bind:options
+  bind:isLabelField
+>
   <ContentFieldOption
     id="content_type-multiple"
     label={window.trans("Allow users to select multiple values?")}

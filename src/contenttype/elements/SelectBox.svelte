@@ -15,6 +15,7 @@
   export let options: ContentType.Options;
   // svelte-ignore unused-export-let
   export let optionsHtmlParams: ContentType.OptionsHtmlParams;
+  export let isLabelField: boolean;
 
   if (options.can_add === "0") {
     options.can_add = 0;
@@ -145,7 +146,13 @@
   };
 </script>
 
-<ContentFieldOptionGroup type="select-box" bind:field {id} bind:options>
+<ContentFieldOptionGroup
+  type="select-box"
+  bind:field
+  {id}
+  bind:options
+  bind:isLabelField
+>
   <ContentFieldOption
     id="select_box-multiple"
     label={window.trans("Allow users to select multiple values?")}

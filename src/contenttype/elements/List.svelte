@@ -12,6 +12,13 @@
   export let options: ContentType.Options;
   // svelte-ignore unused-export-let
   export let optionsHtmlParams: ContentType.OptionsHtmlParams;
+  export let isLabelField: boolean;
 </script>
 
-<ContentFieldOptionGroup type="list" bind:field {id} bind:options />
+<ContentFieldOptionGroup
+  type="list"
+  bind:field
+  {id}
+  bind:options
+  bind:isLabelField
+/>

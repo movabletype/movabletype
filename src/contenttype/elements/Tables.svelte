@@ -13,6 +13,7 @@
   export let options: ContentType.Options;
   // svelte-ignore unused-export-let
   export let optionsHtmlParams: ContentType.OptionsHtmlParams;
+  export let isLabelField: boolean;
 
   if (options.increase_decrease_rows === "0") {
     options.increase_decrease_rows = 0;
@@ -25,7 +26,13 @@
   options.initial_cols ??= 1;
 </script>
 
-<ContentFieldOptionGroup type="table" bind:field {id} bind:options>
+<ContentFieldOptionGroup
+  type="table"
+  bind:field
+  {id}
+  bind:options
+  bind:isLabelField
+>
   <ContentFieldOption
     id="tables-initial_rows"
     label={window.trans("Initial Rows")}
