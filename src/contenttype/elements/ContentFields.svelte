@@ -1,7 +1,7 @@
 <script lang="ts">
   import type * as ContentType from "../../@types/contenttype";
 
-  import { afterUpdate } from "svelte";
+  import { onMount } from "svelte";
 
   import { recalcHeight } from "../Utils";
 
@@ -30,16 +30,14 @@
   const gathers: { [key: string]: (() => object) | undefined } = {};
   const tags: Array<HTMLDivElement> = [];
 
-  afterUpdate(() => {
-    const select = root.querySelector("#label_field") as HTMLSelectElement;
-    jQuery(select)
-      .find("option")
-      .each(function (index, option) {
-        if (option.attributes.getNamedItem("selected")) {
-          select.selectedIndex = index;
-          return false;
-        }
-      });
+  onMount(() => {
+    // Prevent label_field from being reset when saving a content type immediately after loading
+    rebuildLabelFields();
+
+    // Rebuild label fields when any required option is changed in content fields
+    jQuery("#content-fields").on("change", "input[name=required]", function () {
+      rebuildLabelFields();
+    });
   });
 
   // Drag start from content field list
@@ -283,7 +281,6 @@
       return;
     }
 
-    rebuildLabelFields();
     window.setDirty(false);
     const fieldOptions: Array<ContentType.SubmitFieldOption> = [];
     if ($fieldsStore) {
@@ -351,6 +348,17 @@
       }
     }
     labelFields = newLabelFields;
+
+    // Reset labelField when it is removed from the list
+    if (labelField) {
+      if (
+        labelFields.length === 0 ||
+        labelFields.every((lf) => lf.value !== labelField)
+      ) {
+        labelField = "";
+      }
+    }
+
     // update is not needed in Svelte
   };
 

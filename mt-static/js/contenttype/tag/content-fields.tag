@@ -112,13 +112,13 @@
     self.labelFields = null
     self.labelField = opts.labelField
 
-    self.on('updated', function () {
-      var select = self.root.querySelector('#label_field')
-      jQuery(select).find('option').each(function (index, option) {
-        if (option.attributes.selected) {
-          select.selectedIndex = index
-          return false
-        }
+    self.on('mount', function () {
+      // Prevent label_field from being reset when saving a content type immediately after loading
+      self.rebuildLabelFields();
+
+      // Rebuild label fields when any required option is changed in content fields
+      jQuery("#content-fields").on("change", "input[name=required]", function () {
+        self.rebuildLabelFields()
       })
     })
 
@@ -334,7 +334,6 @@
         return
       }
 
-      self.rebuildLabelFields()
       setDirty(false)
       fieldOptions = [];
       if (self.fields) {
@@ -413,11 +412,22 @@
         }
       }
       self.labelFields = fields
+
+      // Reset labelField when it is removed from the list
+      if (self.labelField) {
+        if (
+          self.labelFields.length === 0 ||
+          self.labelFields.every((lf) => lf.value !== self.labelField)
+        ) {
+          self.labelField = "";
+        }
+      }
+
       self.update()
     }
 
     changeLabelField(e) {
-        self.labelField = e.target.value
+      self.labelField = e.target.value
     }
 
     _moveField(item, pos) {
