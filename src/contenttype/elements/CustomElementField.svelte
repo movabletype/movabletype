@@ -4,10 +4,8 @@
   import ContentFieldOptionGroup from "./ContentFieldOptionGroup.svelte";
 
   type Props = {
-    config?: ContentType.ConfigSettings;
     fieldIndex: number;
     fieldsStore: ContentType.FieldsStore;
-    optionsHtmlParams?: ContentType.OptionsHtmlParams;
     type: string;
     customElement: string;
     updateOptions: (options: ContentType.Options) => void;

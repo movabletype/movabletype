@@ -74,10 +74,8 @@ describe("CustomElementField Component", () => {
 
     const { container } = render(CustomElementField, {
       props: {
-        config: {},
         fieldIndex: 0,
         fieldsStore: fieldsStore,
-        optionsHtmlParams: {},
         type: "custom-element",
         customElement: "test-custom-element",
         updateOptions: updateOptionsMock,
@@ -105,10 +103,8 @@ describe("CustomElementField Component", () => {
 
     const { container } = render(CustomElementField, {
       props: {
-        config: {},
         fieldIndex: 0,
         fieldsStore: fieldsStore,
-        optionsHtmlParams: {},
         type: "custom-element",
         customElement: "test-custom-element",
         updateOptions: updateOptionsMock,
@@ -146,10 +142,8 @@ describe("CustomElementField Component", () => {
 
     const { container } = render(CustomElementField, {
       props: {
-        config: {},
         fieldIndex: 0,
         fieldsStore: fieldsStore,
-        optionsHtmlParams: {},
         type: "custom-element",
         customElement: "test-custom-element",
         updateOptions: updateOptionsMock,
@@ -185,10 +179,8 @@ describe("CustomElementField Component", () => {
 
     const { container } = render(CustomElementField, {
       props: {
-        config: {},
         fieldIndex: 0,
         fieldsStore: fieldsStore,
-        optionsHtmlParams: {},
         type: "custom-element",
         customElement: "test-custom-element",
         updateOptions: updateOptionsMock,
@@ -218,10 +210,8 @@ describe("CustomElementField Component", () => {
 
     const { container } = render(CustomElementField, {
       props: {
-        config: {},
         fieldIndex: 0,
         fieldsStore: fieldsStore,
-        optionsHtmlParams: {},
         type: "custom-element",
         customElement: "test-custom-element",
         updateOptions: updateOptionsMock,
@@ -251,10 +241,8 @@ describe("CustomElementField Component", () => {
 
     const { container } = render(CustomElementField, {
       props: {
-        config: {},
         fieldIndex: 0,
         fieldsStore: fieldsStore,
-        optionsHtmlParams: {},
         type: "custom-element",
         customElement: "test-custom-element",
         updateOptions: updateOptionsMock,
