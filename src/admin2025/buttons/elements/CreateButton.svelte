@@ -9,7 +9,7 @@
     magicToken: string;
     open: boolean;
     anchorRef: HTMLElement;
-    containerRef: HTMLElement;
+    containerRef: HTMLElement | null;
   };
   let {
     blog_id,

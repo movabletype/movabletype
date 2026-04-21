@@ -69,7 +69,7 @@ if (createButtonTargets.length > 0 && magicToken !== "") {
         magicToken: magicToken,
         open: false,
         anchorRef: createButtonTarget,
-        containerRef: modalContainerTarget!,
+        containerRef: modalContainerTarget,
       },
     });
   });

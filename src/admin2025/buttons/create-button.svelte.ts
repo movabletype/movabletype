@@ -6,7 +6,7 @@ type CreateButtonProps = {
   magicToken: string;
   open: boolean;
   anchorRef: HTMLElement;
-  containerRef: HTMLElement;
+  containerRef: HTMLElement | null;
 };
 
 export const svelteMountCreateButton = ({
