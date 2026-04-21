@@ -147,7 +147,7 @@
     class="mt-switch form-control"
     id="{type}-required"
     name="required"
-    checked={options.required}
+    checked={!!options.required}
     onchange={(e) => {
       options.required = e.currentTarget.checked;
     }}
