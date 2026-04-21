@@ -246,7 +246,8 @@ class MTViewer extends Smarty {
     function error($err, $error_type = E_USER_ERROR) {
         $trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2);
         $caller = $trace[1] ?? $trace[0];
-        $this->mt->error_handler($error_type, $err, $caller['file'] ?? __FILE__, $caller['line'] ?? __LINE__);
+        $error_handler = get_error_handler();
+        $error_handler($error_type, $err, $caller['file'] ?? __FILE__, $caller['line'] ?? __LINE__);
         return '';
     }
 
