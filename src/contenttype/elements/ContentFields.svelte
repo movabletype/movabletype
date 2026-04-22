@@ -75,9 +75,7 @@
         }
       }
     } else {
-      label = $fieldsStore.find(
-        (f) => value === f.unique_id
-      )?.label;
+      label = $fieldsStore.find((f) => value === f.unique_id)?.label;
     }
 
     if (!label) {
