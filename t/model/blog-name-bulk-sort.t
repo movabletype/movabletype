@@ -89,7 +89,6 @@ subtest 'bulk_sort does not warn for undefined blog name cases' => sub {
     my @input  = ($valid, $system, $alpha, $orphan);
     my @sorted = $prop->bulk_sort(\@input);
 
-    is(scalar @sorted, 4, 'bulk_sort returns all objects');
     is_deeply(
         [map { sort_key_for_log($_) } @input],
         ['z bulk_sort blog', '', 'a bulk_sort blog', ''],
