@@ -16,6 +16,7 @@
   export let parent: HTMLDivElement;
   export let gather: (() => object) | undefined;
   export let optionsHtmlParams: ContentType.OptionsHtmlParams;
+  export let contentFieldType: object;
 
   $: id = `field-options-${field.id}`;
 
@@ -100,11 +101,7 @@
     />
   </div>
   <div class="col text-wrap p-0">
-    <SVG
-      title={window.trans("ContentField")}
-      class="mt-icon--secondary"
-      href="{window.StaticURI}images/sprite.svg#ic_contentstype"
-    />
+    {@html contentFieldType.icon ?? ""}
     {field.label ?? ""} ({field.typeLabel})
     {#if field.realId}<span>(ID: {field.realId})</span>{/if}
   </div>

@@ -30,6 +30,11 @@
   const gathers: { [key: string]: (() => object) | undefined } = {};
   const tags: Array<HTMLDivElement> = [];
 
+  $: contentFieldTypes = (opts.types || []).reduce((acc, curr) => {
+    acc[curr.type] = curr;
+    return acc;
+  }, {});
+
   afterUpdate(() => {
     const select = root.querySelector("#label_field") as HTMLSelectElement;
     jQuery(select)
@@ -735,6 +740,7 @@
             {fieldIndex}
             {fieldsStore}
             {gatheringData}
+            icon={contentFieldTypes[field.type]}
             parent={tags[fieldIndex]}
             bind:gather={gathers[fieldId]}
             {optionsHtmlParams}
