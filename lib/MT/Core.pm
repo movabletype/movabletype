@@ -1303,10 +1303,7 @@ BEGIN {
                             ->load( { id => [ keys %blog_id ] },
                             { no_class => 1, } );
                         my %blogname = map { $_->id => $_->name } @blogs;
-                        return sort {
-                            $blogname{ $a->blog_id }
-                                cmp $blogname{ $b->blog_id }
-                        } @$objs;
+                        return sort { ($blogname{ $a->blog_id } // '') cmp($blogname{ $b->blog_id } // '') } @$objs;
                     },
                 },
                 current_user => {
