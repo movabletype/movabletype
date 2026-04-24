@@ -7,6 +7,7 @@ package MT::CMS::Revision;
 
 use strict;
 use warnings;
+use MT::Util qw(format_ts);
 
 sub js_save_rev {
     my $app = shift;
@@ -52,16 +53,17 @@ sub js_save_rev {
     $rev->description($new);
     $rev->save or die $rev->errstr;
 
-    my $message = $app->translate(
-        "[_1] (ID:[_2])'s change note (r:[_3]) edited by user '[_4]'",
-        $class->class_label, $obj->id, $rn, $user->name
+    my $ts_formatted = format_ts('%Y-%m-%d %H:%M:%S', $rev->created_on, $obj->blog, $user->preferred_language);
+    my $message      = $app->translate(
+        "[_1] (ID:[_2])'s change note ([_3]) edited by user '[_4]'",
+        $class->class_label, $obj->id, $ts_formatted, $user->name
     );
     $app->log({
         message  => $message,
         level    => MT::Log::NOTICE(),
         class    => $class->revision_pkg,
         category => 'edit',
-        metadata => sprintf("%s => %s", $old, $new),
+        metadata => $new,
     });
 
     return $app->json_result({ success => 1 });
