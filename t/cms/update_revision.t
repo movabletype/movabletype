@@ -89,7 +89,7 @@ subtest 'update revision note' => sub {
     my $log = MT::Log->load(
         { class => 'MT::Entry::Revision', category => 'edit' },
         { sort  => 'id', direction => 'descend', limit => 1 });
-    is $log->metadata, ' => first', 'log';
+    is $log->metadata, 'first', 'log';
 };
 
 subtest 'update revision note again' => sub {
@@ -130,7 +130,7 @@ subtest 'update revision note again' => sub {
     my $log = MT::Log->load(
         { class => 'MT::Entry::Revision', category => 'edit' },
         { sort  => 'id', direction => 'descend', limit => 1 });
-    is $log->metadata, 'first => second', 'log';
+    is $log->metadata, 'second', 'log';
 };
 
 subtest 'error' => sub {
