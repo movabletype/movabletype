@@ -40,15 +40,29 @@
           <span class="revision-note" data-rev-number="<mt:var name="rev_number">">
           <mt:if name="description">
             <mt:var name="description" escape="html">
-          </mt:if><button
-            type="button"
-            id="revision-edit-<mt:var name="rev_number">"
-            class="btn btn-default btn-sm edit-btn"
-            style="margin-left: 4px;">
-            <svg role="img" class="mt-icon mt-icon--sm">
-                <title><__trans phrase="edit"></title><use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_edit"></use>
-            </svg>
-          </button>
+          </mt:if>
+          <mt:if name="__odd__">
+            <button
+              type="button"
+              id="revision-edit-<mt:var name="rev_number">"
+              class="btn btn-default btn-sm"
+              style=" padding: 2px 4px; margin-left: 4px; line-height: 0; text-box-trim: trim-both; position: relative; top: -1px;">
+              <svg role="img" class="mt-icon mt-icon--sm">
+                  <title><__trans phrase="edit"></title>
+                  <use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_edit"></use>
+              </svg><__trans phrase="edit">
+            </button>
+          <mt:else>
+            <button
+              type="button"
+              id="revision-edit-<mt:var name="rev_number">"
+              class="btn btn-link edit-btn"
+              style="position: relative; top: -2px; padding: 0 5px;">
+              <svg role="img" class="mt-icon mt-icon--sm mt-icon--primary">
+                  <title><__trans phrase="edit"></title><use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_edit"></use>
+              </svg>
+            </button>
+          </mt:if>
         </mt:if>
       </span></td>
     <mt:if name="object_type" like="(entry|page|content_data)">
