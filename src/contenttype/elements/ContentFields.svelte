@@ -12,6 +12,7 @@
   export let fieldsStore: ContentType.FieldsStore;
   export let optionsHtmlParams: ContentType.OptionsHtmlParams;
   export let opts: ContentType.ContentFieldsOpts;
+  // svelte-ignore unused-export-let
   export let root: Element;
 
   $: isEmpty = $fieldsStore.length > 0 ? false : true;
@@ -75,9 +76,7 @@
         }
       }
     } else {
-      label = $fieldsStore.find(
-        (f) => value === f.unique_id
-      )?.label;
+      label = $fieldsStore.find((f) => value === f.unique_id)?.label;
     }
 
     if (!label) {
@@ -795,7 +794,7 @@
             parent={tags[fieldIndex]}
             bind:gather={gathers[fieldId]}
             {optionsHtmlParams}
-            bind:labelField
+            {labelField}
           />
         </div>
       {/each}
