@@ -17,11 +17,12 @@
   export let gather: (() => object) | undefined;
   export let optionsHtmlParams: ContentType.OptionsHtmlParams;
   export let labelField;
-  export let isLabelField: Boolean;
+
+  let isLabelField: boolean;
 
   $: {
     if (labelField.match(/^id:/)) {
-      isLabelField = labelField === ('id:' + field.id);
+      isLabelField = labelField === "id:" + field.id;
     } else {
       isLabelField = labelField === field.unique_id;
     }
@@ -179,6 +180,7 @@
     {id}
     bind:options={field.options}
     {optionsHtmlParams}
+    {isLabelField}
   />
   <Custom
     {config}

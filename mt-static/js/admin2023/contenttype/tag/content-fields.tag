@@ -127,7 +127,10 @@
 
     self.on('mount', function () {
       // Prevent label_field from being reset when saving a content type immediately after loading
-      self.rebuildLabelFields();
+      self.rebuildLabelFields()
+
+      // Append or Remove hint label for required option
+      self._updateHintLabelOfRequiredOption(self.labelField)
 
       // Rebuild label fields when any required option is changed in content fields
       jQuery("#content-fields").on("change", "input[name=required]", function () {
@@ -182,6 +185,43 @@
 
       return label
     }
+
+    _updateHintLabelOfRequiredOption(labelField) {
+      document.querySelectorAll("#content-fields .mt-contentfield")
+        .forEach((fieldContainer) => {
+          const container = fieldContainer.querySelector("[fieldid]")
+          const id = container.getAttribute("fieldid")
+          const field = self.fields.find((f) => f.id == id)
+          const requiredOptionContainer = container.querySelector("div:has(input[name=required])")
+
+          const isLabelField = labelField.match(/^id:/) ?
+            (labelField == ('id:' + field.id)) : (labelField == field.unique_id);
+          if (isLabelField) {
+            // Append hint label if not exists
+            if (requiredOptionContainer.querySelector("div.hint") == null) {
+              let hint = document.createElement("div");
+              hint.append(
+                trans("Unchecking this required, data label field will reset to default.")
+              )
+              hint.className = "small form-text text-body-secondary hint"
+              requiredOptionContainer.append(hint)
+            }
+          }
+          else {
+            // Remove hint label if exists
+            const hint = requiredOptionContainer.querySelector("div.hint")
+            if (hint) {
+              hint.remove()
+            }
+          }
+        }
+      )
+    }
+
+    // On change label field
+    self.observer.on('mtLabelFieldChanged', function(labelField) {
+      self._updateHintLabelOfRequiredOption(labelField)
+    })
 
     // Drag start from content field list
     self.observer.on('mtDragStart', function() {
@@ -484,6 +524,7 @@
         ) {
           const stash = self.labelField
           self.labelField = ""
+          self.observer.trigger('mtLabelFieldChanged', self.labelField)
           self._alertOnChangedToDefaultLabelField(stash)
         }
       }
@@ -493,6 +534,7 @@
 
     changeLabelField(e) {
       self.labelField = e.target.value
+      self.observer.trigger('mtLabelFieldChanged', self.labelField)
     }
 
     toggleAll() {
