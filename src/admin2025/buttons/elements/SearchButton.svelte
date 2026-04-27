@@ -60,13 +60,6 @@
     }
   };
 
-  let searchTextRef: HTMLInputElement | null = null;
-  $: {
-    if (open && searchTextRef) {
-      searchTextRef.focus();
-    }
-  }
-
   onMount(async () => {
     if (objectType) {
       // If objectType is set and does not exist in searchTabs, select the first one
