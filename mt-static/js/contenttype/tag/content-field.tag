@@ -11,13 +11,21 @@
   <div data-is={ type } class="collapse mt-collapse__content  { isShow }" id={ 'field-options-' + id } fieldid={ id } options={ this.options } isnew={ isNew }></div>
 
   <script>
+    isLabelField() {
+      const labelField = this.parent.labelField
+
+      if (!labelField) {
+        return false
+      }
+
+      return labelField.match(/^id:/) ?
+        (labelField == ('id:' + this.id)) : (labelField == this.unique_id)
+    }
+
     deleteField(e) {
       item = e.item
-      const labelField = this.parent.labelField
       var label = item.label ? item.label : trans('No Name');
-      const isLabelField = labelField.match(/^id:/) ?
-        (labelField == ('id:' + item.id)) : (labelField == item.unique_id)
-      if (isLabelField) {
+      if (this.isLabelField()) {
         alert(
           trans(
             '"[_1]" cannot delete because using as data label field.',
