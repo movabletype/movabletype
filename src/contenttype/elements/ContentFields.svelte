@@ -12,8 +12,6 @@
   export let fieldsStore: ContentType.FieldsStore;
   export let optionsHtmlParams: ContentType.OptionsHtmlParams;
   export let opts: ContentType.ContentFieldsOpts;
-  // svelte-ignore unused-export-let
-  export let root: Element;
 
   $: isEmpty = $fieldsStore.length > 0 ? false : true;
   let data = "";
