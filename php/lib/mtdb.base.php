@@ -1377,6 +1377,8 @@ abstract class MTDatabase {
                         }
                         $distinct = 1;
                         $meta_join_num++;
+                    } else {
+                        $custom_field_filter = sprintf("entry_id = 0");
                     }
                 }
             }
