@@ -466,7 +466,10 @@
             if (label == '') {
               label = trans('No Name')
             }
-            id =  'id:' + self.fields[i].id
+          }
+          if ( !id ) {
+            // new field
+            id = 'id:' + self.fields[i].id
           }
           fields.push({
             'value' : id,

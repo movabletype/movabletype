@@ -89,6 +89,7 @@
     const newItem = jQuery.extend({}, field);
     newItem.options = gatheringData(parent, fieldIndex);
     newItem.id = Math.random().toString(36).slice(-8);
+    newItem.unique_id = undefined;
     let label = field.label;
     if (!label) {
       label = jQuery("#content-field-block-" + field.id)
