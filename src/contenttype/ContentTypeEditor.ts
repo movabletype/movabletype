@@ -83,7 +83,6 @@ export default class ContentTypeEditor {
         fieldsStore: this.fieldsStore,
         optionsHtmlParams: this.optionsHtmlParams,
         opts: this.opts,
-        root: target,
       },
       target: target,
     });
