@@ -329,7 +329,7 @@ class MTViewer extends Smarty {
             if ($cond_tag == '1' or $cond_tag == '0') {
                 $ctx->stash('conditional', $cond_tag);
             } else {
-                $ctx->stash('conditional', !empty($ctx->__stash[$cond_tag]));
+                $ctx->stash('conditional', !empty($ctx->__stash[$cond_tag ?? '']));
             }
         } else {
             if (!$ctx->__stash['conditional']) {
