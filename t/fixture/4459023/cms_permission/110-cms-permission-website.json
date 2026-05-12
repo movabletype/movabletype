@@ -253,7 +253,7 @@
       ],
       "rows" : [
          [
-            "odvl21op",
+            "7su6whnq",
             "MT",
             "melody",
             null,
@@ -284,7 +284,7 @@
             null
          ],
          [
-            "eerq2rl8",
+            "b1g8sbqg",
             "MT",
             "ichiro_aikawa",
             null,
@@ -315,7 +315,7 @@
             null
          ],
          [
-            "dgyb8h5x",
+            "9pqc9bit",
             "MT",
             "jiro_ichikawa",
             null,
@@ -346,7 +346,7 @@
             null
          ],
          [
-            "gw19a8le",
+            "2r90ixau",
             "MT",
             "saburo_ukawa",
             null,
@@ -377,7 +377,7 @@
             null
          ],
          [
-            "ja9gi7xi",
+            "6jb7r13h",
             "MT",
             "shiro_egawa",
             null,
@@ -408,7 +408,7 @@
             null
          ],
          [
-            "k4jbjl7j",
+            "w0pyoic9",
             "MT",
             "goro_ogawa",
             null,
@@ -439,7 +439,7 @@
             null
          ],
          [
-            "7mqmot2k",
+            "fi2zszhv",
             "MT",
             "ichiro_kagawa",
             null,
@@ -470,7 +470,7 @@
             null
          ],
          [
-            "3l81dlbg",
+            "7ptm1zn1",
             "MT",
             "jiro_kikkawa",
             null,
@@ -501,7 +501,7 @@
             null
          ],
          [
-            "b2ukzzmh",
+            "8jb036os",
             "MT",
             "saburo_kumekawa",
             null,
@@ -532,7 +532,7 @@
             null
          ],
          [
-            "lpldq9or",
+            "sbtd2v1i",
             "MT",
             "shiro_kemikawa",
             null,
@@ -563,7 +563,7 @@
             null
          ],
          [
-            "ikli61t9",
+            "4dx1qnbu",
             "MT",
             "goro_koishikawa",
             null,
@@ -594,7 +594,7 @@
             null
          ],
          [
-            "na08lmc8",
+            "h893cznb",
             "MT",
             "ichiro_sagawa",
             null,
@@ -625,7 +625,7 @@
             null
          ],
          [
-            "vc4793gy",
+            "hdoxac2j",
             "MT",
             "jiro_shiki",
             null,
@@ -656,7 +656,7 @@
             null
          ],
          [
-            "lb7bni98",
+            "o1710z6e",
             "MT",
             "saburo_suda",
             null,
@@ -687,7 +687,7 @@
             null
          ],
          [
-            "tyj4csng",
+            "69uhtkxx",
             "MT",
             "shiro_seta",
             null,
@@ -718,7 +718,7 @@
             null
          ],
          [
-            "795po8lw",
+            "lvt1to2z",
             "MT",
             "goro_sorimachi",
             null,
@@ -749,7 +749,7 @@
             null
          ],
          [
-            "50ird138",
+            "9nkrzjfz",
             "MT",
             "ichiro_tada",
             null,
@@ -1310,7 +1310,7 @@
       ],
       "rows" : [
          [
-            "DataAPIDisableSite 0\nDefaultSupportedLanguages en_us,ja\nDisableDataAPI 0\nDisableNotificationPings 1\nHidePrivateRelatedContentData 1\nPluginAlias ContentType Information Widget=ContentInfoWidget\nPluginAlias Markdown=Markdown/Markdown.pl\nPluginAlias SmartyPants=Markdown/SmartyPants.pl\nPluginAlias Textile=Textile/textile2.pl\nPluginAlias WXR Importer=WXRImporter\nPluginAlias Widget Manager Upgrade Assistant=WidgetManager/WidgetManager.pl\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion blockeditor=1\nPluginSchemaVersion formattedtext=1.00\nPluginSchemaVersion tinymce5=1\nPluginSchemaVersion tinymce6=1\nPluginSwitch BlockEditor=0\nPluginSwitch ContentInfoWidget=1\nPluginSwitch FormattedText=1\nPluginSwitch FormattedTextForTinyMCE5=0\nPluginSwitch FormattedTextForTinyMCE6=1\nPluginSwitch GoogleAnalyticsV4=1\nPluginSwitch Markdown/Markdown.pl=1\nPluginSwitch Markdown/SmartyPants.pl=1\nPluginSwitch Textile/textile2.pl=0\nPluginSwitch TinyMCE5=0\nPluginSwitch TinyMCE6=1\nPluginSwitch WXRImporter=1\nPluginSwitch WidgetManager/WidgetManager.pl=0\nSchemaVersion 8.0002\nTrimFilePath 1\n",
+            "DataAPIDisableSite 0\nDefaultSupportedLanguages en_us,ja\nDisableDataAPI 0\nDisableNotificationPings 1\nHidePrivateRelatedContentData 1\nPluginAlias ContentType Information Widget=ContentInfoWidget\nPluginAlias Markdown=Markdown/Markdown.pl\nPluginAlias SmartyPants=Markdown/SmartyPants.pl\nPluginAlias Textile=Textile/textile2.pl\nPluginAlias WXR Importer=WXRImporter\nPluginAlias Widget Manager Upgrade Assistant=WidgetManager/WidgetManager.pl\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion blockeditor=1\nPluginSchemaVersion formattedtext=1.00\nPluginSchemaVersion tinymce5=1\nPluginSchemaVersion tinymce6=1\nPluginSwitch BlockEditor=0\nPluginSwitch ContentInfoWidget=1\nPluginSwitch FormattedText=1\nPluginSwitch FormattedTextForTinyMCE5=0\nPluginSwitch FormattedTextForTinyMCE6=1\nPluginSwitch GoogleAnalyticsV4=1\nPluginSwitch Markdown/Markdown.pl=1\nPluginSwitch Markdown/SmartyPants.pl=1\nPluginSwitch Textile/textile2.pl=0\nPluginSwitch TinyMCE5=0\nPluginSwitch TinyMCE6=1\nPluginSwitch WXRImporter=1\nPluginSwitch WidgetManager/WidgetManager.pl=0\nSchemaVersion 8.0003\nTrimFilePath 1\n",
             1
          ]
       ]
@@ -7133,5 +7133,5 @@
          ]
       ]
    },
-   "schema_version" : "WidgetManager 1.1; blockeditor 1; core 8.0002; formattedtext 1.00; tinymce5 1; tinymce6 1"
+   "schema_version" : "WidgetManager 1.1; blockeditor 1; core 8.0003; formattedtext 1.00; tinymce5 1; tinymce6 1"
 }
