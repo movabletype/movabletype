@@ -3654,7 +3654,7 @@ use vars qw( @ISA %Lexicon );
 	'Ascending' => '昇順',
 	'Basename Length' => 'ファイル名の文字数',
 	'Center' => '中央',
-	'Character entities (&amp#8221;, &amp#8220;, etc.)' => 'エンティティ (&amp#8221;、&amp#8220;など)',
+	'Character entities (&amp;#8221;, &amp;#8220;, etc.)' => 'エンティティ (&amp;#8221;、&amp;#8220;など)',
 	'Compose Defaults' => '作成の既定値',
 	'Content CSS will be applied if supported by the editor in use. You can specify CSS file by URL or {{theme_static}} placeholder. Example: {{theme_static}}path/to/cssfile.css' => 'エディタ内で利用するCSSファイルのURL又は、{{theme_static}}変数を利用したURLを指定する事ができます。エディタが対応していない場合は適用されません。例: {{theme_static}}path/to/cssfile.css',
 	'Content CSS' => 'コンテンツCSSファイル',

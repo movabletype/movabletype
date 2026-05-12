@@ -69,7 +69,7 @@
               <span
                 <mt:if name="id" eq="site">data-is="site-list-button"</mt:if>
                 <mt:loop name="data">
-                    data-<mt:var name="__key__">="<mt:var name="__value__" escape="html">"
+                    <mt:if name="__key__">data-<mt:var name="__key__">="<mt:var name="__value__" escape="html">"</mt:if>
                 </mt:loop>
               >
                 <a
@@ -108,7 +108,7 @@
                 </mt:if>
                 <mt:loop name="user_actions">
                     <mt:setvarblock name="user_action_href"><mt:if name="href"><mt:var name="href" escape="none"><mt:elseif name="mode"><mt:var name="mt_url">?__mode=<mt:var name="mode" escape="none"><mt:else>javascript:void(0)</mt:if></mt:setvarblock>
-                        <li id="menu-<mt:var name="id" escape="html">">
+                        <li id="menu-mobile-<mt:var name="id" escape="html">">
                             <a href="<mt:var name="user_action_href" escape="html">"<mt:if name="target"> target="<mt:var name="target" escape="html">"</mt:if> class="dropdown-item">
                               <mt:var name="label" escape="html">
                             </a>
