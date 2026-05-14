@@ -15,7 +15,7 @@
                 data-is="site-list-button"
             </mt:if>
             <mt:loop name="data">
-                data-<mt:var name="__key__">="<mt:var name="__value__" escape="html">"
+                <mt:if name="__key__">data-<mt:var name="__key__">="<mt:var name="__value__" escape="html">"</mt:if>
             </mt:loop>
             data-bs-toggle="tooltip"
             data-bs-placement="bottom"

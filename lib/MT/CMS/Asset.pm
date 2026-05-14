@@ -2071,8 +2071,8 @@ sub _upload_file {
     if (my $ext_new = $image_info->{ext}) {
         my $asset_class = MT::Asset->handler_for_file("test.$ext_new");
         if (my $type = $app->param('require_type')) {
-            if ($asset_class->class_type ne $type) {
-                $eh->($app, %param, error => $app->translate("[_1] is not a valid [_2] file.", $basename, $app->translate($type eq 'file' ? 'asset' : $type)));
+            if ($type ne 'file' && $asset_class->class_type ne $type) {
+                $eh->($app, %param, error => $app->translate("[_1] is not a valid [_2] file.", $basename, $app->translate($type)));
                 return;
             }
         }

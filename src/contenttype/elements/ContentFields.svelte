@@ -1,7 +1,7 @@
 <script lang="ts">
   import type * as ContentType from "../../@types/contenttype";
 
-  import { afterUpdate } from "svelte";
+  import { onMount } from "svelte";
 
   import { recalcHeight } from "../Utils";
 
@@ -12,7 +12,6 @@
   export let fieldsStore: ContentType.FieldsStore;
   export let optionsHtmlParams: ContentType.OptionsHtmlParams;
   export let opts: ContentType.ContentFieldsOpts;
-  export let root: Element;
 
   $: isEmpty = $fieldsStore.length > 0 ? false : true;
   let data = "";
@@ -30,17 +29,60 @@
   const gathers: { [key: string]: (() => object) | undefined } = {};
   const tags: Array<HTMLDivElement> = [];
 
-  afterUpdate(() => {
-    const select = root.querySelector("#label_field") as HTMLSelectElement;
-    jQuery(select)
-      .find("option")
-      .each(function (index, option) {
-        if (option.attributes.getNamedItem("selected")) {
-          select.selectedIndex = index;
-          return false;
-        }
-      });
+  onMount(() => {
+    // Prevent label_field from being reset when saving a content type immediately after loading
+    rebuildLabelFields();
+
+    // Rebuild label fields when any required option is changed in content fields
+    jQuery("#content-fields").on("change", "input[name=required]", function () {
+      rebuildLabelFields();
+    });
   });
+
+  const _alertOnChangedToDefaultLabelField = (oldId: string): void => {
+    let content = window.trans(
+      'Data label field have been changed to "[_2]" from "[_1]"',
+      _getLabelFromValue(oldId),
+      window.trans("Show input field to enter data label"),
+    );
+    let cls = "warning";
+    jQuery("#msg-block").append(
+      jQuery("<div />")
+        .attr("class", "alert alert-dismissible alert-" + cls)
+        .append(
+          jQuery(
+            '<button class="btn-close" data-bs-dismiss="alert" aria-label="Close" />',
+          ).append('<span aria-hidden="true">&times;</span>'),
+        )
+        .append(content),
+    );
+    alert(content);
+  };
+
+  const _getLabelFromValue = (value: string): string => {
+    var label: string | undefined;
+    if (value.match(/^id:/)) {
+      const id = value.match(/^id:(.*)/)?.[1];
+      if (id) {
+        label =
+          jQuery("#content-field-block-" + id)
+            .find('[name="label"]')
+            .val()
+            ?.toString() || "";
+        if (label === "") {
+          label = window.trans("No Name");
+        }
+      }
+    } else {
+      label = $fieldsStore.find((f) => value === f.unique_id)?.label;
+    }
+
+    if (!label) {
+      label = "(" + window.trans("Deleted") + ")";
+    }
+
+    return label;
+  };
 
   // Drag start from content field list
   observer.on("mtDragStart", function () {
@@ -283,7 +325,6 @@
       return;
     }
 
-    rebuildLabelFields();
     window.setDirty(false);
     const fieldOptions: Array<ContentType.SubmitFieldOption> = [];
     if ($fieldsStore) {
@@ -351,6 +392,19 @@
       }
     }
     labelFields = newLabelFields;
+
+    // Reset labelField when it is removed from the list
+    if (labelField) {
+      if (
+        labelFields.length === 0 ||
+        labelFields.every((lf) => lf.value !== labelField)
+      ) {
+        const stash = labelField;
+        labelField = "";
+        _alertOnChangedToDefaultLabelField(stash);
+      }
+    }
+
     // update is not needed in Svelte
   };
 
@@ -428,7 +482,6 @@
       jQuery(".mt-contentfield").each(function (_i, fld) {
         const jqFld = jQuery(fld);
         if (jqFld.find(".form-control.is-invalid").length > 0) {
-          /* @ts-expect-error : collapse is not defined */
           jqFld.find(".collapse").collapse("show");
         }
       });
@@ -738,6 +791,7 @@
             parent={tags[fieldIndex]}
             bind:gather={gathers[fieldId]}
             {optionsHtmlParams}
+            {labelField}
           />
         </div>
       {/each}

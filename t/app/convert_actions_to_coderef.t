@@ -87,13 +87,13 @@ subtest 'Default Superuser' => sub {
     $app->get_ok({ __mode => 'dashboard', blog_id => $site->id });
     is $app->page_title, 'testsite', 'page title is correct';
     subtest 'user_action' => sub {
-        my $user_action = $app->wq_find('li#menu-user_test');
+        my $user_action = $app->wq_find('li#menu-mobile-user_test');
         ok $user_action && $user_action->text =~ /User action for System Administrator only/, 'user action exists';
         my $user_href = $user_action->find('a')->attr('href');
         is $user_href => 'User action href for ' . $admin->id, 'user href is correct';
     };
     subtest 'menu_action' => sub {
-        my $menu_action = $app->wq_find('a#menu-menu_test');
+        my $menu_action = $app->wq_find('a#mobile-menu-menu_test');
         ok $menu_action && $menu_action->text =~ /Menu action for System Administrator only/, 'menu action exists';
         my $menu_href = $menu_action->attr('href');
         is $menu_href => 'Menu action href for ' . $admin->id, 'menu href is correct';
@@ -106,13 +106,13 @@ subtest 'Extra Superuser' => sub {
     $app->get_ok({ __mode => 'dashboard', blog_id => $site->id });
     is $app->page_title, 'testsite', 'page title is correct';
     subtest 'user_action' => sub {
-        my $user_action = $app->wq_find('li#menu-user_test');
+        my $user_action = $app->wq_find('li#menu-mobile-user_test');
         ok $user_action && $user_action->text =~ /User action for System Administrator only/, 'user action exists';
         my $user_href = $user_action->find('a')->attr('href');
         is $user_href => 'User action href for ' . $superuser->id, 'user href is correct';
     };
     subtest 'menu_action' => sub {
-        my $menu_action = $app->wq_find('a#menu-menu_test');
+        my $menu_action = $app->wq_find('a#mobile-menu-menu_test');
         ok $menu_action && $menu_action->text =~ /Menu action for System Administrator only/, 'menu action exists';
         my $menu_href = $menu_action->attr('href');
         is $menu_href => 'Menu action href for ' . $superuser->id, 'menu href is correct';
@@ -125,9 +125,9 @@ subtest 'Non Superuser' => sub {
     ok !$user->is_superuser, 'user is not a superuser';
     $app->get_ok({ __mode => 'dashboard', blog_id => $site->id });
     is $app->page_title, 'testsite', 'page title is correct';
-    my $user_action = $app->wq_find('li#menu-user_test');
+    my $user_action = $app->wq_find('li#menu-mobile-user_test');
     ok $user_action && !$user_action->html, 'user action does not exist';
-    my $menu_action = $app->wq_find('a#menu-menu_test');
+    my $menu_action = $app->wq_find('a#mobile-menu-menu_test');
     ok $menu_action && !$menu_action->html, 'menu action does not exist';
 };
 
