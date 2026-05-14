@@ -27,7 +27,7 @@ sub js_save_rev {
     my $type  = $param->param('_type');
     my $class = $app->model($type);
 
-    return $app->json_error($app->translate('Invalid request.'), 200)
+    return $app->json_error($app->translate('Invalid request.'), 400)
         unless $class->isa('MT::Revisable');
 
     my $id     = $param->param('id');
@@ -35,7 +35,7 @@ sub js_save_rev {
     my $obj_ds = $class->datasource;
     my $id_col = $obj_ds . '_id';
     my $obj    = $class->load({ id => $id })
-        or return $app->json_error($app->translate('Invalid request.'), 200);
+        or return $app->json_error($app->translate('Invalid request.'), 400);
 
     if ($type eq 'entry') {
         return $app->permission_denied()
@@ -46,7 +46,7 @@ sub js_save_rev {
     }
 
     my $rev = $class->revision_pkg->load({ $id_col => $id, rev_number => $rn })
-        or return $app->json_error($app->translate('Invalid request.'), 200);
+        or return $app->json_error($app->translate('Invalid request.'), 400);
 
     my $old = $rev->description // '';
     my $new = $param->param('revision-note');
