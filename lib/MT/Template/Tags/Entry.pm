@@ -320,19 +320,12 @@ sub _hdlr_entries {
     %terms = %blog_terms;
     %args  = %blog_args;
 
-    $args{joins} = [];
+    $args{joins} = $args->{joins} || [];
 
     my $class_type     = $args->{class_type} || 'entry';
     my $class          = MT->model($class_type);
     my $cat_class_type = $class->container_type();
     my $cat_class      = MT->model($cat_class_type);
-
-    my %fields;
-    foreach my $arg ( keys %$args ) {
-        if ( $arg =~ m/^field:(.+)$/ ) {
-            $fields{$1} = $args->{$arg};
-        }
-    }
 
     my $use_stash = 1;
 
@@ -368,7 +361,7 @@ sub _hdlr_entries {
             }
         }
     }
-    if ( $use_stash && %fields ) {
+    if ( $use_stash && @{$args{joins}} ) {
         $use_stash = 0;
     }
 
@@ -810,22 +803,6 @@ sub _hdlr_entries {
                 }
                 $no_resort = 0;
             }
-        }
-
-        if (%fields) {
-
-            # specifies we need a join with entry_meta;
-            # for now, we support one join
-            my ( $col, $val ) = %fields;
-            my $type = MT::Meta->metadata_by_name( $class, 'field.' . $col );
-            push @{ $args{joins} }, [
-                $class->meta_pkg,
-                undef,
-                {   type          => 'field.' . $col,
-                    $type->{type} => $val,
-                    'entry_id'    => \'= entry_id'
-                }
-            ];
         }
 
         if ( !@filters ) {
