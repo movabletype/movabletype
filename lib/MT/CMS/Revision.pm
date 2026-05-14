@@ -51,7 +51,8 @@ sub js_save_rev {
     my $old = $rev->description // '';
     my $new = $param->param('revision-note');
     $rev->description($new);
-    $rev->save or die $rev->errstr;
+    $rev->save
+        or return $app->json_error($rev->errstr, 500);
 
     my $ts_formatted = format_ts('%Y-%m-%d %H:%M:%S', $rev->created_on, $obj->blog, $user->preferred_language);
     my $message      = $app->translate(
