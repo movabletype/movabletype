@@ -37,14 +37,16 @@
         <mt:if name="is_broken">
           <span class="revision-note"><__trans phrase="*Deleted due to data breakage*">
         <mt:else>
-          <span class="revision-note" data-rev-number="<mt:var name="rev_number">">
+          <span id="revision-note-<mt:var name="rev_number">" class="revision-note" data-rev-number="<mt:var name="rev_number">">
           <mt:if name="description">
             <mt:var name="description" escape="html">
           </mt:if>
+          </span>
           <button
             type="button"
             id="revision-edit-<mt:var name="rev_number">"
-            class="btn btn-default btn-sm"
+            class="btn btn-default btn-sm revision-edit-btn"
+            data-rev-number="<mt:var name="rev_number">"
             style=" padding: 2px 4px; margin-left: 4px; line-height: 0; text-box-trim: trim-both; position: relative; top: -1px;">
             <svg role="img" class="mt-icon mt-icon--sm">
                 <title><__trans phrase="edit"></title>
@@ -52,7 +54,7 @@
             </svg><__trans phrase="edit">
           </button>
         </mt:if>
-      </span></td>
+      </td>
     <mt:if name="object_type" like="(entry|page|content_data)">
       <td class="status">
       <mt:if name="rev_status" eq="1">
@@ -91,22 +93,22 @@
 <script>
 jQuery(function($) {
 
-  jQuery('.revision-note')
+  jQuery('.revision-edit-btn')
     .on('click', function (e) {
       e.stopPropagation();
 
-      const $el   = jQuery(this);
-      const num   = $el.data('revNumber');
+      const $btn  = jQuery(this);
+      const num   = $btn.data('revNumber');
+      const $el   = jQuery('#revision-note-' + num);
       const token = '<mt:var name="magic_token">';
-      const $btn  = jQuery('#revision-edit-' + num);
 
-      if ($el.data('editing'))
+      if ($btn.data('editing'))
         return;
-      $el.data('editing', true);
+      $btn.data('editing', true).hide();
 
       let $status = $el.next('.save-status');
       if (!$status.length) {
-        $status = jQuery('<span class="save-status">').css({ marginLeft: '8px', fontSize: '0.9em' });
+        $status = jQuery('<span class="save-status">').css({ marginLeft: '8px', fontSize: '0.9em' }).hide();
         $el.after($status);
       }
 
@@ -114,25 +116,23 @@ jQuery(function($) {
         return this.nodeType == Node.TEXT_NODE;
       }).text().trim();
 
-      let $editor = $el.next('.note-editor');
+      let $editor = $btn.next('.note-editor');
       if (!$editor.length) {
         $editor = jQuery('<span class="note-editor"></span>');
-        $editor.css('display', 'inline-flex').css('white-space', 'nowrap').css('gap', '4px');
+        $editor.css('display', 'flex').css('flex-wrap', 'wrap').css('gap', '4px');
         $el.text('');
-        $el.after($editor);
+        $btn.after($editor);
       }
       const $input     = jQuery('<input type="text" class="form-control form-control-sm">').val(originalText);
       const $updateBtn = jQuery('<button type="button" class="btn btn-sm btn-primary"><__trans phrase="Update"></button>');
       const $cancelBtn = jQuery('<button type="button" class="btn btn-sm btn-secondary"><__trans phrase="Cancel"></button>');
 
       $editor.append($input, $updateBtn, $cancelBtn);
-      $input.focus();
+      $input.trigger('focus');
 
       const finishEditing = function (newText) {
-        $editor.remove();
         $el.text(newText);
-        $el.append($btn);
-        $el.data('editing', false);
+        $btn.data('editing', false).show();
       };
 
       $updateBtn.on('click', function(e) {
@@ -145,7 +145,7 @@ jQuery(function($) {
         }
 
         $editor.remove();
-        $status.text('<__trans phrase="Saving...">').removeClass('alert-success alert-danger').css('color', 'gray');
+        $status.text('<__trans phrase="Saving...">').removeClass('alert-success alert-danger').css('color', 'gray').show();
 
         jQuery.ajax({
           type: 'POST',
@@ -158,11 +158,11 @@ jQuery(function($) {
             id: <mt:var name="object_id">,
             r: num,
             'revision-note': newText,
-            magic_token: '<mt:var name="magic_token">'
+            magic_token: token
           },
           success: function(data) {
             finishEditing(newText);
-            $status.text('');
+            $status.text('').hide();
           },
           error: function(xhr, status) {
             finishEditing(originalText);
