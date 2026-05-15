@@ -41,14 +41,10 @@ subtest 'update entry' => sub {
         id      => $entry->id,
     });
 
-    my $form  = $app->form;
-    my $input = $form->find_input('__mode');
-    $input->readonly(0);
-    $input->value('save');
-    $input = $form->find_input('text');
-    $input->value('UPDATE!');
-
-    $app->post_ok($form->click);
+    $app->post_form_ok({
+        __mode  => 'save',
+        text    => 'UPDATE!'
+    });
 };
 
 subtest 'update revision note' => sub {
@@ -135,7 +131,7 @@ subtest 'update revision note again' => sub {
 
 subtest 'error' => sub {
 
-    my $res = $app->js_post_ok({
+    my $res = $app->js_post({
         __mode          => 'js_save_rev',
         _type           => 'entry',
         blog_id         => $website->id,
@@ -143,6 +139,7 @@ subtest 'error' => sub {
         'revision-note' => 'FUGAHOGE',
     });
 
+    is $res->code, 400, 'status code 400';
     is_deeply MT::Util::from_json($res->content), { error => "Invalid request." }, 'error';
 };
 

@@ -147,6 +147,12 @@ sub js_get_ok {
     $self->get_ok($params, $message);
 }
 
+sub js_post {
+    my ( $self, $params, $message ) = @_;
+    local $ENV{HTTP_X_REQUESTED_WITH} = 'XMLHttpRequest';
+    $self->post($params, $message);
+}
+
 sub js_post_ok {
     my ( $self, $params, $message ) = @_;
     local $ENV{HTTP_X_REQUESTED_WITH} = 'XMLHttpRequest';
