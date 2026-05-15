@@ -56,7 +56,7 @@ subtest 'update revision note' => sub {
         id      => $entry->id,
     });
     my $content = $app->content;
-    my ($obj_id) = $content =~ qr{\s+id: (\d+)};
+    my ($obj_id) = $content =~ qr{data-object-id="(\d+)"};
     is $obj_id, $entry->id, 'object id';
 
     my $elems = $app->wq_find('.revision-note');
