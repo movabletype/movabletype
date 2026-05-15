@@ -5815,7 +5815,6 @@ use vars qw( @ISA %Lexicon );
 # tmpl/admin2025/cms/include/revision_table.tmpl
     'Saving...' => '保存中...',
     'Failed to save' => '保存に失敗しました',
-    'Click to edit note' => 'クリックで編集',
     q{[_1] (ID:[_2])'s change note ([_3]) edited by user '[_4]'} => q{[_4]が[_1] (ID:[_2])の更新メモ(保存した日:[_3])を変更しました'},
 );
 
