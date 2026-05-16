@@ -90,16 +90,16 @@
 
 </div>
 
-<script id="revision-update-vars"
-  data-object-id="<mt:var name="object_id">"
-  data-object-type="<mt:var name="object_type">"
-  data-message-cancel="<__trans phrase="Cancel" escape="js">"
-  data-message-update="<__trans phrase="Update" escape="js">"
-  data-message-saving="<__trans phrase="Saving..." escape="js">"
-  data-message-failed="<__trans phrase="Failed to save" escape="js">"
-></script>
-
-<script>
+<script
+  id="revision-update-script"
+  data-object-id="<mt:var name="object_id" encode_html="1">"
+  data-object-type="<mt:var name="object_type" encode_html="1">"
+  data-magic-token="<mt:var name="magic_token" encode_html="1">"
+  data-message-cancel="<__trans phrase="Cancel" escape="html">"
+  data-message-update="<__trans phrase="Update" escape="html">"
+  data-message-saving="<__trans phrase="Saving..." escape="html">"
+  data-message-failed="<__trans phrase="Failed to save" escape="html">"
+>
 jQuery(function($) {
 
   jQuery('.revision-edit-btn')
@@ -109,8 +109,7 @@ jQuery(function($) {
       const $btn  = jQuery(this);
       const num   = $btn.data('revNumber');
       const $el   = jQuery('#revision-note-' + num);
-      const token = jQuery('script[data-script="admin-ui"]').data('magicToken');
-      const vars  = jQuery('#revision-update-vars');
+      const script = jQuery('#revision-update-script');
 
       if ($btn.data('editing'))
         return;
@@ -134,8 +133,8 @@ jQuery(function($) {
         $btn.after($editor);
       }
       const $input     = jQuery('<input type="text" class="form-control form-control-sm">').val(originalText);
-      const $updateBtn = jQuery('<button type="button" class="btn btn-sm btn-primary">' + vars.data('messageUpdate') + '</button>');
-      const $cancelBtn = jQuery('<button type="button" class="btn btn-sm btn-secondary">' + vars.data('messageCancel') + '</button>');
+      const $updateBtn = jQuery('<button type="button" class="btn btn-sm btn-primary">' + script.data('messageUpdate') + '</button>');
+      const $cancelBtn = jQuery('<button type="button" class="btn btn-sm btn-secondary">' + script.data('messageCancel') + '</button>');
 
       $editor.append($input, $updateBtn, $cancelBtn);
       $input.trigger('focus');
@@ -155,7 +154,7 @@ jQuery(function($) {
         }
 
         $editor.remove();
-        $status.text(vars.data('messageSaving')).removeClass('alert-success alert-danger').css('color', 'gray').show();
+        $status.text(script.data('messageSaving')).removeClass('alert-success alert-danger').css('color', 'gray').show();
 
         jQuery.ajax({
           type: 'POST',
@@ -164,11 +163,11 @@ jQuery(function($) {
           dataType: 'json',
           data: {
             __mode: 'js_save_rev',
-            _type: vars.data('objectTtpe'),
-            id: vars.data('objectId'),
+            _type: script.data('objectTtpe'),
+            id: script.data('objectId'),
             r: num,
             'revision-note': newText,
-            magic_token: token
+            magic_token: script.data('magicToken')
           },
           success: function(data) {
             finishEditing(newText);
@@ -176,7 +175,7 @@ jQuery(function($) {
           },
           error: function(xhr, status) {
             finishEditing(originalText);
-            $status.text(vars.data('messageFailed')).css('color', 'red');
+            $status.text(script.data('messageFailed')).css('color', 'red');
             $status.fadeOut(3000, function() {
                 jQuery(this).text('').show();
             });
