@@ -1,3 +1,9 @@
+<mtapp:statusmsg
+   id="system_msg"
+   hidden="1"
+   class="success">
+</mtapp:statusmsg>
+
 <mt:var name="pager" value="$hide_pager" default="0">
 <div id="selector-rev" class="selector listing">
 <mtapp:listing
@@ -97,10 +103,11 @@
   data-magic-token="<mt:var name="magic_token" encode_html="1">"
   data-message-cancel="<__trans phrase="Cancel" escape="html">"
   data-message-update="<__trans phrase="Update" escape="html">"
-  data-message-saving="<__trans phrase="Saving..." escape="html">"
+  data-message-saved="<__trans phrase="This revision note has been saved.">"
   data-message-failed="<__trans phrase="Failed to save" escape="html">"
 >
 jQuery(function($) {
+  const $status = jQuery('#system_msg');
 
   jQuery('.revision-edit-btn')
     .on('click', function (e) {
@@ -115,11 +122,7 @@ jQuery(function($) {
         return;
       $btn.data('editing', true).hide();
 
-      let $status = $el.next('.save-status');
-      if (!$status.length) {
-        $status = jQuery('<span class="save-status">').css({ marginLeft: '8px', fontSize: '0.9em' }).hide();
-        $el.after($status);
-      }
+      $status.hide();
 
       let originalText = $el.contents().filter(function () {
         return this.nodeType == Node.TEXT_NODE;
@@ -139,9 +142,20 @@ jQuery(function($) {
       $editor.append($input, $updateBtn, $cancelBtn);
       $input.trigger('focus');
 
-      const finishEditing = function (newText) {
+      const finishEditing = function (newText, message, result) {
+        $editor.remove();
         $el.text(newText);
         $btn.data('editing', false).show();
+        if ( message && result ) {
+          const $closeBtn = jQuery('<button class="btn-close" aria-label="Close"><span aria-hidden="true">×</span></button>');
+          $closeBtn.on('click', function (event) {
+            event.stopPropagation();
+            $status.hide();
+          });
+          $status.removeClass('alert-success')
+            .removeClass('alert-danger').addClass('alert-' + result)
+            .text(message).append($closeBtn).show();
+        }
       };
 
       $updateBtn.on('click', function(e) {
@@ -153,8 +167,8 @@ jQuery(function($) {
           return;
         }
 
-        $editor.remove();
-        $status.text(script.data('messageSaving')).removeClass('alert-success alert-danger').css('color', 'gray').show();
+        $updateBtn.hide();
+        $cancelBtn.hide();
 
         jQuery.ajax({
           type: 'POST',
@@ -170,22 +184,16 @@ jQuery(function($) {
             magic_token: script.data('magicToken')
           },
           success: function(data) {
-            finishEditing(newText);
-            $status.text('').hide();
+            finishEditing(newText, script.data('messageSaved'), 'success');
           },
           error: function(xhr, status) {
-            finishEditing(originalText);
-            $status.text(script.data('messageFailed')).css('color', 'red');
-            $status.fadeOut(3000, function() {
-                jQuery(this).text('').show();
-            });
+            finishEditing(originalText, script.data('messageFailed'), 'danger');
           }
         });
         return false;
       });
 
       $cancelBtn.on('click', function() {
-        $editor.remove();
         finishEditing(originalText);
       });
 
