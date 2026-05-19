@@ -3657,6 +3657,7 @@ sub save_data_api_settings {
 sub _determine_total {
     my ( $archiver, $blog_id, $content_type_id ) = @_;
 
+    require MT::Entry;
     my $total = 0;
     if (   $archiver->entry_based
         || $archiver->contenttype_based
@@ -3679,7 +3680,6 @@ sub _determine_total {
         }
         else {
             my $entry_class = $archiver->entry_class || 'entry';
-            require MT::Entry;
             my $terms = {
                 class   => $entry_class,
                 status  => MT::Entry::RELEASE(),
