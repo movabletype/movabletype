@@ -1355,7 +1355,7 @@ function create_tag_expr_function($expr, &$tags, $datasource = 'entry') {
                 | \(
                 | \A
             )
-            \s*?\Q'.$name.'\E\s*?
+            \s*?'.preg_quote($name, '/').'\s*?
             (
                 \Z
                 | \)
