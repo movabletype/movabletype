@@ -384,6 +384,34 @@ $test_env->prepare_fixture(sub {
         );
         $objtag2->save or die $objtag2->errstr;
 
+        my $tag3 = $mt->model('tag')->new;
+        $tag3->set_values( { name => 'Website Tag 3!?', } );
+        $tag3->save or die $tag3->errstr;
+
+        my $objtag3 = $mt->model('objecttag')->new;
+        $objtag3->set_values(
+            {   blog_id           => $blog_id,
+                object_datasource => 'entry',
+                object_id         => $e1->id,
+                tag_id            => $tag3->id,
+            }
+        );
+        $objtag3->save or die $objtag3->errstr;
+
+        my $tag4 = $mt->model('tag')->new;
+        $tag4->set_values( { name => 'Website Tag \E \s4+', } );
+        $tag4->save or die $tag4->errstr;
+
+        my $objtag4 = $mt->model('objecttag')->new;
+        $objtag4->set_values(
+            {   blog_id           => $blog_id,
+                object_datasource => 'entry',
+                object_id         => $e1->id,
+                tag_id            => $tag4->id,
+            }
+        );
+        $objtag4->save or die $objtag4->errstr;
+
         # Create score
         my $objscore1 = $mt->model('objectscore')->new;
         $objscore1->set_values(
@@ -2232,10 +2260,30 @@ Userpic
 --- expected
 Website Tag 1
 Website Tag 1/2
+Website Tag 3!?
+Website Tag \E \s4+
 
 === mt:Entries with tags
 --- template _mt_websites
 <mt:Entries tags="Website Tag 1"><mt:EntryTitle></mt:Entries>
+--- expected
+Website Entry 1
+
+=== mt:Entries with tags with a slash
+--- template _mt_websites
+<mt:Entries tags="Website Tag 1/2"><mt:EntryTitle></mt:Entries>
+--- expected
+Website Entry 1
+
+=== mt:Entries with tags with characters to be quoted
+--- template _mt_websites
+<mt:Entries tags="Website Tag 3!?"><mt:EntryTitle></mt:Entries>
+--- expected
+Website Entry 1
+
+=== mt:Entries with tags with escape characters
+--- template _mt_websites
+<mt:Entries tags="Website Tag \E \s4+"><mt:EntryTitle></mt:Entries>
 --- expected
 Website Entry 1
 
