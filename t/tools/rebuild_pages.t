@@ -41,14 +41,24 @@ my $objs = MT::Test::Fixture->prepare(
                 site_path => File::Spec->catdir( $test_env->root . '/site' ),
                 archive_path =>
                     File::Spec->catdir( $test_env->root . '/site/archive' ),
-            }
+            },
+            {   name      => 'ct_blog',
+                site_path =>
+                    File::Spec->catdir( $test_env->root . '/ct_site' ),
+                archive_path =>
+                    File::Spec->catdir( $test_env->root . '/ct_site/archive' ),
+            },
         ],
-        category => [qw/cat1 cat2/],
+        category => [
+            { label => 'cat1', blog => 'my_blog' },
+            { label => 'cat2', blog => 'my_blog' },
+        ],
         entry    => [
             map {
                 +{  basename => "entry$_",
                     title    => "entry$_",
                     author   => 'admin',
+                    blog     => 'my_blog',
                     status   => 'publish',
                     authored_on =>
                         ( $start + ONE_DAY * $_ )->strftime('%Y%m%d%H%M%S'),
@@ -57,12 +67,16 @@ my $objs = MT::Test::Fixture->prepare(
                 }
             } ( 1 .. 50 )
         ],
-        folder => [qw/folder1 folder2/],
+        folder => [
+            { label => 'folder1', blog => 'my_blog' },
+            { label => 'folder2', blog => 'my_blog' },
+        ],
         page   => [
             map {
                 +{  basename => "page$_",
                     title    => "page$_",
                     author   => 'admin',
+                    blog     => 'my_blog',
                     status   => 'publish',
                     authored_on =>
                         ( $start + ONE_DAY * $_ )->strftime('%Y%m%d%H%M%S'),
@@ -70,30 +84,90 @@ my $objs = MT::Test::Fixture->prepare(
                 }
             } ( 1 .. 50 )
         ],
+        content_type => {
+            ct_blog_ct => {
+                blog  => 'ct_blog',
+                fields => [
+                    title_field => 'single_line_text',
+                ],
+            },
+        },
+        content_data => {
+            cd1 => {
+                content_type => 'ct_blog_ct',
+                blog         => 'ct_blog',
+                author       => 'admin',
+                status       => 'publish',
+                data         => { title_field => 'content1' },
+            },
+            cd2 => {
+                content_type => 'ct_blog_ct',
+                blog         => 'ct_blog',
+                author       => 'admin',
+                status       => 'publish',
+                data         => { title_field => 'content2' },
+            },
+            cd3 => {
+                content_type => 'ct_blog_ct',
+                blog         => 'ct_blog',
+                author       => 'admin',
+                status       => 'publish',
+                data         => { title_field => 'content3' },
+            },
+        },
+        template => [
+            {   archive_type => 'ContentType',
+                blog         => 'ct_blog',
+                content_type => 'ct_blog_ct',
+                mapping      => [ {} ],
+            },
+        ],
     }
 );
 
 ok my $blog = $objs->{blog}{my_blog};
+ok my $ct_blog = $objs->{blog}{ct_blog};
 
 my $home = $ENV{MT_HOME};
 
-my @cmd = (
-    $^X,
-    '-I',
-    File::Spec->catdir( $home, 't/lib' ),
-    File::Spec->catfile( $home, 'tools/rebuild-pages' ),
-    '--user',
-    'admin',
-    '--pass',
-    'pass',
-    '--blog_id',
-    $blog->id,
-);
+subtest 'entry-based archives' => sub {
+    my @cmd = (
+        $^X,
+        '-I',
+        File::Spec->catdir( $home, 't/lib' ),
+        File::Spec->catfile( $home, 'tools/rebuild-pages' ),
+        '--user',
+        'admin',
+        '--pass',
+        'pass',
+        '--blog_id',
+        $blog->id,
+    );
 
-run3 \@cmd, \my $stdin, \my $stdout, \my $stderr;
+    run3 \@cmd, \my $stdin, \my $stdout, \my $stderr;
 
-ok $stdout !~ /failed/, "no failures" or diag $stdout;
-ok $? == 0, "no errors" or diag $stderr;
+    ok $stdout !~ /failed/, "no failures" or diag $stdout;
+    ok $? == 0, "no errors" or diag $stderr;
+};
+
+subtest 'content type archives' => sub {
+    my @cmd = (
+        $^X,
+        '-I',
+        File::Spec->catdir( $home, 't/lib' ),
+        File::Spec->catfile( $home, 'tools/rebuild-pages' ),
+        '--user',
+        'admin',
+        '--pass',
+        'pass',
+        '--blog_id',
+        $ct_blog->id,
+    );
+
+    run3 \@cmd, \my $stdin, \my $stdout, \my $stderr;
+
+    ok $stdout !~ /failed/, "no failures" or diag $stdout;
+    ok $? == 0, "no errors" or diag $stderr;
+};
 
 done_testing;
-
