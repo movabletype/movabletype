@@ -370,6 +370,20 @@ $test_env->prepare_fixture(sub {
         );
         $objtag1->save or die $objtag1->errstr;
 
+        my $tag2 = $mt->model('tag')->new;
+        $tag2->set_values( { name => 'Website Tag 1/2', } );
+        $tag2->save or die $tag2->errstr;
+
+        my $objtag2 = $mt->model('objecttag')->new;
+        $objtag2->set_values(
+            {   blog_id           => $blog_id,
+                object_datasource => 'entry',
+                object_id         => $e1->id,
+                tag_id            => $tag2->id,
+            }
+        );
+        $objtag2->save or die $objtag2->errstr;
+
         # Create score
         my $objscore1 = $mt->model('objectscore')->new;
         $objscore1->set_values(
@@ -2217,6 +2231,13 @@ Userpic
 </mt:EntryTags></mt:Entries>
 --- expected
 Website Tag 1
+Website Tag 1/2
+
+=== mt:Entries with tags
+--- template _mt_websites
+<mt:Entries tags="Website Tag 1"><mt:EntryTitle></mt:Entries>
+--- expected
+Website Entry 1
 
 === mt:EntryIfTagged
 --- template _mt_websites
