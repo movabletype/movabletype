@@ -232,6 +232,19 @@ sub upgrade {
 
     $app->validate_magic or return;
 
+    my $author = $app->user;
+    if ( $author ) {
+        my $has_permission = $app->{cfg}->RequireUpgradePermission ? $author->is_superuser : 1;
+
+        unless ( $has_permission ) {
+            return $app->redirect(
+                ($app->config->AdminCGIPath || $app->config->CGIPath)
+                . $app->config->AdminScript
+                . $app->uri_params(mode => 'upgrade_pending')
+            );
+        }
+    }
+
     # if code flows here, this is upgrading
     my $steps;
     eval {
