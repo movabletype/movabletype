@@ -177,14 +177,19 @@ jQuery(function($) {
           dataType: 'json',
           data: {
             __mode: 'js_save_rev',
-            _type: script.data('objectTtpe'),
+            _type: script.data('objectType'),
             id: script.data('objectId'),
             r: num,
             'revision-note': newText,
             magic_token: script.data('magicToken')
           },
           success: function(data) {
-            finishEditing(newText, script.data('messageSaved'), 'success');
+            if ( data.error ) {
+              finishEditing(originalText, data.error, 'danger');
+            }
+            else {
+              finishEditing(newText, script.data('messageSaved'), 'success');
+            }
           },
           error: function(xhr, status) {
             finishEditing(originalText, script.data('messageFailed'), 'danger');
