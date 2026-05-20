@@ -1,7 +1,14 @@
 <mtapp:statusmsg
-   id="system_msg"
+   id="success_msg"
    hidden="1"
+   can_close="0"
    class="success">
+</mtapp:statusmsg>
+<mtapp:statusmsg
+   id="error_msg"
+   hidden="1"
+   can_close="0"
+   class="danger">
 </mtapp:statusmsg>
 
 <mt:var name="pager" value="$hide_pager" default="0">
@@ -107,7 +114,8 @@
   data-message-failed="<__trans phrase="Failed to save" escape="html">"
 >
 jQuery(function($) {
-  const $status = jQuery('#system_msg');
+  const $success_msg = jQuery('#success_msg');
+  const $error_msg   = jQuery('#error_msg');
 
   jQuery('.revision-edit-btn')
     .on('click', function (e) {
@@ -122,7 +130,8 @@ jQuery(function($) {
         return;
       $btn.data('editing', true).hide();
 
-      $status.hide();
+      $success_msg.hide();
+      $error_msg.hide();
 
       let originalText = $el.contents().filter(function () {
         return this.nodeType == Node.TEXT_NODE;
@@ -147,14 +156,7 @@ jQuery(function($) {
         $el.text(newText);
         $btn.data('editing', false).show();
         if ( message && result ) {
-          const $closeBtn = jQuery('<button class="btn-close" aria-label="Close"><span aria-hidden="true">×</span></button>');
-          $closeBtn.on('click', function (event) {
-            event.stopPropagation();
-            $status.hide();
-          });
-          $status.removeClass('alert-success')
-            .removeClass('alert-danger').addClass('alert-' + result)
-            .text(message).append($closeBtn).show();
+          (result == 'success' ? $success_msg : $error_msg).text(message).show();
         }
       };
 
@@ -199,6 +201,7 @@ jQuery(function($) {
       });
 
       $cancelBtn.on('click', function() {
+        //finishEditing(originalText, 'This is test.', 'danger');
         finishEditing(originalText);
       });
 
