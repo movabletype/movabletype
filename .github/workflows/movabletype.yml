@@ -40,7 +40,7 @@ jobs:
           - php
     steps:
       - name: checkout
-        uses: actions/checkout@v4.1.0
+        uses: actions/checkout@v6
         with:
           persist-credentials: false
       - name: login
@@ -79,7 +79,7 @@ jobs:
           - php
     steps:
       - name: checkout
-        uses: actions/checkout@v4.1.0
+        uses: actions/checkout@v6
         with:
           persist-credentials: false
       - name: login
@@ -115,7 +115,7 @@ jobs:
           - php
     steps:
       - name: checkout
-        uses: actions/checkout@v4.1.0
+        uses: actions/checkout@v6
         with:
           persist-credentials: false
       - name: login
@@ -152,7 +152,7 @@ jobs:
 
     steps:
       - name: checkout
-        uses: actions/checkout@v4.1.0
+        uses: actions/checkout@v6
         with:
           persist-credentials: false
       - name: login
@@ -187,7 +187,7 @@ jobs:
           - "plugins/*/t"
     steps:
       - name: checkout
-        uses: actions/checkout@v4.1.0
+        uses: actions/checkout@v6
         with:
           persist-credentials: false
       - name: login
@@ -219,7 +219,7 @@ jobs:
           - php
     steps:
       - name: checkout
-        uses: actions/checkout@v4.1.0
+        uses: actions/checkout@v6
         with:
           persist-credentials: false
       - name: login
@@ -255,7 +255,7 @@ jobs:
           - php
     steps:
       - name: checkout
-        uses: actions/checkout@v4.1.0
+        uses: actions/checkout@v6
         with:
           persist-credentials: false
       - name: login
@@ -289,7 +289,7 @@ jobs:
           - php
     steps:
       - name: checkout
-        uses: actions/checkout@v4.1.0
+        uses: actions/checkout@v6
         with:
           persist-credentials: false
       - name: login
@@ -315,7 +315,7 @@ jobs:
           - xt
     steps:
       - name: checkout
-        uses: actions/checkout@v4.1.0
+        uses: actions/checkout@v6
         with:
           persist-credentials: false
       - name: login
@@ -343,7 +343,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: checkout
-        uses: actions/checkout@v4.1.0
+        uses: actions/checkout@v6
         with:
           persist-credentials: false
       - name: test npm ci
