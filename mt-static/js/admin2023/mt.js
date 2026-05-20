@@ -1059,9 +1059,9 @@ Datasource = new Class(Object, {
                 data = eval('(' + c + ')');
                 this.update(data['html']);
                 if (this.pager)
-                    this.pager.setState({});
+                    this.pager.setState(data['pager'] || {});
                 if (this.pager2)
-                    this.pager2.setState({});
+                    this.pager2.setState(data['pager'] || {});
             } catch (e) {
                 alert("Error in response: " + e);
                 if (this.pager)

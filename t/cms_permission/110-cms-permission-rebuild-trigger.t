@@ -138,7 +138,7 @@ subtest 'mode = save' => sub {
         return_args => '__mode=cfg_rebuild_trigger&blog_id=' . $blog->id,
     });
     $app->has_permission_error('right message by non permitted user (child site)');
-    is $app->last_location->query_param('__mode') => 'dashboard', 'redirected to dashboard';
+    ok !$app->last_location, 'not to redirected to dashboard';
 
     $app->login($egawa);
     $app->post_ok({
@@ -148,7 +148,7 @@ subtest 'mode = save' => sub {
         return_args => '__mode=cfg_rebuild_trigger&blog_id=' . $website->id,
     });
     $app->has_permission_error('right message by non permitted user (parent site)');
-    is $app->last_location->query_param('__mode') => 'dashboard', 'redirected to dashboard';
+    ok !$app->last_location, 'not to redirected to dashboard';
 
     $app->login($ogawa);
     $app->post_ok({
@@ -196,7 +196,7 @@ subtest 'mode = add_rebuild_trigger' => sub {
         dialog  => 1,
     });
     $app->has_permission_error('right message by other permission user');
-    is $app->last_location->query_param('__mode') => 'dashboard', 'redirected to dashboard by non permitted user (child site)';
+    ok !$app->last_location, 'not to redirected to dashboard by non permitted user (child site)';
 
     $app->login($egawa);
     $app->get_ok({
@@ -205,7 +205,7 @@ subtest 'mode = add_rebuild_trigger' => sub {
         dialog  => 1,
     });
     $app->has_permission_error('right message by other permission user');
-    is $app->last_location->query_param('__mode') => 'dashboard', 'redirected to dashboard by non permitted user (parent site)';
+    ok !$app->last_location, 'not to redirected to dashboard by non permitted user (parent site)';
 
     $app->login($ogawa);
     $app->get_ok({
