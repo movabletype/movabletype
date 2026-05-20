@@ -4622,6 +4622,8 @@ use vars qw( @ISA %Lexicon );
 	'edit' => '編集',
 	q{(delimited by '[_1]')} => q{([_1]で区切る)},
 	q{Warning: Changing this entry's basename may break inbound links.} => q{警告: この記事の出力ファイル名の変更は、内部のリンク切れの原因となります。},
+	'categories' => 'カテゴリ',
+	'folders' => 'フォルダ',
 
 ## tmpl/admin2023/cms/edit_entry_batch.tmpl
 	'Save these [_1] (s)' => '[_1]の保存',

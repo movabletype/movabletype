@@ -66,7 +66,6 @@
           listActionClient.generateRequestData(requestArgs);
         requestData.dialog = 1;
         const url = window.ScriptURI + "?" + jQuery.param(requestData, true);
-        /* @ts-expect-error : mtModal is not defined */
         jQuery.fn.mtModal.open(url, { large: true });
       } else {
         sendRequest(requestArgs);

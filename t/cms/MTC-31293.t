@@ -86,7 +86,7 @@ subtest 'access to dashboard with parent perm first' => sub {
     $ret = access_to_dashboard($app, $parent);
     is_deeply $ret, { parent => 'hidden', child => 'hidden' }, 'parent';
     $ret = access_to_dashboard($app, $child);
-    is_deeply $ret, { redirected => 1, parent => 'linked', child => 'hidden' }, 'redirect to system';
+    is_deeply $ret, { error => 'Permission denied' }, 'child';
 };
 
 subtest 'access to dashboard without child perm later' => sub {
@@ -107,7 +107,7 @@ subtest 'access to dashboard without child perm later' => sub {
     $ret = access_to_dashboard($app, $parent);
     is_deeply $ret, { parent => 'hidden', child => 'hidden' }, 'parent';
     $ret = access_to_dashboard($app, $child);
-    is_deeply $ret, { redirected => 1, parent => 'linked', child => 'hidden' }, 'redirect to system';
+    is_deeply $ret, { error => 'Permission denied' }, 'child';
 };
 
 subtest 'access to dashboard without any perms first' => sub {
@@ -119,9 +119,9 @@ subtest 'access to dashboard without any perms first' => sub {
     $ret = access_to_dashboard($app);
     is_deeply $ret, { parent => 'hidden', child => 'hidden' }, 'system';
     $ret = access_to_dashboard($app, $parent);
-    is_deeply $ret, { redirected => 1, parent => 'hidden', child => 'hidden' }, 'redirect to system';
+    is_deeply $ret, { error => 'Permission denied' }, 'parent';
     $ret = access_to_dashboard($app, $child);
-    is_deeply $ret, { redirected => 1, parent => 'hidden', child => 'hidden' }, 'redirect to system';
+    is_deeply $ret, { error => 'Permission denied' }, 'child';
 };
 
 subtest 'access to dashboard without any perms later' => sub {
@@ -141,9 +141,9 @@ subtest 'access to dashboard without any perms later' => sub {
     $ret = access_to_dashboard($app);
     is_deeply $ret, { parent => 'hidden', child => 'hidden' }, 'system';
     $ret = access_to_dashboard($app, $parent);
-    is_deeply $ret, { redirected => 1, parent => 'hidden', child => 'hidden' }, 'redirect to system';
+    is_deeply $ret, { error => 'Permission denied' }, 'parent';
     $ret = access_to_dashboard($app, $child);
-    is_deeply $ret, { redirected => 1, parent => 'hidden', child => 'hidden' }, 'redirect to system';
+    is_deeply $ret, { error => 'Permission denied' }, 'child';
 };
 
 done_testing;
@@ -185,8 +185,6 @@ sub access_to_dashboard {
             $ret->{$name} = 'hidden';
         }
     }
-
-    $ret->{redirected} = 1 if $app->last_location;
 
     return $ret;
 }

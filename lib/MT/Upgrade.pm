@@ -358,12 +358,12 @@ sub check_type {
                 if $result->{add_column};
             $self->add_step( 'core_alter_column', type => $type )
                 if $result->{alter_column};
+            $self->add_step( 'core_drop_index', type => $type )
+                if $result->{drop_index};
             $self->add_step( 'core_drop_column', type => $type )
                 if $result->{drop_column};
             $self->add_step( 'core_index_column', type => $type )
                 if $result->{index_column};
-            $self->add_step( 'core_drop_index', type => $type )
-                if $result->{drop_index};
         }
     }
 

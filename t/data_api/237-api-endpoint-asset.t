@@ -394,7 +394,7 @@ sub suite {
                 my @assets = $app->model('asset')->load(
                     {   class   => '*',
                         blog_id => 1,
-                        parent  => [ \'IS NULL', 0, '' ],
+                        parent  => [ \'IS NULL', 0 ],
                     },
                     { sort => 'created_on', direction => 'descend', },
                 );

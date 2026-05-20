@@ -1355,21 +1355,30 @@ abstract class MTDatabase {
             $meta_join_num = 1;
             $entry_meta_info = Entry::get_meta_info('entry');
             if (!empty($entry_meta_info)) {
+                $bind_custom_field_filter = [];
                 foreach ($fields as $name => $value) {
-                    if (isset($entry_meta_info['field.'.$name])) {
+                    $field = New Field;
+                    $loaded = $field->Load("field_basename = ". $this->ph('field_basename', $bind, $name), $bind);
+                    if ($loaded && isset($entry_meta_info['field.'.$name])) {
                         $meta_col = $entry_meta_info['field.'.$name];
                         $table = "mt_entry_meta entry_meta$meta_join_num";
                         $extras['join'][$table] = array(
-                            'condition' => sprintf(
-                                "(entry_meta$meta_join_num.entry_meta_entry_id = entry_id
-                                and entry_meta$meta_join_num.entry_meta_type = %s
-                                and entry_meta$meta_join_num.entry_meta_$meta_col=%s)\n",
-                                $this->ph("entry_meta{$meta_join_num}_1", $bind_entry_meta, "field.$name"),
-                                $this->ph("entry_meta{$meta_join_num}_2", $bind_entry_meta, $value)
-                            ),
-                            'bind' => $bind_entry_meta,
+                            'type' => 'LEFT',
+                            'condition' => "entry_meta$meta_join_num.entry_meta_entry_id = entry_id",
                         );
+                        $custom_field_filter = sprintf(
+                            "entry_meta$meta_join_num.entry_meta_type = %s
+                            and entry_meta$meta_join_num.entry_meta_$meta_col=%s",
+                            $this->ph("entry_meta{$meta_join_num}_1", $bind_custom_field_filter, "field.$name"),
+                            $this->ph("entry_meta{$meta_join_num}_2", $bind_custom_field_filter, $value)
+                        );
+                        if (isset($field->default) && $field->default === $value) {
+                            $custom_field_filter = "($custom_field_filter) OR entry_meta$meta_join_num.entry_meta_$meta_col IS NULL";
+                        }
+                        $distinct = 1;
                         $meta_join_num++;
+                    } else {
+                        $custom_field_filter = sprintf("entry_id = 0");
                     }
                 }
             }
@@ -1399,11 +1408,13 @@ abstract class MTDatabase {
             isset($bind_author_filter) ? $bind_author_filter : [],
             isset($bind_class_filter) ? $bind_class_filter : [],
             isset($bind_max_comment_filter) ? $bind_max_comment_filter : [],
-            isset($bind_min_comment_filter) ? $bind_min_comment_filter : []
+            isset($bind_min_comment_filter) ? $bind_min_comment_filter : [],
+            isset($bind_custom_field_filter) ? $bind_custom_field_filter : []
         );
 
         $sql = implode(' ', array(
-            'select mt_entry.* from mt_entry', $join_clause, 'where', 'entry_status = 2',
+            'select'. (!empty($distinct) ? ' distinct' : '').
+                ' mt_entry.* from mt_entry', $join_clause, 'where', 'entry_status = 2',
             isset($blog_filter) ? $blog_filter : '',
             isset($entry_filter) ? $entry_filter : '',
             isset($author_filter) ? $author_filter : '',
@@ -1411,7 +1422,8 @@ abstract class MTDatabase {
             isset($day_filter) ? $day_filter : '',
             isset($class_filter) ? $class_filter : '',
             isset($max_comment_filter) ? $max_comment_filter : '',
-            isset($min_comment_filter) ? $min_comment_filter : ''
+            isset($min_comment_filter) ? $min_comment_filter : '',
+            isset($custom_field_filter) ? (' AND '. $custom_field_filter) : ''
         ));
         if (!empty($sort_field)) {
             $sql .= " order by $sort_field $base_order";
