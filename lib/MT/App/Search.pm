@@ -1112,7 +1112,8 @@ sub query_parse {
     my $lucene_struct = eval { Lucene::QueryParser::parse_query($search); };
     if ($@) {
         warn $@ if $MT::DebugMode;
-        return;
+        my $term = bless { query => "TERM", term => $search, type => "NORMAL" }, 'Lucene::QueryParser::Term';
+        $lucene_struct = bless [$term], 'Lucene::QueryParser::TopLevel';
     }
     my ( $terms, $joins )
         = $app->_query_parse_core( $lucene_struct, \%columns, $filter_types );
@@ -1144,20 +1145,24 @@ sub _create_join_arg {
 
 sub _get_rvalue {
     my $app = shift;
-
-    my $val = $_[1];
+    my ($type, $val) = @_;
     $val =~ s/\\([^\\])/$1/g;
-    $val =~ s/%/\\%/;
 
-    my %rvalues = (
-        REQUIREDlike   => { like     => '%' . $val . '%' },
-        REQUIRED1      => $val,
-        NORMALlike     => { like     => '%' . $val . '%' },
-        NORMAL1        => $val,
-        PROHIBITEDlike => { not_like => '%' . $val . '%' },
-        PROHIBITED1    => { not      => $val },
-    );
-    $rvalues{ $_[0] };
+    if ($type =~ /like$/) {
+        my $escape_char = '!';
+        if ($app->config->SearchEscapeUnderscore) {
+            $val =~ s/($escape_char|_|%)/$escape_char$1/g;
+        } else {
+            $val =~ s/($escape_char|%)/$escape_char$1/g;
+        }
+        $val = '%' . $val . '%';
+        return { op => 'LIKE',     value => $val, escape => $escape_char } if $type =~ /^(NORMALlike|REQUIREDlike)$/;
+        return { op => 'NOT LIKE', value => $val, escape => $escape_char } if $type eq 'PROHIBITEDlike';
+    } else {
+        return $val            if $type =~ /^(REQUIRED1|NORMAL1)$/;
+        return { not => $val } if $type eq 'PROHIBITED1';
+    }
+    return;    # NOT suppose to reach here
 }
 
 sub _query_parse_core {

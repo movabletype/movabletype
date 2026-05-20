@@ -56,6 +56,11 @@ sub ts2db {
     return $ret;
 }
 
+sub extract {
+    my ($class, $part, $date) = @_;
+    return "EXTRACT($part FROM $date)";
+}
+
 sub distinct_stmt {
     my $class = shift;
     my ($stmt) = @_;
@@ -152,10 +157,10 @@ sub _mk_term {
 
             # hash-style value, containing hints on operation
             if ( exists $val->{like} ) {
-                $val = { op => 'LIKE', value => $val->{like} };
+                $val = { op => 'LIKE', value => $val->{like}, escape => $val->{escape} };
             }
             if ( exists $val->{not_like} ) {
-                $val = { op => 'NOT LIKE', value => $val->{not_like} };
+                $val = { op => 'NOT LIKE', value => $val->{not_like}, escape => $val->{escape} };
             }
             elsif ( exists $val->{not_null} ) {
                 $val = \'is not null';
@@ -316,6 +321,7 @@ sub _mk_term {
                 $val->{op} = 'LIKE';
             }
             elsif ( !ref($val) ) {
+                # TODO: consider to escape the value
                 $val = {
                     op    => 'LIKE',
                     value => $val,

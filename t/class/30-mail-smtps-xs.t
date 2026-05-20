@@ -9,4 +9,4 @@ $ENV{MT_TEST_AUTHEN_SASL_XS} = 1;
 $ENV{MT_TEST_SMTPS}          = 'starttls';
 
 my $file = File::Spec->canonpath("$FindBin::Bin/30-mail-smtp.t");
-do $file or die "$file: $!";
+do $file or die "$file: $! $@";

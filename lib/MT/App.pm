@@ -408,11 +408,11 @@ sub listing {
     my $args    = $opt->{args}    || $opt->{Args} || {};
     my $no_html = $opt->{no_html} || $opt->{NoHTML};
     my $json    = $opt->{json}    || $app->param('json');
-    my $search = $app->param('search');
+    my $search = $app->param('search') // '';
     my $no_limit
         = exists( $opt->{no_limit} )
         ? $opt->{no_limit}
-        : ( $search ? 1 : 0 );
+        : ( $search ne '' ? 1 : 0 );
     my $pre_build;
     $pre_build = $opt->{pre_build} if ref( $opt->{pre_build} ) eq 'CODE';
     $param->{json} = 1 if $json;
@@ -436,9 +436,20 @@ sub listing {
     $param->{limit_none} = 1 if $no_limit;
 
     # handle search parameter
-    if ($search) {
+    if ($search ne '') {
         $app->param( 'do_search', 1 );
         if ( $app->can('do_search_replace') ) {
+            my @cols;
+            if ($opt->{search_cols} && @{$opt->{search_cols}}) {
+                @cols = @{$opt->{search_cols}};
+            } elsif ($app->param('search_cols')) {
+                @cols = split(',', $app->param('search_cols'));
+            } else {
+                my $search_api = $app->registry("search_apis")->{$type};
+                @cols = grep { $_ ne 'plugin' } keys %{ $search_api->{search_cols} };
+            }
+            require MT::CMS::Search;
+            $terms = MT::CMS::Search::make_terms($terms, \@cols, $search) if MT->config->DisableRegexpSearch;
             my $search_param = $app->do_search_replace(
                 { terms => $terms, args => $args } );
             if ($hasher) {
@@ -689,11 +700,11 @@ sub multi_listing {
     my $app_search_type = $app->param('search_type');
 
     my $no_html = $opt->{no_html} || $opt->{NoHTML};
-    my $search = $app->param('search');
+    my $search = $app->param('search') // '';
     my $no_limit
         = exists( $opt->{no_limit} )
         ? $opt->{no_limit}
-        : ( $search ? 1 : 0 );
+        : ( $search ne '' ? 1 : 0 );
     my $json   = $opt->{json}          || $app->param('json');
     my $param  = $opt->{params}        || $opt->{Params} || {};
     my $offset = $app->param('offset') || 0;
@@ -842,6 +853,8 @@ sub json_error {
         if defined $status;
     $app->send_http_header("application/json");
     $app->{no_print_body} = 1;
+    require Scalar::Util;
+    $error = "$error" if Scalar::Util::blessed($error) && $error->isa('MT::ErrorHandler::Exception');
     $app->print_encode( MT::Util::to_json( { error => $error } ) );
     return undef;
 }
@@ -2946,6 +2959,16 @@ sub show_error {
     }
 
     my $error = $param->{error} || $app->translate('Unknown error occurred.');
+
+    require Scalar::Util;
+    if ($ENV{MT_USE_EXCEPTION_OBJECT} and (!Scalar::Util::blessed($error) or !$error->isa('MT::ErrorHandler::Exception'))) {
+        # truly unexpected exception
+        require MT::Util::Log;
+        MT::Util::Log::init();
+        MT::Util::Log->error(Carp::longmess($error));
+        # hide it unless you are debugging
+        $error = $app->translate('Unknown error occurred.') unless $MT::DebugMode;
+    }
 
     if ($MT::DebugMode) {
         if ($@) {

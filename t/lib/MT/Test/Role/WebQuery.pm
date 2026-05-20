@@ -20,7 +20,10 @@ sub _trim {
 
 sub _find_text {
     my ( $self, $selector ) = @_;
-    my @elems = eval { $self->wq_find($selector) } or return;
+    my @elems = eval { $self->wq_find($selector) };
+    # ignore hidden messages
+    @elems = grep {($_->attr('style') // '') !~ /display:\s*none/} @elems;
+    return unless @elems;
     return wantarray ? (map { $_->text } @elems) : $elems[0]->text;
 }
 

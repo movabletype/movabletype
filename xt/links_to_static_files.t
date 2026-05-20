@@ -166,8 +166,7 @@ sub test {
 
 for my $path (sort keys %known) {
     next unless $path =~ /\.(?:css|js)$/;
-    next if $path =~ m!(?:^|/)(?:themes|support|plugins|popper|codemirror|i18n|data-api)/!;
-    next if $path =~ m!chart-api/(?:core|deps)/!;
+    next if $path =~ m!(?:^|/)(?:themes|support|plugins|popper|codemirror|i18n|data-api|chartjs|chart-api)/!;
     next if $path =~ m!themes-base/!;
     next if $path =~ /styles_\w+.css$/;
     next if $path =~ /mt_\w+.js$/;

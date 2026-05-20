@@ -1086,8 +1086,7 @@ sub init_data {
     my $asset    = new $img_pkg;
     $asset->blog_id(1);
     $asset->url('http://narnia.na/nana/images/test.jpg');
-    $asset->file_path(
-        File::Spec->catfile( $ENV{MT_HOME}, "t", 'images', 'test.jpg' ) );
+    $asset->file_path(File::Spec->catfile('%r', 'images', 'test.jpg'));
     $asset->file_name('test.jpg');
     $asset->file_ext('jpg');
     $asset->image_width(640);
@@ -1106,8 +1105,7 @@ sub init_data {
     $asset = new $file_pkg;
     $asset->blog_id(1);
     $asset->url('http://narnia.na/nana/files/test.tmpl');
-    $asset->file_path(
-        File::Spec->catfile( $ENV{MT_HOME}, "t", 'test.tmpl' ) );
+    $asset->file_path(File::Spec->catfile('%r', 'test.tmpl'));
     $asset->file_name('test.tmpl');
     $asset->file_ext('tmpl');
     $asset->mime_type('text/plain');
@@ -1124,8 +1122,7 @@ sub init_data {
     $asset = new $img_pkg;
     $asset->blog_id(0);
     $asset->url('%s/uploads//test.jpg');
-    $asset->file_path(
-        File::Spec->catfile( $ENV{MT_HOME}, "t", 'images', 'test.jpg' ) );
+    $asset->file_path(File::Spec->catfile('%s', 'images', 'test.jpg'));
     $asset->file_name('test.jpg');
     $asset->file_ext('jpg');
     $asset->image_width(640);
@@ -1141,8 +1138,7 @@ sub init_data {
     $asset = new $img_pkg;
     $asset->blog_id(0);
     $asset->url('%s/uploads/test2.jpg');
-    $asset->file_path(
-        File::Spec->catfile( $ENV{MT_HOME}, "t", 'images', 'test2.jpg' ) );
+    $asset->file_path(File::Spec->catfile('%s', 'images', 'test2.jpg'));
     $asset->file_name('test2.jpg');
     $asset->file_ext('jpg');
     $asset->image_width(640);
@@ -1157,8 +1153,7 @@ sub init_data {
     $asset = new $img_pkg;
     $asset->blog_id(1);
     $asset->url('http://narnia.na/nana/images/test1.jpg');
-    $asset->file_path(
-        File::Spec->catfile( $ENV{MT_HOME}, "t", 'images', 'test1.jpg' ) );
+    $asset->file_path(File::Spec->catfile('%r', 'images', 'test1.jpg'));
     $asset->file_name('test1.jpg');
     $asset->file_ext('jpg');
     $asset->image_width(640);
@@ -1176,8 +1171,7 @@ sub init_data {
     $asset = new $img_pkg;
     $asset->blog_id(1);
     $asset->url('http://narnia.na/nana/images/test2.jpg');
-    $asset->file_path(
-        File::Spec->catfile( $ENV{MT_HOME}, "t", 'images', 'test2.jpg' ) );
+    $asset->file_path(File::Spec->catfile('%r', 'images', 'test2.jpg'));
     $asset->file_name('test2.jpg');
     $asset->file_ext('jpg');
     $asset->image_width(640);
@@ -1195,8 +1189,7 @@ sub init_data {
     $asset = new $img_pkg;
     $asset->blog_id(1);
     $asset->url('http://narnia.na/nana/images/test3.jpg');
-    $asset->file_path(
-        File::Spec->catfile( $ENV{MT_HOME}, "t", 'images', 'test3.jpg' ) );
+    $asset->file_path(File::Spec->catfile('%r', 'images', 'test3.jpg'));
     $asset->file_name('test3.jpg');
     $asset->file_ext('jpg');
     $asset->image_width(640);

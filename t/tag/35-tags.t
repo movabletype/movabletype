@@ -19,6 +19,7 @@ use MT::Util qw(ts2epoch epoch2ts);
 use MT::Util::Captcha;
 
 $test_env->prepare_fixture('db_data');
+$test_env->prepare_asset_files;
 
 my $switch = MT->config->PluginSwitch;
 $switch->{Awesome} = 1;
@@ -577,6 +578,18 @@ A Rainy Day
 <MTEntries lastn="1" encode_js="1">"<MTEntryTitle>"</MTEntries>
 --- expected
 \"A Rainy Day\"
+
+=== test 92-1 double encode(js -> html)
+--- template
+<MTSetVarBlock name="foo">foo === "" && 1</MTSetVarBlock><MTGetVar name="foo" encode_js="1" encode_html="1">
+--- expected
+foo === \&quot;\&quot; &amp;&amp; 1
+
+=== test 92-2 double encode(html -> js)
+--- template
+<MTSetVarBlock name="foo">foo === "" && 1</MTSetVarBlock><MTGetVar name="foo" encode_html="1" encode_js="1">
+--- expected
+foo === &quot;&quot; &amp;&amp; 1
 
 === test 93
 --- template
@@ -1321,7 +1334,7 @@ image/jpeg
 --- template
 <MTAssets lastn='1'><$MTAssetFilePath$></MTAssets>
 --- expected fix_path
-CURRENT_WORKING_DIRECTORY/t/images/test.jpg
+TEST_ROOT/site/images/test.jpg
 
 === test 255
 --- template

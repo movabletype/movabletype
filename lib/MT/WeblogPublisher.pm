@@ -827,7 +827,7 @@ sub rebuild_entry {
         ## Rebuild previous and next daily, weekly, and monthly archives;
         ## adding a new entry could cause changes to the intra-archive
         ## navigation.
-        my %at    = map { $_ => 1 } split /,/, $blog->archive_type;
+        my %at    = map { $_ => 1 } split /,/, ($blog->archive_type || '');
         my @db_at = grep {
             my $archiver = $mt->archiver($_);
             $archiver && $archiver->date_based

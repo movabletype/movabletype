@@ -344,6 +344,7 @@ sub find_phrases {
         plugins/MTBlockEditor
         fabric.js
         chart-api/mtchart.js
+        chartjs/
         tiny_mce/plugins/accordion/plugin.js
         tiny_mce/plugins/insertdatetime/plugin.js
         tiny_mce/plugins/save/plugin.js
@@ -371,7 +372,7 @@ sub find_phrases {
     }
 
     for my $dir (@dirs) {
-        next unless -d $dir;
+        next unless $dir && -d $dir;
         finddepth({
                 no_chdir    => 1,
                 follow_fast => $self->parent ? 0 : 1,

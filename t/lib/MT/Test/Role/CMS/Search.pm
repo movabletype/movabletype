@@ -136,6 +136,7 @@ sub apply_opts {
         my @input = $form->find_input($key) or next;
         $input[0]->readonly(0);
         if ($input[0]->type eq 'checkbox') {
+            $input[0]->readonly(0);
             if (ref($opts->{$key}) eq 'ARRAY') {
                 my %flags = map { $_ => 1 } @{ $opts->{$key} };
                 for my $elem (@input) {
@@ -147,6 +148,7 @@ sub apply_opts {
             }
         } else {
             next unless _validate($self, $key, $opts);
+            $input[0]->readonly(0);
             $input[0]->value($opts->{$key});
         }
     }
@@ -236,9 +238,27 @@ sub found_site_ids {
 
 sub found_highlighted_count {
     my $self = shift;
+    my @values = $self->found_highlighted_values;
+    return scalar(@values);
+}
+
+sub found_highlighted_values {
+    my $self = shift;
     my @titles;
     my $type  = $self->current_tab or return [];
-    return $self->wq_find(qq!form#${type}-listing-form table tbody [data-search-highlight="1"]!)->size;
+    my @values;
+    $self->wq_find(qq!form#${type}-listing-form table tbody [data-search-highlight="1"]!)->each(sub {
+        my ($i, $elem) = @_;
+        if ($elem->tagname eq 'span') {
+            my $text = $elem->parent->text;
+            $text =~ s/( \n|\n |\n)/ /g;
+            push @values, $text;
+        } else {
+            my $text = $elem->text;
+            push @values, $text;
+        }
+    });
+    return \@values;
 }
 
 1;

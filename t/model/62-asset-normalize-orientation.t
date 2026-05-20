@@ -9,8 +9,6 @@ use MT::Test::Env;
 BEGIN {
     eval { require Test::MockModule }
         or plan skip_all => 'Test::MockModule is not installed';
-    eval { require Test::MockObject }
-        or plan skip_all => 'Test::MockObject is not installed';
 }
 
 our $test_env;
@@ -26,11 +24,15 @@ use File::Temp;
 use File::Copy;
 use Image::ExifTool;
 
+$test_env->prepare_fixture('db');
+
 my ( $guard, $src_file ) = MT::Test::Image->tempfile(
     DIR    => $test_env->root,
     SUFFIX => '.jpg',
 );
 close $guard;
+
+my $site = MT::Blog->load(1);
 
 my $src_image = MT::Image->new( Filename => $src_file );
 $src_image->_init_image_size;
@@ -44,7 +46,7 @@ sub _create_image_with_orientation {
     );
     my ( $fh, $file ) = File::Temp::tempfile(
         SUFFIX => '.jpg',
-        DIR    => $test_env->root,
+        DIR    => $site->site_path,
     );
     close($fh);
     copy( $src_file, $file );
@@ -64,8 +66,8 @@ my %map = (
     },
     2 => {
         put            => 1,
-        flipHorizontal => 0,
-        flipVertical   => 1,
+        flipHorizontal => 1,
+        flipVertical   => 0,
         rotate         => 0,
         width          => $src_image->{width},
         height         => $src_image->{height},
@@ -80,16 +82,16 @@ my %map = (
     },
     4 => {
         put            => 1,
-        flipHorizontal => 1,
-        flipVertical   => 0,
+        flipHorizontal => 0,
+        flipVertical   => 1,
         rotate         => 0,
         width          => $src_image->{width},
         height         => $src_image->{height},
     },
     5 => {
         put            => 1,
-        flipHorizontal => 0,
-        flipVertical   => 1,
+        flipHorizontal => 1,
+        flipVertical   => 0,
         rotate         => 270,
         width          => $src_image->{height},
         height         => $src_image->{width},
@@ -104,8 +106,8 @@ my %map = (
     },
     7 => {
         put            => 1,
-        flipHorizontal => 0,
-        flipVertical   => 1,
+        flipHorizontal => 1,
+        flipVertical   => 0,
         rotate         => 90,
         width          => $src_image->{height},
         height         => $src_image->{width},
@@ -139,19 +141,18 @@ sub _run {
 
             my $image_obj        = MT::Image->new( Filename => $file );
             my $image_module     = Test::MockModule->new( ref $image_obj );
-            my @manipulated_data = ( '', @$expected{qw(width height)} );
             $image_module->mock(
                 'flipHorizontal',
                 sub {
                     $counter{flipHorizontal}++;
-                    @manipulated_data;
+                    $image_module->original('flipHorizontal')->(@_);
                 }
             );
             $image_module->mock(
                 'flipVertical',
                 sub {
                     $counter{flipVertical}++;
-                    @manipulated_data;
+                    $image_module->original('flipVertical')->(@_);
                 }
             );
             $image_module->mock(
@@ -159,11 +160,12 @@ sub _run {
                 sub {
                     my ( $self, %params ) = @_;
                     $counter{rotate} += $params{Degrees};
-                    @manipulated_data;
+                    $image_module->original('rotate')->(@_);
                 }
             );
 
             my $asset = MT::Asset::Image->new;
+            $asset->blog_id(1);
             $asset->file_path($file);
             $asset->file_ext('jpg');
             $asset->image_width( $image_obj->{width} );
@@ -174,12 +176,12 @@ sub _run {
             is( $asset->image_width,  $expected->{width},  'Updated width' );
             is( $asset->image_height, $expected->{height}, 'Updated height' );
             if ( $expected->{rotate} == 0 ) {
-                is( $counter{rotate} || 0, 0, 'rotate is not colled' );
+                is( $counter{rotate} || 0, 0, 'rotate is not called' );
             }
             else {
                 is( $counter{rotate} || 0,
                     $expected->{rotate},
-                    'rotate is colled (Degrees:' . $expected->{rotate} . ')'
+                    'rotate is called (Degrees:' . $expected->{rotate} . ')'
                 );
             }
             for my $k (qw(put flipHorizontal flipVertical)) {
@@ -189,14 +191,8 @@ sub _run {
                     $k . ' is called ' . $expected->{$k} . ' time(s)' );
             }
 
-            my $fixed_orientation
-                = Image::ExifTool::ImageInfo($file)->{Orientation};
-            ok( !$fixed_orientation
-                    || $fixed_orientation eq 'Horizontal (normal)',
-                'Orientation is cleared'
-            );
-
-            done_testing();
+            my $fixed_orientation = Image::ExifTool::ImageInfo($file)->{Orientation};
+            is( $fixed_orientation => 'Horizontal (normal)', 'Orientation is set to normal');
         };
     }
 }
@@ -216,8 +212,6 @@ for my $driver ( $test_env->image_drivers ) {
             or plan skip_all => "Cannot load MT::Image::$driver";
 
         _run();
-
-        done_testing();
     };
 }
 

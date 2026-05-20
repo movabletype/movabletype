@@ -17,9 +17,9 @@ use MT::I18N qw( const guess_encoding );
 use MT::Util qw( encode_html first_n_words );
 use MT::Util::Encode;
 
-use vars qw( $SEP $SUB_SEP );
-$SEP     = ( '-' x 8 );
-$SUB_SEP = ( '-' x 5 );
+our $SEP     = ('-' x 8);
+our $SUB_SEP = ('-' x 5);
+our $TAB     = "\t";
 
 sub do_import {
     shift->import_contents(@_);
@@ -315,6 +315,7 @@ sub import_contents {
                     for my $piece (@pieces) {
                         $piece =~ s!^\s*!!;
                         $piece =~ s!\s*$!!;
+                        $piece =~ s/^(\Q$SEP\E|\Q$SUB_SEP\E)$TAB$/$1/mg;
                         if ( $piece =~ s/^BODY:\r?\n// ) {
                             $entry->text($piece);
                         }
@@ -501,50 +502,51 @@ sub export {
     require MT::Template::Context;
     my $tmpl = MT::Template->new;
     $tmpl->name('Export Template');
-    $tmpl->text(<<'TEXT');
-AUTHOR: <$MTEntryAuthor strip_linefeeds="1"$>
-TITLE: <$MTEntryTitle strip_linefeeds="1"$>
-BASENAME: <$MTEntryBasename$>
-STATUS: <$MTEntryStatus strip_linefeeds="1"$>
-ALLOW COMMENTS: <$MTEntryFlag flag="allow_comments"$>
-CONVERT BREAKS: <$MTEntryFlag flag="convert_breaks"$>
-ALLOW PINGS: <$MTEntryFlag flag="allow_pings"$><MTIfNonEmpty tag="MTEntryCategory">
-PRIMARY CATEGORY: <$MTEntryCategory$></MTIfNonEmpty><MTEntryCategories>
-CATEGORY: <$MTCategoryLabel$></MTEntryCategories>
-DATE: <$MTEntryDate format="%m/%d/%Y %I:%M:%S %p"$><MTEntryIfTagged include_private="1">
-TAGS: <MTEntryTags include_private="1" glue=","><$MTTagName quote="1"$></MTEntryTags></MTEntryIfTagged>
------
+    my $sep_replacer = qq{regex_replace="/^(\Q$SEP\E|\Q$SUB_SEP\E)\$/mg","\$1$TAB"};
+    $tmpl->text(<<"TEXT");
+AUTHOR: <MTEntryAuthor strip_linefeeds="1">
+TITLE: <MTEntryTitle strip_linefeeds="1">
+BASENAME: <MTEntryBasename>
+STATUS: <MTEntryStatus strip_linefeeds="1">
+ALLOW COMMENTS: <MTEntryFlag flag="allow_comments">
+CONVERT BREAKS: <MTEntryFlag flag="convert_breaks">
+ALLOW PINGS: <MTEntryFlag flag="allow_pings"><MTIfNonEmpty tag="MTEntryCategory">
+PRIMARY CATEGORY: <MTEntryCategory></MTIfNonEmpty><MTEntryCategories>
+CATEGORY: <MTCategoryLabel></MTEntryCategories>
+DATE: <MTEntryDate format="%m/%d/%Y %I:%M:%S %p"><MTEntryIfTagged include_private="1">
+TAGS: <MTEntryTags include_private="1" glue=","><MTTagName quote="1"></MTEntryTags></MTEntryIfTagged>
+$SUB_SEP
 BODY:
-<$MTEntryBody convert_breaks="0"$>
------
+<MTEntryBody convert_breaks="0" $sep_replacer>
+$SUB_SEP
 EXTENDED BODY:
-<$MTEntryMore convert_breaks="0"$>
------
+<MTEntryMore convert_breaks="0" $sep_replacer>
+$SUB_SEP
 EXCERPT:
-<$MTEntryExcerpt no_generate="1" convert_breaks="0"$>
------
+<MTEntryExcerpt no_generate="1" convert_breaks="0" $sep_replacer>
+$SUB_SEP
 KEYWORDS:
-<$MTEntryKeywords$>
------
+<MTEntryKeywords>
+$SUB_SEP
 <MTComments>
 COMMENT:
-AUTHOR: <$MTCommentAuthor strip_linefeeds="1"$>
-EMAIL: <$MTCommentEmail strip_linefeeds="1"$>
-IP: <$MTCommentIP strip_linefeeds="1"$>
-URL: <$MTCommentURL strip_linefeeds="1"$>
-DATE: <$MTCommentDate format="%m/%d/%Y %I:%M:%S %p"$>
-<$MTCommentBody convert_breaks="0"$>
------
+AUTHOR: <MTCommentAuthor strip_linefeeds="1">
+EMAIL: <MTCommentEmail strip_linefeeds="1">
+IP: <MTCommentIP strip_linefeeds="1">
+URL: <MTCommentURL strip_linefeeds="1">
+DATE: <MTCommentDate format="%m/%d/%Y %I:%M:%S %p">
+<MTCommentBody convert_breaks="0" $sep_replacer>
+$SUB_SEP
 </MTComments>
 <MTPings>
 PING:
-TITLE: <$MTPingTitle strip_linefeeds="1"$>
-URL: <$MTPingURL strip_linefeeds="1"$>
-IP: <$MTPingIP strip_linefeeds="1"$>
-BLOG NAME: <$MTPingBlogName strip_linefeeds="1"$>
-DATE: <$MTPingDate format="%m/%d/%Y %I:%M:%S %p"$>
-<$MTPingExcerpt$>
------
+TITLE: <MTPingTitle strip_linefeeds="1">
+URL: <MTPingURL strip_linefeeds="1">
+IP: <MTPingIP strip_linefeeds="1">
+BLOG NAME: <MTPingBlogName strip_linefeeds="1">
+DATE: <MTPingDate format="%m/%d/%Y %I:%M:%S %p">
+<MTPingExcerpt $sep_replacer>
+$SUB_SEP
 </MTPings>
 TEXT
 
@@ -576,7 +578,7 @@ TEXT
             $cb->( $MT::ImportExport::SUB_SEP . "\n" );
             $cb->( $handler->($entry) );
         }
-        $cb->("--------\n");
+        $cb->("$SEP\n");
     }
     1;
 }

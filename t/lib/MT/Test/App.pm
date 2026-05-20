@@ -270,6 +270,8 @@ sub _request_locally {
         Carp::confess "$method is not supported";
     }
 
+    my $dummy = grep defined $_, ($app->errstr, MT->errstr);
+
     require LWP::UserAgent;
     my $ua = LWP::UserAgent->new;
     $ua->max_redirect(0);
@@ -336,6 +338,7 @@ sub _request_internally {
 
     $app->run;
 
+    my $dummy = grep defined $_, ($app->errstr, MT->errstr);
     my $out = delete $app->{__test_output};
     my $res = HTTP::Response->parse($out);
 }

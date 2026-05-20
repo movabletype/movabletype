@@ -13,6 +13,7 @@ use base qw( Data::ObjectDriver::BaseObject MT::ErrorHandler );
 use MT;
 use MT::Util qw(offset_time_list);
 use MT::Util::Encode;
+use Scalar::Util 'blessed';
 
 my ( @PRE_INIT_PROPS, @PRE_INIT_META );
 
@@ -400,9 +401,13 @@ sub _encode_terms {
         }
         return \@values;
     }
+    elsif ( blessed($value) && $value->isa('Data::ObjectDriver::SQL') ) {
+        return $value;
+    }
     elsif ( !ref($value) ) {
         return MT::Util::Encode::encode_if_flagged( $enc, $value );
     }
+    return; # not suppose to rearch here
 }
 
 # A post-load trigger for classed objects

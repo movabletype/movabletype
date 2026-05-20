@@ -772,7 +772,43 @@ subtest 'mode = list' => sub {
             $test_user->{user}->name
         );
     }
+};
 
+subtest 'mode = filtered_list' => sub {
+
+    # MTC-30910
+    subtest 'all users have edit links in label column' => sub {
+        my @users = (
+            $create_user,
+            $edit_user,
+            $manage_user,
+            $publish_user,
+            $manage_content_data_user,
+            $sys_manage_content_data_user,
+        );
+        my $app = MT::Test::App->new;
+        for my $user (@users) {
+            subtest $user->name => sub {
+                $app->login($user);
+                my $res = $app->js_post_ok({
+                    blog_id    => $content_type->blog_id,
+                    __mode     => 'filtered_list',
+                    datasource => 'content_data.content_data_' . $content_type->id,
+                    columns    => 'label',
+                    item       => '[]',
+                    limit      => 50,
+                    page       => 1,
+                    sort_by    => 'modified_on',
+                    sort_order => 'descend',
+                    fid        => '_allpass',
+                });
+                my $json = MT::Util::from_json($res->decoded_content);
+
+                ok !$json->{error}, 'no error';
+                like $json->{result}{objects}[0][1], qr!<a href="/cgi-bin/mt\.cgi\?__mode=view!m, 'edit links exist in label column';
+            };
+        }
+    };
 };
 
 done_testing();

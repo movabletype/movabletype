@@ -14,26 +14,24 @@ sub new { bless {}, shift }
 
 sub error {
     my $class = shift;
-    my $msg = @_ ? $_[0] : '';
-    if ( defined $msg ) {
-        $msg .= "\n" if ( $msg ne '' ) && ( $msg !~ /\n$/ );
+    my $msg   = @_ ? shift : '';
+    if (defined $msg && !ref $msg) {
+        $msg .= "\n" if ($msg ne '') && ($msg !~ /\n$/);
     }
-    if ( ref($class) ) {
-        $class->{_errstr} = $msg;
-    }
-    else {
-        $ERROR = $msg;
+    if (ref($class)) {
+        $class->{_errstr} = MT::ErrorHandler::Exception->new($msg, @_);
+    } else {
+        $ERROR = MT::ErrorHandler::Exception->new($msg, @_);
     }
     return;
 }
 
 sub trans_error {
     my $obj = shift;
-    return $obj->error(
-        $obj->can('translate') ? $obj->translate(@_) : MT->translate(@_) );
+    return $obj->error($obj->can('translate') ? $obj->translate(@_) : MT->translate(@_));
 }
 
-sub errstr { ref( $_[0] ) ? $_[0]->{_errstr} : $ERROR }
+sub errstr { ref($_[0]) ? $_[0]->{_errstr} : $ERROR }
 
 sub clear_error {
     my $class = shift;
@@ -41,6 +39,57 @@ sub clear_error {
         delete $class->{_errstr};
     } else {
         undef $ERROR;
+    }
+}
+
+package MT::ErrorHandler::Exception;
+use strict;
+use warnings;
+use Scalar::Util;
+use overload
+    'bool'   => \&_stringify,
+    '~~'     => \&_stringify,
+    '""'     => \&_stringify,
+    '0+'     => \&_stringify,
+    fallback => 1,
+    ;
+
+sub _stringify {
+    my $self = shift;
+    $self->{finalized}++;
+    $self->{message};
+}
+*TO_JSON = \&_stringify;
+
+sub new {
+    my $class   = shift;
+    my $message = shift;
+    return          unless defined $message && $message ne '';
+    return $message unless $ENV{MT_USE_EXCEPTION_OBJECT};
+
+    my %extra;
+    if (ref $_[-1] eq 'HASH') {
+        %extra = %{ pop @_ };
+    }
+    if (Scalar::Util::blessed $message && $message->isa('MT::ErrorHandler::Exception')) {
+        $extra{ignorable} = 1 if $message->{ignorable};
+    }
+    my @traces;
+    my $i = 1;
+    while ($i < 10) {
+        my ($package, $file, $line) = caller($i++) or last;
+        push @traces, "  at $file line $line";
+    }
+    bless { %extra, message => "$message", traces => \@traces }, $class;
+}
+
+sub DESTROY {
+    my $self = shift;
+    return if $self->{finalized} or $self->{ignorable};
+    if ($self && defined $self->{message}) {
+        if ($ENV{MT_WARN_UNRESOLVED_ERROR}) {
+            warn "Unresolved error: " . $self->{message} . (join "\n", @{ $self->{traces} // [] });
+        }
     }
 }
 

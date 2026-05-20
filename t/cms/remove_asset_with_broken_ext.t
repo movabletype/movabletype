@@ -19,6 +19,7 @@ use MT::Test::App;
 use MT::Test::Fixture;
 
 $test_env->prepare_fixture('db');
+$test_env->prepare_asset_files;
 
 my $objs = MT::Test::Fixture->prepare({
     website => [{ name => 'test site' }],

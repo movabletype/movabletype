@@ -27,8 +27,8 @@
             "1978-01-31 07:45:00",
             "Sample Image 1",
             "jpg",
-            "0JUwwJf9ek.jpg",
-            "__TEST_ROOT__/0JUwwJf9ek.jpg",
+            "PLC7r7jzhU.jpg",
+            "%r/PLC7r7jzhU.jpg",
             null,
             1,
             "Sample Image 1",
@@ -46,8 +46,8 @@
             "1978-01-31 07:45:00",
             "Sample Image 2",
             "jpg",
-            "0JUwwJf9ek.jpg",
-            "__TEST_ROOT__/0JUwwJf9ek.jpg",
+            "PLC7r7jzhU.jpg",
+            "%r/PLC7r7jzhU.jpg",
             null,
             2,
             "Sample Image 2",
@@ -566,7 +566,7 @@
             null,
             null,
             "asset_image",
-            "25c21d278dd7e2f88f94d9030f1d5da6fc2c870a"
+            "d23b2ee62abfce613082f55c9eb12c4cd5ff658f"
          ]
       ]
    },
@@ -610,7 +610,7 @@
             null,
             "__NOW__",
             "content type 1",
-            "f630c5733055155ee6c85993e1658484286e674d",
+            "269879ccf900e3cb595089505756757d8b56ad69",
             null,
             null
          ]

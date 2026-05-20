@@ -440,8 +440,7 @@ sub AUTOLOAD {
     my $mgr = $_[0];
     ( my $var = $AUTOLOAD ) =~ s!.+::!!;
     $var = lc $var;
-    return $mgr->error(
-        MT->translate( "No such config variable '[_1]'", $var ) )
+    return $mgr->error( MT::ErrorHandler::Exception->new(MT->translate( "No such config variable '[_1]'", $var ), { ignorable => 1 }))
         unless exists $mgr->{__settings}->{$var};
     no strict 'refs';
     *$AUTOLOAD = sub {

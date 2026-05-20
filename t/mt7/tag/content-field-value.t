@@ -158,9 +158,7 @@ $test_env->prepare_fixture(
             class     => 'image',
             blog_id   => $blog_id,
             url       => 'http://narnia.na/nana/images/test.jpg',
-            file_path => File::Spec->catfile(
-                $ENV{MT_HOME}, "t", 'images', 'test.jpg'
-            ),
+            file_path => File::Spec->catfile('%r', 'images', 'test.jpg'),
             file_name    => 'test.jpg',
             file_ext     => 'jpg',
             image_width  => 640,
@@ -173,9 +171,7 @@ $test_env->prepare_fixture(
             class     => 'image',
             blog_id   => $blog_id,
             url       => 'http://narnia.na/nana/images/test2.jpg',
-            file_path => File::Spec->catfile(
-                $ENV{MT_HOME}, "t", 'images', 'test2.jpg'
-            ),
+            file_path => File::Spec->catfile('%r', 'images', 'test2.jpg'),
             file_name    => 'test2.jpg',
             file_ext     => 'jpg',
             image_width  => 640,

@@ -14,6 +14,7 @@ BEGIN {
         DefaultLanguage       => 'en_US',                      ## for now
         FallbackAdminThemeIds => ['admin1999', 'admin1998'],
         PluginPath            => ['TEST_ROOT/plugins'],
+        PluginSwitch          => { BlockEditor => 1 },
     );
     $ENV{MT_CONFIG} = $test_env->config_file;
     $test_env->save_file("plugins/TestPlugin/config.yaml", <<"PLUGIN" );

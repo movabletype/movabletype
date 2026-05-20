@@ -22,7 +22,7 @@ use MT;
 use MT::Test;
 use MT::CMS::RebuildTrigger;
 
-MT::Test->init_db;
+$test_env->prepare_fixture('db');
 
 my $app = MT->instance;
 

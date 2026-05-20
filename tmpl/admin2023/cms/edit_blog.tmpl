@@ -148,9 +148,9 @@ jQuery(window).on('load', function () {
                 <input type="text" name="site_url_subdomain" id="site_url_subdomain"  class="form-control blog-subdomain-text text path" value="<mt:var name="site_url_subdomain">" aria-describedby="siteUrl" />.
               </mt:unless>
             </span>
-            <span class="website-url">
+            <mt:if name="website_domain"><span class="website-url">
               <mt:var name="website_domain" encode_html="1">
-            </span>
+            </span></mt:if>
             <span class="extra-path">
               <input type="text" name="site_url_path" id="site_url_path" class="form-control blog-url-text text path" value="<mt:var name="site_url_path" _default="$suggested_site_url" escape="html">" aria-describedby="siteUrl" />
             </span>

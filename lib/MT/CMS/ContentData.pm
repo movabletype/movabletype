@@ -600,6 +600,11 @@ sub save {
         or return $app->permission_denied();
 
     my $content_data_id = $app->param('id');
+    my $content_data =
+      $content_data_id
+      ? MT::ContentData->load($content_data_id)
+      : MT::ContentData->new();
+
     if ( !$content_data_id ) {
         return $app->permission_denied()
             unless $perms->can_do('create_new_content_data')
@@ -608,8 +613,10 @@ sub save {
     }
     else {
         return $app->permission_denied()
-            unless $perms->can_edit_content_data( $content_data_id,
-            $app->user );
+            unless $perms->can_edit_content_data( $content_data, $app->user );
+        return $app->permission_denied()
+	    if ( $content_data->status ne $app->param('status') )
+	    && !( $perms->can_edit_content_data( $content_data, $app->user, 1 ) );
     }
 
     my $convert_breaks = {};
@@ -621,11 +628,6 @@ sub save {
         }
         $data ||= {};
     }
-
-    my $content_data =
-      $content_data_id
-      ? MT::ContentData->load($content_data_id)
-      : MT::ContentData->new();
 
     my $org_data = $content_data->data;
     my $org_convert_breaks = MT::Serialize->unserialize( $content_data->convert_breaks );
@@ -911,8 +913,8 @@ sub save {
         $content_data->label($data_label);
     }
 
-    $app->run_callbacks( 'cms_pre_save.content_data',
-        $app, $content_data, $orig );
+    $app->run_callbacks( 'cms_pre_save.content_data', $app, $content_data, $orig )
+        or return $app->error($app->translate("Saving [_1] failed: [_2]", $content_type->name, $app->errstr));
 
     $content_data->save
         or return $app->error(
@@ -1312,6 +1314,7 @@ sub list_actions {
         },
         'set_draft' => {
             label     => "Unpublish Contents",
+            js_message => 'unpublish',
             order     => 200,
             code      => '$Core::MT::CMS::ContentData::draft_content_data',
             mobile    => 1,
@@ -1490,41 +1493,6 @@ sub _validate_content_fields {
     }
 
     @errors ? \@errors : undef;
-}
-
-sub validate_content_fields {
-    my $app = shift;
-
-    # TODO: permission check
-
-    my $blog_id         = $app->blog ? $app->blog->id : undef;
-    my $content_type_id = $app->param('content_type_id') || 0;
-    my $content_type    = MT::ContentType->load( { id => $content_type_id } );
-
-    return $app->json_error( $app->translate('Invalid request.') )
-        unless $blog_id && $content_type;
-
-    my $content_field_types = $app->registry('content_field_types');
-    my $data                = {};
-    my $data_is_updated;
-    foreach my $f ( @{ $content_type->fields } ) {
-        my $content_field_type = $content_field_types->{ $f->{type} };
-        $data->{ $f->{id} }
-            = _get_form_data( $app, $content_field_type, $f );
-        $data_is_updated->{ $f->{id} } = 1;
-    }
-
-    my $invalid_count = 0;
-    my %invalid_fields;
-    if ( my $errors = _validate_content_fields( $app, $content_type, $data, $data_is_updated ) )
-    {
-        $invalid_count  = scalar @{$errors};
-        %invalid_fields = map { $_->{field_id} => $_->{error} } @{$errors};
-    }
-
-    $app->json_result(
-        { invalidCount => $invalid_count, invalidFields => \%invalid_fields }
-    );
 }
 
 sub _get_form_data {
@@ -1767,7 +1735,6 @@ sub _build_content_data_preview {
     my $archive_url;
     if ($tmpl_map) {
         $tmpl         = MT::Template->load( $tmpl_map->template_id );
-        $file_ext     = $blog->file_extension || '';
         $archive_file = $content_data->archive_file;
         my $base_url = $blog->archive_url;
         $base_url .= '/' unless $base_url =~ m|/$|;
@@ -1778,7 +1745,7 @@ sub _build_content_data_preview {
         $archive_file = File::Spec->catfile( $blog_path, $archive_file );
         my $path;
         ( $orig_file, $path ) = File::Basename::fileparse($archive_file);
-        $file_ext = '.' . $file_ext if $file_ext ne '';
+        ( $file_ext ) = $orig_file =~ /(\.[^.]*)$/;
         $archive_file
             = File::Spec->catfile( $path, $preview_basename . $file_ext );
     }
@@ -2066,7 +2033,7 @@ sub _update_content_data_status {
         return $app->permission_denied
             unless $app_author->is_superuser
             || $app_author->permissions( $content_data->id )
-            ->can_edit_content_data( $content_data, $app_author );
+            ->can_edit_content_data( $content_data, $app_author, 1 );
 
         if (   $app->config('DeleteFilesAtRebuild')
             && $content_data->status == MT::ContentStatus::RELEASE() )
@@ -2152,6 +2119,10 @@ sub can_save {
 
         return 0
             unless $perms->can_edit_content_data( $original, $app->user );
+        return 0
+	    if ( ( $obj && $obj->status != $original->status )
+	    || ( !$obj && $original->status ne $app->param('status') ) )
+            && !( $perms->can_edit_content_data( $original, $app->user, 1 ) );
     }
     else {
         my $user         = $app->user         or return 0;
@@ -2232,10 +2203,8 @@ sub build_content_data_table {
         $row->{author_name}
             = $author ? $author->name : $app->translate('(user deleted)');
         $row->{id} = $content_data->id;
-        $row->{label}
-            = defined $content_data->label && $content_data->label ne ''
-            ? $content_data->label
-            : $app->translate('(No Label)');
+        my $label = $content_data->label;
+        $row->{label} = defined $label && $label ne '' ? $label : $app->translate('(No Label)');
         my $ds = 'content_data.content_data_' . $content_data->content_type_id;
         $list_properties{$ds} ||= MT::ListProperty->list_properties($ds);
         $row->{label_html}   = $list_properties{$ds}{label}->html($content_data, $app);
@@ -2247,8 +2216,12 @@ sub build_content_data_table {
             %highlight_fields = map { $_ => 1 } @$fields;
             $content_data->{__search_result_fields_index} = \%highlight_fields;
             $row->{preview_data_show} = !!grep { $_ =~ /^__field:(\d*)/ } @$fields;
-            $row->{label_html} =~ s/class="label"/data-search-highlight="1" class="label"/ if $highlight_fields{label};
-            $row->{search_highlight}{identifier} = 1 if $highlight_fields{identifier};
+            if ($highlight_fields{label} && ($label // '') =~ $content_data->{__search_term}) {
+                $row->{label_html} =~ s/class="label"/data-search-highlight="1" class="label"/;
+            }
+            if ($highlight_fields{identifier} && $row->{identifier} =~ $content_data->{__search_term}) {
+                $row->{search_highlight}{identifier} = 1;
+            }
         }
 
         $row->{preview_data} = $content_data->preview_data;
