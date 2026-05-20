@@ -277,7 +277,7 @@ sub generate_site_stats_data {
         my @reg_keys;
 
         foreach my $key ( keys %$line_settings ) {
-            push @reg_keys, $key;
+            push @reg_keys, $line_settings->{$key}{hlabel} || $key;
 
             my $sub          = @counts;
             my $line_setting = $line_settings->{$key};

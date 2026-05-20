@@ -20,6 +20,7 @@ use vars qw( %Lexicon );
 ## plugins/GoogleAnalyticsV4/lib/GoogleAnalyticsV4/App.pm
 	'A Perl module required for using Google Analytics API is missing: [_1].' => 'Google アナリティクス APIを利用するのに必要なPerlモジュールのうちいくつかがありません: [_1]',
 	'Removing stats cache failed.' => 'アクセス統計データのキャッシュを削除できませんでした。',
+	'State mismatch' => 'stateの値が一致しません',
 	'The name of the profile' => 'プロファイル名',
 	'The resource name of the property | The measurement id of the WebStreamData' => 'プロパティのリソース名 | 測定ID',
 	'You did not specify a client ID.' => 'Client IDが指定されていません。',

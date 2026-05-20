@@ -339,6 +339,12 @@ sub select_profile_complete {
 sub oauth2callback {
     my $app = shift;
 
+    my $state   = $app->param('state') // '';
+    my $current = $app->current_magic // '';
+    if ($state ne $current) {
+        return _render_api_error($app, { error => plugin()->translate('State mismatch') });
+    }
+
     my $params = { code => scalar $app->param('code'), };
 
     plugin()->load_tmpl('oauth2callback.tmpl', $params);
