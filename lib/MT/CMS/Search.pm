@@ -943,6 +943,9 @@ sub do_search_replace {
             $timeto   = "0$timeto"   if length $timeto == 5;
         }
     }
+
+    $is_regex = $is_regex && !MT->config->DisableRegexpSearch;
+
     my $tab = $app->param('tab') || 'entry';
     ## Sometimes we need to pass in the search columns like 'title,text', so
     ## we look for a comma (not a valid character in a column name) and split
@@ -1079,10 +1082,6 @@ sub do_search_replace {
             }
         }
 
-        my @terms;
-        if ( !$is_regex && $type ne 'content_data' ) {
-            @terms = @{make_terms_for_plain_search(\%terms, \@cols, $plain_search)};
-        }
         my $iter;
         if ($do_replace) {
             $iter = iter_for_replace($class, \@ids);
@@ -1092,21 +1091,24 @@ sub do_search_replace {
             my $args  = $param->{args};
             if ( defined $terms && defined $args ) {
                 $iter = incremental_iter($class, $terms, $args);
-            } elsif ($blog_id || ( $type eq 'blog' ) || ( $app->mode eq 'dialog_grant_role' ) || $author->is_superuser) {
-                $iter = incremental_iter($class, @terms ? \@terms : \%terms, \%args);
             } else {
-                push @terms, \%terms unless @terms;
-                if ( $class->has_column('blog_id') ) {
+                my @terms = @{ make_terms(\%terms, \@cols, $plain_search, $is_regex) };
+                if ($blog_id || ( $type eq 'blog' ) || ( $app->mode eq 'dialog_grant_role' ) || $author->is_superuser) {
+                    $iter = incremental_iter($class, @terms ? \@terms : \%terms, \%args);
+                } else {
+                    push @terms, \%terms unless @terms;
+                    if ( $class->has_column('blog_id') ) {
 
-                    # Get an iter for each accessible blog
-                    my @perms = $app->model('permission')->load(
-                        {   blog_id   => { not => 0 },
-                            author_id => $author->id
-                        },
-                    );
-                    push @terms, {blog_id => [map {$_->blog_id} @perms]} if @perms;
+                        # Get an iter for each accessible blog
+                        my @perms = $app->model('permission')->load(
+                            {   blog_id   => { not => 0 },
+                                author_id => $author->id
+                            },
+                        );
+                        push @terms, {blog_id => [map {$_->blog_id} @perms]} if @perms;
+                    }
+                    $iter = incremental_iter($class, \@terms, \%args);
                 }
-                $iter = incremental_iter($class, \@terms, \%args);
             }
         }
         my $i = 1;
@@ -1262,18 +1264,22 @@ sub do_search_replace {
                         }
                     }
                     else {
-                        if (   $search ne ''
-                            && $field_registry
-                            && $field_registry->{search_handler} )
-                        {
-                            my $search_handler = $app->handler_to_coderef(
-                                $field_registry->{search_handler} );
-                            $match_field += $search_handler && $search_handler->(
-                                $re, $field_data, $text, $obj
-                            );
-                        }
-                        else {
-                            $match_field += $search ne '' ? $text =~ m!$re! : 1;
+                        if (MT->config->DisableRegexpSearch) {
+                            $match_field++;
+                        } else {
+                            if (   $search ne ''
+                                && $field_registry
+                                && $field_registry->{search_handler} )
+                            {
+                                my $search_handler = $app->handler_to_coderef(
+                                    $field_registry->{search_handler} );
+                                $match_field += $search_handler && $search_handler->(
+                                    $re, $field_data, $text, $obj
+                                );
+                            }
+                            else {
+                                $match_field += $search ne '' ? $text =~ m!$re! : 1;
+                            }
                         }
                     }
                     $match += $match_field;
@@ -1536,6 +1542,7 @@ sub do_search_replace {
         "tab_$tab"         => 1,
         filter             => $filter,
         filter_val         => $filter_val,
+        disable_regexp_search => MT->config->DisableRegexpSearch,
         %param
     );
     $res{'tab_junk'} = 1 if $is_junk;
@@ -1604,32 +1611,108 @@ sub do_search_replace {
     \%res;
 }
 
+sub cd_idx_sub_query {
+    my ($query, $ct_id, $cf_ids) = @_;
+    $cf_ids ||= [];
+
+    my %idx_fields;
+    my @cfs = MT->model('cf')->load({id => $cf_ids});
+    my $registry_cf_types = MT->registry("content_field_types");
+    for my $cf (@cfs) {
+        $idx_fields{ $registry_cf_types->{$cf->type}->{data_type} } = 1;
+    }
+
+    my $dbh         = MT->model('cf_idx')->driver->dbh;
+    my $terms       = [];
+    my $escape_char = '!';
+    $query =~ s/($escape_char|_|%)/$escape_char$1/g;
+
+    for ('varchar', 'text', 'float', 'double', 'integer') {
+        next unless $idx_fields{$_};
+        push @$terms, '-or', { 'value_' . $_ => { op => 'LIKE', value => "%$query%", escape => $escape_char } };
+    }
+    shift @$terms if @$terms; # remove leftmost '-or'
+    return unless @$terms;
+
+    return MT->model('cf_idx')->driver->prepare_statement(
+        MT->model('cf_idx'),
+        $terms,
+        {
+            fetchonly => ['content_data_id'],
+            join      => MT->model('cf')->join_on(
+                undef,
+                [
+                    { id => \'= cf_idx_content_field_id' },
+                    {
+                        $ct_id   ? (content_type_id => $ct_id)  : (),
+                        @$cf_ids ? (id              => $cf_ids) : (),
+                    },
+                ],
+            )
+        },
+    );
+}
+
+sub make_terms {
+    my ($terms, $cols, $search, $is_regex) = @_;
+
+    my $is_content_data       = !!$terms->{content_type_id};
+    my $disable_regexp_search = MT->config->DisableRegexpSearch;
+
+    if ($is_content_data && $disable_regexp_search) {
+        my @cf_ids;
+        if ($terms->{content_type_id} && $cols) {
+            for my $col (@$cols) {
+                push @cf_ids, $1 if ($col =~ /^__field:(\d+)/);
+            }
+        }
+        my $new_terms = make_terms_for_plain_search($terms, $cols, $search);
+        if (@cf_ids) {
+            my $sub_query = cd_idx_sub_query($search, $terms->{content_type_id}, \@cf_ids);
+            if ($sub_query) {
+                push @{ $new_terms->[-1] }, '-or', { id => { op => 'IN', value => $sub_query } };
+            }
+        }
+        return $new_terms;
+    }
+
+    # DEPRECATED: remove when DisableRegexpSearch is removed
+    if ($is_content_data) {
+        # This is ported from dialog search but not a good idea because of data_label
+        # if (!grep { $_ =~ /^__field:/ } @$cols) {
+        #     return make_terms_for_plain_search(@_);
+        # }
+        return [];
+    }
+
+    # DEPRECATED: remove when search_handler is totally removed.
+    return [] if $is_regex;
+
+    return make_terms_for_plain_search(@_);
+}
+
 sub make_terms_for_plain_search {
     my ($terms_ref, $cols_ref, $plain_search) = @_;
-    my @new_terms;
-
-    if ($terms_ref) {
-        # MT::Object doesn't like multi-term hashes within arrays
-        push @new_terms, { $_ => $terms_ref->{$_} } for keys %$terms_ref;
-    }
+    my $new_terms = [$terms_ref];
 
     if (my @cols = @$cols_ref) {
         my $query_string = $plain_search;
         my $escape_char = '!';
         $query_string =~ s/($escape_char|_|%)/$escape_char$1/g;
         $query_string = "%$query_string%";
-        my @sub;
+        my $sub = [];
         for my $col (@cols) {
             if ('id' eq $col) {
-                push(@sub, { $col => $plain_search }, '-or');
+                push @$sub, '-or', { $col => $plain_search };
             } elsif ($col !~ /^__field:\d+$/) {
-                push(@sub, { $col => { op => 'like', value => $query_string, escape => $escape_char } }, '-or');
+                push @$sub, '-or', { $col => { op => 'like', value => $query_string, escape => $escape_char } };
             }
         }
-        delete $sub[$#sub];
-        push(@new_terms, '-and', \@sub);
+        shift @$sub; # remove leftmost -or
+        push @$sub, { id => 0 } unless @$sub; # id = 0 prevents empty array
+        push @$new_terms, '-and', $sub;
     }
-    return \@new_terms;
+    return $new_terms;
 }
 
 sub _set_blog_id_to_terms {

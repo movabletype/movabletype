@@ -344,6 +344,7 @@ sub find_phrases {
         plugins/MTBlockEditor
         fabric.js
         chart-api/mtchart.js
+        chartjs/
         tiny_mce/plugins/accordion/plugin.js
         tiny_mce/plugins/insertdatetime/plugin.js
         tiny_mce/plugins/save/plugin.js

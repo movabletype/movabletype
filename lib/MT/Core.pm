@@ -1963,8 +1963,8 @@ BEGIN {
             'CheckScript'             => { default => 'mt-check.cgi', },
             'DataAPIScript'           => { default => 'mt-data-api.cgi', },
             'PublishCharset'          => { default => 'utf-8', },
-            'SafeMode'                => { default => 1, },
-            'AllowFileInclude'        => { default => 0, },
+            'SafeMode'                => { default => 1, deprecated => '9.2.0' },
+            'AllowFileInclude'        => { default => 0, deprecated => '9.2.0' },
             'AllowTestModifier'       => { default => 0 },
             'GlobalSanitizeSpec'      => {
                 default =>
@@ -2004,6 +2004,7 @@ BEGIN {
                 default => sub { $_[0]->SearchResultDisplay }
             },
             'SearchExcerptWords'    => { default => 40, },
+            'SearchEscapeUnderscore' => { default => 0 },
             'SearchDefaultTemplate' => { default => 'default.tmpl', },
             'ContentDataSearchDefaultTemplate' =>
                 { default => 'content_data_default.tmpl' },
@@ -2042,6 +2043,7 @@ BEGIN {
             'ContentDataSearchMaxCharCount' => {
                 default => sub { $_[0]->SearchMaxCharCount },
             },
+            'DisableRegexpSearch' => { default => 0 },
             'CMSSearchLimit'     => { default => 125 },
             'SupportURL'         => undef,
             'NewsURL'            => undef,
@@ -2288,6 +2290,7 @@ BEGIN {
             'CSVExportWithBOM' => { default => 1 },
             'CSVExportEscapeFormula' => { default => 1 },
             'AllowNonAsciiFilename' => { default => 1 },
+            'RequireUpgradePermission' => { default => 1 },
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {
@@ -2400,6 +2403,7 @@ BEGIN {
         },
         commenter_authenticators => \&load_core_commenter_auth,
         captcha_providers        => \&load_captcha_providers,
+        xoauth2_providers        => {},
         tasks                    => \&load_core_tasks,
         default_templates        => \&load_default_templates,
         template_sets            => {
