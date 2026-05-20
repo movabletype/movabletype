@@ -98,12 +98,12 @@
 
 <script
   id="revision-update-script"
-  data-object-id="<mt:var name="object_id" encode_html="1">"
-  data-object-type="<mt:var name="object_type" encode_html="1">"
-  data-magic-token="<mt:var name="magic_token" encode_html="1">"
+  data-object-id="<mt:var name="object_id" escape="html">"
+  data-object-type="<mt:var name="object_type" escape="html">"
+  data-magic-token="<mt:var name="magic_token" escape="html">"
   data-message-cancel="<__trans phrase="Cancel" escape="html">"
   data-message-update="<__trans phrase="Update" escape="html">"
-  data-message-saved="<__trans phrase="This revision note has been saved.">"
+  data-message-saved="<__trans phrase="This revision note has been saved." escape="html">"
   data-message-failed="<__trans phrase="Failed to save" escape="html">"
 >
 jQuery(function($) {
