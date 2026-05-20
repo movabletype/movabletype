@@ -24,6 +24,14 @@ sub new {
     my $class   = shift;
     my (%param) = @_;
     my $self    = bless \%param, $class;
+
+    my %skip;
+    my $reg = MT->registry('backup_instructions') || {};
+    for my $key (keys %$reg) {
+        $skip{$key} = 1 if $reg->{$key}{skip};
+    }
+    $self->{__elements_to_skip} = \%skip;
+
     return $self;
 }
 
@@ -83,6 +91,11 @@ sub start_element {
 
         #}
         $self->{start} = 0;
+        return 1;
+    }
+
+    if ($self->{__elements_to_skip}{$name}) {
+        $self->{skip}++;
         return 1;
     }
 

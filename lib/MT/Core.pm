@@ -2306,6 +2306,7 @@ BEGIN {
             'DisableContentFieldPermission' => { default => undef },
             'CSVExportWithBOM' => { default => 1 },
             'CSVExportEscapeFormula' => { default => 1 },
+            'RequireUpgradePermission' => { default => 1 },
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {
@@ -2422,6 +2423,7 @@ BEGIN {
         },
         commenter_authenticators => \&load_core_commenter_auth,
         captcha_providers        => \&load_captcha_providers,
+        xoauth2_providers        => {},
         tasks                    => \&load_core_tasks,
         default_templates        => \&load_default_templates,
         template_sets            => {
