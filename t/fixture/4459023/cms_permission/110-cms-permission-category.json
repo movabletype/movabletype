@@ -169,7 +169,7 @@
       ],
       "rows" : [
          [
-            "5frx6xb0",
+            "2qymi90v",
             "MT",
             "melody",
             null,
@@ -200,7 +200,7 @@
             null
          ],
          [
-            "tipd0zcq",
+            "kpeu3s6b",
             "MT",
             "ichiro_aikawa",
             null,
@@ -231,7 +231,7 @@
             null
          ],
          [
-            "4yblnjxv",
+            "kmw619bv",
             "MT",
             "jiro_ichikawa",
             null,
@@ -262,7 +262,7 @@
             null
          ],
          [
-            "00094ofa",
+            "bc79t30c",
             "MT",
             "saburo_ukawa",
             null,
@@ -293,7 +293,7 @@
             null
          ],
          [
-            "75b49lod",
+            "xx9nm76w",
             "MT",
             "shiro_egawa",
             null,
@@ -324,7 +324,7 @@
             null
          ],
          [
-            "x61e6gdt",
+            "q4pcyjm9",
             "MT",
             "goro_ogawa",
             null,
@@ -355,7 +355,7 @@
             null
          ],
          [
-            "o1q72e39",
+            "qkv9l3w5",
             "MT",
             "ichiro_kagawa",
             null,
@@ -386,7 +386,7 @@
             null
          ],
          [
-            "nn2jlxna",
+            "sznhc0os",
             "MT",
             "jiro_kikkawa",
             null,
@@ -417,7 +417,7 @@
             null
          ],
          [
-            "q28zqdiw",
+            "flbv1x3x",
             "MT",
             "test8",
             null,
@@ -1124,7 +1124,7 @@
       ],
       "rows" : [
          [
-            "DataAPIDisableSite 0\nDefaultSupportedLanguages en_us,ja\nDisableDataAPI 0\nDisableNotificationPings 1\nHidePrivateRelatedContentData 1\nPluginAlias ContentType Information Widget=ContentInfoWidget\nPluginAlias Markdown=Markdown/Markdown.pl\nPluginAlias SmartyPants=Markdown/SmartyPants.pl\nPluginAlias Textile=Textile/textile2.pl\nPluginAlias WXR Importer=WXRImporter\nPluginAlias Widget Manager Upgrade Assistant=WidgetManager/WidgetManager.pl\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion blockeditor=1\nPluginSchemaVersion formattedtext=1.00\nPluginSchemaVersion tinymce5=1\nPluginSchemaVersion tinymce6=1\nPluginSwitch BlockEditor=0\nPluginSwitch ContentInfoWidget=1\nPluginSwitch FormattedText=1\nPluginSwitch FormattedTextForTinyMCE5=0\nPluginSwitch FormattedTextForTinyMCE6=1\nPluginSwitch GoogleAnalyticsV4=1\nPluginSwitch Markdown/Markdown.pl=1\nPluginSwitch Markdown/SmartyPants.pl=1\nPluginSwitch Textile/textile2.pl=0\nPluginSwitch TinyMCE5=0\nPluginSwitch TinyMCE6=1\nPluginSwitch WXRImporter=1\nPluginSwitch WidgetManager/WidgetManager.pl=0\nSchemaVersion 8.0002\nTrimFilePath 1\n",
+            "DataAPIDisableSite 0\nDefaultSupportedLanguages en_us,ja\nDisableDataAPI 0\nDisableNotificationPings 1\nHidePrivateRelatedContentData 1\nPluginAlias ContentType Information Widget=ContentInfoWidget\nPluginAlias Markdown=Markdown/Markdown.pl\nPluginAlias SmartyPants=Markdown/SmartyPants.pl\nPluginAlias Textile=Textile/textile2.pl\nPluginAlias WXR Importer=WXRImporter\nPluginAlias Widget Manager Upgrade Assistant=WidgetManager/WidgetManager.pl\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion blockeditor=1\nPluginSchemaVersion formattedtext=1.00\nPluginSchemaVersion tinymce5=1\nPluginSchemaVersion tinymce6=1\nPluginSwitch BlockEditor=0\nPluginSwitch ContentInfoWidget=1\nPluginSwitch FormattedText=1\nPluginSwitch FormattedTextForTinyMCE5=0\nPluginSwitch FormattedTextForTinyMCE6=1\nPluginSwitch GoogleAnalyticsV4=1\nPluginSwitch Markdown/Markdown.pl=1\nPluginSwitch Markdown/SmartyPants.pl=1\nPluginSwitch Textile/textile2.pl=0\nPluginSwitch TinyMCE5=0\nPluginSwitch TinyMCE6=1\nPluginSwitch WXRImporter=1\nPluginSwitch WidgetManager/WidgetManager.pl=0\nSchemaVersion 8.0003\nTrimFilePath 1\n",
             1
          ]
       ]
@@ -7934,5 +7934,5 @@
          ]
       ]
    },
-   "schema_version" : "WidgetManager 1.1; blockeditor 1; core 8.0002; formattedtext 1.00; tinymce5 1; tinymce6 1"
+   "schema_version" : "WidgetManager 1.1; blockeditor 1; core 8.0003; formattedtext 1.00; tinymce5 1; tinymce6 1"
 }
