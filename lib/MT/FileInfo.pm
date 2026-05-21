@@ -179,9 +179,10 @@ sub mark_to_remove {
     if ( $build_type != MT::PublishOption::DYNAMIC() ) {
         require MT::DeleteFileInfo;
         my $del = MT::DeleteFileInfo->new(
-            blog_id    => $self->blog_id,
-            file_path  => $self->file_path,
-            build_type => $build_type || 0,
+            blog_id      => $self->blog_id,
+            archive_type => $self->archive_type,
+            file_path    => $self->file_path,
+            build_type   => $build_type || 0,
         );
         $del->save;
     }
