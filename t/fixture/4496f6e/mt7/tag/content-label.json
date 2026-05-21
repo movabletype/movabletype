@@ -350,16 +350,16 @@
             1,
             null,
             "__NOW__",
-            "072201acb9b450ee5e23c17c3b957585c810955b",
+            "6506961ee9d120a77274ef8ad66a11d0fdde8615",
             0,
             null,
             1,
-            "1c4970acf82c5847d5d94901a4df27403da0c9de",
+            "c5b8f06aca81eb72b5dfa576cd97d83847c6dba2",
             "test label 1",
             null,
             "__NOW__",
             2,
-            "1c4970acf82c5847d5d94901a4df27403da0c9de",
+            "c5b8f06aca81eb72b5dfa576cd97d83847c6dba2",
             null,
             201722
          ],
@@ -370,16 +370,16 @@
             2,
             null,
             "__NOW__",
-            "01e934ea39f2ca19a73b39c698b35790c799a059",
+            "b886c3db915fd3572a7b0346ecbde24893ad11e2",
             0,
             "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u00011-\u0000\u0000\u0000\ftest label 2",
             2,
-            "95008775f65e2105a00de6415f49806d5f4dc017",
+            "f38c89b3df64db0f3f66e9bf5f1831f6bdb3ee70",
             "test label 2 (not used)",
             null,
             "__NOW__",
             2,
-            "95008775f65e2105a00de6415f49806d5f4dc017",
+            "f38c89b3df64db0f3f66e9bf5f1831f6bdb3ee70",
             null,
             201722
          ],
@@ -390,16 +390,16 @@
             1,
             null,
             "__NOW__",
-            "072201acb9b450ee5e23c17c3b957585c810955b",
+            "6506961ee9d120a77274ef8ad66a11d0fdde8615",
             0,
             null,
             3,
-            "3bb34ba79848fe763067c415ef3aa118cbb046be",
+            "a83cee1f9186556df0d406b2ce987cb3f99c9c84",
             null,
             null,
             "__NOW__",
             2,
-            "3bb34ba79848fe763067c415ef3aa118cbb046be",
+            "a83cee1f9186556df0d406b2ce987cb3f99c9c84",
             null,
             201722
          ],
@@ -410,16 +410,16 @@
             1,
             null,
             "__NOW__",
-            "072201acb9b450ee5e23c17c3b957585c810955b",
+            "6506961ee9d120a77274ef8ad66a11d0fdde8615",
             0,
             null,
             4,
-            "31aedffea4bd227f9e47bd372819e75e80aaa759",
+            "c3e021462b108e260e9bf995834766f945890a9d",
             "test label 4",
             null,
             "__NOW__",
             2,
-            "31aedffea4bd227f9e47bd372819e75e80aaa759",
+            "c3e021462b108e260e9bf995834766f945890a9d",
             null,
             201722
          ]
@@ -459,7 +459,7 @@
             null,
             null,
             "single_line_text",
-            "91a3cde54d77bf8ff9953f0fcb4be7a605b7c04f"
+            "61c5c21443e7bc82f3c5fe87b18a7222b0a6d9fb"
          ]
       ]
    },
@@ -508,7 +508,7 @@
       ],
       "rows" : [
          [
-            "DataAPIDisableSite 0\nDefaultSupportedLanguages en_us,ja\nDisableContentFieldPermission 1\nDisableDataAPI 0\nDisableNotificationPings 1\nHidePrivateRelatedContentData 1\nPluginAlias ContentType Information Widget=ContentInfoWidget\nPluginAlias Markdown=Markdown/Markdown.pl\nPluginAlias SmartyPants=Markdown/SmartyPants.pl\nPluginAlias Textile=Textile/textile2.pl\nPluginAlias WXR Importer=WXRImporter\nPluginAlias Widget Manager Upgrade Assistant=WidgetManager/WidgetManager.pl\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion blockeditor=1\nPluginSchemaVersion commonmark=1.0\nPluginSchemaVersion formattedtext=1.00\nPluginSchemaVersion tinymce6=1\nPluginSwitch BlockEditor=0\nPluginSwitch CommonMark=1\nPluginSwitch ContentInfoWidget=1\nPluginSwitch DashboardWidgetTemplate=1\nPluginSwitch FormattedText=1\nPluginSwitch FormattedTextForTinyMCE6=1\nPluginSwitch GoogleAnalyticsV4=1\nPluginSwitch Markdown/Markdown.pl=1\nPluginSwitch Markdown/SmartyPants.pl=1\nPluginSwitch Textile/textile2.pl=0\nPluginSwitch TinyMCE6=1\nPluginSwitch WXRImporter=1\nPluginSwitch WidgetManager/WidgetManager.pl=0\nSchemaVersion 9.0002\nTrimFilePath 1\n",
+            "DataAPIDisableSite 0\nDefaultSupportedLanguages en_us,ja\nDisableContentFieldPermission 1\nDisableDataAPI 0\nDisableNotificationPings 1\nHidePrivateRelatedContentData 1\nPluginAlias ContentType Information Widget=ContentInfoWidget\nPluginAlias Markdown=Markdown/Markdown.pl\nPluginAlias SmartyPants=Markdown/SmartyPants.pl\nPluginAlias Textile=Textile/textile2.pl\nPluginAlias WXR Importer=WXRImporter\nPluginAlias Widget Manager Upgrade Assistant=WidgetManager/WidgetManager.pl\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion blockeditor=1\nPluginSchemaVersion commonmark=1.0\nPluginSchemaVersion formattedtext=1.00\nPluginSchemaVersion tinymce6=1\nPluginSwitch BlockEditor=0\nPluginSwitch CommonMark=1\nPluginSwitch ContentInfoWidget=1\nPluginSwitch DashboardWidgetTemplate=1\nPluginSwitch FormattedText=1\nPluginSwitch FormattedTextForTinyMCE6=1\nPluginSwitch GoogleAnalyticsV4=1\nPluginSwitch Markdown/Markdown.pl=1\nPluginSwitch Markdown/SmartyPants.pl=1\nPluginSwitch Textile/textile2.pl=0\nPluginSwitch TinyMCE6=1\nPluginSwitch WXRImporter=1\nPluginSwitch WidgetManager/WidgetManager.pl=0\nSchemaVersion 9.0003\nTrimFilePath 1\n",
             1
          ]
       ]
@@ -541,7 +541,7 @@
             null,
             "__NOW__",
             "test content type 1",
-            "072201acb9b450ee5e23c17c3b957585c810955b",
+            "6506961ee9d120a77274ef8ad66a11d0fdde8615",
             null,
             null
          ],
@@ -549,14 +549,14 @@
             1,
             null,
             "__NOW__",
-            "91a3cde54d77bf8ff9953f0fcb4be7a605b7c04f",
+            "61c5c21443e7bc82f3c5fe87b18a7222b0a6d9fb",
             "This is a sample.",
-            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002A\u0000\u0000\u0000\u0001H\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0014Sample Content Field\u0000\u0000\u0000\brequired-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\u0010single_line_text\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(91a3cde54d77bf8ff9953f0fcb4be7a605b7c04f\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00011",
+            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002A\u0000\u0000\u0000\u0001H\u0000\u0000\u0000\u0005\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(61c5c21443e7bc82f3c5fe87b18a7222b0a6d9fb\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0002\u0000\u0000\u0000\brequired-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0014Sample Content Field\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\u0010single_line_text\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00011",
             2,
             null,
             "__NOW__",
             "test content type 2",
-            "01e934ea39f2ca19a73b39c698b35790c799a059",
+            "b886c3db915fd3572a7b0346ecbde24893ad11e2",
             null,
             null
          ]
@@ -912,5 +912,5 @@
          ]
       ]
    },
-   "schema_version" : "WidgetManager 1.1; blockeditor 1; commonmark 1.0; core 9.0002; formattedtext 1.00; tinymce6 1"
+   "schema_version" : "WidgetManager 1.1; blockeditor 1; commonmark 1.0; core 9.0003; formattedtext 1.00; tinymce6 1"
 }
