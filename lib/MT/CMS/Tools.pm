@@ -2368,9 +2368,13 @@ sub dialog_restore_upload {
         my $objects_tmp = JSON::from_json($objects_json);
         my %class2ids;
 
+        my $object_types  = MT->registry('object_types');
+        my %valid_classes = map { $_ => 1 } values %$object_types;
+
         # { MT::CLASS#OLD_ID => NEW_ID }
         for my $key ( keys %$objects_tmp ) {
             my ( $class, $old_id ) = split '#', $key;
+            next unless $valid_classes{$class};
             if ( exists $class2ids{$class} ) {
                 my $newids = $class2ids{$class}->{newids};
                 push @$newids, $objects_tmp->{$key};
