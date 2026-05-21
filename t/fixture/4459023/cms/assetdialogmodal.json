@@ -27,8 +27,8 @@
             "1978-01-31 07:45:00",
             "Sample Image 1",
             "jpg",
-            "Yu0FAa4jpQ.jpg",
-            "%r/Yu0FAa4jpQ.jpg",
+            "L4ObDRGjbw.jpg",
+            "%r/L4ObDRGjbw.jpg",
             null,
             1,
             "Sample Image 1",
@@ -46,8 +46,8 @@
             "1978-01-31 07:45:00",
             "Sample Image 2",
             "jpg",
-            "Yu0FAa4jpQ.jpg",
-            "%r/Yu0FAa4jpQ.jpg",
+            "L4ObDRGjbw.jpg",
+            "%r/L4ObDRGjbw.jpg",
             null,
             2,
             "Sample Image 2",
@@ -122,7 +122,7 @@
       ],
       "rows" : [
          [
-            "0yanvvgg",
+            "pipswifu",
             "MT",
             "melody",
             null,
@@ -562,7 +562,7 @@
             null,
             null,
             "asset_image",
-            "a494cccae61a3426a0d7045aa308de4e87491a6e"
+            "9b9f066199fb84590faf265617ca1f09cd2c0480"
          ]
       ]
    },
@@ -573,7 +573,7 @@
       ],
       "rows" : [
          [
-            "DataAPIDisableSite 0\nDefaultSupportedLanguages en_us,ja\nDisableDataAPI 0\nDisableNotificationPings 1\nHidePrivateRelatedContentData 1\nPluginAlias ContentType Information Widget=ContentInfoWidget\nPluginAlias Markdown=Markdown/Markdown.pl\nPluginAlias SmartyPants=Markdown/SmartyPants.pl\nPluginAlias Textile=Textile/textile2.pl\nPluginAlias WXR Importer=WXRImporter\nPluginAlias Widget Manager Upgrade Assistant=WidgetManager/WidgetManager.pl\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion blockeditor=1\nPluginSchemaVersion formattedtext=1.00\nPluginSchemaVersion tinymce5=1\nPluginSchemaVersion tinymce6=1\nPluginSwitch BlockEditor=0\nPluginSwitch ContentInfoWidget=1\nPluginSwitch FormattedText=1\nPluginSwitch FormattedTextForTinyMCE5=0\nPluginSwitch FormattedTextForTinyMCE6=1\nPluginSwitch GoogleAnalyticsV4=1\nPluginSwitch Markdown/Markdown.pl=1\nPluginSwitch Markdown/SmartyPants.pl=1\nPluginSwitch Textile/textile2.pl=0\nPluginSwitch TinyMCE5=0\nPluginSwitch TinyMCE6=1\nPluginSwitch WXRImporter=1\nPluginSwitch WidgetManager/WidgetManager.pl=0\nSchemaVersion 8.0002\nTrimFilePath 1\n",
+            "DataAPIDisableSite 0\nDefaultSupportedLanguages en_us,ja\nDisableDataAPI 0\nDisableNotificationPings 1\nHidePrivateRelatedContentData 1\nPluginAlias ContentType Information Widget=ContentInfoWidget\nPluginAlias Markdown=Markdown/Markdown.pl\nPluginAlias SmartyPants=Markdown/SmartyPants.pl\nPluginAlias Textile=Textile/textile2.pl\nPluginAlias WXR Importer=WXRImporter\nPluginAlias Widget Manager Upgrade Assistant=WidgetManager/WidgetManager.pl\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion blockeditor=1\nPluginSchemaVersion formattedtext=1.00\nPluginSchemaVersion tinymce5=1\nPluginSchemaVersion tinymce6=1\nPluginSwitch BlockEditor=0\nPluginSwitch ContentInfoWidget=1\nPluginSwitch FormattedText=1\nPluginSwitch FormattedTextForTinyMCE5=0\nPluginSwitch FormattedTextForTinyMCE6=1\nPluginSwitch GoogleAnalyticsV4=1\nPluginSwitch Markdown/Markdown.pl=1\nPluginSwitch Markdown/SmartyPants.pl=1\nPluginSwitch Textile/textile2.pl=0\nPluginSwitch TinyMCE5=0\nPluginSwitch TinyMCE6=1\nPluginSwitch WXRImporter=1\nPluginSwitch WidgetManager/WidgetManager.pl=0\nSchemaVersion 8.0003\nTrimFilePath 1\n",
             1
          ]
       ]
@@ -606,7 +606,7 @@
             null,
             "__NOW__",
             "content type 1",
-            "7f3202efecae3298603caaa8f8e7a2e3a60469d0",
+            "94a5b462d557e4f8c94c8e60c88b65f51ceada10",
             null,
             null
          ]
@@ -3442,5 +3442,5 @@
          ]
       ]
    },
-   "schema_version" : "WidgetManager 1.1; blockeditor 1; core 8.0002; formattedtext 1.00; tinymce5 1; tinymce6 1"
+   "schema_version" : "WidgetManager 1.1; blockeditor 1; core 8.0003; formattedtext 1.00; tinymce5 1; tinymce6 1"
 }

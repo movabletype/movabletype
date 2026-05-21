@@ -157,7 +157,7 @@
       ],
       "rows" : [
          [
-            "gsmpp3cx",
+            "avkxxs7v",
             "MT",
             "melody",
             null,
@@ -188,7 +188,7 @@
             null
          ],
          [
-            "2nik0izh",
+            "gjieq28m",
             "MT",
             "ichiro_aikawa",
             null,
@@ -219,7 +219,7 @@
             null
          ],
          [
-            "149sbb5k",
+            "iq165fcs",
             "MT",
             "jiro_ichikawa",
             null,
@@ -250,7 +250,7 @@
             null
          ],
          [
-            "hfnvd41b",
+            "9q8nhucu",
             "MT",
             "saburo_ukawa",
             null,
@@ -281,7 +281,7 @@
             null
          ],
          [
-            "56ygn3f6",
+            "gpkffhi7",
             "MT",
             "shiro_egawa",
             null,
@@ -312,7 +312,7 @@
             null
          ],
          [
-            "ty6sfubt",
+            "vxi4hcux",
             "MT",
             "goro_ogawa",
             null,
@@ -343,7 +343,7 @@
             null
          ],
          [
-            "atucocwg",
+            "s9783c6i",
             "MT",
             "ichiro_kagawa",
             null,
@@ -374,7 +374,7 @@
             null
          ],
          [
-            "6dtbnyiq",
+            "8fq0h3pg",
             "MT",
             "jiro_kikkawa",
             null,
@@ -405,7 +405,7 @@
             null
          ],
          [
-            "h0ox9bj4",
+            "5ge3cy65",
             "MT",
             "saburo_kumekawa",
             null,
@@ -436,7 +436,7 @@
             null
          ],
          [
-            "f7u3d77f",
+            "pd3j7n7z",
             "MT",
             "shiro_kemikawa",
             null,
@@ -467,7 +467,7 @@
             null
          ],
          [
-            "vct1iaef",
+            "8wkjq47i",
             "MT",
             "goro_komiya",
             null,
@@ -954,7 +954,7 @@
       ],
       "rows" : [
          [
-            "DataAPIDisableSite 0\nDefaultSupportedLanguages en_us,ja\nDisableDataAPI 0\nDisableNotificationPings 1\nHidePrivateRelatedContentData 1\nPluginAlias ContentType Information Widget=ContentInfoWidget\nPluginAlias Markdown=Markdown/Markdown.pl\nPluginAlias SmartyPants=Markdown/SmartyPants.pl\nPluginAlias Textile=Textile/textile2.pl\nPluginAlias WXR Importer=WXRImporter\nPluginAlias Widget Manager Upgrade Assistant=WidgetManager/WidgetManager.pl\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion blockeditor=1\nPluginSchemaVersion formattedtext=1.00\nPluginSchemaVersion tinymce5=1\nPluginSchemaVersion tinymce6=1\nPluginSwitch BlockEditor=0\nPluginSwitch ContentInfoWidget=1\nPluginSwitch FormattedText=1\nPluginSwitch FormattedTextForTinyMCE5=0\nPluginSwitch FormattedTextForTinyMCE6=1\nPluginSwitch GoogleAnalyticsV4=1\nPluginSwitch Markdown/Markdown.pl=1\nPluginSwitch Markdown/SmartyPants.pl=1\nPluginSwitch Textile/textile2.pl=0\nPluginSwitch TinyMCE5=0\nPluginSwitch TinyMCE6=1\nPluginSwitch WXRImporter=1\nPluginSwitch WidgetManager/WidgetManager.pl=0\nSchemaVersion 8.0002\nTrimFilePath 1\n",
+            "DataAPIDisableSite 0\nDefaultSupportedLanguages en_us,ja\nDisableDataAPI 0\nDisableNotificationPings 1\nHidePrivateRelatedContentData 1\nPluginAlias ContentType Information Widget=ContentInfoWidget\nPluginAlias Markdown=Markdown/Markdown.pl\nPluginAlias SmartyPants=Markdown/SmartyPants.pl\nPluginAlias Textile=Textile/textile2.pl\nPluginAlias WXR Importer=WXRImporter\nPluginAlias Widget Manager Upgrade Assistant=WidgetManager/WidgetManager.pl\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion blockeditor=1\nPluginSchemaVersion formattedtext=1.00\nPluginSchemaVersion tinymce5=1\nPluginSchemaVersion tinymce6=1\nPluginSwitch BlockEditor=0\nPluginSwitch ContentInfoWidget=1\nPluginSwitch FormattedText=1\nPluginSwitch FormattedTextForTinyMCE5=0\nPluginSwitch FormattedTextForTinyMCE6=1\nPluginSwitch GoogleAnalyticsV4=1\nPluginSwitch Markdown/Markdown.pl=1\nPluginSwitch Markdown/SmartyPants.pl=1\nPluginSwitch Textile/textile2.pl=0\nPluginSwitch TinyMCE5=0\nPluginSwitch TinyMCE6=1\nPluginSwitch WXRImporter=1\nPluginSwitch WidgetManager/WidgetManager.pl=0\nSchemaVersion 8.0003\nTrimFilePath 1\n",
             1
          ]
       ]
@@ -5334,5 +5334,5 @@
          ]
       ]
    },
-   "schema_version" : "WidgetManager 1.1; blockeditor 1; core 8.0002; formattedtext 1.00; tinymce5 1; tinymce6 1"
+   "schema_version" : "WidgetManager 1.1; blockeditor 1; core 8.0003; formattedtext 1.00; tinymce5 1; tinymce6 1"
 }
