@@ -111,6 +111,15 @@ sub _sort_cats {
             # Extract the package name
             $package =~ s/::[^(::)]+$//;
 
+            if ($package !~ /\A\w+(::\w+)*\z/) {
+                return $ctx->error(
+                    MT->translate(
+                        "Cannot find package [_1]: [_2]",
+                        $package, 'Illegal package name'
+                    )
+                );
+            }
+
             # Make sure it's loaded
             eval(qq(use $package;));
             if ( my $err = $@ ) {
