@@ -4,8 +4,10 @@
   import ContentFieldOptionGroup from "./ContentFieldOptionGroup.svelte";
 
   type Props = {
+    config?: ContentType.ConfigSettings;
     fieldIndex: number;
     fieldsStore: ContentType.FieldsStore;
+    optionsHtmlParams?: ContentType.OptionsHtmlParams;
     type: string;
     customElement: string;
     updateOptions: (options: ContentType.Options) => void;
@@ -23,6 +25,39 @@
     untrack(() => {
       field = { ...storeField };
       options = { ...(storeField.options || {}) };
+    });
+  });
+
+  $effect(() => {
+    const label = field.label;
+    const desc = options.description;
+    const req = options.required;
+    const display = options.display;
+
+    untrack(() => {
+      const storeField = $fieldsStore[fieldIndex];
+      if (!storeField) return;
+      let changed = false;
+      if (storeField.label !== label) {
+        storeField.label = label;
+        changed = true;
+      }
+      const storeOpts = storeField.options;
+      if (storeOpts) {
+        if (storeOpts.description !== desc) {
+          storeOpts.description = desc;
+          changed = true;
+        }
+        if (storeOpts.required !== req) {
+          storeOpts.required = req;
+          changed = true;
+        }
+        if (storeOpts.display !== display) {
+          storeOpts.display = display;
+          changed = true;
+        }
+      }
+      if (changed) fieldsStore.update((fs) => fs);
     });
   });
 
