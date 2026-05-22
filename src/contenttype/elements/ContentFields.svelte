@@ -231,7 +231,7 @@
         canDataLabel: canDataLabel,
         options: {}, // add in Svelte
       };
-      fieldsStore.update((fields: ContentType.Fields) => [...fields, newField]);
+      fieldsStore.update(() => [...fields, newField]);
       window.setDirty(true);
       // update is not needed in Svelte
 
@@ -376,17 +376,6 @@
 
   // changeLabelFields was removed because unused
 
-  const toggleAll = (): void => {
-    isExpanded = !isExpanded;
-    const newIsShow = isExpanded ? "show" : "";
-    fieldsStore.update((fields: ContentType.Fields) =>
-      fields.map((field: ContentType.Field) => {
-        field.isShow = newIsShow;
-        return field;
-      }),
-    );
-  };
-
   const updateToggleAll = (): void => {
     const collapseEls = document.querySelectorAll(".mt-collapse__content");
     let isAllExpanded = true;
@@ -401,7 +390,7 @@
   };
 
   const _moveField = (item: ContentType.Field, pos: number): void => {
-    fieldsStore.update((fields: ContentType.Fields) => {
+    fieldsStore.update(() => {
       for (let i = 0; i < fields.length; i++) {
         let field = fields[i];
         if (field.id === item.id) {
@@ -520,6 +509,13 @@
     inputData.setAttribute("name", "data");
     inputData.setAttribute("value", data);
     form.insertBefore(inputData, inputId.nextElementSibling);
+  };
+
+  const _deleteField = (index: number): void => {
+    fieldsStore.update(() => fields.filter((_, i) => i !== index));
+  };
+  const _duplicateField = (newItem: ContentType.Field): void => {
+    fieldsStore.update(() => [...fields, newItem]);
   };
 </script>
 
@@ -700,7 +696,6 @@
       <!-- svelte-ignore a11y_invalid_attribute -->
       <a
         data-bs-toggle="collapse"
-        onclick={toggleAll}
         href=".mt-collapse__content"
         aria-expanded={isExpanded ? "true" : "false"}
         class="d-inline-block"
@@ -756,6 +751,8 @@
             parent={tags[fieldIndex]}
             bind:gather={gathers[fieldId]}
             {optionsHtmlParams}
+            onDuplicate={_duplicateField}
+            onDelete={_deleteField}
           />
         </div>
       {/each}
@@ -763,7 +760,6 @@
     <div class="mt-collapse__all">
       <a
         data-bs-toggle="collapse"
-        onclick={toggleAll}
         href=".mt-collapse__content"
         aria-expanded={isExpanded ? "true" : "false"}
         class="d-inline-block"

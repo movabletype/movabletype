@@ -17,6 +17,8 @@
     parent: HTMLDivElement;
     gather: (() => object) | undefined;
     optionsHtmlParams: ContentType.OptionsHtmlParams;
+    onDelete: (index: number) => void;
+    onDuplicate: (newItem: ContentType.Field) => void;
   };
 
   let {
@@ -28,6 +30,8 @@
     parent,
     gather = $bindable(),
     optionsHtmlParams,
+    onDelete,
+    onDuplicate,
   }: Props = $props();
 
   let id = $derived(`field-options-${field.id}`);
@@ -66,10 +70,7 @@
     ) {
       return;
     }
-    fieldsStore.update((fs) =>
-      fs.slice(0, fieldIndex).concat(fs.slice(fieldIndex + 1)),
-    );
-    // update is not needed in Svelte
+    onDelete(fieldIndex);
     const target = document.getElementsByClassName("mt-draggable__area")[0];
     recalcHeight(target);
   };
@@ -92,10 +93,9 @@
     newItem.order = $fieldsStore.length + 1;
     newItem.isNew = true;
     newItem.isShow = "show";
-    fieldsStore.update((fs) => [...fs, newItem]);
+    onDuplicate(newItem);
     const target = document.getElementsByClassName("mt-draggable__area")[0];
     recalcHeight(target);
-    // update is not needed in Svelte
   };
 
   let ContentFieldComponent = $derived(
