@@ -177,7 +177,7 @@ sub edit {
 
             my $original_revision = $content_data->revision;
             my $rn                = $app->param('r');
-            if ( defined($rn) && $rn != $content_data->current_revision ) {
+            if ( defined($rn) ) {
                 my $status_text
                     = MT::ContentStatus::status_text( $content_data->status );
                 $param->{current_status_text}  = $status_text;
