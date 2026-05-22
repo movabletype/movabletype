@@ -60,7 +60,7 @@ sub new {
     $instance = $client;
 
     for my $c (@$workers) {
-        if ( eval( 'require ' . $c ) ) {
+        if ( $c =~ /\A\w+(::\w+)*\z/ && eval( 'require ' . $c ) ) {
             $client->can_do($c);
         } else {
             print STDERR "Failed to load worker class '$c': $@\n";
