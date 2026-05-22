@@ -191,7 +191,7 @@ sub edit {
                     my $rev_obj = $rev->[3];
                     my $values = $content_data->get_values;
                     $param->{$_} = $values->{$_} for keys %$values;
-                    $param->{'revision-note'} = $rev_obj->description;
+                    $param->{'revision-note-in-status-widget'} = $rev_obj->description;
                     $param->{loaded_revision} = 1;
                 }
                 $param->{rev_number}  = $rn;
