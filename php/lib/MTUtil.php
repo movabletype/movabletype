@@ -1165,22 +1165,14 @@ function create_tag_expr_function($expr, &$tags, $datasource = 'entry') {
         ## ( AND, OR, NOT, and round brackets ).
         $id = '#' . $tag->tag_id;
         $count = 0;
-        $expr = preg_replace('/
-            (
-                \sAND\s
-                | \sOR\s
-                | \s?NOT\s
-                | \(
-                | \A
-            )
-            \s*?\Q'.$name.'\E\s*?
-            (
-                \Z
-                | \)
-                | \sAND\s
-                | \sOR\s
-                | \sNOT\s
-            )/ix', "$1$id$2", $expr, -1, $count); # Change all matches to #$id (e.g. #932)
+        $expr = preg_replace(
+            implode('', array(
+                '/',
+                '(\sAND\s|\sOR\s|\s?NOT\s|\(|\A)',
+                '\s*?',preg_quote($name, '/'),'\s*?',
+                '(\Z|\)|\sAND\s|\sOR\s|\sNOT\s)',
+                '/i'
+            )), "$1$id$2", $expr, -1, $count); # Change all matches to #$id (e.g. #932)
 
         if (0 < $count) {
             unset($tags_dict[$tag->tag_name]);
