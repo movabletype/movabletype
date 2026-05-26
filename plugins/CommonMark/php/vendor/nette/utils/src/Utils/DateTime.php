@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace Nette\Utils;
 
+use Nette;
 use function array_merge, checkdate, implode, is_numeric, is_string, preg_replace_callback, sprintf, time, trim;
 
 
@@ -17,6 +18,8 @@ use function array_merge, checkdate, implode, is_numeric, is_string, preg_replac
  */
 class DateTime extends \DateTime implements \JsonSerializable
 {
+	use Nette\SmartObject;
+
 	/** minute in seconds */
 	public const MINUTE = 60;
 
@@ -60,7 +63,7 @@ class DateTime extends \DateTime implements \JsonSerializable
 
 	/**
 	 * Creates DateTime object.
-	 * @throws \Exception if the date and time are not valid.
+	 * @throws Nette\InvalidArgumentException if the date and time are not valid.
 	 */
 	public static function fromParts(
 		int $year,
@@ -71,10 +74,17 @@ class DateTime extends \DateTime implements \JsonSerializable
 		float $second = 0.0,
 	): static
 	{
-		$sec = (int) floor($second);
-		return (new static(''))
-			->setDate($year, $month, $day)
-			->setTime($hour, $minute, $sec, (int) round(($second - $sec) * 1e6));
+		$s = sprintf('%04d-%02d-%02d %02d:%02d:%02.5F', $year, $month, $day, $hour, $minute, $second);
+		if (
+			!checkdate($month, $day, $year)
+			|| $hour < 0 || $hour > 23
+			|| $minute < 0 || $minute > 59
+			|| $second < 0 || $second >= 60
+		) {
+			throw new Nette\InvalidArgumentException("Invalid date '$s'");
+		}
+
+		return new static($s);
 	}
 
 
@@ -112,7 +122,7 @@ class DateTime extends \DateTime implements \JsonSerializable
 	public function setDate(int $year, int $month, int $day): static
 	{
 		if (!checkdate($month, $day, $year)) {
-			throw new \Exception(sprintf('The date %04d-%02d-%02d is not valid.', $year, $month, $day));
+			trigger_error(sprintf(self::class . ': The date %04d-%02d-%02d is not valid.', $year, $month, $day), E_USER_WARNING);
 		}
 		return parent::setDate($year, $month, $day);
 	}
@@ -126,7 +136,7 @@ class DateTime extends \DateTime implements \JsonSerializable
 			|| $second < 0 || $second >= 60
 			|| $microsecond < 0 || $microsecond >= 1_000_000
 		) {
-			throw new \Exception(sprintf('The time %02d:%02d:%08.5F is not valid.', $hour, $minute, $second + $microsecond / 1_000_000));
+			trigger_error(sprintf(self::class . ': The time %02d:%02d:%08.5F is not valid.', $hour, $minute, $second + $microsecond / 1_000_000), E_USER_WARNING);
 		}
 		return parent::setTime($hour, $minute, $second, $microsecond);
 	}
@@ -142,7 +152,7 @@ class DateTime extends \DateTime implements \JsonSerializable
 	}
 
 
-	private function apply(string $datetime, ?\DateTimeZone $timezone = null, bool $ctr = false): void
+	private function apply(string $datetime, $timezone = null, bool $ctr = false): void
 	{
 		$relPart = '';
 		$absPart = preg_replace_callback(
@@ -203,7 +213,7 @@ class DateTime extends \DateTime implements \JsonSerializable
 		$errors = self::getLastErrors();
 		$errors = array_merge($errors['errors'] ?? [], $errors['warnings'] ?? []);
 		if ($errors) {
-			throw new \Exception(implode(', ', $errors) . " '$value'");
+			trigger_error(self::class . ': ' . implode(', ', $errors) . " '$value'", E_USER_WARNING);
 		}
 	}
 }
