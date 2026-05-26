@@ -15,13 +15,14 @@ namespace Nette\Iterators;
  */
 class Mapper extends \IteratorIterator
 {
-	private \Closure $callback;
+	/** @var callable */
+	private $callback;
 
 
 	public function __construct(\Traversable $iterator, callable $callback)
 	{
 		parent::__construct($iterator);
-		$this->callback = $callback(...);
+		$this->callback = $callback;
 	}
 
 
