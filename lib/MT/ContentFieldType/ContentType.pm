@@ -102,7 +102,7 @@ sub html {
     for my $cd (@child_cd) {
         my $id        = $cd->id;
         my $edit_link = $cd->edit_link($app);
-        my $label     = $cd->label || MT->translate('No Label');
+        my $label     = MT::Util::encode_html($cd->label || MT->translate('No Label'));
         push @cd_links, qq{<a href="${edit_link}">$label</a>};
     }
 
