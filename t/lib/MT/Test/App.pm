@@ -210,14 +210,14 @@ sub _request_locally {
         if ($self->{session}) {
             require MT::Session;
             my $sess = MT::Session->load($self->{session}) or delete $self->{session};
-            $params->{magic_token} = $sess->get('magic_token') if $method eq 'POST';
+            $params->{magic_token} //= $sess->get('magic_token');
         }
         if (!$self->{session}) {
             require MT::App;
             my $sess = MT::App::make_session($user, 1);
             $self->{session}       = $sess->id;
-            $params->{magic_token} = $sess->get('magic_token') if $method eq 'POST';
-            if ($self->{app_class} eq 'MT::App::DataAPI' && !defined($self->{access_token})) {
+            $params->{magic_token} //= $sess->get('magic_token');
+            if ($self->{app_class} eq 'MT::App::DataAPI') {
                 require MT::AccessToken;
                 require MT::Util::UniqueID;
                 my $token = MT::Util::UniqueID::create_magic_token();
