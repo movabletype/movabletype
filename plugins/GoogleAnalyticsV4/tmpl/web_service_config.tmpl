@@ -59,9 +59,9 @@
 <input type="hidden" id="ga4_configured_client_secret" value="<mt:Var name="configured_client_secret" encode_html="1" />" />
 <input type="hidden" id="ga4_profile_name" name="ga4_profile_name" value="<mt:Var name="ga4_profile_name" encode_html="1" />" />
 <input type="hidden" id="ga4_profile_web_property_id" name="ga4_profile_web_property_id" value="<mt:Var name="ga4_profile_web_property_id" encode_html="1" />" />
-<input type="hidden" id="ga4_measurement_id" name="ga4_measurement_id" value="<mt:Var name="ga4_measurement_id" />" />
-<input type="hidden" id="ga4_parent_profile_name" value="<mt:Var name="parent_profile_name" />" />
-<input type="hidden" id="ga4_parent_profile_web_property_id" value="<mt:Var name="parent_profile_web_property_id" />" />
+<input type="hidden" id="ga4_measurement_id" name="ga4_measurement_id" value="<mt:Var name="ga4_measurement_id" encode_html="1"/>" />
+<input type="hidden" id="ga4_parent_profile_name" value="<mt:Var name="parent_profile_name" encode_html="1" />" />
+<input type="hidden" id="ga4_parent_profile_web_property_id" value="<mt:Var name="parent_profile_web_property_id" encode_html="1" />" />
 <script type="text/javascript">
 jQuery(function($) {
     var redirectUri = $('#ga4_redirect_uri').val();
