@@ -217,7 +217,7 @@ sub _request_locally {
             my $sess = MT::App::make_session($user, 1);
             $self->{session}       = $sess->id;
             $params->{magic_token} = $sess->get('magic_token') if $method eq 'POST';
-            if ($self->{app_class} eq 'MT::App::DataAPI') {
+            if ($self->{app_class} eq 'MT::App::DataAPI' && !defined($self->{access_token})) {
                 require MT::AccessToken;
                 require MT::Util::UniqueID;
                 my $token = MT::Util::UniqueID::create_magic_token();
@@ -312,7 +312,7 @@ sub _request_internally {
         } else {
             $app->session_user($user, $self->{session});
         }
-        $app->param('magic_token', $app->current_magic);
+        $app->param('magic_token', $app->current_magic) unless defined($app->param('magic_token'));
         $app->user($user);
         my $cookie_name  = $app->user_cookie;
         my $cookie_value = join '::', $user->name, $self->{session};
