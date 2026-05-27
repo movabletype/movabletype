@@ -2,18 +2,18 @@
 
   <div class="form-group">
     <label class="form-control-label"><__trans phrase="Alt"></label>
-    <input type="text" name="asset-option-alt-<$mt:var name="id"$>" id="asset-option-alt" value="<mt:var name="alt" escape="html">" class="form-control">
+    <input type="text" name="asset-option-alt-<$mt:var name="id" escape="html"$>" id="asset-option-alt" value="<mt:var name="alt" escape="html">" class="form-control">
   </div>
 
   <div class="form-group">
     <label class="form-control-label"><__trans phrase="Title"></label>
-    <input type="text" name="asset-option-title-<$mt:var name="id"$>" id="asset-option-title" value="<mt:var name="title" escape="html">" class="form-control">
+    <input type="text" name="asset-option-title-<$mt:var name="id" escape="html"$>" id="asset-option-title" value="<mt:var name="title" escape="html">" class="form-control">
   </div>
 
   <mt:if name="do_thumb">
   <div class="form-group">
       <div class="custom-control custom-checkbox">
-        <input type="checkbox" class="custom-control-input" id="asset-option-thumbnail" name="thumb-<$mt:var name="id"$>" value="1" <mt:if name="make_thumb">checked="checked" </mt:if> onclick="MT.Util.refreshModalBodyOnIos();">
+        <input type="checkbox" class="custom-control-input" id="asset-option-thumbnail" name="thumb-<$mt:var name="id" escape="html"$>" value="1" <mt:if name="make_thumb">checked="checked" </mt:if> onclick="MT.Util.refreshModalBodyOnIos();">
         <label class="custom-control-label" for="asset-option-thumbnail"><__trans phrase="Use thumbnail"></label>
       </div>
   </div>
@@ -23,21 +23,21 @@
   <div class="form-group">
       <label class="form-control-label"><__trans phrase="width:"></label>
       <div class="input-group">
-        <input type="number" name="thumb_width-<$mt:var name="id"$>" class="form-control" name="asset-option-width" id="asset-option-width" value="<mt:var name="width" escape="html">" mt:watch-change="1">
+        <input type="number" name="thumb_width-<$mt:var name="id" escape="html"$>" class="form-control" name="asset-option-width" id="asset-option-width" value="<mt:var name="width" escape="html">" mt:watch-change="1">
         <div class="input-group-append"><span class="input-group-text">px</span></div>
       </div>
   </div>
   <div class="form-group">
     <label class="form-control-label"><__trans phrase="height:"></label>
     <div class="input-group">
-      <input type="number" name="thumb_height-<$mt:var name="id"$>" class="form-control" name="asset-option-height" id="asset-option-height" value="<mt:var name="height" escape="html">" mt:watch-change="1">
+      <input type="number" name="thumb_height-<$mt:var name="id" escape="html"$>" class="form-control" name="asset-option-height" id="asset-option-height" value="<mt:var name="height" escape="html">" mt:watch-change="1">
       <div class="input-group-append"><span class="input-group-text">px</span></div>
     </div>
   </div>
   <div class="form-group">
     <div class="custom-control custom-checkbox">
-      <input type="checkbox" id="thumb_keep_aspect_ratio-<$mt:var name="id"$>" name="thumb_keep_aspect_ratio-<$mt:var name="id"$>" class="custom-control-input" <mt:if name="keep_aspect_ratio">checked="checked"</mt:if> data-mt-aspect-ratio="<mt:var name="aspect_ratio" escape="html">" value="1">
-      <label class="custom-control-label" for="thumb_keep_aspect_ratio-<$mt:var name="id"$>"><__trans phrase="Keep aspect ratio"></label>
+      <input type="checkbox" id="thumb_keep_aspect_ratio-<$mt:var name="id" escape="html"$>" name="thumb_keep_aspect_ratio-<$mt:var name="id" escape="html"$>" class="custom-control-input" <mt:if name="keep_aspect_ratio">checked="checked"</mt:if> data-mt-aspect-ratio="<mt:var name="aspect_ratio" escape="html">" value="1">
+      <label class="custom-control-label" for="thumb_keep_aspect_ratio-<$mt:var name="id" escape="html"$>"><__trans phrase="Keep aspect ratio"></label>
     </div>
   </div>
   <div class="form-group alignbutton">
@@ -65,11 +65,11 @@
         <use xlink:href="<$mt:var name="static_uri"$>images/sprite.svg#ic_alignnone"></use>
       </svg>
     </button>
-    <input type="hidden" name="asset-option-align-<$mt:var name="id"$>" value="<mt:if name="align"><mt:var name="align" escape="html"></mt:if>">
+    <input type="hidden" name="asset-option-align-<$mt:var name="id" escape="html"$>" value="<mt:if name="align"><mt:var name="align" escape="html"></mt:if>">
   </div>
   <div class="form-group">
     <label class="form-control-label"><__trans phrase="Caption"></label>
-    <input type="text" name="asset-option-caption-<$mt:var name="id"$>" id="asset-option-caption-<$mt:var name="id"$>" value="<mt:var name="caption" escape="html">" class="form-control">
+    <input type="text" name="asset-option-caption-<$mt:var name="id" escape="html"$>" id="asset-option-caption-<$mt:var name="id" escape="html"$>" value="<mt:var name="caption" escape="html">" class="form-control">
   </div>
 
 </div>
@@ -78,7 +78,7 @@ jQuery('.alignbutton button').each(function(){
   jQuery(this).on('click', function(){
     jQuery('.alignbutton button').removeClass('btn-contentblock--selected');
     jQuery(this).addClass('btn-contentblock--selected');
-    jQuery('[name="asset-option-align-<$mt:var name="id"$>"]').val(jQuery(this).data("align"));
+    jQuery('[name="asset-option-align-<$mt:var name="id" escape="js"$>"]').val(jQuery(this).data("align"));
     return false;
   });
 });
