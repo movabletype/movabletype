@@ -259,11 +259,11 @@
       <mt:var name="template_status_icon">
       <span class="tmpl-label icon-left-xwide <mt:var name="include_scope_type">-tmpl"><mt:var name="include_module" escape="html"></span>
     </mt:if>
-      <mt:if name="include_from" ne="self"><span class="include-from">(<mt:var name="include_blog_name">)</span></mt:if>
+      <mt:if name="include_from" ne="self"><span class="include-from">(<mt:var name="include_blog_name" escape="html">)</span></mt:if>
   <mt:else>
       <mtapp:svgicon id="ic_stop" title="<__trans phrase="Error">" size="sm" color="danger">
       <span class="tmpl-label icon-left-xwide <mt:var name="include_scope_type">-tmpl error"><mt:var name="include_module" escape="html"></span><mt:unless name="include_from" eq="error"> (<a href="<mt:var name="create_link">"><__trans phrase="create"></a>)</mt:unless>
-      <mt:if name="include_from" ne="self"><span class="include-from <mt:var name="include_from">">(<mt:var name="include_blog_name">)</span></mt:if>
+      <mt:if name="include_from" ne="self"><span class="include-from <mt:var name="include_from">">(<mt:var name="include_blog_name" escape="html">)</span></mt:if>
   </mt:if>
     </li>
   </mt:loop>
@@ -272,10 +272,10 @@
     <li>
   <mt:if name="include_link">
       <a href="<mt:var name="include_link">" class="tmpl-label icon-left-xwide <mt:var name="include_scope_type">-tmpl"><mt:var name="include_module" escape="html"></a>
-      <mt:if name="include_from" ne="self"><span class="include-from <mt:var name="include_from">">(<mt:var name="include_blog_name">)</span></mt:if>
+      <mt:if name="include_from" ne="self"><span class="include-from <mt:var name="include_from">">(<mt:var name="include_blog_name" escape="html">)</span></mt:if>
   <mt:else>
       <span class="tmpl-label icon-left-xwide <mt:var name="include_scope_type">-tmpl error"><mt:var name="include_module" escape="html"></span><mt:unless name="include_from" eq="error"> (<a href="<mt:var name="create_link">"><__trans phrase="create"></a>)</mt:unless>
-      <mt:if name="include_from" ne="self"><span class="include-from <mt:var name="include_from">">(<mt:var name="include_blog_name">)</span></mt:if>
+      <mt:if name="include_from" ne="self"><span class="include-from <mt:var name="include_from">">(<mt:var name="include_blog_name" escape="html">)</span></mt:if>
   </mt:if>
     </li>
   </mt:loop>
@@ -284,10 +284,10 @@
     <li>
   <mt:if name="include_link">
       <a href="<mt:var name="include_link">" class="tmpl-label icon-left-xwide <mt:var name="include_scope_type">-tmpl"><mt:var name="include_module" escape="html"></a>
-      <mt:if name="include_from" ne="self"><span class="include-from <mt:var name="include_from">">(<mt:var name="include_blog_name">)</span></mt:if>
+      <mt:if name="include_from" ne="self"><span class="include-from <mt:var name="include_from">">(<mt:var name="include_blog_name" escape="html">)</span></mt:if>
   <mt:else>
       <span class="tmpl-label icon-left-xwide <mt:var name="include_scope_type">-tmpl error"><mt:var name="include_module" escape="html"></span><mt:unless name="include_from" eq="error"> (<a href="<mt:var name="create_link">"><__trans phrase="create"></a>)</mt:unless>
-      <mt:if name="include_from" ne="self"><span class="include-from <mt:var name="include_from">">(<mt:var name="include_blog_name">)</span></mt:if>
+      <mt:if name="include_from" ne="self"><span class="include-from <mt:var name="include_from">">(<mt:var name="include_blog_name" escape="html">)</span></mt:if>
   </mt:if>
     </li>
   </mt:loop>
