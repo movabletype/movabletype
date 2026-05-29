@@ -35,7 +35,7 @@ sub js_save_rev {
     my $rn     = $q->param('r');
     my $obj_ds = $class->datasource;
     my $id_col = $obj_ds . '_id';
-    my $obj    = $class->load({ id => $id })
+    my $obj    = $class->load($id)
         or return $app->json_error($app->translate('Invalid request.'), 400);
 
     if ($type eq 'entry') {
