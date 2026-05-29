@@ -23,16 +23,16 @@ sub js_save_rev {
         'revision-note' => [qw/TEXT/],
     }) or return $app->json_error($app->translate('Invalid request.'), 400);
 
-    my $param = $app->param;
-    my $type  = $param->param('_type');
+    my $q     = $app->param;
+    my $type  = $q->param('_type');
     my $class = $app->model($type)
         or return $app->json_error($app->translate('Invalid request.'), 400);
 
     return $app->json_error($app->translate('Invalid request.'), 400)
         unless $class->isa('MT::Revisable');
 
-    my $id     = $param->param('id');
-    my $rn     = $param->param('r');
+    my $id     = $q->param('id');
+    my $rn     = $q->param('r');
     my $obj_ds = $class->datasource;
     my $id_col = $obj_ds . '_id';
     my $obj    = $class->load({ id => $id })
@@ -53,7 +53,7 @@ sub js_save_rev {
         or return $app->json_error($app->translate('Invalid request.'), 400);
 
     my $old = $rev->description // '';
-    my $new = $param->param('revision-note');
+    my $new = $q->param('revision-note');
     $rev->description($new);
     $rev->save
         or return $app->json_error($rev->errstr, 500);
