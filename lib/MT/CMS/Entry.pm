@@ -84,7 +84,7 @@ sub edit {
         if ( $blog->use_revision ) {
             $original_revision = $obj->revision;
             my $rn = $app->param('r');
-            if ( defined($rn) ) {
+            if ( defined($rn) && $rn != $obj->current_revision ) {
                 my $status_text = MT::Entry::status_text( $obj->status );
                 $param->{current_status_text}  = $status_text;
                 $param->{current_status_label} = $app->translate($status_text);
@@ -107,6 +107,10 @@ sub edit {
                 $param->{missing_tags_rev} = 1
                     if exists( $obj->{__missing_tags_rev} )
                     && $obj->{__missing_tags_rev};
+            }
+            if ( my $cur_rev = $obj->current_revision ) {
+                my $rev = $obj->load_revision( { rev_number => $cur_rev } );
+                $param->{'latest-revision-note'} = $rev->[3]->description;
             }
             $param->{rev_date} = format_ts( "%Y-%m-%d %H:%M:%S",
                 $obj->modified_on, $blog, $preferred_language );

@@ -73,7 +73,7 @@ sub edit {
                     $obj->modified_on, $blog,
                     $app->user ? $app->user->preferred_language : undef );
                 my $rev = $obj->load_revision( { rev_number => $rn } );
-                if ( $rev && @$rev ) {
+                if ( $rev && @$rev && $rn != $obj->current_revision ) {
                     $obj = $rev->[0];
                     my $rev_obj = $rev->[3];
                     my $values = $obj->get_values;
@@ -87,6 +87,10 @@ sub edit {
                     $app->user ? $app->user->preferred_language : undef );
                 $param->{no_snapshot} = 1 if $app->param('no_snapshot');
             }
+        }
+        if ( my $cur_rev = $obj->current_revision ) {
+            my $rev = $obj->load_revision( { rev_number => $cur_rev } );
+            $param->{'latest-revision-note'} = $rev->[3]->description;
         }
         $param->{nav_templates} = 1;
         my $tab;
