@@ -91,6 +91,9 @@
     <mt:if name="rev_date">
     <__trans phrase="Revision: <strong>[_1]</strong>" params="<mt:var name="rev_date" escape="html">">
     <mt:if name="revision-note-in-status-widget"><br><mt:var name="revision-note-in-status-widget" escape="html"></mt:if>
+    <mt:unless name="loaded_revision">
+      <mt:if name="latest-revision-note"><br><mt:var name="latest-revision-note" escape="html"></mt:if>
+    </mt:unless>
     <br>
     <a href="<mt:var name="script_url">?__mode=list_revision&_type=<mt:var name="object_type" default="entry">&id=<$mt:var name="id" escape="url"$>&blog_id=<$mt:var name="blog_id"$>&r=<mt:var name="rev_number" escape="html">" class="mt-open-dialog mt-modal-open" data-mt-modal-large title="<__trans phrase="View revisions of this [_1]" params="<mt:var name="object_label" escape="html">">">
       <__trans phrase="View revisions">
