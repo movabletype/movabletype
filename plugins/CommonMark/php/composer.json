@@ -1,5 +1,6 @@
 {
     "require": {
-        "league/commonmark": "^2.8.2"
+        "league/commonmark": "^2.8.2",
+        "nette/utils": "<4.1.0"
     }
 }

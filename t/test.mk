@@ -50,8 +50,8 @@ test-phpunit:
 
 PHP_LINT_DIR ?= php plugins
 
-PHP_82_OR_LATER := $(shell php -r "echo version_compare(PHP_VERSION, '8.2.0', '>=');")
-ifeq ($(PHP_82_OR_LATER), 1)
+PHP_81_OR_LATER := $(shell php -r "echo version_compare(PHP_VERSION, '8.1.0', '>=');")
+ifeq ($(PHP_81_OR_LATER), 1)
 	REMOVE_COMMONMARK = |
 else
 	REMOVE_COMMONMARK = | grep -v "plugins/CommonMark/php" |
