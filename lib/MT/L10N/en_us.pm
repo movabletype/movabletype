@@ -68,7 +68,7 @@ sub ascii_only { ( ( ref $_[0] ) || $_[0] ) eq __PACKAGE__ }
         'Select the archive type to which you would like to add a new archive template. Then select the template to associate with that archive type.',
 
     '_USAGE_BANLIST' =>
-        'Below is the list of IP addresses who you have banned from commenting on your site or from sending TrackBack pings to your site. To add a new IP address, enter the address in the form below. To delete a banned IP address, check the delete box in the table below, and press the DELETE button.',
+        'Below is the list of IP addresses who you have banned from commenting on your site. To add a new IP address, enter the address in the form below. To delete a banned IP address, check the delete box in the table below, and press the DELETE button.',
 
     '_USAGE_PREFS' =>
         'This screen allows you to set a variety of optional settings concerning your blog, your archives, your comments, and your publicity &amp; notification settings. When you create a new blog, these values will be set to reasonable defaults.',
@@ -101,9 +101,6 @@ sub ascii_only { ( ( ref $_[0] ) || $_[0] ) eq __PACKAGE__ }
 
     '_USAGE_CATEGORIES' =>
         'Use categories to group your entries for easier reference, archiving and blog display. You can assign a category to a particular entry when creating or editing entries. To edit an existing category, click the category\'s title. To create a subcategory click the corresponding "Create" button. To move a category, click the corresponding "Move" button.',
-    '_USAGE_CATEGORY_PING_URL' =>
-        'This is the URL that others will use to send TrackBacks to your weblog. If you wish for anyone to send TrackBacks to your weblog when they have an entry specific to this category, publish this URL publicly. If you choose to only allow a select group of individuals to TrackBack, send this URL to them privately. To include a list of incoming TrackBacks in your Main Index Template, check the documentation for template tags related to TrackBacks.',
-
     '_USAGE_TAGS' =>
         'Use tags to group your entries for easier reference and blog display.',
 
@@ -128,7 +125,7 @@ sub ascii_only { ( ( ref $_[0] ) || $_[0] ) eq __PACKAGE__ }
     '_USAGE_IMPORT' =>
         'You can import entries for your weblog from a file in the <code>import</code> directory where Movable Type is installed, or uploaded by following forms. Entries can be imported from other Movable Type installations or other applications.',
     '_USAGE_EXPORT_1' =>
-        'Export the entries, comments and TrackBacks of a [_1]. An export is not considered a <em>complete</em> backup of a [_1].',
+        'Export the entries and comments of a [_1]. An export is not considered a <em>complete</em> backup of a [_1].',
     '_USAGE_EXPORT_2' =>
         'To export your entries, click on the link below ("Export Entries From [_1]"). To save the exported data to a file, you can hold down the <code>option</code> key on the Macintosh, or the <code>Shift</code> key on a PC, while clicking on the link. Alternatively, you can select all of the data, then copy it into another document. (<a href="javascript:void(0)" onclick="openManual(\'importing\', \'export_ie\');return false;">Exporting from Internet Explorer?</a>)',
     '_USAGE_EXPORT_3' =>
@@ -168,13 +165,6 @@ sub ascii_only { ( ( ref $_[0] ) || $_[0] ) eq __PACKAGE__ }
 
     '_USAGE_COMMENTERS_LIST' =>
         'Here is the list of all authenicated commenters to [_1]. Below you may flag any commenter as trusted or banned, or get more information.',
-
-    '_USAGE_PING_LIST_BLOG' =>
-        'Here is the list of TrackBacks for [_1]  which you can filter, manage and edit.',
-    '_USAGE_PING_LIST_OVERVIEW' =>
-        'Here is the list of TrackBacks for all weblogs which you can filter, manage and edit.',
-    '_USAGE_PING_LIST_ALL_WEBLOGS' =>
-        'Here is the list of TrackBack pings for all weblogs  which you can filter, manage and edit.',
 
     '_USAGE_NOTIFICATIONS' =>
         'Here is the list of users who wish to be notified when you publish to your site. To add a new user, enter their email address in the form below. The URL field is optional. To delete a user, check the delete box in the table below and press the DELETE button.',
@@ -259,7 +249,6 @@ sub ascii_only { ( ( ref $_[0] ) || $_[0] ) eq __PACKAGE__ }
     '__PAGE_COUNT'             => 'Page Count',
     '__ASSET_COUNT'            => 'Asset Count',
     '__COMMENT_COUNT'          => 'Comment Count',
-    '__PING_COUNT'             => 'Trackback Count',
     '__ROLE_STATUS'            => 'Status',
     '__ROLE_ACTIVE'            => 'In Use',
     '__ROLE_INACTIVE'          => 'Not in Use',

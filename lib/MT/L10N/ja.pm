@@ -324,15 +324,11 @@ use vars qw( @ISA %Lexicon );
 
 ## default_templates/entry.mtml
 	'# Comments' => 'コメント(#)',
-	'# TrackBacks' => 'トラックバック(#)',
 	'1 Comment' => 'コメント(1)',
-	'1 TrackBack' => 'トラックバック(1)',
 	'By [_1] on [_2]' => '[_1] ([_2])',
 	'Comments' => 'コメント',
 	'No Comments' => 'コメント(0)',
-	'No TrackBacks' => 'トラックバック(0)',
 	'Tags' => 'タグ',
-	'Trackbacks' => 'トラックバック',
 
 ## default_templates/entry_summary.mtml
 	'Continue reading <a href="[_1]" rel="bookmark">[_2]</a>.' => '続きを読む: <a href="[_1]" rel="bookmark">[_2]</a>',
@@ -1136,9 +1132,8 @@ use vars qw( @ISA %Lexicon );
 	'Compose Settings' => '投稿設定',
 	'Create Child Site' => '子サイトの作成',
 	'Enter a site name to filter the choices below.' => 'サイト名を入力して絞り込み',
-	'Entries must be cloned if comments and trackbacks are cloned' => 'コメントやトラックバックの複製により、記事も複製されます。',
 	'Entries must be cloned if comments are cloned' => 'コメントの複製により、記事も複製されます。',
-	'Entries must be cloned if trackbacks are cloned' => 'トラックバックの複製により、記事も複製されます。',
+	'Entries must be cloned if comments and trackbacks are cloned' => 'コメントの複製により、記事も複製されます。',
 	'Error' => 'エラー',
 	'Error: Movable Type cannot write to the template cache directory. Please check the permissions for the directory called <code>[_1]</code> underneath your blog directory.' => 'テンプレートをキャッシュするディレクトリに書き込めません。サイトパスの下にある<code>[_1]</code>ディレクトリのパーミッションを確認してください。',
 	'Error: Movable Type was not able to create a directory to cache your dynamic templates. You should create a directory called <code>[_1]</code> underneath your blog directory.' => 'テンプレートをキャッシュするディレクトリを作成できません。サイトパスの下に<code>[_1]</code>ディレクトリを作成してください。',
@@ -1295,7 +1290,7 @@ use vars qw( @ISA %Lexicon );
 	'Unknown Content Type' => '不明なコンテンツタイプ',
 	'You should remove "SSLVerifyNone 1" in mt-config.cgi.' => 'SSLVerifyNone 環境変数の指定を mt-config.cgi から削除してください。',
 	q{Movable Type was unable to write to its 'support' directory. Please create a directory at this location: [_1], and assign permissions that will allow the web server write access to it.} => q{サポートディレクトリに書き込みできません。[_1]にディレクトリを作成して、ウェブサーバーから書き込みできるパーミッションを与えてください。},
-	q{The System Email Address is used in the 'From:' header of each email sent by Movable Type.  Email may be sent for password recovery, commenter registration, comment and trackback notification, user or IP address lockout, and a few other minor events. Please confirm your <a href="[_1]">settings.</a>} => q{このメールアドレスはMovable Typeから送られるメールの'From:'アドレスに利用されます。メールはパスワードの再設定、コメント投稿者の登録、コメントやトラックバックの通知、ユーザーまたはIPアドレスのロックアウト、その他の場合に送信されます。<a href="[_1]">設定</a>を確認してください。},
+	q{The System Email Address is used in the 'From:' header of each email sent by Movable Type.  Email may be sent for password recovery, commenter registration, comment notification, user or IP address lockout, and a few other minor events. Please confirm your <a href="[_1]">settings.</a>} => q{このメールアドレスはMovable Typeから送られるメールの'From:'アドレスに利用されます。メールはパスワードの再設定、コメント投稿者の登録、コメントの通知、ユーザーまたはIPアドレスのロックアウト、その他の場合に送信されます。<a href="[_1]">設定</a>を確認してください。},
 
 ## lib/MT/CMS/Entry.pm
 	'(user deleted - ID:[_1])' => '(削除されたユーザー - ID:[_1])',
@@ -1412,7 +1407,6 @@ use vars qw( @ISA %Lexicon );
 	'Select Site' => 'サイトを選択',
 	'Select to apply this trigger to all child sites in this site.' => 'サイト内のすべての子サイトでトリガーを有効にする',
 	'Select to apply this trigger to all sites and child sites in this system.' => 'システム内のすべてのサイトと子サイトでトリガーを有効にする',
-	'TrackBack' => 'トラックバック',
 	'__UNPUBLISHED' => '公開終了',
 	'rebuild indexes.' => 'インデックスを再構築する',
 
@@ -1566,8 +1560,6 @@ use vars qw( @ISA %Lexicon );
 	'Lockout IP address whitelist' => 'ロックアウトの除外IPアドレス',
 	'MT::Asset#[_1]: ' => 'MT::Asset#[_1]: ',
 	'Manifest file [_1] was not a valid Movable Type exported manifest file.' => '[_1]はMovable Typeで作成された正しいマニフェストファイルではありません。',
-	'Only to blogs within this system' => 'ブログのみ',
-	'Outbound trackback limit is [_1]' => '外部トラックバック送信は [_1] に制限されます',
 	'Password Recovery' => 'パスワードの再設定',
 	'Password reset token not found' => 'パスワードをリセットするためのトークンが見つかりませんでした。',
 	'Passwords do not match' => 'パスワードが一致していません。',
@@ -1583,8 +1575,6 @@ use vars qw( @ISA %Lexicon );
 	'Prohibit comments is on' => 'コメントは無効です',
 	'Prohibit notification pings is off' => '更新pingは有効です',
 	'Prohibit notification pings is on' => '更新pingは無効です',
-	'Prohibit trackbacks is off' => 'トラックバックは有効です',
-	'Prohibit trackbacks is on' => 'トラックバックは無効です',
 	'Reboot is requested by [_1]' => '[_1]が再起動の請求をしました',
 	'Recipients for lockout notification' => '通知メール受信者',
 	'Some [_1] were not imported because their parent objects were not imported.' => '親となるオブジェクトがないため[_1]をインポートできませんでした。',
@@ -1931,7 +1921,7 @@ use vars qw( @ISA %Lexicon );
 	'Include Template Module' => 'テンプレートモジュールのインクルード',
 	'Invalid date.' => '無効な日付フォーマットです。',
 	'Job' => 'ジョブ',
-	'Junk Folder Expiration' => 'スパムコメント/トラックバックの廃棄',
+	'Junk Folder Expiration' => 'スパムコメントの廃棄',
 	'Legacy Quick Filter' => 'クイックフィルタ',
 	'Log' => 'ログ',
 	'Manage Address Book' => 'アドレス帳の管理',
@@ -1942,7 +1932,7 @@ use vars qw( @ISA %Lexicon );
 	'Manage Category Set' => 'カテゴリセットの管理',
 	'Manage Content Type' => 'コンテンツタイプの管理',
 	'Manage Content Types' => 'コンテンツタイプの管理',
-	'Manage Feedback' => 'コメント/トラックバックの管理',
+	'Manage Feedback' => 'コメントの管理',
 	'Manage Group Members' => 'グループメンバーの管理',
 	'Manage Pages' => 'ウェブページの管理',
 	'Manage Plugins' => 'プラグインの管理',
@@ -3383,7 +3373,7 @@ use vars qw( @ISA %Lexicon );
 	'(Deleted)' => '削除されたユーザー',
 	'Approved' => '公開',
 	'Banned' => '禁止',
-	'Can comment and manage feedback.' => 'コメントを投稿し、コメントやトラックバックを管理できます。',
+	'Can comment and manage feedback.' => 'コメントを投稿し、コメントを管理できます。',
 	'Can comment.' => 'コメントを投稿できます。',
 	'Commenter' => 'コメント投稿者',
 	'Comments on [_1]: [_2]' => '[_1] [_2]のコメント',
@@ -3464,7 +3454,6 @@ use vars qw( @ISA %Lexicon );
 	'You cannot reply to unapproved comment.' => '未公開のコメントには返信できません。',
 	'You cannot reply to unpublished comment.' => '公開されていないコメントには返信できません。',
 	'You do not have permission to approve this comment.' => 'このコメントを承認する権限がありません。',
-	'You do not have permission to approve this trackback.' => 'このトラックバックを承認する権限がありません。',
 	q{Comment (ID:[_1]) by '[_2]' deleted by '[_3]' from entry '[_4]'} => q{'[_3]'が記事'[_4]'のコメント'[_1]'(ID:[_2])を削除しました。},
 	q{User '[_1]' banned commenter '[_2]'.} => q{'[_1]'がコメント投稿者'[_2]'を禁止しました。},
 	q{User '[_1]' trusted commenter '[_2]'.} => q{'[_1]'がコメント投稿者'[_2]'を承認しました。},
@@ -3649,7 +3638,6 @@ use vars qw( @ISA %Lexicon );
 	q{Don't compress} => q{圧縮しない},
 
 ## tmpl/admin2023/cms/cfg_entry.tmpl
-	'Accept TrackBacks' => 'トラックバック許可',
 	'Alignment' => '位置',
 	'Ascending' => '昇順',
 	'Basename Length' => 'ファイル名の文字数',
@@ -3686,8 +3674,6 @@ use vars qw( @ISA %Lexicon );
 	'Listing Default' => '表示される記事数',
 	'No substitution' => '置き換えない',
 	'Norwegian' => 'ノルウェー語',
-	'Note: This option is currently ignored since TrackBacks are disabled either child site or system-wide.' => '注: サイトまたはシステム全体の設定でトラックバックが無効なためこのオプションは無視されます。',
-	'Note: This option is currently ignored since TrackBacks are disabled either site or system-wide.' => '注: サイトまたはシステム全体の設定でトラックバックが無効なためこのオプションは無視されます。',
 	'Note: This option is currently ignored since comments are disabled either child site or system-wide.' => '注: サイトまたはシステム全体でコメントが無効なためこのオプションは無視されます。',
 	'Note: This option is currently ignored since comments are disabled either site or system-wide.' => '注: サイトまたはシステム全体でコメントが無効なためこのオプションは無視されます。',
 	'Order' => '順番',
@@ -3724,7 +3710,6 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/admin2023/cms/cfg_feedback.tmpl
 	'([_1])' => '([_1])',
-	'Accept TrackBacks from any source.' => 'すべてのトラックバックを許可する',
 	'Accept comments according to the policies shown below.' => 'コメントポリシーを設定し、コメントを受け付ける',
 	'Allow HTML' => 'HTMLを許可',
 	'Allow commenters to include a limited set of HTML tags in their comments. Otherwise all HTML will be stripped out.' => 'コメントの内容に特定のHTMLタグの利用を許可する (許可しない場合は、すべてのHTMLタグが利用できなくなります)',
@@ -3740,18 +3725,12 @@ use vars qw( @ISA %Lexicon );
 	'Commenting Policy' => 'コメントポリシー',
 	'Delete Spam After' => 'スパムを削除する',
 	'E-mail Notification' => 'メール通知',
-	'Enable External TrackBack Auto-Discovery' => '外部リンクに対するトラックバック自動検知を有効にする',
-	'Enable Internal TrackBack Auto-Discovery' => '内部リンクに対するトラックバック自動検知を有効にする',
-	'Hold all TrackBacks for approval before they are published.' => '公開前に許可を必要とするように、トラックバックを保留する',
 	'Immediately approve comments from' => '即時公開する条件',
 	'Limit HTML Tags' => 'HTMLタグを制限',
 	'Moderation' => '事前確認',
 	'No CAPTCHA provider available' => 'CAPTCHAプロバイダがありません',
 	'No one' => '自動的に公開しない',
 	'Note: Commenting is currently disabled at the system level.' => '注: コメントは現在システムレベルで無効になっています。',
-	'Note: This option is currently ignored since outbound pings are disabled system-wide.' => '備考: システムレベで無効になっている外部pingオプションは現在無効となっています。',
-	'Note: This option may be affected since outbound pings are constrained system-wide.' => '備考: システムレベルのみの外部pingオプションは有効になっているようです。',
-	'Note: TrackBacks are currently disabled at the system level.' => '注: トラックバックは現在システムレベルで無効になっています。',
 	'Off' => '行わない',
 	'On' => '有効にする',
 	'Only when attention is required' => '注意が必要な場合のみ',
@@ -3760,11 +3739,7 @@ use vars qw( @ISA %Lexicon );
 	'Setup Registration' => '登録／認証の設定',
 	'Spam Score Threshold' => 'スパム判断基準',
 	'Spam Settings' => 'スパム設定',
-	'This value can be between -10 and +10. The bigger this value is, the more possible spam-detection framework determines comment/trackback as a spam.' => 'この値は、-10から+10の間で指定できます。この値が大きいほど、コメントとトラックバックがスパムとして判断される可能性が高くなります。',
-	'TrackBack Auto-Discovery' => '自動検知',
-	'TrackBack Options' => 'トラックバックオプション',
-	'TrackBack Policy' => 'トラックバックポリシー',
-	'Trackback Settings' => 'トラックバック設定',
+	'This value can be between -10 and +10. The bigger this value is, the more possible spam-detection framework determines a comment as spam.' => 'この値は、-10から+10の間で指定できます。この値が大きいほど、コメントがスパムとして判断される可能性が高くなります。',
 	'Transform URLs in comment text into HTML links.' => '受信したコメント内にURLが含まれる場合に自動的にリンクする',
 	'Trusted commenters only' => '承認されたコメント投稿者のみ',
 	'Use Comment Confirmation Page' => 'コメントの確認ページ',
@@ -3775,7 +3750,7 @@ use vars qw( @ISA %Lexicon );
 	q{Apply 'nofollow' to URLs} => q{URLのnofollow指定},
 	q{Do not add the 'nofollow' attribute when a comment is submitted by a trusted commenter.} => q{承認されたコメント投稿者のコメントにはnofollowを適用しない},
 	q{Each commenter's browser will be redirected to a comment confirmation page after their comment is accepted.} => q{コメント投稿後に、コメントの確認ページを表示する},
-	q{If enabled, all URLs in comments and TrackBacks will be assigned a 'nofollow' link relation.} => q{コメントとトラックバックに含まれるすべてのURLにnofollowを設定する},
+	q{If enabled, all URLs in comments will be assigned a 'nofollow' link relation.} => q{コメントに含まれるすべてのURLにnofollowを設定する},
 	q{No CAPTCHA provider is available in this system.  Please check to see if Image::Magick is installed and if the CaptchaSourceImageBase configuration directive points to a valid captcha-source directory within the 'mt-static/images' directory.} => q{CAPTCHAプロバイダがありません。Image::Magickがインストールされているか、またCaptchaSourceImageBaseが正しく設定されていてmt-static/images/captcha-sourceにアクセスできるか確認してください。},
 
 ## tmpl/admin2023/cms/cfg_plugin.tmpl
@@ -3966,7 +3941,6 @@ use vars qw( @ISA %Lexicon );
 	'Your site preferences have been saved.' => 'サイトの設定を保存しました。',
 
 ## tmpl/admin2023/cms/cfg_system_general.tmpl
-	'(No Outbound TrackBacks)' => '(すべてのトラックバック送信を無効にする)',
 	'(None selected)' => '(選択されていません)',
 	'A Movable Type user will be locked out if he or she submits an incorrect password [_1] or more times within [_2] seconds.' => 'MTユーザーが、[_2] 秒間に [_1] 回以上サインインに失敗した場合、そのユーザーのサインインを禁止します。',
 	'A test mail was sent.' => 'テストメールを送信しました。',
@@ -3978,8 +3952,6 @@ use vars qw( @ISA %Lexicon );
 	'Debug Mode' => 'デバッグモード',
 	'Disable comments for all sites and child sites.' => 'コメントを無効にする',
 	'Disable notification pings for all sites and child sites.' => 'ping通知を無効にする',
-	'Disable receipt of TrackBacks for all sites and child sites.' => 'トラックバックを無効にする',
-	'Do not send outbound TrackBacks or use TrackBack auto-discovery if your installation is intended to be private.' => 'プライベートに設定する場合は、トラックバックを送信したりトラックバックの自動発見機能は利用しないようにしましょう。',
 	'Enable image quality changing.' => '画像品質の自動変換を有効にする。',
 	'IP address lockout policy' => 'IPアドレスのロック方針',
 	'Image Quality Settings' => '画像品質の設定',
@@ -3992,15 +3964,11 @@ use vars qw( @ISA %Lexicon );
 	'Log Path' => 'ログパス',
 	'Logging Threshold' => 'ログ閾値',
 	'One or more of your sites or child sites are not following the base site path (value of BaseSitePath) restriction.' => '1つ以上のサイトがサイトパスの既定値の制限に違反しています。',
-	'Only to child sites within this system' => '子サイトのみ',
-	'Only to sites on the following domains:' => '次のドメインに属するサイト:',
 	'Outbound Notifications' => '更新通知',
 	'Performance Logging' => 'パフォーマンスログ',
 	'Prohibit Comments' => 'コメント',
 	'Prohibit Notification Pings' => 'Ping通知禁止',
-	'Prohibit TrackBacks' => 'トラックバック',
 	'Send Mail To' => 'メール送信先',
-	'Send Outbound TrackBacks to' => '外部トラックバック送信',
 	'Send Test Mail' => 'テストメールの送信',
 	'Send' => '送信',
 	'Site Path Limitation' => 'ウェブサイトパスの制限',
@@ -4021,7 +3989,7 @@ use vars qw( @ISA %Lexicon );
 	'Your settings have been saved.' => '設定を保存しました。',
 	q{However, the following IP addresses are 'whitelisted' and will never be locked out:} => q{次の一覧で設定されたIPアドレスはアクセスが禁止されることはありません。},
 	q{The system administrators whom you wish to notify if a user or an IP address is locked out.  If no administrators are selected, notifications will be sent to the 'System Email' address.} => q{通知メールを受信するシステム管理者を設定できます。受信者の設定がされていない場合は、'システムのメールアドレス'宛に通知されます。},
-	q{This email address is used in the 'From:' header of each email sent by Movable Type.  Email may be sent for password recovery, commenter registration, comment and trackback notification, user or IP address lockout, and a few other minor events.} => q{このメールアドレスはMovable Typeから送られるメールの'From:'アドレスに利用されます。メールはパスワードの再設定、コメント投稿者の登録、コメントやトラックバックの通知、ユーザーまたはIPアドレスのロックアウト、その他の場合に送信されます。},
+	q{This email address is used in the 'From:' header of each email sent by Movable Type.  Email may be sent for password recovery, commenter registration, comment notification, user or IP address lockout, and a few other minor events.} => q{このメールアドレスはMovable Typeから送られるメールの'From:'アドレスに利用されます。メールはパスワードの再設定、コメント投稿者の登録、コメントの通知、ユーザーまたはIPアドレスのロックアウト、その他の場合に送信されます。},
 
 ## tmpl/admin2023/cms/cfg_system_users.tmpl
 	'Allow Registration' => '登録',
@@ -4191,7 +4159,6 @@ use vars qw( @ISA %Lexicon );
 	'Exclude Categories/Folders' => 'カテゴリ/フォルダの除外',
 	'Exclude Comments' => 'コメントの除外',
 	'Exclude Entries/Pages' => '記事/ページの除外',
-	'Exclude Trackbacks' => 'トラックバックの除外',
 	'Exclusions' => '除外',
 	'This is set to the same URL as the original child site.' => '複製元のサイトと同じURLを設定します。',
 	'This will overwrite the original child site.' => '複製元のサイト設定を上書きします。',
@@ -4417,19 +4384,13 @@ use vars qw( @ISA %Lexicon );
 	q{The path where your index files will be located. Do not end with '/' or '\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog} => q{インデックスファイルを配置するパスを入力してください。例: /home/mt/public_html/blogやC:\www\public_html\blog},
 
 ## tmpl/admin2023/cms/edit_category.tmpl
-	'Allow pings' => 'トラックバックを許可する',
 	'Edit Category' => 'カテゴリの編集',
-	'Inbound TrackBacks' => 'トラックバック受信',
 	'Manage entries in this category' => 'このカテゴリに属する記事の一覧',
-	'Outbound TrackBacks' => 'トラックバック送信',
 	'Passphrase Protection' => 'パスワード保護',
 	'Please enter a valid basename.' => '有効な出力ファイル/フォルダ名を入力してください。',
 	'Save changes to this category (s)' => 'カテゴリへの変更を保存 (s)',
 	'This is the basename assigned to your category.' => 'カテゴリの出力ファイル/フォルダ名です。',
-	'TrackBack URL for this category' => 'このカテゴリのトラックバックURL',
-	'Trackback URLs' => 'トラックバックURL',
 	'Useful links' => 'ショートカット',
-	'View TrackBacks' => 'トラックバックを見る',
 	'You must specify a basename for the category.' => '出力ファイル/フォルダ名を設定して下さい。',
 	'You must specify a label for the category.' => 'カテゴリ名を設定してください。',
 	'_CATEGORY_BASENAME' => '出力ファイル/フォルダ名',
@@ -4591,8 +4552,6 @@ use vars qw( @ISA %Lexicon );
 	'Manage Entries' => '記事の管理',
 	'No assets' => 'アセットはありません',
 	'None selected' => '選択されていません',
-	'One or more errors occurred when sending update pings or TrackBacks.' => '更新通知かトラックバック送信でひとつ以上のエラーが発生しました。',
-	'Outbound TrackBack URLs' => 'トラックバック送信先URL',
 	'Preview this entry (v)' => '記事をプレビュー (v)',
 	'Preview this page (v)' => 'ウェブページをプレビュー (v)',
 	'Reset display options to blog defaults' => '表示オプションをブログの既定値にリセット',
@@ -4608,9 +4567,7 @@ use vars qw( @ISA %Lexicon );
 	'This post was held for review, due to spam filtering.' => 'この投稿はスパムフィルタリングにより承認待ちになっています。',
 	'View Entry' => '記事を見る',
 	'View Page' => 'ウェブページを表示',
-	'View Previously Sent TrackBacks' => '送信済みのトラックバックを見る',
 	'Warning: If you set the basename manually, it may conflict with another entry.' => '警告: 出力ファイル名を手動で設定すると、他の記事と衝突を起こす可能性があります。',
-	'You have successfully deleted the checked TrackBack(s).' => '選択したトラックバックを削除しました。',
 	'You have successfully deleted the checked comment(s).' => '選択したコメントを削除しました。',
 	'You have successfully recovered your saved entry.' => '記事を元に戻しました。',
 	'You have successfully recovered your saved page.' => 'ウェブページを元に戻しました。',
@@ -4659,30 +4616,6 @@ use vars qw( @ISA %Lexicon );
 	'This group profile has been updated.' => 'グループのプロフィールを更新しました。',
 	'This group was classified as disabled.' => 'このグループは無効になっています。',
 	'This group was classified as pending.' => 'このグループは保留中になっています。',
-
-## tmpl/admin2023/cms/edit_ping.tmpl
-	'Category no longer exists' => 'このカテゴリは存在しません。',
-	'Delete this TrackBack (x)' => 'トラックバックを削除 (x)',
-	'Edit Trackback' => 'トラックバックの編集',
-	'Entry no longer exists' => '記事が存在しません',
-	'Manage TrackBacks' => 'トラックバックの管理',
-	'No title' => 'タイトルなし',
-	'Save changes to this TrackBack (s)' => 'トラックバックへの変更を保存 (s)',
-	'Search for other TrackBacks from this site' => 'このサイトのその他のトラックバックを検索する',
-	'Search for other TrackBacks with this status' => 'このステータスのその他のトラックバックを検索する',
-	'Search for other TrackBacks with this title' => 'このタイトルのその他のトラックバックを検索する',
-	'Source Site' => '送信元のサイト',
-	'Source Title' => '送信元記事のタイトル',
-	'Target Category' => 'トラックバック送信するカテゴリ',
-	'Target [_1]' => '宛先[_1]',
-	'The TrackBack has been approved.' => 'トラックバックを公開しました。',
-	'This trackback was classified as spam.' => 'このトラックバックはスパムと判定されました。',
-	'TrackBack Text' => 'トラックバックの本文',
-	'View all TrackBacks created on this day' => 'この日のトラックバックをすべて見る',
-	'View all TrackBacks from this IP address' => 'このIPアドレスからのトラックバックをすべて見る',
-	'View all TrackBacks on this category' => 'このカテゴリのすべてのトラックバックを見る',
-	'View all TrackBacks on this entry' => 'この記事で受信したすべてのトラックバックを見る',
-	'View all TrackBacks with this status' => 'このステータスのトラックバックをすべて表示',
 
 ## tmpl/admin2023/cms/edit_role.tmpl
 	'Administration' => '管理',
@@ -4795,7 +4728,7 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/admin2023/cms/export.tmpl
 	'Export [_1] Entries' => '[_1]の記事をエクスポート',
 	'[_1] to Export' => 'エクスポートする[_1]',
-	'_USAGE_EXPORT_1' => 'Movable Typeから記事をエクスポートして、基本的なデータ(記事、コメント、トラックバック)を保存できます。',
+	'_USAGE_EXPORT_1' => 'Movable Typeから記事をエクスポートして、基本的なデータ(記事、コメント)を保存できます。',
 
 ## tmpl/admin2023/cms/export_theme.tmpl
 	'Author link' => '作者のページ',
@@ -5130,15 +5063,6 @@ use vars qw( @ISA %Lexicon );
 	'First' => '最初',
 	'Last' => '最後',
 
-## tmpl/admin2023/cms/include/ping_table.tmpl
-	'Edit this TrackBack' => 'このトラックバックを編集',
-	'From' => '送信元',
-	'Go to the source entry of this TrackBack' => 'トラックバック送信元に移動',
-	'Moderated' => '公開保留',
-	'Publish selected [_1] (p)' => '選択された[_1]を公開 (p)',
-	'Target' => '送信先',
-	'View the [_1] for this TrackBack' => 'トラックバックされた[_1]を見る',
-
 ## tmpl/admin2023/cms/include/primary_navigation.tmpl
 	'Close Site Menu' => 'サイトメニューを閉じる',
 	'Open Panel' => 'パネルを開く',
@@ -5386,15 +5310,6 @@ use vars qw( @ISA %Lexicon );
 	'You have successfully deleted the selected contacts from your address book.' => 'アドレス帳から選択したあて先を削除しました。',
 	'You have updated your contact in your address book.' => 'アドレス帳を更新しました。',
 
-## tmpl/admin2023/cms/listing/ping_list_header.tmpl
-	'All TrackBacks reported as spam have been removed.' => 'スパムとして報告したすべてのトラックバックを削除しました。',
-	'No TrackBacks appeared to be spam.' => 'スパムトラックバックはありません。',
-	'The selected TrackBack(s) has been approved.' => '選択したトラックバックを公開しました。',
-	'The selected TrackBack(s) has been deleted from the database.' => '選択したトラックバックをデータベースから削除しました。',
-	'The selected TrackBack(s) has been recovered from spam.' => '選択したトラックバックをスパムから戻しました。',
-	'The selected TrackBack(s) has been reported as spam.' => '選択したトラックバックをスパムとして報告しました。',
-	'The selected TrackBack(s) has been unapproved.' => '選択したトラックバックを未公開にしました。',
-
 ## tmpl/admin2023/cms/listing/role_list_header.tmpl
 	'You have successfully deleted the role(s).' => 'ロールを削除しました。',
 
@@ -5416,13 +5331,7 @@ use vars qw( @ISA %Lexicon );
 	'Not implemented yet.' => '実装されていません。',
 
 ## tmpl/admin2023/cms/pinging.tmpl
-	'Pinging sites...' => 'トラックバックと更新通知を送信しています...',
-	'Trackback' => 'トラックバック',
-
-## tmpl/admin2023/cms/popup/pinged_urls.tmpl
-	'Failed Trackbacks' => 'トラックバック(未送信)',
-	'Successful Trackbacks' => 'トラックバック(送信済み)',
-	'To retry, include these TrackBacks in the Outbound TrackBack URLs list for your entry.' => '再送する場合は、トラックバック送信先URLにこれらのトラックバックをコピーしてください。',
+	'Pinging sites...' => '更新通知を送信しています...',
 
 ## tmpl/admin2023/cms/popup/rebuild_confirm.tmpl
 	'All Files' => 'すべてのファイル',
@@ -5538,7 +5447,7 @@ use vars qw( @ISA %Lexicon );
 	'Regex Match' => '正規表現',
 	'Replace Checked' => '選択したものを対象に置換',
 	'Replace With' => '置換',
-	'Reported as Spam?' => 'スパムコメント/トラックバック',
+	'Reported as Spam?' => 'スパムコメント',
 	'Search &amp; Replace' => '検索/置換',
 	'Search Again' => '再検索',
 	'Search For' => '検索',

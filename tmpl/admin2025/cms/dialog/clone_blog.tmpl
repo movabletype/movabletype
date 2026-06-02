@@ -30,11 +30,7 @@
     <mt:else>
       <input type="hidden" name="clone_prefs_comments" value="on" />
     </mt:if>
-    <mt:if name="enabled_plugins{Trackback}">
-      <input type="hidden" name="clone_prefs_trackbacks" value="<mt:var name="clone_prefs_trackbacks" escape="html">" />
-    <mt:else>
       <input type="hidden" name="clone_prefs_trackbacks" value="on" />
-    </mt:if>
       <input type="hidden" name="clone_prefs_categories" value="<mt:var name="clone_prefs_categories" escape="html">" />
       <mt:unless name="clone_prefs_input"></mt:unless>
       <input type="hidden" name="parent_id" value="<mt:var name="parent_id">" />
@@ -159,11 +155,6 @@
   <mt:if name="enabled_plugins{Comments}">
   <mt:if name="clone_prefs_comments" eq="on">
     <li><__trans phrase="Exclude Comments"></li>
-  </mt:if>
-  </mt:if>
-  <mt:if name="enabled_plugins{Trackback}">
-  <mt:if name="clone_prefs_trackbacks" eq="on">
-    <li><__trans phrase="Exclude Trackbacks"></li>
   </mt:if>
   </mt:if>
   <mt:if name="clone_prefs_categories" eq="on">
@@ -465,14 +456,6 @@
         </div>
       </li>
       </mt:if>
-      <mt:if name="enabled_plugins{Trackback}">
-      <li>
-        <div class="form-check">
-          <input type="checkbox" name="clone_prefs_trackbacks" id="clone-prefs-trackbacks" <mt:if name="clone_prefs_trackbacks">checked="<mt:var name="clone_prefs_trackbacks">"</mt:if> class="form-check-input cb" />
-          <label class="form-check-label" for="clone-prefs-trackbacks"><__trans phrase="Trackbacks"></label>
-        </div>
-      </li>
-      </mt:if>
       <li>
         <div class="form-check">
           <input type="checkbox" name="clone_prefs_categories" id="clone-prefs-categories" <mt:if name="clone_prefs_categories">checked="<mt:var name="clone_prefs_categories">"</mt:if> class="form-check-input cb" />
@@ -714,13 +697,9 @@
   function _prepAction(form) {
     var prefsEntries = document.getElementById('clone-prefs-entries-pages'),
         prefsComments = document.getElementById('clone-prefs-comments'),
-        prefsCategories = document.getElementById('clone-prefs-categories'),
-        prefsTrackbacks = document.getElementById('clone-prefs-trackbacks');
+        prefsCategories = document.getElementById('clone-prefs-categories');
     if (prefsComments) {
       prefsComments.disabled = false;
-    }
-    if (prefsTrackbacks) {
-      prefsTrackbacks.disabled = false;
     }
   }
 
@@ -759,7 +738,6 @@
         while(len--) {
           switch(inputEls[len].id) {
             case 'clone-prefs-comments':
-            case 'clone-prefs-trackbacks':
               if(input.checked) {
                 inputEls[len].disabled = true;
                 inputEls[len].checked = true;

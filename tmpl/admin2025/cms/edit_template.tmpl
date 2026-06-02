@@ -829,14 +829,6 @@ function setSyntaxHighlight(on_or_off) {
               </div>
             </div>
             </mt:if>
-            <mt:if name="enabled_plugins{Trackback}">
-            <div class="form-check form-check-inline">
-              <div class="form-check">
-                <input type="checkbox" value="tbping" name="cache_expire_event" id="cache-event-trackback" class="form-check-input" onclick=""<mt:if name="cache_expire_event_tbping"> checked="checked"</mt:if><mt:unless name="cache_expire_type" eq="2"> disabled="disabled"</mt:unless>>
-                <label class="form-check-label" for="cache-event-trackback"><__trans phrase="TrackBack"></label>
-              </div>
-            </div>
-            </mt:if>
             <div class="form-check form-check-inline">
               <div class="form-check">
                 <input type="checkbox" value="page" name="cache_expire_event" id="cache-event-page" class="form-check-input" onclick=""<mt:if name="cache_expire_event_page"> checked="checked"</mt:if><mt:unless name="cache_expire_type" eq="2"> disabled="disabled"</mt:unless>>

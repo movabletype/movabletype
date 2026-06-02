@@ -62,7 +62,7 @@
      required="1"
      label="<__trans phrase="System Email Address">"
      label_for="system_email_address"
-     hint="<__trans phrase="This email address is used in the 'From:' header of each email sent by Movable Type.  Email may be sent for password recovery, commenter registration, comment and trackback notification, user or IP address lockout, and a few other minor events.">"
+     hint="<__trans phrase="This email address is used in the 'From:' header of each email sent by Movable Type.  Email may be sent for password recovery, commenter registration, comment notification, user or IP address lockout, and a few other minor events.">"
      hint_id="systemEmailAddress"
      show_hint="1"
      >
@@ -152,7 +152,7 @@
   </mtapp:settinggroup>
 </mt:unless>
 
-<mt:if name="enabled_plugins{CommentsTrackback}">
+<mt:if name="enabled_plugins{Comments}">
 <mtapp:settinggroup id="system-feedback-controls">
   <legend class="h3"><__trans phrase="System-wide Feedback Controls"></legend>
   <mt:if name="enabled_plugins{Comments}">
@@ -168,72 +168,6 @@
   </mtapp:setting>
   </mt:if>
 
-  <mt:if name="enabled_plugins{Trackback}">
-  <mtapp:setting
-     id="ping-disable"
-     label="<__trans phrase="Prohibit TrackBacks">">
-    <div class="mb-3">
-      <div class="form-check">
-        <input type="checkbox"<mt:if name="config_warnings_allowpings"> disabled="disabled"</mt:if> name="ping_disable" id="ping-disable" class="form-check-input" <mt:if name="ping_disable"> checked="checked"</mt:if> class="cb" />
-        <label class="form-check-label" for="ping-disable"><__trans phrase="Disable receipt of TrackBacks for all sites and child sites."></label>
-      </div>
-    </div>
-  </mtapp:setting>
-  </mt:if>
-</mtapp:settinggroup>
-</mt:if>
-
-<mt:if name="enabled_plugins{Trackback}">
-<mtapp:settinggroup id="outbound-notifications">
-  <legend class="h3"><__trans phrase="Outbound Notifications"></legend>
-  <mtapp:setting
-     id="disable-notify-ping"
-     label="<__trans phrase="Prohibit Notification Pings">">
-    <div class="mb-3">
-      <div class="form-check">
-        <input type="checkbox"<mt:if name="config_warnings_disablenotificationpings"> disabled="disabled"</mt:if> name="disable_notify_ping" id="disable-notify-ping" class="form-check-input" value="1"<mt:if name="disabled_notify_ping"> checked="checked"</mt:if> class="cb" />
-        <label class="form-check-label" for="disable-notify-ping"><__trans phrase="Disable notification pings for all sites and child sites."></label>
-      </div>
-    </div>
-  </mtapp:setting>
-
-  <mtapp:setting
-     id="trackback-send"
-     label="<__trans phrase="Send Outbound TrackBacks to">"
-     hint="<__trans phrase="Do not send outbound TrackBacks or use TrackBack auto-discovery if your installation is intended to be private.">"
-     hint_id="sendOutboundTrackbacksTo"
-     show_hint="1">
-    <ul id="outbound-trackback-setting-list" class="list-unstyled setting-list">
-      <li>
-        <div class="custom-control custom-radio">
-          <input type="radio"<mt:if name="config_warnings_outboundtrackbacklimit"> disabled="disabled"</mt:if> name="trackback_send" id="trackback_send_any" class="form-check-input" value="any"<mt:if name="trackback_send_any"> checked="checked"</mt:if> aria-describedby="sendOutboundTrackbacksTo" />
-          <label class="form-check-label" for="trackback_send_any"><__trans phrase="Any site"></label>
-        </div>
-        </li>
-      <li>
-        <div class="custom-control custom-radio">
-          <input type="radio"<mt:if name="config_warnings_outboundtrackbacklimit"> disabled="disabled"</mt:if> name="trackback_send" id="trackback_send_off" class="form-check-input" value="off"<mt:if name="trackback_send_off"> checked="checked"</mt:if> />
-          <label class="form-check-label" for="trackback_send_off">
-            <__trans phrase="Disabled">
-            <span class="text-body-secondary hint"><__trans phrase="(No Outbound TrackBacks)"></span>
-          </label>
-        </div>
-        </li>
-      <li>
-        <div class="custom-control custom-radio">
-          <input type="radio"<mt:if name="config_warnings_outboundtrackbacklimit"> disabled="disabled"</mt:if> name="trackback_send" id="trackback_send_local" class="form-check-input" value="local"<mt:if name="trackback_send_local"> checked="checked"</mt:if> />
-          <label class="form-check-label" for="trackback_send_local"><__trans phrase="Only to child sites within this system"></label>
-        </div>
-        </li>
-      <li>
-        <div class="custom-control custom-radio">
-          <input type="radio"<mt:if name="config_warnings_outboundtrackbacklimit"> disabled="disabled"</mt:if> name="trackback_send" id="trackback_send_selected" class="form-check-input" value="selected"<mt:if name="trackback_send_selected"> checked="checked"</mt:if> />
-          <label class="form-check-label" for="trackback_send_selected"><__trans phrase="Only to sites on the following domains:"></label>
-        </div>
-        <textarea<mt:if name="config_warnings_outboundtrackbackdomains"> disabled="disabled"</mt:if> name="trackback_send_domains" class="form-control text low" rows="4"><mt:var name="trackback_send_domains" escape="html"></textarea>
-      </li>
-    </ul>
-  </mtapp:setting>
 </mtapp:settinggroup>
 </mt:if>
 

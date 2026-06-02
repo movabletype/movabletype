@@ -154,31 +154,6 @@
     </mtapp:setting>
     </mt:if>
 
-    <mt:if name="enabled_plugins{Trackback}">
-    <mtapp:setting
-       id="allow_pings_default"
-       label="<__trans phrase="TrackBacks">">
-      <div class="mb-3">
-        <div class="form-check">
-          <input type="checkbox" value="1" name="allow_pings_default" class="form-check-input" id="allow_pings_default"<mt:if name="allow_pings_default"> checked="checked"</mt:if> />
-          <label class="form-check-label" for="allow_pings_default"><__trans phrase="Accept TrackBacks"></label>
-        </div>
-    <mt:unless name="system_allow_pings">
-        <p>
-          <img src="<mt:var name="static_uri">images/status_icons/warning.gif" alt="<__trans phrase="Setting Ignored">" width="9" height="9" />
-          <span class="text-warning alert-warning-inline">
-        <mt:if name="is_blog">
-            <__trans phrase="Note: This option is currently ignored since TrackBacks are disabled either child site or system-wide.">
-        <mt:else>
-            <__trans phrase="Note: This option is currently ignored since TrackBacks are disabled either site or system-wide.">
-        </mt:if>
-          </span>
-        </p>
-    </mt:unless>
-      </div>
-    </mtapp:setting>
-    </mt:if>
-
     <mt:setvarblock name="entry_fields" id="entry_fields"></mt:setvarblock>
     <mtapp:setting
        id="entry_prefs"

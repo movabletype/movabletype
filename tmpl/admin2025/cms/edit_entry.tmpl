@@ -116,15 +116,6 @@
     <$mt:var name="view_link"$>
   </mtapp:statusmsg>
 </mt:if>
-<mt:if name="enabled_plugins{Trackback}">
-<mt:if name="ping_errors">
-  <mtapp:statusmsg
-     id="ping-errors"
-     class="alert">
-    <__trans phrase="One or more errors occurred when sending update pings or TrackBacks."> <mt:if name="can_view_log"><__trans phrase="_USAGE_VIEW_LOG" params="<$mt:var name="script_url"$>?__mode=list&amp;_type=log&amp;blog_id=<$mt:var name="blog_id"$>"></mt:if>
-  </mtapp:statusmsg>
-</mt:if>
-</mt:if>
 <mt:if name="saved_prefs">
   <mtapp:statusmsg
      id="saved-prefs"
@@ -179,15 +170,6 @@
      id="saved-deleted"
      class="success">
   <__trans phrase="You have successfully deleted the checked comment(s).">
-  </mtapp:statusmsg>
-</mt:if>
-</mt:if>
-<mt:if name="enabled_plugins{Trackback}">
-<mt:if name="saved_deleted_ping">
-  <mtapp:statusmsg
-     id="saved-deleted-ping"
-     class="success">
-    <__trans phrase="You have successfully deleted the checked TrackBack(s).">
   </mtapp:statusmsg>
 </mt:if>
 </mt:if>
@@ -850,7 +832,7 @@
 </mt:if>
 </div>
 
-<mt:if name="enabled_plugins{CommentsTrackback}">
+<mt:if name="enabled_plugins{Comments}">
 <div id="feedback-field"<mt:unless name="disp_prefs_show_feedback"> style="display: none;"</mt:unless>>
   <mtapp:widget
      id="entry-feedback-widget"
@@ -874,43 +856,8 @@
         </mt:unless>
         </li>
         </mt:if>
-        <mt:if name="enabled_plugins{Trackback}">
-        <li>
-          <div class="form-check">
-            <input type="checkbox" name="allow_pings" id="allow_pings" value="1"<mt:if name="allow_pings"> checked="checked"</mt:if> class="form-check-input cb" />
-            <label class="form-check-label" for="allow_pings"><__trans phrase="Accept Trackbacks"></label>
-          </div>
-        <mt:unless name="new_object">
-          <span class="pings-link feedback-count">
-            <mtapp:svgicon id="ic_trackback" title="<__trans phrase="Accept Trackbacks">" size="sm">
-            <__trans phrase="<a href="[_2]">[_1]</a>" params="<$mt:var name="num_pings"$>%%<$mt:var name="script_url">?__mode=list&amp;_type=ping&amp;filter=entry_id&amp;filter_val=<$mt:var name="id" escape="url"$>&amp;blog_id=<$mt:var name="blog_id" escape="url"$>">
-          </span>
-        </mt:unless>
-        </li>
-        </mt:if>
       </ul>
     </mtapp:setting>
-
-  <mt:if name="enabled_plugins{Trackback}">
-  <mt:unless name="new_object">
-    <mt:if name="has_any_pinged_urls">
-      <mt:setvar name="show_ping_urls_hint" value="1">
-      <mt:setvarblock name="ping_urls_hint">
-      <a href="javascript:void(0)" onclick="listPreviousPings(); return false"><__trans phrase="View Previously Sent TrackBacks"></a>
-      </mt:setvarblock>
-    </mt:if>
-  </mt:unless>
-
-    <mtapp:setting
-       id="ping-urls"
-       label="<__trans phrase="Outbound TrackBack URLs">"
-       label_class="top-label"
-       hint="$ping_urls_hint"
-       show_hint="$show_ping_urls_hint"
-       hint_id="outboundTrackbackUrls">
-      <textarea name="to_ping_urls" id="to_ping_urls" class="form-control text full low"<mt:if name="show_ping_urls_hint"> aria-describedby="outboundTrackbackUrls"</mt:if>><$mt:var name="to_ping_urls" escape="html"$></textarea>
-    </mtapp:setting>
-  </mt:if>
   </mtapp:widget>
 </div>
 </mt:if>
@@ -1354,7 +1301,6 @@ div.mce-notification-error {
       }
 
       var orig_basename;
-      var tbTableSelect;
       var cmtTableSelect;
       var autoTag;
       <mt:if name="tags_js">
@@ -1362,8 +1308,6 @@ div.mce-notification-error {
       </mt:if>
       function init() {
           // setup
-          tbTableSelect = new TC.TableSelect( "manage-trackbacks" );
-          tbTableSelect.rowSelect = true;
           cmtTableSelect = new TC.TableSelect( "manage-comments" );
           cmtTableSelect.rowSelect = true;
           <mt:if name="tags_js">initTags();</mt:if>

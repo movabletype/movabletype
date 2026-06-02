@@ -5,10 +5,6 @@
 <mt:if name="enabled_plugins{Comments}">
 <mt:setvar name="comments" value="1">
 </mt:if>
-<mt:if name="enabled_plugins{Trackback}">
-<mt:setvar name="trackbacks" value="1">
-</mt:if>
-
 <mt:setvarblock name="system_msg">
 <mt:if name="error">
   <mtapp:statusmsg
@@ -47,7 +43,7 @@
 </mt:if>
 </mt:setvarblock>
 
-<mt:if name="enabled_plugins{CommentsTrackback}">
+<mt:if name="enabled_plugins{Comments}">
 <mt:setvarblock name="page_content">
 <form name="cfg_form" method="post" action="<mt:var name="script_url">">
   <input type="hidden" name="id" value="<mt:var name="id" escape="html">" />
@@ -90,7 +86,7 @@
        id="junk_score_threshold"
        label="<__trans phrase="Spam Score Threshold">"
        label_for="junk_score_threshold"
-       hint="<__trans phrase="This value can be between -10 and +10. The bigger this value is, the more possible spam-detection framework determines comment/trackback as a spam.">"
+       hint="<__trans phrase="This value can be between -10 and +10. The bigger this value is, the more possible spam-detection framework determines a comment as spam.">"
        show_hint="1">
       <div class="input-group" style="width: 10rem;">
         <div class="input-group-prepend">
@@ -115,7 +111,7 @@
         <div class="form-check">
           <input type="checkbox" value="1" name="nofollow_urls" class="form-check-input" id="nofollow_urls"<mt:if name="nofollow_urls"> checked="checked"</mt:if> class="cb" data-bs-toggle="collapse" data-bs-target="#nofollow_urls-option" aria-expanded="<mt:if name="nofollow_urls">true<mt:else>false</mt:if>" aria-controls="nofollow_urls-option" />
           <label class="form-check-label" for="nofollow_urls">
-            <__trans phrase="If enabled, all URLs in comments and TrackBacks will be assigned a 'nofollow' link relation.">
+            <__trans phrase="If enabled, all URLs in comments will be assigned a 'nofollow' link relation.">
           </label>
         </div>
       </div>
@@ -341,131 +337,6 @@
               </label>
             </div>
           </div>
-        </mtapp:setting>
-      </mtapp:settinggroup>
-    </div>
-  </mtapp:settinggroup>
-  </mt:if>
-
-  <mt:if name="enabled_plugins{Trackback}">
-  <mtapp:settinggroup id="cfg_trackback">
-    <legend class="h3"><__trans phrase="Trackback Settings"></legend>
-
-  <mt:unless name="system_allow_pings">
-    <mtapp:statusmsg
-       id="system-allow-pings"
-       class="info"
-       can_close="0">
-      <__trans phrase="Note: TrackBacks are currently disabled at the system level.">
-    </mtapp:statusmsg>
-  </mt:unless>
-
-    <mtapp:setting
-       id="allow_pings"
-       label="<__trans phrase="Accept TrackBacks">">
-      <div class="mb-3">
-        <div class="form-check">
-          <input type="checkbox" name="allow_pings" class="form-check-input" id="allow_pings"<mt:if name="allow_pings"> checked="checked"</mt:if> value="1" data-bs-toggle="collapse" data-bs-target="#allow_pings-option" aria-expanded="<mt:if name="allow_pings">true<mt:else>false</mt:if>" aria-controls="allow_pings-option" />
-          <label class="form-check-label" for="allow_pings"><__trans phrase="Accept TrackBacks from any source."></label>
-        </div>
-      </div>
-    </mtapp:setting>
-
-    <div id="allow_pings-option" class="collapse<mt:if name="allow_pings"> show</mt:if>">
-      <mtapp:settinggroup id="trackback-policy-setting">
-        <legend class="h3"><__trans phrase="TrackBack Policy"></legend>
-        <mtapp:setting
-           id="moderate_pings"
-           label="<__trans phrase="Moderation">">
-          <div class="mb-3">
-            <div class="form-check">
-              <input type="checkbox" name="moderate_pings" class="form-check-input" id="moderate_pings"<mt:if name="MODERATE_PINGS_1"> checked="checked"</mt:if> value="1" />
-              <label class="form-check-label" for="moderate_pings">
-                <__trans phrase="Hold all TrackBacks for approval before they are published.">
-              </label>
-            </div>
-          </div>
-        </mtapp:setting>
-
-        <mtapp:setting
-           id="email-new_pings"
-           label="<__trans phrase="E-mail Notification">">
-          <ul class="list-unstyled">
-            <li>
-              <div class="custom-control form-check">
-                <input type="radio" id="email_new_pings_1" name="email_new_pings" class="form-check-input" value="1"<mt:if name="EMAIL_NEW_PINGS_1"> checked="checked"</mt:if> />
-                <label class="form-check-label" for="email_new_pings_1"><__trans phrase="On"></label>
-              </div>
-            </li>
-            <li>
-              <div class="custom-control form-check">
-                <input type="radio" id="email_new_pings_2" name="email_new_pings" class="form-check-input" value="2"<mt:if name="EMAIL_NEW_PINGS_2"> checked="checked"</mt:if> />
-                <label class="form-check-label" for="email_new_pings_2"><__trans phrase="Only when attention is required"></label>
-              </div>
-            </li>
-            <li>
-              <div class="custom-control form-check">
-                <input type="radio" id="email_new_pings_0" name="email_new_pings" class="form-check-input" value="0"<mt:unless name="email_new_pings"> checked="checked"</mt:unless> />
-                <label class="form-check-label" for="email_new_pings_0"><__trans phrase="Off"></label>
-              </div>
-            </li>
-          </ul>
-        </mtapp:setting>
-      </mtapp:settinggroup>
-
-      <mtapp:settinggroup id="trackback-option-setting">
-        <legend class="h3"><__trans phrase="TrackBack Options"></legend>
-        <mtapp:setting
-           id="autodiscover_links"
-           label="<__trans phrase="TrackBack Auto-Discovery">">
-          <ul class="list-unstyled">
-            <li>
-              <div class="form-check">
-                <input type="checkbox" value="1" name="autodiscover_links" class="form-check-input" id="autodiscover_links"<mt:if name="autodiscover_links"> checked="checked"</mt:if> />
-                <label class="form-check-label" for="autodiscover_links"><__trans phrase="Enable External TrackBack Auto-Discovery"></label>
-              </div>
-            <mt:if name="system_allow_selected_pings">
-              <p>
-                <img src="<mt:var name="static_uri">images/status_icons/warning.gif" alt="<__trans phrase="Setting Notice">" width="9" height="9" />
-                <span class="alert-warning-inline">
-                  <__trans phrase="Note: This option may be affected since outbound pings are constrained system-wide.">
-                </span>
-              </p>
-            <mt:else>
-              <mt:unless name="system_allow_outbound_pings">
-              <p>
-                <img src="<mt:var name="static_uri">images/status_icons/warning.gif" alt="<__trans phrase="Setting Ignored">" width="9" height="9" />
-                <span class="alert-warning-inline">
-                  <__trans phrase="Note: This option is currently ignored since outbound pings are disabled system-wide.">
-                </span>
-              </p>
-              </mt:unless>
-            </mt:if>
-            </li>
-            <li>
-              <div class="form-check">
-                <input type="checkbox" value="1" name="internal_autodiscovery" class="form-check-input" id="internal_autodiscovery"<mt:if name="internal_autodiscovery"> checked="checked"</mt:if> class="cb" />
-                <label class="form-check-label" for="internal_autodiscovery"><__trans phrase="Enable Internal TrackBack Auto-Discovery"></label>
-              </div>
-            <mt:if name="system_allow_selected_pings">
-              <p>
-                <img src="<mt:var name="static_uri">images/status_icons/warning.gif" alt="<__trans phrase="Setting Notice">" width="9" height="9" />
-                <span class="text-warning alert-warning-inline">
-                  <__trans phrase="Note: This option may be affected since outbound pings are constrained system-wide.">
-                </span>
-              </p>
-            <mt:else>
-              <mt:unless name="system_allow_local_pings">
-              <p>
-                <img src="<mt:var name="static_uri">images/status_icons/warning.gif" alt="<__trans phrase="Setting Ignored">" width="9" height="9" />
-                <span class="text-warning alert-warning-inline">
-                  <__trans phrase="Note: This option is currently ignored since outbound pings are disabled system-wide.">
-                </span>
-              </p>
-              </mt:unless>
-            </mt:if>
-            </li>
-          </ul>
         </mtapp:setting>
       </mtapp:settinggroup>
     </div>
