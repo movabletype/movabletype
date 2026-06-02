@@ -857,8 +857,10 @@ sub do_search_replace {
         }
     }
 
-    $replace && ( $app->validate_magic() or return );
-    $search = $orig_search if $do_replace;    # for safety's sake
+    if ($do_replace) {
+        $app->validate_magic() or return;
+        $search = $orig_search    # for safety's sake
+    }
     my $list_pref = $app->list_pref($type);
     my $search_api = $app->registry("search_apis")->{$type};
 
