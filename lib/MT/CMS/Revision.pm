@@ -18,8 +18,9 @@ sub js_save_rev {
         or return $app->permission_denied();
 
     $app->validate_param({
+        '_type'         => [qw/OBJTYPE/],
         'id'            => [qw/ID/],
-        'rev_number'    => [qw/INT/],
+        'r'             => [qw/INT/],
         'revision-note' => [qw/TEXT/],
     }) or return $app->json_error($app->translate('Invalid request.'), 400);
 
@@ -38,7 +39,7 @@ sub js_save_rev {
     my $obj    = $class->load($id)
         or return $app->json_error($app->translate('Invalid request.'), 400);
 
-    if ($type eq 'entry') {
+    if ($type eq 'entry' || $type eq 'page') {
         return $app->permission_denied()
             unless $perms->can_edit_entry($obj, $user);
     } elsif ($type eq 'content_data') {
@@ -46,7 +47,7 @@ sub js_save_rev {
             unless $perms->can_edit_content_data($obj, $user);
     } elsif ($type eq 'template') {
         return $app->permission_denied()
-           unless $perms->can_edit_templates($obj, $user);
+           unless $perms->can_edit_templates();
     }
 
     my $rev = $class->revision_pkg->load({ $id_col => $id, rev_number => $rn })
