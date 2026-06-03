@@ -28,9 +28,10 @@ our %Requirements = (
         url   => "https://metacpan.org/pod/Archive::Zip",
     },
     "Authen::SASL" => {
-        label => "This module and its dependencies are required in order to support CRAM-MD5, DIGEST-MD5 or LOGIN SASL mechanisms.",
-        tags  => ["Mail"],
-        url   => "https://metacpan.org/pod/Authen::SASL",
+        extlib => "2.2000",
+        label  => "This module and its dependencies are required in order to support CRAM-MD5, DIGEST-MD5 or LOGIN SASL mechanisms.",
+        tags   => ["Mail"],
+        url    => "https://metacpan.org/pod/Authen::SASL",
     },
     "Cache::Memcached" => {
         label => "Cache::Memcached and a memcached server are optional. They are used to cache in-memory objects.",
@@ -599,6 +600,11 @@ our %ExtLibOnly = (
         url        => "https://metacpan.org/pod/Digest::base",
         used_in    => ["Digest::SHA::PurePerl"],
     },
+    "Digest::HMAC_MD5" => {
+        extlib  => 1.05,
+        url     => "https://metacpan.org/pod/Digest::HMAC_MD5",
+        used_in => ["Authen::SASL::Perl::DIGEST_MD5"],
+    },
     "Digest::Perl::MD5" => {
         extlib  => 1.9,
         url     => "https://metacpan.org/pod/Digest::Perl::MD5",
@@ -992,6 +998,7 @@ my %OptionalModules = map { $_ => 1 } qw(
     URI::urn::isbn
     URI::otpauth
     WWW::RobotRules::AnyDBM_File
+    Authen::SASL::Perl::GSSAPI
 );
 
 sub update_me {
