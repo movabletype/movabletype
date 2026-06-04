@@ -1896,6 +1896,7 @@ BEGIN {
             'CookieSameSite'        => { default => 'Lax' },
             'MailModule'            => { default => 'MIME::Lite', },
             'MailEncoding'          => { default => 'UTF-8', },
+            'MailSMTPOAuthProvider' => undef,
             'MailTransfer'          => { default => 'sendmail' },
             'MailTransferEncoding'  => undef,
             'MailLogAlways'         => undef,
