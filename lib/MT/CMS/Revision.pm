@@ -53,8 +53,8 @@ sub js_save_rev {
     my $rev = $class->revision_pkg->load({ $id_col => $id, rev_number => $rn })
         or return $app->json_error($app->translate('Invalid request.'), 400);
 
-    my $new = $q->param('revision-note');
-    $rev->description($new);
+    my $new = $q->param('revision-note') // '';
+    $rev->description( substr $new, 0, 255 );
     $rev->save
         or return $app->json_error($rev->errstr, 500);
 
