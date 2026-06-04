@@ -199,7 +199,9 @@ sub edit {
             }
             if ( my $cur_rev = $content_data->current_revision ) {
                 my $rev = $content_data->load_revision( { rev_number => $cur_rev } );
-                $param->{'latest-revision-note'} = $rev->[3]->description;
+                if ( $rev && @$rev ) {
+                    $param->{'latest-revision-note'} = $rev->[3]->description;
+                }
             }
             $param->{rev_date} = MT::Util::format_ts(
                 '%Y-%m-%d %H:%M:%S',

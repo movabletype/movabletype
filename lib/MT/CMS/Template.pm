@@ -90,7 +90,9 @@ sub edit {
         }
         if ( my $cur_rev = $obj->current_revision ) {
             my $rev = $obj->load_revision( { rev_number => $cur_rev } );
-            $param->{'latest-revision-note'} = $rev->[3]->description;
+            if ( $rev && @$rev ) {
+                $param->{'latest-revision-note'} = $rev->[3]->description;
+            }
         }
         $param->{nav_templates} = 1;
         my $tab;
