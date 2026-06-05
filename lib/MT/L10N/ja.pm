@@ -5820,6 +5820,11 @@ use vars qw( @ISA %Lexicon );
 	'Are you sure you want to delete the existing password?' => '既存のパスワードを削除します。よろしいですか？',
 	'Copy to clipboard' => 'クリップボードにコピー',
 	'Copied' => 'コピーしました',
+
+# tmpl/admin2025/cms/include/revision_table.tmpl
+    'This revision note has been saved.' => 'メモを保存しました。',
+    'Failed to save' => '保存に失敗しました',
+    q{[_1] (ID:[_2])'s change note ([_3]) edited by user '[_4]'} => q{[_4]が[_1] (ID:[_2])の更新メモ(保存した日:[_3])を変更しました'},
 );
 
 

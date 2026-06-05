@@ -56,6 +56,7 @@ use_ok('MT::CMS::Filter');
 use_ok('MT::CMS::RebuildTrigger');
 use_ok('MT::CMS::Group');
 use_ok('MT::CMS::Deprecated::User');
+use_ok('MT::CMS::Revision');
 
 # Supporting applications
 use_ok('MT::App::Upgrader');
