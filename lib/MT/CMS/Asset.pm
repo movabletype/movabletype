@@ -837,6 +837,9 @@ sub cancel_upload {
 
 sub complete_upload {
     my $app     = shift;
+
+    $app->validate_magic or return;
+
     my $blog_id = $app->param('blog_id');
     my %param   = $app->param_hash;
     my $asset;
