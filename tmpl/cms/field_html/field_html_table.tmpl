@@ -1,5 +1,4 @@
-<table id="js-table-<mt:var name="content_field_id" escape="html">" style="display: none">
-<mt:var name="table_value">
+<table id="js-table-<mt:var name="content_field_id" escape="html">" style="display: none" data-table-value="<mt:var name="table_value" escape="html">">
 </table>
 <input type="hidden" id="content-field-<mt:var name="content_field_id" escape="html">" name="content-field-<mt:var name="content_field_id" escape="html">" value="" mt:raw-name="1" />
 
@@ -35,6 +34,7 @@
 
   <mt:setvarblock name="js_include" append="1">
 <mtapp:script path="a-table.js/build/a-table.js">
+<mtapp:script path="dompurify/purify.min.js">
   </mt:setvarblock>
 
   <mt:setvarblock name="jq_js_include" append="1">
@@ -55,6 +55,9 @@ if (browserIsFirefox) {
   var increaseDecreaseRows = <mt:if name="options{increase_decrease_rows}">true<mt:else>false</mt:if>;
   var fieldId = '<mt:var name="content_field_id" escape="js">';
   var languageTag = '<mt:var name="language_tag" escape="js">';
+
+  var sanitized = DOMPurify.sanitize('<table>' + $('#js-table-' + fieldId).data('table-value') + '</table>');
+  $('#js-table-' + fieldId).html($(sanitized).find('tbody').html());
 
   var table = new aTable(
     '#js-table-' + fieldId,
