@@ -120,9 +120,10 @@
             }
 
             var img = $('<img>');
+            var re  = new RegExp('^on', 'i');
             img.attr('src', self.data.asset_url);
             Object.keys(self.data.options).forEach(function(key){
-                if( key == 'caption' || key == 'thumbnail' || key == 'keep_aspect_ratio' ) return;
+                if( key === 'src' || key == 'caption' || key == 'thumbnail' || key == 'keep_aspect_ratio' ) return;
                 if( ( key === 'width' || key === 'height' ) && self.data.options[key] === '' ) return;
                 if( key == 'align') {
                     img.addClass('mt-image-' + self.data.options[key]);
@@ -133,7 +134,7 @@
                     } else if( self.data.options[key] == 'center' ) {
                         img.attr('style', 'text-align: center; display: block; margin: 0 auto 20px;');
                     }
-                } else {
+                } else if (!(re.test(key))) {
                   img.attr(key, self.data.options[key]);
                 }
 
