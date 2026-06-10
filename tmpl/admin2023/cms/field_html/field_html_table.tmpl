@@ -56,8 +56,15 @@ if (browserIsFirefox) {
   var fieldId = '<mt:var name="content_field_id" escape="js">';
   var languageTag = '<mt:var name="language_tag" escape="js">';
 
-  var sanitized = DOMPurify.sanitize('<table>' + $('#js-table-' + fieldId).data('table-value') + '</table>');
-  $('#js-table-' + fieldId).html($(sanitized).find('tbody').html());
+  var target = document.getElementById('js-table-' + fieldId);
+  target.innerHTML = '';
+  var clean = DOMPurify.sanitize('<table>' + (target.dataset.tableValue || '') + '</table>', { RETURN_DOM: true });
+  var tbody = clean.querySelector('tbody');
+  if (tbody) {
+    while (tbody.firstChild) {
+      target.appendChild(tbody.firstChild);
+    }
+  }
 
   var table = new aTable(
     '#js-table-' + fieldId,
