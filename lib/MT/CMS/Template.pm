@@ -2894,6 +2894,8 @@ BLOG: for my $blog_id (@id) {
 sub refresh_individual_templates {
     my ($app) = @_;
 
+    $app->validate_magic or return;
+
     $app->validate_param({
         blog_id => [qw/ID/],
         id      => [qw/ID MULTI/],
@@ -3059,6 +3061,8 @@ sub refresh_individual_templates {
 
 sub clone_templates {
     my ($app) = @_;
+
+    $app->validate_magic or return;
 
     $app->validate_param({
         id => [qw/ID MULTI/],
