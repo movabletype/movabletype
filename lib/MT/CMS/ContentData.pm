@@ -2013,6 +2013,8 @@ sub _build_content_data_preview {
 sub publish_content_data {
     my $app = shift;
 
+    $app->validate_magic or return;
+
     $app->validate_param({
         id => [qw/ID MULTI/],
     }) or return;
@@ -2026,6 +2028,8 @@ sub publish_content_data {
 
 sub draft_content_data {
     my $app = shift;
+
+    $app->validate_magic or return;
 
     $app->validate_param({
         id => [qw/ID MULTI/],
