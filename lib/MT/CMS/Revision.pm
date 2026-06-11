@@ -33,12 +33,12 @@ sub js_save_rev {
     return $app->json_error($app->translate('Invalid request.'), 400)
         unless $class->isa('MT::Revisable');
 
-    my $id     = $q->param('id');
-    my $rn     = $q->param('r');
+    my $id      = $q->param('id');
+    my $rn      = $q->param('r');
     my $blog_id = $q->param('blog_id') || 0;
-    my $obj_ds = $class->datasource;
-    my $id_col = $obj_ds . '_id';
-    my $obj    = $class->load($id)
+    my $obj_ds  = $class->datasource;
+    my $id_col  = $obj_ds . '_id';
+    my $obj     = $class->load($id)
         or return $app->json_error($app->translate('Invalid request.'), 400);
 
     if ($obj->blog_id != $blog_id) {
@@ -53,14 +53,14 @@ sub js_save_rev {
             unless $perms->can_edit_content_data($obj, $user);
     } elsif ($type eq 'template') {
         return $app->permission_denied()
-           unless $perms->can_edit_templates();
+            unless $perms->can_edit_templates();
     }
 
     my $rev = $class->revision_pkg->load({ $id_col => $id, rev_number => $rn })
         or return $app->json_error($app->translate('Invalid request.'), 400);
 
     my $new = $q->param('revision-note') // '';
-    $rev->description( substr $new, 0, 255 );
+    $rev->description(substr $new, 0, 255);
     $rev->save
         or return $app->json_error($rev->errstr, 500);
 
