@@ -20,6 +20,7 @@ sub js_save_rev {
     $app->validate_param({
         '_type'         => [qw/OBJTYPE/],
         'id'            => [qw/ID/],
+        'blog_id'       => [qw/ID/],
         'r'             => [qw/INT/],
         'revision-note' => [qw/TEXT/],
     }) or return $app->json_error($app->translate('Invalid request.'), 400);
@@ -34,10 +35,15 @@ sub js_save_rev {
 
     my $id     = $q->param('id');
     my $rn     = $q->param('r');
+    my $blog_id = $q->param('blog_id') || 0;
     my $obj_ds = $class->datasource;
     my $id_col = $obj_ds . '_id';
     my $obj    = $class->load($id)
         or return $app->json_error($app->translate('Invalid request.'), 400);
+
+    if ($obj->blog_id != $blog_id) {
+        return $app->json_error($app->translate('Invalid request.'), 400);
+    }
 
     if ($type eq 'entry' || $type eq 'page') {
         return $app->permission_denied()
