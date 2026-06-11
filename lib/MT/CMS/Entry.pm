@@ -96,7 +96,7 @@ sub edit {
                     my $rev_obj = $rev->[3];
                     my $values = $obj->get_values;
                     $param->{$_} = $values->{$_} foreach keys %$values;
-                    $param->{'revision-note'} = $rev_obj->description;
+                    $param->{'revision-note-in-status-widget'} = $rev_obj->description;
                     $param->{loaded_revision} = 1;
                 }
                 $param->{rev_number}       = $rn;
@@ -107,6 +107,12 @@ sub edit {
                 $param->{missing_tags_rev} = 1
                     if exists( $obj->{__missing_tags_rev} )
                     && $obj->{__missing_tags_rev};
+            }
+            if ( my $cur_rev = $obj->current_revision ) {
+                my $rev = $obj->load_revision( { rev_number => $cur_rev } );
+                if ( $rev && @$rev ) {
+                    $param->{'latest-revision-note'} = $rev->[3]->description;
+                }
             }
             $param->{rev_date} = format_ts( "%Y-%m-%d %H:%M:%S",
                 $obj->modified_on, $blog, $preferred_language );
