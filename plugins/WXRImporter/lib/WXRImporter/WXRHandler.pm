@@ -625,10 +625,10 @@ sub _create_asset {
     }
     require File::Basename;
     my $local_basename = File::Basename::basename($path);
-    my $ext = ( File::Basename::fileparse( $path, qr/[A-Za-z]+$/ ) )[2];
+    my $local_ext      = (File::Basename::fileparse($path, qr/[A-Za-z]+$/))[2];
 
     $asset_values->{'file_name'} = $local_basename;
-    $asset_values->{'file_ext'}  = $ext;
+    $asset_values->{'file_ext'}  = $local_ext;
 
     # Now save the asset.
     my $asset_pkg = MT::Asset->handler_for_file($local_basename);
