@@ -433,7 +433,7 @@ jQuery('.collapse.mt-collapse__content').on('show.bs.collapse', function (e) {
             <div class="tab-content" id="plugin-<mt:var name="plugin_id" escape="html">-tag-content">
 
       <mt:if name="plugin_infos">
-              <div id="plugin-<mt:var name="plugin_id">-info" class="tab-pane show pt-3 active" aria-labelledby="plugin-<mt:var name="plugin_id" escape="html">-info-tab">
+              <div id="plugin-<mt:var name="plugin_id">-info" class="tab-pane show pt-3 active" role="tabpanel" aria-labelledby="plugin-<mt:var name="plugin_id" escape="html">-info-tab">
         <mt:if name="plugin_desc">
                 <p><mt:var name="plugin_desc"></p>
         </mt:if>
@@ -470,7 +470,7 @@ jQuery('.collapse.mt-collapse__content').on('show.bs.collapse', function (e) {
       </mt:if>
 
       <mt:if name="plugin_resources">
-              <div id="plugin-<mt:var name="plugin_id">-resources" class="tab-pane pt-3<mt:unless name="plugin_infos"> active</mt:unless> resources" data-role="tabpanel" aria-labelledby="plugin-<mt:var name="plugin_id" escape="html">-resources-tab">
+              <div id="plugin-<mt:var name="plugin_id">-resources" class="tab-pane pt-3<mt:unless name="plugin_infos"> active</mt:unless> resources" role="tabpanel" data-role="tabpanel" aria-labelledby="plugin-<mt:var name="plugin_id" escape="html">-resources-tab">
                 <ul class="list-unstyled">
         <mt:if name="plugin_tags">
                   <li><strong><__trans phrase="Tags:"></strong></li>
@@ -510,7 +510,7 @@ jQuery('.collapse.mt-collapse__content').on('show.bs.collapse', function (e) {
 
       <mt:if name="can_config">
         <mt:if name="plugin_config_html">
-              <div id="plugin-<mt:var name="plugin_id">-config" class="tab-pane p-3<mt:unless name="plugin_infos"><mt:unless name="plugin_resources"> active</mt:unless></mt:unless> config" aria-labelledby="plugin-<mt:var name="plugin_id" escape="html">-config-tab" data-role="tabpanel">
+              <div id="plugin-<mt:var name="plugin_id">-config" class="tab-pane p-3<mt:unless name="plugin_infos"><mt:unless name="plugin_resources"> active</mt:unless></mt:unless> config" role="tabpanel" aria-labelledby="plugin-<mt:var name="plugin_id" escape="html">-config-tab" data-role="tabpanel">
                 <form method="post" action="<mt:var name="script_url">" id="plugin-<mt:var name="plugin_id">-form">
                   <input type="hidden" name="__mode" value="save_plugin_config" />
                 <mt:if name="blog_id">
