@@ -1,5 +1,4 @@
-<table id="js-table-<mt:var name="content_field_id" escape="html">" style="display: none">
-<mt:var name="table_value">
+<table id="js-table-<mt:var name="content_field_id" escape="html">" style="display: none" data-table-value="<mt:var name="table_value" escape="html">">
 </table>
 <input type="hidden" id="content-field-<mt:var name="content_field_id" escape="html">" name="content-field-<mt:var name="content_field_id" escape="html">" value="" mt:raw-name="1" />
 
@@ -35,6 +34,7 @@
 
   <mt:setvarblock name="js_include" append="1">
 <script src="<mt:var name="static_uri">a-table.js/build/a-table.js?v=<mt:var name="mt_version_id" escape="html">" charset="utf-8"></script>
+<script src="<mt:var name="static_uri">dompurify/purify.min.js?v=<mt:var name="mt_version_id" escape="html">" charset="utf-8"></script>
   </mt:setvarblock>
 
   <mt:setvarblock name="jq_js_include" append="1">
@@ -55,6 +55,16 @@ if (browserIsFirefox) {
   var increaseDecreaseRows = <mt:if name="options{increase_decrease_rows}">true<mt:else>false</mt:if>;
   var fieldId = '<mt:var name="content_field_id" escape="js">';
   var languageTag = '<mt:var name="language_tag" escape="js">';
+
+  var target = document.getElementById('js-table-' + fieldId);
+  target.innerHTML = '';
+  var clean = DOMPurify.sanitize('<table>' + (target.dataset.tableValue || '') + '</table>', { RETURN_DOM: true });
+  var tbody = clean.querySelector('tbody');
+  if (tbody) {
+    while (tbody.firstChild) {
+      target.appendChild(tbody.firstChild);
+    }
+  }
 
   var table = new aTable(
     '#js-table-' + fieldId,
