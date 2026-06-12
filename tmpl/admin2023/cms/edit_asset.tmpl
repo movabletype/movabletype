@@ -93,7 +93,7 @@
     <mt:if name="file_is_missing">
           <div class="mt-user">
             <div class="mt-thumbnail">
-              <img src="<mt:var name="static_uri">images/file-<mt:if name="asset_type" eq="file">default<mt:elseif name="asset_type" eq="video">movide<mt:else><mt:var name="asset_type" escape="html"></mt:if>.svg" width="60" height="60">
+              <img src="<mt:var name="static_uri">images/file-<mt:if name="asset_type" eq="file">default<mt:elseif name="asset_type" eq="video">movide<mt:else><mt:var name="asset_type" escape="html"></mt:if>.svg" width="60" height="60" alt="">
             </div>
             <div class="mt-user__badge--warning">
               <svg class="mt-icon--inverse mt-icon--sm">
@@ -103,10 +103,10 @@
             </div>
           </div>
     <mt:elseif name="has_thumbnail">
-          <img src="<mt:var name="thumbnail_url" escape="html">" class="img-thumbnail" width="<mt:var name="thumbnail_width" escape="html">" height="<mt:var name="thumbnail_height" escape="html">"<mt:if name="thumbnail_width"> style="padding: <$mt:var name="thumbnail_height_offset"$>px <$mt:var name="thumbnail_width_offset"$>px"</mt:if> />
+          <img src="<mt:var name="thumbnail_url" escape="html">" class="img-thumbnail" width="<mt:var name="thumbnail_width" escape="html">" height="<mt:var name="thumbnail_height" escape="html">" alt=""<mt:if name="thumbnail_width"> style="padding: <$mt:var name="thumbnail_height_offset"$>px <$mt:var name="thumbnail_width_offset"$>px"</mt:if> />
     <mt:else>
           <div class="mt-thumbnail">
-            <img src="<mt:var name="static_uri" escape="html">images/file-<mt:if name="asset_type" eq="file">default<mt:elseif name="asset_type" eq="video">movie<mt:else><mt:var name="asset_type" escape="html"></mt:if>.svg" width="60" height="60">
+            <img src="<mt:var name="static_uri" escape="html">images/file-<mt:if name="asset_type" eq="file">default<mt:elseif name="asset_type" eq="video">movie<mt:else><mt:var name="asset_type" escape="html"></mt:if>.svg" width="60" height="60" alt="">
           </div>
     </mt:if>
         </a>
@@ -242,13 +242,13 @@ jQuery(window).on('load', init );
         <mt:if name="has_thumbnail">
         <div class="col-12 col-md-auto asset-preview-thumb picture small">
           <div class="thumbnail">
-            <img src="<mt:var name="thumbnail_url" escape="html">" class="img-thumbnail p-0" width="<mt:var name="thumbnail_width" escape="html">" height="<mt:var name="thumbnail_height" escape="html">" />
+            <img src="<mt:var name="thumbnail_url" escape="html">" class="img-thumbnail p-0" width="<mt:var name="thumbnail_width" escape="html">" height="<mt:var name="thumbnail_height" escape="html">" alt="" />
           </div>
         </div>
         <mt:elseif name="asset_type" ne="image">
         <div class="col-12 col-md-auto asset-type-icon picture small">
           <div class="mt-thumbnail">
-            <img src="<mt:var name="static_uri">images/file-<mt:if name="asset_type" eq="file">default<mt:elseif name="asset_type" eq="video">movie<mt:else><mt:var name="asset_type" escape="html"></mt:if>.svg" width="60" height="60">
+            <img src="<mt:var name="static_uri">images/file-<mt:if name="asset_type" eq="file">default<mt:elseif name="asset_type" eq="video">movie<mt:else><mt:var name="asset_type" escape="html"></mt:if>.svg" width="60" height="60" alt="">
           </div>
         </div>
         </mt:if>
