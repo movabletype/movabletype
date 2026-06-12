@@ -592,7 +592,14 @@ sub _create_asset {
     my $url     = $asset_values->{'url'};
     my $old_url = $url;
     if ($mt_url) {
-        $url =~ s/^.*$wp_path(.+)$/$mt_url$1/i;
+        unless ($url =~ s/^.*$wp_path(.+)$/$mt_url$1/i) {
+            $cb->($plugin->translate(
+                "External asset ('[_1]') found.  Skipping.",
+                $asset_values->{label},
+            ));
+            $cb->("\n");
+            return 1;
+        }
     }
     $asset_values->{'url'} = $url;
 
