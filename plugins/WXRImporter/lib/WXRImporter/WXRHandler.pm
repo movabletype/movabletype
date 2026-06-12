@@ -541,6 +541,51 @@ sub _create_asset {
         }
         $path = File::Spec->canonpath($path);
     }
+
+    # Validate the path as we do in MT::CMS::Asset::_upload_file
+    # (NB: We can't change file extensions here as they are not downloaded yet)
+
+    $path =~ s!\\!/!g;    ## Change backslashes to forward slashes
+    $path = MT::Util::trim_path($path) if MT->config->TrimFilePath;
+    if ($path =~ m!\.\.|\0|\|!) {
+        return $cb->($plugin->translate("Invalid filename '[_1]'", $path));
+    }
+    if (!MT->config->AllowNonAsciiFilename && $path =~ m/[^\x20-\x7E]/) {
+        return $cb->($plugin->translate("Non-ASCII characters are not allowed in filenames. Please rename the file using only ASCII characters."));
+    }
+
+    my $ext = (File::Basename::fileparse($path, '\.[^\.]*'))[2];
+
+    if (my $deny_exts = MT->config->DeniedAssetFileExtensions) {
+        my @deny_exts = map {
+            if   ($_ =~ m/^\./) { qr/$_(?:\..*)?/i }
+            else                { qr/\.$_(?:\..*)?/i }
+        } grep { defined $_ && $_ ne '' } split '\s?,\s?', $deny_exts;
+        my @ret = File::Basename::fileparse($path, @deny_exts);
+        if ($ret[2]) {
+            return $cb->($plugin->translate(
+                '\'[_1]\' is not allowed to upload by system settings.: [_2]',
+                $ret[2],
+                $path
+            ));
+        }
+    }
+
+    if (my $allow_exts = MT->config('AssetFileExtensions')) {
+        my @allow_exts = map {
+            if   ($_ =~ m/^\./) { qr/$_/i }
+            else                { qr/\.$_/i }
+        } split '\s?,\s?', $allow_exts;
+        my @ret = File::Basename::fileparse($path, @allow_exts);
+        unless ($ret[2]) {
+            return $cb->($plugin->translate(
+                '\'[_1]\' is not allowed to upload by system settings.: [_2]',
+                $ext,
+                $path
+            ));
+        }
+    }
+
     $asset_values->{'file_path'} = $path;
 
     my $mt_url  = $self->{'mt_url'};
