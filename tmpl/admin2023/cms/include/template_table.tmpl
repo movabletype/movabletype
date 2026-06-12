@@ -1,5 +1,7 @@
 <mt:setvarblock name="listing_header">
+  <mt:if name="template_type_label">
   <h3 class="tmpl-type-name"><mt:var name="template_type_label"></h3>
+  </mt:if>
 <mt:unless name="template_type" like="/system|email|backup/">
   <mt:if name="template_type" eq="ct">
   <mt:unless name="content_type_exists">
