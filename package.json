@@ -95,7 +95,7 @@
     "svelte-preprocess": "^5.0.4",
     "terser": "^5.48.0",
     "typescript": "^5.7.3",
-    "vitest": "^2.1.9"
+    "vitest": "^4.1.8"
   },
   "dependencies": {
     "@riotjs/observable": "^4.1.1",
