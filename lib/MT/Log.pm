@@ -283,7 +283,7 @@ sub list_props {
                 my @types = split(',', $val);
                 return { level => \@types };
             },
-            single_select_options => [
+            single_select_options => sub { return [
                 {   label => MT->translate('Security'),
                     value => SECURITY(),
                     text  => 'security'
@@ -324,7 +324,7 @@ sub list_props {
                     value => join(',', (DEBUG(), ERROR())),
                     text  => 'debug_or_error',
                 },
-            ],
+            ]},
             bulk_html => sub {
                 my ($prop, $objs) = @_;
                 my (@label, @out);
