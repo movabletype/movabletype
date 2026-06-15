@@ -268,7 +268,7 @@ sub list_props {
         level => {
             label   => 'Level',
             base    => '__virtual.single_select',
-            display => 'none',
+            display => 'optional',
             col     => 'level',
             sort    => sub {
                 my $prop = shift;
