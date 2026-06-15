@@ -1696,6 +1696,10 @@ function create_status_expr_function($expr, &$status, $datasource = 'author') {
 
 function create_rating_expr_function($expr, $filter, $namespace, $datasource = 'entry') {
     $orig_expr = $expr;
+    if (preg_match('/[^0-9.]/', $orig_expr)) {
+        echo "Invalid rating filter: $orig_expr";
+        return;
+    }
 
     require_once 'rating_lib.php';
     $expr = '$ctx = $c; if ($ctx == null) { $mt = MT::get_instance(); $ctx = $mt->context(); }';
