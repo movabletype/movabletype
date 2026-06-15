@@ -529,7 +529,7 @@ sub save {
         # Create or load content field
         my $content_field;
         if ( $content_type_id && $field_id ) {
-            $content_field = $cf_class->load($field_id)
+            $content_field = $cf_class->load({ id => $field_id, blog_id => $blog_id, content_type_id => $content_type_id })
                 or return $app->errtrans(
                 "Cannot load content field data (ID: [_1])", $field_id );
             $field->{label_field} = 1
