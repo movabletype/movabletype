@@ -3071,7 +3071,8 @@ sub clone_templates {
     $app->validate_magic or return;
 
     $app->validate_param({
-        id => [qw/ID MULTI/],
+        id      => [qw/ID MULTI/],
+        blog_id => [qw/ID/],
     }) or return;
 
     my $user = $app->user;
@@ -3085,10 +3086,11 @@ sub clone_templates {
             || $perms->can_administer_site )
         );
 
-    my @id = $app->multi_param('id');
+    my @id      = $app->multi_param('id');
+    my $blog_id = $app->param('blog_id') || 0;
     require MT::Template;
     foreach my $tmpl_id (@id) {
-        my $tmpl = MT::Template->load($tmpl_id);
+        my $tmpl = MT::Template->load({ id => $tmpl_id, blog_id => $blog_id });
         next unless $tmpl;
 
         my $new_tmpl = $tmpl->clone(
