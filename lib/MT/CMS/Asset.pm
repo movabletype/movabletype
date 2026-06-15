@@ -819,7 +819,7 @@ sub cancel_upload {
     $app->validate_magic() or return;
 
     my $asset;
-    $param{id} && ( $asset = MT->model('asset')->load( $param{id} ) )
+    $param{id} && ( $asset = MT->model('asset')->load({ id => $param{id}, blog_id => $param{blog_id} }) )
         or return $app->errtrans("Invalid request.");
 
    # User has permission to delete asset and asset file, or user created asset
