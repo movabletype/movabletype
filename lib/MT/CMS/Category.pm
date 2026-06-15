@@ -128,10 +128,10 @@ sub save {
 
     $app->validate_magic() or return;
 
-    my $blog_id = $app->param('blog_id');
+    my $blog_id = $app->param('blog_id') || 0;
     my $cat;
     if ( my $moved_cat_id = $app->param('move_cat_id') ) {
-        $cat = $class->load($moved_cat_id) or return;
+        $cat = $class->load({ id => $moved_cat_id, blog_id => $blog_id, category_set_id => 0 }) or return;
         move_category($app) or return;
     }
     else {
@@ -239,7 +239,7 @@ sub bulk_update {
     my $set;
     if ($is_category_set) {
         if ($set_id) {
-            $set = MT->model('category_set')->load($set_id)
+            $set = MT->model('category_set')->load({ id => $set_id, blog_id => $blog_id })
                 or return $app->json_error(
                 $app->translate( 'Invalid category_set_id: [_1]', $set_id ) );
             $set->name( scalar $app->param('set_name') );
@@ -839,8 +839,9 @@ sub move_category {
         or return $app->errtrans("Invalid request.");
     $app->validate_magic() or return;
 
+    my $blog_id     = $app->param('blog_id') || 0;
     my $move_cat_id = $app->param('move_cat_id');
-    my $cat         = $class->load($move_cat_id)
+    my $cat         = $class->load({ id => $move_cat_id, blog_id => $blog_id, category_set_id => 0 })
         or return;
 
     my $new_parent_id = $app->param('move-radio') || 0;
@@ -848,7 +849,7 @@ sub move_category {
     return 1 if ( $new_parent_id == $cat->parent );
 
     if ($new_parent_id) {
-        my $new_parent = $class->load($new_parent_id)
+        my $new_parent = $class->load({ id => $new_parent_id, blog_id => $blog_id, category_set_id => 0 })
             or return;
         if ( $cat->is_ancestor($new_parent) ) {
             _adjust_ancestry( $cat, $new_parent );
@@ -857,8 +858,9 @@ sub move_category {
     $cat->parent($new_parent_id);
     if ( $type eq 'category' ) {    # folder is able to have a same label
         my @siblings = $class->load(
-            {   parent  => $cat->parent,
-                blog_id => $cat->blog_id
+            {   parent          => $cat->parent,
+                blog_id         => $cat->blog_id,
+                category_set_id => 0,
             }
         );
         foreach (@siblings) {
