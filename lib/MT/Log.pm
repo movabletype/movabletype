@@ -325,6 +325,27 @@ sub list_props {
                     text  => 'debug_or_error',
                 },
             ],
+            bulk_html => sub {
+                my ($prop, $objs) = @_;
+                my (@label, @out);
+                for my $obj (@$objs) {
+                    my $level = $obj->level;
+                    if ($level == ERROR()) {
+                        push @out, $label[$level] ||= MT->translate('Error');
+                    } elsif ($level == INFO()) {
+                        push @out, $label[$level] ||= MT->translate('Information');
+                    } elsif ($level == WARNING()) {
+                        push @out, $label[$level] ||= MT->translate('Warning');
+                    } elsif ($level == NOTICE()) {
+                        push @out, $label[$level] ||= MT->translate('Notice');
+                    } elsif ($level == SECURITY()) {
+                        push @out, $label[$level] ||= MT->translate('Security');
+                    } elsif ($level == DEBUG()) {
+                        push @out, $label[$level] ||= MT->translate('Debug');
+                    }
+                }
+                return @out;
+            },
         },
         metadata => {
             auto      => 1,
