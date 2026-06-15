@@ -2912,7 +2912,7 @@ sub refresh_individual_templates {
     MT::Util::Log->debug('--- Start refresh_individual_templates.');
 
     my $set;
-    my $blog_id = $app->param('blog_id');
+    my $blog_id = $app->param('blog_id') || 0;
     my $blog    = $app->blog;
 
     # force saving the revision when indiv. templates are refreshed.
@@ -2965,7 +2965,7 @@ sub refresh_individual_templates {
     my @id = $app->multi_param('id');
     require MT::Template;
     foreach my $tmpl_id (@id) {
-        my $tmpl = MT::Template->load($tmpl_id);
+        my $tmpl = MT::Template->load({ id => $tmpl_id, blog_id => $blog_id });
         next unless $tmpl;
         my $blog_id = $tmpl->blog_id;
 
