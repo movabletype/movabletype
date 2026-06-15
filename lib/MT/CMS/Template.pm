@@ -2980,7 +2980,7 @@ sub refresh_individual_templates {
             push @msg,
                 $app->translate(
                 "Skipping template '[_1]' since it appears to be a custom template.",
-                $tmpl->name
+                MT::Util::encode_html($tmpl->name)
                 );
             next;
         }
@@ -3010,7 +3010,7 @@ sub refresh_individual_templates {
             push @msg,
                 $app->translate(
                 'Refreshing template <strong>[_3]</strong> after making <a href="?__mode=view&amp;blog_id=[_1]&amp;_type=template&amp;id=[_2]">backup</a>.',
-                $blog_id, $backup->id, $tmpl->name );
+                MT::Util::encode_url($blog_id), MT::Util::encode_url($backup->id), MT::Util::encode_html($tmpl->name) );
 
             # we found that the previous template had not been
             # altered, so replace it with new default template...
@@ -3034,7 +3034,7 @@ sub refresh_individual_templates {
             push @msg,
                 $app->translate(
                 "Skipping template '[_1]' since it has not been changed.",
-                $tmpl->name );
+                MT::Util::encode_html($tmpl->name) );
         }
     }
     my @msg_loop;
