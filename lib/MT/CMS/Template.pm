@@ -2973,9 +2973,6 @@ sub refresh_individual_templates {
     foreach my $tmpl_id (@id) {
         my $tmpl = MT::Template->load({ id => $tmpl_id, blog_id => $blog_id });
         next unless $tmpl;
-        my $blog_id = $tmpl->blog_id;
-
-        # FIXME: permission check -- for this blog_id
 
         my @ts = MT::Util::offset_time_list( $t, $blog_id );
         my $ts = sprintf "%04d-%02d-%02d %02d:%02d:%02d", $ts[5] + 1900,
