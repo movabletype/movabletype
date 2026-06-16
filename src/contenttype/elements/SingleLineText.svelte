@@ -9,6 +9,7 @@
     gather = $bindable(),
     id,
     options = $bindable(),
+    isLabelField = false,
   }: ContentType.ContentFieldProps = $props();
 
   let displayOptions = $derived({
@@ -19,7 +20,13 @@
   });
 </script>
 
-<ContentFieldOptionGroup type="single-line-text" bind:field {id} bind:options>
+<ContentFieldOptionGroup
+  type="single-line-text"
+  bind:field
+  {id}
+  bind:options
+  {isLabelField}
+>
   <ContentFieldOption
     id="single_line_text-min_length"
     label={window.trans("Min Length")}

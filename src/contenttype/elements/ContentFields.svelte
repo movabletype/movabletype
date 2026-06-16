@@ -47,7 +47,7 @@
   let dragoverState = false;
   let labelFields: Array<{ value: string; label: string }> = $state([]);
   // svelte-ignore state_referenced_locally
-  let labelField = opts.labelField;
+  let labelField = $state(opts.labelField);
   let isExpanded = $state(false);
 
   let gathers: { [key: string]: (() => object) | undefined } = $state({});
@@ -67,7 +67,59 @@
       });
   });
 
+  const _getLabelFromValue = (value: string): string => {
+    let label: string | undefined;
+    if (value.match(/^id:/)) {
+      const id = value.match(/^id:(.*)/)?.[1];
+      if (id) {
+        label =
+          jQuery("#content-field-block-" + id)
+            .find('[name="label"]')
+            .val()
+            ?.toString() || "";
+        if (label === "") {
+          label = window.trans("No Name");
+        }
+      }
+    } else {
+      label = fields.find((f) => value === f.unique_id)?.label;
+    }
+
+    if (!label) {
+      label = "(" + window.trans("Deleted") + ")";
+    }
+
+    return label;
+  };
+
+  const _alertOnChangedToDefaultLabelField = (oldId: string): void => {
+    const content = window.trans(
+      'Data label field have been changed to "[_2]" from "[_1]"',
+      _getLabelFromValue(oldId),
+      window.trans("Show input field to enter data label"),
+    );
+    jQuery("#msg-block").append(
+      jQuery("<div />")
+        .attr("class", "alert alert-dismissible alert-warning")
+        .append(
+          jQuery(
+            '<button class="btn-close" data-bs-dismiss="alert" aria-label="Close" />',
+          ).append('<span aria-hidden="true">&times;</span>'),
+        )
+        .append(content),
+    );
+    alert(content);
+  };
+
   onMount(() => {
+    // Prevent label_field from being reset when saving a content type immediately after loading
+    rebuildLabelFields();
+
+    // Rebuild label fields when any required option is changed in content fields
+    jQuery("#content-fields").on("change", "input[name=required]", function () {
+      rebuildLabelFields();
+    });
+
     // Drag start from content field list
     observer.on("mtDragStart", function () {
       droppable = true;
@@ -310,7 +362,6 @@
       return;
     }
 
-    rebuildLabelFields();
     window.setDirty(false);
     const fieldOptions: Array<ContentType.SubmitFieldOption> = [];
     if (fields) {
@@ -378,6 +429,19 @@
       }
     }
     labelFields = newLabelFields;
+
+    // Reset labelField when it is removed from the list
+    if (labelField) {
+      if (
+        labelFields.length === 0 ||
+        labelFields.every((lf) => lf.value !== labelField)
+      ) {
+        const stash = labelField;
+        labelField = "";
+        _alertOnChangedToDefaultLabelField(stash);
+      }
+    }
+
     // update is not needed in Svelte
   };
 
@@ -603,7 +667,7 @@
                         id="label_field"
                         name="label_field"
                         class="custom-select form-control html5-form form-select"
-                        value={labelField}
+                        bind:value={labelField}
                       >
                         <option value=""
                           >{window.trans(
@@ -752,6 +816,7 @@
             parent={tags[fieldIndex]}
             bind:gather={gathers[fieldId]}
             {optionsHtmlParams}
+            {labelField}
             onDuplicate={_duplicateField}
             onDelete={_deleteField}
           />

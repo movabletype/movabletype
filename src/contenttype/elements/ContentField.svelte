@@ -18,6 +18,7 @@
     parent: HTMLDivElement;
     gather: (() => object) | undefined;
     optionsHtmlParams: ContentType.OptionsHtmlParams;
+    labelField: string;
     onDelete: (index: number) => void;
     onDuplicate: (newItem: ContentType.Field) => void;
   };
@@ -32,9 +33,16 @@
     parent,
     gather = $bindable(),
     optionsHtmlParams,
+    labelField,
     onDelete,
     onDuplicate,
   }: Props = $props();
+
+  let isLabelField = $derived(
+    labelField.match(/^id:/)
+      ? labelField === "id:" + field.id
+      : labelField === field.unique_id,
+  );
 
   let id = $derived(`field-options-${field.id}`);
 
@@ -61,6 +69,15 @@
 
   const deleteField = (): void => {
     const label = field.label ? field.label : window.trans("No Name");
+    if (isLabelField) {
+      alert(
+        window.trans(
+          '"[_1]" cannot delete because using as data label field.',
+          label,
+        ),
+      );
+      return;
+    }
     if (
       !confirm(
         window.trans(
@@ -81,6 +98,7 @@
     const newItem = jQuery.extend({}, field);
     newItem.options = gatheringData(parent, fieldIndex);
     newItem.id = Math.random().toString(36).slice(-8);
+    newItem.unique_id = undefined;
     let label = field.label;
     if (!label) {
       label = jQuery("#content-field-block-" + field.id)
@@ -175,6 +193,7 @@
       {id}
       bind:options={field.options}
       {optionsHtmlParams}
+      {isLabelField}
     />
   {/if}
   <Custom

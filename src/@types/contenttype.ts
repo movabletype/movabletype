@@ -112,4 +112,5 @@ export interface ContentFieldProps {
   id: string;
   options: Options;
   optionsHtmlParams: OptionsHtmlParams;
+  isLabelField?: boolean;
 }

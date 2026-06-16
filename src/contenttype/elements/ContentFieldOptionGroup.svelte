@@ -14,6 +14,7 @@
     id: string;
     options: ContentType.Options;
     type: string;
+    isLabelField?: boolean;
     children?: Snippet;
   };
   let {
@@ -21,6 +22,7 @@
     id,
     options = $bindable(),
     type,
+    isLabelField = false,
     children,
   }: Props = $props();
 
@@ -155,6 +157,13 @@
   <label for="{type}-required">
     {window.trans("Is this field required?")}
   </label>
+  {#if isLabelField}
+    <div class="small form-text text-body-secondary hint">
+      {window.trans(
+        "Unchecking this required, data label field will reset to default.",
+      )}
+    </div>
+  {/if}
 </ContentFieldOption>
 
 <ContentFieldOption

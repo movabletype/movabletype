@@ -9,6 +9,7 @@
     gather = $bindable(),
     id,
     options = $bindable(),
+    isLabelField = false,
   }: ContentType.ContentFieldProps = $props();
 
   let displayOptions = $derived({
@@ -17,7 +18,7 @@
   });
 </script>
 
-<ContentFieldOptionGroup type="url" {id} bind:field bind:options>
+<ContentFieldOptionGroup type="url" {id} bind:field bind:options {isLabelField}>
   <ContentFieldOption
     id="url-initial_value"
     label={window.trans("Initial Value")}
