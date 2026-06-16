@@ -336,6 +336,7 @@ sub _request_internally {
     local *MT::App::login                 = $login     if $login;
     local *MT::App::DataAPI::authenticate = $api_login if $api_login;
 
+    local $ENV{HTTP_SEC_FETCH_SITE} = 'same-origin'; # for now
     $app->run;
 
     my $dummy = grep defined $_, ($app->errstr, MT->errstr);

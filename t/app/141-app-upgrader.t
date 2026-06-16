@@ -105,8 +105,10 @@ subtest 'Upgrade from MT4 to MT7' => sub {
     $config->save or die $config->errstr;
 
     my $app = MT::Test::App->new('MT::App::Upgrader');
-    my $res = $app->post({
-        __mode   => 'upgrade',
+    $app->get_ok();
+    like $app->content, qr/A new version of Movable Type has been installed/, 'upgrade detected';
+    $app->post_form_ok;
+    my $res = $app->post_form_ok({
         username => 'Melody',
         password => 'Nelson',
     });
