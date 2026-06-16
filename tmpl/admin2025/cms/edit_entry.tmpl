@@ -208,7 +208,7 @@
     <mtapp:statusmsg
        id="missing_cats_rev"
        class="info">
-      <__trans phrase="Some [_1] in the revision could not be loaded because they have been removed." params="<mt:if name="object_type" eq="entry">categories<mt:else>folders</mt:if>">
+      <__trans phrase="Some [_1] in the revision could not be loaded because they have been removed." params="<mt:if name="object_type" eq="entry"><__trans phrase="categories"><mt:else><__trans phrase="folders"></mt:if>">
     </mtapp:statusmsg>
   </mt:if>
 </mt:if>
@@ -263,6 +263,10 @@
      can_close="0">
     <mt:if name="rev_date">
     <__trans phrase="Revision: <strong>[_1]</strong>" params="<mt:var name="rev_date" escape="html">">
+    <mt:if name="revision-note-in-status-widget"><br><mt:var name="revision-note-in-status-widget" escape="html"></mt:if>
+    <mt:unless name="loaded_revision">
+      <mt:if name="latest-revision-note"><br><mt:var name="latest-revision-note" escape="html"></mt:if>
+    </mt:unless>
     <br>
     <a href="<mt:var name="script_url">?__mode=list_revision&_type=<mt:var name="object_type" default="entry">&id=<$mt:var name="id" escape="url"$>&blog_id=<$mt:var name="blog_id"$>&r=<mt:var name="rev_number" escape="html">" class="mt-open-dialog mt-modal-open" data-mt-modal-large title="<__trans phrase="View revisions of this [_1]" params="<mt:var name="object_label">">">
       <__trans phrase="View revisions">
@@ -908,7 +912,7 @@
        hint="$ping_urls_hint"
        show_hint="$show_ping_urls_hint"
        hint_id="outboundTrackbackUrls">
-      <textarea name="to_ping_urls" id="to_ping_urls" class="form-control text full low" cols="" rows=""<mt:if name="show_ping_urls_hint"> aria-describedby="outboundTrackbackUrls"</mt:if>><$mt:var name="to_ping_urls" escape="html"$></textarea>
+      <textarea name="to_ping_urls" id="to_ping_urls" class="form-control text full low"<mt:if name="show_ping_urls_hint"> aria-describedby="outboundTrackbackUrls"</mt:if>><$mt:var name="to_ping_urls" escape="html"$></textarea>
     </mtapp:setting>
   </mt:if>
   </mtapp:widget>
@@ -1681,7 +1685,7 @@ div.mce-notification-error {
         </div>
         <div class="mt-flexBreak"></div>
         <div class="mt-draggable__content">
-          <textarea name="excerpt" id="excerpt" class="form-control text full low" cols="" rows="" mt:watch-change="1"><$mt:var name="excerpt" escape="html"$></textarea>
+          <textarea name="excerpt" id="excerpt" class="form-control text full low" mt:watch-change="1"><$mt:var name="excerpt" escape="html"$></textarea>
         </div>
       </div>
     </div>

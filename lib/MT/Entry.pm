@@ -349,6 +349,11 @@ sub list_props {
             col_class       => 'string',
             view_filter     => [ 'website', 'blog' ],
             category_class  => 'category',
+            validate_item   => sub {
+                my $prop = shift;
+                my ($item) = @_;
+                return $prop->validate_scalar_filter($item->{args});
+            },
             terms           => sub {
                 my ( $prop, $args, $db_terms, $db_args ) = @_;
                 my $blog_id = MT->app->blog->id;
@@ -1499,12 +1504,11 @@ sub unpack_revision {
         MT::Memcached->instance->delete( $obj->tag_cache_key );
 
         if (@$rev_tags) {
-            my $lookups = MT::Tag->lookup_multi($rev_tags);
-            my @tags = grep {defined} @$lookups;
-            $obj->{__tags}             = [ map { $_->name } @tags ];
-            $obj->{__tag_objects}      = \@tags;
+            my $tags = MT::Tag->lookup_multi($rev_tags);
+            $obj->{__tags}             = [ map { $_->name } @$tags ];
+            $obj->{__tag_objects}      = $tags;
             $obj->{__missing_tags_rev} = 1
-                if scalar(@tags) != scalar(@$lookups);
+                if scalar(@$tags) != scalar(@$rev_tags);
         }
         else {
             $obj->{__tags}        = [];
@@ -1522,9 +1526,9 @@ sub unpack_revision {
             $cat = MT::Category->lookup( $primary->[0] );
             my $cats = MT::Category->lookup_multi(
                 [ map { $_->[0] } @$rev_cats ] );
-            @cats = sort { $a->label cmp $b->label } grep {defined} @$cats;
+            @cats = sort { $a->label cmp $b->label } @$cats;
             $obj->{__missing_cats_rev} = 1
-                if scalar(@cats) != scalar(@$cats);
+                if scalar(@cats) != scalar(@$rev_cats);
         }
         $obj->cache_property( 'category',   undef, $cat );
         $obj->cache_property( 'categories', undef, \@cats );

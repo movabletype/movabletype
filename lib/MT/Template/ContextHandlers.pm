@@ -3853,14 +3853,14 @@ sub _hdlr_app_page_actions {
         <mt:loop name="page_actions">
             <mt:if name="page">
                     <li class="icon-left-xwide icon<mt:unless name="core">-plugin</mt:unless>-action">
-                        <a href="<mt:var name="page" escape="html"><mt:if name="page_has_params">&amp;</mt:if>from=$from<mt:if name="id">&amp;id=<mt:var name="id"></mt:if><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>$mt&amp;return_args=<mt:var name="return_args" escape="url">"<mt:if name="continue_prompt"> onclick="return confirm('<mt:var name="continue_prompt" escape="js">');"</mt:if> class="d-inline-block">
+                        <a href="<mt:var name="page" escape="html"><mt:if name="page_has_params">&amp;</mt:if>from=$from<mt:if name="id">&amp;id=<mt:var name="id"></mt:if><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>$mt&amp;return_args=<mt:var name="return_args" escape="url">"<mt:if name="continue_prompt"> onclick="return confirm('<mt:var name="continue_prompt" escape="js" escape="html">');"</mt:if> class="d-inline-block">
                             <mtapp:svgicon id="ic_setting" size="sm" title="\$label">
                             <mt:var name="label">
                         </a>
                     </li>
             <mt:else><mt:if name="link">
                     <li class="icon-left-xwide icon<mt:unless name="core">-plugin</mt:unless>-action">
-                        <a href="<mt:var name="link" escape="html">&amp;from=$from<mt:if name="id">&amp;id=<mt:var name="id"></mt:if><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>$mt&amp;return_args=<mt:var name="return_args" escape="url">"<mt:if name="continue_prompt"> onclick="return confirm('<mt:var name="continue_prompt" escape="js">');"</mt:if><mt:if name="dialog"> class="mt-open-dialog mt-modal-open d-inline-block" data-mt-modal-large</mt:if>>
+                        <a href="<mt:var name="link" escape="html">&amp;from=$from<mt:if name="id">&amp;id=<mt:var name="id"></mt:if><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>$mt&amp;return_args=<mt:var name="return_args" escape="url">"<mt:if name="continue_prompt"> onclick="return confirm('<mt:var name="continue_prompt" escape="js" escape="html">');"</mt:if><mt:if name="dialog"> class="mt-open-dialog mt-modal-open d-inline-block" data-mt-modal-large</mt:if>>
                             <mtapp:svgicon id="ic_setting" size="sm" title="\$label">
                             <mt:var name="label">
                         </a>
@@ -4323,6 +4323,7 @@ sub _hdlr_app_contentfield_option_group {
      id="$type-required"
      label="<__trans phrase="Is this field required?">">
     <input ref="required" type="checkbox" class="mt-switch form-control" id="$type-required" name="required" checked={ options.required } onclick={ changeStateRequired }><label for="$type-required"><__trans phrase="Is this field required?"></label>
+    <div class="small form-text text-body-secondary hint" if={ this.parent.isLabelField() }><__trans phrase="Unchecking this required, data label field will reset to default."></div>
   </mtapp:ContentFieldOption>
 
   <mtapp:ContentFieldOption
@@ -5075,6 +5076,8 @@ B<Example:> Passing Parameters to a Template Module
                 )
             );
         }
+        require MT::Util::Deprecated;
+        MT::Util::Deprecated::warning(name => 'MTInclude file="..."', alternative => 'MTInclude name="..."', since => '9.2.0');
         my $file = $arg->{file} or return;
         require File::Basename;
         my $base_filename = File::Basename::basename($file);

@@ -282,6 +282,7 @@ sub test_data_api {
             }
 
             if ( exists $data->{error} ) {
+                my $dummy = $app->_app->errstr ? 1 : 0;
                 $result = $format->{unserialize}->($body) if !defined $result;
                 if ( ref $data->{error} eq ref qr// ) {
                     like( $result->{error}{message},

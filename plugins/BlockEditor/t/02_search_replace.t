@@ -17,7 +17,7 @@ BEGIN {
 
 use MT::Test;
 use MT::Test::Permission;
-use MT::Test::App;
+use MT::Test::App qw(MT::Test::Role::CMS::Search);
 
 my $test_data = {
     heading_data => {
@@ -95,7 +95,7 @@ $test_env->prepare_fixture(sub {
         blog_id           => $ct->blog_id,
         author_id         => 1,
         content_type_id   => $ct->id,
-        data              => MT::Serialize->serialize(\$test_data),
+        data              => {$cf->id => MT::Serialize->serialize(\$test_data)},
         block_editor_data => MT::Util::to_json($blog_editor_data),
         convert_breaks    => MT::Serialize->serialize(\$convert_breaks),
     );
@@ -118,20 +118,12 @@ subtest 'BlockEditor Search' => sub {
         subtest "Search BlockEditor :" . $data{type} => sub {
             my $app = MT::Test::App->new;
             $app->login($admin);
-            $app->post_ok({
-                __mode     => 'search_replace',
-                _type      => 'content_data',
-                blog_id    => 1,
-                is_limited => 0,
-                do_search  => 1,
-                search     => $search_value
-            });
+            $app->get_ok({ __mode => 'search_replace', blog_id => 1 });
+            $app->change_tab('content_data');
+            $app->change_content_type($ct->id);
+            $app->search($search_value, {});
             $app->content_unlike(qr/generic-error/, 'no error');
-            my $id = $cd->id;
-            $app->content_like(
-                qr/name="id" value="$id"/,
-                "ContentData#$id is found"
-            );
+            is_deeply($app->found_ids, [$cd->id], "right contentData is found");
         }
     }
 };
@@ -148,24 +140,15 @@ subtest 'BlockEditor Replace' => sub {
         subtest "Replace BlockEditor :" . $data{type} => sub {
             my $app = MT::Test::App->new;
             $app->login($admin);
-            $app->post_ok({
-                __mode      => 'search_replace',
-                _type       => 'content_data',
-                blog_id     => 1,
-                is_limited  => 0,
-                do_replace  => 1,
-                replace_ids => $cd->id,
-                orig_search => $search_value,
-                replace     => $replace_value
-            });
+            $app->get_ok({ __mode => 'search_replace', blog_id => 1 });
+            $app->change_tab('content_data');
+            $app->change_content_type($ct->id);
+            $app->search($search_value, {});
+            $app->replace($replace_value, $app->found_ids);
             $app->content_unlike(qr/generic-error/, 'no error');
-            my $id = $cd->id;
-            $app->content_like(
-                qr/name="id" value="$id"/,
-                "ContentData#$id is found"
-            );
+            is_deeply($app->found_ids, [$cd->id], "right contentData is replaced");
             # reflesh data
-            my $cd_replaced               = MT::ContentData->load($id);
+            my $cd_replaced               = MT::ContentData->load($cd->id);
             my $blog_editor_data_replaced = $cd_replaced->block_editor_data;
             like(
                 $blog_editor_data_replaced,

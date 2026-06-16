@@ -1,3 +1,16 @@
+<mtapp:statusmsg
+   id="success_msg"
+   hidden="1"
+   can_close="0"
+   class="success">
+</mtapp:statusmsg>
+<mtapp:statusmsg
+   id="error_msg"
+   hidden="1"
+   can_close="0"
+   class="danger">
+</mtapp:statusmsg>
+
 <mt:var name="pager" value="$hide_pager" default="0">
 <div id="selector-rev" class="selector listing">
 <mtapp:listing
@@ -33,13 +46,28 @@
           <a class="revision-number" href="javascript:void(0);" onclick="javascript:<$mt:var name="rev_js"$>;"><mt:date ts="$created_on" format="%Y-%m-%d %H:%M:%S"></a>
         </mt:if>
       </span></td>
-      <td class="note"><span class="revision-note">
+      <td class="note">
         <mt:if name="is_broken">
-        <__trans phrase="*Deleted due to data breakage*">
+          <span class="revision-note"><__trans phrase="*Deleted due to data breakage*"></span>
         <mt:else>
-          <mt:var name="description" escape="html">
+          <span id="revision-note-<mt:var name="rev_number">" class="revision-note" data-rev-number="<mt:var name="rev_number">">
+          <mt:if name="description">
+            <mt:var name="description" escape="html">
+          </mt:if>
+          </span>
+          <button
+            type="button"
+            id="revision-edit-<mt:var name="rev_number">"
+            class="btn btn-default btn-sm revision-edit-btn"
+            data-rev-number="<mt:var name="rev_number">"
+            style=" padding: 2px 4px; margin-left: 4px; line-height: 0; text-box-trim: trim-both; position: relative; top: -1px;">
+            <svg role="img" class="mt-icon mt-icon--sm">
+                <title><__trans phrase="edit"></title>
+                <use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_edit"></use>
+            </svg><__trans phrase="edit">
+          </button>
         </mt:if>
-      </span></td>
+      </td>
     <mt:if name="object_type" like="(entry|page|content_data)">
       <td class="status">
       <mt:if name="rev_status" eq="1">
@@ -74,3 +102,108 @@
 </div>
 
 </div>
+
+<script
+  id="revision-update-script"
+  data-object-id="<mt:var name="object_id" escape="html">"
+  data-object-type="<mt:var name="object_type" escape="html">"
+  data-magic-token="<mt:var name="magic_token" escape="html">"
+  data-message-cancel="<__trans phrase="Cancel" escape="html">"
+  data-message-update="<__trans phrase="Update" escape="html">"
+  data-message-saved="<__trans phrase="This revision note has been saved." escape="html">"
+  data-message-failed="<__trans phrase="Failed to save" escape="html">"
+>
+jQuery(function($) {
+  const $success_msg = jQuery('#success_msg');
+  const $error_msg   = jQuery('#error_msg');
+
+  jQuery('.revision-edit-btn')
+    .on('click', function (e) {
+      e.stopPropagation();
+
+      const $btn  = jQuery(this);
+      const num   = $btn.data('revNumber');
+      const $el   = jQuery('#revision-note-' + num);
+      const script = jQuery('#revision-update-script');
+
+      if ($btn.data('editing'))
+        return;
+      $btn.data('editing', true).hide();
+
+      $success_msg.hide();
+      $error_msg.hide();
+
+      let originalText = $el.contents().filter(function () {
+        return this.nodeType == Node.TEXT_NODE;
+      }).text().trim();
+
+      let $editor = $btn.next('.note-editor');
+      if (!$editor.length) {
+        $editor = jQuery('<span class="note-editor"></span>');
+        $editor.css('display', 'flex').css('flex-wrap', 'wrap').css('gap', '4px');
+        $el.text('');
+        $btn.after($editor);
+      }
+      const $input     = jQuery('<input type="text" class="form-control form-control-sm">').val(originalText);
+      const $updateBtn = jQuery('<button type="button" class="btn btn-sm btn-primary">' + script.data('messageUpdate') + '</button>');
+      const $cancelBtn = jQuery('<button type="button" class="btn btn-sm btn-secondary">' + script.data('messageCancel') + '</button>');
+
+      $editor.append($input, $updateBtn, $cancelBtn);
+      $input.trigger('focus');
+
+      const finishEditing = function (newText, message, result) {
+        $editor.remove();
+        $el.text(newText);
+        $btn.data('editing', false).show();
+        if ( message && result ) {
+          (result == 'success' ? $success_msg : $error_msg).text(message).show();
+        }
+      };
+
+      $updateBtn.on('click', function(e) {
+        e.preventDefault();
+        let newText = $input.val();
+
+        if ( newText == originalText ) {
+          finishEditing(newText);
+          return;
+        }
+
+        $updateBtn.hide();
+        $cancelBtn.hide();
+
+        jQuery.ajax({
+          type: 'POST',
+          contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+          url: ScriptURI,
+          dataType: 'json',
+          data: {
+            __mode: 'js_save_rev',
+            _type: script.data('objectType'),
+            id: script.data('objectId'),
+            r: num,
+            'revision-note': newText,
+            magic_token: script.data('magicToken')
+          },
+          success: function(data) {
+            if ( data.error ) {
+              finishEditing(originalText, data.error, 'danger');
+            }
+            else {
+              finishEditing(newText, script.data('messageSaved'), 'success');
+            }
+          },
+          error: function(xhr, status) {
+            finishEditing(originalText, script.data('messageFailed'), 'danger');
+          }
+        });
+        return false;
+      });
+
+      $cancelBtn.on('click', function() {
+        finishEditing(originalText);
+      });
+
+    });
+});
+</script>

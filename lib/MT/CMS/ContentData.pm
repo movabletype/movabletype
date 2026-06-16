@@ -191,11 +191,17 @@ sub edit {
                     my $rev_obj = $rev->[3];
                     my $values = $content_data->get_values;
                     $param->{$_} = $values->{$_} for keys %$values;
-                    $param->{'revision-note'} = $rev_obj->description;
+                    $param->{'revision-note-in-status-widget'} = $rev_obj->description;
                     $param->{loaded_revision} = 1;
                 }
                 $param->{rev_number}  = $rn;
                 $param->{no_snapshot} = 1 if $app->param('no_snapshot');
+            }
+            if ( my $cur_rev = $content_data->current_revision ) {
+                my $rev = $content_data->load_revision( { rev_number => $cur_rev } );
+                if ( $rev && @$rev ) {
+                    $param->{'latest-revision-note'} = $rev->[3]->description;
+                }
             }
             $param->{rev_date} = MT::Util::format_ts(
                 '%Y-%m-%d %H:%M:%S',
@@ -1495,41 +1501,6 @@ sub _validate_content_fields {
     @errors ? \@errors : undef;
 }
 
-sub validate_content_fields {
-    my $app = shift;
-
-    # TODO: permission check
-
-    my $blog_id         = $app->blog ? $app->blog->id : undef;
-    my $content_type_id = $app->param('content_type_id') || 0;
-    my $content_type    = MT::ContentType->load( { id => $content_type_id } );
-
-    return $app->json_error( $app->translate('Invalid request.') )
-        unless $blog_id && $content_type;
-
-    my $content_field_types = $app->registry('content_field_types');
-    my $data                = {};
-    my $data_is_updated;
-    foreach my $f ( @{ $content_type->fields } ) {
-        my $content_field_type = $content_field_types->{ $f->{type} };
-        $data->{ $f->{id} }
-            = _get_form_data( $app, $content_field_type, $f );
-        $data_is_updated->{ $f->{id} } = 1;
-    }
-
-    my $invalid_count = 0;
-    my %invalid_fields;
-    if ( my $errors = _validate_content_fields( $app, $content_type, $data, $data_is_updated ) )
-    {
-        $invalid_count  = scalar @{$errors};
-        %invalid_fields = map { $_->{field_id} => $_->{error} } @{$errors};
-    }
-
-    $app->json_result(
-        { invalidCount => $invalid_count, invalidFields => \%invalid_fields }
-    );
-}
-
 sub _get_form_data {
     my ( $app, $content_field_type, $form_data ) = @_;
 
@@ -2238,10 +2209,8 @@ sub build_content_data_table {
         $row->{author_name}
             = $author ? $author->name : $app->translate('(user deleted)');
         $row->{id} = $content_data->id;
-        $row->{label}
-            = defined $content_data->label && $content_data->label ne ''
-            ? $content_data->label
-            : $app->translate('(No Label)');
+        my $label = $content_data->label;
+        $row->{label} = defined $label && $label ne '' ? $label : $app->translate('(No Label)');
         my $ds = 'content_data.content_data_' . $content_data->content_type_id;
         $list_properties{$ds} ||= MT::ListProperty->list_properties($ds);
         $row->{label_html}   = $list_properties{$ds}{label}->html($content_data, $app);
@@ -2253,8 +2222,12 @@ sub build_content_data_table {
             %highlight_fields = map { $_ => 1 } @$fields;
             $content_data->{__search_result_fields_index} = \%highlight_fields;
             $row->{preview_data_show} = !!grep { $_ =~ /^__field:(\d*)/ } @$fields;
-            $row->{label_html} =~ s/class="label"/data-search-highlight="1" class="label"/ if $highlight_fields{label};
-            $row->{search_highlight}{identifier} = 1 if $highlight_fields{identifier};
+            if ($highlight_fields{label} && ($label // '') =~ $content_data->{__search_term}) {
+                $row->{label_html} =~ s/class="label"/data-search-highlight="1" class="label"/;
+            }
+            if ($highlight_fields{identifier} && $row->{identifier} =~ $content_data->{__search_term}) {
+                $row->{search_highlight}{identifier} = 1;
+            }
         }
 
         $row->{preview_data} = $content_data->preview_data;

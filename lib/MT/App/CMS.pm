@@ -211,6 +211,10 @@ sub core_methods {
             code           => sub { $_[0]->SUPER::logout(@_) },
             requires_login => 0,
         },
+        'upgrade_pending' => {
+            code           => "${pkg}Tools::upgrade_pending",
+            requires_login => 0,
+        },
         'start_recover' => {
             code           => "${pkg}Tools::start_recover",
             requires_login => 0,
@@ -328,6 +332,10 @@ sub core_methods {
             code     => "${pkg}Tools::login_json",
             app_mode => 'JSON',
         },
+        'js_save_rev'     => {
+            code     => "${pkg}Revision::js_save_rev",
+            app_mode => 'JSON',
+        },
 
         # declared in MT::App
         'update_widget_prefs' =>
@@ -352,10 +360,6 @@ sub core_methods {
         'select_edit_content_type' =>
             "${pkg}ContentType::select_edit_content_type",
 
-        'validate_content_fields' => {
-            code     => " ${pkg}ContentType::validate_content_fields",
-            app_mode => 'JSON',
-        },
         'dialog_content_data_modal' =>
             "${pkg}ContentType::dialog_content_data_modal",
         'dialog_list_content_data' => {
@@ -732,9 +736,38 @@ sub init_request {
         }
     }
 
-    if ( $app->{upgrade_required} ) {
-        $app->{requires_login} = 0;
-        $app->mode('upgrade');
+    if ( $mode ne 'logout' && $app->{upgrade_required} ) {
+        my $driver = MT::Object->driver;
+        my $ctx;
+        if ($driver && $driver->table_exists('MT::Author')) {
+            require MT::Auth;
+            $ctx = MT::Auth->fetch_credentials({ app => $app });
+        }
+        if ( $ctx && $ctx->{username} ) {
+            my $author = MT::Author->load(
+                {
+                    name => $ctx->{username},
+                    type => MT::Author::AUTHOR(),
+                }
+            );
+            if (   $author
+                && !$author->is_superuser
+                && $app->config->RequireUpgradePermission )
+            {
+                $app->user($author);
+                $app->session_user( $author, $ctx->{session_id},
+                    permanent => $ctx->{permanent} );
+                $app->mode('upgrade_pending');
+            }
+            else {
+                $app->{requires_login} = 0;
+                $app->mode('upgrade');
+            }
+        }
+        else {
+            $app->{requires_login} = 0;
+            $app->mode('upgrade');
+        }
     }
 
     # Check ImageDriver here because GD cannot be loaded

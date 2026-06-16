@@ -1904,6 +1904,7 @@ use vars qw( @ISA %Lexicon );
 	'Database Socket' => 'データベースソケット',
 	'Date Created' => '作成日',
 	'Date Modified' => '更新日',
+    'The condition must be specified with a string or a number.' => '条件は文字列、または数値で指定してください。',
 	'Days must be a number.' => '日数には数値を指定してください。',
 	'Edit All Entries' => 'すべての記事の編集',
 	'Entries List' => '記事の一覧',
@@ -3171,6 +3172,9 @@ use vars qw( @ISA %Lexicon );
 ## mt-static/js/admin2023/contenttype/contenttype.js
 	'Do you want to delete [_1]([_2])?' => '[_1]([_2])を削除しますか？',
 	'Duplicate' => '複製',
+	'Data label field have been changed to "[_2]" from "[_1]"' => 'データ識別ラベルが"[_1]"から"[_2]"に変更されました',
+	'"[_1]" cannot delete because using as data label field.' => '"[_1]"はデータ識別ラベルとして使用しているため、削除できません。',
+	'Unchecking this required, data label field will reset to default.' => 'この必須チェックを解除すると、データ識別ラベルは初期値に戻ります。',
 
 ## mt-static/js/admin2023/contenttype/tag/content-field.tag
 	'ContentField' => 'コンテンツフィールド',
@@ -3650,7 +3654,7 @@ use vars qw( @ISA %Lexicon );
 	'Ascending' => '昇順',
 	'Basename Length' => 'ファイル名の文字数',
 	'Center' => '中央',
-	'Character entities (&amp#8221;, &amp#8220;, etc.)' => 'エンティティ (&amp#8221;、&amp#8220;など)',
+	'Character entities (&amp;#8221;, &amp;#8220;, etc.)' => 'エンティティ (&amp;#8221;、&amp;#8220;など)',
 	'Compose Defaults' => '作成の既定値',
 	'Content CSS will be applied if supported by the editor in use. You can specify CSS file by URL or {{theme_static}} placeholder. Example: {{theme_static}}path/to/cssfile.css' => 'エディタ内で利用するCSSファイルのURL又は、{{theme_static}}変数を利用したURLを指定する事ができます。エディタが対応していない場合は適用されません。例: {{theme_static}}path/to/cssfile.css',
 	'Content CSS' => 'コンテンツCSSファイル',
@@ -4623,6 +4627,8 @@ use vars qw( @ISA %Lexicon );
 	'edit' => '編集',
 	q{(delimited by '[_1]')} => q{([_1]で区切る)},
 	q{Warning: Changing this entry's basename may break inbound links.} => q{警告: この記事の出力ファイル名の変更は、内部のリンク切れの原因となります。},
+	'categories' => 'カテゴリ',
+	'folders' => 'フォルダ',
 
 ## tmpl/admin2023/cms/edit_entry_batch.tmpl
 	'Save these [_1] (s)' => '[_1]の保存',
@@ -5169,7 +5175,7 @@ use vars qw( @ISA %Lexicon );
 	'Manual' => '手動',
 	'No content type could be found.' => 'コンテンツタイプが見つかりません',
 	'Publish Queue' => '公開キュー',
-	'Publish selected templates (a)' => '選択されたテンプレートを公開 (a)',
+	'Rebuild selected templates (a)' => '選択されたテンプレートを再構築 (a)',
 	'SSI' => 'SSI',
 	'Static' => 'スタティック',
 	'Uncached' => 'キャッシュしていない',
@@ -5772,6 +5778,10 @@ use vars qw( @ISA %Lexicon );
 	q{<strong>Error: '[_1]' could not be found.</strong>  Please move your static files to the directory first or correct the setting if it is incorrect.} => q{エラー: '[_1]'が見つかりませんでした。ファイルをmt-staticディレクトリに移動するか、設定を修正してください。},
 	q{The [_1] directory is in the main Movable Type directory which this wizard script resides, but due to your web server's configuration, the [_1] directory is not accessible in this location and must be moved to a web-accessible location (e.g., your web document root directory).} => q{[_1]ディレクトリは、Movable Typeのメインディレクトリ(このウィザード自身も含まれている)以下で見つかりました。しかし現在のサーバーの構成上、[_1]ディレクトリにはWebブラウザからアクセスできません。ウェブサイトのルートディレクトリの下など、Webブラウザからアクセスできる場所に移動してください。},
 
+## tmpl/cms/upgrade_pending.tmpl
+	'Upgrade Pending' => 'アップグレードの準備ができました',
+	'A new version of Movable Type has been installed. Please wait until an administrator completes the upgrade.' => 'Movable Typeの新しいバージョンがインストールされました。管理者がアップグレードを完了するまでお待ちください。',
+
 ## tmpl/cms/include/content_data_table.tmpl
 	'Unpublish' => '公開取り消し',
 
@@ -5810,6 +5820,11 @@ use vars qw( @ISA %Lexicon );
 	'Are you sure you want to delete the existing password?' => '既存のパスワードを削除します。よろしいですか？',
 	'Copy to clipboard' => 'クリップボードにコピー',
 	'Copied' => 'コピーしました',
+
+# tmpl/admin2025/cms/include/revision_table.tmpl
+    'This revision note has been saved.' => 'メモを保存しました。',
+    'Failed to save' => '保存に失敗しました',
+    q{[_1] (ID:[_2])'s change note ([_3]) edited by user '[_4]'} => q{[_4]が[_1] (ID:[_2])の更新メモ(保存した日:[_3])を変更しました'},
 );
 
 

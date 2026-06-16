@@ -1342,6 +1342,7 @@ $.mtValidateRules = {
         }
     },
     '.ss-validator': function ($e) {
+        // deprecated (MTC-31157)
         var contentFieldId = $e.data('mtContentFieldId');
         if (!contentFieldId) {
             return true;

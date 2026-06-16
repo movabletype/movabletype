@@ -1,0 +1,11 @@
+# How to run phpstan
+# $ cd path/to/mt
+# $ composer install -d php
+# $ ./php/vendor/bin/phpstan analyse --memory-limit 1G -c ./php/phpstan.neon
+
+parameters:
+    level: 0
+    paths:
+        - mt.php
+        - lib
+        - tests

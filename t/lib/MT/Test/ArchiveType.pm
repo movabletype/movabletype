@@ -174,6 +174,7 @@ sub _run_perl_test {
             diag $@ if $@;
 
             if ( my $error = $ctx->errstr ) {
+                my $dummy = $tmpl->errstr ? 1 : 0;
                 my $expected_error_method = "expected";
                 my @extra_error_methods   = (
                     "expected_todo_error_$method_name",

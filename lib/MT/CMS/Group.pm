@@ -80,6 +80,7 @@ sub dialog_select_group_user {
         }
     };
 
+    # TODO: It seems search param is not in use.
     if ( $app->param('search') || $app->param('json') ) {
         my $params = {
             panel_type   => $type,
