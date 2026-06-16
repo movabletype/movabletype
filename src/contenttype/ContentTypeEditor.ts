@@ -1,8 +1,8 @@
 import type * as ContentType from "../@types/contenttype";
 
-import { writable } from "svelte/store";
+import { get } from "svelte/store";
 
-import ContentFieldTypes from "./ContentFieldTypes";
+import ContentFieldTypes from "./ContentFieldTypes.svelte";
 
 import ContentFields from "./elements/ContentFields.svelte";
 
@@ -22,7 +22,6 @@ class CustomElementFieldBase extends HTMLElement {
 
 export default class ContentTypeEditor {
   static accessor config: ContentType.ConfigSettings = {};
-  static accessor fieldsStore: ContentType.FieldsStore;
   static accessor optionsHtmlParams: ContentType.OptionsHtmlParams = {};
   static accessor opts: ContentType.ContentFieldsOpts;
   static readonly types = ContentFieldTypes;
@@ -41,22 +40,19 @@ export default class ContentTypeEditor {
         mountFunction as typeof CustomElementFieldBase,
       );
       mountFunction = (props, target) => {
-        let options: ContentType.Options;
         const customElementField = svelteMount(CustomElementField, {
           props: {
             ...props,
             type,
             customElement,
-            updateOptions: (_options: ContentType.Options) => {
-              options = _options;
-            },
           },
           target: target,
         });
         return {
           component: customElementField,
           gather: () => {
-            return options;
+            const field = get(props.fieldsStore)[props.fieldIndex];
+            return field?.options ?? {};
           },
           destroy: () => {
             unmount(customElementField);
@@ -76,13 +72,11 @@ export default class ContentTypeEditor {
   ): void {
     const target = this.getContentFieldsTarget(targetSelector);
 
-    this.fieldsStore = writable(opts.fields);
     this.opts = opts;
 
     svelteMount(ContentFields, {
       props: {
         config: this.config,
-        fieldsStore: this.fieldsStore,
         optionsHtmlParams: this.optionsHtmlParams,
         opts: this.opts,
         root: target,

@@ -25,10 +25,8 @@ interface FieldsStoreConfig {
   fields: Array<FieldConfig>;
 }
 
-export function createFieldsStore(
-  config: FieldsStoreConfig,
-): ContentType.FieldsStore {
-  const fields: ContentType.Fields = config.fields.map((field, index) => ({
+export function createFields(config: FieldsStoreConfig): ContentType.Fields {
+  return config.fields.map((field, index) => ({
     id: field.id ?? `test-field-${index}`,
     type: field.type ?? "test-type",
     typeLabel: field.typeLabel ?? "Test Type",
@@ -37,7 +35,12 @@ export function createFieldsStore(
     options: field.options ?? {},
     isNew: field.isNew ?? false,
   }));
-  return writable(fields);
+}
+
+export function createFieldsStore(
+  config: FieldsStoreConfig,
+): ContentType.FieldsStore {
+  return writable(createFields(config));
 }
 
 export function createTestProps(

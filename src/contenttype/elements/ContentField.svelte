@@ -2,7 +2,7 @@
   import { untrack } from "svelte";
   import type * as ContentType from "../../@types/contenttype";
 
-  import ContentFieldTypes from "../ContentFieldTypes";
+  import ContentFieldTypes from "../ContentFieldTypes.svelte";
   import { recalcHeight } from "../Utils";
 
   import Custom from "./Custom.svelte";
@@ -12,6 +12,7 @@
     config: ContentType.ConfigSettings;
     field: ContentType.Field;
     fieldIndex: number;
+    fields: ContentType.Fields;
     fieldsStore: ContentType.FieldsStore;
     gatheringData: (c: HTMLDivElement, index: number) => object;
     parent: HTMLDivElement;
@@ -25,6 +26,7 @@
     config,
     field = $bindable(),
     fieldIndex,
+    fields,
     fieldsStore,
     gatheringData,
     parent,
@@ -90,7 +92,7 @@
     }
     newItem.label = window.trans("Duplicate") + "-" + label;
     newItem.options.label = newItem.label;
-    newItem.order = $fieldsStore.length + 1;
+    newItem.order = fields.length + 1;
     newItem.isNew = true;
     newItem.isShow = "show";
     onDuplicate(newItem);

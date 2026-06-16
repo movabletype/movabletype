@@ -2,7 +2,7 @@
   import { untrack, onDestroy } from "svelte";
   import type * as ContentType from "../../@types/contenttype";
 
-  import ContentFieldTypes from "../ContentFieldTypes";
+  import ContentFieldTypes from "../ContentFieldTypes.svelte";
 
   let {
     config,

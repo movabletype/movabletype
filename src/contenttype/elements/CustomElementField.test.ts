@@ -27,8 +27,6 @@ class TestCustomElement extends HTMLElement {
 }
 
 describe("CustomElementField Component", () => {
-  let updateOptionsMock: ReturnType<typeof vi.fn>;
-
   beforeAll(() => {
     if (!customElements.get("test-custom-element")) {
       customElements.define("test-custom-element", TestCustomElement);
@@ -36,8 +34,6 @@ describe("CustomElementField Component", () => {
   });
 
   beforeEach(() => {
-    updateOptionsMock = vi.fn();
-
     vi.spyOn(document, "querySelector").mockImplementation((selector) => {
       if (selector.startsWith("#field-options-")) {
         const mockElement = document.createElement("div");
@@ -78,7 +74,6 @@ describe("CustomElementField Component", () => {
         fieldsStore: fieldsStore,
         type: "custom-element",
         customElement: "test-custom-element",
-        updateOptions: updateOptionsMock,
       },
     });
 
@@ -107,7 +102,6 @@ describe("CustomElementField Component", () => {
         fieldsStore: fieldsStore,
         type: "custom-element",
         customElement: "test-custom-element",
-        updateOptions: updateOptionsMock,
       },
     });
 
@@ -146,7 +140,6 @@ describe("CustomElementField Component", () => {
         fieldsStore: fieldsStore,
         type: "custom-element",
         customElement: "test-custom-element",
-        updateOptions: updateOptionsMock,
       },
     });
 
@@ -183,7 +176,6 @@ describe("CustomElementField Component", () => {
         fieldsStore: fieldsStore,
         type: "custom-element",
         customElement: "test-custom-element",
-        updateOptions: updateOptionsMock,
       },
     });
 
@@ -214,13 +206,49 @@ describe("CustomElementField Component", () => {
         fieldsStore: fieldsStore,
         type: "custom-element",
         customElement: "test-custom-element",
-        updateOptions: updateOptionsMock,
       },
     });
 
     const idInput = container.querySelector('input[name="id"]');
     expect(idInput).toBeInTheDocument();
     expect(idInput).toHaveAttribute("type", "hidden");
+  });
+
+  it("should pass plugin options through data-options on initial render", () => {
+    const fieldsStore = createFieldsStore({
+      fields: [
+        {
+          id: "test-field-1",
+          type: "custom-element",
+          label: "Test Field",
+          options: {
+            description: "Test description",
+            required: false,
+            display: "default",
+            min_length: "1",
+            max_length: "50",
+            initial_value: "test@example.com",
+          },
+        },
+      ],
+    });
+
+    const { container } = render(CustomElementField, {
+      props: {
+        fieldIndex: 0,
+        fieldsStore: fieldsStore,
+        type: "custom-element",
+        customElement: "test-custom-element",
+      },
+    });
+
+    const customElement = container.querySelector("[data-options]");
+    const dataOptions = customElement?.getAttribute("data-options");
+    const parsedOptions = JSON.parse(dataOptions!);
+
+    expect(parsedOptions).toHaveProperty("min_length", "1");
+    expect(parsedOptions).toHaveProperty("max_length", "50");
+    expect(parsedOptions).toHaveProperty("initial_value", "test@example.com");
   });
 
   it("should render display options select with all options", () => {
@@ -245,7 +273,6 @@ describe("CustomElementField Component", () => {
         fieldsStore: fieldsStore,
         type: "custom-element",
         customElement: "test-custom-element",
-        updateOptions: updateOptionsMock,
       },
     });
 

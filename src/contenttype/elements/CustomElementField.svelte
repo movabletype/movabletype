@@ -10,13 +10,17 @@
     optionsHtmlParams?: ContentType.OptionsHtmlParams;
     type: string;
     customElement: string;
-    updateOptions: (options: ContentType.Options) => void;
   };
-  let { fieldIndex, fieldsStore, type, customElement, updateOptions }: Props =
-    $props();
+  let { fieldIndex, fieldsStore, type, customElement }: Props = $props();
 
-  let field = $state<ContentType.Field>({} as ContentType.Field);
-  let options = $state<ContentType.Options>({});
+  // svelte-ignore state_referenced_locally
+  const initialStoreField = $fieldsStore[fieldIndex];
+  let field = $state<ContentType.Field>(
+    initialStoreField ? { ...initialStoreField } : ({} as ContentType.Field),
+  );
+  let options = $state<ContentType.Options>({
+    ...(initialStoreField?.options || {}),
+  });
   let id = $derived(`field-options-${field.id}`);
 
   $effect(() => {
@@ -72,7 +76,6 @@
         if (fieldStore.options) {
           fieldStore.options[property as keyof ContentType.Options] = value;
         }
-        updateOptions(elOptions);
         return value;
       },
     });

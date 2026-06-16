@@ -1,6 +1,8 @@
 <script lang="ts">
   import type * as ContentType from "../../@types/contenttype";
 
+  import { writable } from "svelte/store";
+
   import { recalcHeight } from "../Utils";
 
   import ContentField from "./ContentField.svelte";
@@ -9,22 +11,31 @@
 
   type Props = {
     config: ContentType.ConfigSettings;
-    fieldsStore: ContentType.FieldsStore;
     optionsHtmlParams: ContentType.OptionsHtmlParams;
     opts: ContentType.ContentFieldsOpts;
     root: Element;
   };
-  let { config, fieldsStore, optionsHtmlParams, opts, root }: Props = $props();
+  let { config, optionsHtmlParams, opts, root }: Props = $props();
 
-  let fields = $state<ContentType.Fields>($fieldsStore);
+  // svelte-ignore state_referenced_locally
+  let fields = $state<ContentType.Fields>(opts.fields);
 
-  $effect(() => {
-    const unsubscribe = fieldsStore.subscribe((value) => {
-      fields = value;
-    });
-    return unsubscribe;
-  });
-  let isEmpty: boolean = $derived($fieldsStore.length > 0 ? false : true);
+  const notifier = writable<ContentType.Fields>(fields);
+  const fieldsStore: ContentType.FieldsStore = {
+    subscribe: notifier.subscribe,
+    set: (value) => {
+      if (!Array.isArray(value)) return;
+      if (value !== fields) {
+        fields.splice(0, fields.length, ...value);
+      }
+      notifier.set(fields);
+    },
+    update: (fn) => {
+      fieldsStore.set(fn(fields));
+    },
+  };
+
+  let isEmpty: boolean = $derived(fields.length > 0 ? false : true);
   let data = "";
   let droppable = false;
   // svelte-ignore state_referenced_locally
@@ -231,7 +242,7 @@
         canDataLabel: canDataLabel,
         options: {}, // add in Svelte
       };
-      fieldsStore.update(() => [...fields, newField]);
+      fields.push(newField);
       window.setDirty(true);
       // update is not needed in Svelte
 
@@ -281,10 +292,10 @@
   };
 
   const canSubmit = (): boolean => {
-    if ($fieldsStore.length === 0) {
+    if (fields.length === 0) {
       return true;
     }
-    const invalidFields = $fieldsStore.filter(function (field) {
+    const invalidFields = fields.filter(function (field) {
       return opts.invalid_types[field.type];
     });
     return invalidFields.length === 0 ? true : false;
@@ -302,21 +313,17 @@
     rebuildLabelFields();
     window.setDirty(false);
     const fieldOptions: Array<ContentType.SubmitFieldOption> = [];
-    if ($fieldsStore) {
-      for (let i = 0; i < $fieldsStore.length; i++) {
+    if (fields) {
+      for (let i = 0; i < fields.length; i++) {
         const c = tags[i];
         const options = gatheringData(c, i);
         const newData: ContentType.SubmitFieldOption = {};
-        newData.type = $fieldsStore[i].type;
+        newData.type = fields[i].type;
         newData.options = options;
-        if (
-          !$fieldsStore[i].isNew &&
-          options["id"] &&
-          options["id"].match(/^\d+$/)
-        ) {
+        if (!fields[i].isNew && options["id"] && options["id"].match(/^\d+$/)) {
           newData.id = options["id"];
         }
-        const innerField = $fieldsStore.filter(function (v) {
+        const innerField = fields.filter(function (v) {
           return v.id === newData.id;
         });
         if (innerField.length && innerField[0].order) {
@@ -343,16 +350,16 @@
 
   const rebuildLabelFields = (): void => {
     const newLabelFields: Array<{ value: string; label: string }> = [];
-    for (let i = 0; i < $fieldsStore.length; i++) {
-      const required = jQuery("#content-field-block-" + $fieldsStore[i].id)
+    for (let i = 0; i < fields.length; i++) {
+      const required = jQuery("#content-field-block-" + fields[i].id)
         .find('[name="required"]')
         .prop("checked");
-      if (required && $fieldsStore[i].canDataLabel === 1) {
-        let label = $fieldsStore[i].label;
-        let id = $fieldsStore[i].unique_id;
+      if (required && fields[i].canDataLabel === 1) {
+        let label = fields[i].label;
+        let id = fields[i].unique_id;
         if (!label) {
           label =
-            jQuery("#content-field-block-" + $fieldsStore[i].id)
+            jQuery("#content-field-block-" + fields[i].id)
               .find('[name="label"]')
               .val()
               ?.toString() || "";
@@ -362,7 +369,7 @@
         }
         if (!id) {
           // new field
-          id = "id:" + $fieldsStore[i].id;
+          id = "id:" + fields[i].id;
         }
         newLabelFields.push({
           value: id,
@@ -390,20 +397,17 @@
   };
 
   const _moveField = (item: ContentType.Field, pos: number): void => {
-    fieldsStore.update(() => {
-      for (let i = 0; i < fields.length; i++) {
-        let field = fields[i];
-        if (field.id === item.id) {
-          fields.splice(i, 1);
-          break;
-        }
+    for (let i = 0; i < fields.length; i++) {
+      const field = fields[i];
+      if (field.id === item.id) {
+        fields.splice(i, 1);
+        break;
       }
-      fields.splice(pos, 0, item);
-      for (let i = 0; i < fields.length; i++) {
-        fields[i].order = i + 1;
-      }
-      return fields;
-    });
+    }
+    fields.splice(pos, 0, item);
+    for (let i = 0; i < fields.length; i++) {
+      fields[i].order = i + 1;
+    }
   };
 
   const _validateFields = (): boolean => {
@@ -470,7 +474,7 @@
       }
     });
 
-    const fieldId = $fieldsStore[index].id;
+    const fieldId = fields[index].id;
     if (fieldId) {
       const gather = gathers[fieldId];
       if (gather) {
@@ -485,17 +489,13 @@
   // create in Svelte
   const updateFieldsIsShowAll = (): void => {
     const collapseEls = document.querySelectorAll(".mt-collapse__content");
-    fieldsStore.update((storeFields: ContentType.Fields) =>
-      storeFields.map((storeField: ContentType.Field, i: number) => {
-        storeField = { ...fields[i] };
-        if (collapseEls[i].classList.contains("show")) {
-          storeField.isShow = "show";
-        } else {
-          storeField.isShow = "";
-        }
-        return storeField;
-      }),
-    );
+    for (let i = 0; i < fields.length; i++) {
+      if (collapseEls[i].classList.contains("show")) {
+        fields[i].isShow = "show";
+      } else {
+        fields[i].isShow = "";
+      }
+    }
   };
 
   // create in Svelte
@@ -512,10 +512,10 @@
   };
 
   const _deleteField = (index: number): void => {
-    fieldsStore.update(() => fields.filter((_, i) => i !== index));
+    fields.splice(index, 1);
   };
   const _duplicateField = (newItem: ContentType.Field): void => {
-    fieldsStore.update(() => [...fields, newItem]);
+    fields.push(newItem);
   };
 </script>
 
@@ -746,6 +746,7 @@
             {config}
             bind:field={fields[fieldIndex]}
             {fieldIndex}
+            {fields}
             {fieldsStore}
             {gatheringData}
             parent={tags[fieldIndex]}
