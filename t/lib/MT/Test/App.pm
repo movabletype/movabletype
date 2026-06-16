@@ -125,6 +125,9 @@ sub request {
     my ($self, $params, $is_redirect) = @_;
     $self->{locations} = undef unless $is_redirect;
 
+    local $ENV{HTTP_SEC_FETCH_SITE} = $self->{_request_origin_exists} ? 'same-origin' : 'none';
+    $self->{_request_origin_exists} = 1;
+
     my $res =
           $self->{server}
         ? $self->_request_locally($params)
@@ -336,7 +339,6 @@ sub _request_internally {
     local *MT::App::login                 = $login     if $login;
     local *MT::App::DataAPI::authenticate = $api_login if $api_login;
 
-    local $ENV{HTTP_SEC_FETCH_SITE} = 'same-origin'; # for now
     $app->run;
 
     my $dummy = grep defined $_, ($app->errstr, MT->errstr);
