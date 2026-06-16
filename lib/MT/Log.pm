@@ -268,7 +268,7 @@ sub list_props {
         level => {
             label   => 'Level',
             base    => '__virtual.single_select',
-            display => 'none',
+            display => 'optional',
             col     => 'level',
             sort    => sub {
                 my $prop = shift;
@@ -283,7 +283,7 @@ sub list_props {
                 my @types = split(',', $val);
                 return { level => \@types };
             },
-            single_select_options => [
+            single_select_options => sub { return [
                 {   label => MT->translate('Security'),
                     value => SECURITY(),
                     text  => 'security'
@@ -324,7 +324,31 @@ sub list_props {
                     value => join(',', (DEBUG(), ERROR())),
                     text  => 'debug_or_error',
                 },
-            ],
+            ]},
+            bulk_html => sub {
+                my ($prop, $objs) = @_;
+                my (@label, @out);
+                for my $obj (@$objs) {
+                    my $level = $obj->level // -1;
+                    if ($level == ERROR()) {
+                        push @out, $label[$level] ||= MT->translate('Error');
+                    } elsif ($level == INFO()) {
+                        push @out, $label[$level] ||= MT->translate('Information');
+                    } elsif ($level == WARNING()) {
+                        push @out, $label[$level] ||= MT->translate('Warning');
+                    } elsif ($level == NOTICE()) {
+                        push @out, $label[$level] ||= MT->translate('Notice');
+                    } elsif ($level == SECURITY()) {
+                        push @out, $label[$level] ||= MT->translate('Security');
+                    } elsif ($level == DEBUG()) {
+                        push @out, $label[$level] ||= MT->translate('Debug');
+                    } else {
+                        # unexpected values
+                        push @out, "";
+                    }
+                }
+                return @out;
+            },
         },
         metadata => {
             auto      => 1,
