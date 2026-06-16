@@ -329,7 +329,7 @@ sub list_props {
                 my ($prop, $objs) = @_;
                 my (@label, @out);
                 for my $obj (@$objs) {
-                    my $level = $obj->level;
+                    my $level = $obj->level // -1;
                     if ($level == ERROR()) {
                         push @out, $label[$level] ||= MT->translate('Error');
                     } elsif ($level == INFO()) {
@@ -342,6 +342,9 @@ sub list_props {
                         push @out, $label[$level] ||= MT->translate('Security');
                     } elsif ($level == DEBUG()) {
                         push @out, $label[$level] ||= MT->translate('Debug');
+                    } else {
+                        # unexpected values
+                        push @out, "";
                     }
                 }
                 return @out;
