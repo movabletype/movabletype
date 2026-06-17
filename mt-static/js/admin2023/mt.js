@@ -1644,7 +1644,7 @@ MT.App = new Class( App, {
 
             case "openSelectBlog": // XXX: Seems no longer in use
                 app.openDialog( '__mode=dialog_select_weblog&select_favorites=1&return_args='
-                    + escape( event.commandElement.getAttribute( "mt:href" ) ) );
+                    + encodeURIComponent( event.commandElement.getAttribute( "mt:href" ) ) );
                 break;
 
             case "goToLocation":
