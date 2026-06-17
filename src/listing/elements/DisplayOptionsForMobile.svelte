@@ -1,11 +1,16 @@
 <script lang="ts">
-  import type * as Listing from "../../@types/listing";
+  import { getContext } from "svelte";
+  import type { ListStoreContext } from "../listStoreContext";
 
-  export let changeLimit: (e: Event) => void;
-  export let store: Listing.ListStore;
+  type Props = {
+    changeLimit: (e: Event) => void;
+  };
+  let { changeLimit }: Props = $props();
 
-  $: limit = store.limit || 0;
-  $: limitToString = limit.toString();
+  const { reactiveStore } = getContext<ListStoreContext>("listStore");
+
+  let limit = $derived($reactiveStore.limit || 0);
+  let limitToString = $derived(limit.toString());
 </script>
 
 <div class="row d-md-none">
@@ -19,7 +24,7 @@
         class="custom-select form-control form-select"
         {...{ ref: "limit" }}
         bind:value={limitToString}
-        on:change={changeLimit}
+        onchange={changeLimit}
       >
         <option value="10">{window.trans("[_1] rows", "10")}</option>
         <option value="25">{window.trans("[_1] rows", "25")}</option>

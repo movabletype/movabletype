@@ -1,33 +1,49 @@
 <script lang="ts">
+  import { untrack, onDestroy } from "svelte";
   import type * as ContentType from "../../@types/contenttype";
 
-  import { afterUpdate, onDestroy } from "svelte";
+  import ContentFieldTypes from "../ContentFieldTypes.svelte";
 
-  import ContentFieldTypes from "../ContentFieldTypes";
+  let {
+    config,
+    fieldIndex,
+    fieldsStore,
+    gather = $bindable(),
+    optionsHtmlParams,
+  }: {
+    config: ContentType.ConfigSettings;
+    fieldIndex: number;
+    fieldsStore: ContentType.FieldsStore;
+    gather: (() => object) | null | undefined;
+    optionsHtmlParams: ContentType.OptionsHtmlParams;
+  } = $props();
 
-  export let config: ContentType.ConfigSettings;
-  export let fieldIndex: number;
-  export let fieldsStore: ContentType.FieldsStore;
-  export let gather: (() => object) | null | undefined;
-  export let optionsHtmlParams: ContentType.OptionsHtmlParams;
+  let customContentFieldObject =
+    $state<ContentType.CustomContentFieldObject | null>(null);
+  let target = $state<Element | null>(null);
+  let type = $state<string | null>(null);
 
-  let customContentFieldObject: ContentType.CustomContentFieldObject | null;
-  let target: Element;
-  let type: string | null;
-
-  $: field = $fieldsStore[fieldIndex];
-  $: customContentFieldMountFunction = ContentFieldTypes.getCustomType(
-    field.type,
+  let field = $derived($fieldsStore[fieldIndex]);
+  let customContentFieldMountFunction = $derived(
+    ContentFieldTypes.getCustomType(field.type),
   );
 
-  afterUpdate(() => {
-    if (field.type !== type && customContentFieldObject) {
-      customContentFieldObject.destroy();
+  $effect(() => {
+    const currentFieldType = field.type;
+    const currentType = untrack(() => type);
+    const currentObject = untrack(() => customContentFieldObject);
+
+    if (currentFieldType !== currentType && currentObject) {
+      currentObject.destroy();
       customContentFieldObject = null;
       gather = null;
     }
 
-    if (!customContentFieldObject && customContentFieldMountFunction) {
+    if (
+      !untrack(() => customContentFieldObject) &&
+      customContentFieldMountFunction &&
+      target
+    ) {
       customContentFieldObject = customContentFieldMountFunction(
         {
           config: config,
@@ -40,7 +56,7 @@
       gather = customContentFieldObject?.gather;
     }
 
-    type = field.type;
+    type = currentFieldType;
   });
 
   onDestroy(() => {

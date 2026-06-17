@@ -1,61 +1,71 @@
 <script lang="ts">
+  import { untrack } from "svelte";
   import type * as ContentType from "../../@types/contenttype";
 
-  import ContentFieldTypes from "../ContentFieldTypes";
+  import ContentFieldTypes from "../ContentFieldTypes.svelte";
   import { recalcHeight } from "../Utils";
 
   import Custom from "./Custom.svelte";
   import SVG from "../../svg/elements/SVG.svelte";
 
-  export let config: ContentType.ConfigSettings;
-  export let field: ContentType.Field;
-  export let fields: ContentType.Fields;
-  export let fieldIndex: number;
-  export let fieldsStore: ContentType.FieldsStore;
-  export let gatheringData: (c: HTMLDivElement, index: number) => object;
-  export let parent: HTMLDivElement;
-  export let gather: (() => object) | undefined;
-  export let optionsHtmlParams: ContentType.OptionsHtmlParams;
-  export let labelField;
+  type Props = {
+    config: ContentType.ConfigSettings;
+    field: ContentType.Field;
+    fieldIndex: number;
+    fields: ContentType.Fields;
+    fieldsStore: ContentType.FieldsStore;
+    gatheringData: (c: HTMLDivElement, index: number) => object;
+    parent: HTMLDivElement;
+    gather: (() => object) | undefined;
+    optionsHtmlParams: ContentType.OptionsHtmlParams;
+    labelField: string;
+    onDelete: (index: number) => void;
+    onDuplicate: (newItem: ContentType.Field) => void;
+  };
 
-  let isLabelField: boolean;
+  let {
+    config,
+    field = $bindable(),
+    fieldIndex,
+    fields,
+    fieldsStore,
+    gatheringData,
+    parent,
+    gather = $bindable(),
+    optionsHtmlParams,
+    labelField,
+    onDelete,
+    onDuplicate,
+  }: Props = $props();
 
-  $: {
-    if (labelField.match(/^id:/)) {
-      isLabelField = labelField === "id:" + field.id;
-    } else {
-      isLabelField = labelField === field.unique_id;
-    }
-  }
-  $: id = `field-options-${field.id}`;
+  let isLabelField = $derived(
+    labelField.match(/^id:/)
+      ? labelField === "id:" + field.id
+      : labelField === field.unique_id,
+  );
 
-  $: {
-    if (field.isNew === null) {
-      field.isNew = false;
-    }
+  let id = $derived(`field-options-${field.id}`);
 
-    if (field.isShow === null) {
-      field.isShow = "";
-    }
+  $effect(() => {
+    const { isNew, isShow, realId, options } = field;
+    untrack(() => {
+      if (isNew === null) field.isNew = false;
+      if (isShow === null) field.isShow = "";
+      if (realId === null) field.realId = "";
+      if (options === null) field.options = {};
+    });
+  });
 
-    if (field.realId === null) {
-      field.realId = "";
-    }
+  let gatherCore = $state<(() => object) | undefined>(undefined);
+  let gatherCustom = $state<(() => object) | undefined>(undefined);
 
-    if (field.options === null) {
-      field.options = {};
-    }
-  }
-
-  let gatherCore: (() => object) | undefined;
-  let gatherCustom: (() => object) | undefined;
-  $: {
+  $effect(() => {
     if (ContentFieldTypes.getCoreType(field.type)) {
       gather = gatherCore;
     } else {
       gather = gatherCustom;
     }
-  }
+  });
 
   const deleteField = (): void => {
     const label = field.label ? field.label : window.trans("No Name");
@@ -79,8 +89,7 @@
     ) {
       return;
     }
-    fields = fields.slice(0, fieldIndex).concat(fields.slice(fieldIndex + 1));
-    // update is not needed in Svelte
+    onDelete(fieldIndex);
     const target = document.getElementsByClassName("mt-draggable__area")[0];
     recalcHeight(target);
   };
@@ -104,11 +113,14 @@
     newItem.order = fields.length + 1;
     newItem.isNew = true;
     newItem.isShow = "show";
-    fields = [...fields, newItem];
+    onDuplicate(newItem);
     const target = document.getElementsByClassName("mt-draggable__area")[0];
     recalcHeight(target);
-    // update is not needed in Svelte
   };
+
+  let ContentFieldComponent = $derived(
+    ContentFieldTypes.getCoreType(field.type),
+  );
 </script>
 
 <div class="mt-collapse__container">
@@ -129,10 +141,10 @@
     {#if field.realId}<span>(ID: {field.realId})</span>{/if}
   </div>
   <div class="col-auto p-0">
-    <!-- svelte-ignore a11y-invalid-attribute -->
+    <!-- svelte-ignore a11y_invalid_attribute -->
     <a
       href="javascript:void(0)"
-      on:click={duplicateField}
+      onclick={duplicateField}
       class="d-inline-block duplicate-content-field"
       ><SVG
         title={window.trans("Duplicate")}
@@ -140,10 +152,10 @@
         href="{window.StaticURI}images/sprite.svg#ic_duplicate"
       /></a
     >
-    <!-- svelte-ignore a11y-invalid-attribute -->
+    <!-- svelte-ignore a11y_invalid_attribute -->
     <a
       href="javascript:void(0)"
-      on:click={deleteField}
+      onclick={deleteField}
       class="d-inline-block delete-content-field"
       ><SVG
         title={window.trans("Delete")}
@@ -173,16 +185,17 @@
   {...{ fieldid: field.id, isnew: field.isNew }}
   bind:this={parent}
 >
-  <svelte:component
-    this={ContentFieldTypes.getCoreType(field.type)}
-    {config}
-    bind:field
-    bind:gather={gatherCore}
-    {id}
-    bind:options={field.options}
-    {optionsHtmlParams}
-    {isLabelField}
-  />
+  {#if ContentFieldComponent}
+    <ContentFieldComponent
+      {config}
+      bind:field
+      bind:gather={gatherCore}
+      {id}
+      bind:options={field.options}
+      {optionsHtmlParams}
+      {isLabelField}
+    />
+  {/if}
   <Custom
     {config}
     {fieldIndex}

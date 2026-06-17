@@ -1,7 +1,12 @@
 <script lang="ts">
   import type * as Listing from "../../@types/listing";
 
-  import { afterUpdate, onMount } from "svelte";
+  import { onMount, setContext } from "svelte";
+  import { writable, type Writable } from "svelte/store";
+  import {
+    createReactiveStoreData,
+    type ReactiveStoreData,
+  } from "../listStoreContext";
 
   import DisplayOptions from "./DisplayOptions.svelte";
   import DisplayOptionsForMobile from "./DisplayOptionsForMobile.svelte";
@@ -11,35 +16,82 @@
   import ListPagination from "./ListPagination.svelte";
   import ListTable from "./ListTable.svelte";
 
-  export let buttonActions: Listing.ButtonActions;
-  export let disableUserDispOption: boolean;
-  export let filterTypes: Array<Listing.FilterType>;
-  export let hasListActions: boolean;
-  export let hasMobilePulldownActions: boolean;
-  export let hasPulldownActions: boolean;
-  export let listActionClient: Listing.ListActionClient;
-  export let listActions: Listing.ListActions;
-  export let localeCalendarHeader: Array<string>;
-  export let moreListActions: Listing.MoreListActions;
-  export let objectLabel: string;
-  export let objectType: string;
-  export let objectTypeForTableClass: string;
-  export let plural: string;
-  export let useActions: boolean;
-  export let useFilters: boolean;
-  export let singular: string;
-  export let store: Listing.ListStore;
-  export let zeroStateLabel: string;
+  type Props = {
+    buttonActions: Listing.ButtonActions;
+    disableUserDispOption: boolean;
+    filterTypes: Array<Listing.FilterType>;
+    hasListActions: boolean;
+    hasMobilePulldownActions: boolean;
+    hasPulldownActions: boolean;
+    listActionClient: Listing.ListActionClient;
+    listActions: Listing.ListActions;
+    localeCalendarHeader: Array<string>;
+    moreListActions: Listing.MoreListActions;
+    objectLabel: string;
+    objectType: string;
+    objectTypeForTableClass: string;
+    plural: string;
+    useActions: boolean;
+    useFilters: boolean;
+    singular: string;
+    store: Listing.ListStore;
+    zeroStateLabel: string;
+  };
 
+  let {
+    buttonActions,
+    disableUserDispOption,
+    filterTypes,
+    hasListActions,
+    hasMobilePulldownActions,
+    hasPulldownActions,
+    listActionClient,
+    listActions,
+    localeCalendarHeader,
+    moreListActions,
+    objectLabel,
+    objectType,
+    objectTypeForTableClass,
+    plural,
+    useActions,
+    useFilters,
+    singular,
+    store,
+    zeroStateLabel,
+  }: Props = $props();
   let callListReady = false;
 
-  $: hidden = store.count === 0;
+  // svelte-ignore state_referenced_locally
+  const reactiveStore: Writable<ReactiveStoreData> = writable(
+    createReactiveStoreData(store),
+  );
+  // svelte-ignore state_referenced_locally
+  setContext("listStore", { store, reactiveStore });
+
+  let hidden = $derived($reactiveStore.count === 0);
 
   onMount(() => {
     store.trigger("load_list");
+
+    store.on(
+      "refresh_view",
+      (args?: { moveToPagination?: boolean; notCallListReady?: boolean }) => {
+        if (!args) args = {};
+
+        update();
+
+        if (args.moveToPagination) {
+          window.document.body.scrollTop = window.document.body.scrollHeight;
+        }
+        if (!args.notCallListReady) {
+          // trigger a "listReady" event in afterUpdate() after the DOM has been updated
+          callListReady = true;
+        }
+      },
+    );
   });
 
-  afterUpdate(() => {
+  $effect(() => {
     // update sub_fields not managed in the svelte lifecycle
     updateSubFields();
 
@@ -49,30 +101,12 @@
     }
   });
 
-  store.on(
-    "refresh_view",
-    (args?: { moveToPagination?: boolean; notCallListReady?: boolean }) => {
-      if (!args) args = {};
-
-      update();
-
-      if (args.moveToPagination) {
-        window.document.body.scrollTop = window.document.body.scrollHeight;
-      }
-      if (!args.notCallListReady) {
-        // trigger a "listReady" event in afterUpdate() after the DOM has been updated
-        callListReady = true;
-      }
-    },
-  );
-
   const changeLimit = (e: Event): void => {
     store.trigger("update_limit", (e.target as HTMLSelectElement)?.value);
   };
 
   const update = (): void => {
-    // eslint-disable-next-line no-self-assign
-    store = store;
+    reactiveStore.set(createReactiveStoreData(store));
   };
 
   const updateSubFields = (): void => {
@@ -94,7 +128,7 @@
 </script>
 
 <div class="d-none d-md-block mb-3" data-is="display-options">
-  <DisplayOptions {changeLimit} {disableUserDispOption} {store} />
+  <DisplayOptions {changeLimit} {disableUserDispOption} />
 </div>
 <div id="actions-bar-top" class="row mb-5 mb-md-3">
   <div class="col">
@@ -107,12 +141,11 @@
         {moreListActions}
         {plural}
         {singular}
-        {store}
       />
     {/if}
   </div>
   <div class="col-auto align-self-end list-counter">
-    <ListCount {store} />
+    <ListCount />
   </div>
 </div>
 <div class="row mb-5 mb-md-3">
@@ -124,7 +157,6 @@
           {listActionClient}
           {localeCalendarHeader}
           {objectLabel}
-          {store}
         />
       {/if}
       <div style="overflow-x: auto">
@@ -132,7 +164,6 @@
           <ListTable
             {hasListActions}
             {hasMobilePulldownActions}
-            {store}
             {zeroStateLabel}
           />
         </table>
@@ -141,6 +172,6 @@
   </div>
 </div>
 <div class="row" {hidden} style:display={hidden ? "none" : ""}>
-  <ListPagination {store} />
+  <ListPagination />
 </div>
-<DisplayOptionsForMobile {changeLimit} {store} />
+<DisplayOptionsForMobile {changeLimit} />

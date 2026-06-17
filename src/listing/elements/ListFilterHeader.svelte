@@ -1,14 +1,25 @@
 <script lang="ts">
+  import { getContext } from "svelte";
   import type * as Listing from "../../@types/listing";
 
   import ListFilterSelectModal from "./ListFilterSelectModal.svelte";
+  import type { ListStoreContext } from "../listStoreContext";
 
-  export let currentFilter: Listing.Filter;
-  export let isAllpassFilter: boolean;
-  export let listActionClient: Listing.ListActionClient;
-  export let listFilterTopCreateNewFilter: (filterLabel?: string) => void;
-  export let listFilterTopUpdate: () => void;
-  export let store: Listing.ListStore;
+  type Props = {
+    currentFilter: Listing.Filter;
+    isAllpassFilter: boolean;
+    listActionClient: Listing.ListActionClient;
+    listFilterTopCreateNewFilter: (filterLabel?: string) => void;
+    listFilterTopUpdate: () => void;
+  };
+  let {
+    currentFilter,
+    isAllpassFilter,
+    listActionClient,
+    listFilterTopCreateNewFilter,
+    listFilterTopUpdate,
+  }: Props = $props();
+  const { store } = getContext<ListStoreContext>("listStore");
 
   const resetFilter = (): void => {
     listActionClient.removeFilterKeyFromReturnArgs();
@@ -25,7 +36,7 @@
         {window.trans("Filter:")}
       </li>
       <li class="list-inline-item">
-        <!-- svelte-ignore a11y-invalid-attribute -->
+        <!-- svelte-ignore a11y_invalid_attribute -->
         <a
           href="#"
           id="opener"
@@ -37,13 +48,12 @@
         <ListFilterSelectModal
           {listFilterTopCreateNewFilter}
           {listFilterTopUpdate}
-          {store}
         />
       </li>
       <li class="list-inline-item">
         {#if isAllpassFilter === false}
-          <!-- svelte-ignore a11y-invalid-attribute -->
-          <a href="#" id="allpass-filter" on:click={resetFilter}>
+          <!-- svelte-ignore a11y_invalid_attribute -->
+          <a href="#" id="allpass-filter" onclick={resetFilter}>
             [ {window.trans("Reset Filter")} ]
           </a>
         {/if}
@@ -58,6 +68,7 @@
       data-bs-target="#list-filter-collapse"
       aria-expanded="false"
       aria-controls="list-filter-collapse"
-    />
+      aria-label="filter toggle"
+    ></button>
   </div>
 </div>

@@ -1,30 +1,45 @@
 <script lang="ts">
+  import type { Snippet } from "svelte";
+
   // copied from lib/MT/Template/ContextHandlers.pm
 
   import StatusMsgTmpl from "./StatusMsgTmpl.svelte";
 
-  export let blogId = "";
-  export let canClose: number | undefined;
-  let className = "info";
-  export { className as class };
-  export let id = "";
-  export let hidden = "";
-  export let noLink = "";
-  export let rebuild = "";
+  type Props = {
+    blogId?: string;
+    canClose?: number;
+    class?: string;
+    id?: string;
+    hidden?: string;
+    msg?: Snippet;
+    noLink?: string;
+    rebuild?: string;
+  };
 
-  $: {
+  let {
+    blogId = "",
+    canClose,
+    class: className = "info",
+    id = "",
+    hidden = "",
+    msg,
+    noLink = "",
+    rebuild = "",
+  }: Props = $props();
+
+  $effect(() => {
     if (!className) {
       className = "info";
     }
     className = className.replace(/\balert\b/, "warning");
     className = className.replace(/\berror\b/, "danger");
-  }
+  });
 
-  $: {
+  $effect(() => {
     if (id && (canClose || canClose === null)) {
       canClose = 1;
     }
-  }
+  });
 </script>
 
 <StatusMsgTmpl
@@ -36,10 +51,7 @@
   dynamicAll={0}
   hidden={hidden ?? ""}
   {id}
+  {msg}
   noLink={noLink ?? ""}
   {rebuild}
->
-  <svelte:fragment slot="msg">
-    <slot name="msg" />
-  </svelte:fragment>
-</StatusMsgTmpl>
+></StatusMsgTmpl>

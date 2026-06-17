@@ -1,4 +1,4 @@
-import { Sites } from "../@types/site";
+import type { Sites } from "../@types/site";
 
 export type FetchSitesProps = {
   magicToken: string;

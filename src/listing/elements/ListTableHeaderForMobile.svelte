@@ -1,12 +1,16 @@
 <script lang="ts">
-  import type * as Listing from "../../@types/listing";
+  import { getContext } from "svelte";
+  import type { ListStoreContext } from "../listStoreContext";
 
-  export let hasMobilePulldownActions: boolean;
-  export let store: Listing.ListStore;
-  export let toggleAllRowsOnPage: () => void;
+  type Props = {
+    hasMobilePulldownActions: boolean;
+    toggleAllRowsOnPage: () => void;
+  };
+  let { hasMobilePulldownActions, toggleAllRowsOnPage }: Props = $props();
+  const { store, reactiveStore } = getContext<ListStoreContext>("listStore");
 </script>
 
-{#if store.count}
+{#if $reactiveStore.count}
   <tr class="d-md-none">
     {#if hasMobilePulldownActions}
       <th class="mt-table__control">
@@ -17,8 +21,8 @@
             type="checkbox"
             class="form-check-input"
             id="select-all"
-            checked={store.checkedAllRowsOnPage}
-            on:change={toggleAllRowsOnPage}
+            checked={$reactiveStore.checkedAllRowsOnPage}
+            onchange={toggleAllRowsOnPage}
           />
           <label class="form-check-label" for="select-all">
             <span class="visually-hidden">
@@ -30,8 +34,9 @@
     {/if}
     <th scope="col">
       {#if hasMobilePulldownActions}
-        <!-- svelte-ignore a11y-click-events-have-key-events a11y-no-static-element-interactions -->
-        <span on:click={toggleAllRowsOnPage}>
+        <!-- svelte-ignore a11y_click_events_have_key_events -->
+        <!-- svelte-ignore a11y_no_static_element_interactions -->
+        <span onclick={toggleAllRowsOnPage}>
           {window.trans("All")}
         </span>
       {/if}
@@ -40,7 +45,7 @@
           "[_1] - [_2] of [_3]",
           store.getListStart().toString(),
           store.getListEnd().toString(),
-          store.count.toString(),
+          $reactiveStore.count.toString(),
         )}
       </span>
     </th>

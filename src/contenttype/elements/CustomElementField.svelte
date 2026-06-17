@@ -1,33 +1,81 @@
 <script lang="ts">
+  import { untrack } from "svelte";
   import type * as ContentType from "../../@types/contenttype";
   import ContentFieldOptionGroup from "./ContentFieldOptionGroup.svelte";
 
-  // svelte-ignore unused-export-let
-  export let config: ContentType.ConfigSettings;
-  export let fieldIndex: number;
-  export let fieldsStore: ContentType.FieldsStore;
-  // svelte-ignore unused-export-let
-  export let optionsHtmlParams: ContentType.OptionsHtmlParams;
+  type Props = {
+    config?: ContentType.ConfigSettings;
+    fieldIndex: number;
+    fieldsStore: ContentType.FieldsStore;
+    optionsHtmlParams?: ContentType.OptionsHtmlParams;
+    type: string;
+    customElement: string;
+  };
+  let { fieldIndex, fieldsStore, type, customElement }: Props = $props();
 
-  export let type: string;
-  export let customElement: string;
-  export let updateOptions: (options: ContentType.Options) => void;
+  // svelte-ignore state_referenced_locally
+  const initialStoreField = $fieldsStore[fieldIndex];
+  let field = $state<ContentType.Field>(
+    initialStoreField ? { ...initialStoreField } : ({} as ContentType.Field),
+  );
+  let options = $state<ContentType.Options>({
+    ...(initialStoreField?.options || {}),
+  });
+  let id = $derived(`field-options-${field.id}`);
 
-  $: field = $fieldsStore[fieldIndex];
-  $: options = field.options || {};
-  $: id = `field-options-${field.id}`;
+  $effect(() => {
+    const storeField = $fieldsStore[fieldIndex];
+    if (!storeField) return;
+    untrack(() => {
+      field = { ...storeField };
+      options = { ...(storeField.options || {}) };
+    });
+  });
+
+  $effect(() => {
+    const label = field.label;
+    const desc = options.description;
+    const req = options.required;
+    const display = options.display;
+
+    untrack(() => {
+      const storeField = $fieldsStore[fieldIndex];
+      if (!storeField) return;
+      let changed = false;
+      if (storeField.label !== label) {
+        storeField.label = label;
+        changed = true;
+      }
+      const storeOpts = storeField.options;
+      if (storeOpts) {
+        if (storeOpts.description !== desc) {
+          storeOpts.description = desc;
+          changed = true;
+        }
+        if (storeOpts.required !== req) {
+          storeOpts.required = req;
+          changed = true;
+        }
+        if (storeOpts.display !== display) {
+          storeOpts.display = display;
+          changed = true;
+        }
+      }
+      if (changed) fieldsStore.update((fs) => fs);
+    });
+  });
 
   const initElement = (
     el: HTMLElement & { options: ContentType.Options },
   ): void => {
-    const options = el.options;
-    el.options = new Proxy(options, {
+    const elOptions = el.options;
+    el.options = new Proxy(elOptions, {
       set(_, property, value) {
-        options[property as keyof ContentType.Options] = value;
-        $fieldsStore[fieldIndex].options![
-          property as keyof ContentType.Options
-        ] = value;
-        updateOptions(options);
+        elOptions[property as keyof ContentType.Options] = value;
+        const fieldStore = $fieldsStore[fieldIndex];
+        if (fieldStore.options) {
+          fieldStore.options[property as keyof ContentType.Options] = value;
+        }
         return value;
       },
     });
