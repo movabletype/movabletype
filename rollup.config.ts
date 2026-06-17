@@ -86,6 +86,7 @@ export default [
   srcConfig("src/listing.ts"),
   srcConfig("src/dashboard.ts"),
   srcConfig("src/edit-author.ts"),
+  srcConfig("src/template-editor.ts"),
   srcConfig("src/admin2025/admin-ui.ts"),
   srcConfig("src/admin2025/admin-ui-immediate.ts", {
     format: "iife",
