@@ -13,6 +13,7 @@ use Time::Local qw( timegm );
 use MT;
 use MT::Util qw( offset_time_list );
 use MT::Util::Encode;
+use URI;
 
 use base qw(XML::SAX::Base);
 
@@ -460,6 +461,14 @@ sub _create_asset {
                 push @tags, $value;
             }
             elsif ( '_guid' eq $key ) {
+                my $scheme = URI->new($value)->scheme;
+                unless ($scheme && $scheme =~ /^https?$/) {
+                    return $cb->($plugin->translate(
+                        '\'[_1]\' is not allowed to upload by system settings.: [_2]',
+                        $scheme,
+                        $value
+                    ));
+                }
                 $asset_values->{'url'} = $value;
             }
             elsif ( '_description' eq $key ) {
