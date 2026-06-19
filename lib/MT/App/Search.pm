@@ -129,8 +129,14 @@ sub core_parameters {
         = ( $app->multi_param('filter'), $app->multi_param('filter_on') )
         ;    # XXX: filter_on is gone?
     if (@filters) {
-        $core->{types}->{entry}->{columns}
-            = { map { $_ => 'like' } @filters };
+        for my $filter (@filters) {
+            unless (MT->model('entry')->has_column($filter)) {
+                # Don't just return an error because search after the error does not work (because of missing paramters);
+                $app->error(MT::ErrorHandler::Exception->new(MT->translate('Invalid filter: [_1]', $filter)));
+                next;
+            }
+            $core->{types}->{entry}->{columns}{$filter} = 'like';
+        }
     }
 
     $core;
