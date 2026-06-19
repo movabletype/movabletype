@@ -795,6 +795,7 @@
             parent={tags[fieldIndex]}
             bind:gather={gathers[fieldId]}
             {optionsHtmlParams}
+            bind:labelField
           />
         </div>
       {/each}
