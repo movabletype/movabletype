@@ -206,6 +206,9 @@ sub _hdlr_archives {
         return $ctx->_no_content_type_error;
     }
 
+    local $ctx->{__stash}{content_field_types} = MT->registry('content_field_types')
+        if $args->{content_type};
+
     local $ctx->{current_archive_type} = $at;
     ## If we are producing a Category archive list, don't bother to
     ## handle it here--instead hand it over to <MTCategories>.
@@ -467,6 +470,9 @@ sub _hdlr_archive_prev_next {
     if ( $at =~ /^ContentType/ && !$ctx->stash('content_type') ) {
         return $ctx->_no_content_type_error;
     }
+
+    local $ctx->{__stash}{content_field_types} = MT->registry('content_field_types')
+        if $args->{content_type};
 
     my ( $prev_method, $next_method )
         = $arctype->contenttype_based

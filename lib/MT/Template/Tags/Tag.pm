@@ -287,8 +287,9 @@ sub _hdlr_tags {
             return $ctx->_no_content_type_error unless $ct;
         }
     }
-    local $ctx->{__stash}{content_type_id} = $ct->id if $ct;
-    local $ctx->{__stash}{content_type}    = $ct     if $ct;
+    local $ctx->{__stash}{content_type_id}     = $ct->id                             if $ct;
+    local $ctx->{__stash}{content_type}        = $ct                                 if $ct;
+    local $ctx->{__stash}{content_field_types} = MT->registry('content_field_types') if $ct;
 
     my $include_private = defined $args->{include_private}
         && $args->{include_private} == 1 ? 1 : 0;
