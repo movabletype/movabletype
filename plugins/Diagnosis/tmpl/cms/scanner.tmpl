@@ -1,0 +1,163 @@
+<mt:setvarblock name="page_title"><__trans phrase="Database Scanner"></mt:setvarblock>
+
+<mt:setvarblock name="css_include" append="1">
+    <link rel="stylesheet" href="<$mt:var name="static_uri"$>plugins/Diagnosis/css/scanner.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css">
+</mt:setvarblock>
+
+<mt:setvarblock name="page_content">
+    <div class="page_content">
+        <div class="form_container scan mb-5">
+            <p class="page_desc">
+                <__trans phrase="Click Scan button to start database scan.">
+            </p>
+            <mtapp:form id="scan-start" mode="diagnosis_scan">
+                <mtapp:setting id="scan_target" label="<__trans phrase="Select departments.">">
+                    <mt:loop name="department_loop">
+                        <div class="list-container">
+                            <div class="custom-control custom-checkbox col-2 m-3">
+                                <input class="custom-control-input" type="checkbox" id="department_select_<mt:var name="id">" name="departments" value="<mt:var name="id">">
+                                <label class="custom-control-label" for="department_select_<mt:var name="id">">
+                                    <mt:var name="id">
+                                </label>
+                            </div>
+                            <div class="m-3">
+                                <mt:var name="description">
+                            </div>
+                        </div>
+                    </mt:loop>
+                </mtapp:setting>
+            </mtapp:form>
+            <mt:setvarblock name="action_buttons">
+                <button type="submit" accesskey="x" title="<__trans phrase="Cancel (x)">" class="btn btn-default cancel action button">
+                    <__trans phrase="Cancel">
+                </button>
+                <button type="submit" accesskey="d" title="<__trans phrase="Scan (s)">" class="btn btn-primary action primary button">
+                    <__trans phrase="Scan">
+                </button>
+                <span class="loading spinner-border disabled"></span>
+            </mt:setvarblock>
+            <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1" align_right="1">
+        </div>
+        <div id="object-panel" class="form_container repair disabled mb-5 mb-md-3">
+            <p class="page_desc">
+                <__trans phrase="Select the repair tasks and repair button to start to repair.">
+            </p>
+            <mtapp:form id="repair" mode="diagnosis_repair">
+                <div class="mt-table--outline mb-4">
+                    <table class="table mt-table">
+                        <thead>
+                            <tr>
+                                <th class="mt-table__control">
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" class="custom-control-input" id="select-all">
+                                        <label class="custom-control-label" for="select-all"><span class="sr-only">Select All</span></label>
+                                    </div>
+                                </th>
+                                <th scope="col"><__trans phrase="department"></th>
+                                <th scope="col"><__trans phrase="description"></th>
+                                <th scope="col"><__trans phrase="repair parameters"></th>
+                            </tr>
+                            <tr class="template">
+                                <td>
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" class="custom-control-input">
+                                        <label class="custom-control-label"><span class="sr-only"><__trans phrase="Select"></span></label>
+                                    </div>
+                                </td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </mtapp:form>
+            <mt:setvarblock name="action_buttons">
+                <button type="submit" accesskey="r" title="<__trans phrase="Repair (r)">" class="btn btn-primary action primary button" disabled="disabled">
+                    <__trans phrase="Repair">
+                </button>
+            </mt:setvarblock>
+            <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1" align_right="1">
+        </div>
+        <script>
+            (function($){
+                'use strict';
+
+                var tbody = $('.form_container.repair table tbody');
+                var template = $('.form_container.repair tr.template').removeClass('template').remove();
+                var cancel_buttons = $(".scan .actions-bar button.cancel");
+                var scan_buttons = $(".scan .actions-bar button.primary");
+                var repiar_buttons = $(".repair .actions-bar button");
+                var tr_active_class = 'mt-table__highlight';
+
+                $.fn.boolClass = function(name, bool){
+                    bool ? this.addClass(name) : this.removeClass(name);
+                    return this;
+                };
+
+                $("#repair thead input").on('click', function(){
+                    tbody.find("tr").boolClass(tr_active_class, $(this).prop("checked"));
+                    tbody.find("input").prop("checked", $(this).prop("checked"));
+                });
+
+                $("#repair").on('click', 'tr', function(){
+                    if ($(this).closest("tbody")) {
+                        var input = $(this).find("input");
+                        input.prop("checked", !input.prop("checked"));
+                        $(this).boolClass(tr_active_class, input.prop('checked'));
+                    }
+                    var inputs = tbody.find("input");
+                    var checked_length = inputs.filter(":checked").length;
+                    $("#repair thead input").prop("checked", checked_length == inputs.length);
+                    repiar_buttons.prop('disabled', (checked_length == 0));
+                });
+
+                scan_buttons.on('click', function(){
+                    $(".actions-bar .loading").removeClass("disabled");
+                    scan_buttons.attr('disabled', 'disabled');
+                    repiar_buttons.attr('disabled', 'disabled');
+                    var form = $('#scan-start');
+                    jQuery.ajax({
+                        type: 'POST',
+                        contentType: 'application/x-www-form-urlencoded: charset=utf-8',
+                        url: form.action,
+                        dataType: 'json',
+                        data: form.serialize(),
+                    }).done(function(data) {
+                        if (!data.error) {
+                            tbody.empty();
+                            data.result.forEach(function(e, i){
+                                var tr = template.clone();
+                                tr.find('td:nth-child(1) input').attr({'id':'task' + i, 'name':'tasks', 'value':i});
+                                tr.find('td:nth-child(1) label').attr('for', 'task' + i);
+                                tr.find('td:nth-child(2)').text(e.department);
+                                tr.find('td:nth-child(3)').text(e.description);
+                                tr.find('td:nth-child(4)').text(e.params);
+                                tr.appendTo(tbody);
+                            });
+                            $(".form_container.repair").removeClass('disabled');
+
+                            scan_buttons.attr('disabled', false);
+                            $(".actions-bar .loading").addClass("disabled");
+                        }
+                    }).fail(function(jqXHR, textStatus, errorThrown){
+                        console.error(jqXHR, textStatus, errorThrown);
+                    });
+                    return false;
+                });
+
+                repiar_buttons.on('click', function(){
+                    $('#repair').trigger('submit');
+                });
+
+                cancel_buttons.on('click', function(){
+                    window.location.href = '<mt:var name="script_url">?__mode=list&amp;_type=repair_task&amp;blog_id=0';
+                });
+            })(jQuery);
+        </script>
+    </div>
+</mt:setvarblock>
+
+<mt:include name="layout/default.tmpl">
+<mt:var name="layout">

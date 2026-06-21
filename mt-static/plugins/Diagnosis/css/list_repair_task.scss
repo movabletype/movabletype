@@ -1,0 +1,6 @@
+#repair_task-table tbody td {
+  &.status,
+  &.department {
+    white-space:nowrap;
+  }
+}

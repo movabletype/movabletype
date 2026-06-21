@@ -1,0 +1,36 @@
+.page_content {
+  .list-container {
+    display:flex;
+    border-bottom:1px solid #ccc;
+  }
+  .spinner-border {
+    display: inline-block;
+    width: 1.5rem;
+    height: 1.5rem;
+    vertical-align: text-bottom;
+    border: .25em solid #595959;
+    border-right-color: transparent;
+    border-radius: 50%;
+    -webkit-animation: spinner-border .75s linear infinite;
+    animation: spinner-border .75s linear infinite;
+    vertical-align:middle;
+  }
+  .template,
+  .disabled {
+    display:none;
+  }
+  tbody {
+    tr {
+      cursor: pointer;
+    }
+    td:nth-child(2) {
+      white-space:nowrap;
+    }
+  }
+}
+@keyframes spinner-border {
+  100% {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
