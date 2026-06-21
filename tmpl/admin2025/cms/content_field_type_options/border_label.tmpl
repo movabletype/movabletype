@@ -1,0 +1,10 @@
+<mt:app:ContentFieldOptionGroup type="border_label">
+  <mt:app:ContentFieldOptionScript>
+  this.on('mount', function() {
+    // description, required, display field is hidden.
+    document.getElementById('border-label-description-field-' + this.id).style.display ="none";
+    document.getElementById('border-label-required-field-' + this.id).style.display ="none";
+    document.getElementById('border-label-display-field-' + this.id).style.display ="none";
+  });
+  </mt:app:ContentFieldOptionScript>
+</mt:app:ContentFieldOptionGroup>
