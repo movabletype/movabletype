@@ -37,6 +37,8 @@ $author->save;
 my $suite = suite();
 test_data_api($suite);
 
+test_data_api( suite_mtc_26757() );
+
 done_testing;
 
 sub suite {
@@ -155,9 +157,9 @@ sub suite {
             error     => 'Unauthorized',
         },
         {    # No permisions.
-            path   => '/v2/sites/1/folders',
-            method => 'POST',
-            params => { folder => { label => 'create-folder', }, },
+            path         => '/v2/sites/1/folders',
+            method       => 'POST',
+            params       => { folder => { label => 'create-folder', }, },
             restrictions => { 1 => [qw/ save_folder /], },
             code         => 403,
             error        => 'Do not have permission to create a folder.',
@@ -238,9 +240,9 @@ sub suite {
             error     => 'Unauthorized',
         },
         {    # No permissions.
-            path   => '/v2/sites/1/folders/22',
-            method => 'PUT',
-            params => { folder => { label => 'update-folder', }, },
+            path         => '/v2/sites/1/folders/22',
+            method       => 'PUT',
+            params       => { folder => { label => 'update-folder', }, },
             restrictions => { 1 => [qw/ save_folder /], },
             code         => 403,
             error        => 'Do not have permission to update a folder.',
@@ -375,7 +377,7 @@ sub suite {
                 },
             ],
             result => sub {
-                my $site = $app->model('blog')->load(1);
+                my $site         = $app->model('blog')->load(1);
                 my @folder_order = split ',', $site->folder_order;
 
                 $app->user($author);
@@ -504,6 +506,65 @@ sub suite {
                     = sort ( $got->{items}[0]{id}, $got->{items}[1]{id} );
                 my @expected_ids = ( 31, 32 );
                 is_deeply( \@got_ids, \@expected_ids, 'id 31, 32' );
+            },
+        },
+    ];
+}
+
+sub suite_mtc_26757 {
+    my $same_basename_folder = MT::Test::Permission->make_folder(
+        basename => 'same_basename',
+        blog_id  => 1,
+        label    => 'same_basename',
+    );
+
+    return [
+        {   note   => 'create folder with duplicated basename',
+            path   => '/v2/sites/1/folders',
+            method => 'POST',
+            params => {
+                folder => {
+                    basename => 'same_basename',
+                    label    => 'same_basename',
+                },
+            },
+            code => 409,
+            error =>
+                "Save failed: The folder 'same_basename' conflicts with another folder. Folders with the same parent must have unique basenames.\n",
+        },
+        {   note   => 'create folder whose basename is same as parent\'s',
+            path   => '/v2/sites/1/folders',
+            method => 'POST',
+            params => {
+                folder => {
+                    basename => 'same_basename',
+                    label    => 'same_basename',
+                    parent   => $same_basename_folder->id,
+                },
+            },
+            callbacks => [
+                {   name =>
+                        'MT::App::DataAPI::data_api_save_permission_filter.folder',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_save_filter.folder',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_pre_save.folder',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_post_save.folder',
+                    count => 1,
+                },
+            ],
+            result => sub {
+                MT->model('folder')->load(
+                    {   basename => 'same_basename',
+                        blog_id  => 1,
+                        label    => 'same_basename',
+                        parent   => $same_basename_folder->id,
+                    }
+                );
             },
         },
     ];
