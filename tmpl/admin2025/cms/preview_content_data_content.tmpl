@@ -33,6 +33,8 @@
       <mt:ContentFieldValue regex_replace="/table/","table border='1' cellpadding='3'">
     <mt:elseif name="content_field_type" eq="content_type">
       (ID:<mt:ContentID>)
+    <mt:elseif name="content_field_type" eq="multi_line_text">
+      <mt:ContentFieldValue escape="html">
     <mt:else>
       <mt:var name="__value__" escape="html">
     </mt:if>
