@@ -16,28 +16,96 @@ use MT;
 use MT::Test::App;
 use MT::Test::Fixture;
 
-$test_env->prepare_fixture('db');
+$test_env->prepare_fixture('db_data');
 
-my $blog = MT->model('blog')->load(1);
+my $blog   = MT->model('blog')->load(1);
+my $author = MT->model('author')->load(1);
 
-subtest "login redirect" => sub {
+subtest "to dashboard" => sub {
+    my $app1 = MT::Test::App->new;
+    $app1->get_ok();
+    like $app1->header_title, qr/^Sign in/, 'is a sign in screen';
+    $app1->sign_in_ok({ username => 'Melody', password => 'Nelson' });
+    like $app1->header_title, qr/^Dashboard/, 'right destination';
+};
 
-    subtest "to dashboard" => sub {
-        my $app1 = MT::Test::App->new;
-        $app1->get_ok();
-        like $app1->header_title, qr/^Sign in/, 'is a sign in screen';
-        $app1->post_form_ok({username => 'Melody', password => 'Nelson'});
-        like $app1->header_title, qr/^Dashboard/, 'right destination';
+subtest "to site general setting" => sub {
+    my $app1 = MT::Test::App->new;
+    $app1->get_ok({ __mode => 'cfg_prefs', blog_id => $blog->id });
+    like $app1->header_title, qr/^Sign in/, 'is a sign in screen';
+    $app1->sign_in_ok({ username => 'Melody', password => 'Nelson' });
+    like $app1->header_title, qr/^General Settings/, 'right destination';
+    my $res = $app1->post_form_ok({ name => 'First Site RENAMED1' });
+    like $app1->header_title, qr/^General Settings/, 'right destination';
+    my $blog_reloaded = MT->model('blog')->load($blog->id);
+    is $blog_reloaded->name, 'First Site RENAMED1', 'blog name is renamed';
+};
+
+subtest "to self profile (make sure Commercial.pack doesn't interrupt it)" => sub {
+    my $app1 = MT::Test::App->new;
+    $app1->get_ok({ __mode => 'view', _type => 'author', id => $author->id });
+    like $app1->header_title, qr/^Sign in/, 'is a sign in screen';
+    $app1->sign_in_ok({ username => 'Melody', password => 'Nelson' });
+    like $app1->header_title, qr/^Edit Profile/, 'right destination';
+    my $res = $app1->post_form_ok({ nickname => 'Melody RENAMED1' });
+    like $app1->header_title, qr/^Edit Profile/, 'right destination';
+    my $author_reloaded = MT->model('author')->load($author->id);
+    is $author_reloaded->nickname, 'Melody RENAMED1', 'author nickname is renamed';
+};
+
+subtest "multiple browser tabs" => sub {
+    my $app1 = MT::Test::App->new;
+    $app1->get_ok({ __mode => 'cfg_prefs', blog_id => $blog->id });
+    like $app1->header_title, qr/^Sign in/, 'is a sign in screen';
+    $app1->sign_in_ok({ username => 'Melody', password => 'Nelson' });
+    like $app1->header_title, qr/^General Settings/, 'right destination';
+
+    subtest "new brower tab" => sub {
+        my $app2 = MT::Test::App->new;
+        $app2->{session} = $app1->{session}; # browser tabs share the session
+        $app2->get_ok({ __mode => 'cfg_prefs', blog_id => $blog->id });
+        like $app2->header_title, qr/^Sign in/, 'is a sign in screen';
+        $app2->sign_in_ok({ username => 'Melody', password => 'Nelson' });
+        like $app2->header_title, qr/^General Settings/, 'right destination';
     };
 
-    subtest "to site general setting" => sub {
-        my $app1 = MT::Test::App->new;
-        $app1->get_ok({__mode => 'cfg_prefs', blog_id => $blog->id});
-        like $app1->header_title, qr/^Sign in/, 'is a sign in screen';
-        $app1->post_form_ok({username => 'Melody', password => 'Nelson'});
+    subtest "original brower tab" => sub {
+        $app1->post_form_ok({ name => 'First Site RENAMED2' });
         like $app1->header_title, qr/^General Settings/, 'right destination';
+        my $blog_reloaded = MT->model('blog')->load($blog->id);
+        is $blog_reloaded->name, 'First Site RENAMED2', 'blog name is renamed';
     };
 };
 
-done_testing;
+subtest "other random modes" => sub {
 
+    my @cases = (
+        ['__mode=search_replace&blog_id=0',           qr/^Search & Replace /],
+        ['__mode=search_replace&blog_id=1',           qr/^Search & Replace /],
+        ['__mode=list&blog_id=0&_type=log',           qr/^Activity Log /],
+        ['__mode=list&blog_id=1&_type=log',           qr/^Activity Log /],
+        ['__mode=cfg_plugins&blog_id=0',              qr/^Plugin Settings /],
+        ['__mode=cfg_plugins&blog_id=1',              qr/^Plugin Settings /],
+        ['__mode=list_template&blog_id=0',            qr/^Manage Templates /],
+        ['__mode=list_template&blog_id=1',            qr/^Manage Templates /],
+        ['__mode=view&_type=template&id=1&blog_id=0', qr/ Edit Template /],
+        ['__mode=list_theme&blog_id=0',               qr/^All Themes /],
+        ['__mode=list_theme&blog_id=1',               qr/^All Themes /],
+        ['__mode=list&blog_id=1&_type=content_type',  qr/^Manage Content Type /],
+        ['__mode=list&blog_id=0&_type=asset',         qr/^Manage Assets /],
+        ['__mode=list&blog_id=1&_type=asset',         qr/^Manage Assets /],
+        ['__mode=view&_type=asset&id=1&blog_id=1',    qr/^Edit Asset /],
+    );
+    for my $case (@cases) {
+        my $app1   = MT::Test::App->new;
+        my $params = CGI->new($case->[0])->Vars;
+        subtest 'params: ' . $case->[0] => sub {
+            $app1->get_ok($params);
+            like $app1->header_title, qr/^Sign in/, 'is a sign in screen';
+            $app1->sign_in_ok({ username => 'Melody', password => 'Nelson' });
+            like $app1->header_title, $case->[1], 'right destination';
+        }
+    }
+};
+
+done_testing;
