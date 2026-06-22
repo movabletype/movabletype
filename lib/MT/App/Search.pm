@@ -127,7 +127,7 @@ sub core_parameters {
         for my $filter (@filters) {
             unless (MT->model('entry')->has_column($filter)) {
                 # Don't just return an error because search after the error does not work (because of missing paramters);
-                $app->error(MT::ErrorHandler::Exception->new(MT->translate('Invalid filter: [_1]', $filter)));
+                $app->error(MT->translate('Invalid filter: [_1]', $filter));
                 next;
             }
             $core->{types}->{entry}->{columns}{$filter} = 'like';
