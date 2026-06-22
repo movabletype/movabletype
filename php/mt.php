@@ -372,7 +372,7 @@ class MT {
         // location of mt.php
         $cfg['phpdir'] = realpath(dirname(__FILE__));
         // path to MT directory
-        $cfg['mtdir'] = realpath(dirname($file));
+        $cfg['mtdir'] = $ENV['MT_HOME'] ?? realpath(dirname(dirname(__FILE__)));
         // path to handlers
         $cfg['phplibdir'] = $cfg['phpdir'] . DIRECTORY_SEPARATOR . 'lib';
 
