@@ -108,10 +108,7 @@ subtest 'Upgrade from MT4 to MT7' => sub {
     $app->get_ok();
     like $app->content, qr/A new version of Movable Type has been installed/, 'upgrade detected';
     $app->post_form_ok;
-    my $res = $app->post_form_ok({
-        username => 'Melody',
-        password => 'Nelson',
-    });
+    my $res = $app->post_form_ok({username => 'Melody', password => 'Nelson'});
 
     my $json_steps = $app->_app->response;
     while (@{ $json_steps->{steps} || [] }) {

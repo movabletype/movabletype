@@ -21,15 +21,20 @@ $test_env->prepare_fixture('db_data');
 my $blog   = MT->model('blog')->load(1);
 my $author = MT->model('author')->load(1);
 
-subtest "to dashboard" => sub {
+$author->set_password('Nelson');
+$author->save;
+
+subtest "to dashboard and general setting" => sub {
     my $app1 = MT::Test::App->new;
     $app1->get_ok();
     like $app1->header_title, qr/^Sign in/, 'is a sign in screen';
     $app1->sign_in_ok({ username => 'Melody', password => 'Nelson' });
     like $app1->header_title, qr/^Dashboard/, 'right destination';
+    $app1->get_ok({ __mode => 'cfg_prefs', blog_id => $blog->id });
+    like $app1->header_title, qr/^General Settings/, 'right destination';
 };
 
-subtest "to site general setting" => sub {
+subtest "to general setting and post it" => sub {
     my $app1 = MT::Test::App->new;
     $app1->get_ok({ __mode => 'cfg_prefs', blog_id => $blog->id });
     like $app1->header_title, qr/^Sign in/, 'is a sign in screen';
@@ -41,7 +46,7 @@ subtest "to site general setting" => sub {
     is $blog_reloaded->name, 'First Site RENAMED1', 'blog name is renamed';
 };
 
-subtest "to self profile (make sure Commercial.pack doesn't interrupt it)" => sub {
+subtest "to self profile and post it (make sure Commercial.pack doesn't interrupt it)" => sub {
     my $app1 = MT::Test::App->new;
     $app1->get_ok({ __mode => 'view', _type => 'author', id => $author->id });
     like $app1->header_title, qr/^Sign in/, 'is a sign in screen';
