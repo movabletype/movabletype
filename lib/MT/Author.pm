@@ -217,7 +217,7 @@ sub list_props {
                 $val = exists $statuses{$val} ? $statuses{$val} : $val;
                 return { status => $val };
             },
-            single_select_options => [
+            single_select_options => sub {[
                 {   label => MT->translate('Active'),
                     value => 'active',
                     text  => 'Active'
@@ -230,7 +230,7 @@ sub list_props {
                     value => 'pending',
                     text  => 'Pending'
                 },
-            ],
+            ]},
         },
         url => {
             auto      => 1,
@@ -294,14 +294,14 @@ sub list_props {
                 $val = exists $statuses{$val} ? $statuses{$val} : $val;
                 return { locked_out_time => $val };
             },
-            single_select_options => [
+            single_select_options => sub {[
                 {   label => MT->translate('Not Locked Out'),
                     value => 'not_locked_out',
                 },
                 {   label => MT->translate('Locked Out'),
                     value => 'locked_out',
                 },
-            ],
+            ]},
         },
         content => {
             base    => '__virtual.content',
@@ -460,12 +460,12 @@ sub member_list_props {
             condition => sub {
                 MT->config->SingleCommunity ? 0 : 1;
             },
-            single_select_options => [
+            single_select_options => sub {[
                 { label => MT->translate('MT Users'), value => AUTHOR(), },
                 {   label => MT->translate('Commenters'),
                     value => COMMENTER(),
                 },
-            ],
+            ]},
         },
         status     => { base => 'author.status', },
         created_on => {
