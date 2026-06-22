@@ -87,7 +87,7 @@ sub core_search_apis {
                 if ( $app->param('filter') && $app->param('filter_val') ) {
                     my $col = $app->param('filter');
                     unless (MT->model('content_data')->has_column($col)) {
-                        die MT::ErrorHandler::Exception->new(MT->translate('Invalid filter: [_1]', $col));
+                        die MT->translate('Invalid filter: [_1]', $col);
                     }
                     $terms->{$col} = $app->param('filter_val');
                 }
@@ -163,7 +163,7 @@ sub core_search_apis {
                 if ( $app->param('filter') && $app->param('filter_val') ) {
                     my $col = $app->param('filter');
                     unless (MT->model('entry')->has_column($col)) {
-                        die MT::ErrorHandler::Exception->new(MT->translate('Invalid filter: [_1]', $col));
+                        die MT->translate('Invalid filter: [_1]', $col);
                     }
                     $terms->{$col} = $app->param('filter_val');
                 }
@@ -217,7 +217,7 @@ sub core_search_apis {
                 if ( $app->param('filter') && $app->param('filter_val') ) {
                     my $col = $app->param('filter');
                     unless (MT->model('page')->has_column($col)) {
-                        die MT::ErrorHandler::Exception->new(MT->translate('Invalid filter: [_1]', $col));
+                        die MT->translate('Invalid filter: [_1]', $col);
                     }
                     $terms->{$col} = $app->param('filter_val');
                 }
