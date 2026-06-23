@@ -1,3 +1,8 @@
+// CodeMirror, copyright (c) by Marijn Haverbeke and others
+// Distributed under an MIT license: https://codemirror.net/LICENSE
+// Copied from @codemirror/legacy-modes 6.5.3 (mode/css.js)
+// Modified for MT: added MTML tag handling. Search this file for "MT patch".
+
 export function mkCSS(parserConfig) {
   parserConfig = {...defaults, ...parserConfig}
   var inline = parserConfig.inline
@@ -81,7 +86,7 @@ export function mkCSS(parserConfig) {
     return function(stream, state) {
       var escaped = false, ch;
       while (!stream.eol()) {
-        // MT patch
+        // MT patch: skip MT tags so their quotes do not break the string
         if (
           stream.match(
             /^<\$?(MT:?)((?:<[^>]+?>|"(?:<[^>]+?>|.)*?"|'(?:<[^>]+?>|.)*?'|.)+?)([-]?)[\$\/]?>|^<\/MT[^>]+>/i,
