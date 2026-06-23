@@ -151,7 +151,7 @@
     name="required"
     checked={!!options.required}
     onchange={(e) => {
-      options.required = e.currentTarget.checked;
+      options.required = e.currentTarget.checked ? 1 : 0;
     }}
   />
   <label for="{type}-required">
