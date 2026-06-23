@@ -900,10 +900,11 @@ sub edit {
     {
         # If any column value is overridden by $app->param,
         # the MT (especially WYSISYG editor) will be working in tainted mode.
-        my $tainted_input;
-        $tainted_input ||= ($app->param($_) || '') !~ /^\d*$/ for @$cols;
-        local $app->{login_again};
-        $param{tainted_input} = $tainted_input && !$app->validate_magic;
+        $param{tainted_input} = 0;
+        local @{$app}{ qw(login_again redirect redirect_use_meta) };
+        unless ( $app->validate_magic ) {
+            $param{tainted_input} ||= ( $app->param($_) || '' ) !~ /^\d*$/ for @$cols;
+        }
     }
 
     if ( $type eq 'website' || $type eq 'blog' ) {

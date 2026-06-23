@@ -47,7 +47,6 @@ subtest "to general setting and post it" => sub {
 };
 
 subtest "to self profile and post it" => sub {
-    plan skip_all => "some pages possibly fails to be redirected because of taint_input MT::CMS::Common::edit";
     my $app1 = MT::Test::App->new;
     $app1->get_ok({ __mode => 'view', _type => 'author', id => $author->id });
     like $app1->header_title, qr/^Sign in/, 'is a sign in screen';
