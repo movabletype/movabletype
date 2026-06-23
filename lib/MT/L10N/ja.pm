@@ -3162,6 +3162,9 @@ use vars qw( @ISA %Lexicon );
 ## mt-static/js/admin2023/contenttype/contenttype.js
 	'Do you want to delete [_1]([_2])?' => '[_1]([_2])を削除しますか？',
 	'Duplicate' => '複製',
+	'Data label field have been changed to "[_2]" from "[_1]"' => 'データ識別ラベルが"[_1]"から"[_2]"に変更されました',
+	'"[_1]" cannot delete because using as data label field.' => '"[_1]"はデータ識別ラベルとして使用しているため、削除できません。',
+	'Unchecking this required, data label field will reset to default.' => 'この必須チェックを解除すると、データ識別ラベルは初期値に戻ります。',
 
 ## mt-static/js/admin2023/contenttype/tag/content-field.tag
 	'ContentField' => 'コンテンツフィールド',
