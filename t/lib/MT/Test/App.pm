@@ -154,7 +154,21 @@ sub request {
         my $max_redirect = $self->{max_redirect} || 10;
         if (!defined $max_redirect or $max_redirect > @{$self->{locations} || []}) {
             push @{ $self->{locations} ||= [] }, $uri;
-            return $self->request($params, 1) unless $self->{no_redirect};
+            unless ($self->{no_redirect}) {
+                my %reverse_mapping = (
+                    'mt-data-api.cgi' => 'MT::App::DataAPI',
+                    'mt-search.cgi'   => 'MT::App::Search',
+                    'mt-cdsearch.cgi' => 'MT::App::Search::ContentData',
+                    'mt-upgrade.cgi'  => 'MT::App::Upgrader',
+                );
+                my $dest_app = $reverse_mapping{(split(qr{/}, $uri->path))[-1]} || '';
+                if ($dest_app ne $self->{app_class}) {
+                    my $dest_self = __PACKAGE__->new($dest_app); # initialize $dest_app
+                    $self->{app_class} = $dest_app || 'MT::App::CMS';
+                    $self->{server} = $dest_self->{server} if $dest_self->{server};
+                }
+                return $self->request($params, 1);
+            }
         }
     }
 
