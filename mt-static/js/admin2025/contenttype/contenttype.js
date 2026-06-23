@@ -1,7 +1,27 @@
 riot.tag2('content-field', '<div class="mt-collapse__container"> <div class="col-auto p-0"><ss title="{trans(\'Move\')}" class="mt-icon" href="{StaticURI}/images/admin2025/sprite.svg#ic_move"></ss></div> <div class="col text-wrap p-0"><ss title="{trans(\'ContentField\')}" class="mt-icon--secondary" href="{StaticURI}images/admin2025/sprite.svg#ic_contentstype"></ss>{label} ({typeLabel}) <span if="{realId}">(ID: {realId})</span></div> <div class="col-auto p-0"> <a href="javascript:void(0)" onclick="{duplicateField}" class="d-inline-block duplicate-content-field"><ss title="{trans(\'Duplicate\')}" class="mt-icon--secondary" href="{StaticURI}images/admin2025/sprite.svg#ic_duplicate"></ss></a> <a href="javascript:void(0)" onclick="{deleteField}" class="d-inline-block delete-content-field"><ss title="{trans(\'Delete\')}" class="mt-icon--secondary" href="{StaticURI}images/admin2025/sprite.svg#ic_trash"></ss></a> <a data-bs-toggle="collapse" href="#field-options-{id}" aria-expanded="{isShow == \'show\' ? \'true\' : \'false\'}" aria-controls="field-options-{id}" class="d-inline-block"><ss title="{trans(\'Edit\')}" class="mt-icon--secondary" href="{StaticURI}images/admin2025/sprite.svg#ic_collapse"></ss></a> </div> </div> <div data-is="{type}" class="collapse mt-collapse__content {isShow}" id="{\'field-options-\' + id}" fieldid="{id}" options="{this.options}" isnew="{isNew}"></div>', '', 'id="content-field-block-{id}"', function(opts) {
+    this.isLabelField = function() {
+      const labelField = this.parent.labelField
+
+      if (!labelField) {
+        return false
+      }
+
+      return labelField.match(/^id:/) ?
+        (labelField == ('id:' + this.id)) : (labelField == this.unique_id)
+    }.bind(this)
+
     this.deleteField = function(e) {
       item = e.item
       var label = item.label ? item.label : trans('No Name');
+      if (this.isLabelField()) {
+        alert(
+          trans(
+            '"[_1]" cannot delete because using as data label field.',
+            label
+          )
+        )
+        return
+      }
       if( !confirm( trans('Do you want to delete [_1]([_2])?', label, item.typeLabel) ) ){
         return;
       }
@@ -20,6 +40,7 @@ riot.tag2('content-field', '<div class="mt-collapse__container"> <div class="col
       var options = field.gatheringData()
       newItem.options = options
       newItem.id = Math.random().toString(36).slice(-8)
+      newItem.unique_id = undefined
       var label = e.item.label
       if ( !label ) {
         label = jQuery('#content-field-block-' + e.item.id).find('[name="label"]').val()
@@ -55,15 +76,62 @@ riot.tag2('content-fields', '<form name="content-type-form" action="{CMSScriptUR
     self.labelField = opts.labelField
     self.isExpanded = false
 
-    self.on('updated', function () {
-      var select = self.root.querySelector('#label_field')
-      jQuery(select).find('option').each(function (index, option) {
-        if (option.attributes.selected) {
-          select.selectedIndex = index
-          return false
-        }
+    self.on('mount', function () {
+
+      self.rebuildLabelFields()
+
+      jQuery("#content-fields").on("change", "input[name=required]", function () {
+        self.rebuildLabelFields()
       })
     })
+
+    this._alertOnChangedToDefaultLabelField = function(oldId) {
+      const content = trans(
+        'Data label field have been changed to "[_2]" from "[_1]"',
+        self._getLabelFromValue(oldId),
+        trans('Show input field to enter data label')
+      )
+      const cls = 'warning'
+      jQuery('#msg-block').append(jQuery('<div />')
+        .attr('class', 'alert alert-dismissible alert-' + cls )
+        .append(
+          jQuery('<button class="btn-close" data-bs-dismiss="alert" aria-label="Close" />')
+            .append('<span aria-hidden="true">&times;</span>')
+        )
+        .append(content)
+      )
+      alert(content)
+    }.bind(this)
+
+    this._getLabelFromValue = function(value) {
+      var label
+      if (value.match(/^id:/)) {
+        const id = value.match(/^id:(.*)/)?.[1]
+        if (id) {
+          label =
+            jQuery("#content-field-block-" + id)
+              .find('[name="label"]')
+              .val()
+          if (label == '') {
+            label = trans('No Name')
+          }
+        }
+      } else {
+        const field = self.fields.find(
+          (f) => value === f.unique_id
+        )
+
+        if (field) {
+          label = field.label
+        }
+      }
+
+      if (!label) {
+        label = "(" + window.trans("Deleted") + ")"
+      }
+
+      return label
+    }.bind(this)
 
     self.observer.on('mtDragStart', function() {
       self.droppable = true
@@ -269,7 +337,6 @@ riot.tag2('content-fields', '<form name="content-type-form" action="{CMSScriptUR
         return
       }
 
-      self.rebuildLabelFields()
       setDirty(false)
       fieldOptions = [];
       if (self.fields) {
@@ -339,7 +406,10 @@ riot.tag2('content-fields', '<form name="content-type-form" action="{CMSScriptUR
             if (label == '') {
               label = trans('No Name')
             }
-            id =  'id:' + self.fields[i].id
+          }
+          if ( !id ) {
+
+            id = 'id:' + self.fields[i].id
           }
           fields.push({
             'value' : id,
@@ -348,11 +418,23 @@ riot.tag2('content-fields', '<form name="content-type-form" action="{CMSScriptUR
         }
       }
       self.labelFields = fields
+
+      if (self.labelField) {
+        if (
+          self.labelFields.length === 0 ||
+          self.labelFields.every((lf) => lf.value !== self.labelField)
+        ) {
+          const stash = self.labelField
+          self.labelField = ""
+          self._alertOnChangedToDefaultLabelField(stash)
+        }
+      }
+
       self.update()
     }.bind(this)
 
     this.changeLabelField = function(e) {
-        self.labelField = e.target.value
+      self.labelField = e.target.value
     }.bind(this)
 
     this.toggleAll = function() {
