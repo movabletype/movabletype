@@ -125,6 +125,9 @@ sub request {
     my ($self, $params, $is_redirect) = @_;
     $self->{locations} = undef unless $is_redirect;
 
+    local $ENV{HTTP_SEC_FETCH_SITE} = $self->{_request_sent} ? 'same-origin' : 'none';
+    $self->{_request_sent} = 1;
+
     my $res =
           $self->{server}
         ? $self->_request_locally($params)
