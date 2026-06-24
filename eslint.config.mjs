@@ -16,7 +16,9 @@ const compat = new FlatCompat({
     allConfig: js.configs.all
 });
 
-export default [...compat.extends(
+export default [{
+    ignores: ["src/template-editor/codemirror/modes/**"],
+}, ...compat.extends(
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
     "plugin:@typescript-eslint/eslint-recommended",
