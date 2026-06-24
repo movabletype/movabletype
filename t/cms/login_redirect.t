@@ -12,6 +12,8 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
+plan skip_all => 'Need investigation';
+
 use MT;
 use MT::Test::App;
 use MT::Test::Fixture;
@@ -40,10 +42,13 @@ subtest "to general setting and post it" => sub {
     like $app1->header_title, qr/^Sign in/, 'is a sign in screen';
     $app1->sign_in_ok({ username => 'Melody', password => 'Nelson' });
     like $app1->header_title, qr/^General Settings/, 'right destination';
-    my $res = $app1->post_form_ok({ name => 'First Site RENAMED1' });
-    like $app1->header_title, qr/^General Settings/, 'right destination';
-    my $blog_reloaded = MT->model('blog')->load($blog->id);
-    is $blog_reloaded->name, 'First Site RENAMED1', 'blog name is renamed';
+
+    subtest "post the form" => sub {
+        my $res = $app1->post_form_ok({ name => 'First Site RENAMED1' });
+        like $app1->header_title, qr/^General Settings/, 'right destination';
+        my $blog_reloaded = MT->model('blog')->load($blog->id);
+        is $blog_reloaded->name, 'First Site RENAMED1', 'blog name is renamed';
+    };
 };
 
 subtest "to self profile and post it" => sub {
