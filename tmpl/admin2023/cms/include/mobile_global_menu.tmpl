@@ -3,7 +3,7 @@
     <a id="mobileGlobalMenu__dropdownMenuButton" href="javascript:void(0);" class="mt-mobileGlobalMenu__dropdownMenuButton" data-role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
       <mtapp:svgicon title="Open mobile global menu" data-role="img" color="inverse" id="ic_menu">
     </a>
-    <div class="mt-mobileGlobalMenu__dropdownMenu dropdown-menu" aria-labelledby="mobileGlobalMenu__dropdownMenuButton">
+    <div class="mt-mobileGlobalMenu__dropdownMenu dropdown-menu" role="menu" aria-labelledby="mobileGlobalMenu__dropdownMenuButton">
       <ul>
 <mt:setvarblock name="show_dashboard_link"><mt:if name="scope_type" ne="user">1<mt:elseif name="override_scope_type">1</mt:if></mt:setvarblock>
 <mt:if name="show_dashboard_link">
