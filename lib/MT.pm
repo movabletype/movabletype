@@ -2374,10 +2374,18 @@ sub build_page {
         my $q = $mt->{query};
         if ($mode) {
             my @query;
+
+            if ((($mt->get_header('Sec-Fetch-Site') || '') ne 'same-origin')
+                || $mt->param('_is_cross_origin'))
+            {
+                push @query, { name => '_is_cross_origin', value => 1 };
+            }
+
             my @query_keys = grep {
                        ( $_ ne 'username' )
                     && ( $_ ne 'password' )
                     && ( $_ ne 'submit' )
+                    && ( $_ ne '_is_cross_origin' )
                     && ( $mode eq 'logout' ? ( $_ ne '__mode' ) : 1 )
             } $mt->multi_param;
             for my $query_key (@query_keys) {
