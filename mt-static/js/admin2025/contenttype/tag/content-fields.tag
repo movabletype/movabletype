@@ -125,15 +125,63 @@
     self.labelField = opts.labelField
     self.isExpanded = false
 
-    self.on('updated', function () {
-      var select = self.root.querySelector('#label_field')
-      jQuery(select).find('option').each(function (index, option) {
-        if (option.attributes.selected) {
-          select.selectedIndex = index
-          return false
-        }
+    self.on('mount', function () {
+      // Prevent label_field from being reset when saving a content type immediately after loading
+      self.rebuildLabelFields()
+
+      // Rebuild label fields when any required option is changed in content fields
+      jQuery("#content-fields").on("change", "input[name=required]", function () {
+        self.rebuildLabelFields()
       })
     })
+
+    _alertOnChangedToDefaultLabelField(oldId) {
+      const content = trans(
+        'Data label field have been changed to "[_2]" from "[_1]"',
+        self._getLabelFromValue(oldId),
+        trans('Show input field to enter data label')
+      )
+      const cls = 'warning'
+      jQuery('#msg-block').append(jQuery('<div />')
+        .attr('class', 'alert alert-dismissible alert-' + cls )
+        .append(
+          jQuery('<button class="btn-close" data-bs-dismiss="alert" aria-label="Close" />')
+            .append('<span aria-hidden="true">&times;</span>')
+        )
+        .append(content)
+      )
+      alert(content)
+    }
+
+    _getLabelFromValue(value) {
+      var label
+      if (value.match(/^id:/)) {
+        const id = value.match(/^id:(.*)/)?.[1]
+        if (id) {
+          label =
+            jQuery("#content-field-block-" + id)
+              .find('[name="label"]')
+              .val()
+          if (label == '') {
+            label = trans('No Name')
+          }
+        }
+      } else {
+        const field = self.fields.find(
+          (f) => value === f.unique_id
+        )
+
+        if (field) {
+          label = field.label
+        }
+      }
+
+      if (!label) {
+        label = "(" + window.trans("Deleted") + ")"
+      }
+
+      return label
+    }
 
     // Drag start from content field list
     self.observer.on('mtDragStart', function() {
@@ -349,7 +397,6 @@
         return
       }
 
-      self.rebuildLabelFields()
       setDirty(false)
       fieldOptions = [];
       if (self.fields) {
@@ -419,7 +466,10 @@
             if (label == '') {
               label = trans('No Name')
             }
-            id =  'id:' + self.fields[i].id
+          }
+          if ( !id ) {
+            // new field
+            id = 'id:' + self.fields[i].id
           }
           fields.push({
             'value' : id,
@@ -428,11 +478,24 @@
         }
       }
       self.labelFields = fields
+
+      // Reset labelField when it is removed from the list
+      if (self.labelField) {
+        if (
+          self.labelFields.length === 0 ||
+          self.labelFields.every((lf) => lf.value !== self.labelField)
+        ) {
+          const stash = self.labelField
+          self.labelField = ""
+          self._alertOnChangedToDefaultLabelField(stash)
+        }
+      }
+
       self.update()
     }
 
     changeLabelField(e) {
-        self.labelField = e.target.value
+      self.labelField = e.target.value
     }
 
     toggleAll() {
