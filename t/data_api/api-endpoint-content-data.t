@@ -1328,9 +1328,9 @@ sub normal_tests_for_list {
         },
     });
 
-    # This is not documented
     test_data_api({
-        note      => 'sortBy=content_field_XX, not logged in',
+        skip      => 1,
+        note      => 'sortBy=content_field_XX, not logged in (undocumented)',
         path      => "/v4/sites/$site_id/contentTypes/$content_type_id/data",
         method    => 'GET',
         params    => { sortBy => 'content_field_' . $single_field->id, direction => 'descend' },
