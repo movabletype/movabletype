@@ -447,17 +447,23 @@
 
   // changeLabelFields was removed because unused
 
+  const toggleAll = (): void => {
+    isExpanded = !isExpanded;
+    const newIsShow = isExpanded ? "show" : "";
+    for (let i = 0; i < fields.length; i++) {
+      fields[i].isShow = newIsShow;
+    }
+  };
+
   const updateToggleAll = (): void => {
     const collapseEls = document.querySelectorAll(".mt-collapse__content");
     let isAllExpanded = true;
     collapseEls.forEach((collapseEl) => {
-      if (collapseEl.classList.contains("show")) {
-        isAllExpanded = true;
-      } else {
+      if (!collapseEl.classList.contains("show")) {
         isAllExpanded = false;
       }
     });
-    isExpanded = isAllExpanded ? true : false;
+    isExpanded = isAllExpanded;
   };
 
   const _moveField = (item: ContentType.Field, pos: number): void => {
@@ -760,7 +766,8 @@
       <!-- svelte-ignore a11y_invalid_attribute -->
       <a
         data-bs-toggle="collapse"
-        href=".mt-collapse__content"
+        onclick={toggleAll}
+        href=""
         aria-expanded={isExpanded ? "true" : "false"}
         class="d-inline-block"
       >
@@ -824,9 +831,11 @@
       {/each}
     </div>
     <div class="mt-collapse__all">
+      <!-- svelte-ignore a11y_invalid_attribute -->
       <a
         data-bs-toggle="collapse"
-        href=".mt-collapse__content"
+        onclick={toggleAll}
+        href=""
         aria-expanded={isExpanded ? "true" : "false"}
         class="d-inline-block"
       >
