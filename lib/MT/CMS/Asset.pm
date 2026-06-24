@@ -816,7 +816,7 @@ sub cancel_upload {
     $app->validate_magic() or return;
 
     my $asset;
-    $param{id} && ( $asset = MT->model('asset')->load( $param{id} ) )
+    $param{id} && ( $asset = MT->model('asset')->load({ id => $param{id}, blog_id => $param{blog_id} }) )
         or return $app->errtrans("Invalid request.");
 
    # User has permission to delete asset and asset file, or user created asset
@@ -2715,7 +2715,7 @@ sub dialog_edit_asset {
     return $app->permission_denied()
         if $blog_id && !$app->can_do('upload');
 
-    my $asset = MT->model('asset')->load($id)
+    my $asset = MT->model('asset')->load({ id => $id, blog_id => $blog_id })
         or return $app->errtrans( "Cannot load asset #[_1].", $id );
 
     my $param = {
@@ -2847,7 +2847,7 @@ sub js_save_asset {
         $app->json_error( $app->translate("Permission denied.") ) )
         if $blog_id && !$app->can_do('upload');
 
-    my $asset = MT->model('asset')->load($id)
+    my $asset = MT->model('asset')->load({ id => $id, blog_id => $blog_id })
         or return $app->error(
         $app->json_error(
             $app->translate( "Cannot load asset #[_1].", $id )
