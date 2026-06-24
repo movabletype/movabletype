@@ -164,10 +164,10 @@ sub list_props {
             base                  => '__virtual.single_select',
             display               => 'none',
             label                 => 'Author Status',
-            single_select_options => [
+            single_select_options => sub {[
                 { label => MT->translate('Enabled'),  value => 'enabled', },
                 { label => MT->translate('Disabled'), value => 'disabled', },
-            ],
+            ]},
             terms => sub {
                 my $prop = shift;
                 my ( $args, $db_terms, $db_args ) = @_;
