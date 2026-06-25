@@ -1057,9 +1057,11 @@ sub make_list_props {
                 bulk_sort => sub {
                     my $prop = shift;
                     my ( $objs, $app, $opts ) = @_;
-                    return
-                        sort { ( $a->label || '' ) cmp( $b->label || '' ) }
-                        @$objs;
+                    my %label_cache;
+                    return sort {
+                             ( $label_cache{$a->id} || ($label_cache{$a->id} = $a->label) || '' ) cmp
+                             ( $label_cache{$b->id} || ($label_cache{$b->id} = $b->label) || '' )
+                        } @$objs;
                 },
                 terms => sub {
                     my $prop = shift;
@@ -1598,20 +1600,24 @@ sub _default_bulk_sort {
     my $data_type = $prop->data_type;
     my $cf_id     = $prop->content_field_id;
 
+    my %sort_cache;
+    
     if (   $data_type eq 'integer'
         || $data_type eq 'float'
         || $data_type eq 'double'
         || $data_type eq 'datetime' )
     {
         @sorted_objs = sort {
-            ( _get_field_first_value( $a->data->{$cf_id} ) || 0 )
-                <=> ( _get_field_first_value( $b->data->{$cf_id} ) || 0 )
+            ($sort_cache{ $a->id } || ($sort_cache{ $a->id } = _get_field_first_value($a->data->{$cf_id})) || 0)
+            <=>
+            ($sort_cache{ $b->id } || ($sort_cache{ $b->id } = _get_field_first_value($b->data->{$cf_id})) || 0)
         } @$objs;
     }
     else {
         @sorted_objs = sort {
-            _get_field_first_value( $a->data->{$cf_id} )
-                cmp _get_field_first_value( $b->data->{$cf_id} )
+            ($sort_cache{ $a->id } || ($sort_cache{ $a->id } = _get_field_first_value($a->data->{$cf_id})))
+            cmp
+            ($sort_cache{ $b->id } || ($sort_cache{ $b->id } = _get_field_first_value($b->data->{$cf_id})))
         } @$objs;
     }
 
