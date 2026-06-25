@@ -109,7 +109,6 @@
     "jquery-ui-touch-punch": "github:RWAP/jquery-ui-touch-punch",
     "jquery-validation": "1.22.1",
     "js-cookie": "3.0.7",
-    "lru-cache": "^11.5.1",
     "mt-chart-api": "github:movabletype/mt-chart-api-sdk-js#v1.0.2",
     "popper.js": "^1.16.1",
     "riot": "3.7.4",
