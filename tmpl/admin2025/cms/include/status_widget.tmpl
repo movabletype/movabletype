@@ -13,6 +13,9 @@
       <br><mt:include name="include/status_label.tmpl" $status_text_key="current_status_text">
         <mt:if name="current_rev_date">
       <br>(<mt:var name="current_rev_date" escape="html">)
+          <mt:if name="latest-revision-note">
+        <br><mt:var name="latest-revision-note" escape="html">
+          </mt:if>
         </mt:if>
     </div>
     <div class="status">
@@ -21,8 +24,8 @@
         <mt:if name="rev_date">
       <br>(<mt:var name="rev_date" escape="html">)
         </mt:if>
-        <mt:if name="revision-note">
-      <br><mt:var name="revision-note" escape="html">
+        <mt:if name="revision-note-in-status-widget">
+      <br><mt:var name="revision-note-in-status-widget" escape="html">
         </mt:if>
     </div>
       <mt:else>
@@ -30,6 +33,9 @@
       <mt:include name="include/status_label.tmpl" $status_text_key="status_text">
         <mt:if name="rev_date">
       <br>(<mt:var name="rev_date" escape="html">)
+          <mt:if name="latest-revision-note">
+        <br><mt:var name="latest-revision-note" escape="html">
+          </mt:if>
         </mt:if>
     </div>
       </mt:if>
