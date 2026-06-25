@@ -12,7 +12,6 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-plan skip_all => 'Need investigation';
 
 use MT;
 use MT::Test::App;
@@ -20,7 +19,7 @@ use MT::Test::Fixture;
 
 $test_env->prepare_fixture('db_data');
 
-my $blog   = MT->model('blog')->load(1);
+my $blog = MT::Test::Permission->make_website(name => 'my website',);
 my $author = MT->model('author')->load(1);
 
 $author->set_password('Nelson');
