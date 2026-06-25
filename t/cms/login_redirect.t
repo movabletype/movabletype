@@ -12,14 +12,13 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-
 use MT;
 use MT::Test::App;
 use MT::Test::Fixture;
 
 $test_env->prepare_fixture('db_data');
 
-my $blog = MT::Test::Permission->make_website(name => 'my website',);
+my $site   = MT::Test::Permission->make_website(name => 'my website');
 my $author = MT->model('author')->load(1);
 
 $author->set_password('Nelson');
@@ -31,22 +30,22 @@ subtest "to dashboard and general setting" => sub {
     like $app1->header_title, qr/^Sign in/, 'is a sign in screen';
     $app1->sign_in_ok({ username => 'Melody', password => 'Nelson' });
     like $app1->header_title, qr/^Dashboard/, 'right destination';
-    $app1->get_ok({ __mode => 'cfg_prefs', blog_id => $blog->id });
+    $app1->get_ok({ __mode => 'cfg_prefs', blog_id => $site->id });
     like $app1->header_title, qr/^General Settings/, 'right destination';
 };
 
 subtest "to general setting and post it" => sub {
     my $app1 = MT::Test::App->new;
-    $app1->get_ok({ __mode => 'cfg_prefs', blog_id => $blog->id });
+    $app1->get_ok({ __mode => 'cfg_prefs', blog_id => $site->id });
     like $app1->header_title, qr/^Sign in/, 'is a sign in screen';
     $app1->sign_in_ok({ username => 'Melody', password => 'Nelson' });
     like $app1->header_title, qr/^General Settings/, 'right destination';
 
     subtest "post the form" => sub {
-        my $res = $app1->post_form_ok({ name => 'First Site RENAMED1' });
+        my $res = $app1->post_form_ok({ name => 'my website RENAMED1' });
         like $app1->header_title, qr/^General Settings/, 'right destination';
-        my $blog_reloaded = MT->model('blog')->load($blog->id);
-        is $blog_reloaded->name, 'First Site RENAMED1', 'blog name is renamed';
+        my $site_reloaded = MT->model('blog')->load($site->id);
+        is $site_reloaded->name, 'my website RENAMED1', 'blog name is renamed';
     };
 };
 
@@ -64,25 +63,25 @@ subtest "to self profile and post it" => sub {
 
 subtest "multiple browser tabs" => sub {
     my $app1 = MT::Test::App->new;
-    $app1->get_ok({ __mode => 'cfg_prefs', blog_id => $blog->id });
+    $app1->get_ok({ __mode => 'cfg_prefs', blog_id => $site->id });
     like $app1->header_title, qr/^Sign in/, 'is a sign in screen';
     $app1->sign_in_ok({ username => 'Melody', password => 'Nelson' });
     like $app1->header_title, qr/^General Settings/, 'right destination';
 
     subtest "new brower tab" => sub {
         my $app2 = MT::Test::App->new;
-        $app2->{session} = $app1->{session}; # browser tabs share the session
-        $app2->get_ok({ __mode => 'cfg_prefs', blog_id => $blog->id });
+        $app2->{session} = $app1->{session};    # browser tabs share the session
+        $app2->get_ok({ __mode => 'cfg_prefs', blog_id => $site->id });
         like $app2->header_title, qr/^Sign in/, 'is a sign in screen';
         $app2->sign_in_ok({ username => 'Melody', password => 'Nelson' });
         like $app2->header_title, qr/^General Settings/, 'right destination';
     };
 
     subtest "original brower tab" => sub {
-        $app1->post_form_ok({ name => 'First Site RENAMED2' });
+        $app1->post_form_ok({ name => 'my website RENAMED2' });
         like $app1->header_title, qr/^General Settings/, 'right destination';
-        my $blog_reloaded = MT->model('blog')->load($blog->id);
-        is $blog_reloaded->name, 'First Site RENAMED2', 'blog name is renamed';
+        my $site_reloaded = MT->model('blog')->load($site->id);
+        is $site_reloaded->name, 'my website RENAMED2', 'blog name is renamed';
     };
 };
 
