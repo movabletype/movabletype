@@ -191,11 +191,17 @@ sub edit {
                     my $rev_obj = $rev->[3];
                     my $values = $content_data->get_values;
                     $param->{$_} = $values->{$_} for keys %$values;
-                    $param->{'revision-note'} = $rev_obj->description;
+                    $param->{'revision-note-in-status-widget'} = $rev_obj->description;
                     $param->{loaded_revision} = 1;
                 }
                 $param->{rev_number}  = $rn;
                 $param->{no_snapshot} = 1 if $app->param('no_snapshot');
+            }
+            if ( my $cur_rev = $content_data->current_revision ) {
+                my $rev = $content_data->load_revision( { rev_number => $cur_rev } );
+                if ( $rev && @$rev ) {
+                    $param->{'latest-revision-note'} = $rev->[3]->description;
+                }
             }
             $param->{rev_date} = MT::Util::format_ts(
                 '%Y-%m-%d %H:%M:%S',
