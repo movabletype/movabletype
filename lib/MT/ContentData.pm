@@ -1601,7 +1601,7 @@ sub _default_bulk_sort {
     my $cf_id     = $prop->content_field_id;
 
     my %sort_cache;
-    
+
     if (   $data_type eq 'integer'
         || $data_type eq 'float'
         || $data_type eq 'double'
