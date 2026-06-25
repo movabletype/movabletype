@@ -380,6 +380,7 @@ sub upgrade_templates {
     my $blog_class      = MT->model('blog');
     my $blog_count      = $blog_class->count({ class => '*' });
     my $installed_count = 0;
+    my %site_tmpl_mapping;
     for my $val (@$tmpl_list) {
         if (!$install) {
             if (!$val->{global}) {
@@ -408,51 +409,64 @@ sub upgrade_templates {
                 $installer->($val, 0) or return;
             }
         } else {
-            my @blog_ids_with_template = map { $_->id } $blog_class->load(
-                { class => '*' },
-                {
-                    join => MT::Template->join_on(
-                        'blog_id',
-                        \%template_terms,
-                        { unique => 1 }
-                    ),
-                    fetchonly => { id => 1 },
-                });
-            if (@blog_ids_with_template < $blog_count) {
-                my $progress_key = $opt{step} . '_' . $val->{type};
+            my @tmpl = MT::Template->load(\%template_terms, { fetch_only => ['blog_id'] });
+            my %map  = map { $_->blog_id => 1 } @tmpl;
+            delete $map{0};    # just in case
+            next if keys %map == $blog_count;   # all the sites have the template
+
+            $site_tmpl_mapping{$val->{name}} = {val => $val, map => \%map};
+        }
+    }
+
+    if (%site_tmpl_mapping) {
+                my $progress_key = $opt{step} . '_' . 'site_tmpl';
                 my $msg          = $self->translate_escape(
                     "Creating new template: '[_1]'.",
-                    MT->translate($val->{name}));
+                    join('/', map { MT->translate($_) } sort keys %site_tmpl_mapping),
+                );
+        my $offset = $opt{upgrade_templates_offset} || 0;
+        if ($offset) {
                 $self->progress(
-                    sprintf("$msg (%d%%)", (@blog_ids_with_template / $blog_count * 100)),
+                    sprintf("$msg (%d%%)", ($offset / $blog_count * 100)),
                     $progress_key
                 );
+        }
 
                 my $iter = $blog_class->load_iter({
                     class => '*',
-                    (@blog_ids_with_template ? (id => { not => \@blog_ids_with_template }) : ()),
-                });
+                }, { offset => $offset });
 
                 $blog_class->begin_work;
                 while (my $blog = $iter->()) {
-                    last if $installed_count++ == $INSTALL_TEMPLATE_BATCH_SIZE;
+                    last if $installed_count == $INSTALL_TEMPLATE_BATCH_SIZE;
                     my $current_language = MT->current_language;
+            for my $name (sort keys %site_tmpl_mapping) {
+                my $val = $site_tmpl_mapping{$name}{val};
+                my $map = $site_tmpl_mapping{$name}{map};
+                next if $map->{$blog->id};
+
+                my $p = $val->{plugin} || $mt;
+;
                     MT->set_language($blog->language);
                     local $val->{name} = $p->translate($val->{name});
                     local $val->{text} = $p->translate_templatized($val->{text});
                     MT->set_language($current_language);
-                    $installer->($val, $blog->id);
+                    $installer->($val, $blog->id) or do {
+                        $blog_class->rollback;
+                        return;
+                    };
+                $installed_count++;
+            }
+            $offset++;
                 }
                 $blog_class->commit;
 
                 if ($installed_count > $INSTALL_TEMPLATE_BATCH_SIZE) {
-                    $self->add_step('core_upgrade_templates');
+                    $self->add_step('core_upgrade_templates', upgrade_templates_offset => $offset);
                     return;
                 } else {
                     $self->progress("$msg (100%)", $progress_key);
                 }
-            }
-        }
     }
 
     if (@arch_tmpl) {
