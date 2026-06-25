@@ -12,8 +12,8 @@ require_once 'vendor/autoload.php';
  */
 require_once('lib/class.exception.php');
 
-define('VERSION', '9.000006');
-define('PRODUCT_VERSION', '9.0.6');
+define('VERSION', '9.000009');
+define('PRODUCT_VERSION', '9.0.9');
 define('DATA_API_DEFAULT_VERSION', '7');
 
 $PRODUCT_NAME = '__PRODUCT_NAME__';
@@ -38,6 +38,16 @@ define('VERSION_ID', $PRODUCT_VERSION_ID);
 
 global $Lexicon;
 $Lexicon = array();
+
+if (!function_exists('get_error_handler')) {
+    function noop_error_handler() {
+    }
+    function get_error_handler(): ?callable {
+        $handler = set_error_handler('noop_error_handler');
+        restore_error_handler();
+        return $handler;
+    }
+}
 
 class MT {
     protected $mime_types = array(
@@ -568,7 +578,7 @@ class MT {
                 $msg = "<b>Error:</b> ". $e->getMessage() ."<br>\n" .
                        "<pre>".$e->getTraceAsString()."</pre>";
 
-                return trigger_error( $msg, E_USER_WARNING);
+                return $ctx->error($msg);
             }
             header( "503 Service Unavailable" );
             return false;

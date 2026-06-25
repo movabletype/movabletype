@@ -27,6 +27,7 @@ sub authorize_url {
         scope           => 'https://www.googleapis.com/auth/analytics https://www.googleapis.com/auth/analytics.readonly',
         access_type     => 'offline',
         prompt          => 'select_account consent',
+        state           => $app->current_magic,
     );
 
     $uri->as_string;
@@ -98,11 +99,9 @@ sub refresh_access_token {
 sub get_username {
     my ($app, $ua, $token_data) = @_;
 
-    my $uri = URI->new('https://www.googleapis.com/analytics/v3/management/accounts');
+    my $uri = URI->new('https://analyticsadmin.googleapis.com/v1beta/accounts');
     $uri->query_form(
         access_token  => $token_data->{data}{access_token},
-        'max-results' => 1,
-        'start-index' => 1,
     );
 
     my $res = $ua->request(GET($uri));
@@ -117,7 +116,7 @@ sub get_username {
 
     my $data = MT::Util::from_json(MT::Util::Encode::decode('utf-8', $res->content));
 
-    return $data->{username};
+    return $data->{accounts}[0]{name};
 }
 
 sub get_profiles {
@@ -130,7 +129,7 @@ sub get_profiles {
     my $data;
 
     while (1) {
-        my $uri = URI->new('https://analyticsadmin.googleapis.com/v1alpha/accountSummaries');
+        my $uri = URI->new('https://analyticsadmin.googleapis.com/v1beta/accountSummaries');
         $uri->query_form(
             access_token => $token_data->{data}{access_token},
             'pageSize'   => $max_results,
@@ -235,7 +234,7 @@ sub get_webstream {
     my $data;
 
     while (1) {
-        my $uri = URI->new('https://analyticsadmin.googleapis.com/v1alpha/' . $parent . '/dataStreams');
+        my $uri = URI->new('https://analyticsadmin.googleapis.com/v1beta/' . $parent . '/dataStreams');
         $uri->query_form(
             access_token => $token_data->{data}{access_token},
             'pageSize'   => $max_results,

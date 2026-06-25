@@ -51,15 +51,33 @@ sub bulk_insert {
 
     my $cols = shift;
     my $rows_ref = shift;
+    my $attrs = shift || {};
 
-    my $sql = "COPY $table (" . join(',', @{$cols}) . ') from stdin';
+    if (%$attrs) {
+        my $sql = "INSERT INTO $table ("  . join(',', @{$cols}) . ") VALUES\n";
 
-    $dbh->do($sql);
-    foreach my $row (@{$rows_ref}) {
-        my $line = join("\t", map {$_ || '\N'} @{$row});
-        $dbh->pg_putline("$line\n");
+        my $one_data_row = "(" . (join ',', (('?') x @$cols)) . ")";
+        my $ph = join ",", (($one_data_row) x @$rows_ref);
+        $sql .= $ph;
+
+        my $sth = $dbh->prepare($sql);
+        my $i = 1;
+        for my $row (@$rows_ref) {
+            for (my $j = 0; $j < @$cols; $j++) {
+                $sth->bind_param($i++, $row->[$j], $attrs->{$cols->[$j]});
+            }
+        }
+        $sth->execute;
+    } else {
+        my $sql = "COPY $table (" . join(',', @{$cols}) . ') from stdin';
+
+        $dbh->do($sql);
+        foreach my $row (@{$rows_ref}) {
+            my $line = join("\t", map {$_ || '\N'} @{$row});
+            $dbh->pg_putline("$line\n");
+        }
+        return $dbh->pg_endcopy();
     }
-    return $dbh->pg_endcopy();
 }
 
 sub map_error_code {

@@ -5,9 +5,16 @@ use warnings;
 use MIME::Base64;
 use IO::File;
 use File::Temp ();
+use File::Path;
+use File::Basename;
 
 sub tempfile {
     my ( $class, %args ) = @_;
+
+    if ($args{DIR} && !-d $args{DIR}) {
+        mkpath($args{DIR});
+    }
+
     my ( $fh, $filename ) = File::Temp::tempfile(%args);
 
     $class->write( %args, fh => $fh, type => $args{SUFFIX} );
@@ -31,7 +38,12 @@ sub write {
     my ( $class, %args ) = @_;
     my $data = $class->_image_data_for(\%args);
 
-    my $fh = $args{fh} || IO::File->new( $args{file}, "w" ) or die "$!: $args{file}";
+    my $fh = $args{fh};
+    if (!$fh) {
+        my $dir = dirname($args{file});
+        mkpath($dir) unless -d $dir;
+        $fh = IO::File->new($args{file}, "w") or die "$!: $args{file}";
+    }
     binmode $fh;
     $fh->autoflush(1);
     print $fh $data;

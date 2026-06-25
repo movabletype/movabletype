@@ -11,9 +11,29 @@
   <div data-is={ type } class="collapse mt-collapse__content  { isShow }" id={ 'field-options-' + id } fieldid={ id } options={ this.options } isnew={ isNew }></div>
 
   <script>
+    isLabelField() {
+      const labelField = this.parent.labelField
+
+      if (!labelField) {
+        return false
+      }
+
+      return labelField.match(/^id:/) ?
+        (labelField == ('id:' + this.id)) : (labelField == this.unique_id)
+    }
+
     deleteField(e) {
       item = e.item
       var label = item.label ? item.label : trans('No Name');
+      if (this.isLabelField()) {
+        alert(
+          trans(
+            '"[_1]" cannot delete because using as data label field.',
+            label
+          )
+        )
+        return
+      }
       if( !confirm( trans('Do you want to delete [_1]([_2])?', label, item.typeLabel) ) ){
         return;
       }
@@ -32,6 +52,7 @@
       var options = field.gatheringData()
       newItem.options = options
       newItem.id = Math.random().toString(36).slice(-8)
+      newItem.unique_id = undefined
       var label = e.item.label
       if ( !label ) {
         label = jQuery('#content-field-block-' + e.item.id).find('[name="label"]').val()

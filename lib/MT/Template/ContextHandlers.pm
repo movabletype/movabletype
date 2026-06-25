@@ -4323,6 +4323,7 @@ sub _hdlr_app_contentfield_option_group {
      id="$type-required"
      label="<__trans phrase="Is this field required?">">
     <input ref="required" type="checkbox" class="mt-switch form-control" id="$type-required" name="required" checked={ options.required } onclick={ changeStateRequired }><label for="$type-required"><__trans phrase="Is this field required?"></label>
+    <div class="small form-text text-body-secondary hint" if={ this.parent.isLabelField() }><__trans phrase="Unchecking this required, data label field will reset to default."></div>
   </mtapp:ContentFieldOption>
 
   <mtapp:ContentFieldOption

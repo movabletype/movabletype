@@ -5,6 +5,7 @@ use base 'MT::Test::Fixture';
 
 use MT::Test::Image;
 use File::Basename qw( basename );
+use File::Spec;
 
 sub prepare_fixture {
     my $self = shift;
@@ -13,7 +14,8 @@ sub prepare_fixture {
 
     # Website
     my $website = MT::Test::Permission->make_website(
-        name => 'asset dialog website',
+        name      => 'asset dialog website',
+        site_path => $ENV{MT_TEST_ROOT},
     );
 
     # Blog
@@ -38,15 +40,16 @@ sub prepare_fixture {
 
     # Image
     my ($guard, $jpg_file) = MT::Test::Image->tempfile(
-        DIR    => $ENV{MT_TEST_ROOT},
+        DIR    => $website->site_path,
         SUFFIX => '.jpg',
     );
     close $guard;
+    my $basename = basename($jpg_file);
     my $pic1 = MT::Test::Permission->make_asset(
         class        => 'image',
         blog_id      => $website->id,
-        file_name    => basename($jpg_file),
-        file_path    => $jpg_file,
+        file_name    => $basename,
+        file_path    => File::Spec->catfile('%r', $basename),
         file_ext     => 'jpg',
         label        => 'Sample Image 1',
         description  => 'Sample Image 1',
@@ -54,8 +57,8 @@ sub prepare_fixture {
     my $pic2 = MT::Test::Permission->make_asset(
         class        => 'image',
         blog_id      => $blog->id,
-        file_name    => basename($jpg_file),
-        file_path    => $jpg_file,
+        file_name    => $basename,
+        file_path    => File::Spec->catfile('%r', $basename),
         file_ext     => 'jpg',
         label        => 'Sample Image 2',
         description  => 'Sample Image 2',

@@ -28,9 +28,10 @@ our %Requirements = (
         url   => "https://metacpan.org/pod/Archive::Zip",
     },
     "Authen::SASL" => {
-        label => "This module and its dependencies are required in order to support CRAM-MD5, DIGEST-MD5 or LOGIN SASL mechanisms.",
-        tags  => ["Mail"],
-        url   => "https://metacpan.org/pod/Authen::SASL",
+        extlib => "2.2000",
+        label  => "This module and its dependencies are required in order to support CRAM-MD5, DIGEST-MD5 or LOGIN SASL mechanisms.",
+        tags   => ["Mail"],
+        url    => "https://metacpan.org/pod/Authen::SASL",
     },
     "Cache::Memcached" => {
         label => "Cache::Memcached and a memcached server are optional. They are used to cache in-memory objects.",
@@ -196,6 +197,13 @@ our %Requirements = (
         tags  => ["ImageDriver"],
         url   => "http://www.graphicsmagick.org/perl.html",
     },
+    "Hash::Util" => {
+        dropped_in => ["amazonlinux2023"],
+        label      => "This module is shipped with perl. If missing, your perl distribution is incomplete and needs an extra package.",
+        perl_core  => 0.11,
+        perl_only  => 1,
+        url        => "https://metacpan.org/pod/Hash::Util",
+    },
     "HTML::Entities" => {
         label    => "HTML::Entities is required by CGI.pm",
         required => 1,
@@ -214,13 +222,6 @@ our %Requirements = (
         pinned => 1,
         tags   => ["HTTP"],
         url    => "https://metacpan.org/pod/HTTP::Request",
-    },
-    "Hash::Util" => {
-        dropped_in => ["amazonlinux2023"],
-        label      => "This module is shipped with perl. If missing, your perl distribution is incomplete and needs an extra package.",
-        perl_core  => 0.11,
-        perl_only  => 1,
-        url        => "https://metacpan.org/pod/Hash::Util",
     },
     "I18N::LangTags::List" => {
         dropped_in => ["amazonlinux2023"],
@@ -452,19 +453,19 @@ our %Requirements = (
         tags       => ["System", "DateTime"],
         url        => "https://metacpan.org/pod/Time::HiRes",
     },
-    "URI" => {
-        extlib  => 5.34,
-        label   => "This module is sometimes used to parse URI.",
-        tags    => ["HTTP", "URI"],
-        url     => "https://metacpan.org/pod/URI",
-        version => 5.12,
-    },
     "Unicode::UCD" => {
         dropped_in => ["amazonlinux2023"],
         label      => "This module is shipped with perl. If missing, your perl distribution is incomplete and needs an extra package.",
         perl_core  => 0.43,
         perl_only  => 1,
         url        => "https://metacpan.org/pod/Unicode::UCD",
+    },
+    "URI" => {
+        extlib  => 5.34,
+        label   => "This module is sometimes used to parse URI.",
+        tags    => ["HTTP", "URI"],
+        url     => "https://metacpan.org/pod/URI",
+        version => 5.12,
     },
     "WWW::Form::UrlEncoded::XS" => {
         label => "This module is optional; It parses the query string faster.",
@@ -582,7 +583,7 @@ our %ExtLibOnly = (
         used_in => ["MT::Util::UniqueID"],
     },
     "Data::ObjectDriver" => {
-        extlib  => 0.26,
+        extlib  => 0.27,
         url     => "https://metacpan.org/pod/Data::ObjectDriver",
         used_in => ["MT::Object"],
     },
@@ -598,6 +599,11 @@ our %ExtLibOnly = (
         perl_core  => 1.16,
         url        => "https://metacpan.org/pod/Digest::base",
         used_in    => ["Digest::SHA::PurePerl"],
+    },
+    "Digest::HMAC_MD5" => {
+        extlib  => 1.05,
+        url     => "https://metacpan.org/pod/Digest::HMAC_MD5",
+        used_in => ["Authen::SASL::Perl::DIGEST_MD5"],
     },
     "Digest::Perl::MD5" => {
         extlib  => 1.9,
@@ -760,7 +766,7 @@ our %ExtLibOnly = (
     "Text::CSV" => {
         extlib  => 2.06,
         url     => "https://metacpan.org/pod/Text::CSV",
-        used_in => ["MT::CMS::Log"],
+        used_in => ["MT::App"],
     },
     "Time::Local" => {
         extlib    => 1.35,
@@ -992,6 +998,7 @@ my %OptionalModules = map { $_ => 1 } qw(
     URI::urn::isbn
     URI::otpauth
     WWW::RobotRules::AnyDBM_File
+    Authen::SASL::Perl::GSSAPI
 );
 
 sub update_me {

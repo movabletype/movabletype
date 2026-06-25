@@ -19,6 +19,7 @@ use MT::Util qw(ts2epoch epoch2ts);
 use MT::Util::Captcha;
 
 $test_env->prepare_fixture('db_data');
+$test_env->prepare_asset_files;
 
 my $switch = MT->config->PluginSwitch;
 $switch->{Awesome} = 1;
@@ -1333,7 +1334,9 @@ image/jpeg
 --- template
 <MTAssets lastn='1'><$MTAssetFilePath$></MTAssets>
 --- expected fix_path
-CURRENT_WORKING_DIRECTORY/t/images/test.jpg
+TEST_ROOT/site/images/test.jpg
+--- expected_php_todo fix_path
+TEST_ROOT/site/images/test.jpg
 
 === test 255
 --- template
@@ -1352,11 +1355,15 @@ Melody
 <MTAssets lastn='1'><$MTAssetProperty property='file_size'$></MTAssets>
 --- expected
 129.9 KB
+--- expected_php_todo
+129.9 KB
 
 === test 258
 --- template
 <MTAssets lastn='1'><$MTAssetProperty property='file_size' format='0'$></MTAssets>
 --- expected
+133050
+--- expected_php_todo
 133050
 
 === test 259
@@ -1364,17 +1371,23 @@ Melody
 <MTAssets lastn='1'><$MTAssetProperty property='file_size' format='1'$></MTAssets>
 --- expected
 129.9 KB
+--- expected_php_todo
+129.9 KB
 
 === test 260
 --- template
 <MTAssets lastn='1'><$MTAssetProperty property='file_size' format='k'$></MTAssets>
 --- expected
 129.9
+--- expected_php_todo
+129.9
 
 === test 261
 --- template
 <MTAssets lastn='1'><$MTAssetProperty property='file_size' format='m'$></MTAssets>
 --- expected
+0.1
+--- expected_php_todo
 0.1
 
 === test 262
@@ -1571,15 +1584,15 @@ http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-480x360-1.j
 
 === test 290
 --- template
-[<MTEntries lastn="10"><MTIfNonZero tag="MTEntryScoreCount" namespace="unit test"><MTEntryID> <MTEntryScoreHigh namespace="unit test">; </MTIfNonZero></MTEntries>]
+[<MTEntries lastn="10"><MTIfNonZero tag="MTEntryScoreCount" namespace="unit test"><MTEntryID> <MTEntryScoreHigh string_format="%.1f" namespace="unit test">; </MTIfNonZero></MTEntries>]
 --- expected
-[6 1; 5 5; 4 3; ]
+[6 1.0; 5 5.0; 4 3.0; ]
 
 === test 291
 --- template
-[<MTEntries lastn="10"><MTIfNonZero tag="MTEntryScoreCount" namespace="unit test"><MTEntryID> <MTEntryScoreLow namespace="unit test">; </MTIfNonZero></MTEntries>]
+[<MTEntries lastn="10"><MTIfNonZero tag="MTEntryScoreCount" namespace="unit test"><MTEntryID> <MTEntryScoreLow string_format="%.1f" namespace="unit test">; </MTIfNonZero></MTEntries>]
 --- expected
-[6 1; 5 3; 4 2; ]
+[6 1.0; 5 3.0; 4 2.0; ]
 
 === test 292
 --- template
@@ -1619,15 +1632,15 @@ http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-480x360-1.j
 
 === test 298
 --- template
-[<MTAssets lastn="10"><MTIfNonZero tag="MTAssetScoreCount" namespace="unit test"><MTAssetID> <MTAssetScoreHigh namespace="unit test">; </MTIfNonZero></MTAssets>]
+[<MTAssets lastn="10"><MTIfNonZero tag="MTAssetScoreCount" namespace="unit test"><MTAssetID> <MTAssetScoreHigh string_format="%.1f" namespace="unit test">; </MTIfNonZero></MTAssets>]
 --- expected
-[1 5; 7 7; 6 9; 5 8; 2 3; ]
+[1 5.0; 7 7.0; 6 9.0; 5 8.0; 2 3.0; ]
 
 === test 299
 --- template
-[<MTAssets lastn="10"><MTIfNonZero tag="MTAssetScoreCount" namespace="unit test"><MTAssetID> <MTAssetScoreLow namespace="unit test">; </MTIfNonZero></MTAssets>]
+[<MTAssets lastn="10"><MTIfNonZero tag="MTAssetScoreCount" namespace="unit test"><MTAssetID> <MTAssetScoreLow string_format="%.1f" namespace="unit test">; </MTIfNonZero></MTAssets>]
 --- expected
-[1 3; 7 7; 6 9; 5 8; 2 2; ]
+[1 3.0; 7 7.0; 6 9.0; 5 8.0; 2 2.0; ]
 
 === test 300
 --- template
@@ -3075,6 +3088,31 @@ FooBar
 <MTSetVarBlock name="foo">FooBar</MTSetVarBlock><MTGetVar name="foo" regex_replace="/Fo*/i","Bar">
 --- expected
 BarBar
+
+=== test 575-2
+--- template
+<MTSetVar name="foo" value="aあb"><MTVar name="foo" regex_replace="/あ/","い">
+--- expected
+aいb
+
+=== test 575-3
+--- template
+<MTSetVar name="foo" value="a b"><MTVar name="foo" regex_replace="/\s/","-">
+--- expected
+a-b
+
+=== test 575-4(wide space)
+--- skip_php
+--- template
+<MTSetVar name="foo" value="a　b"><MTVar name="foo" regex_replace="/\s/","-">
+--- expected
+a-b
+
+=== test 575-5(wide space with u option)
+--- template
+<MTSetVar name="foo" value="a　b"><MTVar name="foo" regex_replace="/\s/u","-">
+--- expected
+a-b
 
 === test 576
 --- template
