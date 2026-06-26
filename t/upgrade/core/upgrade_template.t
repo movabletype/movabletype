@@ -143,7 +143,7 @@ subtest 'step: upgrade_templates' => sub {
         };
 
         subtest 'divisible batch size' => sub {
-            $batch_size = 8;
+            $batch_size = 4;
             $runner->();
             is $added_steps{'core_upgrade_templates'}, 3;
         };
