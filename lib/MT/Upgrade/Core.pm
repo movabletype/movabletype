@@ -436,7 +436,6 @@ sub upgrade_templates {
 
         $blog_class->begin_work;
         while (my $blog = $iter->()) {
-            last if $installed_count >= $INSTALL_TEMPLATE_BATCH_SIZE;
             my $current_language = MT->current_language;
             for my $name (sort keys %site_tmpl_mapping) {
                 my $val = $site_tmpl_mapping{$name}{val};
@@ -456,6 +455,7 @@ sub upgrade_templates {
                 $installed_count++;
             }
             $offset++;
+            last if $installed_count >= $INSTALL_TEMPLATE_BATCH_SIZE;
         }
         $blog_class->commit;
 
