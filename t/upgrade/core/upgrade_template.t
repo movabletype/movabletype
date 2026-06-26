@@ -2,7 +2,6 @@ use strict;
 use warnings;
 use utf8;
 use FindBin;
-use POSIX qw(ceil);
 use lib "$FindBin::Bin/../../lib";    # t/lib
 use Mock::MonkeyPatch;
 use Test::More;
