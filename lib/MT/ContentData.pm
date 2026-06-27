@@ -1059,8 +1059,8 @@ sub make_list_props {
                     my ( $objs, $app, $opts ) = @_;
                     my %label_cache;
                     return sort {
-                        ( $label_cache{$a->id} //= $a->label // '' ) cmp
-                        ( $label_cache{$b->id} //= $b->label // '' )
+                        ( $label_cache{$a->id} //= $a->label || '' ) cmp
+                        ( $label_cache{$b->id} //= $b->label || '' )
                     } @$objs;
                 },
                 terms => sub {
@@ -1529,9 +1529,9 @@ sub _default_bulk_sort {
     }
     else {
         @sorted_objs = sort {
-            ($sort_cache{ $a->id } //= _get_field_first_value($a->data->{$cf_id}) // '')
+            ($sort_cache{ $a->id } //= _get_field_first_value($a->data->{$cf_id}))
             cmp
-            ($sort_cache{ $b->id } //= _get_field_first_value($b->data->{$cf_id}) // '')
+            ($sort_cache{ $b->id } //= _get_field_first_value($b->data->{$cf_id}))
         } @$objs;
     }
 
