@@ -29,15 +29,18 @@ sub snippet {
     my $plugindata = GoogleAnalyticsV4::current_plugindata($app, $self->blog)
         or return q();
 
-        return <<__HTML__;
+    my $measurement_id = $plugindata->data->{measurement_id};
+
+    require MT::Util;
+    return <<"__HTML__";
 <!-- Global site tag (gtag.js) - Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=@{[ $plugindata->data->{measurement_id} ]}"></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=@{[ MT::Util::encode_html(MT::Util::encode_url($measurement_id)) ]}"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
 
-  gtag('config', '@{[ $plugindata->data->{measurement_id} ]}');
+  gtag('config', '@{[ MT::Util::encode_js($measurement_id) ]}');
 </script>
 __HTML__
 }
