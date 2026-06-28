@@ -29,7 +29,9 @@ sub snippet {
     my $plugindata = GoogleAnalyticsV4::current_plugindata($app, $self->blog)
         or return q();
 
+    # cf. https://support.google.com/analytics/answer/12270356?hl=en
     my $measurement_id = $plugindata->data->{measurement_id};
+    return '' unless $measurement_id =~ /^G\-\w+$/;
 
     require MT::Util;
     return <<"__HTML__";
