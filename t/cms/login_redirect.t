@@ -42,6 +42,7 @@ subtest "to general setting and post it" => sub {
     like $app1->header_title, qr/^General Settings/, 'right destination';
 
     subtest "post the form" => sub {
+        plan skip_all => 'Skip for Cloud.pack' if MT->instance->component('cloud');
         my $res = $app1->post_form_ok({ name => 'my website RENAMED1' });
         like $app1->header_title, qr/^General Settings/, 'right destination';
         my $site_reloaded = MT->model('blog')->load($site->id);
@@ -78,6 +79,7 @@ subtest "multiple browser tabs" => sub {
     };
 
     subtest "original brower tab" => sub {
+        plan skip_all => 'Skip for Cloud.pack' if MT->instance->component('cloud');
         $app1->post_form_ok({ name => 'my website RENAMED2' });
         like $app1->header_title, qr/^General Settings/, 'right destination';
         my $site_reloaded = MT->model('blog')->load($site->id);
