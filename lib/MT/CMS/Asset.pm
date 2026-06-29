@@ -746,20 +746,7 @@ sub complete_insert {
             $param->{'auth_pref_tag_delim'} = $delim;
         }
 
-        require MT::ObjectTag;
-        my $tags_js = MT::Util::to_json(
-            [   map { $_->name } MT->model('tag')->load(
-                    undef,
-                    {   join => [
-                            'MT::ObjectTag', 'tag_id',
-                            { blog_id => $blog_id }, { unique => 1 }
-                        ]
-                    }
-                )
-            ]
-        );
-        $tags_js =~ s!/!\\/!g;
-        $param->{tags_js} = $tags_js;
+        $param->{tags_js} = MT::Tag->get_tags_js($blog_id);
     }
 
     # XXX: useless? should always be false
@@ -2786,20 +2773,7 @@ sub dialog_edit_asset {
     $param->{'auth_pref_tag_delim'} = $tag_delim
         if $tag_delim;
 
-    require MT::ObjectTag;
-    my $tags_js = MT::Util::to_json(
-        [   map { $_->name } MT->model('tag')->load(
-                undef,
-                {   join => [
-                        'MT::ObjectTag', 'tag_id',
-                        { blog_id => $asset->blog_id }, { unique => 1 }
-                    ]
-                }
-            )
-        ]
-    );
-    $tags_js =~ s!/!\\/!g;
-    $param->{tags_js} = $tags_js;
+    $param->{tags_js} = MT::Tag->get_tags_js($asset->blog_id);
 
     $param->{return_args} = $app->make_return_args;
     $param->{saved_image} = 1
