@@ -746,6 +746,7 @@ sub complete_insert {
             $param->{'auth_pref_tag_delim'} = $delim;
         }
 
+        require MT::Tag;
         $param->{tags_js} = MT::Tag->get_tags_js($blog_id);
     }
 
