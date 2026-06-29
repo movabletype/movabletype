@@ -1299,7 +1299,7 @@ sub normal_tests_for_list {
             result => sub {
                 my @cd = MT->model('content_data')->load(
                     { content_type_id => $content_type_id, },
-                    { sort            => 'label', direction => 'descend', },
+                    { sort => 'label', direction => 'descend', },
                 );
                 +{  totalResults => scalar @cd,
                     items => MT::DataAPI::Resource->from_object( \@cd ),
@@ -1307,6 +1307,64 @@ sub normal_tests_for_list {
             },
         }
     );
+
+    test_data_api({
+        note      => 'sortBy, not logged in',
+        path      => "/v4/sites/$site_id/contentTypes/$content_type_id/data",
+        method    => 'GET',
+        params    => { sortBy => 'label' },
+        author_id => 0,
+        result    => sub {
+            my @cd = MT->model('content_data')->load({
+                    content_type_id => $content_type_id,
+                    status          => MT::ContentStatus::RELEASE(),
+                },
+                { sort => 'label', direction => 'descend', },
+            );
+            +{
+                totalResults => scalar @cd,
+                items        => MT::DataAPI::Resource->from_object(\@cd),
+            };
+        },
+    });
+
+    test_data_api({
+        skip      => 1,
+        note      => 'sortBy=content_field_XX, not logged in (undocumented)',
+        path      => "/v4/sites/$site_id/contentTypes/$content_type_id/data",
+        method    => 'GET',
+        params    => { sortBy => 'content_field_' . $single_field->id, direction => 'descend' },
+        author_id => 0,
+        result    => sub {
+            my @cd = MT->model('content_data')->load({
+                    content_type_id => $content_type_id,
+                    status          => MT::ContentStatus::RELEASE(),
+                },
+                {
+                    joins => [
+                        MT->model('content_field_index')->join_on(
+                            undef,
+                            undef,
+                            {
+                                condition => {
+                                    content_data_id  => \'= cd_id',
+                                    content_field_id => $single_field->id,
+                                    content_type_id  => $content_type_id,
+                                },
+                                direction => 'descend',
+                                sort      => 'value_varchar',
+                                type      => 'left',
+                            },
+                        )
+                    ],
+                },
+            );
+            +{
+                totalResults => scalar @cd,
+                items        => MT::DataAPI::Resource->from_object(\@cd),
+            };
+        },
+    });
 
     test_data_api({
         note      => 'Retrieve format field by not logged in user (MTC-27955)',
