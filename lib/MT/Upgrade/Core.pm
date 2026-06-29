@@ -459,8 +459,7 @@ sub upgrade_templates {
         $blog_class->commit;
 
         if ($offset < $blog_count) {
-            $self->add_step('core_upgrade_templates', upgrade_templates_offset => $offset);
-            return;
+            return { upgrade_templates_offset => $offset };
         } else {
             $self->progress("$msg (100%)", $progress_key);
         }
