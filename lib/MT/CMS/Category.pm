@@ -131,7 +131,7 @@ sub save {
     my $blog_id = $app->param('blog_id') || 0;
     my $cat;
     if ( my $moved_cat_id = $app->param('move_cat_id') ) {
-        $cat = $class->load({ id => $moved_cat_id, blog_id => $blog_id, category_set_id => 0 }) or return;
+        $cat = $class->load({ id => $moved_cat_id, blog_id => $blog_id, category_set_id => 0 }) or return $app->errtrans('Invalid request.');
         move_category($app) or return;
     }
     else {
@@ -842,7 +842,7 @@ sub move_category {
     my $blog_id     = $app->param('blog_id') || 0;
     my $move_cat_id = $app->param('move_cat_id');
     my $cat         = $class->load({ id => $move_cat_id, blog_id => $blog_id, category_set_id => 0 })
-        or return;
+        or return $app->errtrans('Invalid request.');
 
     my $new_parent_id = $app->param('move-radio') || 0;
 
@@ -850,7 +850,7 @@ sub move_category {
 
     if ($new_parent_id) {
         my $new_parent = $class->load({ id => $new_parent_id, blog_id => $blog_id, category_set_id => 0 })
-            or return;
+            or return $app->errtrans('Invalid request.');
         if ( $cat->is_ancestor($new_parent) ) {
             _adjust_ancestry( $cat, $new_parent );
         }
