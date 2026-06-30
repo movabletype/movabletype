@@ -122,6 +122,9 @@
         id="categories-category_set"
         class="custom-select form-control html5-form form-select"
         value={options.category_set}
+        onchange={(e) => {
+          options.category_set = e.currentTarget.value;
+        }}
       >
         {#each categorySets as cs}
           <option value={cs.id}>

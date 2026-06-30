@@ -97,6 +97,9 @@
       id="asset_image-allow_upload"
       name="allow_upload"
       checked={displayOptions.allow_upload}
+      onchange={(e) => {
+        options.allow_upload = e.currentTarget.checked ? 1 : 0;
+      }}
     /><label for="asset_image-allow_upload" class="form-label">
       {window.trans("Allow users to upload a new image asset?")}
     </label>

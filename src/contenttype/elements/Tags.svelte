@@ -55,6 +55,9 @@
       class="form-control w-25"
       min="0"
       value={displayOptions.min}
+      onchange={(e) => {
+        options.min = e.currentTarget.value;
+      }}
     />
   </ContentFieldOption>
 
