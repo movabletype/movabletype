@@ -54,8 +54,8 @@
   let page = $state(1);
   let pageMax = $state(1);
   let siteType: "parent_sites" | "parent_and_child_sites" | "child_sites_only" =
-    $derived("parent_and_child_sites");
-  let filterSiteName = $derived("");
+    $state("parent_and_child_sites");
+  let filterSiteName = $state("");
   let items: Array<{
     type: string;
     args: {
@@ -65,7 +65,7 @@
     };
   }> = $state([]);
   let loading = $state(false);
-  let modalRef: HTMLElement | null = $derived(null);
+  let modalRef: HTMLElement | null = $state(null);
 
   const nextPage = (): void => {
     page++;

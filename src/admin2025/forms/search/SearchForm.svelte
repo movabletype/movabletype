@@ -28,7 +28,7 @@
     isLoading,
   };
 
-  let searchContentTypeId: string = $derived("");
+  let searchContentTypeId: string = $state("");
   let searchTextRef: HTMLInputElement | null = null;
 
   $effect(() => {
