@@ -92,6 +92,8 @@
   });
 
   $effect(() => {
+    void $reactiveStore;
+
     // update sub_fields not managed in the svelte lifecycle
     updateSubFields();
 
