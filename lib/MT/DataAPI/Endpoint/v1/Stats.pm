@@ -53,15 +53,35 @@ DESCRIPTION
 sub provider {
     my ( $app, $endpoint ) = @_;
 
-    readied_provider( $app, $app->blog ) || { id => undef };
+    my $user = $app->user;
+    my $site = $app->blog or return;
+    if (!$user->is_superuser) {
+        require MT::Permission;
+        return $app->error(403) unless MT::Permission->count({
+            author_id => $user->id,
+            blog_id   => $site->id,
+        });
+    }
+
+    readied_provider($app, $site) || { id => undef };
 }
 
 sub _invoke {
     my ( $app, $endpoint ) = @_;
 
+    my $user = $app->user;
+    my $site = $app->blog or return;
+    if (!$user->is_superuser) {
+        require MT::Permission;
+        return $app->error(403) unless MT::Permission->count({
+            author_id => $user->id,
+            blog_id   => $site->id,
+        });
+    }
+
     ( my $method = ( caller 1 )[3] ) =~ s/.*:://;
 
-    my $provider = readied_provider( $app, $app->blog )
+    my $provider = readied_provider($app, $site)
         or return $app->error( 'Readied provider is not found', 404 );
 
     my $params = {
@@ -80,7 +100,7 @@ sub _invoke {
             $path;
         }
         else {
-            URI->new( $app->blog->site_url )->path;
+            URI->new($site->site_url)->path;
         }
     };
 
