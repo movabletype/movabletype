@@ -55,12 +55,6 @@ export default [...compat.extends(
             allowExpressions: true,
             allowTypedFunctionExpressions: true,
         }],
-
-        "@typescript-eslint/no-unused-vars": ["error", {
-            argsIgnorePattern: "^_",
-            varsIgnorePattern: "^_",
-        }],
-
         eqeqeq: "error",
     },
 }, {
