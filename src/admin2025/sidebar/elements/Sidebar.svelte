@@ -57,7 +57,6 @@
   });
 
   const handleMouseEnter = (): void => {
-    console.log("enter");
     if (collapsed) {
       mouseOver = true;
       handleMouseEnterLeave();
@@ -68,7 +67,6 @@
   };
 
   const handleMouseLeave = (): void => {
-    console.log("leave");
     mouseOver = false;
     handleMouseEnterLeave();
   };
