@@ -56,7 +56,12 @@ export function createReactiveStoreData(
     limit: store.limit || 0,
     page: store.page || 0,
     pageMax: store.pageMax || 0,
-    columns: store.columns || [],
+    columns: (store.columns || []).map((column) => ({
+      ...column,
+      sub_fields: (column.sub_fields || []).map((subField) => ({
+        ...subField,
+      })),
+    })),
     showColumns: store.showColumns || [],
     isLoading: store.isLoading || false,
     sortBy: store.sortBy || "",
