@@ -71,8 +71,6 @@
   let hidden = $derived($reactiveStore.count === 0);
 
   onMount(() => {
-    store.trigger("load_list");
-
     store.on(
       "refresh_view",
       (args?: { moveToPagination?: boolean; notCallListReady?: boolean }) => {
@@ -89,6 +87,8 @@
         }
       },
     );
+
+    store.trigger("load_list");
   });
 
   $effect(() => {
