@@ -1687,10 +1687,12 @@ sub save {
             $place->blog_id( $obj->blog_id );
             $place->is_primary(1);
         }
-        $place->category_id($cat_id);
-        $place->save;
-        $primary_category   = $cat_class->load($cat_id);
-        $placements_updated = 1;
+        $primary_category = $cat_class->load({ id => $cat_id, blog_id => $obj->blog_id });
+        if ($primary_category) {
+            $place->category_id($cat_id);
+            $place->save;
+            $placements_updated = 1;
+        }
     }
     else {
         if ($place) {
