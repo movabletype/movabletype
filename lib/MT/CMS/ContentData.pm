@@ -1648,12 +1648,22 @@ sub _create_temp_content_data {
     my $content_type        = $content_data->content_type;
     my $field_data          = $content_type->fields;
     my $data                = {};
+    my $convert_breaks      = {};
     for my $f (@$field_data) {
         my $content_field_type = $content_field_types->{ $f->{type} };
         $data->{ $f->{id} }
             = _get_form_data( $app, $content_field_type, $f );
-    }
+        if ( $f->{type} eq 'multi_line_text' ) {
+            my $val = $app->param('content-field-' . $f->{id} . '_convert_breaks') || '';
+            if ( $val eq '_richtext' ) {
+                $val = 'richtext';
+            }
+            $convert_breaks->{ $f->{id} } = $val;
+        }
+     }
     $content_data->data($data);
+    $content_data->convert_breaks(
+        MT::Serialize->serialize( \$convert_breaks ) );
 
     return $content_data;
 }
