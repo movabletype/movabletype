@@ -7,7 +7,7 @@
     },
     "require": {
         "adodb/adodb-php": "5.22.11",
-        "smarty/smarty": "4.5.5"
+        "smarty/smarty": "4.5.7"
     },
     "require-dev": {
         "phpunit/phpunit": "^9.5.24"
