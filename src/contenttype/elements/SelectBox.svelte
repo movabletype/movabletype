@@ -88,7 +88,7 @@
   const changeStateMultiple = (e: Event): void => {
     const target = e.target as HTMLInputElement;
     const block = jQuery(target).parents(".mt-contentfield");
-    options.multiple = target.checked;
+    options.multiple = target.checked ? 1 : 0;
     if (
       !options.multiple &&
       block.find(".values-option-table").find('input[type="checkbox"]:checked')

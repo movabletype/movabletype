@@ -35,7 +35,7 @@
       name="multiple"
       checked={displayOptions.multiple}
       onchange={(e) => {
-        options.multiple = e.currentTarget.checked;
+        options.multiple = e.currentTarget.checked ? 1 : 0;
       }}
     /><label for="tags-multiple" class="form-label">
       {window.trans("Allow users to select multiple values?")}
@@ -109,7 +109,7 @@
       name="can_add"
       checked={displayOptions.can_add}
       onchange={(e) => {
-        options.can_add = e.currentTarget.checked;
+        options.can_add = e.currentTarget.checked ? 1 : 0;
       }}
     /><label for="tags-can_add" class="form-label">
       {window.trans("Allow users to create new tags?")}

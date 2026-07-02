@@ -69,7 +69,7 @@
       name="increase_decrease_rows"
       checked={displayOptions.increase_decrease_rows}
       onchange={(e) => {
-        options.increase_decrease_rows = e.currentTarget.checked;
+        options.increase_decrease_rows = e.currentTarget.checked ? 1 : 0;
       }}
     /><label for="tables-can_increase_decrease_rows" class="form-label">
       {window.trans("Allow users to increase/decrease rows?")}
@@ -88,7 +88,7 @@
       name="increase_decrease_cols"
       checked={displayOptions.increase_decrease_cols}
       onchange={(e) => {
-        options.increase_decrease_cols = e.currentTarget.checked;
+        options.increase_decrease_cols = e.currentTarget.checked ? 1 : 0;
       }}
     /><label for="tables-can_increase_decrease_cols" class="form-label">
       {window.trans("Allow users to increase/decrease cols?")}
