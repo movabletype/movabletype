@@ -11,6 +11,7 @@ use List::Util qw(uniq);
 use File::Basename;
 
 our @CARP_NOT;
+my $content_field_types;
 
 sub prepare {
     my ($class, $spec, $objs) = @_;
@@ -21,6 +22,7 @@ sub prepare {
         $spec,
         sub {
             my ($key, $valueref) = @_;
+            return unless defined $$valueref;
             $$valueref =~ s/TEST_ROOT/$ENV{MT_TEST_ROOT}/g;
             $$valueref =~ s/MT_HOME/$ENV{MT_HOME}/g;
         },
@@ -28,6 +30,7 @@ sub prepare {
 
     $objs ||= { __first_time => 1 };
     $class->prepare_author($spec, $objs);
+    $class->prepare_group($spec, $objs);
     $class->prepare_website($spec, $objs);
     $class->prepare_blog($spec, $objs);
     $class->prepare_asset($spec, $objs);
@@ -62,6 +65,22 @@ sub _note_or_croak {
     } else {
         Test::More::note(@_);
     }
+}
+
+sub _type_label {
+    my $type = shift;
+    $content_field_types ||= MT->registry('content_field_types');
+    my $label = $content_field_types->{$type}->{label};
+    $label = $label->() if ref $label eq 'CODE';
+    $label;
+}
+
+sub _fix_fields {
+    my $fields = shift;
+    for my $field (@$fields) {
+        $field->{type_label} ||= _type_label($field->{type});
+    }
+    $fields;
 }
 
 sub prepare_author {
@@ -102,6 +121,24 @@ sub prepare_author {
     }
     if ($objs->{__first_time} and @author_names == 1) {
         $objs->{author_id} = $objs->{author}{ $author_names[0] }->id;
+    }
+}
+
+sub prepare_group {
+    my ($class, $spec, $objs) = @_;
+
+    if (ref $spec->{group} eq 'ARRAY') {
+        for my $item (@{ $spec->{group} }) {
+            my %arg = ref $item eq 'HASH' ? %$item : (name => $item);
+            if (exists $objs->{group}{ $arg{name} }) {
+                _note_or_croak("group: $arg{name} already exists");
+                next;
+            }
+            $arg{display_name} ||= $arg{name};
+            my $roles = delete $arg{roles};                        ## not for now
+            my $group = MT::Test::Permission->make_group(%arg);
+            $objs->{group}{ $group->name } = $group;
+        }
     }
 }
 
@@ -203,7 +240,15 @@ sub prepare_image {
             my $item = $spec->{image}{$name};
             if (ref $item eq 'HASH') {
                 my $blog_id = _find_blog_id($objs, $item);
-                my $file    = "$image_dir/$name";
+                my $site = _find_blog($objs, $blog_id);
+                my ($file, $path);
+                if ($site) {
+                    $file = File::Spec->catfile($site->site_path, "images/$name");
+                    $path = "%r/images/$name";
+                } else {
+                    $file = File::Spec->catfile(MT->instance->support_directory_path, "images/$name");
+                    $path = "%s/images/$name";
+                }
                 my $dir     = File::Basename::dirname($file);
                 File::Path::mkpath($dir) unless -d $dir;
                 MT::Test::Image->write(file => $file);
@@ -211,12 +256,13 @@ sub prepare_image {
                 my %args = (
                     class        => 'image',
                     blog_id      => $blog_id,
-                    url          => "%s/images/$name",
-                    file_path    => $file,
+                    url          => $path,
+                    file_path    => $path,
                     file_ext     => $info->{FileTypeExtension},
                     image_width  => $info->{ImageWidth},
                     image_height => $info->{ImageHeight},
                     mime_type    => $info->{MIMEType},
+                    label        => $name,
                     %$item,
                 );
 
@@ -273,6 +319,7 @@ sub prepare_asset {
                     url       => "%s/assets/$name",
                     file_path => $file,
                     file_ext  => $ext,
+                    label     => $name,
                     %$item,
                 );
 
@@ -424,6 +471,8 @@ sub prepare_entry {
             my $title     = $arg{title} || '(no title)';
             my @cat_names = @{ delete $arg{categories} || [] };
             my @tag_names = @{ delete $arg{tags}       || [] };
+            my @asset_names = @{ delete $arg{assets}   || [] };
+            my @image_names = @{ delete $arg{images}   || [] };
 
             my $blog_id = _find_blog_id($objs, \%arg)
                 or croak "blog_id is required: entry: $title";
@@ -461,6 +510,26 @@ sub prepare_entry {
                     tag_id            => $tag->id,
                 );
             }
+            for my $asset_name (@asset_names) {
+                my $asset = $objs->{asset}{$asset_name}
+                    or croak "unknown asset: $asset_name entry: $title";
+                MT::Test::Permission->make_objectasset(
+                    blog_id   => $blog_id,
+                    object_id => $entry->id,
+                    object_ds => 'entry',
+                    asset_id  => $asset->id,
+                );
+            }
+            for my $image_name (@image_names) {
+                my $image = $objs->{image}{$image_name}
+                    or croak "unknown image: $image_name entry: $title";
+                MT::Test::Permission->make_objectasset(
+                    blog_id   => $blog_id,
+                    object_id => $entry->id,
+                    object_ds => 'entry',
+                    asset_id  => $image->id,
+                );
+            }
         }
     }
 }
@@ -484,7 +553,9 @@ sub prepare_page {
             }
             my $title       = $arg{title} || '(no title)';
             my $folder_name = delete $arg{folder};
-            my @tag_names   = @{ delete $arg{tags} || [] };
+            my @tag_names   = @{ delete $arg{tags}   || [] };
+            my @asset_names = @{ delete $arg{assets} || [] };
+            my @image_names = @{ delete $arg{images} || [] };
 
             my $blog_id = _find_blog_id($objs, \%arg)
                 or croak "blog_id is required: page: $title";
@@ -522,6 +593,26 @@ sub prepare_page {
                     tag_id            => $tag->id,
                 );
             }
+            for my $asset_name (@asset_names) {
+                my $asset = $objs->{asset}{$asset_name}
+                    or croak "unknown asset: $asset_name entry: $title";
+                MT::Test::Permission->make_objectasset(
+                    blog_id   => $blog_id,
+                    object_id => $page->id,
+                    object_ds => 'entry',
+                    asset_id  => $asset->id,
+                );
+            }
+            for my $image_name (@image_names) {
+                my $image = $objs->{image}{$image_name}
+                    or croak "unknown image: $image_name entry: $title";
+                MT::Test::Permission->make_objectasset(
+                    blog_id   => $blog_id,
+                    object_id => $page->id,
+                    object_ds => 'entry',
+                    asset_id  => $image->id,
+                );
+            }
         }
     }
 }
@@ -537,8 +628,13 @@ sub prepare_category_set {
                 next;
             }
             my $items = $spec->{category_set}{$name};
+            my $blog_id;
+            if (ref $items eq 'HASH') {
+                $blog_id = _find_blog_id($objs, $items);
+                $items   = $items->{categories};
+            }
             if (ref $items eq 'ARRAY') {
-                my $blog_id = $objs->{blog_id}
+                $blog_id ||= $objs->{blog_id}
                     or croak "blog_id is required: category_set: $name";
                 my $set = MT::Test::Permission->make_category_set(
                     blog_id => $blog_id,
@@ -595,6 +691,7 @@ sub prepare_content_type {
                 %ct_arg     = %$item;
                 @field_spec = @{ delete $ct_arg{fields} || [] };
             }
+            my $data_label = delete $ct_arg{data_label};
 
             my $blog_id = _find_blog_id($objs, \%ct_arg)
                 or croak "blog_id is required: content_type: $ct_name";
@@ -610,7 +707,6 @@ sub prepare_content_type {
             }
 
             my @field_spec_copy = @field_spec;
-            my %cfs;
             my @fields;
             while (my ($cf_name, $cf_spec) = splice @field_spec_copy, 0, 2) {
                 my %cf_arg;
@@ -680,7 +776,12 @@ sub prepare_content_type {
                     unique_id => $cf->unique_id,
                     };
             }
-            $ct->fields(\@fields);
+            $ct->fields(_fix_fields(\@fields));
+            if ($data_label) {
+                my $cf_for_data_label = $objs->{content_type}{$ct_name}{content_field}{$data_label}
+                    or croak "unknown data_label field: $data_label";
+                $ct->data_label($cf_for_data_label->unique_id);
+            }
             $ct->save;
         }
     }
@@ -799,6 +900,10 @@ sub prepare_content_data {
                 if ($status =~ /\w+/) {
                     require MT::ContentStatus;
                     $arg{status} = MT::ContentStatus::status_int($status);
+                }
+
+                if (ref $spec->{content_type}{$ct_name} eq 'HASH' && $spec->{content_type}{$ct_name}{data_label}) {
+                    delete $arg{label};
                 }
 
                 my $cd = MT::Test::Permission->make_content_data(%arg);
@@ -927,7 +1032,9 @@ sub prepare_template {
     my ($class, $spec, $objs) = @_;
     return unless $spec->{template};
 
+    my $needs_update;
     if (ref $spec->{template} eq 'ARRAY') {
+        my @widgetsets;
         for my $item (@{ $spec->{template} }) {
             my %arg          = ref $item eq 'HASH' ? %$item : (archive_type => $item);
             my $archive_type = delete $arg{archive_type};
@@ -949,9 +1056,16 @@ sub prepare_template {
                 (my $archive_type_name = $archive_type) =~ tr/A-Z-/a-z_/;
                 $arg{name} = "tmpl_$archive_type_name";
             }
-            if (exists $objs->{template}{ $arg{name} }) {
-                _note_or_croak("template: $arg{name} already exists");
+            if (exists $objs->{template}{$blog_id}{ $arg{name} }) {
+                _note_or_croak("template: $arg{name} for site $blog_id already exists");
                 next;
+            }
+            if ($arg{type} && $arg{type} eq 'widgetset') {
+                push @widgetsets, {
+                    name       => $arg{name},
+                    blog_id    => $blog_id,
+                    modulesets => delete $arg{modulesets},
+                };
             }
 
             my $mapping = delete $arg{mapping};
@@ -968,7 +1082,7 @@ sub prepare_template {
                 %arg,
             );
 
-            $objs->{template}{ $tmpl->name } = $tmpl;
+            $objs->{template}{$blog_id}{ $tmpl->name } = $tmpl;
 
             next unless $archive_type && $mapping;
 
@@ -997,10 +1111,30 @@ sub prepare_template {
                 }
 
                 my $tmpl_map = MT::Test::Permission->make_templatemap(%$map);
+                $needs_update = 1;
 
                 push @{ $objs->{templatemap}{ $tmpl->name } ||= [] }, $tmpl_map;
 
                 $preferred = 0;
+            }
+        }
+        for my $widgetset (@widgetsets) {
+            my @modulesets;
+            for my $widget (@{ $widgetset->{modulesets} || []}) {
+                if (!exists $objs->{template}{$widgetset->{blog_id}}{$widget}) {
+                    croak("template: unknown widget $widget for site $widgetset->{blog_id} widgetset $widgetset->{name}");
+                }
+                push @modulesets, $widget;
+            }
+            my $obj = $objs->{template}{$widgetset->{blog_id}}{$widgetset->{name}};
+            $obj->modulesets(MT::Template->widgets_to_modulesets(\@modulesets, $widgetset->{blog_id}));
+            $obj->save_widgetset;
+        }
+    }
+    if ($needs_update) {
+        for my $type (qw(website blog)) {
+            for my $site (values %{$objs->{$type} || {}}) {
+                $site->refresh;    # to update archive_types
             }
         }
     }
@@ -1035,6 +1169,17 @@ sub _find_blog_id {
         return $site->id;
     }
     $arg->{blog_id} // $objs->{blog_id};
+}
+
+sub _find_blog {
+    my ($objs, $blog_id) = @_;
+    for my $site (values %{ $objs->{website} || {} }) {
+        return $site if $site->id == $blog_id;
+    }
+    for my $site (values %{ $objs->{blog} || {} }) {
+        return $site if $site->id == $blog_id;
+    }
+    MT::Blog->load($blog_id);
 }
 
 sub _find_author_id {
@@ -1077,16 +1222,32 @@ sub load_objs {
     $objs{blog_id} = $all_sites[0]->id if @all_sites == 1;
 
     if ($spec->{image}) {
-        my $image_dir  = "$ENV{MT_TEST_ROOT}/images";
-        my @file_paths = map { "$image_dir/$_" } keys %{ $spec->{image} };
-        my @images     = MT->model('image')->load({ file_path => \@file_paths });
+        my @file_paths;
+        for my $key (keys %{ $spec->{image} }) {
+            my $blog_id = _find_blog_id($spec->{image}{$key});
+            my $site    = _find_blog($blog_id);
+            if ($site) {
+                push @file_paths, "%r/images/$key";
+            } else {
+                push @file_paths, "%s/images/$key";
+            }
+        }
+        my @images = MT->model('image')->load({ file_path => \@file_paths });
         $objs{image}{ basename($_->file_path) } = $_ for @images;
     }
 
     if ($spec->{asset}) {
-        my $asset_dir  = "$ENV{MT_TEST_ROOT}/assets";
-        my @file_paths = map { "$asset_dir/$_" } keys %{ $spec->{asset} };
-        my @assets     = MT->model('asset')->load({ file_path => \@file_paths });
+        my @file_paths;
+        for my $key (keys %{ $spec->{image} }) {
+            my $blog_id = _find_blog_id($spec->{image}{$key});
+            my $site    = _find_blog($blog_id);
+            if ($site) {
+                push @file_paths, "%r/$key";
+            } else {
+                push @file_paths, "%s/$key";
+            }
+        }
+        my @assets = MT->model('asset')->load({ file_path => \@file_paths });
         $objs{ $_->class }{ basename($_->file_path) } = $_ for @assets;
     }
 
