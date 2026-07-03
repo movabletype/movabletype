@@ -124,6 +124,68 @@ $test_env->prepare_fixture(
             = join( ',', map { $_->id } ( $cat123, $cat456, $cat789 ) );
         $catset2->order($catset2_order);
         $catset2->save or die $catset2->errstr;
+
+        my $catset3 = MT::Test::Permission->make_category_set(
+            blog_id => $blog_id,
+            name    => 'catset3',
+        );
+        my $cat_parent = MT::Test::Permission->make_category(
+            blog_id         => $blog_id,
+            category_set_id => $catset3->id,
+        );
+        my $cat_child1 = MT::Test::Permission->make_category(
+            blog_id         => $blog_id,
+            category_set_id => $catset3->id,
+            label           => 'cat_child1',
+            parent          => $cat_parent->id,
+        );
+        my $cat_child2 = MT::Test::Permission->make_category(
+            blog_id         => $blog_id,
+            category_set_id => $catset3->id,
+            label           => 'cat_child2',
+            parent          => $cat_parent->id,
+        );
+        my $catset3_order = join ',', map { $_->id } ($cat_parent, $cat_child2, $cat_child1);
+        $catset3->order($catset3_order);
+        $catset3->save or dir $catset3->errstr;
+        my $content_type = MT::Test::Permission->make_content_type(
+            blog_id => $blog_id,
+            name    => 'ct1',
+        );
+        my $categories_field = MT::Test::Permission->make_content_field(
+            blog_id         => $blog_id,
+            content_type_id => $content_type->id,
+            name            => 'cat_field',
+            type            => 'categories',
+        );
+        $content_type->fields([{
+                id      => $categories_field->id,
+                order   => 1,
+                options => {
+                    can_add      => '0',
+                    category_set => $catset3->id,
+                    description  => '',
+                    display      => 'default',
+                    label        => $categories_field->name,
+                    max          => '',
+                    min          => '',
+                    multiple     => '0',
+                    required     => '0',
+                },
+                type       => $categories_field->type,
+                type_label => $categories_field->name,
+                unique_id  => $categories_field->unique_id,
+            },
+        ]);
+        $content_type->save or die $content_type->errstr;
+        my $content_data = MT::Test::Permission->make_content_data(
+            blog_id         => $blog_id,
+            content_type_id => $content_type->id,
+        );
+        $content_data->data({
+            $categories_field->id => [$cat_parent->id],
+        });
+        $content_data->save or die $content_data->errstr;
     }
 );
 
@@ -213,3 +275,11 @@ ghi
 123
 456
 789
+
+=== MTSubCategories with category_set_id context from MTContentField
+--- template
+<MTContents content_type="ct1"><MTContentField content_field="cat_field"><MTSubCategories><MTCategoryLabel>
+</MTSubCategories></MTContentField></MTContents>
+--- expected
+cat_child2
+cat_child1
