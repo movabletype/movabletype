@@ -327,7 +327,7 @@ MT.App.CategoryList = new Class( Object, {
     eventMouseOver: function( event ) {
         var target;
         if ( event.target &&
-            ( target = DOM.getFirstAncestorByAttribute( event.target, "mt:focus-hover" ) ) )
+            ( target = ( DOM.getFirstAncestorByAttribute( event.target, "data-mt-focus-hover" ) || DOM.getFirstAncestorByAttribute( event.target, "mt:focus-hover" ) ) ) )
                 DOM.addClassName( target, "focus" );
     },
 
@@ -335,7 +335,7 @@ MT.App.CategoryList = new Class( Object, {
     eventMouseOut: function( event ) {
         var target;
         if ( event.target &&
-            ( target = DOM.getFirstAncestorByAttribute( event.target, "mt:focus-hover" ) ) )
+            ( target = ( DOM.getFirstAncestorByAttribute( event.target, "data-mt-focus-hover" ) || DOM.getFirstAncestorByAttribute( event.target, "mt:focus-hover" ) ) ) )
                 DOM.removeClassName( target, "focus" );
     },
 
