@@ -348,7 +348,7 @@
               } #]
               <mt:if name="object_type" ne="page">
               [# if ( i == 0 ) { #]
-                  <li class="primary row" mt:focus-hover="1" mt:id="[#= cat.id #]">
+                  <li class="primary row" mt:focus-hover="1" data-mt-id="[#= cat.id #]">
                     <div class="col-auto"><mtapp:svgicon id="ic_fav" color="success" title="Primary"></div>
                     <strong class="col text-break px-0">[#= label #]</strong>
                     <a href="javascript:void(0);" mt:command="remove" class="delete d-md-inline-block px-3 col-auto" title="[#|h trans("Remove") #]">
@@ -356,7 +356,7 @@
                     </a>
                   </li>
               [# } else { #]
-                  <li mt:focus-hover="1" mt:id="[#= cat.id #]" class="row">
+                  <li mt:focus-hover="1" data-mt-id="[#= cat.id #]" class="row">
                   <mt:if name="object_type" eq="entry">
                     <a mt:focus-hover="1" href="javascript:void(0);" mt:command="primary" class="primary col row" title="[#|h trans("Make primary") #]">
                       <span class="col-auto">
@@ -376,7 +376,7 @@
                   </li>
               [# } #]
               <mt:else>
-              <li mt:focus-hover="1" mt:id="[#= cat.id #]">[#= label #]</li>
+              <li mt:focus-hover="1" data-mt-id="[#= cat.id #]">[#= label #]</li>
               </mt:if>
           [# } #]
           </ul>
