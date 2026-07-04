@@ -5028,8 +5028,10 @@ sub template_paths {
 
 sub _load_child_blog_ids {
     my $app = shift;
-    my ($blog_id) = @_;
+    my ($blog_id, $parent_action, $child_action) = @_;
     return unless $blog_id;
+    $parent_action //= 'administer_site';
+    $child_action  //= 'administer_site';
 
     my $blog_class = $app->model('blog');
     my $blog       = $blog_class->load($blog_id);
@@ -5039,15 +5041,14 @@ sub _load_child_blog_ids {
     return unless $user;
 
     my @ids;
-    if (  !$blog->is_blog
-        && $user->permissions( $blog->id )->can_do('administer_site') )
+    if (!$blog->is_blog
+        && (!$parent_action || $user->permissions($blog->id)->can_do($parent_action)))
     {
         my $blogs = $blog->blogs();
         if (@$blogs) {
             foreach my $b (@$blogs) {
                 push @ids, $b->id
-                    if $user->permissions( $b->id )
-                    ->can_do('administer_site');
+                    if !$child_action || $user->permissions($b->id)->can_do($child_action);
             }
         }
     }
