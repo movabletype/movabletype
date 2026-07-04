@@ -2548,7 +2548,7 @@ MT.App.CategorySelector = new Class( Component, {
             case "showAddCategory":
                 this.removeMovable();
                 /* show the add category block inside the flyout */
-                var id = DOM.getMouseEventAttribute( event, "mt:id" );
+                var id = DOM.getMouseEventAttribute( event, "data-mt-id" ) || DOM.getMouseEventAttribute( event, "mt:id" );
                 if ( id ) {
                     /* adding a sub cat/folder */
                     this.catInput.value = '';

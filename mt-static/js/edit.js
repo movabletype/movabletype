@@ -342,7 +342,7 @@ MT.App.CategoryList = new Class( Object, {
 
     eventClick: function( event ) {
         var command = app.getMouseEventCommand( event );
-        var id = DOM.getMouseEventAttribute( event, "mt:id" );
+        var id = DOM.getMouseEventAttribute( event, "data-mt-id" ) || DOM.getMouseEventAttribute( event, "mt:id" );
         var contentFieldId = DOM.getMouseEventAttribute( event, 'data-mt-content-field-id' ) || DOM.getMouseEventAttribute( event, 'mt:content-field-id' );
         var categorySelector = contentFieldId
             ? app.fieldCategorySelectors[contentFieldId]
