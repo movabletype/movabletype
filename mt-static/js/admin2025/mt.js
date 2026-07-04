@@ -1575,7 +1575,7 @@ MT.App = new Class( App, {
         if ( !form )
             return;
 
-        if ( form.getAttribute( "mt:once" ) ) {
+        if ( mtDataAttr( form, "once" ) ) {
             if ( form.submitted )
                 return event.stop();
 
@@ -1586,7 +1586,7 @@ MT.App = new Class( App, {
         if ( this.cpeList )
             this.cpeList.forEach( function( cpe ) { cpe.onSubmit() } );
 
-        if ( form.getAttribute( "mt:once" ) )
+        if ( mtDataAttr( form, "once" ) )
             form.submitted = true;
         this.stopAutoSave();
     },
@@ -1624,7 +1624,7 @@ MT.App = new Class( App, {
             if ( tagName == "button" ||
                 (tagName == "input" && (type == "button" || type == "submit" || type == "image")) ){
                 element.disabled = disable;
-                if( this.eventTarget === element && form.getAttribute( "mt:once" ) && element.getAttribute('value') ) {
+                if( this.eventTarget === element && mtDataAttr( form, "once" ) && element.getAttribute('value') ) {
                     var hiddenelm = document.createElement('input');
                     hiddenelm.type = 'hidden';
                     hiddenelm.name = element.getAttribute('name');
