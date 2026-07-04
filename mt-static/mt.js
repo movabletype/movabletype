@@ -2242,7 +2242,7 @@ MT.App.TabContainer = new Class( Object, {
     eventClick: function( event ) {
         var command = app.getMouseEventCommand( event );
         if (!event.commandElement) return;
-        var tab = event.commandElement.getAttribute( "mt:tab" );
+        var tab = mtDataAttr( event.commandElement, "tab" );
         if ( tab && command != "selectTab" )
             this.selectTab( event.attributeElement, tab );
 
@@ -2275,9 +2275,9 @@ MT.App.TabContainer = new Class( Object, {
 
     selectTab: function( element, name ) {
         log('select tab '+name);
-        var es = DOM.getElementsByAttribute( element, "mt:tab" );
+        var es = DOM.getElementsByAttribute( element, "data-mt-tab" ).concat( DOM.getElementsByAttribute( element, "mt:tab" ) );
         for ( var i = 0; i < es.length; i++ ) {
-            if ( es[ i ].getAttribute( "mt:tab" ) == name )
+            if ( mtDataAttr( es[ i ], "tab" ) == name )
                 DOM.addClassName( es[ i ], "selected-tab" );
             else
                 DOM.removeClassName( es[ i ], "selected-tab" );
