@@ -209,7 +209,7 @@ jQuery(window).on('load resize', function () {
                           </div>
                           <mt:if name="options{can_add}">
                           <div class="col-auto category-selector-add">
-                            <a href="javascript:void(0);" mt:id="[#= item.id #]" mt:content-field-id="<mt:var name="content_field_id" escape="html">" mt:command="show-add-category" class="add-category-new-link"><span class="d-inline-block"><mtapp:svgicon id="ic_add" color="success" title="Add" ></span></a>
+                            <a href="javascript:void(0);" mt:id="[#= item.id #]" data-mt-content-field-id="<mt:var name="content_field_id" escape="html">" mt:command="show-add-category" class="add-category-new-link"><span class="d-inline-block"><mtapp:svgicon id="ic_add" color="success" title="Add" ></span></a>
                           </div>
                           </mt:if>
                       </div>
@@ -310,7 +310,7 @@ jQuery(window).on('load resize', function () {
     </div>
     <div class="mt-collapse__container p-4">
       <div class="col">
-        <div mt:delegate="category-list" id="category-list-<mt:var name="content_field_id" escape="html">" class="category-list-container" mt:content-field-id="<mt:var name="content_field_id" escape="html">"></div>
+        <div mt:delegate="category-list" id="category-list-<mt:var name="content_field_id" escape="html">" class="category-list-container" data-mt-content-field-id="<mt:var name="content_field_id" escape="html">"></div>
         <input id="category-ids-<mt:var name="content_field_id" escape="js">" type="hidden" style="display: none;" name="category-<mt:var name="content_field_id" escape="html">" value="<$mt:var name="selected_category_loop" glue=","$>" <mt:var name="required"> <mt:var name="multiple"> />
       </div>
     </div>
