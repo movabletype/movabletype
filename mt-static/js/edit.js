@@ -108,16 +108,16 @@ MT.App = new Class( MT.App, {
 
                 var e = event.target;
                 var return_args = '__mode=list&_type='
-                    + e.getAttribute( "mt:object-type" )
+                    + mtDataAttr( e, "object-type" )
                     + '&blog_id='
-                    + e.getAttribute( "mt:blog-id" );
-                if (e.hasAttribute('mt:subtype'))
+                    + mtDataAttr( e, "blog-id" );
+                if (mtDataAttr( e, "subtype" ) !== null)
                     return_args += '&type='
-                        + e.getAttribute('mt:subtype');
+                        + mtDataAttr( e, "subtype" );
                 if( !doRemoveItems(
                         form,
-                        e.getAttribute( "mt:object-singular" ),
-                        e.getAttribute( "mt:object-plural" ),
+                        mtDataAttr( e, "object-singular" ),
+                        mtDataAttr( e, "object-plural" ),
                         false,
                         {
                             'return_args': return_args
