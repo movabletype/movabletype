@@ -2505,7 +2505,7 @@ MT.App.CategorySelector = new Class( Component, {
         if ( el ) {
            this.openingEl = el;
            jQuery(el).hide();
-           var closeEl = el.getAttribute( "mt:close-el" );
+           var closeEl = mtDataAttr( el, "close-el" );
            if ( closeEl )
                jQuery('#' + closeEl).show();
         }
