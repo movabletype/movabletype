@@ -928,7 +928,7 @@ MT.App = new Class( MT.App, {
 
 } );
 
-var options = jQuery('#text').attr('mt:editor-options');
+var options = ( jQuery('#text').attr('data-mt-editor-options') || jQuery('#text').attr('mt:editor-options') );
 var editor_params = {
     lineNumbers: true,
     lineWrapping: false,
