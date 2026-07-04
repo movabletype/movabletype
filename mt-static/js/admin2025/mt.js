@@ -35,6 +35,12 @@ function restore () {
         location.reload();
 }
 
+function mtDataAttr (el, name) {
+    if (!el || !el.getAttribute) return null;
+    var v = el.getAttribute('data-mt-' + name);
+    return v !== null ? v : el.getAttribute('mt:' + name);
+}
+
 function doRebuild (blogID, otherParams) {
     window.open(CMSScriptURI + '?__mode=rebuild_confirm&blog_id=' + blogID + '&' + otherParams, 'rebuild_blog_' + blogID, 'width=400,height=400,resizable=yes');
 }
