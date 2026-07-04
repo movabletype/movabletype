@@ -41,6 +41,15 @@ function mtDataAttr (el, name) {
     return v !== null ? v : el.getAttribute('mt:' + name);
 }
 
+function mtElementsByAttr (root, tag, name) {
+    var els = DOM.getElementsByTagAndAttribute(root, tag, 'data-mt-' + name);
+    var legacy = DOM.getElementsByTagAndAttribute(root, tag, 'mt:' + name);
+    for (var i = 0; i < legacy.length; i++)
+        if (els.indexOf(legacy[i]) === -1)
+            els.push(legacy[i]);
+    return els;
+}
+
 function doRebuild (blogID, otherParams) {
     window.open(CMSScriptURI + '?__mode=rebuild_confirm&blog_id=' + blogID + '&' + otherParams, 'rebuild_blog_' + blogID, 'width=400,height=400,resizable=yes');
 }
