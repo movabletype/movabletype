@@ -26,6 +26,7 @@ filters {
 my $blog_id    = 1;
 my $catset1_id = 1;
 my $catset2_id = 2;
+my $catset3_id = 3;
 
 $test_env->prepare_fixture(
     sub {
@@ -129,9 +130,15 @@ $test_env->prepare_fixture(
             blog_id => $blog_id,
             name    => 'catset3',
         );
+        $catset3->id($catset3_id);
+        $catset3->save or die $catset3->errstr;
+        if ($catset3->id != $catset3_id) {
+            die '$catset3->id is ' . ($catset3->id || 'not set');
+        }
         my $cat_parent = MT::Test::Permission->make_category(
             blog_id         => $blog_id,
             category_set_id => $catset3->id,
+            label           => 'cat_parent',
         );
         my $cat_child1 = MT::Test::Permission->make_category(
             blog_id         => $blog_id,
@@ -280,6 +287,14 @@ ghi
 --- template
 <MTContents content_type="ct1"><MTContentField content_field="cat_field"><MTSubCategories><MTCategoryLabel>
 </MTSubCategories></MTContentField></MTContents>
+--- expected
+cat_child2
+cat_child1
+
+=== MTSubCategories category="cat_parent" category_set_id="3"
+--- template
+<MTSubCategories category="cat_parent" category_set_id="3"><MTCategoryLabel>
+</MTSubCategories>
 --- expected
 cat_child2
 cat_child1
