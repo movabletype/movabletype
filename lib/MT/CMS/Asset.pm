@@ -808,6 +808,8 @@ sub complete_insert {
 }
 
 sub cancel_upload {
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::warning(since => '9.3.0');
 
     # Delete uploaded asset after upload if user cancels on asset options page
     my $app   = shift;
