@@ -1,44 +1,63 @@
 <script lang="ts">
+  import type { Snippet } from "svelte";
+
   // copied from mtapp_statusmsg.tmpl
 
-  export let blogId: string = "";
-  export let canClose: number | undefined;
-  export let canRebuild: number;
-  let className: string;
-  export { className as class };
-  export let didReplace: number;
-  export let dynamicAll: number;
-  export let hidden: string;
-  export let id: string;
-  export let noLink: string;
-  export let rebuild: string;
+  type Props = {
+    blogId: string;
+    canClose?: number;
+    canRebuild: number;
+    class?: string;
+    didReplace: number;
+    dynamicAll: number;
+    hidden: string;
+    id: string;
+    msg?: Snippet;
+    noLink: string;
+    rebuild: string;
+  };
 
-  let divProps = {};
-  $: {
-    divProps = {};
+  let {
+    blogId = "",
+    canClose,
+    canRebuild,
+    class: className = "",
+    didReplace = 0,
+    dynamicAll = 0,
+    hidden = "",
+    id = "",
+    msg,
+    noLink = "",
+    rebuild = "",
+  }: Props = $props();
+
+  let divProps: Record<string, string> = $derived.by(() => {
+    const props: Record<string, string> = {};
 
     if (id) {
-      divProps["id"] = id;
+      props["id"] = id;
     }
 
     if (className) {
-      divProps["class"] = "alert alert-" + className;
+      props["class"] = "alert alert-" + className;
     } else {
-      divProps["class"] = "alert alert-info";
+      props["class"] = "alert alert-info";
     }
 
     if (canClose) {
-      divProps["alert-dismissible"] = "";
+      props["alert-dismissible"] = "";
     }
 
     if (hidden) {
-      divProps["style"] = "display: none;";
+      props["style"] = "display: none;";
     }
 
     if (className.match(/\bwarning|\bdanger/)) {
-      divProps["role"] = "alert";
+      props["role"] = "alert";
     }
-  }
+
+    return props;
+  });
 </script>
 
 <div {...divProps}>
@@ -53,7 +72,9 @@
     </button>
   {/if}
 
-  <slot name="msg" />
+  {#if msg}
+    {@render msg()}
+  {/if}
 
   {#if didReplace}
     {#if !noLink}

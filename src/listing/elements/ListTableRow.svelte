@@ -1,14 +1,20 @@
 <script lang="ts">
-  import type * as Listing from "../../@types/listing";
+  import { getContext } from "svelte";
+  import type { ListStoreContext } from "../listStoreContext";
 
-  export let checked: boolean;
-  export let hasListActions: boolean;
-  export let hasMobilePulldownActions: boolean;
-  export let object: Array<string | number>;
-  export let store: Listing.ListStore;
+  type Props = {
+    checked: boolean;
+    hasListActions: boolean;
+    hasMobilePulldownActions: boolean;
+    object: Array<string | number>;
+  };
+  let { checked, hasListActions, hasMobilePulldownActions, object }: Props =
+    $props();
+
+  const { store, reactiveStore } = getContext<ListStoreContext>("listStore");
 
   const classes = (index: string): string => {
-    const nameClass = store.showColumns[index].id;
+    const nameClass = $reactiveStore.showColumns[index].id;
     let classes: string;
     if (store.hasMobileColumn()) {
       if (store.getMobileColumnIndex().toString() === index) {
@@ -17,7 +23,7 @@
         classes = "d-none d-md-table-cell";
       }
     } else {
-      if (store.showColumns[index].primary) {
+      if ($reactiveStore.showColumns[index].primary) {
         classes = "";
       } else {
         classes = "d-none d-md-table-cell";
@@ -48,7 +54,7 @@
           value={object[0]}
           {checked}
         />
-        <span class="custom-control-indicator" />
+        <span class="custom-control-indicator"></span>
         <label class="form-check-label" for={"select_" + object[0]}
           ><span class="visually-hidden">{window.trans("Select")}</span></label
         >

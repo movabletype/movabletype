@@ -1,9 +1,15 @@
 <script lang="ts">
-  import { onMount, createEventDispatcher } from "svelte";
+  import { onMount } from "svelte";
 
-  export let element;
-  export let event;
+  type Props = {
+    element: HTMLElement | string;
+    event: Event;
+    onready?: () => void;
+    onmessage?: (e: MessageEvent) => void;
+  };
+  let { element, event, onready, onmessage }: Props = $props();
 
+  // svelte-ignore state_referenced_locally
   if (typeof element === "string") {
     const constructor = customElements.get(element);
     if (constructor) {
@@ -15,16 +21,14 @@
     }
   }
 
-  let dispatch = createEventDispatcher();
-
   let container;
   onMount(() => {
     container.appendChild(element);
     setTimeout(() => {
       element.dispatchEvent(event);
-      dispatch("ready");
+      onready?.();
     }, 0);
   });
 </script>
 
-<div bind:this={container} on:message />
+<div bind:this={container} {onmessage}></div>

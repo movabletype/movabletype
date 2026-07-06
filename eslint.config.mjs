@@ -55,7 +55,6 @@ export default [...compat.extends(
             allowExpressions: true,
             allowTypedFunctionExpressions: true,
         }],
-
         eqeqeq: "error",
     },
 }, {

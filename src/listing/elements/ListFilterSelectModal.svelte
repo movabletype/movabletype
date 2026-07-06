@@ -1,13 +1,18 @@
 <script lang="ts">
-  import type * as Listing from "../../@types/listing";
+  import { getContext } from "svelte";
 
   import SVG from "../../svg/elements/SVG.svelte";
+  import type { ListStoreContext } from "../listStoreContext";
 
-  export let listFilterTopCreateNewFilter: (filterLabel?: string) => void;
-  export let listFilterTopUpdate: () => void;
-  export let store: Listing.ListStore;
+  type Props = {
+    listFilterTopCreateNewFilter: (filterLabel?: string) => void;
+    listFilterTopUpdate: () => void;
+  };
+  let { listFilterTopCreateNewFilter, listFilterTopUpdate }: Props = $props();
 
-  let isEditingFilter: { [key: string]: boolean } = {};
+  const { store, reactiveStore } = getContext<ListStoreContext>("listStore");
+
+  let isEditingFilter: { [key: string]: boolean } = $state({});
   let modal: HTMLDivElement;
 
   const applyFilter = (e: Event): void => {
@@ -98,7 +103,7 @@
         <div class="filter-list-block">
           <h6 class="filter-list-label">{window.trans("My Filters")}</h6>
           <ul id="user-filters" class="list-unstyled editable">
-            {#each store.filters as filter}
+            {#each $reactiveStore.filters as filter}
               {@const filterId = filter.id ?? ""}
               {#if filter.can_save?.toString() === "1"}
                 <li
@@ -107,21 +112,17 @@
                   data-mt-list-filter-label={filter.label}
                 >
                   {#if !isEditingFilter[filterId]}
-                    <!-- svelte-ignore a11y-invalid-attribute -->
-                    <a href="#" on:click={applyFilter}>
+                    <!-- svelte-ignore a11y_invalid_attribute -->
+                    <a href="#" onclick={applyFilter}>
                       {filter.label}
                     </a>
                     <div class="float-end d-none d-md-block">
-                      <!-- svelte-ignore a11y-invalid-attribute -->
-                      <a href="#" on:click={startEditingFilter}>
+                      <!-- svelte-ignore a11y_invalid_attribute -->
+                      <a href="#" onclick={startEditingFilter}>
                         [{window.trans("rename")}]
                       </a>
-                      <!-- svelte-ignore a11y-invalid-attribute -->
-                      <a
-                        href="#"
-                        class="d-inline-block"
-                        on:click={removeFilter}
-                      >
+                      <!-- svelte-ignore a11y_invalid_attribute -->
+                      <a href="#" class="d-inline-block" onclick={removeFilter}>
                         <SVG
                           title={window.trans("Remove")}
                           class="mt-icon mt-icon--sm"
@@ -141,14 +142,14 @@
                         />
                         <button
                           class="btn btn-default form-control"
-                          on:click={renameFilter}
+                          onclick={renameFilter}
                         >
                           {window.trans("Save")}
                         </button>
-                        <!-- add filter.id to argument because Event object cannot be gotten in on:click function -->
+                        <!-- add filter.id to argument because Event object cannot be gotten in onclick function -->
                         <button
                           class="btn btn-default form-control"
-                          on:click={() => stopEditingFilter(filterId)}
+                          onclick={() => stopEditingFilter(filterId)}
                         >
                           {window.trans("Cancel")}
                         </button>
@@ -159,12 +160,12 @@
               {/if}
             {/each}
             <li class="filter line d-none d-md-block">
-              <!-- svelte-ignore a11y-invalid-attribute -->
+              <!-- svelte-ignore a11y_invalid_attribute -->
               <a
                 href="#"
                 id="new_filter"
                 class="icon-mini-left addnew create-new apply-link d-md-inline-block"
-                on:click={createNewFilter}
+                onclick={createNewFilter}
               >
                 <SVG
                   title={window.trans("Add")}
@@ -182,15 +183,15 @@
               {window.trans("Built in Filters")}
             </h6>
             <ul id="built-in-filters" class="list-unstyled">
-              {#each store.filters as filter}
+              {#each $reactiveStore.filters as filter}
                 {#if filter.can_save?.toString() === "0"}
                   <li
                     class="filter line"
                     data-mt-list-filter-id={filter.id}
                     data-mt-list-filter-label={filter.label}
                   >
-                    <!-- svelte-ignore a11y-invalid-attribute -->
-                    <a href="#" on:click={applyFilter}>
+                    <!-- svelte-ignore a11y_invalid_attribute -->
+                    <a href="#" onclick={applyFilter}>
                       {filter.label}
                     </a>
                   </li>

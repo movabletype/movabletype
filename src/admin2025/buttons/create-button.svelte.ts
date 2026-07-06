@@ -1,4 +1,5 @@
 import CreateButton from "./elements/CreateButton.svelte";
+import { mount } from "svelte";
 
 type CreateButtonProps = {
   blog_id: string;
@@ -15,18 +16,25 @@ export const svelteMountCreateButton = ({
   target: HTMLElement;
   props: CreateButtonProps;
 }): void => {
-  const app = new CreateButton({
+  const state = $state({
+    blog_id: props.blog_id,
+    magicToken: props.magicToken,
+    open: props.open,
+    anchorRef: props.anchorRef,
+    containerRef: props.containerRef,
+  });
+
+  mount(CreateButton, {
     target: target,
-    props: props,
+    props: state,
   });
 
   target.addEventListener("click", (event: MouseEvent) => {
     event.preventDefault();
     if (props.anchorRef.classList.contains("open")) {
-      props.open = false;
+      state.open = false;
     } else {
-      props.open = true;
+      state.open = true;
     }
-    app.$set(props);
   });
 };
