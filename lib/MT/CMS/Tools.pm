@@ -3164,16 +3164,19 @@ sub _progress {
     my ( $str, $id ) = @_;
     if ( $id && $ids->{$id} ) {
         my $str_js = encode_js($str);
+        my $id_js  = encode_js($id);
         $app->print_encode(
-            qq{<script type="text/javascript">progress('$str_js', '$id');</script>}
+            qq{<script type="text/javascript">progress('$str_js', '$id_js');</script>}
         );
     }
     elsif ($id) {
+        my $str_html = encode_html($str);
         $ids->{$id} = 1;
-        $app->print_encode(qq{\n<span id="$id">$str</span>});
+        $app->print_encode(qq{\n<span id="$id">$str_html</span>});
     }
     else {
-        $app->print_encode("<span>$str</span>");
+        my $str_html = encode_html($str);
+        $app->print_encode("<span>$str_html</span>");
     }
 
     $app->request( 'progress_ids', $ids );
