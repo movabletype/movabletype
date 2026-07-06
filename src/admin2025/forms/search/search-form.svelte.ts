@@ -1,6 +1,7 @@
 import { fetchContentTypes } from "src/utils/fetch-content-types";
 import SearchForm from "./SearchForm.svelte";
 import { type ContentType } from "src/@types/contenttype";
+import { mount } from "svelte";
 
 type SearchFormProps = {
   blogId: string;
@@ -30,17 +31,17 @@ export function svelteMountSearchForm(
     }
   }
 
-  const searchFormProps = {
+  const state = $state({
     searchTabs: searchTabs,
     objectType: target.dataset.objectType ?? "",
     contentTypes: props.contentTypes || [],
     isLoading: false,
     ...props,
-  };
+  });
 
-  const app = new SearchForm({
+  mount(SearchForm, {
     target: target,
-    props: searchFormProps,
+    props: state,
   });
 
   const searchFormButton = target.closest(
@@ -50,8 +51,7 @@ export function svelteMountSearchForm(
     "click",
     (event: MouseEvent) => {
       event.preventDefault();
-      searchFormProps.isLoading = true;
-      app.$set(searchFormProps);
+      state.isLoading = true;
       fetchContentTypes({
         blogId: props.blogId,
         magicToken: props.magicToken,
@@ -60,20 +60,15 @@ export function svelteMountSearchForm(
           const contentTypes: ContentType[] = data.contentTypes.filter(
             (contentType) => contentType.can_search === 1,
           );
-          searchFormProps.contentTypes = contentTypes;
-          if (
-            searchFormProps.contentTypes.length > 0 &&
-            searchFormProps.objectType === ""
-          ) {
-            searchFormProps.objectType = "content_data";
+          state.contentTypes = contentTypes;
+          if (state.contentTypes.length > 0 && state.objectType === "") {
+            state.objectType = "content_data";
           }
-          searchFormProps.isLoading = false;
-          app.$set(searchFormProps);
+          state.isLoading = false;
         })
         .catch((error) => {
           console.error("Failed to fetch content types:", error);
-          searchFormProps.isLoading = false;
-          app.$set(searchFormProps);
+          state.isLoading = false;
         });
     },
     { once: true },

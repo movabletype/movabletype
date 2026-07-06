@@ -187,10 +187,10 @@ sub list_props {
             label                 => 'Private',
             display               => 'none',
             verb                  => ' ',
-            single_select_options => [
+            single_select_options => sub {[
                 { label => MT->translate('Private'),     value => 1, },
                 { label => MT->translate('Not Private'), value => 0, },
-            ],
+            ]},
         },
         page_count => {
             base        => 'tag.entry_count',

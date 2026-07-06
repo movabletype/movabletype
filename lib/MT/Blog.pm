@@ -340,7 +340,7 @@ sub list_props {
                 return @sorted;
             },
             verb                  => ' ',
-            single_select_options => [
+            single_select_options => sub {[
                 {
                     label => MT->translate('__INTEGER_FILTER_EQUAL'),
                     value => 1,
@@ -349,7 +349,7 @@ sub list_props {
                     label => MT->translate('__INTEGER_FILTER_NOT_EQUAL'),
                     value => 0,
                 },
-            ],
+            ]},
             singleton => 1,
             base      => '__virtual.single_select',
             terms     => sub {

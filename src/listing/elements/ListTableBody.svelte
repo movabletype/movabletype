@@ -1,15 +1,18 @@
 <script lang="ts">
+  import { getContext } from "svelte";
   import type * as Listing from "../../@types/listing";
 
   import ListTableRow from "./ListTableRow.svelte";
+  import type { ListStoreContext } from "../listStoreContext";
 
-  export let hasListActions: boolean;
-  export let hasMobilePulldownActions: boolean;
-  export let store: Listing.ListStore;
-  export let zeroStateLabel: string;
-
-  $: count = store.count || 0;
-  $: objects = store.objects || [];
+  type Props = {
+    hasListActions: boolean;
+    hasMobilePulldownActions: boolean;
+    zeroStateLabel: string;
+  };
+  let { hasListActions, hasMobilePulldownActions, zeroStateLabel }: Props =
+    $props();
+  const { store, reactiveStore } = getContext<ListStoreContext>("listStore");
 
   const clickRow = (e: Event): boolean | undefined => {
     store.trigger("reset_all_clicked_rows");
@@ -26,14 +29,14 @@
     const currentTarget = e.currentTarget as HTMLElement;
     /* @ts-expect-error : MT is not defined */
     if (MT.Util.isMobileView()) {
-      let $mobileColumn: JQuery<HTMLElement>;
+      let mobileColumn: JQuery<HTMLElement>;
       if (target.dataset.is === "list-table-column") {
-        $mobileColumn = jQuery(target);
+        mobileColumn = jQuery(target);
       } else {
-        $mobileColumn = jQuery(target).parents("[data-is=list-table-column]");
+        mobileColumn = jQuery(target).parents("[data-is=list-table-column]");
       }
-      if ($mobileColumn.length > 0 && $mobileColumn.find("a").length > 0) {
-        $mobileColumn.find("a")[0].click();
+      if (mobileColumn.length > 0 && mobileColumn.find("a").length > 0) {
+        mobileColumn.find("a")[0].click();
         store.trigger("click_row", currentTarget.dataset.index);
         return false;
       }
@@ -60,38 +63,44 @@
   };
 </script>
 
-{#if objects.length === 0}
+{#if !$reactiveStore.objects || $reactiveStore.objects.length === 0}
   <tr>
-    <td colspan={store.columns.length + 1}>
+    <td colspan={$reactiveStore.columns.length + 1}>
       {window.trans("No [_1] could be found.", zeroStateLabel)}
     </td>
   </tr>
 {/if}
 
-{#if store.pageMax > 1 && store.checkedAllRowsOnPage && !store.checkedAllRows}
+{#if $reactiveStore.pageMax > 1 && $reactiveStore.checkedAllRowsOnPage && !$reactiveStore.checkedAllRows}
   <tr style="background-color: #ffffff;">
-    <td colspan={objects.length + 1}>
-      <!-- svelte-ignore a11y-invalid-attribute -->
-      <a href="javascript:void(0);" on:click={checkAllRows}>
-        {window.trans("Select all [_1] items", count.toString())}
+    <td colspan={$reactiveStore.columns.length + 1}>
+      <!-- svelte-ignore a11y_invalid_attribute -->
+      <a href="javascript:void(0);" onclick={checkAllRows}>
+        {window.trans(
+          "Select all [_1] items",
+          ($reactiveStore.count ?? 0).toString(),
+        )}
       </a>
     </td>
   </tr>
 {/if}
 
-{#if store.pageMax > 1 && store.checkedAllRows}
+{#if $reactiveStore.pageMax > 1 && $reactiveStore.checkedAllRows}
   <tr class="success">
-    <td colspan={objects.length + 1}>
-      {window.trans("All [_1] items are selected", count.toString())}
+    <td colspan={$reactiveStore.columns.length + 1}>
+      {window.trans(
+        "All [_1] items are selected",
+        ($reactiveStore.count ?? 0).toString(),
+      )}
     </td>
   </tr>
 {/if}
 
-{#each objects as obj, index}
+{#each $reactiveStore.objects as obj, index}
   <!-- remove "object" property because it is not output in Riot.js -->
   <tr
     data-is="list-table-row"
-    on:click={clickRow}
+    onclick={clickRow}
     data-index={index}
     {...trProps(obj)}
   >
@@ -100,7 +109,6 @@
       {hasListActions}
       {hasMobilePulldownActions}
       object={obj.object}
-      {store}
     />
   </tr>
 {/each}

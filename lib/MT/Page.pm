@@ -123,7 +123,7 @@ sub list_props {
         },
         status => {
             base                  => 'entry.status',
-            single_select_options => [
+            single_select_options => sub {[
                 {   label => MT->translate('Draft'),
                     value => 1,
                     text  => 'Draft',
@@ -140,7 +140,7 @@ sub list_props {
                     value => 6,
                     text  => 'Unpublish',
                 },
-            ],
+            ]},
         },
         basename => { base => 'entry.basename' },
         tag      => {

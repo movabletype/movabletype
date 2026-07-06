@@ -1,6 +1,7 @@
 import observable from "@riotjs/observable";
 
 import ListTop from "./listing/elements/ListTop.svelte";
+import { mount } from "svelte";
 
 declare global {
   interface Window {
@@ -19,7 +20,7 @@ function getListTopTarget(): Element {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function svelteMountListTop(props: any): void {
-  new ListTop({
+  mount(ListTop, {
     target: getListTopTarget(),
     props: props,
   });

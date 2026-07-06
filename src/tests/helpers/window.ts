@@ -11,3 +11,29 @@ Object.defineProperty(window, "matchMedia", {
     dispatchEvent: vi.fn(),
   })),
 });
+
+Object.defineProperty(window, "ScriptURI", {
+  writable: true,
+  value: "/cgi-bin/mt.cgi",
+});
+
+Object.defineProperty(window, "CMSScriptURI", {
+  writable: true,
+  value: "/cgi-bin/mt.cgi",
+});
+
+Object.defineProperty(window, "StaticURI", {
+  writable: true,
+  value: "/mt-static/",
+});
+
+Object.defineProperty(window, "trans", {
+  writable: true,
+  value: vi.fn((str: string, ...args: string[]) => {
+    let result = str;
+    args.forEach((arg, i) => {
+      result = result.replace(`[_${i + 1}]`, arg);
+    });
+    return result;
+  }),
+});
