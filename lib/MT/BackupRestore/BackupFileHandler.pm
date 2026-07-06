@@ -65,7 +65,7 @@ sub start_element {
         my $schema = $attrs->{'{}schema_version'}->{Value};
 
 #if (('ignore' ne $self->{schema_version}) && ($schema > $self->{schema_version})) {
-        if ( $schema != $self->{schema_version} ) {
+        if ( $schema !~ /^[0-9.]+$/ or $schema != $self->{schema_version} ) {
             $self->{critical} = 1;
             my $message = MT->translate(
                 'The uploaded exported manifest file was created with Movable Type, but the schema version ([_1]) differs from the one used by this system ([_2]).  You should not import this exported file to this version of Movable Type.',
