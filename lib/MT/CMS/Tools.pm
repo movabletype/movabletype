@@ -3066,7 +3066,7 @@ sub restore_upload_manifest {
     $assets_json = encode_url( MT::Util::to_json($assets) )
         if scalar(@$assets) > 0;
     $param->{files}    = join( ',', @$files );
-    $param->{assets}   = $assets_json;
+    $param->{assets}   = $assets_json // '';
     $param->{filename} = $file_next;
     $param->{last}     = scalar(@$files) ? 0 : ( scalar(@$assets) ? 0 : 1 );
     $param->{open_dialog}    = 1;
