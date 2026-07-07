@@ -3171,8 +3171,9 @@ sub _progress {
     }
     elsif ($id) {
         my $str_html = encode_html($str);
+        my $id_html  = encode_html($id);
         $ids->{$id} = 1;
-        $app->print_encode(qq{\n<span id="$id">$str_html</span>});
+        $app->print_encode(qq{\n<span id="$id_html">$str_html</span>});
     }
     else {
         my $str_html = encode_html($str);
