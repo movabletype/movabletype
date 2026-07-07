@@ -2008,7 +2008,7 @@ MT.App.Resizer = new Class( Object, {
 
         this.reset();
 
-        this.target = event.attributeElement.getAttribute( "mt:target" );
+        this.target = mtDataAttr( event.attributeElement, "target" );
 
         /* x or y locking */
         var lock = event.attributeElement.getAttribute( "mt:lock" );
