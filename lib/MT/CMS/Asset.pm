@@ -387,6 +387,10 @@ sub asset_userpic {
         $asset = $app->model('asset')->lookup($id);
     }
 
+    if (!$asset || $asset->blog_id != 0 || !$asset->isa('MT::Asset::Image')) {
+        return $app->errtrans('Invalid request.');
+    }
+
     my $user_id = $param->{user_id} || $app->param('user_id');
     my $user;
     if ($user_id) {
@@ -398,7 +402,7 @@ sub asset_userpic {
                 # everthing is ok
             } elsif ( $user->id != $appuser->id ) {
                 return $app->permission_denied();
-            } elsif ($asset->created_by != $user_id && !$user->permissions($asset->blog_id)->can_do('edit_assets') ) {
+            } elsif ($asset->created_by != $user->id) {
                 return $app->permission_denied();
             }
 
