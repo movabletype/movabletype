@@ -3066,7 +3066,7 @@ sub restore_upload_manifest {
     $assets_json = encode_url( MT::Util::to_json($assets) )
         if scalar(@$assets) > 0;
     $param->{files}    = join( ',', @$files );
-    $param->{assets}   = $assets_json;
+    $param->{assets}   = $assets_json // '';
     $param->{filename} = $file_next;
     $param->{last}     = scalar(@$files) ? 0 : ( scalar(@$assets) ? 0 : 1 );
     $param->{open_dialog}    = 1;
@@ -3164,16 +3164,20 @@ sub _progress {
     my ( $str, $id ) = @_;
     if ( $id && $ids->{$id} ) {
         my $str_js = encode_js($str);
+        my $id_js  = encode_js($id);
         $app->print_encode(
-            qq{<script type="text/javascript">progress('$str_js', '$id');</script>}
+            qq{<script type="text/javascript">progress('$str_js', '$id_js');</script>}
         );
     }
     elsif ($id) {
+        my $str_html = encode_html($str);
+        my $id_html  = encode_html($id);
         $ids->{$id} = 1;
-        $app->print_encode(qq{\n<span id="$id">$str</span>});
+        $app->print_encode(qq{\n<span id="$id_html">$str_html</span>});
     }
     else {
-        $app->print_encode("<span>$str</span>");
+        my $str_html = encode_html($str);
+        $app->print_encode("<span>$str_html</span>");
     }
 
     $app->request( 'progress_ids', $ids );
