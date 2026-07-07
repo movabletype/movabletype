@@ -672,12 +672,18 @@ sub complete_insert {
     }
     return $app->errtrans('Invalid request.') unless $asset;
 
+    require MT::Blog;
+    my $blog = $app->blog or return $app->errtrans( "Cannot load blog #[_1].", $blog_id );
+    my %blog_ids;
+    if ( !$blog->is_blog ) {
+        %blog_ids = map { $_->id => 1 } @{ $blog->blogs };
+    }
+    $blog_ids{$blog_id} = 1;
+    return $app->errtrans('Invalid request.') unless defined $blog_ids{ $asset->blog_id };
+
     $args{is_image} = $asset->isa('MT::Asset::Image') ? 1 : 0
         unless defined $args{is_image};
 
-    require MT::Blog;
-    my $blog = $asset->blog
-        or return $app->errtrans( "Cannot load blog #[_1].", $blog_id );
     my $perms = $app->permissions
         or return $app->errtrans('No permissions');
 
@@ -3241,6 +3247,14 @@ sub insert_asset {
     return $app->permission_denied()
         unless $app->can_do('insert_asset');
 
+    my $blog_id = $app->param('blog_id');
+    my $blog    = $app->blog or return $app->errtrans( "Cannot load blog #[_1].", $blog_id );
+    my %blog_ids;
+    if ( !$blog->is_blog ) {
+        %blog_ids = map { $_->id => 1 } @{ $blog->blogs };
+    }
+    $blog_ids{$blog_id} = 1;
+
     require MT::Asset;
     my $text;
     my $assets;
@@ -3251,6 +3265,9 @@ sub insert_asset {
     elsif ( $app->param('direct_asset_insert') ) {
         $assets = $param->{assets};
         foreach my $a (@$assets) {
+            return $app->errtrans('Invalid request.')
+                unless defined $blog_ids{ $a->blog_id };
+
             my %param;
             $param{wrap_text} = 1;
             $param{new_entry} = $app->param('new_entry') ? 1 : 0;
@@ -3282,6 +3299,7 @@ sub insert_asset {
                 unless $id;
             my $asset = MT->model('asset')->load($id)
                 or return $app->errtrans( 'Cannot load asset #[_1]', $id );
+            return $app->errtrans('Invalid request.') unless defined $blog_ids{ $asset->blog_id };
             my %param;
             foreach my $k ( keys %$item ) {
                 my $name = $k;
