@@ -148,7 +148,7 @@ h1.dialog-title {
 <fieldset class="mb-3 text-center">
   <input type="file" id="file" name="file"<mt:if name="can_multi"> multiple="multiple"</mtif> style="display: none;">
   <a href="javascript:void(0)" id="open-file-dialog" class="d-none d-md-inline-block">
-    <img src="<mt:var name="static_uri">images/ic_addfiles.svg">
+    <img src="<mt:var name="static_uri">images/ic_addfiles.svg" alt="">
   <mt:if name="can_multi">
     <span><__trans phrase="Choose files to upload or drag files."></span>
   <mt:else>
@@ -157,7 +157,7 @@ h1.dialog-title {
   </a>
 
   <a href="javascript:void(0)" id="open-file-dialog-for-mobile" class="d-inline-block d-md-none">
-    <img src="<mt:var name="static_uri">images/ic_addfiles.svg"><br>
+    <img src="<mt:var name="static_uri">images/ic_addfiles.svg" alt=""><br>
   <mt:if name="can_multi">
     <span><__trans phrase="Choose files to upload."></span>
   <mt:else>
