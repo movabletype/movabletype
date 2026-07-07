@@ -1507,7 +1507,7 @@ MT.App = new Class( App, {
                 forms[ i ].getElementsByTagName( "textarea" )
             );
             for ( var j = 0; j < es.length; j++ ) {
-                if ( es[ j ].getAttribute && es[ j ].getAttribute( "mt:watch-change" ) ) {
+                if ( mtDataAttr( es[ j ], "watch-change" ) ) {
                     log('adding watcher to '+es[ j ].name);
                     DOM.addEventListener( es[ j ], "change", this.getIndirectEventListener( "setDirty" ) );
                 }
@@ -2797,7 +2797,7 @@ MT.App.CategorySelector = new Class( Component, {
         }
         ids.forEach( function (id) {
             var input = list.getItem( id ).getElementsByTagName( 'input' );
-            if ( input.length > 0 && input[0].hasAttribute( 'mt:watch-change' ) ) {
+            if ( input.length > 0 && mtDataAttr( input[0], "watch-change" ) !== null ) {
                 log( 'found dirty form' );
                 (app.getIndirectMethod( 'setDirty' ))();
             }
