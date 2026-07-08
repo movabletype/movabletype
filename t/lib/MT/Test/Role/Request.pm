@@ -61,18 +61,9 @@ sub post_ok {
 
 sub sign_in_ok {
     my ($self, $params) = @_;
+    local $ENV{MT_TEST_SIGNIN_MANUALLY} = 1;
     my $res = $self->post_form_ok($params);
-    my $sess_id;
-    if ($res->is_success && (my $cookies = $res->headers->{'set-cookie'})) {
-        require CGI::Cookie;
-        my %cookie = CGI::Cookie->parse(ref($cookies) eq 'ARRAY' ? $cookies->[-1] : $cookies);
-        if ($sess_id = (split(/::/, $cookie{mt_user}->value))[1]) {
-            my $author  = MT->model('author')->load({ name => $params->{username} });
-            $self->{user}    = $author;
-            $self->{session} = $sess_id;
-        }
-    }
-    ok $sess_id, 'sign in succeeded';
+    ok $self->{session}, 'sign in succeeded';
     $res;
 }
 
