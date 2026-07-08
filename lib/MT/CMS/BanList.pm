@@ -37,16 +37,20 @@ sub can_delete {
 sub save_filter {
     my $eh    = shift;
     my ($app) = @_;
-    my $ip    = $app->param('ip');
+
+    # Saving banlist from the system scope list is not supported.
+    my $blog_id = $app->param('blog_id') or return $eh->error('Invalid request');
+
+    # Updating banlist is not supported.
+    my $id = $app->param('id');
+    return $eh->error('Invalid request') if $id;
+
+    my $ip = $app->param('ip');
     $ip =~ s/(^\s+|\s+$)//g;
     return $eh->error('empty') if ( '' eq $ip );
-    my $blog_id = $app->param('blog_id');
-    require MT::IPBanList;
-    my $existing
-        = MT::IPBanList->load( { 'ip' => $ip, 'blog_id' => $blog_id } );
-    my $id = $app->param('id') || 0;
 
-    if ( $existing && ( !$id || $existing->id != $id ) ) {
+    require MT::IPBanList;
+    if (MT::IPBanList->exist({ 'ip' => $ip, 'blog_id' => $blog_id })) {
         return $eh->error('duplicated');
     }
     return 1;
