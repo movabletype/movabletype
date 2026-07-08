@@ -21,8 +21,17 @@ sub can_save {
 }
 
 sub can_delete {
-    my ( $eh, $app, $id ) = @_;
-    return $app->can_do('delete_banlist');
+    my ($eh, $app, $obj) = @_;
+    my $user = $app->user or return;
+    return 1 if $user->is_superuser;
+
+    # no system scope for non-superuser
+    my $blog_id = $app->param('blog_id') or return;
+    if ($obj && !ref $obj) {
+        $obj = MT->model('ipbanlist')->load($obj) or return;
+    }
+    return if $obj && $obj->blog_id != $blog_id;
+    return $user->permissions($blog_id)->can_do('delete_banlist');
 }
 
 sub save_filter {
