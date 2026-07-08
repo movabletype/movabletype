@@ -9,7 +9,14 @@ use strict;
 use warnings;
 
 sub can_save {
-    my ( $eh, $app, $id ) = @_;
+    my ($eh, $app, $obj) = @_;
+
+    # no system scope
+    my $blog_id = $app->param('blog_id') or return;
+    if ($obj && !ref $obj) {
+        $obj = MT->model('ipbanlist')->load($obj) or return;
+    }
+    return if $obj && $obj->blog_id != $blog_id;
     return $app->can_do('save_banlist');
 }
 
