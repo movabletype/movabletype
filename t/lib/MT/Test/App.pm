@@ -138,6 +138,15 @@ sub request {
 
     my $content_type = $res->headers->content_type;
 
+    if ($ENV{MT_TEST_SIGNIN_MANUALLY} && (my $cookies = $res->headers->{'set-cookie'})) {
+        require CGI::Cookie;
+        my %cookie = CGI::Cookie->parse(ref($cookies) eq 'ARRAY' ? $cookies->[-1] : $cookies);
+        if ($cookie{mt_user}) {
+            $self->{user}    = MT->model('author')->load({ name => $params->{username} });
+            $self->{session} = (split(/::/, $cookie{mt_user}->value))[1];
+        }
+    }
+
     # redirect?
     my $location;
     if ($res->header('Location')) {
