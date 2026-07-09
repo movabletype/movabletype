@@ -385,14 +385,14 @@
   /* ]]> */
   </script>
 <mt:if name="object_type" eq="page">
-  <div mt:delegate="category-list" id="category-list"></div>
+  <div data-mt-delegate="category-list" id="category-list"></div>
   <a href="javascript:void(0);" class="change-folder-link" mt:command="open-category-selector" title="<__trans phrase="Change Folder">">
     <__trans phrase="Change Folder"/>
   </a>
 </mt:if>
 <mt:include name="include/category_selector.tmpl">
 <mt:if name="object_type" eq="entry">
-  <div mt:delegate="category-list" id="category-list" class="mt-3"></div>
+  <div data-mt-delegate="category-list" id="category-list" class="mt-3"></div>
 </mt:if>
   <input id="category-ids" type="hidden" name="category_ids" value="<$mt:var name="selected_category_loop" glue=","$>" />
 </mtapp:setting>
@@ -1621,7 +1621,7 @@ div.mce-notification-error {
     <mt:section id="text">
     <div id="text-field" class="text-field mod field mb-5">
       <div id="editor">
-        <div id="editor-header" class="editor-header" mt:delegate="tab-container">
+        <div id="editor-header" class="editor-header" data-mt-delegate="tab-container">
           <div class="tab selected-tab" mt:command="set-editor-content" mt:tab="content">
             <label class="form-label"><a href="javascript:void(0);" tabindex="-1"><__trans phrase="Body"></a></label>
           </div>
