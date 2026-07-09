@@ -262,12 +262,12 @@ subtest 'delete the newly-created entry' => sub {
 
     my $form = $app->form;
     my ($input)
-        = grep { ( $_->{'mt:command'} || '' ) eq 'do-remove-items' }
+        = grep { ( $_->{'data-mt-command'} // $_->{'mt:command'} || '' ) eq 'do-remove-items' }
         $form->find_input( undef, 'submit' );
     my %return_args = (
         __mode  => 'list',
-        _type   => $input->{'mt:object-type'},
-        blog_id => $input->{'mt:blog-id'},
+        _type   => $input->{'data-mt-object-type'} // $input->{'mt:object-type'},
+        blog_id => $input->{'data-mt-blog-id'} // $input->{'mt:blog-id'},
     );
 
     $app->post_form_ok(
@@ -572,12 +572,12 @@ subtest 'delete the newly-created entry with the same date' => sub {
 
     my $form = $app->form;
     my ($input)
-        = grep { ( $_->{'mt:command'} || '' ) eq 'do-remove-items' }
+        = grep { ( $_->{'data-mt-command'} // $_->{'mt:command'} || '' ) eq 'do-remove-items' }
         $form->find_input( undef, 'submit' );
     my %return_args = (
         __mode  => 'list',
-        _type   => $input->{'mt:object-type'},
-        blog_id => $input->{'mt:blog-id'},
+        _type   => $input->{'data-mt-object-type'} // $input->{'mt:object-type'},
+        blog_id => $input->{'data-mt-blog-id'} // $input->{'mt:blog-id'},
     );
 
     $app->post_form_ok(
@@ -757,13 +757,13 @@ subtest 'delete the newly-created content data' => sub {
 
     my $form = $app->form;
     my ($input)
-        = grep { ( $_->{'mt:command'} || '' ) eq 'do-remove-items' }
+        = grep { ( $_->{'data-mt-command'} // $_->{'mt:command'} || '' ) eq 'do-remove-items' }
         $form->find_input( undef, 'submit' );
     my %return_args = (
         __mode  => 'list',
-        _type   => $input->{'mt:object-type'},
-        type    => $input->{'mt:subtype'},
-        blog_id => $input->{'mt:blog-id'},
+        _type   => $input->{'data-mt-object-type'} // $input->{'mt:object-type'},
+        type    => $input->{'data-mt-subtype'} // $input->{'mt:subtype'},
+        blog_id => $input->{'data-mt-blog-id'} // $input->{'mt:blog-id'},
     );
 
     $app->post_form_ok(
@@ -1096,13 +1096,13 @@ subtest 'delete the newly-created content data with the same date' => sub {
 
     my $form = $app->form;
     my ($input)
-        = grep { ( $_->{'mt:command'} || '' ) eq 'do-remove-items' }
+        = grep { ( $_->{'data-mt-command'} // $_->{'mt:command'} || '' ) eq 'do-remove-items' }
         $form->find_input( undef, 'submit' );
     my %return_args = (
         __mode  => 'list',
-        _type   => $input->{'mt:object-type'},
-        type    => $input->{'mt:subtype'},
-        blog_id => $input->{'mt:blog-id'},
+        _type   => $input->{'data-mt-object-type'} // $input->{'mt:object-type'},
+        type    => $input->{'data-mt-subtype'} // $input->{'mt:subtype'},
+        blog_id => $input->{'data-mt-blog-id'} // $input->{'mt:blog-id'},
     );
 
     $app->post_form_ok(
