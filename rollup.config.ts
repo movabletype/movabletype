@@ -81,5 +81,6 @@ const mtStaticConfig = (inputfile) => {
 export default [
   srcConfig("src/contenttype.ts"),
   srcConfig("src/listing.ts"),
+  srcConfig("src/template-editor/codemirror6/index.ts"),
   ...mtStaticInputFiles.map(mtStaticConfig),
 ];
