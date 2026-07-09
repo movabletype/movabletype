@@ -351,14 +351,14 @@
                   <li class="primary row" data-mt-focus-hover="1" data-mt-id="[#= cat.id #]">
                     <div class="col-auto"><mtapp:svgicon id="ic_fav" color="success" title="Primary"></div>
                     <strong class="col text-break px-0">[#= label #]</strong>
-                    <a href="javascript:void(0);" mt:command="remove" class="delete d-md-inline-block px-3 col-auto" title="[#|h trans("Remove") #]">
+                    <a href="javascript:void(0);" data-mt-command="remove" class="delete d-md-inline-block px-3 col-auto" title="[#|h trans("Remove") #]">
                       <mtapp:svgicon id="ic_caution" color="danger" title="Remove">
                     </a>
                   </li>
               [# } else { #]
                   <li data-mt-focus-hover="1" data-mt-id="[#= cat.id #]" class="row">
                   <mt:if name="object_type" eq="entry">
-                    <a data-mt-focus-hover="1" href="javascript:void(0);" mt:command="primary" class="primary col row" title="[#|h trans("Make primary") #]">
+                    <a data-mt-focus-hover="1" href="javascript:void(0);" data-mt-command="primary" class="primary col row" title="[#|h trans("Make primary") #]">
                       <span class="col-auto">
                         <mtapp:svgicon id="ic_fav" title="Primary" color="success">
                       </span>
@@ -368,7 +368,7 @@
                       <div class="col text-break px-0">[#= label #]</div>
                     </a>
                   </mt:if>
-                    <a data-mt-focus-hover="1" href="javascript:void(0);" mt:command="remove" class="delete d-md-inline-block px-3 col-auto" title="[#|h trans("Remove") #]">
+                    <a data-mt-focus-hover="1" href="javascript:void(0);" data-mt-command="remove" class="delete d-md-inline-block px-3 col-auto" title="[#|h trans("Remove") #]">
                       <span>
                         <mtapp:svgicon id="ic_caution" color="danger" title="Remove">
                       </span>
@@ -385,7 +385,7 @@
   </script>
 <mt:if name="object_type" eq="page">
   <div data-mt-delegate="category-list" id="category-list"></div>
-  <a href="javascript:void(0);" class="change-folder-link" mt:command="open-category-selector" title="<__trans phrase="Change Folder">">
+  <a href="javascript:void(0);" class="change-folder-link" data-mt-command="open-category-selector" title="<__trans phrase="Change Folder">">
     <__trans phrase="Change Folder"/>
   </a>
 </mt:if>
@@ -794,7 +794,7 @@
 <div class="text-end delete-action mt-4 d-none d-md-block">
   <a
      href="javascript:void(0)"
-     mt:command="do-remove-items"
+     data-mt-command="do-remove-items"
      mt:object-singular="<mt:var name="object_label" lower_case="1" escape="html">"
      mt:object-plural="<mt:var name="object_label_plural" lower_case="1" escape="html">"
      mt:object-type="<mt:var name="object_type" escape="html">" mt:blog-id="<mt:var name="blog_id">"
@@ -808,7 +808,7 @@
 <div class="row delete-action d-md-none mt-4">
   <div class="col">
     <button class="btn__mobile btn-danger delete mx-1"
-      mt:command="do-remove-items"
+      data-mt-command="do-remove-items"
       mt:object-singular="<mt:var name="object_label" lower_case="1" escape="html">"
       mt:object-plural="<mt:var name="object_label_plural" lower_case="1" escape="html">"
       mt:object-type="<mt:var name="object_type" escape="html">" mt:blog-id="<mt:var name="blog_id">"
@@ -837,10 +837,10 @@
 <div id="category-field-wrapper"<mt:unless name="disp_prefs_show_category"> style="display: none;"</mt:unless>>
 <mt:if name="object_type" eq="entry">
   <mt:setvarblock name="header_action">
-  <a href="javascript:void(0)" class="float-end category-toggle-link toggle-link" id="open-category-selector1" mt:command="open-category-selector" mt:close-el="close-category-selector1" title="<__trans phrase="Add category">">
+  <a href="javascript:void(0)" class="float-end category-toggle-link toggle-link" id="open-category-selector1" data-mt-command="open-category-selector" mt:close-el="close-category-selector1" title="<__trans phrase="Add category">">
     <__trans phrase="edit"/>
   </a>
-  <a href="javascript:void(0)" class="float-end category-toggle-link toggle-link" style="display: none;" mt:command="close-category-selector" id="close-category-selector1">
+  <a href="javascript:void(0)" class="float-end category-toggle-link toggle-link" style="display: none;" data-mt-command="close-category-selector" id="close-category-selector1">
     <__trans phrase="close">
   </a>
   </mt:setvarblock>
@@ -1605,10 +1605,10 @@ div.mce-notification-error {
     <div id="text-field" class="text-field mod field mb-5">
       <div id="editor">
         <div id="editor-header" class="editor-header" data-mt-delegate="tab-container">
-          <div class="tab selected-tab" mt:command="set-editor-content" mt:tab="content">
+          <div class="tab selected-tab" data-mt-command="set-editor-content" mt:tab="content">
             <label class="form-label"><a href="javascript:void(0);" tabindex="-1"><__trans phrase="Body"></a></label>
           </div>
-          <div class="tab" mt:command="set-editor-extended" mt:tab="extended">
+          <div class="tab" data-mt-command="set-editor-extended" mt:tab="extended">
             <label class="form-label"><a href="javascript:void(0);" tabindex="-1"><__trans phrase="Extended"></a></label>
           </div>
         </div>
