@@ -517,7 +517,7 @@ Component.Delegator = {
     
     
     delegateEvent: function( event, eventName ) {
-        var delegate = DOM.getMouseEventAttribute( event, this.NAMESPACE + ":delegate" );
+        var delegate = DOM.getMouseEventAttribute( event, "data-" + this.NAMESPACE + "-delegate" ) || DOM.getMouseEventAttribute( event, this.NAMESPACE + ":delegate" );
             
         if ( !delegate ) {
             if ( this.delegateListeners && this.delegateListeners.hasOwnProperty( eventName ) )
