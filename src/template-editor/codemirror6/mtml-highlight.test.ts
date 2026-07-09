@@ -113,6 +113,12 @@ describe("mtmlLanguage (CSS)", () => {
 });
 
 describe("mtmlLanguage (JavaScript)", () => {
+  it("keeps a regexp intact when MTML contains a slash", () => {
+    const tokens = tokenize("javascript", '/<MT:Foo attr="/">/.test("x");');
+    const re = tokens.find((t) => t.name === "string.special");
+    expect(re?.text).toBe('/<MT:Foo attr="/">/');
+  });
+
   it("keeps a string with MTML inside intact", () => {
     const tokens = tokenize("javascript", 'var s = "<$mt:val$>";');
     const str = tokens.find((t) => t.name === "string");
