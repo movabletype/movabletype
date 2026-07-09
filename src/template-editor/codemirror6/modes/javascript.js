@@ -1,6 +1,7 @@
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: https://codemirror.net/LICENSE
 // Copied from @codemirror/legacy-modes 6.5.3 (mode/javascript.js)
+// Modified for MT: added MTML tag handling. Search this file for "MT patch".
 
 function mkJavaScript(parserConfig) {
   var statementIndent = parserConfig.statementIndent;
@@ -131,6 +132,14 @@ function mkJavaScript(parserConfig) {
         return ret("jsonld-keyword", "meta");
       }
       while (!stream.eol()) {
+        // start MT patch: skip MT tags so their quotes do not break the string
+        if (
+          stream.match(
+            /^<\$?(MT:?)((?:<[^>]+?>|"(?:<[^>]+?>|.)*?"|'(?:<[^>]+?>|.)*?'|.)+?)([-]?)[\$\/]?>|^<\/MT[^>]+>/i,
+          )
+        )
+          continue;
+        // end MT patch:
         next = stream.next();
         if (next == quote && !escaped) break;
         escaped = !escaped && next == "\\";

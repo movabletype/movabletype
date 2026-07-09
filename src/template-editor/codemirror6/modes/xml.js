@@ -1,6 +1,7 @@
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: https://codemirror.net/LICENSE
 // Copied from @codemirror/legacy-modes 6.5.3 (mode/xml.js)
+// Modified for MT: added MTML tag handling. Search this file for "MT patch".
 
 var htmlConfig = {
   autoSelfClosers: {'area': true, 'base': true, 'br': true, 'col': true, 'command': true,
@@ -86,17 +87,11 @@ export function mkXML(parserConfig) {
         return "angleBracket";
       }
     } else if (ch == "&") {
-      var ok;
-      if (stream.eat("#")) {
-        if (stream.eat("x")) {
-          ok = stream.eatWhile(/[a-fA-F\d]/) && stream.eat(";");
-        } else {
-          ok = stream.eatWhile(/[\d]/) && stream.eat(";");
-        }
-      } else {
-        ok = stream.eatWhile(/[\w\.\-:]/) && stream.eat(";");
-      }
-      return ok ? "atom" : "error";
+      // start MT patch: make & ... to atom color. MT template use &param a lot, not real entity.
+      stream.eatWhile(/[^;]/);
+      stream.eat(";");
+      return "atom";
+      // end MT patch:
     } else {
       stream.eatWhile(/[^&<]/);
       return null;
@@ -132,6 +127,14 @@ export function mkXML(parserConfig) {
   function inAttribute(quote) {
     var closure = function(stream, state) {
       while (!stream.eol()) {
+        // start MT patch: skip MT tags so their quotes do not break the string
+        if (
+          stream.match(
+            /^<\$?(MT:?)((?:<[^>]+?>|"(?:<[^>]+?>|.)*?"|'(?:<[^>]+?>|.)*?'|.)+?)([-]?)[\$\/]?>|^<\/MT[^>]+>/i,
+          )
+        )
+          continue;
+        // end MT patch:
         if (stream.next() == quote) {
           state.tokenize = inTag;
           break;
