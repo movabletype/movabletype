@@ -1,6 +1,7 @@
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: https://codemirror.net/LICENSE
 // Copied from CodeMirror 5 (mode/htmlmixed/htmlmixed.js)
+// Modified for MT: added MTML tag handling. Search this file for "MT patch".
 
 import { html as htmlBaseMode } from "./xml";
 import { javascript } from "./javascript";
@@ -153,6 +154,11 @@ const CodeMirror = {
       },
 
       token: function (stream, state) {
+        // start MT patch: catch MT tags first and color them as mt-tag
+        if (stream.match(/^<\$?(MT:?)((?:<[^>]+?>|"(?:<[^>]+?>|.)*?"|'(?:<[^>]+?>|.)*?'|.)+?)([-]?)[\$\/]?>|^<\/MT[^>]+>/i)) {
+          return "mt-tag";
+        }
+        // end MT patch:
         return state.token(stream, state);
       },
 
