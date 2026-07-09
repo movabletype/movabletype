@@ -34,9 +34,18 @@ function mkJavaScript(parserConfig) {
   var isOperatorChar = /[+\-*&%=<>!?|~^@]/;
   var isJsonldKeyword = /^@(context|id|value|language|type|container|list|set|reverse|index|base|vocab|graph)"/;
 
+  // start MT patch: matches a whole MTML tag so its quotes and slashes are skipped
+  var mtTagRE =
+    /^<\$?(MT:?)((?:<[^>]+?>|"(?:<[^>]+?>|.)*?"|'(?:<[^>]+?>|.)*?'|.)+?)([-]?)[\$\/]?>|^<\/MT[^>]+>/i;
+  // end MT patch:
+
   function readRegexp(stream) {
     var escaped = false, next, inSet = false;
-    while ((next = stream.next()) != null) {
+    while (!stream.eol()) {
+      // start MT patch: skip MT tags so their slashes do not end the regexp early
+      if (!escaped && !inSet && stream.match(mtTagRE)) continue;
+      // end MT patch:
+      next = stream.next();
       if (!escaped) {
         if (next == "/" && !inSet) return;
         if (next == "[") inSet = true;
@@ -133,12 +142,7 @@ function mkJavaScript(parserConfig) {
       }
       while (!stream.eol()) {
         // start MT patch: skip MT tags so their quotes do not break the string
-        if (
-          stream.match(
-            /^<\$?(MT:?)((?:<[^>]+?>|"(?:<[^>]+?>|.)*?"|'(?:<[^>]+?>|.)*?'|.)+?)([-]?)[\$\/]?>|^<\/MT[^>]+>/i,
-          )
-        )
-          continue;
+        if (stream.match(mtTagRE)) continue;
         // end MT patch:
         next = stream.next();
         if (next == quote && !escaped) break;
