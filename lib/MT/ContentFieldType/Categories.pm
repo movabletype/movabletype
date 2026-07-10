@@ -285,7 +285,8 @@ sub tag_handler {
         $i++;
         my $last = $i == scalar(@ordered_categories);
 
-        local $ctx->{__stash}{category} = $cat;
+        local $ctx->{__stash}{category}        = $cat;
+        local $ctx->{__stash}{category_set_id} = $category_set_id;
         local $ctx->{__stash}{entries};
         local $ctx->{__stash}{contents};
         local $ctx->{__stash}{category_count};
