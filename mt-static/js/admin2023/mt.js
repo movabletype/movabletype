@@ -1480,18 +1480,18 @@ MT.App = new Class( App, {
         if ( this.constructor.TabContainer )
             this.setDelegate( "tabContainer", new this.constructor.TabContainer() );
 
-        var forms = DOM.getElementsByTagAndAttribute( this.document, "form", "mt:auto-save" );
+        var forms = mtElementsByAttr( this.document, "form", "auto-save" );
         if ( forms.length )
             window.onbeforeunload = this.getIndirectEventListener( "eventBeforeUnload" );
 
         for ( var i = 0; i < forms.length; i++ ) {
-            var autosave = truth( forms[ i ].getAttribute( "mt:auto-save" ) );
+            var autosave = truth( mtDataAttr( forms[ i ], "auto-save" ) );
             if ( !autosave )
                 continue;
 
             this.form = forms[ i ];
 
-            var ad = forms[ i ].getAttribute( "mt:auto-save-delay" );
+            var ad = mtDataAttr( forms[ i ], "auto-save-delay" );
             var autoSaveDelay;
             if ( ad !== null ) {
                 autoSaveDelay = parseInt( ad ) || 0;
@@ -1575,7 +1575,7 @@ MT.App = new Class( App, {
         if ( !form )
             return;
 
-        if ( form.getAttribute( "mt:once" ) ) {
+        if ( mtDataAttr( form, "once" ) ) {
             if ( form.submitted )
                 return event.stop();
 
@@ -1586,7 +1586,7 @@ MT.App = new Class( App, {
         if ( this.cpeList )
             this.cpeList.forEach( function( cpe ) { cpe.onSubmit() } );
 
-        if ( form.getAttribute( "mt:once" ) )
+        if ( mtDataAttr( form, "once" ) )
             form.submitted = true;
         this.stopAutoSave();
     },
@@ -1624,7 +1624,7 @@ MT.App = new Class( App, {
             if ( tagName == "button" ||
                 (tagName == "input" && (type == "button" || type == "submit" || type == "image")) ){
                 element.disabled = disable;
-                if( this.eventTarget === element && form.getAttribute( "mt:once" ) && element.getAttribute('value') ) {
+                if( this.eventTarget === element && mtDataAttr( form, "once" ) && element.getAttribute('value') ) {
                     var hiddenelm = document.createElement('input');
                     hiddenelm.type = 'hidden';
                     hiddenelm.name = element.getAttribute('name');
@@ -1909,7 +1909,7 @@ MT.App = new Class( App, {
             if ( form ) {
                 log('found dirty form: '+form);
                 this.form = form;
-                if ( autoSaveDelay = parseInt( form.getAttribute( "mt:auto-save-delay" ) ) || 0 ) {
+                if ( autoSaveDelay = parseInt( mtDataAttr( form, "auto-save-delay" ) ) || 0 ) {
                     this.autoSaveDelay = autoSaveDelay;
                     log('using auto save delay: '+this.autoSaveDelay);
                 }
