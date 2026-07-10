@@ -597,6 +597,7 @@ class CategoriesRegistry implements ContentFieldType {
 
             $ctx->stash('_content_field_values', $values);
             $ctx->stash('_content_field_counter_max', count($values));
+            $ctx->stash('category_set_id', $category_set_id);
         }
 
         $counter = $ctx->stash('_content_field_counter');
