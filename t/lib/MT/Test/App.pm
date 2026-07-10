@@ -125,8 +125,9 @@ sub request {
     my ($self, $params, $is_redirect) = @_;
     $self->{locations} = undef unless $is_redirect;
 
+    # Note that 302 redirect for SEC_FETCH_SITE=none causes SEC_FETCH_SITE=none again
+    # On the other hand redirection by client side js always causes SEC_FETCH_SITE=same-origin
     local $ENV{HTTP_SEC_FETCH_SITE} = $self->{_request_sent} ? 'same-origin' : 'none';
-    $self->{_request_sent} = 1;
 
     my $res =
           $self->{server}
@@ -154,6 +155,7 @@ sub request {
         $location = $res->header('Location');
     } elsif ($content_type =~ /html/ and $self->{content} =~ /window\.location\s*=\s*(['"])(\S+)\1/) {
         $location = $2;
+        $self->{_request_sent} = 1;
     }
     if ($location) {
         Test::More::note "REDIRECTING TO $location";
@@ -169,6 +171,8 @@ sub request {
             return $self->request($params, 1) unless $self->{no_redirect};
         }
     }
+
+    $self->{_request_sent} = 1;
 
     # json response?
     if ($content_type =~ /json/ or $self->{content} =~ /\A\s*[\{\[]/) {
