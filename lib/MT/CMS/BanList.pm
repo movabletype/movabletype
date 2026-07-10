@@ -26,11 +26,13 @@ sub can_delete {
     return 1 if $user->is_superuser;
 
     # no system scope for non-superuser
-    my $blog_id = $app->param('blog_id') or return;
+    my $blog_id  = $app->param('blog_id') or return;
+    my $site     = MT->model('website')->load($blog_id);
+    my %blog_ids = map {$_->id => 1} $site->is_blog ? ($site) : ($site, @{ $site->blogs || [] });
     if ($obj && !ref $obj) {
         $obj = MT->model('ipbanlist')->load($obj) or return;
     }
-    return if $obj && $obj->blog_id != $blog_id;
+    return if $obj && !$blog_ids{ $obj->blog_id };
     return $user->permissions($blog_id)->can_do('delete_banlist');
 }
 
