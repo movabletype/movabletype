@@ -284,7 +284,7 @@
 </mt:setvarblock>
 
 <mt:setvarblock name="form_header">
-<form name="entry_form" id="entry_form" method="post" action="<$mt:var name="script_url"$>"<mt:unless name="config.previewinnewwindow"> data-mt-once="1"</mt:unless> mt:auto-save="1" mt:auto-save-delay="<$mt:var name="autosave_frequency"$>000">
+<form name="entry_form" id="entry_form" method="post" action="<$mt:var name="script_url"$>"<mt:unless name="config.previewinnewwindow"> data-mt-once="1"</mt:unless> data-mt-auto-save="1" data-mt-auto-save-delay="<$mt:var name="autosave_frequency"$>000">
 <mt:if name="new_object">
   <input type="hidden" name="author_id" value="<$mt:var name="author_id" escape="html"$>" />
 <mt:else>
