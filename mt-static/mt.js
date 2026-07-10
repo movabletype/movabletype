@@ -2157,7 +2157,7 @@ MT.App.DefaultValue = new Class( Object, {
 
 
     init: function() {
-        var es = DOM.getElementsByAttributeAndValue( document, "data-mt-delegate", "default-value" ).concat( DOM.getElementsByAttributeAndValue( document, "mt:delegate", "default-value" ) );
+        var es = DOM.getElementsByAttributeAndValue( document, "mt:delegate", "default-value" );
         for ( var i = 0; i < es.length; i++ ) {
             var val = es[ i ].getAttribute( "mt:default" );
             if ( !val )
@@ -2228,7 +2228,7 @@ MT.App.DefaultValue = new Class( Object, {
 MT.App.TabContainer = new Class( Object, {
 
     init: function() {
-        var es = DOM.getElementsByAttributeAndValue( document, "data-mt-delegate", "tab-container" ).concat( DOM.getElementsByAttributeAndValue( document, "mt:delegate", "tab-container" ) );
+        var es = DOM.getElementsByAttributeAndValue( document, "mt:delegate", "tab-container" );
         var t;
         for ( var i = 0; i < es.length; i++ ) {
             if ( t = es[ i ].getAttribute( "mt:selected-tab" ) ) {
