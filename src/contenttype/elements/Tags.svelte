@@ -13,8 +13,14 @@
 
   let displayOptions = $derived({
     ...options,
-    multiple: options.multiple ?? false,
-    can_add: options.can_add ?? false,
+    multiple:
+      options.multiple === 1 ||
+      options.multiple === "1" ||
+      options.multiple === true,
+    can_add:
+      options.can_add === 1 ||
+      options.can_add === "1" ||
+      options.can_add === true,
     min: options.min ?? "",
     max: options.max ?? "",
     initial_value: options.initial_value ?? "",
