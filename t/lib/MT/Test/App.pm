@@ -156,6 +156,7 @@ sub request {
     } elsif ($content_type =~ /html/ and $self->{content} =~ /window\.location\s*=\s*(['"])(\S+)\1/) {
         $location = $2;
         $self->{_request_sent} = 1;
+        Test::More::note "REDIRECTING BY window.location";
     }
     if ($location) {
         Test::More::note "REDIRECTING TO $location";
@@ -168,6 +169,7 @@ sub request {
         my $max_redirect = $self->{max_redirect} || 10;
         if (!defined $max_redirect or $max_redirect > @{$self->{locations} || []}) {
             push @{ $self->{locations} ||= [] }, $uri;
+            $params->{magic_token} //= ''; # disable auto filling
             return $self->request($params, 1) unless $self->{no_redirect};
         }
     }
