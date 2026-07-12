@@ -1146,10 +1146,12 @@ sub init_request {
     $app->init_query();
 
     if ((($app->get_header('Sec-Fetch-Site') || '') ne 'same-origin') || $app->{query}->param('_is_cross_origin')) {
-        my $args = $app->{query}->param('return_args');
-        if (defined($args) && $args !~ /_is_cross_origin=1/i) {
-            $args .= '&_is_cross_origin=1';
-            $app->{query}->param('return_args', $args);
+        if (defined(my $args = $app->{query}->param('return_args'))) {
+            require URI;
+            my $uri = URI->new('?'. $args);
+            $uri->query_param_delete('_is_cross_origin');
+            $uri->query_param_append(_is_cross_origin => 1);
+            $app->{query}->param('return_args', $uri->query);
         }
     }
     $app->{return_args} = $app->{query}->param('return_args');
