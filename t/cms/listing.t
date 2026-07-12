@@ -49,7 +49,7 @@ subtest 'move site modal search' => sub {
         _type => 'blog',
         action_name => 'move_blogs',
         blog_id => 0,
-        return_args => '__mode%3Dlist%26blog_id%3D0%26_type%3Dwebsite%26does_act%3D1',
+        return_args => '__mode=list&blog_id=0&_type=website&does_act=1',
         id => 5,
         dialog => 1,
         json => 1,

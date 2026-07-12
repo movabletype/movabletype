@@ -50,7 +50,7 @@ $app->login($admin);
 
 $app->post_ok(
     {   __mode      => 'plugin_control',
-        return_args => '__mode%3Dcfg_plugins%26blog_id%3D0',
+        return_args => '__mode=cfg_plugins&blog_id=0',
         state       => 'off',
         plugin_sig  => 'TestTemplate',
     }
@@ -70,7 +70,7 @@ my $res = $app->post_ok(
         _type                  => 'template',
         action_name            => 'refresh_tmpl_templates',
         itemset_action_input   => '',
-        return_args            => '__mode%3Dlist_template%26blog_id%3D0',
+        return_args            => '__mode=list_template&blog_id=0',
         plugin_action_selector => 'refresh_tmpl_templates',
         id                     => $test_template->id,
     }

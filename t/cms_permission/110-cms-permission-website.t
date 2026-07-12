@@ -529,7 +529,7 @@ subtest 'action = refresh_website_templates' => sub {
         _type                  => 'website',
         action_name            => 'refresh_website_templates',
         itemset_action_input   => '',
-        return_args            => '__mode%3Dlist_website%26blog_id%3D' . $website->id,
+        return_args            => '__mode=list_website&blog_id=' . $website->id,
         id                     => $website->id,
         plugin_action_selector => 'refresh_website_templates',
     });
@@ -542,7 +542,7 @@ subtest 'action = refresh_website_templates' => sub {
         _type                  => 'website',
         action_name            => 'refresh_website_templates',
         itemset_action_input   => '',
-        return_args            => '__mode%3Dlist_website%26blog_id%3D' . $website->id,
+        return_args            => '__mode=list_website&blog_id=' . $website->id,
         id                     => $website->id,
         plugin_action_selector => 'refresh_website_templates',
     });
@@ -558,7 +558,7 @@ subtest 'action = refresh_website_templates' => sub {
         _type                  => 'website',
         action_name            => 'refresh_website_templates',
         itemset_action_input   => '',
-        return_args            => '__mode%3Dlist_website%26blog_id%3D' . $website->id,
+        return_args            => '__mode=list_website&blog_id=' . $website->id,
         id                     => $website->id,
         plugin_action_selector => 'refresh_website_templates',
     });
@@ -574,11 +574,11 @@ subtest 'action = refresh_website_templates' => sub {
         _type                  => 'website',
         action_name            => 'refresh_website_templates',
         itemset_action_input   => '',
-        return_args            => '__mode%3Dlist_website%26blog_id%3D' . $website->id,
+        return_args            => '__mode=list_website&blog_id=' . $website->id,
         id                     => $website->id,
         plugin_action_selector => 'refresh_website_templates',
     });
-    $app->has_no_permission_error("XXX");
+    $app->has_permission_error("refresh_website_templates by other permission");
     ok($app->last_location->query_param('error_id'), "refresh_website_templates by other blog");
 
     $app->login($ogawa);
@@ -587,7 +587,7 @@ subtest 'action = refresh_website_templates' => sub {
         _type                  => 'website',
         action_name            => 'refresh_website_templates',
         itemset_action_input   => '',
-        return_args            => '__mode%3Dlist_website%26blog_id%3D' . $website->id,
+        return_args            => '__mode=list_website&blog_id=' . $website->id,
         id                     => $website->id,
         plugin_action_selector => 'refresh_website_templates',
     });

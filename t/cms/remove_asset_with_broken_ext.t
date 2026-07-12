@@ -52,7 +52,7 @@ subtest 'Remove asset with a normal extension' => sub {
         _type       => 'asset',
         action_name => 'delete',
         blog_id     => $normal_asset->blog_id,
-        return_args => '__mode%3Dlist%26blog_id%3D0%26_type%3Dasset%26does_act%3D1',
+        return_args => '__mode=list&blog_id=0&_type=asset&does_act=1',
         id          => $normal_asset->id,
     });
     ok !$app->generic_error, "no error";
@@ -84,7 +84,7 @@ subtest 'Remove asset with a weird extension' => sub {
         _type       => 'asset',
         action_name => 'delete',
         blog_id     => $weird_asset->blog_id,
-        return_args => '__mode%3Dlist%26blog_id%3D0%26_type%3Dasset%26does_act%3D1',
+        return_args => '__mode=list&blog_id=0&_type=asset&does_act=1',
         id          => $weird_asset->id,
     });
     ok !$app->generic_error, "no error";
