@@ -197,6 +197,13 @@ sub prepare_blog {
             if (my $parent_name = delete $arg{parent}) {
                 my $parent = $objs->{website}{$parent_name} or croak "unknown parent: $parent_name";
                 $arg{parent_id} = $parent->id;
+
+                if (my $site_url = $arg{site_url}) {
+                    $arg{site_url} = _fix_blog_url($site_url, $parent->site_url) if $site_url =~ /^https?/;
+                }
+                if (my $archive_url = $arg{archive_url}) {
+                    $arg{archive_url} = _fix_blog_url($archive_url, $parent->archive_url) if $archive_url =~ /^https?/;
+                }
             }
 
             my $blog = MT::Test::Permission->make_blog(%arg);
@@ -218,6 +225,29 @@ sub prepare_blog {
             $objs->{blog_id} = $objs->{blog}{ $blog_names[0] }->id;
         }
     }
+}
+
+sub _fix_blog_url {
+    my ($url, $parent_url) = map { URI->new($_) } @_;
+    if ($url->scheme ne $parent_url->scheme) {
+        _note_or_croak("blog: scheme of $url does not match: $parent_url");
+    }
+    my $subdomain;
+    my $authority        = $url->authority;
+    my $parent_authority = $parent_url->authority;
+    if ($authority =~ /^(.*\.)?$parent_authority/) {
+        $subdomain = $1 // '';
+    } else {
+        _note_or_croak("blog: host of $url does not match: $parent_url");
+    }
+    my $path        = $url->path;
+    my $parent_path = $parent_url->path;
+    unless ($path =~ s/^$parent_path//) {
+        _note_or_croak("blog: path of $url does not match: $parent_url");
+    }
+    my $new_url = join '/::/', $subdomain, ($path // '');
+print STDERR "$url => $new_url\n\n";
+    $new_url;
 }
 
 sub prepare_image {
