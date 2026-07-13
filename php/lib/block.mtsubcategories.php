@@ -29,8 +29,12 @@ function smarty_block_mtsubcategories($args, $content, &$ctx, &$repeat) {
         if (isset($args['category_set_id']) && $args['category_set_id']) {
             $category_set_id = $args['category_set_id'];
         }
-        if (!$category_set_id && $ctx->stash('category_set')) {
-            $category_set_id = $ctx->stash('category_set')->id;
+        if (!$category_set_id) {
+            if ($ctx->stash('category_set')) {
+                $category_set_id = $ctx->stash('category_set')->id;
+            } else if ($ctx->stash('category_set_id')) {
+                $category_set_id = $ctx->stash('category_set_id');
+            }
         }
 
         # Store the tokens for recursion
@@ -58,6 +62,7 @@ function smarty_block_mtsubcategories($args, $content, &$ctx, &$repeat) {
                 $cats = $ctx->mt->db()->fetch_categories(array(
                     'blog_id' => $blog_id,
                     'category_id' => $current_cat->category_id,
+                    'category_set_id' => $current_cat->category_category_set_id,
                     'children' => 1,
                     'show_empty' => 1,
                     'sort_order' => $sort_order,

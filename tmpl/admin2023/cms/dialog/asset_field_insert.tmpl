@@ -27,7 +27,7 @@ jQuery(document).ready(function () {
     <mt:elseif name="asset_type" eq="image">
       <mt:if name="asset_preview_url">
          +     '<span class="asset-preview-image picture small me-3 mb-3">'
-         +       '<img src="<mt:var name="asset_preview_url" escape="html" escape="js">" width="<mt:var name="asset_preview_width" escape="html" escape="js">" height="<mt:var name="asset_preview_height" escape="html" escape="js">">'
+         +       '<img src="<mt:var name="asset_preview_url" escape="html" escape="js">" width="<mt:var name="asset_preview_width" escape="html" escape="js">" height="<mt:var name="asset_preview_height" escape="html" escape="js">" alt="">'
          +     '</span>'
       <mt:else>
          +     '<mtapp:svgicon id="ic_image" title="Image" color="secondary" strip_linefeeds="1" escape="js">'

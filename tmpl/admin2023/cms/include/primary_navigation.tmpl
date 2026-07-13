@@ -27,14 +27,14 @@
         <use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_user-open"></use>
       </svg>
     </button>
-    <div class="dropdown-menu dropdown-menu-right mt-primaryNavigation__user" aria-labelledby="userDropdownMenu">
+    <div class="dropdown-menu dropdown-menu-right mt-primaryNavigation__user" role="menu" aria-labelledby="userDropdownMenu">
   <mt:if name="user_actions">
       <ul>
   </mt:if>
   <mt:loop name="user_actions">
         <mt:setvarblock name="user_action_href"><mt:if name="href"><mt:var name="href" escape="none"><mt:elseif name="mode"><mt:var name="mt_url">?__mode=<mt:var name="mode" escape="none"><mt:else>javascript:void(0)</mt:if></mt:setvarblock>
         <li id="menu-mobile-<mt:var name="id" escape="html">">
-          <a href="<mt:var name="user_action_href" escape="html">"<mt:if name="target"> target="<mt:var name="target" escape="html">"</mt:if> class="dropdown-item">
+          <a href="<mt:var name="user_action_href" escape="html">"<mt:if name="target"> target="<mt:var name="target" escape="html">"</mt:if> class="dropdown-item" role="menuitem">
             <mt:var name="label" escape="html">
           </a>
         </li>

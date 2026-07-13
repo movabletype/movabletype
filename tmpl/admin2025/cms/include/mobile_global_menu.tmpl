@@ -15,7 +15,7 @@
     <a id="mobileGlobalMenu__dropdownMenuButton" href="javascript:void(0);" class="mt-mobileGlobalMenu__dropdownMenuButton" data-role="button" data-bs-toggle="dropdown" aria-haspopup="true" data-bs-auto-close="outside" aria-expanded="false">
       <mtapp:svgicon id="ic_menuhamburger" title="Open mobile global menu" data-role="img">
     </a>
-    <div class="mt-mobileGlobalMenu__dropdownMenu dropdown-menu" aria-labelledby="mobileGlobalMenu__dropdownMenuButton">
+    <div class="mt-mobileGlobalMenu__dropdownMenu dropdown-menu" role="menu" aria-labelledby="mobileGlobalMenu__dropdownMenuButton">
       <div class="mt-productHeader__logo">
         <a href="<mt:var name="mt_url">?__mode=dashboard" title="<__trans phrase="Dashboard">">
         <mt:if name="scope_type" eq="system">
@@ -102,14 +102,14 @@
               </mt:if>
               <mt:var name="author_display_name" escape="html">
               </button>
-              <div class="dropdown-menu dropdown-menu-end mt-primaryNavigation__user" aria-labelledby="mt-mobileGlobalMenu-userDropdownMenu">
+              <div class="dropdown-menu dropdown-menu-end mt-primaryNavigation__user" role="menu" aria-labelledby="mt-mobileGlobalMenu-userDropdownMenu">
                 <mt:if name="user_actions">
                     <ul>
                 </mt:if>
                 <mt:loop name="user_actions">
                     <mt:setvarblock name="user_action_href"><mt:if name="href"><mt:var name="href" escape="none"><mt:elseif name="mode"><mt:var name="mt_url">?__mode=<mt:var name="mode" escape="none"><mt:else>javascript:void(0)</mt:if></mt:setvarblock>
                         <li id="menu-mobile-<mt:var name="id" escape="html">">
-                            <a href="<mt:var name="user_action_href" escape="html">"<mt:if name="target"> target="<mt:var name="target" escape="html">"</mt:if> class="dropdown-item">
+                            <a href="<mt:var name="user_action_href" escape="html">"<mt:if name="target"> target="<mt:var name="target" escape="html">"</mt:if> class="dropdown-item" role="menuitem">
                               <mt:var name="label" escape="html">
                             </a>
                         </li>

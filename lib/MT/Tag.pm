@@ -724,15 +724,7 @@ sub save_tags {
 
     foreach my $otag ( values %existing_tags ) {
         next unless ref $otag;
-        my $this_tag_id = $otag->tag_id;
         $otag->remove;
-        if ( !MT::ObjectTag->exist( { tag_id => $this_tag_id } ) ) {
-
-            # no more references to this tag... just delete it now
-            if ( my $tag = MT::Tag->load($this_tag_id) ) {
-                $tag->remove;
-            }
-        }
         $clear_cache = 1;
     }
     delete $obj->{__save_tags};

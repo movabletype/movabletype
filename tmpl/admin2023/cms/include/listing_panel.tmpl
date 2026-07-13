@@ -103,7 +103,7 @@ parameters:
               </td>
               <td class="panel-label-tr">
                 <mt:if name="icon">
-                  <div class="mt-user me-3"><img src="<mt:var name="icon">" class="rounded-circle" width="32" height="32"></div>
+                  <div class="mt-user me-3"><img src="<mt:var name="icon">" class="rounded-circle" width="32" height="32" alt=""></div>
                 </mt:if>
                 <span class="panel-label"><mt:var name="label" escape="html"></span>
                 <mt:if name="has_child"><mt:setvarblock name="parent_label"><mt:var name="label" escape="html"></mt:setvarblock>
@@ -114,7 +114,7 @@ parameters:
                       <div class="form-check">
                           <input id="select_child_<mt:if name="object_type"><mt:var name="object_type"><mt:else><mt:var name="panel_type"></mt:if>_<mt:var name="id" escape="html">" type="<mt:if name="panel_multi">checkbox<mt:else>radio</mt:if>" class="form-check-input select" name="<mt:var name="panel_type">-cb" value="<mt:var name="id">" />
                           <mt:if name="icon">
-                            <div class="mt-user me-3"><img src="<mt:var name="icon">" width="32" height="32"></div>
+                            <div class="mt-user me-3"><img src="<mt:var name="icon">" width="32" height="32" alt=""></div>
                           </mt:if>
                           <label class="form-check-label" for="select_child_<mt:if name="object_type"><mt:var name="object_type"><mt:else><mt:var name="panel_type"></mt:if>_<mt:var name="id" escape="html">"><span class="visually-hidden"><__trans phrase="Select"></span></label>
                           <span class="child-panel-label"><mt:var name="label" escape="html"></span>
