@@ -157,18 +157,18 @@ jQuery(window).on('load resize', function () {
                       } #]
                       [# if ( multiple ) { #]
                           [# if ( i == 0 ) { #]
-                          <li class="primary row" mt:focus-hover="1" mt:id="[#= cat.id #]">
+                          <li class="primary row" data-mt-focus-hover="1" data-mt-id="[#= cat.id #]">
                             <div class="col-auto"><mtapp:svgicon id="ic_fav" color="success" title="Primary" ></div>
                             <strong class="col text-break px-0">[#= label #]</strong>
-                            <a href="javascript:void(0);" mt:command="remove" class="ms-1 delete d-md-inline-block category-selected-delete px-3 col-auto" title="[#|h trans("Remove") #]">
+                            <a href="javascript:void(0);" data-mt-command="remove" class="ms-1 delete d-md-inline-block category-selected-delete px-3 col-auto" title="[#|h trans("Remove") #]">
                               <span>
                                 <mtapp:svgicon id="ic_caution" color="danger" title="Remove" >
                               </span>
                             </a>
                           </li>
                           [# } else { #]
-                          <li mt:focus-hover="1" mt:id="[#= cat.id #]" class="row">
-                            <a mt:focus-hover="1" href="javascript:void(0);" mt:command="primary" class="primary col row" title="[#|h trans("Make primary") #]">
+                          <li data-mt-focus-hover="1" data-mt-id="[#= cat.id #]" class="row">
+                            <a data-mt-focus-hover="1" href="javascript:void(0);" data-mt-command="primary" class="primary col row" title="[#|h trans("Make primary") #]">
                               <span class="col-auto">
                                 <mtapp:svgicon id="ic_fav" title="Primary" color="success">
                               </span>
@@ -177,7 +177,7 @@ jQuery(window).on('load resize', function () {
                               </span>
                               <div class="col text-break px-0">[#= label #]</div>
                             </a>
-                            <a mt:focus-hover="1" href="javascript:void(0);" mt:command="remove" class="ms-3 delete d-md-inline-block px-3 col-auto" title="[#|h trans("Remove") #]">
+                            <a data-mt-focus-hover="1" href="javascript:void(0);" data-mt-command="remove" class="ms-3 delete d-md-inline-block px-3 col-auto" title="[#|h trans("Remove") #]">
                               <span>
                                 <mtapp:svgicon id="ic_caution" color="danger" title="Remove">
                               </span>
@@ -185,9 +185,9 @@ jQuery(window).on('load resize', function () {
                           </li>
                           [# } #]
                       [# } else { #]
-                      <li mt:focus-hover="1" mt:id="[#= cat.id #]" class="focus row">
+                      <li data-mt-focus-hover="1" data-mt-id="[#= cat.id #]" class="focus row">
                         <span class="col text-break">[#= label #]</span>
-                        <a href="javascript:void(0);" mt:command="remove" class="ms-1 delete d-md-inline-block category-selected-delete px-3 col-auto" title="[#|h trans("Remove") #]">
+                        <a href="javascript:void(0);" data-mt-command="remove" class="ms-1 delete d-md-inline-block category-selected-delete px-3 col-auto" title="[#|h trans("Remove") #]">
                           <span>
                             <mtapp:svgicon id="ic_caution" color="danger" title="Remove" >
                           </span>
@@ -209,7 +209,7 @@ jQuery(window).on('load resize', function () {
                           </div>
                           <mt:if name="options{can_add}">
                           <div class="col-auto category-selector-add">
-                            <a href="javascript:void(0);" mt:id="[#= item.id #]" mt:content-field-id="<mt:var name="content_field_id" escape="html">" mt:command="show-add-category" class="add-category-new-link"><span class="d-inline-block"><mtapp:svgicon id="ic_add" color="success" title="Add" ></span></a>
+                            <a href="javascript:void(0);" data-mt-id="[#= item.id #]" data-mt-content-field-id="<mt:var name="content_field_id" escape="html">" data-mt-command="show-add-category" class="add-category-new-link"><span class="d-inline-block"><mtapp:svgicon id="ic_add" color="success" title="Add" ></span></a>
                           </div>
                           </mt:if>
                       </div>
@@ -219,13 +219,13 @@ jQuery(window).on('load resize', function () {
               [# div.className="mb-3 add-category-form m-3" #]
                 <div class="mb-3 row">
                   <div class="col-auto ps-3 pe-0">
-                    <a href="javascript:void(0);" mt:command="cancel" class="add-category-cancel-link btn"><mtapp:svgicon id="ic_caution" title="Cancel"></a>
+                    <a href="javascript:void(0);" data-mt-command="cancel" class="add-category-cancel-link btn"><mtapp:svgicon id="ic_caution" title="Cancel"></a>
                   </div>
                   <div class="col ps-0">
                     <div class="input-group">
                       <input id="add-category-input-movable-[#= contentFieldId #]" class="form-control add-category-input input-hint" type="text" value="" placeholder="[#|h trans( "Add sub category" ) #]" />
                       <div class="input-group-append">
-                        <a href="javascript:void(0);" mt:command="add" class="add-category-save-link btn btn-default">[#|h trans( "Add" ) #]</a>
+                        <a href="javascript:void(0);" data-mt-command="add" class="add-category-save-link btn btn-default">[#|h trans( "Add" ) #]</a>
                       </div>
                   </div>
                 </div>
@@ -295,7 +295,7 @@ jQuery(window).on('load resize', function () {
             <div class="input-group d-md-flex">
               <input id="add-category-input-<mt:var name="content_field_id" escape="html">" type="text" class="form-control add-category-input" placeholder="<__trans phrase="Category Name">" aria-label="<__trans phrase="Category Name">">
               <div class="input-group-append">
-                <button class="btn btn-default" type="button" mt:command="add"><mtapp:svgicon id="ic_add" color="success" title="<__trans phrase="Add">" ><__trans phrase="Add"></button>
+                <button class="btn btn-default" type="button" data-mt-command="add"><mtapp:svgicon id="ic_add" color="success" title="<__trans phrase="Add">" ><__trans phrase="Add"></button>
               </div>
             </div>
           </mt:if>
@@ -310,7 +310,7 @@ jQuery(window).on('load resize', function () {
     </div>
     <div class="mt-collapse__container p-4">
       <div class="col">
-        <div mt:delegate="category-list" id="category-list-<mt:var name="content_field_id" escape="html">" class="category-list-container" mt:content-field-id="<mt:var name="content_field_id" escape="html">"></div>
+        <div data-mt-delegate="category-list" id="category-list-<mt:var name="content_field_id" escape="html">" class="category-list-container" data-mt-content-field-id="<mt:var name="content_field_id" escape="html">"></div>
         <input id="category-ids-<mt:var name="content_field_id" escape="js">" type="hidden" style="display: none;" name="category-<mt:var name="content_field_id" escape="html">" value="<$mt:var name="selected_category_loop" glue=","$>" <mt:var name="required"> <mt:var name="multiple"> />
       </div>
     </div>
