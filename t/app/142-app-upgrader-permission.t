@@ -69,7 +69,7 @@ subtest 'Upgrade permission check' => sub {
         $app->get_ok();
         like $app->content, qr/A new version of Movable Type has been installed/, 'upgrade detected';
         $app->post_form_ok;
-        my $res = $app->post_form_ok({ username => 'Melody', password => 'Nelson' });
+        my $res = $app->sign_in_ok({ username => 'Melody', password => 'Nelson' });
         like $res->decoded_content => qr/Upgrading database/,
           "Superuser should see upgrade runner";
     };
@@ -80,7 +80,7 @@ subtest 'Upgrade permission check' => sub {
         $app->get_ok();
         like $app->content, qr/A new version of Movable Type has been installed/, 'upgrade detected';
         $app->post_form_ok;
-        my $res = $app->post_form_ok({ username => 'Melody', password => 'Nelson' });
+        my $res = $app->sign_in_ok({ username => 'Melody', password => 'Nelson' });
         like $res->decoded_content => qr/Upgrading database/,
           "Superuser should see upgrade runner";
     };
@@ -98,7 +98,7 @@ subtest 'Upgrade permission check' => sub {
         $app->get_ok();
         like $app->content, qr/A new version of Movable Type has been installed/, 'upgrade detected';
         $app->post_form_ok;
-        my $res = $app->post_form_ok({ username => $test_user_name, password => $test_password });
+        my $res = $app->sign_in_ok({ username => $test_user_name, password => $test_password });
         like $res->decoded_content => qr/Upgrading database/,
           "Non-superuser should see upgrade runner";
     };
@@ -116,7 +116,7 @@ subtest 'Upgrade permission check' => sub {
         $app->get_ok();
         like $app->content, qr/A new version of Movable Type has been installed/, 'upgrade detected';
         $app->post_form_ok;
-        my $res = $app->post_form_ok({ username => $test_user_name, password => $test_password });
+        my $res = $app->sign_in_ok({ username => $test_user_name, password => $test_password });
         like $app->last_location => qr/__mode=upgrade_pending/,
           "Non-superuser should be redirected to upgrade_pending";
     };
