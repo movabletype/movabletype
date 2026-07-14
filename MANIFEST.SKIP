@@ -88,7 +88,7 @@ themes/broken_blog_theme
 #?package=MTAWS ^mt-cp.cgi
 #?package=MTAWS ^addons/Community.pack
 #?package=MTAWS ^mt-static/addons/Community.pack
-#?package=MTAWS ^plugins/LicenseVerification
+#?package=MTAWS ^addons/LicenseVerification.pack
 
 #?package=MTOS ^addons
 #?package=MTOS ^mt-cp.cgi
@@ -120,7 +120,7 @@ themes/broken_blog_theme
 #?package=MTOS ^mt-static/addons/Sync.pack
 #?package=MTOS ^addons/AWS.pack
 #?package=MTOS ^plugins/P-M-SizeLimit
-#?package=MTOS ^plugins/LicenseVerification
+#?package=MTOS ^addons/LicenseVerification.pack
 
 #?package=MTCOM ^COPYING
 #?package=MTCOM ^COPYRIGHT
@@ -152,7 +152,7 @@ themes/broken_blog_theme
 #?package=MTCOM ^mt-static/addons/Sync.pack
 #?package=MTCOM ^addons/AWS.pack
 #?package=MTCOM ^plugins/P-M-SizeLimit
-#?package=MTCOM ^plugins/LicenseVerification
+#?package=MTCOM ^addons/LicenseVerification.pack
 
 #?package=MTA ^COPYING
 #?package=MTA ^COPYRIGHT
@@ -178,7 +178,7 @@ themes/broken_blog_theme
 #?package=MTAAWS ^mt-cp.cgi
 #?package=MTAAWS ^addons/Community.pack
 #?package=MTAAWS ^mt-static/addons/Community.pack
-#?package=MTAAWS ^plugins/LicenseVerification
+#?package=MTAAWS ^addons/LicenseVerification.pack
 
 #?package=MTCLOUD ^COPYING
 #?package=MTCLOUD ^COPYRIGHT
@@ -191,7 +191,7 @@ themes/broken_blog_theme
 #?package=MTCLOUD ^addons/Community.pack
 #?package=MTCLOUD ^mt-static/addons/Community.pack
 #?package=MTCLOUD ^addons/Cloud.pack/tools/Cloud.pack/cloud-log
-#?package=MTCLOUD ^plugins/LicenseVerification
+#?package=MTCLOUD ^addons/LicenseVerification.pack
 
 #?package=MTP ^COPYING
 #?package=MTP ^COPYRIGHT
@@ -221,7 +221,7 @@ themes/broken_blog_theme
 #?pacakge=MTP ^plugins/mixiComment
 #?pacakge=MTP ^mt-static/plugins/mixiComment
 #?package=MTP ^plugins/P-M-SizeLimit
-#?package=MTP ^plugins/LicenseVerification
+#?package=MTP ^addons/LicenseVerification.pack
 
 #?package=MTPA ^COPYING
 #?package=MTPA ^COPYRIGHT
@@ -238,7 +238,7 @@ themes/broken_blog_theme
 #?pacakge=MTPA ^plugins/mixiComment
 #?pacakge=MTPA ^mt-static/plugins/mixiComment
 #?package=MTPA ^plugins/P-M-SizeLimit
-#?package=MTPA ^plugins/LicenseVerification
+#?package=MTPA ^addons/LicenseVerification.pack
 
 #?package=MTPCLOUD ^COPYING
 #?package=MTPCLOUD ^COPYRIGHT
@@ -252,7 +252,7 @@ themes/broken_blog_theme
 #?package=MTPCLOUD ^mt-static/addons/Community.pack
 #?package=MTPCLOUD ^plugins/PremiumSearch
 #?package=MTPCLOUD ^plugins/PremiumOpenSearch
-#?package=MTPCLOUD ^plugins/LicenseVerification
+#?package=MTPCLOUD ^addons/LicenseVerification.pack
 
 #?language=ja ^plugins/zemanta
 
