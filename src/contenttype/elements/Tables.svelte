@@ -13,8 +13,14 @@
 
   let displayOptions = $derived({
     ...options,
-    increase_decrease_rows: options.increase_decrease_rows ?? false,
-    increase_decrease_cols: options.increase_decrease_cols ?? false,
+    increase_decrease_rows:
+      options.increase_decrease_rows === 1 ||
+      options.increase_decrease_rows === "1" ||
+      options.increase_decrease_rows === true,
+    increase_decrease_cols:
+      options.increase_decrease_cols === 1 ||
+      options.increase_decrease_cols === "1" ||
+      options.increase_decrease_cols === true,
     initial_rows: options.initial_rows ?? 1,
     initial_cols: options.initial_cols ?? 1,
   });
