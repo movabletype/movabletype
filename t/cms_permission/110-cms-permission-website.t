@@ -143,6 +143,7 @@ $test_env->prepare_fixture(sub {
     }
 
     MT::Association->link($kikkawa  => $edit_templates => $website);
+    MT::Association->link($tada     => $edit_templates => $blog);
     MT::Association->link($kumekawa => $edit_templates => $second_website);
 
     $ukawa->can_create_site(1);
@@ -525,76 +526,104 @@ subtest 'mode = edit (edit)' => sub {
 };
 
 subtest 'action = refresh_website_templates' => sub {
-    my $app = MT::Test::App->new('MT::App::CMS');
-    $app->login($admin);
-    $app->post_ok({
+    my $params = {
         __mode                 => 'itemset_action',
         _type                  => 'website',
         action_name            => 'refresh_website_templates',
         itemset_action_input   => '',
-        return_args            => '__mode=list_website&blog_id=' . $website->id,
+        return_args            => '__mode=list&_type=website&blog_id=0&does_act=1',
         id                     => $website->id,
         plugin_action_selector => 'refresh_website_templates',
-    });
-    $app->has_no_permission_error("XXX");
-    ok(!$app->last_location->query_param('error_id'), "refresh_website_templates by admin");
+    };
+    subtest 'by admin' => sub {
+        my $app = MT::Test::App->new;
+        $app->login($admin);
+        $app->get();
+        $app->post_ok($params);
+        $app->has_no_permission_error;
+        ok(!$app->last_location->query_param('error_id'), "no error_id");
+    };
 
-    $app->login($kikkawa);
-    $app->post_ok({
-        __mode                 => 'itemset_action',
-        _type                  => 'website',
-        action_name            => 'refresh_website_templates',
-        itemset_action_input   => '',
-        return_args            => '__mode=list_website&blog_id=' . $website->id,
-        id                     => $website->id,
-        plugin_action_selector => 'refresh_website_templates',
-    });
-    $app->has_no_permission_error("XXX");
-    ok(
-        !$app->last_location->query_param('error_id'),
-        "refresh_website_templates by permitted user"
-    );
+    subtest 'by permitted user' => sub {
+        my $app = MT::Test::App->new;
+        $app->login($kikkawa);
+        $app->get();
+        $app->post_ok($params);
+        $app->has_no_permission_error;
+        ok(!$app->last_location->query_param('error_id'), "no error_id");
+    };
 
-    $app->login($kemikawa);
-    $app->post_ok({
-        __mode                 => 'itemset_action',
-        _type                  => 'website',
-        action_name            => 'refresh_website_templates',
-        itemset_action_input   => '',
-        return_args            => '__mode=list_website&blog_id=' . $website->id,
-        id                     => $website->id,
-        plugin_action_selector => 'refresh_website_templates',
-    });
-    $app->has_no_permission_error("XXX");
-    ok(
-        !$app->last_location->query_param('error_id'),
-        "refresh_website_templates by permitted user (system)"
-    );
+    subtest 'has can_edit_templates permission' => sub {
+        my $app = MT::Test::App->new;
+        $app->login($kemikawa);
+        $app->get();
+        $app->post_ok($params);
+        $app->has_no_permission_error;
+        ok(!$app->last_location->query_param('error_id'), "no error_id");
+    };
 
-    $app->login($kumekawa);
-    $app->post_ok({
-        __mode                 => 'itemset_action',
-        _type                  => 'website',
-        action_name            => 'refresh_website_templates',
-        itemset_action_input   => '',
-        return_args            => '__mode=list_website&blog_id=' . $website->id,
-        id                     => $website->id,
-        plugin_action_selector => 'refresh_website_templates',
-    });
-    $app->has_permission_error("refresh_website_templates by other permission");
-    ok($app->last_location->query_param('error_id'), "refresh_website_templates by other blog");
+    subtest 'by a user with other permission' => sub {
+        my $app = MT::Test::App->new;
+        $app->login($kumekawa);
+        $app->get();
+        $app->post_ok($params);
+        is $app->message_text, 'Some templates were not refreshed.', 'failed';
+        ok($app->last_location->query_param('error_id'), "error_id exists");
+    };
 
-    $app->login($ogawa);
-    $app->post_ok({
+    subtest 'by other permission' => sub {
+        my $app = MT::Test::App->new;
+        $app->login($ogawa);
+        $app->get();
+        $app->post_ok($params);
+        $app->has_permission_error;
+    };
+};
+
+subtest 'action = refresh_blog_templates' => sub {
+    my $params = {
         __mode                 => 'itemset_action',
-        _type                  => 'website',
-        action_name            => 'refresh_website_templates',
+        _type                  => 'blog',
+        action_name            => 'refresh_blog_templates',
         itemset_action_input   => '',
-        return_args            => '__mode=list_website&blog_id=' . $website->id,
+        return_args            => '__mode=list&_type=blog&blog_id='. $website->id. '&does_act=1',
         id                     => $website->id,
-        plugin_action_selector => 'refresh_website_templates',
-    });
-    $app->has_permission_error("refresh_website_templates by other permission");
+        plugin_action_selector => 'refresh_blog_templates',
+    };
+    subtest 'by admin' => sub {
+        my $app = MT::Test::App->new;
+        $app->login($admin);
+        $app->get();
+        $app->post_ok($params);
+        $app->has_no_permission_error;
+        ok(!$app->last_location->query_param('error_id'), "no error_id");
+    };
+
+    subtest 'a user who has permission on the blog' => sub {
+        my $app = MT::Test::App->new;
+        $app->login($tada);
+        $app->get();
+        $app->post_ok($params);
+        $app->has_no_permission_error;
+        ok(!$app->last_location->query_param('error_id'), "no error_id");
+    };
+
+    subtest 'a user who has permission on parent site(XXX)' => sub {
+        my $app = MT::Test::App->new;
+        $app->login($kikkawa);
+        $app->get();
+        $app->post_ok($params);
+        $app->has_permission_error;
+    };
+
+    subtest 'has can_edit_templates permission' => sub {
+        my $app = MT::Test::App->new;
+        $app->login($kemikawa);
+        $app->get();
+        $app->post_ok($params);
+        $app->has_no_permission_error;
+        ok(!$app->last_location->query_param('error_id'), "no error_id");
+    };
 };
 
 subtest 'mode = delete' => sub {
