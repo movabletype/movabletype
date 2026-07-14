@@ -1263,6 +1263,9 @@ sub start_rebuild_pages {
 sub start_rebuild_pages_directly {
     my $app = shift;
 
+    my $perms = $app->permissions
+        or return $app->error( $app->translate("No permissions") );
+
     my $start_time = $app->param('start_time');
 
     if ( !$start_time ) {
@@ -1308,11 +1311,16 @@ sub start_rebuild_pages_directly {
     );
 
     if ( $type_name =~ /^index-(\d+)$/ ) {
+        return $app->permission_denied() unless $perms->can_do('rebuild');
+
         my $tmpl_id = $1;
         require MT::Template;
         my $tmpl = MT::Template->load($tmpl_id)
             or return $app->error(
             $app->translate( 'Cannot load template #[_1].', $tmpl_id ) );
+
+        return $app->permission_denied() unless $app->user->permissions($tmpl->blog_id)->can_do('rebuild');
+
         $param{build_type_name} = $app->translate( "index template '[_1]'",
             MT::Util::encode_html( $tmpl->name ) );
         $param{is_one_index} = 1;
@@ -1323,6 +1331,11 @@ sub start_rebuild_pages_directly {
         my $entry = MT::Entry->load($entry_id)
             or return $app->error(
             $app->translate( 'Cannot load entry #[_1].', $entry_id ) );
+
+        return $app->permission_denied()
+            if !$perms->can_edit_entry( $entry, $app->user )
+            && !$perms->can_republish_entry( $entry, $app->user );
+
         $param{build_type_name}
             = $app->translate( "[_1] '[_2]'", $entry->class_label,
             MT::Util::encode_html( $entry->title ) );
@@ -1341,6 +1354,9 @@ sub start_rebuild_pages_directly {
         my $content_data = MT::ContentData->load($content_data_id)
             or return $app->errtrans( 'Cannot load content data #[_1].',
             $content_data_id );
+
+        return $app->permission_denied unless $perms->can_edit_content_data( $content_data, $app->user );
+
         $param{build_type_name} = $app->translate(
             "[_1] (ID:[_2])",
             $content_data->content_type->name || $app->translate('(no name)'),
