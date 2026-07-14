@@ -242,12 +242,11 @@ sub _fix_blog_url {
     }
     my $path        = $url->path;
     my $parent_path = $parent_url->path;
-    unless ($path =~ s/^$parent_path//) {
+    unless ($path =~ /^$parent_path/) {
         _note_or_croak("blog: path of $url does not match: $parent_url");
     }
-    my $new_url = join '/::/', $subdomain, ($path // '');
-print STDERR "$url => $new_url\n\n";
-    $new_url;
+    $path =~ s!^/!!;
+    return join '/::/', $subdomain, $path;
 }
 
 sub prepare_image {
