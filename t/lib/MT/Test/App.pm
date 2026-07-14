@@ -125,8 +125,9 @@ sub request {
     my ($self, $params, $is_redirect) = @_;
     $self->{locations} = undef unless $is_redirect;
 
+    # Note that 302 redirect for SEC_FETCH_SITE=none causes SEC_FETCH_SITE=none again
+    # On the other hand redirection by client side js always causes SEC_FETCH_SITE=same-origin
     local $ENV{HTTP_SEC_FETCH_SITE} = $self->{_request_sent} ? 'same-origin' : 'none';
-    $self->{_request_sent} = 1;
 
     my $res =
           $self->{server}
@@ -139,12 +140,23 @@ sub request {
 
     my $content_type = $res->headers->content_type;
 
+    if ($ENV{MT_TEST_SIGNIN_MANUALLY} && (my $cookies = $res->headers->{'set-cookie'})) {
+        require CGI::Cookie;
+        my %cookie = CGI::Cookie->parse(ref($cookies) eq 'ARRAY' ? $cookies->[-1] : $cookies);
+        if ($cookie{mt_user}) {
+            $self->{user}    = MT->model('author')->load({ name => $params->{username} });
+            $self->{session} = (split(/::/, $cookie{mt_user}->value))[1];
+        }
+    }
+
     # redirect?
     my $location;
     if ($res->header('Location')) {
         $location = $res->header('Location');
     } elsif ($content_type =~ /html/ and $self->{content} =~ /window\.location\s*=\s*(['"])(\S+)\1/) {
         $location = $2;
+        $self->{_request_sent} = 1;
+        Test::More::note "REDIRECTING BY window.location";
     }
     if ($location) {
         Test::More::note "REDIRECTING TO $location";
@@ -157,9 +169,12 @@ sub request {
         my $max_redirect = $self->{max_redirect} || 10;
         if (!defined $max_redirect or $max_redirect > @{$self->{locations} || []}) {
             push @{ $self->{locations} ||= [] }, $uri;
+            $params->{magic_token} //= ''; # disable auto filling
             return $self->request($params, 1) unless $self->{no_redirect};
         }
     }
+
+    $self->{_request_sent} = 1;
 
     # json response?
     if ($content_type =~ /json/ or $self->{content} =~ /\A\s*[\{\[]/) {
