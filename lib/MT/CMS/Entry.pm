@@ -2197,6 +2197,8 @@ sub save_entry_prefs {
 sub publish_entries {
     my $app = shift;
 
+    $app->validate_magic or return;
+
     $app->validate_param({
         id => [qw/ID MULTI/],
     }) or return;
@@ -2208,6 +2210,8 @@ sub publish_entries {
 
 sub draft_entries {
     my $app = shift;
+
+    $app->validate_magic or return;
 
     $app->validate_param({
         id => [qw/ID MULTI/],
