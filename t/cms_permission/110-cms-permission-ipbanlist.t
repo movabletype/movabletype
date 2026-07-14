@@ -24,7 +24,9 @@ $test_env->prepare_fixture(sub {
     MT::Test->init_db;
 
     # Website
-    my $website = MT::Test::Permission->make_website();
+    my $website = MT::Test::Permission->make_website(
+        name => 'my website',
+    );
 
     # Blog
     my $blog = MT::Test::Permission->make_blog(
@@ -78,6 +80,7 @@ $test_env->prepare_fixture(sub {
     my $designer = MT::Role->load({ name => MT->translate('Designer') });
 
     require MT::Association;
+    MT::Association->link($ichikawa => $manage_feedback => $website);
     MT::Association->link($aikawa   => $edit_config     => $blog);
     MT::Association->link($ichikawa => $manage_feedback => $blog);
     MT::Association->link($ukawa    => $designer        => $blog);
@@ -88,7 +91,8 @@ $test_env->prepare_fixture(sub {
     my $banlist = MT::Test::Permission->make_banlist(blog_id => $blog->id,);
 });
 
-my $blog = MT::Blog->load({ name => 'my blog' });
+my $website = MT::Website->load({ name => 'my website' });
+my $blog    = MT::Blog->load({ name => 'my blog' });
 
 my $aikawa   = MT::Author->load({ name => 'aikawa' });
 my $ichikawa = MT::Author->load({ name => 'ichikawa' });
@@ -103,7 +107,7 @@ my $banlist = MT::IPBanList->load({ blog_id => $blog->id });
 subtest 'mode = list' => sub {
     my $app = MT::Test::App->new('MT::App::CMS');
     $app->login($admin);
-    $app->post_ok({
+    $app->get_ok({
         __mode  => 'list',
         blog_id => $blog->id,
         _type   => 'banlist',
@@ -111,15 +115,22 @@ subtest 'mode = list' => sub {
     $app->has_no_permission_error("list by admin");
 
     $app->login($ichikawa);
-    $app->post_ok({
+    $app->get_ok({
         __mode  => 'list',
         blog_id => $blog->id,
         _type   => 'banlist',
     });
     $app->has_no_permission_error("list by permitted user (manage feedback)");
 
+    $app->get_ok({
+        __mode  => 'list',
+        blog_id => $website->id,
+        _type   => 'banlist',
+    });
+    $app->has_no_permission_error("list by permitted user (manage feedback, website)");
+
     $app->login($ogawa);
-    $app->post_ok({
+    $app->get_ok({
         __mode  => 'list',
         blog_id => $blog->id,
         _type   => 'banlist',
@@ -127,7 +138,7 @@ subtest 'mode = list' => sub {
     $app->has_permission_error("list by other blog (manage feedback)");
 
     $app->login($ukawa);
-    $app->post_ok({
+    $app->get_ok({
         __mode  => 'list',
         blog_id => $blog->id,
         _type   => 'banlist',
@@ -163,6 +174,14 @@ subtest 'mode = save' => sub {
         ip      => '1.1.1.1'
     });
     $app->has_no_permission_error("save by permitted user (manage feedback)");
+
+    $app->post_ok({
+        __mode  => 'save',
+        blog_id => $website->id,
+        _type   => 'banlist',
+        ip      => '2.2.2.2'
+    });
+    $app->has_no_permission_error("save by permitted user (manage feedback, website)");
 
     $app->login($egawa);
     $app->post_ok({
@@ -392,6 +411,26 @@ subtest 'mode = delete' => sub {
         id      => $banlist->id,
     });
     $app->has_no_permission_error("delete by permitted user (manage feedback)");
+
+    $banlist = MT::Test::Permission->make_banlist(blog_id => $website->id,);
+    $app->login($ichikawa);
+    $app->post_ok({
+        __mode  => 'delete',
+        blog_id => $website->id,
+        _type   => 'banlist',
+        id      => $banlist->id,
+    });
+    $app->has_no_permission_error("delete by permitted user (manage feedback, website)");
+
+    $banlist = MT::Test::Permission->make_banlist(blog_id => $blog->id,);
+    $app->login($ichikawa);
+    $app->post_ok({
+        __mode  => 'delete',
+        blog_id => $website->id,
+        _type   => 'banlist',
+        id      => $banlist->id,
+    });
+    $app->has_no_permission_error("delete by permitted user (manage feedback, website/blog)");
 
     $banlist = MT::Test::Permission->make_banlist(blog_id => $blog->id,);
     $app->login($egawa);
