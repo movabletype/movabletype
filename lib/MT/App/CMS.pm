@@ -725,6 +725,7 @@ sub init_request {
 
     if ( $mode ne 'logout' && $app->{upgrade_required} ) {
         my $driver = MT::Object->driver;
+        local $driver->dbh->{RaiseError} = 0;
         my $ctx;
         if ($driver && $driver->table_exists('MT::Author')) {
             require MT::Auth;
