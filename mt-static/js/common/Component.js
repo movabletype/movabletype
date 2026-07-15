@@ -157,10 +157,11 @@ Component = new Class( Observable, Autolayout, {
     getMouseEventCommand: function( event, rootElement ) {
         var ancestors = DOM.getAncestors( event.target, true );
         var cmdattr = app.NAMESPACE + ":command";
+        var dataCmdattr = "data-" + app.NAMESPACE + "-command";
         for( var i = 0; i < ancestors.length; i++ ) {
             try {
-                /* check the new NAMESPACE:command attribute first */
-                var result = ancestors[ i ].getAttribute( cmdattr );
+                /* check the data-mt-command attribute first, then the legacy NAMESPACE:command */
+                var result = ancestors[ i ].getAttribute( dataCmdattr ) || ancestors[ i ].getAttribute( cmdattr );
                 if ( !result ) {
                     result = this.matchCommand.exec( ancestors[ i ].className );
                     if ( result[ 1 ] )
@@ -517,7 +518,7 @@ Component.Delegator = {
     
     
     delegateEvent: function( event, eventName ) {
-        var delegate = DOM.getMouseEventAttribute( event, this.NAMESPACE + ":delegate" );
+        var delegate = DOM.getMouseEventAttribute( event, "data-" + this.NAMESPACE + "-delegate" ) || DOM.getMouseEventAttribute( event, this.NAMESPACE + ":delegate" );
             
         if ( !delegate ) {
             if ( this.delegateListeners && this.delegateListeners.hasOwnProperty( eventName ) )
