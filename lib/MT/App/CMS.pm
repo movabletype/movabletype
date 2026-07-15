@@ -736,6 +736,8 @@ sub init_request {
                 {
                     name => $ctx->{username},
                     type => MT::Author::AUTHOR(),
+                }, {
+                    fetchonly => [qw(id name password type email status external_id locked_out_time)],
                 }
             );
             if (   $author
