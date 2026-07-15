@@ -667,7 +667,7 @@ sub list_props {
             display               => 'none',
             col_class             => 'icon',
             base                  => '__virtual.single_select',
-            single_select_options => [
+            single_select_options => sub {[
                 {   label => MT->translate('Draft'),
                     text  => 'Draft',
                     value => 1,
@@ -692,7 +692,7 @@ sub list_props {
                     text  => 'Unpublish',
                     value => 6,
                 },
-            ],
+            ]},
         },
         modified_by => {
             base    => '__virtual.modified_by',
@@ -732,11 +732,11 @@ sub list_props {
             base                  => '__virtual.single_select',
             display               => 'none',
             label                 => 'Author Status',
-            single_select_options => [
+            single_select_options => sub {[
                 { label => MT->translate('Deleted'),  value => 'deleted', },
                 { label => MT->translate('Enabled'),  value => 'enabled', },
                 { label => MT->translate('Disabled'), value => 'disabled', },
-            ],
+            ]},
             terms => sub {
                 my $prop = shift;
                 my ( $args, $db_terms, $db_args ) = @_;

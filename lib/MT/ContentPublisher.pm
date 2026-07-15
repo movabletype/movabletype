@@ -602,7 +602,9 @@ sub rebuild_content_data {
 
             if ( $archiver->category_based ) {
                 for my $map (@maps) {
-                    my @cats = map { @$_ } values %{ $categories_for_rebuild || {} };
+                    my @cats
+                        = @{ $categories_for_rebuild->{ $map->cat_field_id }
+                            || [] };
                     for my $cat_item (@cats) {
                         my ( $cat, $is_old ) = @$cat_item;
                         MT::Util::Log->debug(
