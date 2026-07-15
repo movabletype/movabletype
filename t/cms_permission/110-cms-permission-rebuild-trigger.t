@@ -100,65 +100,86 @@ subtest 'mode = save' => sub {
 
     my $save_message_regex = qr/Rebuild Trigger settings have been saved/;
 
-    $app->login($admin);
-    $app->post_ok({
-        __mode      => 'save',
-        _type       => 'rebuild_trigger',
-        blog_id     => $blog->id,
-        return_args => '__mode=cfg_rebuild_trigger&blog_id=' . $blog->id,
-    });
-    like $app->message_text, $save_message_regex, 'right message by admin';
-    is $app->last_location->query_param('__mode') => 'cfg_rebuild_trigger', 'redirected to dashboard';
+    subtest 'admin user' => sub {
+        $app->login($admin);
+        $app->get_ok({__mode => 'cfg_rebuild_trigger', blog_id => $blog->id});
+        $app->{content} =~ s/<input type="hidden" name="rebuild_trigger" value="">//; # remove template element
+        $app->post_form_ok;
+        like $app->message_text, $save_message_regex, 'right message by admin';
+        is $app->last_location->query_param('__mode') => 'cfg_rebuild_trigger', 'redirected to dashboard';
+    };
 
-    $app->login($aikawa);
-    $app->post_ok({
-        __mode      => 'save',
-        _type       => 'rebuild_trigger',
-        blog_id     => $blog->id,
-        return_args => '__mode=cfg_rebuild_trigger&blog_id=' . $blog->id,
-    });
-    like $app->message_text, $save_message_regex, 'right message by permitted user (child site)';
-    is $app->last_location->query_param('__mode') => 'cfg_rebuild_trigger', 'redirected to dashboard';
+    subtest 'permitted user for child site' => sub {
+        $app->login($aikawa);
+        $app->get_ok({__mode => 'cfg_rebuild_trigger', blog_id => $blog->id});
+        $app->{content} =~ s/<input type="hidden" name="rebuild_trigger" value="">//; # remove template element
+        $app->post_form_ok;
+        like $app->message_text, $save_message_regex, 'right message by permitted user (child site)';
+        is $app->last_location->query_param('__mode') => 'cfg_rebuild_trigger', 'redirected to dashboard';
+    };
 
-    $app->login($ichikawa);
-    $app->post_ok({
-        __mode      => 'save',
-        _type       => 'rebuild_trigger',
-        blog_id     => $website->id,
-        return_args => '__mode=cfg_rebuild_trigger&blog_id=' . $website->id,
-    });
-    like $app->message_text, $save_message_regex, 'right message by permitted user (parent site)';
-    is $app->last_location->query_param('__mode') => 'cfg_rebuild_trigger', 'redirected to dashboard';
+    subtest 'permitted user for parent site' => sub {
+        $app->login($ichikawa);
+        $app->get_ok({__mode => 'cfg_rebuild_trigger', blog_id => $website->id});
+        $app->{content} =~ s/<input type="hidden" name="rebuild_trigger" value="">//; # remove template element
+        $app->post_form_ok;
+        like $app->message_text, $save_message_regex, 'right message by permitted user (parent site)';
+        is $app->last_location->query_param('__mode') => 'cfg_rebuild_trigger', 'redirected to dashboard';
+    };
 
-    $app->login($ukawa);
-    $app->post_ok({
-        __mode      => 'save',
-        _type       => 'rebuild_trigger',
-        blog_id     => $blog->id,
-        return_args => '__mode=cfg_rebuild_trigger&blog_id=' . $blog->id,
-    });
-    $app->has_permission_error('right message by non permitted user (child site)');
-    ok !$app->last_location, 'not to redirected to dashboard';
+    subtest 'non permitted user for child site' => sub {
+        $app->login($ukawa);
+        $app->get_ok({__mode => 'cfg_rebuild_trigger', blog_id => $blog->id});
+        $app->has_permission_error('right message by non permitted user (child site)');
+        ok !$app->last_location, 'not to redirected to dashboard';
 
-    $app->login($egawa);
-    $app->post_ok({
-        __mode      => 'save',
-        _type       => 'rebuild_trigger',
-        blog_id     => $website->id,
-        return_args => '__mode=cfg_rebuild_trigger&blog_id=' . $website->id,
-    });
-    $app->has_permission_error('right message by non permitted user (parent site)');
-    ok !$app->last_location, 'not to redirected to dashboard';
+        subtest 'post directly' => sub {
+            $app->post_ok({
+                __mode      => 'save',
+                _type       => 'rebuild_trigger',
+                blog_id     => $blog->id,
+                # return_args => '__mode=cfg_rebuild_trigger&blog_id=' . $blog->id,
+            });
+            $app->has_permission_error('right message by non permitted user (child site)');
+            ok !$app->last_location, 'not to redirected to dashboard';
+        };
+    };
 
-    $app->login($ogawa);
-    $app->post_ok({
-        __mode      => 'save',
-        _type       => 'rebuild_trigger',
-        blog_id     => $blog->id,
-        return_args => '__mode=cfg_rebuild_trigger&blog_id=' . $blog->id,
-    });
-    $app->has_permission_error('right message by other permission user');
-    is $app->last_location->query_param('__mode') => 'dashboard', 'redirected to dashboard';
+    subtest 'non permitted user for parent site' => sub {
+        $app->login($egawa);
+        $app->get_ok({__mode => 'cfg_rebuild_trigger', blog_id => $website->id});
+        $app->has_permission_error('right message by non permitted user (child site)');
+        ok !$app->last_location, 'not to redirected to dashboard';
+
+        subtest 'post directly' => sub {
+            $app->post_ok({
+                __mode      => 'save',
+                _type       => 'rebuild_trigger',
+                blog_id     => $website->id,
+                # return_args => '__mode=cfg_rebuild_trigger&blog_id=' . $website->id,
+            });
+            $app->has_permission_error('right message by non permitted user (parent site)');
+            ok !$app->last_location, 'not to redirected to dashboard';
+        };
+    };
+
+    subtest 'other permission user' => sub {
+        $app->login($ogawa);
+        $app->get_ok({__mode => 'cfg_rebuild_trigger', blog_id => $blog->id});
+        $app->has_permission_error('right message by other permission user');
+        is $app->last_location->query_param('__mode') => 'dashboard', 'redirected to dashboard';
+
+        subtest 'post directly' => sub {
+            $app->post_ok({
+                __mode      => 'save',
+                _type       => 'rebuild_trigger',
+                blog_id     => $blog->id,
+                # return_args => '__mode=cfg_rebuild_trigger&blog_id=' . $blog->id,
+            });
+            $app->has_permission_error('right message by other permission user');
+            is $app->last_location->query_param('__mode') => 'dashboard', 'redirected to dashboard';
+        };
+    };
 };
 
 subtest 'mode = add_rebuild_trigger' => sub {

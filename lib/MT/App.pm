@@ -1222,6 +1222,15 @@ sub init_request {
     }
     $app->init_query();
 
+    if ((($app->get_header('Sec-Fetch-Site') || '') ne 'same-origin') || $app->{query}->param('_is_cross_origin')) {
+        if (defined(my $args = $app->{query}->param('return_args'))) {
+            require URI;
+            my $uri = URI->new;
+            $uri->query($args);
+            $uri->query_param(_is_cross_origin => 1);
+            $app->{query}->param('return_args', $uri->query);
+        }
+    }
     $app->{return_args} = $app->{query}->param('return_args');
     $app->cookies;
 
