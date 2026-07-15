@@ -191,11 +191,17 @@ sub edit {
                     my $rev_obj = $rev->[3];
                     my $values = $content_data->get_values;
                     $param->{$_} = $values->{$_} for keys %$values;
-                    $param->{'revision-note'} = $rev_obj->description;
+                    $param->{'revision-note-in-status-widget'} = $rev_obj->description;
                     $param->{loaded_revision} = 1;
                 }
                 $param->{rev_number}  = $rn;
                 $param->{no_snapshot} = 1 if $app->param('no_snapshot');
+            }
+            if ( my $cur_rev = $content_data->current_revision ) {
+                my $rev = $content_data->load_revision( { rev_number => $cur_rev } );
+                if ( $rev && @$rev ) {
+                    $param->{'latest-revision-note'} = $rev->[3]->description;
+                }
             }
             $param->{rev_date} = MT::Util::format_ts(
                 '%Y-%m-%d %H:%M:%S',
@@ -1676,12 +1682,22 @@ sub _create_temp_content_data {
     my $content_type        = $content_data->content_type;
     my $field_data          = $content_type->fields;
     my $data                = {};
+    my $convert_breaks      = {};
     for my $f (@$field_data) {
         my $content_field_type = $content_field_types->{ $f->{type} };
         $data->{ $f->{id} }
             = _get_form_data( $app, $content_field_type, $f );
-    }
+        if ( $f->{type} eq 'multi_line_text' ) {
+            my $val = $app->param('content-field-' . $f->{id} . '_convert_breaks') || '';
+            if ( $val eq '_richtext' ) {
+                $val = 'richtext';
+            }
+            $convert_breaks->{ $f->{id} } = $val;
+        }
+     }
     $content_data->data($data);
+    $content_data->convert_breaks(
+        MT::Serialize->serialize( \$convert_breaks ) );
 
     return $content_data;
 }

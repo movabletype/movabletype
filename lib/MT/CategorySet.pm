@@ -66,7 +66,9 @@ sub list_props {
             base         => '__virtual.integer',
             label        => 'Categories',
             filter_label => 'Category Count',
+            terms        => undef,
             bulk_html    => \&_cat_count_bulk_html,
+            grep         => \&_cat_grep,
             display      => 'default',
             order        => 400,
         },
@@ -74,8 +76,10 @@ sub list_props {
             base         => '__virtual.integer',
             label        => 'Content Types',
             filter_label => 'Content Type Count',
+            terms        => undef,
             bulk_html    => \&_ct_count_bulk_html,
             html_link    => \&_ct_count_html_link,
+            grep         => \&_ct_grep,
             display      => 'default',
             order        => 500,
         },
@@ -141,6 +145,32 @@ sub _cat_count_bulk_html {
     return @out;
 }
 
+sub _cat_grep {
+    my ($prop, $args, $objs, $options) = @_;
+    my $blog      = $options->{blog};
+    my $cat_count = __PACKAGE__->cat_count_by_blog($blog->id);
+    my $option    = $args->{option};
+    my $value     = $args->{value} || 0;
+    my @grepped;
+    for my $obj (@$objs) {
+        my $count = $cat_count->{ $obj->id } || 0;
+        if ($option eq 'equal') {
+            push @grepped, $obj if $count == $value;
+        } elsif ($option eq 'not_equal') {
+            push @grepped, $obj if $count != $value;
+        } elsif ($option eq 'greater_than') {
+            push @grepped, $obj if $count > $value;
+        } elsif ($option eq 'greater_equal') {
+            push @grepped, $obj if $count >= $value;
+        } elsif ($option eq 'less_than') {
+            push @grepped, $obj if $count < $value;
+        } elsif ($option eq 'less_equal') {
+            push @grepped, $obj if $count <= $value;
+        }
+    }
+    return @grepped;
+}
+
 sub ct_count_by_blog {
     my $class     = shift;
     my ($blog_id) = @_;
@@ -188,6 +218,32 @@ sub _ct_count_html_link {
             filter_val => $obj->id,
         },
     );
+}
+
+sub _ct_grep {
+    my ($prop, $args, $objs, $options) = @_;
+    my $blog     = $options->{blog};
+    my $ct_count = __PACKAGE__->ct_count_by_blog($blog->id);
+    my $option   = $args->{option};
+    my $value    = $args->{value} || 0;
+    my @grepped;
+    for my $obj (@$objs) {
+        my $count = $ct_count->{ $obj->id } || 0;
+        if ($option eq 'equal') {
+            push @grepped, $obj if $count == $value;
+        } elsif ($option eq 'not_equal') {
+            push @grepped, $obj if $count != $value;
+        } elsif ($option eq 'greater_than') {
+            push @grepped, $obj if $count > $value;
+        } elsif ($option eq 'greater_equal') {
+            push @grepped, $obj if $count >= $value;
+        } elsif ($option eq 'less_than') {
+            push @grepped, $obj if $count < $value;
+        } elsif ($option eq 'less_equal') {
+            push @grepped, $obj if $count <= $value;
+        }
+    }
+    return @grepped;
 }
 
 sub _category_label_terms {

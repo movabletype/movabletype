@@ -73,12 +73,12 @@ sub edit {
                     $obj->modified_on, $blog,
                     $app->user ? $app->user->preferred_language : undef );
                 my $rev = $obj->load_revision( { rev_number => $rn } );
-                if ( $rev && @$rev ) {
+                if ( $rev && @$rev && $rn != $obj->current_revision ) {
                     $obj = $rev->[0];
                     my $rev_obj = $rev->[3];
                     my $values = $obj->get_values;
                     $param->{$_} = $values->{$_} foreach keys %$values;
-                    $param->{'revision-note'} = $rev_obj->description;
+                    $param->{'revision-note-in-status-widget'} = $rev_obj->description;
                     $param->{loaded_revision} = 1;
                 }
                 $param->{rev_number} = $rn;
@@ -86,6 +86,12 @@ sub edit {
                     $obj->modified_on, $blog,
                     $app->user ? $app->user->preferred_language : undef );
                 $param->{no_snapshot} = 1 if $app->param('no_snapshot');
+            }
+        }
+        if ( my $cur_rev = $obj->current_revision ) {
+            my $rev = $obj->load_revision( { rev_number => $cur_rev } );
+            if ( $rev && @$rev ) {
+                $param->{'latest-revision-note'} = $rev->[3]->description;
             }
         }
         $param->{nav_templates} = 1;
