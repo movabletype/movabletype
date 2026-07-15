@@ -1227,6 +1227,7 @@ sub init_request {
     if ((($app->get_header('Sec-Fetch-Site') || '') ne 'same-origin') || $app->{query}->param('_is_cross_origin')) {
         if (defined(my $args = $app->{query}->param('return_args'))) {
             require URI;
+            require URI::QueryParam;
             my $uri = URI->new;
             $uri->query($args);
             $uri->query_param(_is_cross_origin => 1);
