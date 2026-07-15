@@ -1097,14 +1097,11 @@ sub delete {
             $app, $obj )
             or return $app->permission_denied;
 
-        # Mark before FileInfo records are gone by cascading delete
-        my @finfos = MT->model('fileinfo')->load({ cd_id => $obj->id, blog_id => $blog->id });
-        for my $finfo (@finfos) {
-            if ( $app->config('DeleteFilesAfterRebuild') ) {
-                $finfo->mark_to_remove;
-                MT::Util::Log->debug( 'Marked to remove ' . $finfo->file_path );
-            }
-        }
+        my %recipe;
+        %recipe = $app->publisher->rebuild_deleted_content_data(
+            ContentData => $obj,
+            Blog        => $obj->blog,
+        ) if $obj->status eq MT::ContentStatus::RELEASE();
 
         # Remove object from database
         my $content_type_name
@@ -1115,12 +1112,6 @@ sub delete {
             or return $app->errtrans( 'Removing [_1] failed: [_2]',
             $content_type_name, $obj->errstr );
         $app->run_callbacks( 'cms_post_delete.content_data', $app, $obj );
-
-        my %recipe;
-        %recipe = $app->publisher->rebuild_deleted_content_data(
-            ContentData => $obj,
-            Blog        => $obj->blog,
-        ) if $obj->status eq MT::ContentStatus::RELEASE();
 
         my $child_hash = $rebuild_recipe{ $obj->blog_id } || {};
         MT::__merge_hash( $child_hash, \%recipe );
