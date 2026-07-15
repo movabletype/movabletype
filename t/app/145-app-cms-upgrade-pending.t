@@ -25,28 +25,11 @@ sub setup_upgrade_test {
 
     MT::Test->init_db;
 
-    my $cfg = MT->config;
-    $cfg->MTVersion(9.000001);
-    $cfg->SchemaVersion(9.0000);
-    $cfg->RequireUpgradePermission($require_admin);
-    $cfg->save_config;
-
-    my $config = MT::Config->load;
-    my $data   = $config->data;
-    my @lines  = split /\n/, $data;
-    my @new_lines;
-    foreach my $line (@lines) {
-        if ( $line =~ /^MTVersion/ ) {
-            $line = 'MTVersion 9.000001';
-        }
-        elsif ( $line =~ /^SchemaVersion/ ) {
-            $line = 'SchemaVersion 9.0000';
-        }
-        push @new_lines, $line;
-    }
-    my $new_data = join "\n", @new_lines;
-    $config->data($new_data);
-    $config->save or die $config->errstr;
+    $test_env->update_config(
+        MTVersion                => 9.000001,
+        SchemaVersion            => 9.0000,
+        RequireUpgradePermission => $require_admin,
+    );
 }
 
 subtest 'Superuser: redirected to upgrade' => sub {
