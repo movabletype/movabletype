@@ -1592,7 +1592,7 @@ div.mce-notification-error {
      id="title"
      label="<__trans phrase="Title">"
      label_class="no-header">
-    <input type="text" name="title" id="title" class="form-control title text full" value="<$mt:var name="title" escape="html"$>" placeholder="<__trans phrase="Title">" maxlength="255" mt:watch-change="1" />
+    <input type="text" name="title" id="title" class="form-control title text full" value="<$mt:var name="title" escape="html"$>" placeholder="<__trans phrase="Title">" maxlength="255" data-mt-watch-change="1" />
   </mtapp:setting>
     <mt:if name="has_archive_mapping">
       <mtapp:setting
@@ -1678,7 +1678,7 @@ div.mce-notification-error {
         <div class="mt-flexBreak"></div>
         <div class="mt-draggable__content">
           <div class="mb-3 position-relative">
-            <input type="text" name="tags" id="tags" class="form-control text full" value="<$mt:var name="tags" escape="html"$>" mt:watch-change="1" autocomplete="off" />
+            <input type="text" name="tags" id="tags" class="form-control text full" value="<$mt:var name="tags" escape="html"$>" data-mt-watch-change="1" autocomplete="off" />
             <input type="hidden" name="_ignore_tags" id="tags-cache" value="<$mt:var name="tags" escape="html"$>" />
             <div id="tags-suggestion" class="mt-suggest" style="display: none; z-index: 100;">
               <div id="tags_completion" class="mt_suggest__list">
@@ -1702,7 +1702,7 @@ div.mce-notification-error {
         </div>
         <div class="mt-flexBreak"></div>
         <div class="mt-draggable__content">
-          <textarea name="excerpt" id="excerpt" class="form-control text full low" mt:watch-change="1"><$mt:var name="excerpt" escape="html"$></textarea>
+          <textarea name="excerpt" id="excerpt" class="form-control text full low" data-mt-watch-change="1"><$mt:var name="excerpt" escape="html"$></textarea>
         </div>
       </div>
     </div>
@@ -1719,7 +1719,7 @@ div.mce-notification-error {
         </div>
         <div class="mt-flexBreak"></div>
         <div class="mt-draggable__content">
-          <input type="text" name="keywords" id="keywords" class="form-control text full" value="<$mt:var name="keywords" escape="html"$>" mt:watch-change="1" autocomplete="off" />
+          <input type="text" name="keywords" id="keywords" class="form-control text full" value="<$mt:var name="keywords" escape="html"$>" data-mt-watch-change="1" autocomplete="off" />
         </div>
       </div>
     </div>
