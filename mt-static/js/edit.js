@@ -108,16 +108,16 @@ MT.App = new Class( MT.App, {
 
                 var e = event.target;
                 var return_args = '__mode=list&_type='
-                    + e.getAttribute( "mt:object-type" )
+                    + mtDataAttr( e, "object-type" )
                     + '&blog_id='
-                    + e.getAttribute( "mt:blog-id" );
-                if (e.hasAttribute('mt:subtype'))
+                    + mtDataAttr( e, "blog-id" );
+                if (mtDataAttr( e, "subtype" ) !== null)
                     return_args += '&type='
-                        + e.getAttribute('mt:subtype');
+                        + mtDataAttr( e, "subtype" );
                 if( !doRemoveItems(
                         form,
-                        e.getAttribute( "mt:object-singular" ),
-                        e.getAttribute( "mt:object-plural" ),
+                        mtDataAttr( e, "object-singular" ),
+                        mtDataAttr( e, "object-plural" ),
                         false,
                         {
                             'return_args': return_args
@@ -327,7 +327,7 @@ MT.App.CategoryList = new Class( Object, {
     eventMouseOver: function( event ) {
         var target;
         if ( event.target &&
-            ( target = DOM.getFirstAncestorByAttribute( event.target, "mt:focus-hover" ) ) )
+            ( target = ( DOM.getFirstAncestorByAttribute( event.target, "data-mt-focus-hover" ) || DOM.getFirstAncestorByAttribute( event.target, "mt:focus-hover" ) ) ) )
                 DOM.addClassName( target, "focus" );
     },
 
@@ -335,15 +335,15 @@ MT.App.CategoryList = new Class( Object, {
     eventMouseOut: function( event ) {
         var target;
         if ( event.target &&
-            ( target = DOM.getFirstAncestorByAttribute( event.target, "mt:focus-hover" ) ) )
+            ( target = ( DOM.getFirstAncestorByAttribute( event.target, "data-mt-focus-hover" ) || DOM.getFirstAncestorByAttribute( event.target, "mt:focus-hover" ) ) ) )
                 DOM.removeClassName( target, "focus" );
     },
 
 
     eventClick: function( event ) {
         var command = app.getMouseEventCommand( event );
-        var id = DOM.getMouseEventAttribute( event, "mt:id" );
-        var contentFieldId = DOM.getMouseEventAttribute( event, 'mt:content-field-id' );
+        var id = DOM.getMouseEventAttribute( event, "data-mt-id" ) || DOM.getMouseEventAttribute( event, "mt:id" );
+        var contentFieldId = DOM.getMouseEventAttribute( event, 'data-mt-content-field-id' ) || DOM.getMouseEventAttribute( event, 'mt:content-field-id' );
         var categorySelector = contentFieldId
             ? app.fieldCategorySelectors[contentFieldId]
             : app.categorySelector;

@@ -33,11 +33,11 @@
             }
 
             self.edit_field = $('<div></div>');
-            self.edit_field_input = $('<textarea id="' + self.id + '-text" class="mt-contentblock__textarea" name="' + self.id + '-text" mt:watch-change="1"></textarea>');
+            self.edit_field_input = $('<textarea id="' + self.id + '-text" class="mt-contentblock__textarea" name="' + self.id + '-text" data-mt-watch-change="1"></textarea>');
             self.edit_field_input.text(self.data.value);
             self.edit_field.append(self.edit_field_input);
             if (MT.EditorManager) {
-                self.edit_field_input_mobile = $('<textarea id="' + self.id + '-text-mobile" class="mt-contentblock__textarea" name="' + self.id + '-text-mobile" mt:watch-change="1"></textarea>');
+                self.edit_field_input_mobile = $('<textarea id="' + self.id + '-text-mobile" class="mt-contentblock__textarea" name="' + self.id + '-text-mobile" data-mt-watch-change="1"></textarea>');
                 self.edit_field_input_mobile.text(self.data.value);
                 self.edit_field_input_mobile.hide();
                 self.edit_field.append(self.edit_field_input_mobile);
