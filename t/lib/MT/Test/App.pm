@@ -148,7 +148,7 @@ sub request {
         require CGI::Cookie;
         my %cookie = CGI::Cookie->parse(ref($cookies) eq 'ARRAY' ? $cookies->[-1] : $cookies);
         if ($cookie{mt_user}) {
-            $self->{user}    = MT->model('author')->load({ name => $params->{username} });
+            $self->{user}    = MT->model('author')->load({ name => $cloned_params->{username} });
             $self->{session} = (split(/::/, $cookie{mt_user}->value))[1];
         }
     }
@@ -173,7 +173,7 @@ sub request {
         my $max_redirect = $self->{max_redirect} || 10;
         if (!defined $max_redirect or $max_redirect > @{$self->{locations} || []}) {
             push @{ $self->{locations} ||= [] }, $uri;
-            $params->{magic_token} //= ''; # disable auto filling
+            $query_params->{magic_token} //= ''; # disable auto filling
             return $self->request($query_params, 1) unless $self->{no_redirect};
         }
     }
