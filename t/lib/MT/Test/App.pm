@@ -11,6 +11,7 @@ use URI::QueryParam;
 use Test::More;
 use JSON;
 use File::Basename;
+use Storable;
 
 with qw(
     MT::Test::Role::Request
@@ -124,10 +125,13 @@ sub request {
     my ($self, $params, $is_redirect) = @_;
     $self->{locations} = undef unless $is_redirect;
 
+    # not to break params in a test
+    my $cloned_params = Storable::dclone($params);
+
     my $res =
           $self->{server}
-        ? $self->_request_locally($params)
-        : $self->_request_internally($params);
+        ? $self->_request_locally($cloned_params)
+        : $self->_request_internally($cloned_params);
 
     $self->{content} = $res->decoded_content // '';
 
@@ -144,8 +148,8 @@ sub request {
     }
     if ($location) {
         Test::More::note "REDIRECTING TO $location";
-        my $uri    = URI->new($location);
-        my $params = $uri->query_form_hash;
+        my $uri          = URI->new($location);
+        my $query_params = $uri->query_form_hash;
 
         # avoid processing multiple requests in a second
         sleep 1;
@@ -153,7 +157,7 @@ sub request {
         my $max_redirect = $self->{max_redirect} || 10;
         if (!defined $max_redirect or $max_redirect > @{$self->{locations} || []}) {
             push @{ $self->{locations} ||= [] }, $uri;
-            return $self->request($params, 1) unless $self->{no_redirect};
+            return $self->request($query_params, 1) unless $self->{no_redirect};
         }
     }
 
