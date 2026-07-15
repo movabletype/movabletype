@@ -22,6 +22,10 @@ import List from "./elements/List.svelte";
 import Tables from "./elements/Tables.svelte";
 import TextLabel from "./elements/TextLabel.svelte";
 
+const customTypes = $state<Record<string, CT.CustomContentFieldMountFunction>>(
+  {},
+);
+
 export default class ContentFieldTypes {
   private static coreTypes = {
     "content-type": ContentType,
@@ -47,23 +51,19 @@ export default class ContentFieldTypes {
     "text-label": TextLabel,
   };
 
-  private static customTypes: {
-    [type: string]: CT.CustomContentFieldMountFunction;
-  } = {};
-
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   static getCoreType(type: string): any {
-    return !this.customTypes[type] && this.coreTypes[type];
+    return !customTypes[type] && this.coreTypes[type];
   }
 
   static getCustomType(type: string): CT.CustomContentFieldMountFunction {
-    return this.customTypes[type];
+    return customTypes[type];
   }
 
   static registerCustomType(
     type: string,
     mountFunction: CT.CustomContentFieldMountFunction,
   ): void {
-    this.customTypes[type] = mountFunction;
+    customTypes[type] = mountFunction;
   }
 }

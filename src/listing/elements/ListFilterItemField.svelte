@@ -1,14 +1,15 @@
 <script lang="ts">
   import type * as Listing from "../../@types/listing";
 
-  import { afterUpdate } from "svelte";
+  type Props = {
+    field: string;
+    parentDiv: HTMLDivElement | undefined;
+    item: Listing.Item;
+    localeCalendarHeader: Array<string>;
+  };
+  let { field, parentDiv, item, localeCalendarHeader }: Props = $props();
 
-  export let field: string;
-  export let parentDiv: HTMLDivElement | undefined;
-  export let item: Listing.Item;
-  export let localeCalendarHeader: Array<string>;
-
-  afterUpdate(() => {
+  $effect(() => {
     setValues();
     initializeDateOption();
     initializeOptionWithBlank();
@@ -78,10 +79,10 @@
     jQuery(parentDiv)
       .find(".filter-date")
       .each(function (_index, element) {
-        const $node = jQuery(element);
-        dateOption($node);
-        $node.on("change", function () {
-          dateOption($node);
+        const node = jQuery(element);
+        dateOption(node);
+        node.on("change", function () {
+          dateOption(node);
         });
       });
     jQuery(parentDiv)
@@ -114,20 +115,20 @@
       return;
     }
 
-    const changeOption = ($node: JQuery<HTMLElement>): void => {
-      if ($node.val() === "blank" || $node.val() === "not_blank") {
-        $node.parent().find("input[type=text]").hide();
+    const changeOption = (node: JQuery<HTMLElement>): void => {
+      if (node.val() === "blank" || node.val() === "not_blank") {
+        node.parent().find("input[type=text]").hide();
       } else {
-        $node.parent().find("input[type=text]").show();
+        node.parent().find("input[type=text]").show();
       }
     };
     jQuery(parentDiv)
       .find(".filter-blank")
       .each(function (_index, element) {
-        const $node = jQuery(element);
-        changeOption($node);
-        $node.on("change", function () {
-          changeOption($node);
+        const node = jQuery(element);
+        changeOption(node);
+        node.on("change", function () {
+          changeOption(node);
         });
       });
   };

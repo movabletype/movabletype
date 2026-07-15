@@ -104,3 +104,13 @@ export interface ContentType {
   can_create: number;
   can_search: number;
 }
+
+export interface ContentFieldProps {
+  config: ConfigSettings;
+  field: Field;
+  gather: (() => object) | undefined;
+  id: string;
+  options: Options;
+  optionsHtmlParams: OptionsHtmlParams;
+  isLabelField?: boolean;
+}
