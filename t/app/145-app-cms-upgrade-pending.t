@@ -19,6 +19,9 @@ MT->add_callback( 'MT::App::CMS::init_request', 10, undef,
     sub { delete $_[1]->{upgrade_required} },
 );
 
+my $test_name = 'restricted_user';
+my $test_pass = 'test1234';
+
 sub setup_upgrade_test {
     my %args          = @_;
     my $require_admin = $args{require_admin} || 0;
@@ -29,6 +32,12 @@ sub setup_upgrade_test {
         MTVersion                => 9.000001,
         SchemaVersion            => 9.0000,
         RequireUpgradePermission => $require_admin,
+    );
+
+    MT::Test::Permission->make_author(
+        name     => $test_name,
+        password => $test_pass,
+        nickname => 'Test User',
     );
 }
 
@@ -49,15 +58,7 @@ subtest 'Superuser: redirected to upgrade' => sub {
 };
 
 subtest 'Non-superuser: redirected to upgrade when RequireUpgradePermission=0' => sub {
-    my $test_name = 'restricted_user';
-    my $test_pass = 'test1234';
-
     setup_upgrade_test( require_admin => 0 );
-    my $author = MT::Test::Permission->make_author(
-        name     => $test_name,
-        password => $test_pass,
-        nickname => 'Test User',
-    );
     my $app =
       MT::Test::App->new( app_class => 'MT::App::CMS', no_redirect => 1 );
     $app->post_ok( { username => $test_name, password => $test_pass } );
@@ -65,15 +66,7 @@ subtest 'Non-superuser: redirected to upgrade when RequireUpgradePermission=0' =
 };
 
 subtest 'Non-superuser: upgrade pending when RequireUpgradePermission=1' => sub {
-    my $test_name = 'restricted_user';
-    my $test_pass = 'test1234';
-
     setup_upgrade_test( require_admin => 1 );
-    my $author = MT::Test::Permission->make_author(
-        name     => $test_name,
-        password => $test_pass,
-        nickname => 'Test User',
-    );
     my $app =
       MT::Test::App->new( app_class => 'MT::App::CMS', no_redirect => 1 );
     $app->post_ok( { username => $test_name, password => $test_pass } );
