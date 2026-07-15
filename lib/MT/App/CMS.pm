@@ -751,13 +751,14 @@ sub init_request {
                     type => MT::Author::AUTHOR(),
                 }
             );
-            if (   $author
-                && !$author->is_superuser
+            if (   (!$author || ($author && !$author->is_superuser))
                 && $app->config->RequireUpgradePermission )
             {
-                $app->user($author);
-                $app->session_user( $author, $ctx->{session_id},
-                    permanent => $ctx->{permanent} );
+                if ($author) {
+                    $app->user($author);
+                    $app->session_user( $author, $ctx->{session_id},
+                        permanent => $ctx->{permanent} );
+                }
                 $app->mode('upgrade_pending');
             }
             else {
