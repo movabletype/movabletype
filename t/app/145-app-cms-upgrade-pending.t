@@ -7,7 +7,9 @@ use MT::Test::Env;
 our $test_env;
 
 BEGIN {
-    $test_env = MT::Test::Env->new;
+    $test_env = MT::Test::Env->new(
+        PluginPath => ['TEST_ROOT/plugins'],
+    );
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
@@ -39,10 +41,38 @@ sub setup_upgrade_test {
         password => $test_pass,
         nickname => 'Test User',
     );
+
+    my $plugin = $args{plugin} || '';
+    if ($plugin eq 'blog') {
+        $test_env->save_file('plugins/BlogPlugin/config.yaml', <<'YAML');
+name: BlogPlugin
+version: 1
+schema_version: 1
+object_types:
+  website:
+    new_column: integer
+  blog:
+    new_column: integer
+YAML
+    }
+    if ($plugin eq 'author') {
+        $test_env->save_file('plugins/AuthorPlugin/config.yaml', <<'YAML');
+name: AuthorPlugin
+version: 1
+schema_version: 1
+object_types:
+  author:
+    new_column: integer
+YAML
+    }
 }
 
+for my $plugin ('no plugin', 'blog', 'author') {
+
+    subtest $plugin => sub {
+
 subtest 'Superuser: redirected to upgrade' => sub {
-    setup_upgrade_test( require_admin => 0 );
+    setup_upgrade_test(require_admin => 0, plugin => $plugin);
     my $app =
       MT::Test::App->new( app_class => 'MT::App::CMS', no_redirect => 1 );
     $app->post_ok( { username => 'Melody', password => 'Nelson' } );
@@ -51,7 +81,7 @@ subtest 'Superuser: redirected to upgrade' => sub {
 };
 
 subtest 'Superuser: redirected to upgrade' => sub {
-    setup_upgrade_test( require_admin => 1 );
+    setup_upgrade_test(require_admin => 1, plugin => $plugin);
     my $app =
       MT::Test::App->new( app_class => 'MT::App::CMS', no_redirect => 1 );
     $app->post_ok( { username => 'Melody', password => 'Nelson' } );
@@ -59,7 +89,7 @@ subtest 'Superuser: redirected to upgrade' => sub {
 };
 
 subtest 'Non-superuser: redirected to upgrade when RequireUpgradePermission=0' => sub {
-    setup_upgrade_test( require_admin => 0 );
+    setup_upgrade_test(require_admin => 0, plugin => $plugin);
     my $app =
       MT::Test::App->new( app_class => 'MT::App::CMS', no_redirect => 1 );
     $app->post_ok( { username => $test_name, password => $test_pass } );
@@ -67,7 +97,7 @@ subtest 'Non-superuser: redirected to upgrade when RequireUpgradePermission=0' =
 };
 
 subtest 'Non-superuser: upgrade pending when RequireUpgradePermission=1' => sub {
-    setup_upgrade_test( require_admin => 1 );
+    setup_upgrade_test(require_admin => 1, plugin => $plugin);
     my $app =
       MT::Test::App->new( app_class => 'MT::App::CMS', no_redirect => 1 );
     $app->post_ok( { username => $test_name, password => $test_pass } );
@@ -76,7 +106,7 @@ subtest 'Non-superuser: upgrade pending when RequireUpgradePermission=1' => sub 
 };
 
 subtest 'Not logged in: redirected to upgrade when RequireUpgradePermission=0' => sub {
-    setup_upgrade_test( require_admin => 0 );
+    setup_upgrade_test(require_admin => 0, plugin => $plugin);
     my $app =
       MT::Test::App->new( app_class => 'MT::App::CMS', no_redirect => 1 );
     $app->get_ok( {} );
@@ -84,11 +114,15 @@ subtest 'Not logged in: redirected to upgrade when RequireUpgradePermission=0' =
 };
 
 subtest 'Not logged in: redirected to upgrade when RequireUpgradePermission=1' => sub {
-    setup_upgrade_test( require_admin => 1 );
+    setup_upgrade_test(require_admin => 1, plugin => $plugin);
     my $app =
       MT::Test::App->new( app_class => 'MT::App::CMS', no_redirect => 1 );
     $app->get_ok( {} );
     like $app->last_location => qr/mt-upgrade\.cgi/, "redirected to mt-upgrade";
 };
+
+    };
+
+}
 
 done_testing;
