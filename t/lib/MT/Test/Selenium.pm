@@ -227,8 +227,10 @@ sub login {
     my $url = $self->base_url;
     $url->path('/cgi-bin/mt.cgi');
     $self->driver->get("$url");
-    $self->{content} = wait_until { $self->driver->get_page_source };
-    my $form = $self->form;
+    my $form = wait_until {
+        $self->{content} = $self->driver->get_page_source;
+        $self->form;
+    };
     $form->param( username => $user->name );
     $form->param( password => $user->id == 1 ? 'Nelson' : 'pass' );
 
