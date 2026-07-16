@@ -56,8 +56,16 @@ $.extend(ES.Multi.prototype, ES.prototype, {
         });
     },
 
-    save: function() {
-       app.editor.save();
+    save: function(app) {
+        app ||= window.app;
+        if (typeof app.editors === 'object') {
+            for (const editor of Object.values(app.editors)) {
+                editor.save();
+            }
+        }
+        else {
+            app.editor.save();
+        }
     }
 });
 
