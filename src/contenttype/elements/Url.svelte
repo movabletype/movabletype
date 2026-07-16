@@ -13,11 +13,12 @@
   export let options: ContentType.Options;
   // svelte-ignore unused-export-let
   export let optionsHtmlParams: ContentType.OptionsHtmlParams;
+  export let isLabelField: boolean;
 
   options.initial_value ??= "";
 </script>
 
-<ContentFieldOptionGroup type="url" {id} bind:field bind:options>
+<ContentFieldOptionGroup type="url" {id} bind:field bind:options {isLabelField}>
   <ContentFieldOption
     id="url-initial_value"
     label={window.trans("Initial Value")}

@@ -56,6 +56,11 @@ sub ts2db {
     return $ret;
 }
 
+sub extract {
+    my ($class, $part, $date) = @_;
+    return "EXTRACT($part FROM $date)";
+}
+
 sub distinct_stmt {
     my $class = shift;
     my ($stmt) = @_;

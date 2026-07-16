@@ -1899,6 +1899,7 @@ use vars qw( @ISA %Lexicon );
 	'Database Socket' => 'データベースソケット',
 	'Date Created' => '作成日',
 	'Date Modified' => '更新日',
+    'The condition must be specified with a string or a number.' => '条件は文字列、または数値で指定してください。',
 	'Days must be a number.' => '日数には数値を指定してください。',
 	'Edit All Entries' => 'すべての記事の編集',
 	'Entries List' => '記事の一覧',
@@ -3161,6 +3162,9 @@ use vars qw( @ISA %Lexicon );
 ## mt-static/js/admin2023/contenttype/contenttype.js
 	'Do you want to delete [_1]([_2])?' => '[_1]([_2])を削除しますか？',
 	'Duplicate' => '複製',
+	'Data label field have been changed to "[_2]" from "[_1]"' => 'データ識別ラベルが"[_1]"から"[_2]"に変更されました',
+	'"[_1]" cannot delete because using as data label field.' => '"[_1]"はデータ識別ラベルとして使用しているため、削除できません。',
+	'Unchecking this required, data label field will reset to default.' => 'この必須チェックを解除すると、データ識別ラベルは初期値に戻ります。',
 
 ## mt-static/js/admin2023/contenttype/tag/content-field.tag
 	'ContentField' => 'コンテンツフィールド',
@@ -4612,6 +4616,8 @@ use vars qw( @ISA %Lexicon );
 	'edit' => '編集',
 	q{(delimited by '[_1]')} => q{([_1]で区切る)},
 	q{Warning: Changing this entry's basename may break inbound links.} => q{警告: この記事の出力ファイル名の変更は、内部のリンク切れの原因となります。},
+	'categories' => 'カテゴリ',
+	'folders' => 'フォルダ',
 
 ## tmpl/admin2023/cms/edit_entry_batch.tmpl
 	'Save these [_1] (s)' => '[_1]の保存',
@@ -5756,6 +5762,10 @@ use vars qw( @ISA %Lexicon );
 	'To create a new configuration file using the Wizard, remove the current configuration file and then refresh this page' => 'ウィザードで新しく構成ファイルを作るときは、現在の構成ファイルを別の場所に移動してこのページを更新してください。',
 	q{<strong>Error: '[_1]' could not be found.</strong>  Please move your static files to the directory first or correct the setting if it is incorrect.} => q{エラー: '[_1]'が見つかりませんでした。ファイルをmt-staticディレクトリに移動するか、設定を修正してください。},
 	q{The [_1] directory is in the main Movable Type directory which this wizard script resides, but due to your web server's configuration, the [_1] directory is not accessible in this location and must be moved to a web-accessible location (e.g., your web document root directory).} => q{[_1]ディレクトリは、Movable Typeのメインディレクトリ(このウィザード自身も含まれている)以下で見つかりました。しかし現在のサーバーの構成上、[_1]ディレクトリにはWebブラウザからアクセスできません。ウェブサイトのルートディレクトリの下など、Webブラウザからアクセスできる場所に移動してください。},
+
+## tmpl/cms/upgrade_pending.tmpl
+	'Upgrade Pending' => 'アップグレードの準備ができました',
+	'A new version of Movable Type has been installed. Please wait until an administrator completes the upgrade.' => 'Movable Typeの新しいバージョンがインストールされました。管理者がアップグレードを完了するまでお待ちください。',
 
 ## tmpl/cms/include/content_data_table.tmpl
 	'Unpublish' => '公開取り消し',

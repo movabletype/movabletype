@@ -122,7 +122,7 @@
       ],
       "rows" : [
          [
-            "nn2n8pzf",
+            "0lnmgn2d",
             "MT",
             "melody",
             null,
@@ -153,7 +153,7 @@
             1
          ],
          [
-            "co6j9x7f",
+            "5uec30z2",
             null,
             "guest",
             null,
@@ -783,7 +783,7 @@
       ],
       "rows" : [
          [
-            "DataAPIDisableSite 0\nDefaultSupportedLanguages en_us,ja\nDisableDataAPI 0\nDisableNotificationPings 1\nHidePrivateRelatedContentData 1\nPluginAlias ContentType Information Widget=ContentInfoWidget\nPluginAlias Markdown=Markdown/Markdown.pl\nPluginAlias SmartyPants=Markdown/SmartyPants.pl\nPluginAlias Textile=Textile/textile2.pl\nPluginAlias WXR Importer=WXRImporter\nPluginAlias Widget Manager Upgrade Assistant=WidgetManager/WidgetManager.pl\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion blockeditor=1\nPluginSchemaVersion formattedtext=1.00\nPluginSchemaVersion tinymce5=1\nPluginSchemaVersion tinymce6=1\nPluginSwitch BlockEditor=0\nPluginSwitch ContentInfoWidget=1\nPluginSwitch FormattedText=1\nPluginSwitch FormattedTextForTinyMCE5=0\nPluginSwitch FormattedTextForTinyMCE6=1\nPluginSwitch GoogleAnalyticsV4=1\nPluginSwitch Markdown/Markdown.pl=1\nPluginSwitch Markdown/SmartyPants.pl=1\nPluginSwitch Textile/textile2.pl=0\nPluginSwitch TinyMCE5=0\nPluginSwitch TinyMCE6=1\nPluginSwitch WXRImporter=1\nPluginSwitch WidgetManager/WidgetManager.pl=0\nSchemaVersion 8.0002\nTrimFilePath 1\n",
+            "DataAPIDisableSite 0\nDefaultSupportedLanguages en_us,ja\nDisableDataAPI 0\nDisableNotificationPings 1\nHidePrivateRelatedContentData 1\nPluginAlias ContentType Information Widget=ContentInfoWidget\nPluginAlias Markdown=Markdown/Markdown.pl\nPluginAlias SmartyPants=Markdown/SmartyPants.pl\nPluginAlias Textile=Textile/textile2.pl\nPluginAlias WXR Importer=WXRImporter\nPluginAlias Widget Manager Upgrade Assistant=WidgetManager/WidgetManager.pl\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion blockeditor=1\nPluginSchemaVersion formattedtext=1.00\nPluginSchemaVersion tinymce5=1\nPluginSchemaVersion tinymce6=1\nPluginSwitch BlockEditor=0\nPluginSwitch ContentInfoWidget=1\nPluginSwitch FormattedText=1\nPluginSwitch FormattedTextForTinyMCE5=0\nPluginSwitch FormattedTextForTinyMCE6=1\nPluginSwitch GoogleAnalyticsV4=1\nPluginSwitch Markdown/Markdown.pl=1\nPluginSwitch Markdown/SmartyPants.pl=1\nPluginSwitch Textile/textile2.pl=0\nPluginSwitch TinyMCE5=0\nPluginSwitch TinyMCE6=1\nPluginSwitch WXRImporter=1\nPluginSwitch WidgetManager/WidgetManager.pl=0\nSchemaVersion 8.0003\nTrimFilePath 1\n",
             1
          ]
       ]
@@ -1051,7 +1051,7 @@
             null,
             "tag:localhost,2026:/first_website//2.8",
             1,
-            "2026-03-06 09:06:04",
+            "2026-05-21 05:45:38",
             "blog_entry_1",
             2,
             null,
@@ -1076,7 +1076,7 @@
             "Blog Entry 1",
             null,
             null,
-            202610
+            202621
          ]
       ]
    },
@@ -2332,6 +2332,30 @@
             "entry",
             1,
             2
+         ],
+         [
+            1,
+            0,
+            2,
+            "entry",
+            1,
+            4
+         ],
+         [
+            1,
+            0,
+            3,
+            "entry",
+            1,
+            6
+         ],
+         [
+            1,
+            0,
+            4,
+            "entry",
+            1,
+            8
          ]
       ]
    },
@@ -2576,13 +2600,13 @@
       ],
       "rows" : [
          [
-            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0004\u0000\u0000\u0000\bremember-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0005start-\u0000\u0000\u0000\n1772787963\u0000\u0000\u0000\tauthor_id-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u000bmagic_token-\u0000\u0000\u0000(dc04b39242efa7b09b46bcdddcf3218a6fe72d5a",
+            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0004\u0000\u0000\u0000\u0005start-\u0000\u0000\u0000\n1779342336\u0000\u0000\u0000\tauthor_id-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u000bmagic_token-\u0000\u0000\u0000(460f95b8d801a964855e99d60cb709da2b5d74b0\u0000\u0000\u0000\bremember-\u0000\u0000\u0000\u00011",
             null,
             null,
-            "b2725f61099c0f624c7b6223b9db7bd7ffefde1c",
+            "1a8d7751fcdf8f612e2d34f9c7bd98875dcf350d",
             "US",
             "1",
-            1772787963
+            1779342336
          ]
       ]
    },
@@ -2605,6 +2629,42 @@
             0,
             1,
             "Website Tag 1"
+         ],
+         [
+            3,
+            0,
+            0,
+            "websitetag12"
+         ],
+         [
+            4,
+            0,
+            3,
+            "Website Tag 1/2"
+         ],
+         [
+            5,
+            0,
+            0,
+            "websitetag3"
+         ],
+         [
+            6,
+            0,
+            5,
+            "Website Tag 3!?"
+         ],
+         [
+            7,
+            0,
+            0,
+            "websitetages4"
+         ],
+         [
+            8,
+            0,
+            7,
+            "Website Tag \\E \\s4+"
          ]
       ]
    },
@@ -4224,5 +4284,5 @@
          ]
       ]
    },
-   "schema_version" : "WidgetManager 1.1; blockeditor 1; core 8.0002; formattedtext 1.00; tinymce5 1; tinymce6 1"
+   "schema_version" : "WidgetManager 1.1; blockeditor 1; core 8.0003; formattedtext 1.00; tinymce5 1; tinymce6 1"
 }

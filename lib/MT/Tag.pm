@@ -187,10 +187,10 @@ sub list_props {
             label                 => 'Private',
             display               => 'none',
             verb                  => ' ',
-            single_select_options => [
+            single_select_options => sub {[
                 { label => MT->translate('Private'),     value => 1, },
                 { label => MT->translate('Not Private'), value => 0, },
-            ],
+            ]},
         },
         page_count => {
             base        => 'tag.entry_count',
@@ -793,15 +793,7 @@ sub save_tags {
 
     foreach my $otag ( values %existing_tags ) {
         next unless ref $otag;
-        my $this_tag_id = $otag->tag_id;
         $otag->remove;
-        if ( !MT::ObjectTag->exist( { tag_id => $this_tag_id } ) ) {
-
-            # no more references to this tag... just delete it now
-            if ( my $tag = MT::Tag->load($this_tag_id) ) {
-                $tag->remove;
-            }
-        }
         $clear_cache = 1;
     }
     delete $obj->{__save_tags};

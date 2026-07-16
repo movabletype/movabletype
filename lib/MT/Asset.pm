@@ -218,10 +218,15 @@ sub list_props {
             display => 'none',
         },
         class => {
-            label   => 'Type',
-            col     => 'class',
-            display => 'none',
-            base    => '__virtual.single_select',
+            label         => 'Type',
+            col           => 'class',
+            display       => 'none',
+            base          => '__virtual.single_select',
+            validate_item => sub {
+                my $prop = shift;
+                my ($item) = @_;
+                return $prop->validate_scalar_filter($item->{args});
+            },
             terms   => sub {
                 my $prop = shift;
                 my ( $args, $db_terms, $db_args ) = @_;
@@ -231,12 +236,12 @@ sub list_props {
                 return;
             },
             ## FIXME: Get these values from registry or somewhere...
-            single_select_options => [
+            single_select_options => sub {[
                 { label => MT->translate('Image'), value => 'image', },
                 { label => MT->translate('Audio'), value => 'audio', },
                 { label => MT->translate('Video'), value => 'video', },
                 { label => MT->translate('File'),  value => 'file', },
-            ],
+            ]},
         },
         description => {
             auto      => 1,
@@ -347,11 +352,11 @@ sub list_props {
                         );
                 }
             },
-            single_select_options => [
+            single_select_options => sub {[
                 { label => MT->translate('Deleted'),  value => 'deleted', },
                 { label => MT->translate('Enabled'),  value => 'active', },
                 { label => MT->translate('Disabled'), value => 'disabled', },
-            ],
+            ]},
         },
         content => {
             base    => '__virtual.content',
@@ -375,10 +380,10 @@ sub list_props {
 <mt:var name="filter_form_single_select">
 __FILTER_TMPL__
             },
-            single_select_options => [
+            single_select_options => sub {[
                 { label => MT->translate('missing'), value => 1, },
                 { label => MT->translate('extant'),  value => 0, },
-            ],
+            ]},
             label_via_param => sub {
                 my $prop = shift;
                 my ( $app, $val ) = @_;
@@ -494,6 +499,11 @@ __FILTER_TMPL__
                     $content_data->id,
                     ( $content_data->label || MT->translate('No Label') )
                 );
+            },
+            validate_item => sub {
+                my $prop = shift;
+                my ($item) = @_;
+                return $prop->validate_scalar_filter($item->{args});
             },
             terms => sub {
                 my $prop = shift;

@@ -1,6 +1,6 @@
 --
 -- Created by SQL::Translator::Producer::MySQL
--- Created on Mon Feb 24 18:57:09 2025
+-- Created on Tue May 12 13:51:36 2026
 --
 SET foreign_key_checks=0;
 
@@ -618,6 +618,7 @@ DROP TABLE IF EXISTS `mt_deletefileinfo`;
 -- Table: `mt_deletefileinfo`
 --
 CREATE TABLE `mt_deletefileinfo` (
+  `deletefileinfo_archive_type` varchar(255) NULL DEFAULT NULL,
   `deletefileinfo_blog_id` integer(11) NOT NULL,
   `deletefileinfo_build_type` smallint(6) NOT NULL,
   `deletefileinfo_file_path` mediumtext NOT NULL,

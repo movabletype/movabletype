@@ -115,6 +115,7 @@ sub archive_group_iter {
     # }
 
     require MT::Entry;
+    my $sql_class = MT::Entry->driver->dbd->sql_class;
     my $loop_sub = sub {
         my $auth       = shift;
         my $count_iter = MT::Entry->count_group_by(
@@ -128,14 +129,14 @@ sub archive_group_iter {
                     : ()
                 ),
                 group => [
-                    "extract(year from authored_on) AS year",
-                    "extract(month from authored_on) AS month"
+                    $sql_class->extract('year', 'authored_on') . " AS year",
+                    $sql_class->extract('month', 'authored_on') . " AS month"
                 ],
                 'sort' => [
-                    {   column => "extract(year from authored_on)",
+                    {   column => $sql_class->extract('year', 'authored_on'),
                         desc   => $order
                     },
-                    {   column => "extract(month from authored_on)",
+                    {   column => $sql_class->extract('month', 'authored_on'),
                         desc   => $order
                     }
                 ],

@@ -61,7 +61,7 @@
       ],
       "rows" : [
          [
-            "hnwdobau",
+            "t84bh6x1",
             "MT",
             "melody",
             null,
@@ -92,7 +92,7 @@
             null
          ],
          [
-            "zsxato6i",
+            "nmntcljs",
             "MT",
             "test1",
             null,
@@ -379,16 +379,16 @@
             1,
             null,
             "__NOW__",
-            "61f0dcd7b484171acfee8d5f74935d4daeb5881c",
+            "2aef8f3e1d4e8bd9e7919c5beca8965051268c7e",
             0,
             null,
             1,
-            "42041e712e2e0edb620f6a90e3b642a8980393a3",
+            "1f5abfe8de226ce429239574d17cc6f519bb73b4",
             null,
             null,
             "__NOW__",
             2,
-            "42041e712e2e0edb620f6a90e3b642a8980393a3",
+            "1f5abfe8de226ce429239574d17cc6f519bb73b4",
             null,
             201722
          ],
@@ -399,16 +399,16 @@
             1,
             null,
             "__NOW__",
-            "61f0dcd7b484171acfee8d5f74935d4daeb5881c",
+            "2aef8f3e1d4e8bd9e7919c5beca8965051268c7e",
             0,
             null,
             2,
-            "e4e6ac99abbf12a3089d172e2cfee03aee5b5e26",
+            "01a74712ed8074b3ea97fbfdbaea65e286f46d9b",
             null,
             null,
             "__NOW__",
             2,
-            "e4e6ac99abbf12a3089d172e2cfee03aee5b5e26",
+            "01a74712ed8074b3ea97fbfdbaea65e286f46d9b",
             null,
             201722
          ],
@@ -419,16 +419,16 @@
             1,
             null,
             "__NOW__",
-            "61f0dcd7b484171acfee8d5f74935d4daeb5881c",
+            "2aef8f3e1d4e8bd9e7919c5beca8965051268c7e",
             0,
             null,
             3,
-            "926f3dc6c2f906ff0bce9f59099ed19cdc391e54",
+            "667b194a636c73e6b31300fad8e5346cb8489b82",
             null,
             null,
             "__NOW__",
             2,
-            "926f3dc6c2f906ff0bce9f59099ed19cdc391e54",
+            "667b194a636c73e6b31300fad8e5346cb8489b82",
             null,
             201722
          ],
@@ -439,16 +439,16 @@
             1,
             null,
             "__NOW__",
-            "61f0dcd7b484171acfee8d5f74935d4daeb5881c",
+            "2aef8f3e1d4e8bd9e7919c5beca8965051268c7e",
             0,
             null,
             4,
-            "29858a1c3aae8c047ce46ddbefc032806bd02c2d",
+            "6f1ffe15e50bd4490f55fa20f01a9ec70748dafb",
             null,
             null,
             "__NOW__",
             2,
-            "29858a1c3aae8c047ce46ddbefc032806bd02c2d",
+            "6f1ffe15e50bd4490f55fa20f01a9ec70748dafb",
             null,
             201722
          ],
@@ -459,16 +459,16 @@
             1,
             null,
             "__NOW__",
-            "61f0dcd7b484171acfee8d5f74935d4daeb5881c",
+            "2aef8f3e1d4e8bd9e7919c5beca8965051268c7e",
             0,
             null,
             5,
-            "f97871f92cbd573701a70fab275556c75cd5fad3",
+            "b34a5d2650a516dd5eaa0a1a16d4fbab439f8ccf",
             null,
             null,
             "__NOW__",
             2,
-            "f97871f92cbd573701a70fab275556c75cd5fad3",
+            "b34a5d2650a516dd5eaa0a1a16d4fbab439f8ccf",
             null,
             201722
          ],
@@ -479,16 +479,16 @@
             1,
             null,
             "__NOW__",
-            "61f0dcd7b484171acfee8d5f74935d4daeb5881c",
+            "2aef8f3e1d4e8bd9e7919c5beca8965051268c7e",
             0,
             null,
             6,
-            "6e76a1fe0266536886eaf0c087335cb42f190b91",
+            "0c0c4c03e163aa5bcf823a58c3a46a6c9d478c33",
             null,
             null,
             "__NOW__",
             1,
-            "6e76a1fe0266536886eaf0c087335cb42f190b91",
+            "0c0c4c03e163aa5bcf823a58c3a46a6c9d478c33",
             null,
             201722
          ],
@@ -499,16 +499,16 @@
             1,
             null,
             "__NOW__",
-            "61f0dcd7b484171acfee8d5f74935d4daeb5881c",
+            "2aef8f3e1d4e8bd9e7919c5beca8965051268c7e",
             0,
             null,
             7,
-            "d2208b917a3ee459f402e0a3c5e9cc65211e1acd",
+            "262361cea8acd738b2192bd5ae204db7833983f9",
             null,
             null,
             "__NOW__",
             1,
-            "d2208b917a3ee459f402e0a3c5e9cc65211e1acd",
+            "262361cea8acd738b2192bd5ae204db7833983f9",
             null,
             201722
          ]
@@ -521,7 +521,7 @@
       ],
       "rows" : [
          [
-            "DataAPIDisableSite 0\nDefaultSupportedLanguages en_us,ja\nDisableDataAPI 0\nDisableNotificationPings 1\nHidePrivateRelatedContentData 1\nPluginAlias ContentType Information Widget=ContentInfoWidget\nPluginAlias Markdown=Markdown/Markdown.pl\nPluginAlias SmartyPants=Markdown/SmartyPants.pl\nPluginAlias Textile=Textile/textile2.pl\nPluginAlias WXR Importer=WXRImporter\nPluginAlias Widget Manager Upgrade Assistant=WidgetManager/WidgetManager.pl\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion blockeditor=1\nPluginSchemaVersion formattedtext=1.00\nPluginSchemaVersion tinymce5=1\nPluginSchemaVersion tinymce6=1\nPluginSwitch BlockEditor=0\nPluginSwitch ContentInfoWidget=1\nPluginSwitch FormattedText=1\nPluginSwitch FormattedTextForTinyMCE5=0\nPluginSwitch FormattedTextForTinyMCE6=1\nPluginSwitch GoogleAnalyticsV4=1\nPluginSwitch Markdown/Markdown.pl=1\nPluginSwitch Markdown/SmartyPants.pl=1\nPluginSwitch Textile/textile2.pl=0\nPluginSwitch TinyMCE5=0\nPluginSwitch TinyMCE6=1\nPluginSwitch WXRImporter=1\nPluginSwitch WidgetManager/WidgetManager.pl=0\nSchemaVersion 8.0002\nTrimFilePath 1\n",
+            "DataAPIDisableSite 0\nDefaultSupportedLanguages en_us,ja\nDisableDataAPI 0\nDisableNotificationPings 1\nHidePrivateRelatedContentData 1\nPluginAlias ContentType Information Widget=ContentInfoWidget\nPluginAlias Markdown=Markdown/Markdown.pl\nPluginAlias SmartyPants=Markdown/SmartyPants.pl\nPluginAlias Textile=Textile/textile2.pl\nPluginAlias WXR Importer=WXRImporter\nPluginAlias Widget Manager Upgrade Assistant=WidgetManager/WidgetManager.pl\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion blockeditor=1\nPluginSchemaVersion formattedtext=1.00\nPluginSchemaVersion tinymce5=1\nPluginSchemaVersion tinymce6=1\nPluginSwitch BlockEditor=0\nPluginSwitch ContentInfoWidget=1\nPluginSwitch FormattedText=1\nPluginSwitch FormattedTextForTinyMCE5=0\nPluginSwitch FormattedTextForTinyMCE6=1\nPluginSwitch GoogleAnalyticsV4=1\nPluginSwitch Markdown/Markdown.pl=1\nPluginSwitch Markdown/SmartyPants.pl=1\nPluginSwitch Textile/textile2.pl=0\nPluginSwitch TinyMCE5=0\nPluginSwitch TinyMCE6=1\nPluginSwitch WXRImporter=1\nPluginSwitch WidgetManager/WidgetManager.pl=0\nSchemaVersion 8.0003\nTrimFilePath 1\n",
             1
          ]
       ]
@@ -554,7 +554,7 @@
             null,
             "__NOW__",
             "test content type 1",
-            "61f0dcd7b484171acfee8d5f74935d4daeb5881c",
+            "2aef8f3e1d4e8bd9e7919c5beca8965051268c7e",
             null,
             null
          ]
@@ -926,5 +926,5 @@
          ]
       ]
    },
-   "schema_version" : "WidgetManager 1.1; blockeditor 1; core 8.0002; formattedtext 1.00; tinymce5 1; tinymce6 1"
+   "schema_version" : "WidgetManager 1.1; blockeditor 1; core 8.0003; formattedtext 1.00; tinymce5 1; tinymce6 1"
 }

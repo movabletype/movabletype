@@ -919,6 +919,16 @@ sub upgrade {
     return $app->redirect( $app->path . $upgrade_script );
 }
 
+sub upgrade_pending {
+    my $app = shift;
+    return $app->build_page(
+        'upgrade_pending.tmpl',
+        {
+            upgrade_pending => $app->{upgrade_required}
+        }
+    );
+}
+
 sub recover_profile_password {
     my $app = shift;
     $app->validate_magic or return;

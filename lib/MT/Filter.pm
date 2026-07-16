@@ -164,10 +164,10 @@ sub list_props {
             base                  => '__virtual.single_select',
             display               => 'none',
             label                 => 'Author Status',
-            single_select_options => [
+            single_select_options => sub {[
                 { label => MT->translate('Enabled'),  value => 'enabled', },
                 { label => MT->translate('Disabled'), value => 'disabled', },
-            ],
+            ]},
             terms => sub {
                 my $prop = shift;
                 my ( $args, $db_terms, $db_args ) = @_;
@@ -545,6 +545,34 @@ sub count_objects {
     }
 
     [ $count, $editable_count ];
+}
+
+sub pack_validate_item {
+    my $prop = shift;
+    my ($item) = @_;
+
+    return $prop->error(MT->translate('Invalid value'))
+        unless $item->{args} && ref $item->{args} eq 'HASH';
+
+    my $items = $item->{args}{items};
+    return $prop->error(MT->translate('Invalid value'))
+        unless $items && ref $items eq 'ARRAY';
+
+    my $ds    = $prop->{class};
+    my $props = MT::ListProperty->list_properties($ds);
+    for my $item (@$items) {
+        return $prop->error(MT->translate('Invalid value'))
+            unless $item && ref $item eq 'HASH';
+
+        my $child_prop = $props->{ $item->{type} }
+            or return $prop->error(MT->translate('Invalid type'));
+        if ($child_prop->has('validate_item')) {
+            $child_prop->validate_item($item)
+                or return $prop->error($child_prop->errstr);
+        }
+    }
+
+    return 1;
 }
 
 sub pack_terms {

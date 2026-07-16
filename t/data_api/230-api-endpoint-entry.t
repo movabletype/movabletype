@@ -199,6 +199,176 @@ sub suite {
 
         # version 2
 
+        # list_entries - normal tests.
+        {
+            path   => '/v2/sites/1/entries',
+            method => 'GET',
+            note   => '__virtual.string via title',
+            params => {
+                items => [{
+                        type => 'title',
+                        args => {
+                            option => 'equal',
+                            string => 'Verse 1',
+                        },
+                    },
+                ],
+            },
+            result => sub {
+                my @entry = MT->model('entry')->load({
+                        blog_id => 1,
+                        class   => 'entry',
+                        title   => 'Verse 1',
+                    },
+                );
+
+                return +{
+                    totalResults => scalar @entry,
+                    items        => MT::DataAPI::Resource->from_object(\@entry),
+                };
+            },
+        },
+        {
+            path   => '/v2/sites/1/entries',
+            method => 'GET',
+            note   => '__virtual.integer via category_id',
+            params => {
+                items => [{
+                        type => 'category_id',
+                        args => {
+                            option => 'equal',
+                            value  => 1,
+                        },
+                    },
+                ],
+            },
+            result => sub {
+                my @entry = MT->model('entry')->load(
+                    { class => 'entry' },
+                    {   join => MT->model('placement')->join_on(
+                            'entry_id',
+                            {   blog_id     => 1,
+                                category_id => 1,
+                            },
+                        ),
+                        sort      => 'authored_on',
+                        direction => 'descend',
+                    },
+                );
+
+                return +{
+                    totalResults => scalar @entry,
+                    items        => MT::DataAPI::Resource->from_object(\@entry),
+                };
+            },
+        },
+        {
+            path   => '/v2/sites/1/entries',
+            method => 'GET',
+            note   => '__virtual.single_select via status',
+            params => {
+                items => [{
+                        type => 'status',
+                        args => {
+                            value => 'Draft',
+                        },
+                    },
+                ],
+            },
+            result => sub {
+                require MT::Entry;
+                my @entry = MT->model('entry')->load(
+                    {   blog_id => 1,
+                        class   => 'entry',
+                        status  => MT::Entry::HOLD(),
+                    },
+                    {   sort      => 'authored_on',
+                        direction => 'descend',
+                    },
+                );
+
+                return +{
+                    totalResults => scalar @entry,
+                    items        => MT::DataAPI::Resource->from_object(\@entry),
+                };
+            },
+        },
+        {
+            path   => '/v2/sites/1/entries',
+            method => 'GET',
+            note   => '__virtual.content via content',
+            params => {
+                items => [{
+                        type => 'content',
+                        args => {
+                            option => 'contains',
+                            string => 'Verse',
+                        },
+                    },
+                ],
+            },
+            result => sub {
+                my @entry = MT->model('entry')->load(
+                    [   { blog_id => 1, class => 'entry' },
+                        '-and',
+                        [   { title    => { like => '%Verse%' } },
+                            '-or',
+                            { text      => { like => '%Verse%' } },
+                            '-or',
+                            { text_more => { like => '%Verse%' } },
+                            '-or',
+                            { keywords  => { like => '%Verse%' } },
+                            '-or',
+                            { excerpt   => { like => '%Verse%' } },
+                            '-or',
+                            { basename  => { like => '%Verse%' } },
+                        ],
+                    ],
+                    {   sort      => 'authored_on',
+                        direction => 'descend',
+                    },
+                );
+
+                return +{
+                    totalResults => scalar @entry,
+                    items        => MT::DataAPI::Resource->from_object(\@entry),
+                };
+            },
+        },
+        {
+            path   => '/v2/sites/1/entries',
+            method => 'GET',
+            params => {
+                items => [{
+                        type => 'pack',
+                        args => {
+                            items => [{
+                                    type => 'title',
+                                    args => {
+                                        option => 'equal',
+                                        string => 'A Rainy Day',
+                                    },
+                                },
+                            ],
+                        }
+                    },
+                ],
+            },
+            result => sub {
+                my @entry = MT->model('entry')->load({
+                        blog_id => 1,
+                        class   => 'entry',
+                        title   => 'A Rainy Day',
+                    },
+                );
+
+                return +{
+                    totalResults => scalar @entry,
+                    items        => MT::DataAPI::Resource->from_object(\@entry),
+                };
+            },
+        },
+
         # create_entry - irregular tests.
         {    # Attach non-existent category.
             path   => '/v2/sites/1/entries',

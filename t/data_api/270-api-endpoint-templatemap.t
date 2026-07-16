@@ -1012,6 +1012,46 @@ sub suite {
                 };
             },
         },
+        {    # Filtered by archiveType.
+            path   => "/v4/sites/1/templates/$blog_ct1_tmpl_id/templatemaps",
+            method => 'GET',
+            params => {
+                items => [{
+                    type => 'archive_type',
+                    args => {
+                        value => 'ContentType',
+                    },
+                }],
+            },
+            result => sub {
+                my @tm = $app->model('templatemap')->load({
+                    template_id  => $blog_ct1_tmpl_id,
+                    archive_type => 'ContentType',
+                });
+                return +{
+                    totalResults => scalar(@tm),
+                    items        => MT::DataAPI::Resource->from_object(\@tm),
+                };
+            },
+        },
+        {    # Filtered by archiveType (not match).
+            path   => "/v4/sites/1/templates/$blog_ct1_tmpl_id/templatemaps",
+            method => 'GET',
+            params => {
+                items => [{
+                    type => 'archive_type',
+                    args => {
+                        value => 'Category',
+                    },
+                }],
+            },
+            result => sub {
+                +{
+                    totalResults => 0,
+                    items        => [],
+                };
+            },
+        },
         {    # ct2 content type archive listing
             path =>
                 "/v4/sites/1/templates/$blog_ct2_archive_tmpl_id/templatemaps",
