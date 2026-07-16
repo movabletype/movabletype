@@ -1097,15 +1097,6 @@ sub delete {
             $app, $obj )
             or return $app->permission_denied;
 
-        # Mark before FileInfo records are gone by cascading delete
-        my @finfos = MT->model('fileinfo')->load({ cd_id => $obj->id, blog_id => $blog->id });
-        for my $finfo (@finfos) {
-            if ( $app->config('DeleteFilesAfterRebuild') ) {
-                $finfo->mark_to_remove;
-                MT::Util::Log->debug( 'Marked to remove ' . $finfo->file_path );
-            }
-        }
-
         # Remove object from database
         my $content_type_name
             = defined $content_type->name && $content_type->name ne ''
