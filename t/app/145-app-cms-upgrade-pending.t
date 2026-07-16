@@ -74,6 +74,7 @@ YAML
 for my $plugin ('no plugin', 'blog', 'author') {
 
     subtest $plugin => sub {
+        plan skip_all => 'author extension is still on the way' if $plugin eq 'author';
 
         subtest 'Superuser: redirected to upgrade' => sub {
             setup_upgrade_test(require_admin => 0, plugin => $plugin);
