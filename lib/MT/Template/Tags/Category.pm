@@ -732,8 +732,12 @@ sub _hdlr_sub_categories {
         if !$sort_by || !$class->has_column($sort_by);
 
     my $category_set_id = $args->{category_set_id} || 0;
-    if ( !$category_set_id && $ctx->stash('category_set') ) {
-        $category_set_id = $ctx->stash('category_set')->id;
+    if (!$category_set_id) {
+        if ($ctx->stash('category_set')) {
+            $category_set_id = $ctx->stash('category_set')->id;
+        } elsif ($ctx->stash('category_set_id')) {
+            $category_set_id = $ctx->stash('category_set_id');
+        }
     }
 
     # Store the tokens for recursion

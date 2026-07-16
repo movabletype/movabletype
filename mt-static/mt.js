@@ -35,6 +35,21 @@ function restore () {
         location.reload();
 }
 
+function mtDataAttr (el, name) {
+    if (!el || !el.getAttribute) return null;
+    var v = el.getAttribute('data-mt-' + name);
+    return v !== null ? v : el.getAttribute('mt:' + name);
+}
+
+function mtElementsByAttr (root, tag, name) {
+    var els = DOM.getElementsByTagAndAttribute(root, tag, 'data-mt-' + name);
+    var legacy = DOM.getElementsByTagAndAttribute(root, tag, 'mt:' + name);
+    for (var i = 0; i < legacy.length; i++)
+        if (els.indexOf(legacy[i]) === -1)
+            els.push(legacy[i]);
+    return els;
+}
+
 function doRebuild (blogID, otherParams) {
     window.open(CMSScriptURI + '?__mode=rebuild_confirm&blog_id=' + blogID + '&' + otherParams, 'rebuild_blog_' + blogID, 'width=400,height=400,resizable=yes');
 }
@@ -1465,18 +1480,18 @@ MT.App = new Class( App, {
         if ( this.constructor.TabContainer )
             this.setDelegate( "tabContainer", new this.constructor.TabContainer() );
 
-        var forms = DOM.getElementsByTagAndAttribute( this.document, "form", "mt:auto-save" );
+        var forms = mtElementsByAttr( this.document, "form", "auto-save" );
         if ( forms.length )
             window.onbeforeunload = this.getIndirectEventListener( "eventBeforeUnload" );
 
         for ( var i = 0; i < forms.length; i++ ) {
-            var autosave = truth( forms[ i ].getAttribute( "mt:auto-save" ) );
+            var autosave = truth( mtDataAttr( forms[ i ], "auto-save" ) );
             if ( !autosave )
                 continue;
 
             this.form = forms[ i ];
 
-            var ad = forms[ i ].getAttribute( "mt:auto-save-delay" );
+            var ad = mtDataAttr( forms[ i ], "auto-save-delay" );
             var autoSaveDelay;
             if ( ad !== null ) {
                 autoSaveDelay = parseInt( ad ) || 0;
@@ -1492,7 +1507,7 @@ MT.App = new Class( App, {
                 forms[ i ].getElementsByTagName( "textarea" )
             );
             for ( var j = 0; j < es.length; j++ ) {
-                if ( es[ j ].getAttribute && es[ j ].getAttribute( "mt:watch-change" ) ) {
+                if ( mtDataAttr( es[ j ], "watch-change" ) ) {
                     log('adding watcher to '+es[ j ].name);
                     DOM.addEventListener( es[ j ], "change", this.getIndirectEventListener( "setDirty" ) );
                 }
@@ -1560,7 +1575,7 @@ MT.App = new Class( App, {
         if ( !form )
             return;
 
-        if ( form.getAttribute( "mt:once" ) ) {
+        if ( mtDataAttr( form, "once" ) ) {
             if ( form.submitted || app.formValidated )
                 return event.stop();
 
@@ -1571,7 +1586,7 @@ MT.App = new Class( App, {
         if ( this.cpeList )
             this.cpeList.forEach( function( cpe ) { cpe.onSubmit() } );
 
-        if ( form.getAttribute( "mt:once" ) )
+        if ( mtDataAttr( form, "once" ) )
             form.submitted = true;
         this.stopAutoSave();
     },
@@ -1609,7 +1624,7 @@ MT.App = new Class( App, {
             if ( tagName == "button" ||
                 (tagName == "input" && (type == "button" || type == "submit" || type == "image")) ){
                 element.disabled = disable;
-                if( this.eventTarget === element && form.getAttribute( "mt:once" ) && element.getAttribute('value') ) {
+                if( this.eventTarget === element && mtDataAttr( form, "once" ) && element.getAttribute('value') ) {
                     var hiddenelm = document.createElement('input');
                     hiddenelm.type = 'hidden';
                     hiddenelm.name = element.getAttribute('name');
@@ -1686,9 +1701,9 @@ MT.App = new Class( App, {
                 if ( !form )
                     return;
 
-                var mode = event.target.getAttribute( "mt:mode" );
+                var mode = mtDataAttr( event.target, "mode" );
                 if ( !mode && event.commandElement )
-                    mode = event.commandElement.getAttribute( "mt:mode" );
+                    mode = mtDataAttr( event.commandElement, "mode" );
 
                 if ( mode ) {
                     log('setting __mode in this form: '+mode);
@@ -1894,7 +1909,7 @@ MT.App = new Class( App, {
             if ( form ) {
                 log('found dirty form: '+form);
                 this.form = form;
-                if ( autoSaveDelay = parseInt( form.getAttribute( "mt:auto-save-delay" ) ) || 0 ) {
+                if ( autoSaveDelay = parseInt( mtDataAttr( form, "auto-save-delay" ) ) || 0 ) {
                     this.autoSaveDelay = autoSaveDelay;
                     log('using auto save delay: '+this.autoSaveDelay);
                 }
@@ -1993,10 +2008,10 @@ MT.App.Resizer = new Class( Object, {
 
         this.reset();
 
-        this.target = event.attributeElement.getAttribute( "mt:target" );
+        this.target = mtDataAttr( event.attributeElement, "target" );
 
         /* x or y locking */
-        var lock = event.attributeElement.getAttribute( "mt:lock" );
+        var lock = mtDataAttr( event.attributeElement, "lock" );
         if ( lock ) {
             if ( lock == "x" || lock == "X" )
                 this.xLock = true;
@@ -2227,7 +2242,7 @@ MT.App.TabContainer = new Class( Object, {
     eventClick: function( event ) {
         var command = app.getMouseEventCommand( event );
         if (!event.commandElement) return;
-        var tab = event.commandElement.getAttribute( "mt:tab" );
+        var tab = mtDataAttr( event.commandElement, "tab" );
         if ( tab && command != "selectTab" )
             this.selectTab( event.attributeElement, tab );
 
@@ -2260,9 +2275,9 @@ MT.App.TabContainer = new Class( Object, {
 
     selectTab: function( element, name ) {
         log('select tab '+name);
-        var es = DOM.getElementsByAttribute( element, "mt:tab" );
+        var es = DOM.getElementsByAttribute( element, "data-mt-tab" ).concat( DOM.getElementsByAttribute( element, "mt:tab" ) );
         for ( var i = 0; i < es.length; i++ ) {
-            if ( es[ i ].getAttribute( "mt:tab" ) == name )
+            if ( mtDataAttr( es[ i ], "tab" ) == name )
                 DOM.addClassName( es[ i ], "selected-tab" );
             else
                 DOM.removeClassName( es[ i ], "selected-tab" );
@@ -2490,7 +2505,7 @@ MT.App.CategorySelector = new Class( Component, {
         if ( el ) {
            this.openingEl = el;
            jQuery(el).hide();
-           var closeEl = el.getAttribute( "mt:close-el" );
+           var closeEl = mtDataAttr( el, "close-el" );
            if ( closeEl )
                jQuery('#' + closeEl).show();
         }
@@ -2533,7 +2548,7 @@ MT.App.CategorySelector = new Class( Component, {
             case "showAddCategory":
                 this.removeMovable();
                 /* show the add category block inside the flyout */
-                var id = DOM.getMouseEventAttribute( event, "mt:id" );
+                var id = DOM.getMouseEventAttribute( event, "data-mt-id" ) || DOM.getMouseEventAttribute( event, "mt:id" );
                 if ( id ) {
                     /* adding a sub cat/folder */
                     this.catInput.value = '';
@@ -2777,7 +2792,7 @@ MT.App.CategorySelector = new Class( Component, {
         }
         ids.forEach( function (id) {
             var input = list.getItem( id ).getElementsByTagName( 'input' );
-            if ( input.length > 0 && input[0].hasAttribute( 'mt:watch-change' ) ) {
+            if ( input.length > 0 && mtDataAttr( input[0], "watch-change" ) !== null ) {
                 log( 'found dirty form' );
                 (app.getIndirectMethod( 'setDirty' ))();
             }

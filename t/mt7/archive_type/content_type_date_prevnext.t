@@ -300,26 +300,6 @@ my $objs = MT::Test::Fixture->prepare({
                 cat_field     => 'cf_category_type',
             }],
         }, {
-            archive_type => 'ContentType-Category',
-            name         => 'tmpl_ct_archive_cat',
-            content_type => 'ct',
-            text         => $tmpl,
-            mapping      => [{
-                file_template => 'ct/%c/%i',
-                is_preferred  => 1,
-                cat_field     => 'cf_category_type',
-            }],
-        }, {
-            archive_type => 'ContentType-Category',
-            name         => 'tmpl_ct_archive_cat2',
-            content_type => 'ct2',
-            text         => $tmpl,
-            mapping      => [{
-                file_template => 'ct2/%c/%i',
-                is_preferred  => 1,
-                cat_field     => 'cf_category_type',
-            }],
-        }, {
             archive_type => 'ContentType',
             name         => 'tmpl_ct',
             content_type => 'ct',

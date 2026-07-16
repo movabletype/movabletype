@@ -492,7 +492,7 @@ function toggleCache(id) {
   </script>
 </mt:if>
 
-<form name="template-listing-form" id="template-listing-form" method="post" action="<mt:var name="script_url">"<mt:unless name="config.previewinnewwindow"> mt:once="1"</mt:unless> mt:auto-save="1" mt:auto-save-delay="<$mt:var name="autosave_frequency"$>000">
+<form name="template-listing-form" id="template-listing-form" method="post" action="<mt:var name="script_url">"<mt:unless name="config.previewinnewwindow"> data-mt-once="1"</mt:unless> data-mt-auto-save="1" data-mt-auto-save-delay="<$mt:var name="autosave_frequency"$>000">
   <input type="hidden" name="id" value="<mt:var name="id" escape="html">" />
   <input type="hidden" name="blog_id" value="<mt:var name="blog_id" escape="html" default="0">" />
   <input type="hidden" name="type" value="<mt:var name="type" escape="html">" />
@@ -514,7 +514,7 @@ function toggleCache(id) {
      label_for="title"
      label_class="no-header">
   <mt:if name="has_name">
-    <input type="text" name="name" id="title" class="form-control title text full" value="<mt:var name="name" escape="html">" placeholder="<__trans phrase="Template Name">"  maxlength="255" mt:watch-change="1" />
+    <input type="text" name="name" id="title" class="form-control title text full" value="<mt:var name="name" escape="html">" placeholder="<__trans phrase="Template Name">"  maxlength="255" data-mt-watch-change="1" />
   <mt:else>
     <input type="hidden" name="name" value="<$mt:var name="name" escape="html"$>" />
     <input type="text" name="name_display" id="title" class="form-control title text full" value="<$mt:var name="name" escape="html">" disabled="disabled" />
@@ -561,7 +561,7 @@ function toggleCache(id) {
         </div>
       </div>
       <div id="textarea-enclosure" class="editor">
-        <textarea name="text" style="height: 550px;" id="text" class="form-control monospace text full" spellcheck="false" mt:watch-change="1" mt:editor="codemirror" mt:editor-options="lang:<mt:var name="template_lang"> autocomplete:off" ><mt:var name="text" escape="html"></textarea>
+        <textarea name="text" style="height: 550px;" id="text" class="form-control monospace text full" spellcheck="false" data-mt-watch-change="1" data-mt-editor="codemirror" data-mt-editor-options="lang:<mt:var name="template_lang"> autocomplete:off" ><mt:var name="text" escape="html"></textarea>
       </div>
     </div>
   </mtapp:setting>
@@ -582,7 +582,7 @@ function toggleCache(id) {
          label="<__trans phrase="Output File">"
          label_for="outfile"
          label_class="top-label">
-        <input type="text" name="outfile" id="outfile" class="form-control text" value="<mt:var name="outfile" escape="html">" mt:watch-change="1" />
+        <input type="text" name="outfile" id="outfile" class="form-control text" value="<mt:var name="outfile" escape="html">" data-mt-watch-change="1" />
       </mtapp:setting>
     </mt:if>
     <mt:if name="type" eq="index">
@@ -605,7 +605,7 @@ function toggleCache(id) {
          label="<__trans phrase="Link to File">"
          label_for="linked_file"
          label_class="top-label">
-        <input type="text" name="linked_file" id="linked_file" class="form-control text" value="<mt:var name="linked_file" escape="html">" maxlength="255" mt:watch-change="1" />
+        <input type="text" name="linked_file" id="linked_file" class="form-control text" value="<mt:var name="linked_file" escape="html">" maxlength="255" data-mt-watch-change="1" />
       </mtapp:setting>
 
 <mt:setvarblock name="publishing_hint"><__trans phrase="Learn more about <a href="https://www.movabletype.org/documentation/administrator/publishing/settings.html" target="_blank">publishing settings</a>"></mt:setvarblock>
@@ -720,7 +720,7 @@ function toggleCache(id) {
 <!-- untested features -->
   <option value="5"<mt:if name="build_type_5"> selected="selected"</mt:if>><__trans phrase="On a schedule"></option>
   <!-- This code needs to be shown if the "On a schedule" has been selected -->
-  <__trans phrase=": every "><input name="schedule_interval" id="schedule_interval" value="<mt:var name="schedule_interval" escape="html">" maxlength="10" class="quarter-width" mt:watch-change="1" />
+  <__trans phrase=": every "><input name="schedule_interval" id="schedule_interval" value="<mt:var name="schedule_interval" escape="html">" maxlength="10" class="quarter-width" data-mt-watch-change="1" />
     <select name="schedule_period" id="schedule_period" class="custom-select form-control form-select">
       <option value="minutes"<mt:if name="schedule_period_minutes"> selected="selected"</mt:if>><__trans phrase="minutes"></option>
       <option value="hours"<mt:if name="schedule_period_hours"> selected="selected"</mt:if>><__trans phrase="hours"></option>
@@ -756,7 +756,7 @@ function toggleCache(id) {
        label_class="top-label"
        shown="<mt:if name="include_with_ssi">0<mt:else>1</mt:if>">
       <div class="textarea-wrapper">
-        <input type="text" id="include-cache-path" name="cache_path" value="<mt:var name="cache_path" escape="html">" maxlength="255" class="full-width" mt:watch-change="1" />
+        <input type="text" id="include-cache-path" name="cache_path" value="<mt:var name="cache_path" escape="html">" maxlength="255" class="full-width" data-mt-watch-change="1" />
       </div>
     </mtapp:setting>
   </mt:ignore>
@@ -910,6 +910,33 @@ MT.App = new Class( MT.App, {
     }
 
 } );
+
+var options = ( jQuery('#text').attr('data-mt-editor-options') || jQuery('#text').attr('mt:editor-options') );
+var editor_params = {
+    lineNumbers: true,
+    lineWrapping: false,
+    tabMode: "default",
+    indentUnit: 0,
+    pollForIME: true,
+    mode: "text/html",
+    viewportMargin: Infinity
+};
+if (options.match('lang:css')) {
+    editor_params['mode'] = 'text/css';
+} else if (options.match('lang:javascript')) {
+    editor_params['mode'] = 'text/javascript';
+}
+
+var editor = CodeMirror.fromTextArea(jQuery('#text').get(0), editor_params);
+
+function syncEditor() {
+    var wrapper = editor.getWrapperElement();
+    if ( jQuery(wrapper).css('display') == 'none') {
+        editor.setValue(jQuery('#text').val());
+    } else {
+        jQuery('#text').val(editor.getValue());
+    }
+}
 
 function saveTemplatePrefs( sync ) {
   jQuery.ajax({
