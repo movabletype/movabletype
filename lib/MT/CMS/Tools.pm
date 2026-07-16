@@ -925,6 +925,7 @@ sub upgrade_pending {
         'upgrade_pending.tmpl',
         {
             build_blog_selector => 0,
+            build_menus         => 0,
             upgrade_pending     => $app->{upgrade_required}
         }
     );
