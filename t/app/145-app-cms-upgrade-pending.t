@@ -16,6 +16,7 @@ BEGIN {
 use MT::Test;
 use MT::Test::Permission;
 use MT::Test::App;
+use File::Path qw(rmtree);
 
 MT->add_callback(
     'MT::App::CMS::init_request', 10, undef,
@@ -43,7 +44,9 @@ sub setup_upgrade_test {
         nickname => 'Test User',
     );
 
-    my $plugin = $args{plugin} || '';
+    my $plugin     = $args{plugin} || '';
+    my $plugin_dir = $test_env->path('plugins');
+    rmtree($plugin_dir) if -d $plugin_dir;
     if ($plugin eq 'blog') {
         $test_env->save_file('plugins/BlogPlugin/config.yaml', <<'YAML');
 name: BlogPlugin
