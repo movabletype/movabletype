@@ -753,14 +753,13 @@ sub init_request {
                     fetchonly => [qw(id name password type email status external_id locked_out_time)],
                 }
             );
-            if (   (!$author || ($author && !$author->is_superuser))
+            if (   $author
+                && !$author->is_superuser
                 && $app->config->RequireUpgradePermission )
             {
-                if ($author) {
-                    $app->user($author);
-                    $app->session_user( $author, $ctx->{session_id},
-                        permanent => $ctx->{permanent} );
-                }
+                $app->user($author);
+                $app->session_user( $author, $ctx->{session_id},
+                    permanent => $ctx->{permanent} );
                 $app->mode('upgrade_pending');
             }
             else {
