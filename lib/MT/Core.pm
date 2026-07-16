@@ -2314,7 +2314,7 @@ BEGIN {
             'wizard' => {
                 handler  => 'MT::App::Wizard',
                 script   => sub {'mt-wizard.cgi'},
-                cgi_path => sub { MT->config->AdminCGIPath },
+                cgi_path => sub { MT->config->AdminCGIPath || MT->config->CGIPath },
                 type     => 'run_once',
             },
             'check' => {
@@ -2345,7 +2345,7 @@ BEGIN {
                 handler         => 'MT::App::CMS',
                 type            => 'psgi_streaming',
                 script          => sub { MT->config->AdminScript },
-                cgi_path        => sub { MT->config->AdminCGIPath },
+                cgi_path        => sub { MT->config->AdminCGIPath || MT->config->CGIPath },
                 cgi_base        => 'mt',
                 page_actions    => sub { MT->app->core_page_actions(@_) },
                 content_actions => sub { MT->app->core_content_actions(@_) },
@@ -2374,7 +2374,7 @@ BEGIN {
                 handler  => 'MT::App::Upgrader',
                 methods  => '$Core::MT::App::Upgrader::core_methods',
                 script   => sub { MT->config->UpgradeScript },
-                cgi_path => sub { MT->config->AdminCGIPath },
+                cgi_path => sub { MT->config->AdminCGIPath || MT->config->CGIPath },
                 type     => 'run_once',
             },
             'data_api' => {
