@@ -2356,10 +2356,11 @@ BEGIN {
                     sub { MT::CMS::Dashboard->site_stats_widget_lines() },
             },
             upgrade => {
-                handler => 'MT::App::Upgrader',
-                methods => '$Core::MT::App::Upgrader::core_methods',
-                script  => sub { MT->config->UpgradeScript },
-                type    => 'run_once',
+                handler  => 'MT::App::Upgrader',
+                methods  => '$Core::MT::App::Upgrader::core_methods',
+                script   => sub { MT->config->UpgradeScript },
+                cgi_path => sub { MT->config->AdminCGIPath },
+                type     => 'run_once',
             },
             'data_api' => {
                 handler   => 'MT::App::DataAPI',
