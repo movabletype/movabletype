@@ -1,10 +1,10 @@
 jQuery(function () {
   var textarea = jQuery("#text");
   if (!textarea.length) return;
-  if (textarea.attr("mt:editor") !== "codemirror") return;
+  if (mtDataAttr(textarea.get(0), "editor") !== "codemirror") return;
   if (typeof CodeMirror === "undefined") return;
 
-  var options = textarea.attr("mt:editor-options") || "";
+  var options = mtDataAttr(textarea.get(0), "editor-options") || "";
   var editorParams = {
     lineNumbers: true,
     lineWrapping: false,

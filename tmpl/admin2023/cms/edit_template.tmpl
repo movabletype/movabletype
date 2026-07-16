@@ -911,33 +911,6 @@ MT.App = new Class( MT.App, {
 
 } );
 
-var options = ( jQuery('#text').attr('data-mt-editor-options') || jQuery('#text').attr('mt:editor-options') );
-var editor_params = {
-    lineNumbers: true,
-    lineWrapping: false,
-    tabMode: "default",
-    indentUnit: 0,
-    pollForIME: true,
-    mode: "text/html",
-    viewportMargin: Infinity
-};
-if (options.match('lang:css')) {
-    editor_params['mode'] = 'text/css';
-} else if (options.match('lang:javascript')) {
-    editor_params['mode'] = 'text/javascript';
-}
-
-var editor = CodeMirror.fromTextArea(jQuery('#text').get(0), editor_params);
-
-function syncEditor() {
-    var wrapper = editor.getWrapperElement();
-    if ( jQuery(wrapper).css('display') == 'none') {
-        editor.setValue(jQuery('#text').val());
-    } else {
-        jQuery('#text').val(editor.getValue());
-    }
-}
-
 function saveTemplatePrefs( sync ) {
   jQuery.ajax({
     type: 'POST',

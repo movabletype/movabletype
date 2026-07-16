@@ -22,11 +22,12 @@ interface EditorShim {
 declare global {
   interface Window {
     saveTemplatePrefs?: (state: string) => void;
+    mtDataAttr?: (el: Element | null, name: string) => string | null;
   }
 }
 
 function detectLanguage(textarea: HTMLTextAreaElement): string {
-  const options = textarea.getAttribute("mt:editor-options") || "";
+  const options = window.mtDataAttr?.(textarea, "editor-options") || "";
   if (options.match("lang:css")) return "css";
   if (options.match("lang:javascript")) return "javascript";
   return "html";
@@ -71,7 +72,7 @@ function initTemplateEditor(): void {
     "text",
   ) as HTMLTextAreaElement | null;
   if (!textarea) return;
-  if (textarea.getAttribute("mt:editor") !== "codemirror") return;
+  if (window.mtDataAttr?.(textarea, "editor") !== "codemirror") return;
   if (textarea.dataset.mtEditorInitialized) return;
   textarea.dataset.mtEditorInitialized = "1";
 

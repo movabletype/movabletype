@@ -2,6 +2,8 @@ import $ from "jquery";
 import "./index";
 
 window.jQuery = $ as unknown as typeof window.jQuery;
+window.mtDataAttr = (el, name) =>
+  el?.getAttribute ? el.getAttribute("data-mt-" + name) : null;
 
 function initTemplateEditor(): void {
   document.dispatchEvent(new Event("DOMContentLoaded"));
@@ -25,10 +27,10 @@ function setup(opts: SetupOptions = {}): SetupResult {
   const textarea = document.createElement("textarea");
   textarea.id = "text";
   if (opts.mtEditor !== undefined) {
-    textarea.setAttribute("mt:editor", opts.mtEditor);
+    textarea.setAttribute("data-mt-editor", opts.mtEditor);
   }
   if (opts.mtEditorOptions !== undefined) {
-    textarea.setAttribute("mt:editor-options", opts.mtEditorOptions);
+    textarea.setAttribute("data-mt-editor-options", opts.mtEditorOptions);
   }
   textarea.value = opts.value ?? "";
   form.appendChild(textarea);
@@ -57,7 +59,7 @@ describe("initTemplateEditor", () => {
     expect(document.querySelector(".mt-codemirror-wrapper")).toBeNull();
   });
 
-  it("does nothing when mt:editor is not 'codemirror'", () => {
+  it("does nothing when data-mt-editor is not 'codemirror'", () => {
     setup({ mtEditor: "monaco" });
     initTemplateEditor();
     expect(document.querySelector(".mt-codemirror-wrapper")).toBeNull();
