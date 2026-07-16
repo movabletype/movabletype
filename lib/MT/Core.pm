@@ -2312,9 +2312,10 @@ BEGIN {
         upgrade_functions => \&load_upgrade_fns,
         applications      => {
             'wizard' => {
-                handler => 'MT::App::Wizard',
-                script  => sub {'mt-wizard.cgi'},
-                type    => 'run_once',
+                handler  => 'MT::App::Wizard',
+                script   => sub {'mt-wizard.cgi'},
+                cgi_path => sub { MT->config->AdminCGIPath },
+                type     => 'run_once',
             },
             'check' => {
                 script => sub { MT->config->CheckScript },
