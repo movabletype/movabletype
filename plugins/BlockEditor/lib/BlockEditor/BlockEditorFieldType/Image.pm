@@ -64,7 +64,10 @@ sub dialog_list_asset {
     $app->add_breadcrumb( $app->translate("Files") );
 
     if ($blog_id) {
-        my $blog_ids = $app->_load_child_blog_ids($blog_id);
+        my $blog_ids =
+              $app->config->RequireAdministerSiteForChildAssets
+            ? $app->_load_child_blog_ids($blog_id)
+            : $app->_load_child_blog_ids($blog_id, '', 'access_to_insert_asset_list');
         push @$blog_ids, $blog_id;
         $terms{blog_id} = $blog_ids;
     }
