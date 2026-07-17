@@ -811,7 +811,7 @@ sub site_path {
         if ( $blog->is_blog() && $website ) {
             $base_path = $website->column('site_path');
             if ($base_path) {
-                $path = File::Spec->catdir( $base_path, $raw_path );
+                $path = File::Spec->catdir( $base_path, $raw_path // '' );
             }
             else {
                 $path = $raw_path;
