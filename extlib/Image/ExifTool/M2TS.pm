@@ -32,7 +32,7 @@ use strict;
 use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 
-$VERSION = '1.31';
+$VERSION = '1.33';
 
 # program map table "stream_type" lookup (ref 6/1/9)
 my %streamType = (
@@ -306,11 +306,13 @@ sub ParsePID($$$$$)
         require Image::ExifTool::MPEG;
         Image::ExifTool::MPEG::ParseMPEGAudio($et, $dataPt);
     } elsif ($type == 6 and $pid == 0x0300) {
-        # LIGOGPSINFO from unknown dashcam (../testpics/gps_video/Wrong Way pass.ts)
+        # LIGOGPSINFO
+        # unknown dashcam (../testpics/gps_video/Wrong Way pass.ts, 160 bytes, not fuzzed)
+        # Pruveeo D90 dashcam (../testpics/gps_video/20260216_101326F.ts, 200 bytes, fuzzed)
         if ($$dataPt =~ /^LIGOGPSINFO/s) {
             my $tbl = GetTagTable('Image::ExifTool::QuickTime::Stream');
             my %dirInfo = ( DataPt => $dataPt, DirName => 'Ligo0x0300' );
-            Image::ExifTool::LigoGPS::ProcessLigoGPS($et, \%dirInfo, $tbl, 1);
+            Image::ExifTool::LigoGPS::ProcessLigoGPS($et, \%dirInfo, $tbl, length($$dataPt)!=200);
             $$et{FoundGoodGPS} = 1;
             $more = 1;
         }
@@ -1023,7 +1025,7 @@ video.
 
 =head1 AUTHOR
 
-Copyright 2003-2025, Phil Harvey (philharvey66 at gmail.com)
+Copyright 2003-2026, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

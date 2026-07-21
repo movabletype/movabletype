@@ -3,12 +3,17 @@
 ##
 
 package Date::Language::Bulgarian;
+
 use strict;
 use warnings;
 use utf8;
+
 use base qw(Date::Language);
-our (@DoW, @DoWs, @MoY, @MoYs, @AMPM, @Dsuf, %MoY, %DoW, $VERSION);
-$VERSION = "1.01";
+
+our (@DoW, @DoWs, @MoY, @MoYs, @AMPM, @Dsuf, %MoY, %DoW);
+
+our $VERSION = '2.35'; # VERSION: generated
+# ABSTRACT: Bulgarian localization for Date::Format
 
 @DoW = qw(неделя понеделник вторник сряда четвъртък петък събота);
 @MoY = qw(януари февруари март април май юни
@@ -21,10 +26,7 @@ $VERSION = "1.01";
 @Dsuf[11,12,13] = qw(ти ти ти);
 @Dsuf[30,31] = qw(ти ви);
 
-@MoY{@MoY}  = (0 .. scalar(@MoY));
-@MoY{@MoYs} = (0 .. scalar(@MoYs));
-@DoW{@DoW}  = (0 .. scalar(@DoW));
-@DoW{@DoWs} = (0 .. scalar(@DoWs));
+Date::Language::_build_lookups();
 
 # Formatting routines
 
@@ -40,24 +42,21 @@ sub format_o { ($_[0]->[3]<10?' ':'').$_[0]->[3].$Dsuf[$_[0]->[3]] }
 
 __END__
 
-=encoding utf8
+=pod
+
+=encoding UTF-8
 
 =head1 NAME
 
-Date::Language::Bulgarian - localization for Date::Format
+Date::Language::Bulgarian - Bulgarian localization for Date::Format
 
-=head1 DESCRIPTION
+=head1 VERSION
 
-This is Bulgarian localization for Date::Format. 
-It is important to note that this module source code is in utf8.
-All strings which it outputs are in utf8, so it is safe to use it 
-currently only with English. You are left alone to try and convert 
-the output when using different Date::Language::* in the same application. 
-This should be addresed in the future.
+version 2.35
 
 =head1 SYNOPSIS
 
-    use strict; 
+    use strict;
     use warnings;
     use Date::Language;
     local $\=$/;
@@ -77,6 +76,19 @@ This should be addresed in the future.
         print $lang->strftime($template, \@lt);
     }
 
+=head1 DESCRIPTION
+
+This is Bulgarian localization for Date::Format.
+It is important to note that this module source code is in utf8.
+All strings which it outputs are in utf8, so it is safe to use it
+currently only with English. You are left alone to try and convert
+the output when using different Date::Language::* in the same application.
+This should be addresed in the future.
+
+=head1 NAME
+
+Date::Language::Bulgarian - localization for Date::Format
+
 =head1 AUTHOR
 
 Krasimir Berov (berov@cpan.org)
@@ -87,6 +99,15 @@ Copyright (c) 2010 Krasimir Berov. This program is free
 software; you can redistribute it and/or modify it under the same terms
 as Perl itself.
 
+=head1 AUTHOR
+
+Graham <gbarr@pobox.com>
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is copyright (c) 2020 by Graham Barr.
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
+
 =cut
-
-

@@ -41,8 +41,8 @@ my %format = (
     VARS => { NO_LOOKUP => 1 },
     NOTES => q{
         Tags extracted from Kandao KVAR files and the 'kvar', 'kfix' and 'kstb'
-        atoms in Kandao MP4 videos, and have a family 1 group name of KVAR, KFIX or
-        KSTB depending on their location.
+        atoms in Kandao MP4 videos, with a family 1 group name of KVAR, KFIX or KSTB
+        depending on their location.
     },
     PROCESS_PROC => \&ProcessKandao,
 #
@@ -385,7 +385,7 @@ atoms in MP4 videos as shot by the Kandao QOOCAM 3 ULTRA.
 
 =head1 AUTHOR
 
-Copyright 2003-2025, Phil Harvey (philharvey66 at gmail.com)
+Copyright 2003-2026, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

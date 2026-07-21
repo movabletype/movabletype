@@ -8,7 +8,7 @@ use strict;
 use warnings;
 #/;
 
-$CGI::VERSION='4.71';
+$CGI::VERSION='4.72';
 
 use CGI::Util qw(rearrange rearrange_header make_attributes unescape escape expires ebcdic2ascii ascii2ebcdic);
 
@@ -3606,6 +3606,7 @@ sub tmpFileName {
     # one of our filenames when compared as strings
     foreach my $param_name ($self->param) {
         foreach my $filehandle ($self->multi_param($param_name)) {
+            next unless ref($filehandle);
             if ($filehandle eq $filename) {
                 return $self->{'.tmpfiles'}->{$filehandle->filename . $filehandle}->{name} || '';
             }

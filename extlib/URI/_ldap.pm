@@ -7,7 +7,7 @@ package URI::_ldap;
 use strict;
 use warnings;
 
-our $VERSION = '5.34';
+our $VERSION = '5.35';
 
 use URI::Escape qw(uri_unescape);
 

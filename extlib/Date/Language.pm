@@ -4,11 +4,23 @@ package Date::Language;
 use     strict;
 use     Time::Local;
 use     Carp;
-use     vars qw($VERSION @ISA);
+
 require Date::Format;
 
-$VERSION = "1.10";
-@ISA     = qw(Date::Format::Generic);
+our $VERSION = '2.35'; # VERSION: generated
+# ABSTRACT: Language specific date formatting and parsing
+
+use base qw(Date::Format::Generic);
+
+sub _build_lookups
+{
+ my $pkg = caller;
+ no strict 'refs';
+ @{"${pkg}::MoY"}{@{"${pkg}::MoY"}}  = (0 .. scalar(@{"${pkg}::MoY"}));
+ @{"${pkg}::MoY"}{@{"${pkg}::MoYs"}} = (0 .. scalar(@{"${pkg}::MoYs"}));
+ @{"${pkg}::DoW"}{@{"${pkg}::DoW"}}  = (0 .. scalar(@{"${pkg}::DoW"}));
+ @{"${pkg}::DoW"}{@{"${pkg}::DoWs"}} = (0 .. scalar(@{"${pkg}::DoWs"}));
+}
 
 sub new
 {
@@ -18,10 +30,10 @@ sub new
  $type =~ s/^(\w+)$/Date::Language::$1/;
 
  croak "Bad language"
-	unless $type =~ /^[\w:]+$/;
+    unless $type =~ /^[\w:]+$/;
 
  eval "require $type"
-	or croak $@;
+    or croak $@;
 
  bless [], $type;
 }
@@ -31,8 +43,7 @@ sub DESTROY {}
 
 sub AUTOLOAD
 {
- use vars qw($AUTOLOAD);
-
+ our $AUTOLOAD;
  if($AUTOLOAD =~ /::strptime\Z/o)
   {
    my $self = $_[0];
@@ -41,15 +52,23 @@ sub AUTOLOAD
 
    no strict 'refs';
    *{"${type}::strptime"} = Date::Parse::gen_parser(
-	\%{"${type}::DoW"},
-	\%{"${type}::MoY"},
-	\@{"${type}::Dsuf"},
-	1);
+    \%{"${type}::DoW"},
+    \%{"${type}::MoY"},
+    \@{"${type}::Dsuf"},
+    1);
 
    goto &{"${type}::strptime"};
   }
 
  croak "Undefined method &$AUTOLOAD called";
+}
+
+sub format_Z {
+    my $tz = Date::Format::Generic::format_Z(@_);
+    my $pkg = ref($_[0]) || 'Date::Language';
+    no strict 'refs';
+    my $tz_map = \%{"${pkg}::TZ"};
+    return exists $tz_map->{$tz} ? $tz_map->{$tz} : $tz;
 }
 
 sub str2time
@@ -58,7 +77,7 @@ sub str2time
  my @t = $me->strptime(@_);
 
  return undef
-	unless @t;
+    unless @t;
 
  my($ss,$mm,$hh,$day,$month,$year,$zone) = @t;
  my @lt  = localtime(time);
@@ -68,26 +87,33 @@ sub str2time
  $ss    ||= 0;
 
  $month = $lt[4]
-	unless(defined $month);
+    unless(defined $month);
 
  $day  = $lt[3]
-	unless(defined $day);
+    unless(defined $day);
 
  $year = ($month > $lt[4]) ? ($lt[5] - 1) : $lt[5]
-	unless(defined $year);
+    unless(defined $year);
 
  return defined $zone ? timegm($ss,$mm,$hh,$day,$month,$year) - $zone
-    	    	      : timelocal($ss,$mm,$hh,$day,$month,$year);
+                      : timelocal($ss,$mm,$hh,$day,$month,$year);
 }
 
 1;
 
 __END__
 
+=pod
+
+=encoding UTF-8
 
 =head1 NAME
 
-Date::Language - Language specific date formating and parsing
+Date::Language - Language specific date formatting and parsing
+
+=head1 VERSION
+
+version 2.35
 
 =head1 SYNOPSIS
 
@@ -112,6 +138,10 @@ L<Date::Language> provides objects to parse and format dates for specific langua
   English                 Romanian                Turkish
   Finnish                 Russian                 Bulgarian
   Occitan
+
+=head1 NAME
+
+Date::Language - Language specific date formatting and parsing
 
 =head1 METHODS
 
@@ -143,3 +173,15 @@ See L<Date::Parse/strptime>
 
 =back
 
+=head1 AUTHOR
+
+Graham <gbarr@pobox.com>
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is copyright (c) 2020 by Graham Barr.
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
+
+=cut

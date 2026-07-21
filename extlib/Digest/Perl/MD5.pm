@@ -6,8 +6,8 @@ use vars qw($VERSION @ISA @EXPORTER @EXPORT_OK);
 
 @EXPORT_OK = qw(md5 md5_hex md5_base64);
 
-@ISA = 'Exporter';
-$VERSION = '1.9';
+@ISA     = 'Exporter';
+$VERSION = '1.91';
 
 # I-Vektor
 sub A() { 0x67_45_23_01 }
@@ -20,73 +20,99 @@ sub MAX() { 0xFFFFFFFF }
 
 # pad a message to a multiple of 64
 sub padding {
-    my $l = length (my $msg = shift() . chr(128));    
-    $msg .= "\0" x (($l%64<=56?56:120)-$l%64);
-    $l = ($l-1)*8;
-    $msg .= pack 'VV', $l & MAX , ($l >> 16 >> 16);
+    my $l = length( my $msg = shift() . chr(128) );
+    $msg .= "\0" x ( ( $l % 64 <= 56 ? 56 : 120 ) - $l % 64 );
+    $l = ( $l - 1 ) * 8;
+    $msg .= pack 'VV', $l & MAX, ( $l >> 16 >> 16 );
 }
 
-
 sub rotate_left($$) {
-	#$_[0] << $_[1] | $_[0] >> (32 - $_[1]);
-	#my $right = $_[0] >> (32 - $_[1]);
-	#my $rmask = (1 << $_[1]) - 1;
-	($_[0] << $_[1]) | (( $_[0] >> (32 - $_[1])  )  & ((1 << $_[1]) - 1));
-	#$_[0] << $_[1] | (($_[0]>> (32 - $_[1])) & (1 << (32 - $_[1])) - 1);
+
+    #$_[0] << $_[1] | $_[0] >> (32 - $_[1]);
+    #my $right = $_[0] >> (32 - $_[1]);
+    #my $rmask = (1 << $_[1]) - 1;
+    ( $_[0] << $_[1] ) |
+      ( ( $_[0] >> ( 32 - $_[1] ) ) & ( ( 1 << $_[1] ) - 1 ) );
+
+    #$_[0] << $_[1] | (($_[0]>> (32 - $_[1])) & (1 << (32 - $_[1])) - 1);
 }
 
 sub gen_code {
-  # Discard upper 32 bits on 64 bit archs.
-  my $MSK = ((1 << 16) << 16) ? ' & ' . MAX : '';
-#	FF => "X0=rotate_left(((X1&X2)|(~X1&X3))+X0+X4+X6$MSK,X5)+X1$MSK;",
-#	GG => "X0=rotate_left(((X1&X3)|(X2&(~X3)))+X0+X4+X6$MSK,X5)+X1$MSK;",
-  my %f = (
-	FF => "X0=rotate_left((X3^(X1&(X2^X3)))+X0+X4+X6$MSK,X5)+X1$MSK;",
-	GG => "X0=rotate_left((X2^(X3&(X1^X2)))+X0+X4+X6$MSK,X5)+X1$MSK;",
-	HH => "X0=rotate_left((X1^X2^X3)+X0+X4+X6$MSK,X5)+X1$MSK;",
-	II => "X0=rotate_left((X2^(X1|(~X3)))+X0+X4+X6$MSK,X5)+X1$MSK;",
-  );
-  #unless ( (1 << 16) << 16) { %f = %{$CODES{'32bit'}} }
-  #else { %f = %{$CODES{'64bit'}} }
 
-  my %s = (  # shift lengths
-	S11 => 7, S12 => 12, S13 => 17, S14 => 22, S21 => 5, S22 => 9, S23 => 14,
-	S24 => 20, S31 => 4, S32 => 11, S33 => 16, S34 => 23, S41 => 6, S42 => 10,
-	S43 => 15, S44 => 21
-  );
+    # Discard upper 32 bits on 64 bit archs.
+    my $MSK = ( ( 1 << 16 ) << 16 ) ? ' & ' . MAX : '';
 
-  my $insert = "\n";
-  while(defined( my $data = <DATA> )) {
-	chomp $data;
-	next unless $data =~ /^[FGHI]/;
-	my ($func,@x) = split /,/, $data;
-	my $c = $f{$func};
-	$c =~ s/X(\d)/$x[$1]/g;
-	$c =~ s/(S\d{2})/$s{$1}/;
-	$c =~ s/^(.*)=rotate_left\((.*),(.*)\)\+(.*)$//;
+    #	FF => "X0=rotate_left(((X1&X2)|(~X1&X3))+X0+X4+X6$MSK,X5)+X1$MSK;",
+    #	GG => "X0=rotate_left(((X1&X3)|(X2&(~X3)))+X0+X4+X6$MSK,X5)+X1$MSK;",
+    # Only mask before rotate, not after; final mask in round() return
+    my %f = (
+        FF => "X0=rotate_left((X3^(X1&(X2^X3)))+X0+X4+X6$MSK,X5)+X1;",
+        GG => "X0=rotate_left((X2^(X3&(X1^X2)))+X0+X4+X6$MSK,X5)+X1;",
+        HH => "X0=rotate_left((X1^X2^X3)+X0+X4+X6$MSK,X5)+X1;",
+        II => "X0=rotate_left((X2^(X1|(~X3)))+X0+X4+X6$MSK,X5)+X1;",
+    );
 
-	my $su = 32 - $3;
-	my $sh = (1 << $3) - 1;
+    #unless ( (1 << 16) << 16) { %f = %{$CODES{'32bit'}} }
+    #else { %f = %{$CODES{'64bit'}} }
 
-	$c = "$1=(((\$r=$2)<<$3)|((\$r>>$su)&$sh))+$4";
+    my %s = (    # shift lengths
+        S11 => 7,
+        S12 => 12,
+        S13 => 17,
+        S14 => 22,
+        S21 => 5,
+        S22 => 9,
+        S23 => 14,
+        S24 => 20,
+        S31 => 4,
+        S32 => 11,
+        S33 => 16,
+        S34 => 23,
+        S41 => 6,
+        S42 => 10,
+        S43 => 15,
+        S44 => 21
+    );
 
-	#my $rotate = "(($2 << $3) || (($2 >> (32 - $3)) & (1 << $2) - 1)))"; 
-	# $c = "\$r = $2;
-	# $1 = ((\$r << $3) | ((\$r >> (32 - $3))  & ((1 << $3) - 1))) + $4";
-	$insert .= "\t$c\n";
-  }
-  close DATA;
-  
-  my $dump = '
+    my $insert = "\n";
+    while ( defined( my $data = <DATA> ) ) {
+        chomp $data;
+        next unless $data =~ /^[FGHI]/;
+        my ( $func, @x ) = split /,/, $data;
+        my $c = $f{$func};
+        $c =~ s/X(\d)/$x[$1]/g;
+        $c =~ s/(S\d{2})/$s{$1}/;
+        $c =~ s/^(.*)=rotate_left\((.*),(.*)\)\+(.*)$//;
+
+        my $su = 32 - $3;
+        my $sh = ( 1 << $3 ) - 1;
+
+        $c = "$1=(((\$r=$2)<<$3)|((\$r>>$su)&$sh))+$4";
+
+        #my $rotate = "(($2 << $3) || (($2 >> (32 - $3)) & (1 << $2) - 1)))";
+        # $c = "\$r = $2;
+        # $1 = ((\$r << $3) | ((\$r >> (32 - $3))  & ((1 << $3) - 1))) + $4";
+        $insert .= "\t$c\n";
+    }
+    close DATA;
+
+    my $dump = '
   sub round {
 	my ($a,$b,$c,$d) = @_[0 .. 3];
 	my $r;' . $insert . '
-	$_[0]+$a' . $MSK . ', $_[1]+$b ' . $MSK . 
-        ', $_[2]+$c' . $MSK . ', $_[3]+$d' . $MSK . ';
+	($_[0]+$a)'
+      . $MSK
+      . ', ($_[1]+$b)'
+      . $MSK
+      . ', ($_[2]+$c)'
+      . $MSK
+      . ', ($_[3]+$d)'
+      . $MSK . ';
   }';
-  eval $dump;
-  # print "$dump\n";
-  # exit 0;
+    eval $dump;
+
+    # print "$dump\n";
+    # exit 0;
 }
 
 gen_code();
@@ -94,132 +120,134 @@ gen_code();
 #########################################
 # Private output converter functions:
 sub _encode_hex { unpack 'H*', $_[0] }
+
 sub _encode_base64 {
-	my $res;
-	while ($_[0] =~ /(.{1,45})/gs) {
-		$res .= substr pack('u', $1), 1;
-		chop $res;
-	}
-	$res =~ tr|` -_|AA-Za-z0-9+/|;#`
-	chop $res; chop $res;
-	$res
+    my $res;
+    while ( $_[0] =~ /(.{1,45})/gs ) {
+        $res .= substr pack( 'u', $1 ), 1;
+        chop $res;
+    }
+    $res =~ tr|` -_|AA-Za-z0-9+/|;    #`
+    chop $res;
+    chop $res;
+    $res;
 }
 
 #########################################
 # OOP interface:
 sub new {
-	my $proto = shift;
-	my $class = ref $proto || $proto;
-	my $self = {};
-	bless $self, $class;
-	$self->reset();
-	$self
+    my $proto = shift;
+    my $class = ref $proto || $proto;
+    my $self  = {};
+    bless $self, $class;
+    $self->reset();
+    $self;
 }
 
 sub reset {
-	my $self = shift;
-	delete $self->{_data};
-	$self->{_state} = [A,B,C,D];
-	$self->{_length} = 0;
-	$self
+    my $self = shift;
+    delete $self->{_data};
+    $self->{_state}  = [ A, B, C, D ];
+    $self->{_length} = 0;
+    $self;
 }
 
 sub add {
-	my $self = shift;
-	$self->{_data} .= join '', @_ if @_;
-	my ($i,$c);
-	for $i (0 .. (length $self->{_data})/64-1) {
-		my @X = unpack 'V16', substr $self->{_data}, $i*64, 64;
-		@{$self->{_state}} = round(@{$self->{_state}},@X);
-		++$c;
-	}
-	if ($c) {
-		substr ($self->{_data}, 0, $c*64) = '';
-		$self->{_length} += $c*64;
-	}
-	$self
+    my $self = shift;
+    $self->{_data} .= join '', @_ if @_;
+    my ( $i, $c );
+    for $i ( 0 .. ( length $self->{_data} ) / 64 - 1 ) {
+        my @X = unpack 'V16', substr $self->{_data}, $i * 64, 64;
+        @{ $self->{_state} } = round( @{ $self->{_state} }, @X );
+        ++$c;
+    }
+    if ($c) {
+        substr( $self->{_data}, 0, $c * 64 ) = '';
+        $self->{_length} += $c * 64;
+    }
+    $self;
 }
 
 sub finalize {
-	my $self = shift;
-	$self->{_data} .= chr(128);
+    my $self = shift;
+    $self->{_data} .= chr(128);
     my $l = $self->{_length} + length $self->{_data};
-    $self->{_data} .= "\0" x (($l%64<=56?56:120)-$l%64);
-    $l = ($l-1)*8;
-    $self->{_data} .= pack 'VV', $l & MAX , ($l >> 16 >> 16);
-	$self->add();
-	$self
+    $self->{_data} .= "\0" x ( ( $l % 64 <= 56 ? 56 : 120 ) - $l % 64 );
+    $l = ( $l - 1 ) * 8;
+    $self->{_data} .= pack 'VV', $l & MAX, ( $l >> 16 >> 16 );
+    $self->add();
+    $self;
 }
 
 sub addfile {
-  	my ($self,$fh) = @_;
-	if (!ref($fh) && ref(\$fh) ne "GLOB") {
-	    require Symbol;
-	    $fh = Symbol::qualify($fh, scalar caller);
-	}
-	# $self->{_data} .= do{local$/;<$fh>};
-	my $read = 0;
-	my $buffer = '';
-	$self->add($buffer) while $read = read $fh, $buffer, 8192;
-	die __PACKAGE__, " read failed: $!" unless defined $read;
-	$self
+    my ( $self, $fh ) = @_;
+    if ( !ref($fh) && ref( \$fh ) ne "GLOB" ) {
+        require Symbol;
+        $fh = Symbol::qualify( $fh, scalar caller );
+    }
+
+    # $self->{_data} .= do{local$/;<$fh>};
+    my $read   = 0;
+    my $buffer = '';
+    $self->add($buffer) while $read = read $fh, $buffer, 8192;
+    die __PACKAGE__, " read failed: $!" unless defined $read;
+    $self;
 }
 
 sub add_bits {
-	my $self = shift;
-	return $self->add( pack 'B*', shift ) if @_ == 1;
-	my ($b,$n) = @_;
-	die __PACKAGE__, " Invalid number of bits\n" if $n%8;
-	$self->add( substr $b, 0, $n/8 )
+    my $self = shift;
+    return $self->add( pack 'B*', shift ) if @_ == 1;
+    my ( $b, $n ) = @_;
+    die __PACKAGE__, " Invalid number of bits\n" if $n % 8;
+    $self->add( substr $b, 0, $n / 8 );
 }
 
 sub digest {
-	my $self = shift;
-	$self->finalize();
-	my $res = pack 'V4', @{$self->{_state}};
-	$self->reset();
-	$res
+    my $self = shift;
+    $self->finalize();
+    my $res = pack 'V4', @{ $self->{_state} };
+    $self->reset();
+    $res;
 }
 
 sub hexdigest {
-	_encode_hex($_[0]->digest)
+    _encode_hex( $_[0]->digest );
 }
 
 sub b64digest {
-	_encode_base64($_[0]->digest)
+    _encode_base64( $_[0]->digest );
 }
 
 sub clone {
-	my $self = shift;
-	my $clone = { 
-		_state => [@{$self->{_state}}],
-		_length => $self->{_length},
-		_data => $self->{_data}
-	};
-	bless $clone, ref $self || $self;
+    my $self  = shift;
+    my $clone = {
+        _state  => [ @{ $self->{_state} } ],
+        _length => $self->{_length},
+        _data   => $self->{_data}
+    };
+    bless $clone, ref $self || $self;
 }
 
 #########################################
 # Procedural interface:
 sub md5 {
-	my $message = padding(join'',@_);
-	my ($a,$b,$c,$d) = (A,B,C,D);
-	my $i;
-	for $i (0 .. (length $message)/64-1) {
-		my @X = unpack 'V16', substr $message,$i*64,64;	
-		($a,$b,$c,$d) = round($a,$b,$c,$d,@X);
-	}
-	pack 'V4',$a,$b,$c,$d;
+    my $message = padding( join '', @_ );
+    my ( $a, $b, $c, $d ) = ( A, B, C, D );
+    my $i;
+    for $i ( 0 .. ( length $message ) / 64 - 1 ) {
+        my @X = unpack 'V16', substr $message, $i * 64, 64;
+        ( $a, $b, $c, $d ) = round( $a, $b, $c, $d, @X );
+    }
+    pack 'V4', $a, $b, $c, $d;
 }
-sub md5_hex { _encode_hex &md5 } 
+sub md5_hex    { _encode_hex &md5 }
 sub md5_base64 { _encode_base64 &md5 }
-
 
 1;
 
 =head1 NAME
 
-Digest::MD5::Perl - Perl implementation of Ron Rivests MD5 Algorithm
+Digest::MD5::Perl - Perl implementation of Ron Rivest's MD5 Algorithm
 
 =head1 DISCLAIMER
 
@@ -236,7 +264,7 @@ computers where you cannot install C<Digest::MD5> (e.g. lack of a C-Compiler)
 
 =item
 
-encrypting only small amounts of data (less than one million bytes). I use it to
+hashing only small amounts of data (less than one million bytes). I use it to
 hash passwords.
 
 =item
@@ -269,7 +297,7 @@ educational purposes
 
 =head1 DESCRIPTION
 
-This modules has the same interface as the much faster C<Digest::MD5>. So you can
+This module has the same interface as the much faster C<Digest::MD5>. So you can
 easily exchange them, e.g.
 
 	BEGIN {
@@ -277,7 +305,7 @@ easily exchange them, e.g.
 	    require Digest::MD5;
 	    import Digest::MD5 'md5_hex'
 	  };
-	  if ($@) { # ups, no Digest::MD5
+	  if ($@) { # oops, no Digest::MD5
 	    require Digest::Perl::MD5;
 	    import Digest::Perl::MD5 'md5_hex'
 	  }		
@@ -290,7 +318,7 @@ You can also install the Perl part of Digest::MD5 together with Digest::Perl::MD
 and use Digest::MD5 as normal, it falls back to Digest::Perl::MD5 if it
 cannot load its object files.
 
-For a detailed Documentation see the C<Digest::MD5> module.
+For detailed documentation see the C<Digest::MD5> module.
 
 =head1 EXAMPLES
 
@@ -317,7 +345,7 @@ checksum can also be calculated in OO style:
     print "Digest is $digest\n";
 
 The digest methods are destructive. That means you can only call them
-once and the $md5 objects is reset after use. You can make a copy with clone:
+once and the $md5 object is reset after use. You can make a copy with clone:
 
 	$md5->clone->hexdigest
 
@@ -330,12 +358,12 @@ This implementation of the MD5 algorithm has some limitations:
 =item
 
 It's slow, very slow. I've done my very best but Digest::MD5 is still about 100 times faster.
-You can only encrypt Data up to one million bytes in an acceptable time. But it's very useful
-for encrypting small amounts of data like passwords.
+You can only hash data up to one million bytes in an acceptable time. But it's very useful
+for hashing small amounts of data like passwords.
 
 =item
 
-You can only encrypt up to 2^32 bits = 512 MB on 32bit archs. But You should
+You can only hash up to 2^32 bits = 512 MB on 32-bit archs. But you should
 use C<Digest::MD5> for those amounts of data anyway.
 
 =back

@@ -17,7 +17,7 @@ our %EXPORT_TAGS = ( 'all' => \@EXPORT_OK, );
 our @CARP_NOT = ('Crypt::URandom');
 
 BEGIN {
-    our $VERSION = '0.54';
+    our $VERSION = '0.55';
     eval {
         require XSLoader;
 
@@ -115,7 +115,7 @@ sub _init {
             }
             else {
                 my $rtlgenrand =
-                  Win32::API->new( 'advapi32', <<'_RTLGENRANDOM_PROTO_');
+                  Win32::API->new( 'advapi32', <<'_RTLGENRANDOM_PROTO_' );
 INT SystemFunction036(
   PVOID RandomBuffer,
   ULONG RandomBufferLength
@@ -217,6 +217,17 @@ sub _read_urandom_fs {
             && ( length $urandom == $original_length ) )
         {
         }
+        elsif ( !defined $result ) {
+            my $error = $EXTENDED_OS_ERROR;
+            $_urandom_handle = undef;
+            $_initialised    = undef;
+            Carp::croak( q[Failed to read from ] . PATH() . qq[:$error] );
+        }
+        elsif ( $result == 0 ) {
+            $_urandom_handle = undef;
+            $_initialised    = undef;
+            Carp::croak( PATH() . q[ has returned EOF] );
+        }
         elsif (( $result == SYSTEM_CALL_FAILED() )
             && ( $OS_ERROR == POSIX::EINTR() ) )
         {
@@ -245,7 +256,7 @@ Crypt::URandom - Provide non blocking randomness
 
 =head1 VERSION
 
-This document describes Crypt::URandom version 0.54
+This document describes Crypt::URandom version 0.55
 
 
 =head1 SYNOPSIS
@@ -300,7 +311,9 @@ This function accepts an integer and returns a string of the same size
 filled with random data on platforms that implement L<getrandom(2)>.
 It will throw an exception if the requested amount of random data is not returned.
 This is NOT portable across all operating systems, but is made available if
-high-speed generation of random numbers is required.
+high-speed generation of random numbers is required.  If an integer is not supplied
+as an argument, this function will return a empty string as a result (the same as if
+the integer 0 is supplied as an argument)
 
 =back
 

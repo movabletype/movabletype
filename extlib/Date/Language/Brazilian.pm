@@ -4,24 +4,28 @@
 
 package Date::Language::Brazilian;
 
+use strict;
+use warnings;
+use utf8;
+
 use Date::Language ();
-use vars qw(@ISA @DoW @DoWs @MoY @MoYs @AMPM @Dsuf %MoY %DoW $VERSION);
-@ISA = qw(Date::Language);
-$VERSION = "1.01";
 
-@DoW = qw(Domingo Segunda Terça Quarta Quinta Sexta Sábado);
-@MoY = qw(Janeiro Fevereiro Março Abril Maio Junho
-	  Julho Agosto Setembro Outubro Novembro Dezembro);
-@DoWs = map { substr($_,0,3) } @DoW;
-@MoYs = map { substr($_,0,3) } @MoY;
-@AMPM = qw(AM PM);
+our $VERSION = '2.35'; # VERSION: generated
+# ABSTRACT: Brazilian localization for Date::Format
 
-@Dsuf = (qw(mo ro do ro to to to mo vo no)) x 3;
+use base 'Date::Language';
 
-@MoY{@MoY}  = (0 .. scalar(@MoY));
-@MoY{@MoYs} = (0 .. scalar(@MoYs));
-@DoW{@DoW}  = (0 .. scalar(@DoW));
-@DoW{@DoWs} = (0 .. scalar(@DoWs));
+our @DoW = qw(Domingo Segunda TerÃ§a Quarta Quinta Sexta SÃ¡bado);
+our @MoY = qw(Janeiro Fevereiro MarÃ§o Abril Maio Junho
+      Julho Agosto Setembro Outubro Novembro Dezembro);
+our @DoWs = map { substr($_,0,3) } @DoW;
+our @MoYs = map { substr($_,0,3) } @MoY;
+our @AMPM = qw(AM PM);
+
+our @Dsuf = (qw(mo ro do ro to to to mo vo no)) x 3;
+
+our ( %MoY, %DoW );
+Date::Language::_build_lookups();
 
 # Formatting routines
 
@@ -33,3 +37,30 @@ sub format_h { $MoYs[$_[0]->[4]] }
 sub format_p { $_[0]->[2] >= 12 ?  $AMPM[1] : $AMPM[0] }
 
 1;
+
+__END__
+
+=pod
+
+=encoding UTF-8
+
+=head1 NAME
+
+Date::Language::Brazilian - Brazilian localization for Date::Format
+
+=head1 VERSION
+
+version 2.35
+
+=head1 AUTHOR
+
+Graham <gbarr@pobox.com>
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is copyright (c) 2020 by Graham Barr.
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
+
+=cut

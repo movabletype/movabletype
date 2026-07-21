@@ -21,7 +21,7 @@ use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::Exif;
 use Image::ExifTool::Canon;
 
-$VERSION = '1.61';
+$VERSION = '1.62';
 
 sub WriteCRW($$);
 sub ProcessCanonRaw($$$);
@@ -595,7 +595,9 @@ sub BuildMakerNotes($$$$$$);
     3 => 'WhiteSampleLeftBorder',
     4 => 'WhiteSampleTopBorder',
     5 => 'WhiteSampleBits',
-    # this is followed by the encrypted white sample values (ref 1)
+    # (followed by the encrypted white sample values, ref 1)
+    # BlackLevels seem valid for D30 and D60, but not sure about PowerShot models
+    0x37 => { Name => 'BlackLevels', Format => 'int16u[4]' }, #github387
 );
 
 #------------------------------------------------------------------------------
@@ -888,7 +890,7 @@ tags.)
 
 =head1 AUTHOR
 
-Copyright 2003-2025, Phil Harvey (philharvey66 at gmail.com)
+Copyright 2003-2026, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

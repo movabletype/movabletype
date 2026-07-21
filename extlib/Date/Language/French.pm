@@ -4,25 +4,28 @@
 
 package Date::Language::French;
 
+use strict;
+use warnings;
+use utf8;
 use Date::Language ();
-use vars qw(@ISA @DoW @DoWs @MoY @MoYs @AMPM @Dsuf %MoY %DoW $VERSION);
-@ISA = qw(Date::Language);
-$VERSION = "1.04";
 
-@DoW = qw(dimanche lundi mardi mercredi jeudi vendredi samedi);
-@MoY = qw(janvier février mars avril mai juin 
-          juillet août septembre octobre novembre décembre);
-@DoWs = map { substr($_,0,3) } @DoW;
-@MoYs = map { substr($_,0,3) } @MoY;
+use base 'Date::Language';
+
+our $VERSION = '2.35'; # VERSION: generated
+# ABSTRACT: French localization for Date::Format
+
+our @DoW = qw(dimanche lundi mardi mercredi jeudi vendredi samedi);
+our @MoY = qw(janvier fÃ©vrier mars avril mai juin
+          juillet aoÃ»t septembre octobre novembre dÃ©cembre);
+our @DoWs = map { substr($_,0,3) } @DoW;
+our @MoYs = map { substr($_,0,3) } @MoY;
 $MoYs[6] = 'jul';
-@AMPM = qw(AM PM);
 
-@Dsuf = ((qw(er e e e e e e e e e)) x 3, 'er');
+our @AMPM = qw(AM PM);
+our @Dsuf = ('e', 'er', ('e') x 30);
 
-@MoY{@MoY}  = (0 .. scalar(@MoY));
-@MoY{@MoYs} = (0 .. scalar(@MoYs));
-@DoW{@DoW}  = (0 .. scalar(@DoW));
-@DoW{@DoWs} = (0 .. scalar(@DoWs));
+our ( %MoY, %DoW );
+Date::Language::_build_lookups();
 
 # Formatting routines
 
@@ -32,6 +35,33 @@ sub format_b { $MoYs[$_[0]->[4]] }
 sub format_B { $MoY[$_[0]->[4]] }
 sub format_h { $MoYs[$_[0]->[4]] }
 sub format_p { $_[0]->[2] >= 12 ?  $AMPM[1] : $AMPM[0] }
-sub format_o { $_[0]->[3] }
+sub format_o { sprintf("%2d%s",$_[0]->[3],$Dsuf[$_[0]->[3]]) }
 
 1;
+
+__END__
+
+=pod
+
+=encoding UTF-8
+
+=head1 NAME
+
+Date::Language::French - French localization for Date::Format
+
+=head1 VERSION
+
+version 2.35
+
+=head1 AUTHOR
+
+Graham <gbarr@pobox.com>
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is copyright (c) 2020 by Graham Barr.
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
+
+=cut

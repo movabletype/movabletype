@@ -38,7 +38,7 @@ use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::GPS;
 
-$VERSION = '1.08';
+$VERSION = '1.09';
 
 sub ProcessPrimer($$$);
 sub ProcessLocalSet($$$);
@@ -2481,7 +2481,7 @@ sub ReadMXFValue($$$)
     local $_;
 
     if ($type eq 'UTF-16') {
-        $val = $et->Decode($val, 'UCS2'); # (until we handle UTF-16 properly)
+        $val = $et->Decode($val, 'UTF16');
     } elsif ($type eq 'ProductVersion') {
         my @a = unpack('n*', $val);
         push @a, 0 while @a < 5;
@@ -2987,7 +2987,7 @@ information from MXF (Material Exchange Format) files.
 
 =head1 AUTHOR
 
-Copyright 2003-2025, Phil Harvey (philharvey66 at gmail.com)
+Copyright 2003-2026, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

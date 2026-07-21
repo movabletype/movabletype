@@ -11,7 +11,7 @@ use strict;
 use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 
-$VERSION = '1.39';
+$VERSION = '1.40';
 
 sub ProcessOcad($$$);
 sub ProcessJPEG_HDR($$$);
@@ -211,6 +211,10 @@ sub ProcessJPEG_HDR($$$);
     APP7 => [{
         Name => 'Pentax',
         Condition => '$$valPt =~ /^PENTAX \0/',
+        SubDirectory => { TagTable => 'Image::ExifTool::Pentax::Main' },
+      }, {
+        Name => 'Ricoh',
+        Condition => '$$valPt =~ /^RICOH\0/',
         SubDirectory => { TagTable => 'Image::ExifTool::Pentax::Main' },
       }, {
         Name => 'Huawei',
@@ -817,7 +821,7 @@ segments are included in the Image::ExifTool module itself.
 
 =head1 AUTHOR
 
-Copyright 2003-2025, Phil Harvey (philharvey66 at gmail.com)
+Copyright 2003-2026, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

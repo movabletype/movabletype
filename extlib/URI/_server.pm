@@ -7,7 +7,7 @@ use parent 'URI::_generic';
 
 use URI::Escape qw(uri_unescape);
 
-our $VERSION = '5.34';
+our $VERSION = '5.35';
 
 sub _uric_escape {
     my($class, $str) = @_;
@@ -156,10 +156,13 @@ sub canonical
     my $uc_host = $host =~ /[A-Z]/;
     my $def_port = defined($port) && ($port eq "" ||
                                       $port == $self->default_port);
-    if ($uc_host || $def_port) {
+    # strip leading zeros from non-default ports (e.g. 08080 -> 8080)
+    my $norm_port = !$def_port && defined($port) && $port ne "" && $port =~ /^0\d/;
+    if ($uc_host || $def_port || $norm_port) {
 	$other = $other->clone if $other == $self;
 	$other->host(lc $host) if $uc_host;
 	$other->port(undef)    if $def_port;
+	$other->_port(int($port)) if $norm_port;
     }
     $other;
 }

@@ -18,7 +18,7 @@ use Module::Load qw( load );
 use Scalar::Util qw(blessed openhandle);
 use Try::Tiny qw(try catch);
 
-our $VERSION = '6.81';
+our $VERSION = '6.83';
 
 sub new
 {
@@ -93,6 +93,9 @@ sub new
     $cookie_jar_class = 'HTTP::Cookies'
       unless defined $cookie_jar_class;
 
+    my $allow_credentialed_redirects = delete $cnf{allow_credentialed_redirects};
+    my $allow_downgrade              = delete $cnf{allow_downgrade};
+
     # Actually ""s are just as good as 0's, but for concision we'll just say:
     Carp::croak("protocols_allowed has to be an arrayref or 0, not \"$protocols_allowed\"!")
       if $protocols_allowed and ref($protocols_allowed) ne 'ARRAY';
@@ -119,9 +122,11 @@ sub new
         no_proxy              => [ @{ $no_proxy } ],
         protocols_allowed     => $protocols_allowed,
         protocols_forbidden   => $protocols_forbidden,
-        requests_redirectable => $requests_redirectable,
-        send_te               => $send_te,
-        cookie_jar_class      => $cookie_jar_class,
+        requests_redirectable        => $requests_redirectable,
+        send_te                      => $send_te,
+        cookie_jar_class             => $cookie_jar_class,
+        allow_credentialed_redirects => $allow_credentialed_redirects,
+        allow_downgrade              => $allow_downgrade,
     }, $class;
 
     $self->agent(defined($agent) ? $agent : $class->_agent)
@@ -368,6 +373,42 @@ sub request {
                 = $HTTP::URI_CLASS->new($referral_uri, $base)->abs($base);
         }
         $referral->uri($referral_uri);
+
+        # Strip caller-supplied credential headers on cross-origin
+        # redirect (different scheme/host/port). Same fix shape as
+        # libcurl CVE-2018-1000007. Opt-out via
+        # allow_credentialed_redirects => 1.
+        unless ($self->{allow_credentialed_redirects}) {
+            my $orig = $request->uri;
+            my $new  = $referral->uri;
+            my $orig_scheme = defined $orig->scheme ? $orig->scheme : q{};
+            my $new_scheme  = defined $new->scheme  ? $new->scheme  : q{};
+            my $orig_host   = defined $orig->host   ? lc $orig->host : q{};
+            my $new_host    = defined $new->host    ? lc $new->host  : q{};
+            my $orig_port   = eval { $orig->port } || 0;
+            my $new_port    = eval { $new->port  } || 0;
+            if (   $orig_scheme ne $new_scheme
+                || $orig_host   ne $new_host
+                || $orig_port   != $new_port)
+            {
+                $referral->remove_header('Authorization', 'Proxy-Authorization');
+            }
+        }
+
+        # Refuse https->http downgrade by default. A caller who
+        # requested https reasonably expects end-to-end TLS; following
+        # a 3xx to plaintext leaks the body and remaining headers.
+        # Opt-out via allow_downgrade => 1.
+        my $orig_scheme = defined $request->uri->scheme  ? $request->uri->scheme  : q{};
+        my $new_scheme  = defined $referral->uri->scheme ? $referral->uri->scheme : q{};
+        if (   $orig_scheme eq 'https'
+            && $new_scheme  eq 'http'
+            && !$self->{allow_downgrade})
+        {
+            $response->header("Client-Warning" =>
+                "Refusing https->http redirect (set allow_downgrade => 1 to opt in)");
+            return $response;
+        }
 
         return $response unless $self->redirect_ok($referral, $response);
         return $self->request($referral, $arg, $size, $response);
@@ -738,6 +779,8 @@ sub timeout
 sub local_address{ shift->_elem('local_address',@_); }
 sub max_size     { shift->_elem('max_size',     @_); }
 sub max_redirect { shift->_elem('max_redirect', @_); }
+sub allow_credentialed_redirects { shift->_elem('allow_credentialed_redirects', @_); }
+sub allow_downgrade              { shift->_elem('allow_downgrade', @_); }
 sub show_progress{ shift->_elem('show_progress', @_); }
 sub send_te      { shift->_elem('send_te',      @_); }
 
@@ -1169,9 +1212,12 @@ sub env_proxy {
         }
 	$k = lc($k);
         if (my $from_key= $seen{$k}) {
-            warn "Environment contains multiple differing definitions for '$k'.\n".
-                 "Using value from '$from_key' ($ENV{$from_key}) and ignoring '$real_key' ($v)"
-                if $v ne $ENV{$from_key};
+            # Only warn about proxy-related env vars, not unrelated ones (GH #372)
+            if ($k =~ /^(.*)_proxy$/) {
+                warn "Environment contains multiple differing definitions for '$k'.\n".
+                     "Using value from '$from_key' ($ENV{$from_key}) and ignoring '$real_key' ($v)"
+                    if $v ne $ENV{$from_key};
+            }
             next;
         } else {
             $seen{$k}= $real_key;
@@ -1319,27 +1365,41 @@ This method constructs a new L<LWP::UserAgent> object and returns it.
 Key/value pair arguments may be provided to set up the initial state.
 The following options correspond to attribute methods described below:
 
-   KEY                     DEFAULT
-   -----------             --------------------
-   agent                   "libwww-perl/#.###"
-   conn_cache              undef
-   cookie_jar              undef
-   cookie_jar_class        HTTP::Cookies
-   default_headers         HTTP::Headers->new
-   from                    undef
-   local_address           undef
-   max_redirect            7
-   max_size                undef
-   no_proxy                []
-   parse_head              1
-   protocols_allowed       undef
-   protocols_forbidden     undef
-   proxy                   {}
-   requests_redirectable   ['GET', 'HEAD']
-   send_te                 1
-   show_progress           undef
-   ssl_opts                { verify_hostname => 1 }
-   timeout                 180
+   KEY                            DEFAULT
+   ---------------------------    --------------------
+   agent                          "libwww-perl/#.###"
+   allow_credentialed_redirects   undef
+   allow_downgrade                undef
+   conn_cache                     undef
+   cookie_jar                     undef
+   cookie_jar_class               HTTP::Cookies
+   default_headers                HTTP::Headers->new
+   from                           undef
+   local_address                  undef
+   max_redirect                   7
+   max_size                       undef
+   no_proxy                       []
+   parse_head                     1
+   protocols_allowed              undef
+   protocols_forbidden            undef
+   proxy                          {}
+   requests_redirectable          ['GET', 'HEAD']
+   send_te                        1
+   show_progress                  undef
+   ssl_opts                       { verify_hostname => 1 }
+   timeout                        180
+
+When following a 3xx redirect to a different origin (a different
+scheme, host, or port), L<LWP::UserAgent> strips C<Authorization>
+and C<Proxy-Authorization> from the cloned request to avoid leaking
+caller-supplied credentials to the redirect target. Set
+C<allow_credentialed_redirects> to a true value to opt out and
+forward these headers across origins.
+
+A 3xx redirect that downgrades an C<https> request to plain C<http>
+is refused by default; the original response is returned with a
+C<Client-Warning> header explaining the refusal. Set C<allow_downgrade>
+to a true value to opt in to following such redirects.
 
 The following additional options are also accepted: If the C<env_proxy> option
 is passed in with a true value, then proxy settings are read from environment
@@ -1382,6 +1442,30 @@ string is appended to it.
 
 The user agent string should be one or more simple product identifiers
 with an optional version number separated by the C</> character.
+
+=head2 allow_credentialed_redirects
+
+    my $allow = $ua->allow_credentialed_redirects;
+    $ua->allow_credentialed_redirects( 1 );
+
+Get/set whether caller-supplied C<Authorization> and C<Proxy-Authorization>
+headers are forwarded across cross-origin 3xx redirects (a different scheme,
+host, or port). Defaults to a false value, meaning the headers are stripped
+on cross-origin redirects to avoid leaking credentials to the redirect target.
+Same-origin redirects always retain these headers.
+
+=head2 allow_downgrade
+
+    my $allow = $ua->allow_downgrade;
+    $ua->allow_downgrade( 1 );
+
+Get/set whether a 3xx redirect from an C<https> request to a plain
+C<http> URL is followed. Defaults to a false value, meaning such
+redirects are refused; the original response is returned with a
+C<Client-Warning> header. Set to a true value to opt in to following
+the redirect. Note that even when C<allow_downgrade> is true,
+cross-origin credential stripping still applies (see
+L</allow_credentialed_redirects>).
 
 =head2 conn_cache
 
@@ -1631,7 +1715,7 @@ external module, SSL certificate verification was harmonized to behave in sync w
 L<IO::Socket::SSL>. With this change, setting this option no longer disables all SSL
 certificate verification, only the hostname checks. To disable all verification,
 use the C<SSL_verify_mode> option in the C<ssl_opts> attribute. For example:
-C<$ua->ssl_opts(SSL_verify_mode => IO::Socket::SSL::SSL_VERIFY_NONE);>
+C<< $ua->ssl_opts(SSL_verify_mode => IO::Socket::SSL::SSL_VERIFY_NONE); >>
 
 =item C<SSL_ca_file> => $path
 

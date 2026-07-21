@@ -1,27 +1,57 @@
 ##
-## English tables
+## Chinese GB2312 tables (GB2312 byte encoding)
 ##
 
 package Date::Language::Chinese_GB;
 
-use Date::Language ();
-use vars qw(@ISA @DoW @DoWs @MoY @MoYs @AMPM @Dsuf %MoY %DoW $VERSION);
-@ISA = qw(Date::Language);
-$VERSION = "1.01";
+use strict;
+use warnings;
 
-@DoW = qw(ÐÇÆÚÈÕ ÐÇÆÚÒ» ÐÇÆÚ¶þ ÐÇÆÚÈý ÐÇÆÚËÄ ÐÇÆÚÎå ÐÇÆÚÁù);
-@MoY = qw(Ò»ÔÂ ¶þÔÂ ÈýÔÂ ËÄÔÂ ÎåÔÂ ÁùÔÂ
-	  ÆßÔÂ °ËÔÂ ¾ÅÔÂ Ê®ÔÂ Ê®Ò»ÔÂ Ê®¶þÔÂ);
+use Date::Language ();
+
+use base 'Date::Language';
+
+our $VERSION = '2.35'; # VERSION: generated
+# ABSTRACT: Chinese localization for Date::Format (GB2312)
+
+our (@DoW, @DoWs, @MoY, @MoYs, @AMPM, @Dsuf, %MoY, %DoW);
+
+@DoW = (
+    "\xd0\xc7\xc6\xda\xc8\xd5",  # æ˜ŸæœŸæ—¥
+    "\xd0\xc7\xc6\xda\xd2\xbb",  # æ˜ŸæœŸä¸€
+    "\xd0\xc7\xc6\xda\xb6\xfe",  # æ˜ŸæœŸäºŒ
+    "\xd0\xc7\xc6\xda\xc8\xfd",  # æ˜ŸæœŸä¸‰
+    "\xd0\xc7\xc6\xda\xcb\xc4",  # æ˜ŸæœŸå››
+    "\xd0\xc7\xc6\xda\xce\xe5",  # æ˜ŸæœŸäº”
+    "\xd0\xc7\xc6\xda\xc1\xf9",  # æ˜ŸæœŸå…­
+);
+
+@MoY = (
+    "\xd2\xbb\xd4\xc2",          # ä¸€æœˆ
+    "\xb6\xfe\xd4\xc2",          # äºŒæœˆ
+    "\xc8\xfd\xd4\xc2",          # ä¸‰æœˆ
+    "\xcb\xc4\xd4\xc2",          # å››æœˆ
+    "\xce\xe5\xd4\xc2",          # äº”æœˆ
+    "\xc1\xf9\xd4\xc2",          # å…­æœˆ
+    "\xc6\xdf\xd4\xc2",          # ä¸ƒæœˆ
+    "\xb0\xcb\xd4\xc2",          # å…«æœˆ
+    "\xbe\xc5\xd4\xc2",          # ä¹æœˆ
+    "\xca\xae\xd4\xc2",          # åæœˆ
+    "\xca\xae\xd2\xbb\xd4\xc2",  # åä¸€æœˆ
+    "\xca\xae\xb6\xfe\xd4\xc2",  # åäºŒæœˆ
+);
+
 @DoWs = map { $_ } @DoW;
 @MoYs = map { $_ } @MoY;
-@AMPM = qw(ÉÏÎç ÏÂÎç);
 
-@Dsuf = (qw(ÈÕ ÈÕ ÈÕ ÈÕ ÈÕ ÈÕ ÈÕ ÈÕ ÈÕ ÈÕ)) x 3;
+@AMPM = (
+    "\xc9\xcf\xce\xe7",  # ä¸Šåˆ
+    "\xcf\xc2\xce\xe7",  # ä¸‹åˆ
+);
 
-@MoY{@MoY}  = (0 .. scalar(@MoY));
-@MoY{@MoYs} = (0 .. scalar(@MoYs));
-@DoW{@DoW}  = (0 .. scalar(@DoW));
-@DoW{@DoWs} = (0 .. scalar(@DoWs));
+@Dsuf = ("\xc8\xd5") x 31;  # æ—¥
+
+Date::Language::_build_lookups();
 
 # Formatting routines
 
@@ -32,5 +62,33 @@ sub format_B { $MoY[$_[0]->[4]] }
 sub format_h { $MoYs[$_[0]->[4]] }
 sub format_p { $_[0]->[2] >= 12 ?  $AMPM[1] : $AMPM[0] }
 
-sub format_o { sprintf("%2d%s",$_[0]->[3],"ÈÕ") }
+sub format_o { sprintf("%2d%s",$_[0]->[3],"\xc8\xd5") }  # æ—¥
+
 1;
+
+__END__
+
+=pod
+
+=encoding UTF-8
+
+=head1 NAME
+
+Date::Language::Chinese_GB - Chinese localization for Date::Format (GB2312)
+
+=head1 VERSION
+
+version 2.35
+
+=head1 AUTHOR
+
+Graham <gbarr@pobox.com>
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is copyright (c) 2020 by Graham Barr.
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
+
+=cut

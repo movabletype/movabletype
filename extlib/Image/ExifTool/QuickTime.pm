@@ -49,7 +49,7 @@ use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::Exif;
 use Image::ExifTool::GPS;
 
-$VERSION = '3.25';
+$VERSION = '3.33';
 
 sub ProcessMOV($$;$);
 sub ProcessKeys($$$);
@@ -503,8 +503,8 @@ my %qtFlags = ( #12
 # tags that may be duplicated and directories that may contain duplicate tags
 # (used only to avoid warnings when Validate-ing)
 my %dupTagOK = ( mdat => 1, trak => 1, free => 1, infe => 1, sgpd => 1, dimg => 1, CCDT => 1,
-                 sbgp => 1, csgm => 1, uuid => 1, cdsc => 1, maxr => 1, '----' => 1 );
-my %dupDirOK = ( ipco => 1, iref => 1, '----' => 1 );
+                 sbgp => 1, csgm => 1, uuid => 1, cdsc => 1, maxr => 1, moof => 1, '----' => 1 );
+my %dupDirOK = ( ipco => 1, iref => 1, sdpd => 1, moof => 1, traf => 1, '----' => 1 );
 
 # the usual atoms required to decode timed metadata with the ExtractEmbedded option
 my %eeStd = ( stco => 'stbl', co64 => 'stbl', stsz => 'stbl', stz2 => 'stbl',
@@ -972,6 +972,7 @@ my %userDefined = (
         Binary => 1,
         # note that this may be written and/or deleted, but can't currently be added back again
         Writable => 'undef',
+        WriteLast => 1, # (must come after mdat according to https://developer.android.com/media/platform/motion-photo-format)
     },
     # '35AX'? - seen "AT" (Yada RoadCam Pro 4K dashcam)
     cust => 'CustomInfo', # 70mai A810
@@ -1761,7 +1762,7 @@ my %userDefined = (
                 my $len = Get8u(\$val, $pos++);
                 last if $pos + $len > length $val;
                 my $v = substr($val, $pos, $len);
-                $v = $self->Decode($v, 'UCS2') if $v =~ /^\xfe\xff/;
+                $v = $self->Decode($v, 'UTF16') if $v =~ /^\xfe\xff/;
                 push @vals, $v;
                 $pos += $len;
             }
@@ -1785,7 +1786,7 @@ my %userDefined = (
             my $str;
             if ($val =~ /^\xfe\xff/) {
                 $val =~ s/^(\xfe\xff(.{2})*?)\0\0//s or return '<err>';
-                $str = $self->Decode($1, 'UCS2');
+                $str = $self->Decode($1, 'UTF16');
             } else {
                 $val =~ s/^(.*?)\0//s or return '<err>';
                 $str = $self->Decode($1, 'UTF8');
@@ -1801,12 +1802,12 @@ my %userDefined = (
             $str .= sprintf(' Lat=%.5f Lon=%.5f Alt=%.2f', $lat, $lon, $alt);
             $val = substr($val, 13);
             if ($val =~ s/^(\xfe\xff(.{2})*?)\0\0//s) {
-                $str .= ' Body=' . $self->Decode($1, 'UCS2');
+                $str .= ' Body=' . $self->Decode($1, 'UTF16');
             } elsif ($val =~ s/^(.*?)\0//s) {
                 $str .= ' Body=' . $self->Decode($1, 'UTF8');
             }
             if ($val =~ s/^(\xfe\xff(.{2})*?)\0\0//s) {
-                $str .= ' Notes=' . $self->Decode($1, 'UCS2');
+                $str .= ' Notes=' . $self->Decode($1, 'UTF16');
             } elsif ($val =~ s/^(.*?)\0//s) {
                 $str .= ' Notes=' . $self->Decode($1, 'UTF8');
             }
@@ -6648,7 +6649,7 @@ my %userDefined = (
     PROCESS_PROC => \&ProcessKeys,
     WRITE_PROC => \&WriteKeys,
     CHECK_PROC => \&CheckQTValue,
-    VARS => { LONG_TAGS => 8 },
+    VARS => { LONG_TAGS => 9 },
     WRITABLE => 1,
     # (not PREFERRED when writing)
     GROUPS => { 1 => 'Keys' },
@@ -6789,6 +6790,8 @@ my %userDefined = (
         # (ignore the fact that the "f" and "l" unpacks won't work on a big-endian machine)
         ValueConv => 'join " ",unpack "VfVVf6c4lCCcclf4Vvv", $val',
     },
+    # (mdta)live-photo-still-image-transform mdta (dtyp=com.apple.quicktime.live-photo-still-image-transform)
+    # (mdta)live-photo-still-image-transform-reference-dimensions (dtyp=com.apple.quicktime.live-photo-still-image-transform-reference-dimensions)
     # (mdta)com.apple.quicktime.still-image-time (dtyp=65, int8s)
     'still-image-time' => { # (found in live photo)
         Name => 'StillImageTime',
@@ -6838,6 +6841,36 @@ my %userDefined = (
         Writable => 0, # (don't make this writable because it is found in timed metadata)
     },
     'full-frame-rate-playback-intent' => 'FullFrameRatePlaybackIntent', #forum16824
+    'smartstyle-info' => {
+        Name => 'SmartStyleInfo',
+        SubDirectory => {
+            TagTable => 'Image::ExifTool::PLIST::Main',
+            ProcessProc => 'Image::ExifTool::PLIST::ProcessBinaryPLIST',
+        },
+    },
+    # (mdta) com.apple.quicktime.smartstyle.rendering-version
+    'smartstyle.rendering-version' => { Name => 'SmartstyleRenderingVersion', Writable => 0 },
+    # (mdta) com.apple.quicktime.smartstyle.tone
+    'smartstyle.tone'       => { Name => 'SmartstyleTone',      Writable => 0 },
+    # (mdta) com.apple.quicktime.smartstyle.color
+    'smartstyle.color'      => { Name => 'SmartstyleColor',     Writable => 0 },
+    # (mdta) com.apple.quicktime.smartstyle.intensity
+    'smartstyle.intensity'  => { Name => 'SmartstyleIntensity', Writable => 0 },
+    # (mdta) com.apple.quicktime.smartstyle.bypassed
+    'smartstyle.bypassed'   => { Name => 'SmartstyleBypassed',  Writable => 0 },
+    # (mdta) com.apple.quicktime.smartstyle.cast
+    'smartstyle.cast'       => { Name => 'SmartstyleCast',      Writable => 0 },
+#
+# tags stored directly in the mdta Keys atom
+#
+    setu => {
+        Name => 'SETU',
+        SubDirectory => { TagTable => 'Image::ExifTool::QuickTime::setu' },
+    },
+    sdpd => {
+        Name => 'SDPD',
+        SubDirectory => { TagTable => 'Image::ExifTool::QuickTime::sdpd' },
+    },
 #
 # seen in Apple ProRes RAW file
 #
@@ -6925,17 +6958,17 @@ my %userDefined = (
         # the 'Triplet' flag tells ProcessMOV() to generate
         # a single tag from the mean/name/data triplet
         Triplet => 1,
-        Hidden => 1,
+        Hidden => 2,
     },
     name => {
         Name => 'Name',
         Triplet => 1,
-        Hidden => 1,
+        Hidden => 2,
     },
     data => {
         Name => 'Data',
         Triplet => 1,
-        Hidden => 1,
+        Hidden => 2,
     },
     # the tag ID's below are composed from "mean/name",
     # but "mean/" is omitted if it is "com.apple.iTunes/":
@@ -8663,28 +8696,28 @@ my %userDefined = (
         Name => 'GPSLatitude',
         Require => 'QuickTime:LocationInformation',
         Groups => { 2 => 'Location' },
-        ValueConv => '$val =~ /Lat=([-+.\d]+)/; $1',
+        ValueConv => '$val =~ /Lat=([-+.\d]+)/ ? $1 : undef',
         PrintConv => 'Image::ExifTool::GPS::ToDMS($self, $val, 1, "N")',
     },
     GPSLongitude2 => {
         Name => 'GPSLongitude',
         Require => 'QuickTime:LocationInformation',
         Groups => { 2 => 'Location' },
-        ValueConv => '$val =~ /Lon=([-+.\d]+)/; $1',
+        ValueConv => '$val =~ /Lon=([-+.\d]+)/ ? $1 : undef',
         PrintConv => 'Image::ExifTool::GPS::ToDMS($self, $val, 1, "E")',
     },
     GPSAltitude2 => {
         Name => 'GPSAltitude',
         Require => 'QuickTime:LocationInformation',
         Groups => { 2 => 'Location' },
-        ValueConv => '$val =~ /Alt=([-+.\d]+)/; abs($1)',
+        ValueConv => '$val =~ /Alt=([-+.\d]+)/ ? abs($1) : undef',
         PrintConv => '"$val m"',
     },
     GPSAltitudeRef2  => {
         Name => 'GPSAltitudeRef',
         Require => 'QuickTime:LocationInformation',
         Groups => { 2 => 'Location' },
-        ValueConv => '$val =~ /Alt=([-+.\d]+)/; $1 < 0 ? 1 : 0',
+        ValueConv => '$val =~ /Alt=([-+.\d]+)/ ? ($1 < 0 ? 1 : 0) : undef',
         PrintConv => {
             0 => 'Above Sea Level',
             1 => 'Below Sea Level',
@@ -9572,7 +9605,7 @@ sub ProcessMetaData($$$)
                 Size   => $size - 10,
             );
             # convert from UTF-16 BE if necessary
-            $val = $et->Decode($val, 'UCS2') if $enc == 1;
+            $val = $et->Decode($val, 'UTF16') if $enc == 1;
             if ($enc == 0 and $$tagInfo{Unknown}) {
                 # binary data
                 $et->FoundTag($tagInfo, \$val);
@@ -10048,7 +10081,8 @@ sub ProcessMOV($$;$)
             if ($$et{ValidatePath}{$path} and not $dupTagOK{$tag} and not $dupDirOK{$dirID}) {
                 my $i = Get32u(\$tag,0);
                 my $str = $i < 255 ? "index $i" : "tag '" . PrintableTagID($tag,2) . "'";
-                $et->Warn("Duplicate $str at " . join('-', @{$$et{PATH}}));
+                $path =~ s/-[^-+]$//;   # remove tag name
+                $et->Warn("Duplicate $str at $path");
                 $$et{ValidatePath} = { } if $path eq 'MOV-moov'; # avoid warnings for all contained dups
             }
             $$et{ValidatePath}{$path} = 1;
@@ -10325,7 +10359,7 @@ ItemID:         foreach $id (reverse sort { $a <=> $b } keys %$items) {
                         if ($tag eq 'ipco' and not $$et{IsItemProperty}) {
                             $$et{ItemPropertyContainer} = [ \%dirInfo, $subTable, $proc ];
                             $et->VPrint(0,"$$et{INDENT}\[Process ipco box later]");
-                        } else {
+                        } elsif ($fast < 2 or not $$tagInfo{MakerNotes}) {
                             $et->ProcessDirectory(\%dirInfo, $subTable, $proc);
                         }
                     }
@@ -10546,8 +10580,12 @@ ItemID:         foreach $id (reverse sort { $a <=> $b } keys %$items) {
                 $raf->Seek($seekTo);
             }
             unless ($raf->Seek($seekTo-1) and $raf->Read($buff, 1) == 1) {
-                my $t = PrintableTagID($tag,2);
-                $warnStr = sprintf("Truncated '${t}' data at offset 0x%x", $lastPos);
+                if (pack('N',$size) =~ /^<b[r>]/) { # check for corrupted HEIC file downloaded from heic.digital
+                    $warnStr = sprintf('Extraneous HTML text appended to file at offset 0x%x', $lastPos);
+                } else {
+                    my $t = PrintableTagID($tag,2);
+                    $warnStr = sprintf("Truncated '${t}' data at offset 0x%x", $lastPos);
+                }
                 last;
             }
         }
@@ -10597,7 +10635,10 @@ QTLang: foreach $tag (@{$$et{QTLang}}) {
             for ($i=0, $key=$name; $$infoHash{$key}; ++$i, $key="$name ($i)") {
                 next QTLang if $et->GetGroup($key, 0) eq 'QuickTime';
             }
+            my $oldRawConv = $$tagInfo{RawConv};
+            delete $$tagInfo{RawConv} if defined $oldRawConv; # (avoid doing RawConv twice)
             $key = $et->FoundTag($tagInfo, $$et{VALUE}{$tag});
+            $$tagInfo{RawConv} = $oldRawConv if defined $oldRawConv;
             # copy extra tag information (groups, etc) to the synthetic tag
             $$et{TAG_EXTRA}{$key} = $$et{TAG_EXTRA}{$tag};
             $et->VPrint(0, "(synthesized default-language tag for QuickTime:$$tagInfo{Name})");
@@ -10634,7 +10675,7 @@ QTLang: foreach $tag (@{$$et{QTLang}}) {
     }
     # brute force scan for metadata embedded in media data
     # (and process Insta360 trailer if it exists)
-    ScanMediaData($et) if $ee and $topLevel;
+    ScanMediaData($et) if $ee and $topLevel and not $$et{OPTIONS}{FastScan};
 
     # restore any changed options
     $et->Options($_ => $saveOptions{$_}) foreach keys %saveOptions;
@@ -10689,7 +10730,7 @@ information from QuickTime and MP4 video, M4A audio, and HEIC image files.
 
 =head1 AUTHOR
 
-Copyright 2003-2025, Phil Harvey (philharvey66 at gmail.com)
+Copyright 2003-2026, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

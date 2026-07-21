@@ -17,7 +17,7 @@ use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::XMP;
 use Image::ExifTool::ZIP;
 
-$VERSION = '1.04';
+$VERSION = '1.05';
 
 # CaptureOne COS XML tags
 # - tags are added dynamically when encountered
@@ -26,7 +26,7 @@ $VERSION = '1.04';
     GROUPS => { 0 => 'XML', 1 => 'XML', 2 => 'Image' },
     PROCESS_PROC => \&Image::ExifTool::XMP::ProcessXMP,
     VARS => { ID_FMT => 'none' },
-    ColorCorrections => { ValueConv => '\$val' }, # (long list of floating point numbers)
+    ColorCorrections => { ValueConv => '\$val', Hidden => 1 }, # (long list of floating point numbers)
 );
 
 #------------------------------------------------------------------------------
@@ -221,7 +221,7 @@ settings files (COS).
 
 =head1 AUTHOR
 
-Copyright 2003-2025, Phil Harvey (philharvey66 at gmail.com)
+Copyright 2003-2026, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

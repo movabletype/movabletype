@@ -4,25 +4,29 @@
 
 package Date::Language::Icelandic;
 
+use strict;
+use warnings;
+use utf8;
 use Date::Language ();
-use vars qw(@ISA @DoW @DoWs @MoY @MoYs @AMPM @Dsuf %MoY %DoW $VERSION);
-@ISA = qw(Date::Language);
-$VERSION = "1.01";
 
-@MoY  = qw(Janúar Febrúar Mars Apríl Maí Júni
-	   Júli Ágúst September Október Nóvember Desember);
-@MoYs = qw(Jan Feb Mar Apr Maí Jún Júl Ágú Sep Okt Nóv Des);
-@DoW  = qw(Sunnudagur Mánudagur Þriðjudagur Miðvikudagur Fimmtudagur Föstudagur Laugardagur Sunnudagur);
-@DoWs = qw(Sun Mán Þri Mið Fim Fös Lau Sun);
+use base 'Date::Language';
 
 use Date::Language::English ();
-@AMPM =   @{Date::Language::English::AMPM};
-@Dsuf =   @{Date::Language::English::Dsuf};
 
-@MoY{@MoY}  = (0 .. scalar(@MoY));
-@MoY{@MoYs} = (0 .. scalar(@MoYs));
-@DoW{@DoW}  = (0 .. scalar(@DoW));
-@DoW{@DoWs} = (0 .. scalar(@DoWs));
+our $VERSION = '2.35'; # VERSION: generated
+# ABSTRACT: Icelandic localization for Date::Format
+
+our @MoY  = qw(JanÃºar FebrÃºar Mars AprÃ­l MaÃ­ JÃºni
+       JÃºli ÃgÃºst September OktÃ³ber NÃ³vember Desember);
+our @MoYs = qw(Jan Feb Mar Apr MaÃ­ JÃºn JÃºl ÃgÃº Sep Okt NÃ³v Des);
+our @DoW  = qw(Sunnudagur MÃ¡nudagur ÃžriÃ°judagur MiÃ°vikudagur Fimmtudagur FÃ¶studagur Laugardagur);
+our @DoWs = qw(Sun MÃ¡n Ãžri MiÃ° Fim FÃ¶s Lau);
+
+our @AMPM =   @{Date::Language::English::AMPM};
+our @Dsuf =   @{Date::Language::English::Dsuf};
+
+our ( %MoY, %DoW );
+Date::Language::_build_lookups();
 
 # Formatting routines
 
@@ -34,3 +38,30 @@ sub format_h { $MoYs[$_[0]->[4]] }
 sub format_p { $_[0]->[2] >= 12 ?  $AMPM[1] : $AMPM[0] }
 
 1;
+
+__END__
+
+=pod
+
+=encoding UTF-8
+
+=head1 NAME
+
+Date::Language::Icelandic - Icelandic localization for Date::Format
+
+=head1 VERSION
+
+version 2.35
+
+=head1 AUTHOR
+
+Graham <gbarr@pobox.com>
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is copyright (c) 2020 by Graham Barr.
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
+
+=cut

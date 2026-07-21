@@ -15,7 +15,7 @@ use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::GPS;
 
-$VERSION = '1.01';
+$VERSION = '1.03';
 
 sub Process_marl($$$);
 sub Process_mrld($$$);
@@ -344,7 +344,7 @@ sub Process_mrld($$$)
 
     $et->VerboseDir('mrld', undef, $dirLen);
     require 'Image/ExifTool/XMPStruct.pl';
-    Image::ExifTool::XMP::AddFlattenedTags($tagTablePtr);
+    Image::ExifTool::XMP::AddFlattenedTags($tagTablePtr, undef, undef, 1);
     $csv = [ ] if $et->Options('PrintCSV');
 
     for ($pos=0; $pos+448<=$dirLen; $pos+=448) {
@@ -375,7 +375,7 @@ sub Process_mrld($$$)
         my $hash = { map { $channel[$_] => $a[$_] } 1..$#a };
         unless ($tagInfo) {
             $tagInfo = AddTagToTable($tagTablePtr, $tag, { Name => $tag, Struct => \%channelStruct });
-            Image::ExifTool::XMP::AddFlattenedTags($tagTablePtr, $tag);
+            Image::ExifTool::XMP::AddFlattenedTags($tagTablePtr, $tag, undef, 1);
         }
         # extract channel structure if specified
         if ($struct) {
@@ -396,8 +396,7 @@ sub Process_mrld($$$)
         $$tagInfo{Description} = $a[13] unless $$tagInfo{Description};
         unless ($$tagInfo{PrintConv}) {
             # add a default print conversion
-            $units =~ tr/"\\//d; # (just to be safe, probably never happen)
-            $$tagInfo{PrintConv} = $printConv{$units} || qq("\$val $units");
+            $$tagInfo{PrintConv} = $printConv{$units} || qq("\$val \Q$units\E");
         }
         # adjust multiplier/offset as necessary to scale to more appropriate units
         # (ie. to the units actually specified in this dictionary -- d'oh)
@@ -531,7 +530,7 @@ metadata from videos written by some GM models such as Corvette and Camero.
 
 =head1 AUTHOR
 
-Copyright 2003-2025, Phil Harvey (philharvey66 at gmail.com)
+Copyright 2003-2026, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

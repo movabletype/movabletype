@@ -1,30 +1,62 @@
 ##
-## Russian koi8r
+## Russian koi8r (KOI8-R byte encoding)
 ##
 
 package Date::Language::Russian_koi8r;
 
-use Date::Language ();
-use vars qw(@ISA @DoW @DoWs @MoY @MoYs @AMPM @Dsuf %MoY %DoW $VERSION);
-@ISA = qw(Date::Language);
-$VERSION = "1.01";
+use strict;
+use warnings;
 
-@DoW = qw(÷ÏÓËÒÅÓÅÎØÅ ðÏÎÅÄÅÌØÎÉË ÷ÔÏÒÎÉË óÒÅÄÁ þÅÔ×ÅÒÇ ðÑÔÎÉÃÁ óÕÂÂÏÔÁ);
-@MoY = qw(ñÎ×ÁÒØ æÅ×ÒÁÌØ íÁÒÔ áÐÒÅÌØ íÁÊ éÀÎØ
-      éÀÌØ á×ÇÕÓÔ óÅÎÔÑÂÒØ ïËÔÑÂÒØ îÏÑÂÒØ äÅËÁÂÒØ);
-@DoWs = qw(÷ÓË ðÎÄ ÷ÔÒ óÒÄ þÔ× ðÔÎ óÂÔ);
-#@DoWs = map { substr($_,0,3) } @DoW;
+use Date::Language ();
+
+use base 'Date::Language';
+
+our $VERSION = '2.35'; # VERSION: generated
+# ABSTRACT: Russian localization for Date::Format (KOI8-R variant)
+
+our (@DoW, @DoWs, @MoY, @MoYs, @AMPM, @Dsuf, %MoY, %DoW);
+
+@DoW = (
+    "\xf7\xcf\xd3\xcb\xd2\xc5\xd3\xc5\xce\xd8\xc5",    # Ð’Ð¾ÑÐºÑ€ÐµÑÐµÐ½ÑŒÐµ
+    "\xf0\xcf\xce\xc5\xc4\xc5\xcc\xd8\xce\xc9\xcb",      # ÐŸÐ¾Ð½ÐµÐ´ÐµÐ»ÑŒÐ½Ð¸Ðº
+    "\xf7\xd4\xcf\xd2\xce\xc9\xcb",                        # Ð’Ñ‚Ð¾Ñ€Ð½Ð¸Ðº
+    "\xf3\xd2\xc5\xc4\xc1",                                # Ð¡Ñ€ÐµÐ´Ð°
+    "\xfe\xc5\xd4\xd7\xc5\xd2\xc7",                        # Ð§ÐµÑ‚Ð²ÐµÑ€Ð³
+    "\xf0\xd1\xd4\xce\xc9\xc3\xc1",                        # ÐŸÑÑ‚Ð½Ð¸Ñ†Ð°
+    "\xf3\xd5\xc2\xc2\xcf\xd4\xc1",                        # Ð¡ÑƒÐ±Ð±Ð¾Ñ‚Ð°
+);
+
+@MoY = (
+    "\xf1\xce\xd7\xc1\xd2\xd8",              # Ð¯Ð½Ð²Ð°Ñ€ÑŒ
+    "\xe6\xc5\xd7\xd2\xc1\xcc\xd8",          # Ð¤ÐµÐ²Ñ€Ð°Ð»ÑŒ
+    "\xed\xc1\xd2\xd4",                        # ÐœÐ°Ñ€Ñ‚
+    "\xe1\xd0\xd2\xc5\xcc\xd8",               # ÐÐ¿Ñ€ÐµÐ»ÑŒ
+    "\xed\xc1\xca",                             # ÐœÐ°Ð¹
+    "\xe9\xc0\xce\xd8",                         # Ð˜ÑŽÐ½ÑŒ
+    "\xe9\xc0\xcc\xd8",                         # Ð˜ÑŽÐ»ÑŒ
+    "\xe1\xd7\xc7\xd5\xd3\xd4",               # ÐÐ²Ð³ÑƒÑÑ‚
+    "\xf3\xc5\xce\xd4\xd1\xc2\xd2\xd8",      # Ð¡ÐµÐ½Ñ‚ÑÐ±Ñ€ÑŒ
+    "\xef\xcb\xd4\xd1\xc2\xd2\xd8",          # ÐžÐºÑ‚ÑÐ±Ñ€ÑŒ
+    "\xee\xcf\xd1\xc2\xd2\xd8",               # ÐÐ¾ÑÐ±Ñ€ÑŒ
+    "\xe4\xc5\xcb\xc1\xc2\xd2\xd8",          # Ð”ÐµÐºÐ°Ð±Ñ€ÑŒ
+);
+
+@DoWs = (
+    "\xf7\xd3\xcb",  # Ð’ÑÐº
+    "\xf0\xce\xc4",  # ÐŸÐ½Ð´
+    "\xf7\xd4\xd2",  # Ð’Ñ‚Ñ€
+    "\xf3\xd2\xc4",  # Ð¡Ñ€Ð´
+    "\xfe\xd4\xd7",  # Ð§Ñ‚Ð²
+    "\xf0\xd4\xce",  # ÐŸÑ‚Ð½
+    "\xf3\xc2\xd4",  # Ð¡Ð±Ñ‚
+);
+
 @MoYs = map { substr($_,0,3) } @MoY;
 @AMPM = qw(AM PM);
 
 @Dsuf = ('e') x 31;
-#@Dsuf[11,12,13] = qw(Å Å Å);
-#@Dsuf[30,31] = qw(Å Å);
 
-@MoY{@MoY}  = (0 .. scalar(@MoY));
-@MoY{@MoYs} = (0 .. scalar(@MoYs));
-@DoW{@DoW}  = (0 .. scalar(@DoW));
-@DoW{@DoWs} = (0 .. scalar(@DoWs));
+Date::Language::_build_lookups();
 
 # Formatting routines
 
@@ -37,3 +69,30 @@ sub format_p { $_[0]->[2] >= 12 ?  $AMPM[1] : $AMPM[0] }
 sub format_o { sprintf("%2de",$_[0]->[3]) }
 
 1;
+
+__END__
+
+=pod
+
+=encoding UTF-8
+
+=head1 NAME
+
+Date::Language::Russian_koi8r - Russian localization for Date::Format (KOI8-R variant)
+
+=head1 VERSION
+
+version 2.35
+
+=head1 AUTHOR
+
+Graham <gbarr@pobox.com>
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is copyright (c) 2020 by Graham Barr.
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
+
+=cut

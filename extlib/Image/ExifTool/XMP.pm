@@ -50,7 +50,7 @@ use Image::ExifTool::Exif;
 use Image::ExifTool::GPS;
 require Exporter;
 
-$VERSION = '3.76';
+$VERSION = '3.78';
 @ISA = qw(Exporter);
 @EXPORT_OK = qw(EscapeXML UnescapeXML);
 
@@ -65,7 +65,7 @@ sub ProcessBlankInfo($$$;$);
 sub ValidateXMP($;$);
 sub ValidateProperty($$;$);
 sub UnescapeChar($$;$);
-sub AddFlattenedTags($;$$);
+sub AddFlattenedTags($;$$$);
 sub FormatXMPDate($);
 sub ConvertRational($);
 sub ConvertRationalList($);
@@ -1377,10 +1377,30 @@ my %sPantryItem = (
                     RadialDistortParam1  => { Writable => 'real' },
                     RadialDistortParam2  => { Writable => 'real' },
                     RadialDistortParam3  => { Writable => 'real' },
+                    VignetteModel => {
+                        Namespace       => 'crlcp',
+                        Struct => {
+                            NAMESPACE   => 'stCamera',
+                            STRUCT_NAME => 'VignetteModel',
+                            ImageXCenter         => { Writable => 'real' },
+                            ImageYCenter         => { Writable => 'real' },
+                            VignetteModelParam1    => { Writable => 'real' },
+                            VignetteModelPiecewiseParam => { List => 'Seq' },
+                        },
+                    },
                 },
             },
         },
     },
+    CameraProfilesPerspectiveModelVignetteModelVignetteModelPiecewiseParam => {
+        Name => 'CameraProfilesPerspectiveModelVignetteModelPiecewiseParam',
+        Flat => 1,
+    },
+    CameraProfilesPerspectiveModelVignetteModelVignetteModelParam1 => {
+        Name => 'CameraProfilesPerspectiveModelVignetteModelParam1',
+        Flat => 1,
+    },
+    LabelColor => { },
 );
 
 # Photoshop Camera Raw namespace properties (crs) - (ref 8,PH)
@@ -1867,6 +1887,9 @@ my %sPantryItem = (
     },
     # more new stuff
     PointColors => { List => 'Seq' },
+    ColorVariance             => { Writable => 'real', List => 'Seq' },
+    CropConstrainToUnitSquare => { Writable => 'integer' },
+    HDRMaxValue               => { Writable => 'real' },
 );
 
 # Tiff namespace properties (tiff)
@@ -2419,13 +2442,16 @@ my %sPantryItem = (
         PrintConvInv => '$val=~s/\s*m$//; $val',
     },
     NativeDigest => { }, #PH
-    # the following written incorrectly by ACR 15.1
+    # --- the following written incorrectly by ACR 15.1
     # SubSecTime (should not be written according to Exif4XMP 2.32 specification)
     # SubSecTimeOriginal (should not be written according to Exif4XMP 2.32 specification)
     # SubSecTimeDigitized (should not be written according to Exif4XMP 2.32 specification)
     # SerialNumber (should be BodySerialNumber)
     # Lens (should be XMP-aux)
     # LensInfo (should be XMP-aux)
+    # --- these written incorrectly by Adobe too:
+    # LensMake (should be XMP-exifEX)
+    # SensitivityType (should be XMP-exifEX)
 );
 
 # Exif extended properties (exifEX, ref 12)
@@ -2629,7 +2655,7 @@ my %sPantryItem = (
     EnhanceDenoiseAlreadyApplied    => { Writable => 'boolean' }, #forum14760
     EnhanceDenoiseVersion           => { }, #forum14760 integer?
     EnhanceDenoiseLumaAmount        => { }, #forum14760 integer?
-    # FujiRatingAlreadyApplied - boolean written by LR classic 13.2 (forum15815)
+    FujiRatingAlreadyApplied        => { Writable => 'boolean' }, #forum15815 (LR classic 13.2)
 );
 
 # IPTC Core namespace properties (Iptc4xmpCore) (ref 4)
@@ -3076,14 +3102,14 @@ sub RegisterNamespace($)
 #------------------------------------------------------------------------------
 # Generate flattened tags and add to table
 # Inputs: 0) tag table ref, 1) tag ID for Struct tag (if not defined, whole table is done),
-#         2) flag to not expand sub-structures
+#         2) flag to not expand sub-structures, 3) Hidden flag
 # Returns: number of tags added (not counting those just initialized)
 # Notes: Must have verified that $$tagTablePtr{$tagID}{Struct} exists before calling this routine
 # - makes sure that the tagInfo Struct is a HASH reference
-sub AddFlattenedTags($;$$)
+sub AddFlattenedTags($;$$$)
 {
     local $_;
-    my ($tagTablePtr, $tagID, $noSubStruct) = @_;
+    my ($tagTablePtr, $tagID, $noSubStruct, $hidden) = @_;
     my $count = 0;
     my @tagIDs;
 
@@ -3155,6 +3181,7 @@ sub AddFlattenedTags($;$$)
                 # generate new flattened tag information based on structure field
                 my $flatName = $flat . $flatField;
                 $flatInfo = { %$fieldInfo, Name => $flatName, Flat => 0 };
+                $$flatInfo{Hidden} = 0 unless $hidden;
                 $$flatInfo{FlatName} = $flatName if $$fieldInfo{FlatName};
                 # make a copy of the Groups hash if necessary
                 $$flatInfo{Groups} = { %{$$fieldInfo{Groups}} } if $$fieldInfo{Groups};
@@ -3607,6 +3634,7 @@ NoLoop:
             if (not length $val and $$attrs{'rdf:parseType'} and $$attrs{'rdf:parseType'} eq 'Resource') {
                 $$tagInfo{Struct} = { STRUCT_NAME => 'XMP Unknown' } unless $$tagInfo{Struct};
             }
+            $$tagInfo{Hidden} = 2;  # (don't show in -list outputs)
             AddTagToTable($tagTablePtr, $tagID, $tagInfo);
         }
         last;
@@ -4631,7 +4659,7 @@ information.
 
 =head1 AUTHOR
 
-Copyright 2003-2025, Phil Harvey (philharvey66 at gmail.com)
+Copyright 2003-2026, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

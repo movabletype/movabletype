@@ -22,7 +22,7 @@ use vars qw($VERSION %ttLang);
 use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::XMP;
 
-$VERSION = '1.12';
+$VERSION = '1.13';
 
 sub ProcessOTF($$);
 
@@ -71,7 +71,7 @@ my %ttCharset = (
     1 => 'UCS2', # Unicode 1.1 semantics
     2 => 'UCS2', # ISO 10646 semantics
     3 => 'UCS2', # Unicode 2.0 and onwards semantics, Unicode BMP only.
-    4 => 'UCS2', # Unicode 2.0 and onwards semantics, Unicode full repertoire.
+    4 => 'UTF16',# Unicode 2.0 and onwards semantics, Unicode full repertoire.
     # 5 => Unicode Variation Sequences (not used in Naming table)
   },
   ISO => { # (deprecated)
@@ -896,7 +896,7 @@ WOFF2.
 
 =head1 AUTHOR
 
-Copyright 2003-2025, Phil Harvey (philharvey66 at gmail.com)
+Copyright 2003-2026, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
