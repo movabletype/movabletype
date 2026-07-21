@@ -1701,9 +1701,9 @@ MT.App = new Class( App, {
                 if ( !form )
                     return;
 
-                var mode = mtDataAttr( event.target, "mode" );
+                var mode = event.target.getAttribute( "mt:mode" );
                 if ( !mode && event.commandElement )
-                    mode = mtDataAttr( event.commandElement, "mode" );
+                    mode = event.commandElement.getAttribute( "mt:mode" );
 
                 if ( mode ) {
                     log('setting __mode in this form: '+mode);
