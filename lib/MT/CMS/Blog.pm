@@ -1629,12 +1629,32 @@ sub pre_save {
     require MT::Util;
     if (my $site_url = $obj->site_url) {
         if (!MT::Util::is_url($site_url)) {
-            return $app->errtrans('Invalid URL in "[_1]" field.', $app->translate('Site URL'));
+            # parent site may not be set yet
+            my $ok;
+            if ($site_url =~ m!/::/!) {
+                my @parts = $obj->raw_site_url;
+                my $tmp   = 'https://' . (@parts == 2 ? shift @parts : '') . 'example.com/';
+                $tmp      = MT::Util::caturl($tmp, shift @parts);
+                $ok       = MT::Util::is_url($tmp) ? 1 : 0;
+            }
+            if (!$ok) {
+                return $app->errtrans('Invalid URL in "[_1]" field.', $app->translate('Site URL'));
+            }
         }
     }
     if (my $archive_url = $obj->archive_url) {
         if (!MT::Util::is_url($archive_url)) {
-            return $app->errtrans('Invalid URL in "[_1]" field.', $app->translate('Archive URL'));
+            # parent site may not be set yet
+            my $ok;
+            if ($archive_url =~ m!/::/!) {
+                my @parts = $obj->raw_archive_url;
+                my $tmp   = 'https://' . (@parts == 2 ? shift @parts : '') . 'example.com/';
+                $tmp      = MT::Util::caturl($tmp, shift @parts);
+                $ok       = MT::Util::is_url($tmp) ? 1 : 0;
+            }
+            if (!$ok) {
+                return $app->errtrans('Invalid URL in "[_1]" field.', $app->translate('Archive URL'));
+            }
         }
     }
 
