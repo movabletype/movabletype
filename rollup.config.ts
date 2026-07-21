@@ -104,6 +104,7 @@ export default [
   srcConfig("src/listing.ts"),
   srcConfig("src/dashboard.ts"),
   srcConfig("src/edit-author.ts"),
+  srcConfig("src/template-editor/codemirror6/index.ts"),
   srcConfig("src/admin2025/admin-ui.ts"),
   srcConfig("src/admin2025/admin-ui-immediate.ts", {
     format: "iife",

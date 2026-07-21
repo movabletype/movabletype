@@ -78,11 +78,9 @@
     <mtapp:setting
        id="theme-options-field"
        label="<__trans phrase="Options">">
-      <div class="form-check mb-0 pl-0">
-        <div class="custom-control custom-checkbox">
-          <input type="checkbox" id="include_all" class="custom-control-input" name="include_all" value="1" <mt:if name="include_all">checked="checked"</mt:if>>
-          <label class="custom-control-label" for="include_all"><__trans phrase="Always include all options"></label>
-        </div>
+      <div class="form-check mb-3 pl-5">
+        <input type="checkbox" id="include_all" class="form-check-input" name="include_all" value="1" <mt:if name="include_all">checked="checked"</mt:if>>
+        <label class="form-check-label" for="include_all"><__trans phrase="Always include all options"></label>
       </div>
       <ul class="list-unstyled ml-5">
       <mt:loop name="exporters">
