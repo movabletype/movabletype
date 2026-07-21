@@ -4,17 +4,17 @@
   import ContentFieldOption from "./ContentFieldOption.svelte";
   import ContentFieldOptionGroup from "./ContentFieldOptionGroup.svelte";
 
-  // svelte-ignore unused-export-let
-  export let config: ContentType.ConfigSettings;
-  export let field: ContentType.Field;
-  // svelte-ignore unused-export-let
-  export let gather = null;
-  export let id: string;
-  export let options: ContentType.Options;
-  // svelte-ignore unused-export-let
-  export let optionsHtmlParams: ContentType.OptionsHtmlParams;
+  let {
+    field = $bindable(),
+    gather = $bindable(),
+    id,
+    options = $bindable(),
+  }: ContentType.ContentFieldProps = $props();
 
-  options.initial_value ??= "";
+  let displayOptions = $derived({
+    ...options,
+    initial_value: options.initial_value ?? "",
+  });
 </script>
 
 <ContentFieldOptionGroup type="time-only" bind:field {id} bind:options>
@@ -28,8 +28,11 @@
       name="initial_value"
       id="time_only-initial-value"
       class="form-control time-field w-25"
-      bind:value={options.initial_value}
       placeholder="HH:mm:ss"
+      value={displayOptions.initial_value}
+      onchange={(e) => {
+        options.initial_value = e.currentTarget.value;
+      }}
     />
   </ContentFieldOption>
 </ContentFieldOptionGroup>

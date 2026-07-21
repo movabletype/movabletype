@@ -2,7 +2,6 @@ use strict;
 use warnings;
 use utf8;
 use FindBin;
-use POSIX qw(ceil);
 use lib "$FindBin::Bin/../../lib";    # t/lib
 use Mock::MonkeyPatch;
 use Test::More;
@@ -141,18 +140,18 @@ subtest 'step: upgrade_templates' => sub {
                 { sort => 'type' },
             );
             is_deeply \@blog_tmpl_keys, \@blog_system_tmpl_keys, 'created all system templates for blog';
-
-            is $added_steps{'core_upgrade_templates'}, ceil($template_count / $batch_size);
         };
 
         subtest 'divisible batch size' => sub {
-            $batch_size = $blog_count;
+            $batch_size = 4;
             $runner->();
+            is $added_steps{'core_upgrade_templates'}, 3;
         };
 
         subtest 'indivisible batch size' => sub {
-            $batch_size = $blog_count + 1;
+            $batch_size = 9;
             $runner->();
+            is $added_steps{'core_upgrade_templates'}, 2;
         };
     };
 };

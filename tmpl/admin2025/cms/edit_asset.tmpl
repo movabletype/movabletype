@@ -133,18 +133,18 @@
       <mtapp:svgicon id="ic_tri-left" title="Prev" color="primary" size="sm"><__trans phrase="Prev">
     </a>
   <mt:else>
-    <a class="btn btn-default w-50 disabled">
+    <button type="button" class="btn btn-default w-50 disabled" disabled>
       <mtapp:svgicon id="ic_tri-left" title="Prev" color="secondary" size="sm"><__trans phrase="Prev">
-    </a>
+    </button>
   </mt:if>
   <mt:if name="next_entry_id">
     <a class="btn btn-default w-50" href="<mt:var name="script_url">?__mode=view&amp;_type=asset&amp;id=<mt:var name="next_entry_id" escape="url">&amp;blog_id=<mt:var name="blog_id" escape="url">">
       <__trans phrase="Next"><mtapp:svgicon id="ic_tri-right" title="Next" color="primary" size="sm">
     </a>
   <mt:else>
-    <a class="btn btn-default w-50 disabled">
+    <button type="button" class="btn btn-default w-50 disabled" disabled>
       <__trans phrase="Next"><mtapp:svgicon id="ic_tri-right" title="Next" color="secondary" size="sm">
-    </a>
+    </button>
   </mt:if>
 </div>
 </mt:setvarblock>

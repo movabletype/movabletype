@@ -1,51 +1,55 @@
 <script lang="ts">
   import type * as ContentType from "../../@types/contenttype";
 
-  import { afterUpdate } from "svelte";
-
   import { addRow, deleteRow, validateTable } from "../SelectionCommonScript";
 
   import ContentFieldOption from "./ContentFieldOption.svelte";
   import ContentFieldOptionGroup from "./ContentFieldOptionGroup.svelte";
 
-  // svelte-ignore unused-export-let
-  export let config: ContentType.ConfigSettings;
-  export let field: ContentType.Field;
-  export let id: string;
-  export let options: ContentType.Options;
-  // svelte-ignore unused-export-let
-  export let optionsHtmlParams: ContentType.OptionsHtmlParams;
+  let {
+    field = $bindable(),
+    gather = $bindable(),
+    id,
+    options = $bindable(),
+  }: ContentType.ContentFieldProps = $props();
 
-  if (options.can_add === "0") {
-    options.can_add = 0;
-  }
-
-  if (options.multiple === "0") {
-    options.multiple = 0;
-  }
-
-  options.min ??= "";
-  options.max ??= "";
+  let displayOptions = $derived({
+    ...options,
+    multiple:
+      options.multiple === 1 ||
+      options.multiple === "1" ||
+      options.multiple === true,
+    can_add:
+      options.can_add === 1 ||
+      options.can_add === "1" ||
+      options.can_add === true,
+    min: options.min ?? "",
+    max: options.max ?? "",
+  });
 
   let refsTable: HTMLTableElement;
 
   // <mt:include name="content_field_type_options/selection_common_script.tmpl">
   // copied some functions from selection_common_script.tmpl below
-  if (!options.values) {
-    options.values = [
-      {
-        checked: "",
-        label: "",
-        value: "",
-      },
-    ];
-  }
-
-  afterUpdate(() => {
-    validateTable(refsTable);
+  $effect(() => {
+    if (!options.values) {
+      options.values = [
+        {
+          checked: "",
+          label: "",
+          value: "",
+        },
+      ];
+    }
   });
 
-  export const gather = (): object => {
+  $effect(() => {
+    if (refsTable) {
+      validateTable(refsTable);
+    }
+  });
+
+  gather = (): object => {
     return {
       values: options.values,
     };
@@ -96,8 +100,7 @@
 
   // added in Svelte
   const refreshView = (): void => {
-    // eslint-disable-next-line no-self-assign
-    options = options;
+    options = { ...options };
   };
 </script>
 
@@ -113,7 +116,10 @@
       id="checkboxes-min"
       class="form-control w-25"
       min="0"
-      bind:value={options.min}
+      value={displayOptions.min}
+      onchange={(e) => {
+        options.min = e.currentTarget.value;
+      }}
     />
   </ContentFieldOption>
 
@@ -128,8 +134,8 @@
       id="checkboxes-max"
       class="form-control w-25"
       min="1"
-      bind:value={options.max}
-      on:change={enterMax}
+      value={displayOptions.max}
+      onchange={enterMax}
     />
   </ContentFieldOption>
 
@@ -166,7 +172,7 @@
                   type="checkbox"
                   class="form-check-input mt-3"
                   checked={v.checked ? true : false}
-                  on:change={(e) => {
+                  onchange={(e) => {
                     enterInitial(e, index);
                   }}
                 /></td
@@ -191,7 +197,7 @@
               >
               <td
                 ><button
-                  on:click={() => {
+                  onclick={() => {
                     options.values = deleteRow(options.values, index);
                   }}
                   type="button"
@@ -212,7 +218,7 @@
       </table>
     </div>
     <button
-      on:click={() => {
+      onclick={() => {
         options.values = addRow(options.values);
       }}
       type="button"

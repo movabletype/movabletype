@@ -1,11 +1,11 @@
 <script lang="ts">
-  import type * as Listing from "../../@types/listing";
-
   import DisplayOptionsDetail from "./DisplayOptionsDetail.svelte";
 
-  export let changeLimit: (e: Event) => void;
-  export let disableUserDispOption: boolean;
-  export let store: Listing.ListStore;
+  type Props = {
+    changeLimit: (e: Event) => void;
+    disableUserDispOption: boolean;
+  };
+  let { changeLimit, disableUserDispOption }: Props = $props();
 </script>
 
 <div class="row">
@@ -23,6 +23,6 @@
 </div>
 <div class="row">
   <div data-is="display-options-detail" class="col-12">
-    <DisplayOptionsDetail {changeLimit} {disableUserDispOption} {store} />
+    <DisplayOptionsDetail {changeLimit} {disableUserDispOption} />
   </div>
 </div>

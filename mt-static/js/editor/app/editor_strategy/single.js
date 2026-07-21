@@ -47,8 +47,9 @@ $.extend(ES.Single.prototype, ES.prototype, {
         this.dummy_textarea.data(key, target);
     },
 
-    save: function() {
-       app.editor.save();
+    save: function(app) {
+        app ||= window.app;
+        app.editor.save();
     }
 });
 

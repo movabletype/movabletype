@@ -2,7 +2,7 @@
 
 <mt:loop name="asset_loop">
   <div class="mt-draggable"<mt:if name="multiple"> draggable="true" aria-grabbed="false"</mt:if>>
-    <input type="hidden" name="content-field-<mt:var name="content_field_id" escape="html">" value="<mt:var name="asset_id" escape="html">" mt:raw-name="1">
+    <input type="hidden" name="content-field-<mt:var name="content_field_id" escape="html">" value="<mt:var name="asset_id" escape="html">" data-mt-raw-name="1">
     <div class="col-auto">
   <mt:if name="multiple">
       <mtapp:svgicon id="ic_move" title="Draggable">
@@ -16,7 +16,7 @@
   <mt:elseif name="asset_type" eq="image">
     <mt:if name="asset_preview_url">
       <span class="asset-preview-image picture small me-3 mb-3">
-        <img src="<mt:var name="asset_preview_url" escape="html">" width="<mt:var name="asset_preview_width" escape="html">" height="<mt:var name="asset_preview_height" escape="html">">
+        <img src="<mt:var name="asset_preview_url" escape="html">" width="<mt:var name="asset_preview_width" escape="html">" height="<mt:var name="asset_preview_height" escape="html">" alt="">
       </span>
     <mt:else>
       <mtapp:svgicon id="ic_image" title="Image" color="secondary">

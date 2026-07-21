@@ -19,12 +19,15 @@
       "vitest/globals",
       "@types/jquery",
       "@types/jqueryui",
-      "@types/bootstrap"
+      "@types/bootstrap",
+      "@testing-library/jest-dom",
+      "svelte"
     ],
     "noImplicitAny": false,
     "jsx": "preserve",
     "baseUrl": ".",
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "verbatimModuleSyntax": true
   },
   "include": ["src"]
 }
