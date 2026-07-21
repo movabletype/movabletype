@@ -35,7 +35,7 @@ use Image::ExifTool::Sony;
 use Image::ExifTool::Validate;
 use Image::ExifTool::MacOS;
 
-$VERSION = '3.63';
+$VERSION = '3.67';
 @ISA = qw(Exporter);
 
 sub NumbersFirst($$);
@@ -71,6 +71,7 @@ my %tweakOrder = (
     CBOR    => 'JSON',
     GeoTiff => 'GPS',
     CanonVRD=> 'CanonCustom',
+    CaptureOne => 'CanonVRD',
     DJI     => 'Casio',
     FLIR    => 'DJI',
     FujiFilm => 'FLIR',
@@ -555,7 +556,7 @@ Pentax, Ricoh, Samsung, Sanyo, SeaLife, Sony, Supra and Vivitar.
 These tags are used in Panasonic/Leica cameras.
 },
     Pentax => q{
-These tags are used in Pentax/Asahi cameras.
+These tags are used in Pentax/Asahi/Ricoh cameras.
 },
     CanonRaw => q{
 These tags apply to CRW-format Canon RAW files and information in the APP0
@@ -699,7 +700,7 @@ L<Image::ExifTool::BuildTagLookup|Image::ExifTool::BuildTagLookup>.
 
 ~head1 AUTHOR
 
-Copyright 2003-2025, Phil Harvey (philharvey66 at gmail.com)
+Copyright 2003-2026, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
@@ -962,6 +963,9 @@ TagID:  foreach $tagID (@keys) {
                 if ($$tagInfo{List} and $$tagInfo{List} !~ /^(1|Alt|Bag|Seq|array|string)$/) {
                     warn "Warning: Unknown List type ($$tagInfo{List}) for $name in $tableName\n";
                 }
+                if ($$tagInfo{Hook} and $$tagInfo{Unknown}) {
+                    warn "Warning: Unknown tag with Hook - $short $name\n"
+                }
                 # accumulate information for consistency check of BinaryData tables
                 if ($processBinaryData and $$table{WRITABLE}) {
                     # can't currently write tag if Condition accesses $valPt
@@ -977,7 +981,7 @@ TagID:  foreach $tagID (@keys) {
                     if ($format and $format =~ /^var_/) {
                         $datamember{$tagID} = $name;
                         unless (defined $$tagInfo{Writable} and not $$tagInfo{Writable}) {
-                            warn "Warning: Var-format tag is writable - $short $name\n"
+                            warn "Warning: Var-format tag is writable - $short $name\n";
                         }
                         # also need DATAMEMBER for tags used in length of var-sized value
                         while ($format =~ /\$val\{(.*?)\}/g) {
@@ -996,10 +1000,15 @@ TagID:  foreach $tagID (@keys) {
                     if ($format and $format =~ /\$val\{/ and
                         ($$tagInfo{Writable} or not defined $$tagInfo{Writable}))
                     {
-                        warn "Warning: \$val{} used in Format of writable tag - $short $name\n"
+                        warn "Warning: \$val{} used in Format of writable tag - $short $name\n";
                     }
                 }
                 if ($$tagInfo{Hidden}) {
+                    if ($$tagInfo{Hidden} ne '2' and not $$tagInfo{Unknown} and
+                        (not $$tagInfo{RawConv} or $$tagInfo{RawConv} !~ /Unknown|undef/))
+                    {
+                        warn "Warning: $short $name is Hidden contrary to guidelines\n";
+                    }
                     if ($tagInfo == $infoArray[0]) {
                         next TagID; # hide all tags with this ID if first tag in list is hidden
                     } else {
@@ -1011,7 +1020,7 @@ TagID:  foreach $tagID (@keys) {
                     $writable = $$tagInfo{Writable};
                     # validate Writable
                     unless ($formatOK{$writable} or  ($writable =~ /(.*)\[/ and $formatOK{$1})) {
-                        warn "Warning: Unknown Writable ($writable) - $short $name\n",
+                        warn "Warning: Unknown Writable ($writable) - $short $name\n";
                     }
                 } elsif (not $$tagInfo{SubDirectory}) {
                     $writable = $$table{WRITABLE};
@@ -1021,7 +1030,7 @@ TagID:  foreach $tagID (@keys) {
                     undef $writable;
                 }
                 #if ($writable and $$tagInfo{Unknown} and $$table{GROUPS}{0} ne 'MakerNotes') {
-                #    warn "Warning: Writable Unknown tag - $short $name\n",
+                #    warn "Warning: Writable Unknown tag - $short $name\n";
                 #}
                 # validate some characteristics of obvious date/time tags
                 my @g = $et->GetGroup($tagInfo);
@@ -2096,7 +2105,7 @@ sub CloseHtmlFiles($)
         if ($htmlFile =~ /index\.html$/) {
             print HTMLFILE "'../index.html'>&lt;-- Back to ExifTool home page</a></p>\n";
         } else {
-            print HTMLFILE "'index.html'>&lt;-- ExifTool Tag Names</a></p>\n"
+            print HTMLFILE "'index.html'>&lt;-- ExifTool Tag Names</a></p>\n";
         }
         print HTMLFILE "</body>\n</html>\n" or $success = 0;
         close HTMLFILE or $success = 0;
@@ -2256,22 +2265,33 @@ sub WriteTagNames($$)
                 print HTMLFILE "<table class='inner sep' cellspacing=1>\n";
                 my $align = ' class=r';
                 my $wid = 0;
-                my @keys;
+                my (@keys, @bits);
                 foreach (sort { NumbersFirst($a,$b) } keys %$printConv) {
-                    next if /^(Notes|PrintHex|PrintInt|PrintString|OTHER)$/;
+                    next if /^(Notes|PrintHex|PrintInt|PrintString|OTHER|BITMASK)$/;
                     $align = '' if $align and /[^\d]/;
                     my $w = length($_) + length($$printConv{$_});
                     $wid = $w if $wid < $w;
                     push @keys, $_;
-                    if ($$printConv{$_} =~ /[\0-\x1f\x7f-\xff]/) {
-                        warn "Warning: Special characters in $tableName PrintConv ($$printConv{$_})\n";
+                    next unless $$printConv{$_} =~ /[\0-\x1f\x7f-\xff]/;
+                    warn "Warning: Special characters in $tableName PrintConv ($$printConv{$_})\n";
+                }
+                my $bits = $$printConv{BITMASK};
+                if ($bits) {
+                    $align = '';
+                    foreach (sort { NumbersFirst($a,$b) } keys %$bits) {
+                        my $w = length($_) + length($$bits{$_}) + 4;
+                        $wid = $w if $wid < $w;
+                        push @bits, $_;
+                        next unless $$bits{$_} =~ /[\0-\x1f\x7f-\xff]/;
+                        warn "Warning: Special characters in $tableName PrintConv BITMASK ($$bits{$_})\n";
                     }
                 }
                 $wid = length($tableName)+7 if $wid < length($tableName)+7;
                 # print in multiple columns if there is room
                 my $cols = int(110 / ($wid + 4));
-                $cols = 1 if $cols < 1 or $cols > @keys or @keys < 4;
-                my $rows = int((scalar(@keys) + $cols - 1) / $cols);
+                my $items = @keys + @bits;
+                $cols = 1 if $cols < 1 or $cols > $items or $items < 4;
+                my $rows = int(($items + $cols - 1) / $cols);
                 my ($r, $c);
                 print HTMLFILE '<tr class=h>';
                 for ($c=0; $c<$cols; ++$c) {
@@ -2281,11 +2301,18 @@ sub WriteTagNames($$)
                 for ($r=0; $r<$rows; ++$r) {
                     print HTMLFILE '<tr>';
                     for ($c=0; $c<$cols; ++$c) {
-                        my $key = $keys[$r + $c*$rows];
-                        my ($index, $prt);
+                        my ($key, $val, $index, $prt);
+                        my $n = $r + $c * $rows;
+                        if ($n < @keys) {
+                            $key = $keys[$n];
+                            $val = $$printConv{$key};
+                        } elsif ($n < $items) {
+                            $key = 'Bit ' . $bits[$n - @keys];
+                            $val = $$bits{$bits[$n - @keys]};
+                        }
                         if (defined $key) {
                             $index = $key;
-                            $prt = '= ' . EscapeHTML($$printConv{$key});
+                            $prt = '= ' . EscapeHTML($val);
                             $index =~ s/\.\d+$// if $$printConv{PrintInt};
                             if ($$printConv{PrintHex}) {
                                 $index =~ s/(\.\d+)$//; # remove decimal
@@ -2831,7 +2858,7 @@ Returned list of writable pseudo tags.
 
 =head1 AUTHOR
 
-Copyright 2003-2025, Phil Harvey (philharvey66 at gmail.com)
+Copyright 2003-2026, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

@@ -23,7 +23,7 @@ use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::Exif;
 use Image::ExifTool::JSON;
 
-$VERSION = '1.60';
+$VERSION = '1.62';
 
 sub WriteSTMN($$$);
 sub ProcessINFO($$$);
@@ -1007,7 +1007,24 @@ my %formatMinMax = (
     #       the Google trailer, but keep this copy named as EmbeddedVideoFile
     #       for backward compatibility and to avoid confusion due to extracting
     #       multiple tags with the same name
-    '0x0a30' => { Name => 'EmbeddedVideoFile', Groups => { 2 => 'Video' }, Binary => 1 }, #forum7161
+    '0x0a30' => [{
+        Name => 'EmbeddedVideoOffsetSize',
+        # (have seen 12-byte data starting with "mpv2" that contains
+        #  absolute file offset and size of embedded video)
+        Condition => 'length $$valPt == 12',
+        ValueConv => 'join(" ", unpack("x4N2", $val))',
+    },{ #forum7161
+        Name => 'EmbeddedVideoFile',
+        Groups => { 2 => 'Video' },
+        Binary => 1,
+    }],
+   # 0x0a31-name - seen MotionPhoto_Version
+    '0x0a31' => 'SamsungMotionPhotoVersion', # (to distinguish from XMP-GCamera:MotionPhotoVersion)
+    '0x0a33' => { # seen MotionPhoto_AutoPlay
+        Name => 'MotionPhotoAutoPlayVideo',
+        Groups => { 2 => 'Video' },
+        Binary => 1,
+    },
    # 0x0a41-name - seen 'BackupRestore_Data' #forum16086
    # 0x0aa1-name - seen 'MCC_Data'
    # 0x0aa1 - seen '204','222','234','302','429'
@@ -1899,7 +1916,7 @@ Samsung maker notes in EXIF information.
 
 =head1 AUTHOR
 
-Copyright 2003-2025, Phil Harvey (philharvey66 at gmail.com)
+Copyright 2003-2026, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

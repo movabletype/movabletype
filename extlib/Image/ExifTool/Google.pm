@@ -15,7 +15,7 @@ use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::XMP;
 
-$VERSION = '1.00';
+$VERSION = '1.01';
 
 sub ProcessHDRP($$$);
 
@@ -130,7 +130,8 @@ my %sAppInfo = (
     NAMESPACE => 'GPano',
     NOTES => q{
         Panorama tags written by Google Photosphere. See
-        L<https://developers.google.com/panorama/metadata/> for the specification.
+        L<https://developers.google.com/streetview/spherical-metadata> for the
+        specification.
     },
     UsePanoramaViewer               => { Writable => 'boolean' },
     CaptureSoftware                 => { },
@@ -671,7 +672,10 @@ sub ProcessHDRP($$$)
     my $tagInfo = $$dirInfo{TagInfo};
     my $tagName = $tagInfo ? $$tagInfo{Name} : '';
     my $verbose = $et->Options('Verbose');
+    my $fast = $et->Options('FastScan') || 0;
     my ($ver, $valPt);
+
+    return undef if $fast > 1;
 
     if ($$dirInfo{DirStart}) {
         my $dat = substr($$dataPt, $$dirInfo{DirStart}, $$dirInfo{DirLen});
@@ -793,7 +797,7 @@ Google maker notes and write Google XMP tags.
 
 =head1 AUTHOR
 
-Copyright 2003-2025, Phil Harvey (philharvey66 at gmail.com)
+Copyright 2003-2026, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

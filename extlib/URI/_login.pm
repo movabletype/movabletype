@@ -5,7 +5,7 @@ use warnings;
 
 use parent qw(URI::_server URI::_userpass);
 
-our $VERSION = '5.34';
+our $VERSION = '5.35';
 
 # Generic terminal logins.  This is used as a base class for 'telnet',
 # 'tn3270', and 'rlogin' URL schemes.
