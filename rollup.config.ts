@@ -22,6 +22,7 @@ const srcConfig = (inputFile) => {
     input: [inputFile],
     output: {
       dir: defaultOutputDir,
+      entryFileNames: inputFile.replace(/^src\//, "").replace(/\.ts$/, ".js"),
       format: "esm",
       sourcemap: !production,
     },
@@ -47,7 +48,7 @@ const srcConfig = (inputFile) => {
       // Watch the `public` directory and refresh the
       // browser on changes when not in production
       !production && livereload(defaultOutputDir),
-      typescript({ sourceMap: !production }),
+      typescript({ sourceMap: !production, allowJs: false }),
     ],
   };
 };
@@ -73,7 +74,7 @@ const mtStaticConfig = (inputfile) => {
       // Watch the `public` directory and refresh the
       // browser on changes when not in production
       !production && livereload(mtStaticOutputDir),
-      typescript({ sourceMap: !production }),
+      typescript({ sourceMap: !production, allowJs: false }),
     ],
   };
 };
@@ -81,5 +82,6 @@ const mtStaticConfig = (inputfile) => {
 export default [
   srcConfig("src/contenttype.ts"),
   srcConfig("src/listing.ts"),
+  srcConfig("src/template-editor/codemirror6/index.ts"),
   ...mtStaticInputFiles.map(mtStaticConfig),
 ];
