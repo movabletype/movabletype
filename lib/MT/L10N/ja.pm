@@ -5360,7 +5360,7 @@ use vars qw( @ISA %Lexicon );
 	'The content data has been deleted from the database.' => 'コンテンツデータをデータベースから削除しました。',
 
 ## tmpl/admin2023/cms/listing/content_type_list_header.tmpl
-	'Some content types were not deleted. You need to delete archive templates or content type fields from the content type first.' => 'いくつかのコンテンツタイプが削除できませんでした。先にアーカイブマッピングを削除する必要があります。',
+	'Some content types were not deleted. You need to delete content type templates or content type fields from the content type first.' => 'いくつかのコンテンツタイプが削除できませんでした。先に関連するコンテンツタイプテンプレートとコンテンツタイプフィールドを削除する必要があります。',
 	'The content type has been deleted from the database.' => 'コンテンツタイプをデータベースから削除しました。',
 
 ## tmpl/admin2023/cms/listing/group_list_header.tmpl
