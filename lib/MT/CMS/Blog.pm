@@ -1640,6 +1640,38 @@ sub pre_save {
     my $eh = shift;
     my ( $app, $obj, $original ) = @_;
 
+    require MT::Util;
+    if (my $site_url = $obj->site_url) {
+        if (!MT::Util::is_url($site_url)) {
+            # parent site may not be set yet
+            my $ok;
+            if ($site_url =~ m!/::/!) {
+                my @parts = $obj->raw_site_url;
+                my $tmp   = 'https://' . (@parts == 2 ? shift @parts : '') . 'example.com/';
+                $tmp      = MT::Util::caturl($tmp, shift @parts);
+                $ok       = MT::Util::is_url($tmp) ? 1 : 0;
+            }
+            if (!$ok) {
+                return $app->errtrans('Invalid URL in "[_1]" field.', $app->translate('Site URL'));
+            }
+        }
+    }
+    if (my $archive_url = $obj->archive_url) {
+        if (!MT::Util::is_url($archive_url)) {
+            # parent site may not be set yet
+            my $ok;
+            if ($archive_url =~ m!/::/!) {
+                my @parts = $obj->raw_archive_url;
+                my $tmp   = 'https://' . (@parts == 2 ? shift @parts : '') . 'example.com/';
+                $tmp      = MT::Util::caturl($tmp, shift @parts);
+                $ok       = MT::Util::is_url($tmp) ? 1 : 0;
+            }
+            if (!$ok) {
+                return $app->errtrans('Invalid URL in "[_1]" field.', $app->translate('Archive URL'));
+            }
+        }
+    }
+
     my $overlay = $app->param('overlay');
     my $screen = $app->param('cfg_screen') || '';
 
@@ -2362,12 +2394,16 @@ sub cfg_prefs_save {
     $blog->include_cache( $app->param('include_cache') ? 1 : 0 );
 
     if ( $blog->class eq 'blog' && $app->can_do('set_publish_paths') ) {
+        require MT::Util;
         my $subdomain = $app->param('site_url_subdomain');
         $subdomain = '' if !$app->param('use_subdomain');
         $subdomain .= '.' if $subdomain && $subdomain !~ /\.$/;
         $subdomain =~ s/\.{2,}/\./g;
         my $path = $app->param('site_url_path');
         $blog->site_url("$subdomain/::/$path");
+        if (!MT::Util::is_url($blog->site_url)) {
+            return $app->errtrans('Invalid URL in "[_1]" field.', $app->translate('Site URL'));
+        }
         if ( $app->param('enable_archive_paths') ) {
             $subdomain = $app->param('archive_url_subdomain');
             $subdomain = '' if !$app->param('use_archive_subdomain');
@@ -2375,6 +2411,9 @@ sub cfg_prefs_save {
             $subdomain =~ s/\.{2,}/\./g;
             $path = $app->param('archive_url_path');
             $blog->archive_url("$subdomain/::/$path");
+            if (!MT::Util::is_url($blog->archive_url)) {
+                return $app->errtrans('Invalid URL in "[_1]" field.', $app->translate('Archive URL'));
+            }
         }
         my $site_path_absolute    = $app->param('site_path_absolute');
         my $use_absolute          = $app->param('use_absolute');

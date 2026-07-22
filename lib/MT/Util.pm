@@ -1514,8 +1514,14 @@ sub is_valid_url {
 
 sub is_url {
     my ($url) = @_;
-
-    return $url && $url =~ /^s?https?:\/\/[-_.!~*'()a-zA-Z0-9;\/?:\@&=+\$,%#]+$/;
+    return unless $url && $url =~ /^s?https?:\/\/[-_.!~*'()a-zA-Z0-9;\/?:\@&=+\$,%#]+$/;
+    require URI;
+    my $uri  = URI->new($url);
+    my $host = $uri->host;
+    # cf. https://url.spec.whatwg.org/#host-miscellaneous
+    # control characters and whitespaces are excluded by the first regexp above
+    return if $host =~ m![#/:<>?@\[\\\]\^\|%]!;
+    return 1;
 }
 
 sub mark_odd_rows {
