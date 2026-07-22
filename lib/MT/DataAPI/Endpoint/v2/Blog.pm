@@ -241,6 +241,7 @@ sub insert_new_blog {
             commenter_authenticators => _generate_commenter_authenticators(),
             max_revisions_entry      => $MT::Revisable::MAX_REVISIONS,
             max_revisions_template   => $MT::Revisable::MAX_REVISIONS,
+            parent_id                => $site->id,
         }
     );
 
