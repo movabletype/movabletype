@@ -1,30 +1,34 @@
 ##
 ## Czech tables
 ##
-## Contributed by Honza Pazdziora 
+## Contributed by Honza Pazdziora
 
 package Date::Language::Czech;
 
-use vars qw(@ISA @DoW @DoWs @MoY @MoYs @MoY2 @AMPM %MoY %DoW $VERSION);
-@ISA = qw(Date::Language Date::Format::Generic);
-$VERSION = "1.01";
+use strict;
+use warnings;
+use utf8;
+use Date::Language ();
 
-@MoY = qw(leden únor bøezen duben kvìten èerven èervenec srpen záøí
-	      øíjen listopad prosinec);
-@MoYs = qw(led únor bøe dub kvì èvn èec srp záøí øíj lis pro);
-@MoY2 = @MoY;
+use base 'Date::Language';
+
+our $VERSION = '2.35'; # VERSION: generated
+# ABSTRACT: Czech localization for Date::Format
+
+our @MoY = qw(leden Ãºnor bÃ¸ezen duben kvÃ¬ten Ã¨erven Ã¨ervenec srpen zÃ¡Ã¸Ã­
+          Ã¸Ã­jen listopad prosinec);
+our @MoYs = qw(led Ãºnor bÃ¸e dub kvÃ¬ Ã¨vn Ã¨ec srp zÃ¡Ã¸Ã­ Ã¸Ã­j lis pro);
+our @MoY2 = @MoY;
 for (@MoY2)
       { s!en$!na! or s!ec$!ce! or s!ad$!adu! or s!or$!ora!; }
 
-@DoW = qw(nedìle pondìlí úterý støeda ètvrtek pátek sobota);
-@DoWs = qw(Ne Po Út St Èt Pá So);
+our @DoW = qw(nedÃ¬le pondÃ¬lÃ­ ÃºterÃ½ stÃ¸eda Ã¨tvrtek pÃ¡tek sobota);
+our @DoWs = qw(Ne Po Ãšt St Ãˆt PÃ¡ So);
 
-@AMPM = qw(dop. odp.);
+our @AMPM = qw(dop. odp.);
 
-@MoY{@MoY}  = (0 .. scalar(@MoY));
-@MoY{@MoYs} = (0 .. scalar(@MoYs));
-@DoW{@DoW}  = (0 .. scalar(@DoW));
-@DoW{@DoWs} = (0 .. scalar(@DoWs));
+our ( %MoY, %DoW );
+Date::Language::_build_lookups();
 
 # Formatting routines
 
@@ -56,3 +60,30 @@ sub strftime {
       }
 
 1;
+
+__END__
+
+=pod
+
+=encoding UTF-8
+
+=head1 NAME
+
+Date::Language::Czech - Czech localization for Date::Format
+
+=head1 VERSION
+
+version 2.35
+
+=head1 AUTHOR
+
+Graham <gbarr@pobox.com>
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is copyright (c) 2020 by Graham Barr.
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
+
+=cut
