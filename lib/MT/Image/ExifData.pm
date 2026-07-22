@@ -76,7 +76,7 @@ sub _require_module {
 1;
 
 __DATA__
-# Generated from Image::ExifTool 13.44
+# Generated from Image::ExifTool 13.55
 ACDSeeRegion
 ACDSeeRegionALGArea
 ACDSeeRegionALGAreaH
@@ -319,6 +319,11 @@ CameraProfilesPerspectiveModelRadialDistortParam2
 CameraProfilesPerspectiveModelRadialDistortParam3
 CameraProfilesPerspectiveModelScaleFactor
 CameraProfilesPerspectiveModelVersion
+CameraProfilesPerspectiveModelVignetteModel
+CameraProfilesPerspectiveModelVignetteModelImageXCenter
+CameraProfilesPerspectiveModelVignetteModelImageYCenter
+CameraProfilesPerspectiveModelVignetteModelParam1
+CameraProfilesPerspectiveModelVignetteModelPiecewiseParam
 CameraProfilesProfileName
 CameraProfilesSensorFormatFactor
 CameraProfilesUniqueCameraModel
@@ -523,6 +528,7 @@ ColorNoiseReduction
 ColorNoiseReductionDetail
 ColorNoiseReductionSmoothness
 ColorTemperature
+ColorVariance
 ColorantA
 ColorantB
 ColorantBlack
@@ -634,6 +640,7 @@ CreditLineReq
 CreditLineRequired
 CropAngle
 CropBottom
+CropConstrainToUnitSquare
 CropConstrainToWarp
 CropH
 CropHeight
@@ -1077,6 +1084,7 @@ FossilSpecimen
 FossilSpecimenMaterialSampleID
 FrameRate
 Framing
+FujiRatingAlreadyApplied
 FullPanoHeightPixels
 FullPanoWidthPixels
 GDALMetadata
@@ -1304,6 +1312,7 @@ HDRCapacityMax
 HDRCapacityMin
 HDREditMode
 HDRGainMapVersion
+HDRMaxValue
 HDRPMakerNote
 HDRPlusMakerNote
 HalftoneHints
@@ -1524,6 +1533,7 @@ KillDate
 KillDateA-platform
 KillDateDate
 Label
+LabelColor
 LabelName1
 LabelName2
 LabelName3
