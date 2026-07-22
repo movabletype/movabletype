@@ -3,7 +3,7 @@ package LWP::Protocol::https;
 use strict;
 use warnings;
 
-our $VERSION = '6.14';
+our $VERSION = '6.15';
 
 use parent qw(LWP::Protocol::http);
 require Net::HTTPS;
@@ -99,12 +99,26 @@ if ( $Net::HTTPS::SSL_SOCKET_CLASS->can('start_SSL')) {
     # SNI should be passed there only if it is not an IP address.
     # Details: https://github.com/libwww-perl/libwww-perl/issues/449#issuecomment-1896175509
 	my $host = $url->host() =~ m/:|^[\d.]+$/s ? undef : $url->host();
-	$sock = LWP::Protocol::https::Socket->start_SSL( $sock,
+	my $usebio = {};
+	if (UNIVERSAL::can($sock,'is_SSL') && $sock->is_SSL) {
+	    $usebio = eval { $Net::HTTPS::SSL_SOCKET_CLASS->can_nested_ssl } or
+		die "no support for nested TLS in this IO::Socket::SSL version";
+	}
+
+	$sock = LWP::Protocol::https::Socket->start_SSL( my $osock = $sock,
 	    SSL_verifycn_name => $url->host,
 	    SSL_hostname => $host,
+	    %$usebio,
 	    $self->_extra_sock_opts,
 	);
-	$@ = LWP::Protocol::https::Socket->errstr if ! $sock;
+	if (!$sock) {
+	    $@ = LWP::Protocol::https::Socket->errstr;
+	    return;
+	}
+	if ($usebio and my @fields = grep { /^http_/ } keys %{*$osock}) {
+	    # propagate any http_ fields from osock to sock
+	    @{*$sock}{@fields} = @{*$osock}{@fields}
+	}
 	return $sock;
     }
 }
