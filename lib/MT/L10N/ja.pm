@@ -5265,7 +5265,6 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/admin2023/cms/list_template.tmpl
 	'<strong>&lt;$MTWidgetSet name=&quot;Name of the Widget Set&quot;$&gt;</strong>' => '<strong>&lt;$MTWidgetSet name=&quot;ウィジェットセットの名前&quot;$&gt;</strong>',
 	'Content Type Listing Archive' => 'コンテンツタイプリストアーカイブ',
-	'Content type Templates' => 'コンテンツタイプのテンプレート',
 	'Create new template (c)' => 'テンプレートの作成 (s)',
 	'Create' => '新規作成',
 	'Delete selected Widget Sets (x)' => '選択されたウィジェットセットを削除 (x)',
