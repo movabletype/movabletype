@@ -152,7 +152,7 @@ subtest 'Check callbacks for saving' => sub {
         _type    => 'website',
         id       => $website->id,
         blog_id  => $website->id,
-        site_url => q(),
+        site_url => q(https://localhost/),
     });
 
     for my $t (qw(blog website)) {

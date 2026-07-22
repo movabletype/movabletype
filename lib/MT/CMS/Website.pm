@@ -352,6 +352,17 @@ sub pre_save {
     my $eh = shift;
     my ( $app, $obj, $original ) = @_;
 
+    require MT::Util;
+    if (my $site_url = $obj->site_url) {
+        if (!MT::Util::is_url($site_url)) {
+            return $app->errtrans('Invalid URL in "[_1]" field.', $app->translate('Site URL'));
+        }
+    }
+    if (my $archive_url = $obj->archive_url) {
+        if (!MT::Util::is_url($archive_url)) {
+            return $app->errtrans('Invalid URL in "[_1]" field.', $app->translate('Archive URL'));
+        }
+    }
     if ( !$obj->id ) {
         my $site_path = $obj->site_path;
         my $fmgr      = $obj->file_mgr;
