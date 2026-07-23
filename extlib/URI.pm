@@ -3,7 +3,7 @@ package URI;
 use strict;
 use warnings;
 
-our $VERSION = '5.34';
+our $VERSION = '5.35';
 
 # 1=version 5.10 and earlier; 0=version 5.11 and later
 use constant HAS_RESERVED_SQUARE_BRACKETS => $ENV{URI_HAS_RESERVED_SQUARE_BRACKETS} ? 1 : 0;
@@ -483,7 +483,7 @@ The constructor determines the scheme, maps this to an appropriate
 URI subclass, constructs a new object of that class and returns it.
 
 If the scheme isn't one of those that URI recognizes, you still get
-an URI object back that you can access the generic methods on.  The
+a URI object back that you can access the generic methods on.  The
 C<< $uri->has_recognized_scheme >> method can be used to test for
 this.
 
