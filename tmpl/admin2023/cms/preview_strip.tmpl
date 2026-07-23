@@ -118,7 +118,7 @@
       <tr>
         <td id="entry-preview-control-strip" class="preview-control-strip">
           <p id="entry-preview-label" class="preview-label"><mt:if name="object_type" eq="entry"><__trans phrase="You are previewing the entry entitled &ldquo;[_1]&rdquo;" params="<$mt:var name="title" remove_html="1" escape="html"$>"><mt:else><__trans phrase="You are previewing the page entitled &ldquo;[_1]&rdquo;" params="<$mt:var name="title" remove_html="1" escape="html"$>"></mt:if></p>
-          <form method="post" action="<$mt:var name="script_url"$>" data-mt-once="1">
+          <form method="post" action="<$mt:var name="script_url"$>" mt:once="1">
             <input type="hidden" name="__mode" value="save_entry" />
             <input type="hidden" name="_type" value="<$mt:var name="object_type"$>" />
             <input type="hidden" name="magic_token" value="<$mt:var name="magic_token"$>" />
@@ -129,7 +129,7 @@
 </mt:loop>
 <mt:setvarblock name="action_buttons">
   <button
-     data-mt-mode="save_entry"
+     mt:mode="save_entry"
      type="submit"
      name="save"
      value="save"
@@ -139,7 +139,7 @@
     <mt:var name="save_button_value">
   </button>
   <button
-     data-mt-mode="view"
+     mt:mode="view"
      type="submit"
      name="reedit"
      value="reedit"

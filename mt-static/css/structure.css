@@ -1407,7 +1407,7 @@ More details about listing style, see [listing.css](#/style/listing.css)
           </fieldset>
 
           <div class="actions-bar settings-actions-bar">
-            <button data-mt-mode="save_plugin_config" type="submit" class="save action primary button">
+            <button mt:mode="save_plugin_config" type="submit" class="save action primary button">
               Save Changes
             </button>
           </div>
@@ -1483,7 +1483,7 @@ More details about listing style, see [listing.css](#/style/listing.css)
           </fieldset>
 
           <div class="actions-bar settings-actions-bar">
-            <button data-mt-mode="save_plugin_config" type="submit" class="save action primary button">
+            <button mt:mode="save_plugin_config" type="submit" class="save action primary button">
               Save Changes
             </button>
           </div>

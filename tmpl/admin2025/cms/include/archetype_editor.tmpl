@@ -55,8 +55,8 @@
           <mt:ignore>
             <button type="button" title="Spell Check" class="command-spell-check toolbar button"><span class="button-label"><__trans phrase="Check Spelling"></span></button>
           </mt:ignore>
-            <button type="button" title="<__trans phrase="WYSIWYG Mode" escape="html">" data-mt-command="set-mode-iframe" class="command-toggle-wysiwyg toolbar button"><span class="button-label"><__trans phrase="WYSIWYG Mode"></span></button>
-            <button type="button" title="<__trans phrase="HTML Mode" escape="html">" data-mt-command="set-mode-textarea" class="command-toggle-html toolbar button"><span class="button-label"><__trans phrase="HTML Mode"></span></button>
+            <button type="button" title="<__trans phrase="WYSIWYG Mode" escape="html">" mt:command="set-mode-iframe" class="command-toggle-wysiwyg toolbar button"><span class="button-label"><__trans phrase="WYSIWYG Mode"></span></button>
+            <button type="button" title="<__trans phrase="HTML Mode" escape="html">" mt:command="set-mode-textarea" class="command-toggle-html toolbar button"><span class="button-label"><__trans phrase="HTML Mode"></span></button>
           </span>
         </div>
       </div>
@@ -68,7 +68,7 @@
         <input type="hidden" id="editor-input-content" name="text" value="<$mt:var name="text" escape="html"$>" />
         <input type="hidden" id="editor-input-extended" name="text_more" value="<$mt:var name="text_more" escape="html"$>" />
       <mt:ignore>
-        <div class="resizer" data-mt-delegate="resizer" data-mt-target="editor-content-enclosure" data-mt-lock="x">
+        <div class="resizer" mt:delegate="resizer" mt:target="editor-content-enclosure" mt:lock="x">
           <img src="<$mt:var name="static_uri"$>images/spacer.gif" width="100%" height="10"/>
         </div>
       </mt:ignore>
