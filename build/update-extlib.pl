@@ -71,12 +71,14 @@ for my $arg (@ARGV) {
                             if ($body =~ /(use|require).+(?:XSLoader|DynaLoader)/) {
                                 my $scanner  = Perl::PrereqScanner::NotQuiteLite->new(recommends => 1, suggests => 1);
                                 my $ctx      = $scanner->scan_file($pmfile);
-                                my $requires = $ctx->requires->as_string_hash;
-                                if (exists $requires->{XSLoader} or exists $requires->{DynaLoader}) {
-                                    # really requires XS
-                                    say STDERR "SKIP: $path uses XS";
-                                    $done = 1;
-                                    last MODULE_PATH;
+                                for my $phase (qw(requires recommends)) {
+                                    my $requires = $ctx->$phase->as_string_hash;
+                                    if (exists $requires->{XSLoader} or exists $requires->{DynaLoader}) {
+                                        # really requires XS
+                                        say STDERR "SKIP: $path uses XS";
+                                        $done = 1;
+                                        last MODULE_PATH;
+                                    }
                                 }
                             }
                             my $extfile = "$extlib/$path";
