@@ -12,12 +12,40 @@ use strict;
 use vars qw($VERSION);
 use Image::ExifTool::Exif;
 
-$VERSION = '1.54';
+$VERSION = '1.58';
 
 my %coordConv = (
     ValueConv    => 'Image::ExifTool::GPS::ToDegrees($val)',
     ValueConvInv => 'Image::ExifTool::GPS::ToDMS($self, $val)',
     PrintConv    => 'Image::ExifTool::GPS::ToDMS($self, $val, 1)',
+);
+
+my %printConvLatRef = (
+    # extract N/S if written from Composite:GPSLatitude
+    # (also allow writing from a signed number)
+    OTHER => sub {
+        my ($val, $inv) = @_;
+        return undef unless $inv;
+        return uc $2 if $val =~ /(^|[^A-Z])([NS])(orth|outh)?\b/i;
+        return $1 eq '-' ? 'S' : 'N' if $val =~ /([-+]?)\d+/;
+        return undef;
+    },
+    N => 'North',
+    S => 'South',
+);
+
+my %printConvLonRef = (
+    # extract E/W if written from Composite:GPSLongitude
+    # (also allow writing from a signed number)
+    OTHER => sub {
+        my ($val, $inv) = @_;
+        return undef unless $inv;
+        return uc $2 if $val =~ /(^|[^A-Z])([EW])(ast|est)?\b/i;
+        return $1 eq '-' ? 'W' : 'E' if $val =~ /([-+]?)\d+/;
+        return undef;
+    },
+    E => 'East',
+    W => 'West',
 );
 
 %Image::ExifTool::GPS::Main = (
@@ -43,19 +71,7 @@ my %coordConv = (
             latitudes or negative for south, or a string containing N, North, S or South
         },
         Count => 2,
-        PrintConv => {
-            # extract N/S if written from Composite:GPSLatitude
-            # (also allow writing from a signed number)
-            OTHER => sub {
-                my ($val, $inv) = @_;
-                return undef unless $inv;
-                return uc $2 if $val =~ /(^|[^A-Z])([NS])(orth|outh)?\b/i;
-                return $1 eq '-' ? 'S' : 'N' if $val =~ /([-+]?)\d+/;
-                return undef;
-            },
-            N => 'North',
-            S => 'South',
-        },
+        PrintConv => \%printConvLatRef,
     },
     0x0002 => {
         Name => 'GPSLatitude',
@@ -72,19 +88,7 @@ my %coordConv = (
             ExifTool will also accept a number when writing this tag, positive for east
             longitudes or negative for west, or a string containing E, East, W or West
         },
-        PrintConv => {
-            # extract E/W if written from Composite:GPSLongitude
-            # (also allow writing from a signed number)
-            OTHER => sub {
-                my ($val, $inv) = @_;
-                return undef unless $inv;
-                return uc $2 if $val =~ /(^|[^A-Z])([EW])(ast|est)?\b/i;
-                return $1 eq '-' ? 'W' : 'E' if $val =~ /([-+]?)\d+/;
-                return undef;
-            },
-            E => 'East',
-            W => 'West',
-        },
+        PrintConv => \%printConvLonRef,
     },
     0x0004 => {
         Name => 'GPSLongitude',
@@ -106,8 +110,10 @@ my %coordConv = (
                 return undef unless $inv and $val =~ /^([-+0-9])/;
                 return($1 eq '-' ? 1 : 0);
             },
-            0 => 'Above Sea Level',
-            1 => 'Below Sea Level',
+            0 => 'Above Sea Level', # (ellipsoidal surface, Exif 3.0)
+            1 => 'Below Sea Level', # (ellipsoidal surface, Exif 3.0)
+            2 => 'Positive Sea Level (sea-level ref)', # sea-level reference, Exif 3.0
+            3 => 'Negative Sea Level (sea-level ref)', # sea-level reference, Exif 3.0
         },
     },
     0x0006 => {
@@ -236,7 +242,7 @@ my %coordConv = (
         Writable => 'string',
         Notes => 'tags 0x0013-0x001a used for subject location according to MWG 2.0',
         Count => 2,
-        PrintConv => { N => 'North', S => 'South' },
+        PrintConv => \%printConvLatRef,
     },
     0x0014 => {
         Name => 'GPSDestLatitude',
@@ -249,7 +255,7 @@ my %coordConv = (
         Name => 'GPSDestLongitudeRef',
         Writable => 'string',
         Count => 2,
-        PrintConv => { E => 'East', W => 'West' },
+        PrintConv => \%printConvLonRef,
     },
     0x0016 => {
         Name => 'GPSDestLongitude',
@@ -289,6 +295,7 @@ my %coordConv = (
         Name => 'GPSProcessingMethod',
         Writable => 'undef',
         Notes => 'values of "GPS", "CELLID", "WLAN" or "MANUAL" by the EXIF spec.',
+        # (or QZZSS, GALILEO, GLONASS, BEIDOU or NAVIC in Exif 3.0)
         RawConv => 'Image::ExifTool::Exif::ConvertExifText($self,$val,1,$tag)',
         RawConvInv => 'Image::ExifTool::Exif::EncodeExifText($self,$val)',
     },
@@ -407,12 +414,18 @@ my %coordConv = (
         # Require either GPS:GPSAltitudeRef or XMP:GPSAltitudeRef
         RawConv => '(defined $val[1] or defined $val[3]) ? $val : undef',
         ValueConv => q{
-            my $alt = $val[0];
-            $alt = $val[2] unless defined $alt;
-            return undef unless defined $alt and IsFloat($alt);
-            return(($val[1] || $val[3]) ? -$alt : $alt);
+            foreach (0,2) {
+                next unless defined $val[$_] and IsFloat($val[$_]) and defined $val[$_+1];
+                return $val[$_+1] ? -abs($val[$_]) : $val[$_];
+            }
+            return undef;
         },
         PrintConv => q{
+            foreach (0,2) {
+                next unless defined $val[$_] and IsFloat($val[$_]);
+                next unless defined $prt[$_+1] and $prt[$_+1] =~ /Sea/;
+                return((int($val[$_]*10)/10) . ' m ' . $prt[$_+1]);
+            }
             $val = int($val * 10) / 10;
             return(($val =~ s/^-// ? "$val m Below" : "$val m Above") . " Sea Level");
         },
@@ -476,13 +489,13 @@ sub PrintTimeStamp($)
 #------------------------------------------------------------------------------
 # Convert degrees to DMS, or whatever the current settings are
 # Inputs: 0) ExifTool reference, 1) Value in degrees,
-#         2) format code (0=no format, 1=CoordFormat, 2=XMP format)
+#         2) format code (0=no format, 1=CoordFormat, 2=XMP format, 3=signed unformatted)
 #         3) 'N' or 'E' if sign is significant and N/S/E/W should be added
 # Returns: DMS string
 sub ToDMS($$;$$)
 {
     my ($et, $val, $doPrintConv, $ref) = @_;
-    my ($fmt, @fmt, $num, $sign, $rtnVal);
+    my ($fmt, @fmt, $num, $sign, $minus, $rtnVal, $neg);
 
     unless (length $val) {
         # don't convert an empty value
@@ -494,11 +507,17 @@ sub ToDMS($$;$$)
             $val = -$val;
             $ref = {N => 'S', E => 'W'}->{$ref};
             $sign = '-';
+            $minus = '-';
         } else {
             $sign = '+';
+            $minus = '';
         }
         $ref = " $ref" unless $doPrintConv and $doPrintConv eq '2';
     } else {
+        if ($doPrintConv and $doPrintConv eq '3') {
+            $neg = 1 if $val < 0;
+            $doPrintConv = 0;
+        }
         $val = abs($val);
         $ref = '';
     }
@@ -509,7 +528,7 @@ sub ToDMS($$;$$)
                 $fmt = q{%d deg %d' %.2f"} . $ref;
             } elsif ($ref) {
                 # use signed value instead of reference direction if specified
-                $fmt =~ s/%\+/$sign%/g or $fmt .= $ref;
+                $fmt =~ s/%\+/$sign%/g or $fmt =~ s/%-/$minus%/g or $fmt .= $ref;
             } else {
                 $fmt =~ s/%\+/%/g;  # don't know sign, so don't print it
             }
@@ -548,6 +567,7 @@ sub ToDMS($$;$$)
         # trim trailing zeros in XMP
         $rtnVal =~ s/(\d)0+$ref$/$1$ref/ if $doPrintConv eq '2';
     } else {
+        $neg and map { $_ *= -1 } @c;
         $rtnVal = "@c$ref";
     }
     return $rtnVal;
@@ -599,7 +619,7 @@ GPS (Global Positioning System) meta information in EXIF data.
 
 =head1 AUTHOR
 
-Copyright 2003-2022, Phil Harvey (philharvey66 at gmail.com)
+Copyright 2003-2026, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

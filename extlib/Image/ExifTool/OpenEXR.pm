@@ -4,6 +4,7 @@
 # Description:  Read OpenEXR meta information
 #
 # Revisions:    2011/12/10 - P. Harvey Created
+#               2023/01/31 - PH Added support for multipart images
 #
 # References:   1) http://www.openexr.com/
 #------------------------------------------------------------------------------
@@ -15,7 +16,7 @@ use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::GPS;
 
-$VERSION = '1.03';
+$VERSION = '1.07';
 
 # supported EXR value format types (other types are extracted as undef binary data)
 my %formatType = (
@@ -47,14 +48,18 @@ my %formatType = (
 %Image::ExifTool::OpenEXR::Main = (
     GROUPS => { 2 => 'Image' },
     NOTES => q{
-        Information extracted from EXR images.  See L<http://www.openexr.com/> for
-        the official specification.
+        Information extracted from EXR images.  Use the ExtractEmbedded option to
+        extract information from all frames of a multipart image.  See
+        L<http://www.openexr.com/> for the official specification.
     },
-    _ver => { Name => 'EXRVersion' },
-    _lay => {
-        Name => 'Layout',
-        PrintHex => 1,
-        PrintConv => { 0 => 'Scan Lines', 0x200 => 'Tiles' },
+    _ver => { Name => 'EXRVersion', Notes => 'low byte of Flags word' },
+    _flags => { Name => 'Flags',
+        PrintConv => { BITMASK => {
+            9 => 'Tiled',
+            10 => 'Long names',
+            11 => 'Deep data',
+            12 => 'Multipart',
+        }},
     },
     adoptedNeutral      => { },
     altitude => {
@@ -86,6 +91,8 @@ my %formatType = (
             5 => 'PXR24',
             6 => 'B44',
             7 => 'B44A',
+            8 => 'DWAA', #github276
+            9 => 'DWAB', #github276
         },
     },
     dataWindow          => { },
@@ -129,7 +136,7 @@ my %formatType = (
     multiView           => { },
     owner               => { Groups => { 2 => 'Author' } },
     pixelAspectRatio    => { },
-    preview             => { },
+    preview             => { Groups => { 2 => 'Preview' } },
     renderingTransform  => { },
     screenWindowCenter  => { },
     screenWindowWidth   => { },
@@ -145,6 +152,23 @@ my %formatType = (
     worldToNDC          => { },
     wrapmodes           => { Name => 'WrapModes' },
     xDensity            => { Name => 'XResolution' },
+    name                => { },
+    type                => { },
+    version             => { },
+    chunkCount          => { },
+    # exif and xmp written by PanoramaStudio4.0.2Pro
+    exif => {
+        Name => 'EXIF',
+        SubDirectory => {
+            TagTable => 'Image::ExifTool::Exif::Main',
+            ProcessProc => \&Image::ExifTool::ProcessTIFF,
+            Start => 4, # (skip leading 4 bytes with data length)
+        },
+    },
+    xmp  => {
+        Name => 'XMP',
+        SubDirectory => { TagTable => 'Image::ExifTool::XMP::Main' },
+    },
     # also observed:
     # ilut
 );
@@ -169,15 +193,22 @@ sub ProcessEXR($$)
     my $tagTablePtr = GetTagTable('Image::ExifTool::OpenEXR::Main');
 
     # extract information from header
-    my $ver = unpack('x4V', $buff);
-    $et->HandleTag($tagTablePtr, '_ver', $ver & 0xff);
-    $et->HandleTag($tagTablePtr, '_lay', $ver & 0x200);
-    my $maxLen = ($ver & 0x400) ? 255 : 31;
+    my $flags = unpack('x4V', $buff);
+    $et->HandleTag($tagTablePtr, '_ver', $flags & 0xff);
+    $et->HandleTag($tagTablePtr, '_flags', $flags & 0xffffff00);
+    my $maxLen = ($flags & 0x400) ? 255 : 31;
+    my $multi = $flags & 0x1000;
 
     # extract attributes
     for (;;) {
-        $raf->Read($buff, 68) or last;
-        last if $buff =~ /^\0/;
+        $raf->Read($buff, ($maxLen + 1) * 2 + 5) or last;
+        if ($buff =~ /^\0/) {
+            last unless $multi and $et->Options('ExtractEmbedded');
+            # remove null and process the next frame header as a sub-document
+            # (second null is end of all headers)
+            last if $buff =~ s/^(\0+)// and length($1) > 1;
+            $$et{DOC_NUM} = ++$$et{DOC_COUNT};
+        }
         unless ($buff =~ /^([^\0]{1,$maxLen})\0([^\0]{1,$maxLen})\0(.{4})/sg) {
             $et->Warn('EXR format error');
             last;
@@ -203,25 +234,30 @@ sub ProcessEXR($$)
             AddTagToTable($tagTablePtr, $tag, $tagInfo);
             $et->VPrint(0, $$et{INDENT}, "[adding $tag]\n");
         }
-        my ($val, $success);
+        my ($val, $success, $buf2);
         my $format = $formatType{$type};
-        if ($format or $binary) {
-            $raf->Read($buff, $size) == $size and $success = 1;
-            if (not $format) {
-                $val = \$buff;  # treat as undef binary data
+        my $subdir = $$tagInfo{SubDirectory};
+        if ($format or $binary or $subdir) {
+            $raf->Read($buf2, $size) == $size and $success = 1;
+            if ($subdir) {
+                $et->HandleTag($tagTablePtr, $tag, undef,
+                    DataPt => \$buf2, DataPos => $raf->Tell() - length($buf2));
+                next if $success;
+            } elsif (not $format) {
+                $val = \$buf2;  # treat as undef binary data
             } elsif ($format ne '1') {
                 # handle formats which map nicely into ExifTool format codes
                 if ($format =~ /^(\w+)\[?(\d*)/) {
                     my ($fmt, $cnt) = ($1, $2);
                     $cnt = $fmt eq 'string' ? $size : 1 unless $cnt;
-                    $val = ReadValue(\$buff, 0, $fmt, $cnt, $size);
+                    $val = ReadValue(\$buf2, 0, $fmt, $cnt, $size);
                 }
             # handle other format types
             } elsif ($type eq 'tiledesc') {
                 if ($size >= 9) {
-                    my $x = Get32u(\$buff, 0);
-                    my $y = Get32u(\$buff, 4);
-                    my $mode = Get8u(\$buff, 8);
+                    my $x = Get32u(\$buf2, 0);
+                    my $y = Get32u(\$buf2, 4);
+                    my $mode = Get8u(\$buf2, 8);
                     my $lvl = { 0 => 'One Level', 1 => 'MIMAP Levels', 2 => 'RIPMAP Levels' }->{$mode & 0x0f};
                     $lvl or $lvl = 'Unknown Levels (' . ($mode & 0xf) . ')';
                     my $rnd = { 0 => 'Round Down', 1 => 'Round Up' }->{$mode >> 4};
@@ -230,7 +266,7 @@ sub ProcessEXR($$)
                 }
             } elsif ($type eq 'chlist') {
                 $val = [ ];
-                while ($buff =~ /\G([^\0]{1,31})\0(.{16})/sg) {
+                while ($buf2 =~ /\G([^\0]{1,31})\0(.{16})/sg) {
                     my ($str, $dat) = ($1, $2);
                     my ($pix,$lin,$x,$y) = unpack('VCx3VV', $dat);
                     $pix = { 0 => 'int8u', 1 => 'half', 2 => 'float' }->{$pix} || "unknown($pix)";
@@ -239,14 +275,14 @@ sub ProcessEXR($$)
             } elsif ($type eq 'stringvector') {
                 $val = [ ];
                 my $pos = 0;
-                while ($pos + 4 <= length($buff)) {
-                    my $len = Get32u(\$buff, $pos);
-                    last if $pos + 4 + $len > length($buff);
-                    push @$val, substr($buff, $pos + 4, $len);
+                while ($pos + 4 <= length($buf2)) {
+                    my $len = Get32u(\$buf2, $pos);
+                    last if $pos + 4 + $len > length($buf2);
+                    push @$val, substr($buf2, $pos + 4, $len);
                     $pos += 4 + $len;
                 }
             } else {
-                $val = \$buff;  # (shouldn't happen)
+                $val = \$buf2;  # (shouldn't happen)
             }
         } else {
             # avoid loading binary data
@@ -261,23 +297,24 @@ sub ProcessEXR($$)
 
         # take image dimensions from dataWindow (with displayWindow as backup)
         if (($tag eq 'dataWindow' or (not $dim and $tag eq 'displayWindow')) and
-            $val =~ /^(-?\d+) (-?\d+) (-?\d+) (-?\d+)$/)
+            $val =~ /^(-?\d+) (-?\d+) (-?\d+) (-?\d+)$/ and not $$et{DOC_NUM})
         {
             $dim = [$3 - $1 + 1, $4 - $2 + 1];
         }
         if ($verbose) {
-            my $dataPt = ref $val ? $val : \$val,
+            my $dataPt = ref $val eq 'SCALAR' ? $val : \$buf2;
             $et->VerboseInfo($tag, $tagInfo,
                 Table   => $tagTablePtr,
                 Value   => $val,
                 Size    => $size,
                 Format  => $type,
-                DataPt  => \$buff,
+                DataPt  => $dataPt,
                 Addr    => $raf->Tell() - $size,
             );
         }
         $et->FoundTag($tagInfo, $val);
     }
+    delete $$et{DOC_NUM};
     if ($dim) {
         $et->FoundTag('ImageWidth', $$dim[0]);
         $et->FoundTag('ImageHeight', $$dim[1]);
@@ -304,7 +341,7 @@ information from OpenEXR images.
 
 =head1 AUTHOR
 
-Copyright 2003-2022, Phil Harvey (philharvey66 at gmail.com)
+Copyright 2003-2026, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

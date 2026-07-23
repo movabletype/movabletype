@@ -31,10 +31,11 @@ use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::Exif;
 
-$VERSION = '1.84';
+$VERSION = '2.00';
 
 sub ProcessFujiDir($$$);
 sub ProcessFaceRec($$$);
+sub ProcessMRAW($$$);
 
 # the following RAF version numbers have been tested for writing:
 # (as of ExifTool 11.70, this lookup is no longer used if the version number is numerical)
@@ -42,11 +43,12 @@ my %testedRAF = (
     '0100' => 'E550, E900, F770, S5600, S6000fd, S6500fd, HS10/HS11, HS30, S200EXR, X100, XF1, X-Pro1, X-S1, XQ2 Ver1.00, X-T100, GFX 50R, XF10',
     '0101' => 'X-E1, X20 Ver1.01, X-T3',
     '0102' => 'S100FS, X10 Ver1.02',
-    '0103' => 'IS Pro Ver1.03',
+    '0103' => 'IS Pro and X-T5 Ver1.03',
     '0104' => 'S5Pro Ver1.04',
     '0106' => 'S5Pro Ver1.06',
     '0111' => 'S5Pro Ver1.11',
     '0114' => 'S9600 Ver1.00',
+    '0120' => 'X-T4 Ver1.20',
     '0132' => 'X-T2 Ver1.32',
     '0144' => 'X100T Ver1.44',
     '0159' => 'S2Pro Ver1.00',
@@ -222,6 +224,7 @@ my %faceCategories = (
     },
     0x100a => { #2
         Name => 'WhiteBalanceFineTune',
+        Notes => 'newer cameras should divide these values by 20', #forum10800
         Writable => 'int32s',
         Count => 2,
         PrintConv => 'sprintf("Red %+d, Blue %+d", split(" ", $val))',
@@ -423,10 +426,28 @@ my %faceCategories = (
             0x300 => 'DR (Dynamic Range priority)',
         },
     },
+    0x1037 => { #forum17591
+        Name => 'MultipleExposure',
+        Writable => 'int16u', # (NC)
+        PrintConv => {
+            1 => 'Additive',
+            2 => 'Average',
+            3 => 'Light',
+            4 => 'Dark',
+        },
+    },
     0x1040 => { #8
         Name => 'ShadowTone',
         Writable => 'int32s',
         PrintConv => {
+            OTHER => sub {
+                my ($val, $inv) = @_;
+                if ($inv) {
+                    return int(-$val * 16);
+                } else {
+                    return -$val / 16;
+                }
+            },
             -64 => '+4 (hardest)',
             -48 => '+3 (very hard)',
             -32 => '+2 (hard)',
@@ -440,6 +461,14 @@ my %faceCategories = (
         Name => 'HighlightTone',
         Writable => 'int32s',
         PrintConv => {
+            OTHER => sub {
+                my ($val, $inv) = @_;
+                if ($inv) {
+                    return int(-$val * 16);
+                } else {
+                    return -$val / 16;
+                }
+            },
             -64 => '+4 (hardest)',
             -48 => '+3 (very hard)',
             -32 => '+2 (hard)',
@@ -478,14 +507,20 @@ my %faceCategories = (
             64 => 'Strong',
         },
     },
-    0x1049 => { #12
+    0x1049 => { #12,forum14319
         Name => 'BWAdjustment',
         Notes => 'positive values are warm, negative values are cool',
         Format => 'int8s',
         PrintConv => '$val > 0 ? "+$val" : $val',
         PrintConvInv => '$val + 0',
     },
-    # 0x104b - BWAdjustment for Green->Magenta (forum10800)
+    0x104b => { #forum10800,forum14319
+        Name => 'BWMagentaGreen',
+        Notes => 'positive values are green, negative values are magenta',
+        Format => 'int8s',
+        PrintConv => '$val > 0 ? "+$val" : $val',
+        PrintConvInv => '$val + 0',
+    },
     0x104c => { #PR158
         Name => "GrainEffectSize",
         Writable => 'int16u', #PH
@@ -503,6 +538,16 @@ my %faceCategories = (
             1 => 'Full-frame on GFX', #IB
             2 => 'Sports Finder Mode', # (mechanical shutter)
             4 => 'Electronic Shutter 1.25x Crop', # (continuous high)
+            8 => 'Digital Tele-Conv', #forum15784
+        },
+    },
+    0x104e => { #forum10800 (X-Pro3)
+        Name => 'ColorChromeFXBlue',
+        Writable => 'int32s',
+        PrintConv => {
+            0 => 'Off',
+            32 => 'Weak', # (NC)
+            64 => 'Strong',
         },
     },
     0x1050 => { #forum6109
@@ -515,6 +560,16 @@ my %faceCategories = (
             3 => 'Electronic Front Curtain', #10
         },
     },
+    0x1051 => { #forum15784
+        Name => 'CropFlag',
+        Writable => 'int8u',
+        Notes => q(
+            this tag exists only if the image was cropped, and is 0 for cropped JPG
+            image or 1 for a cropped RAF
+        ),
+    },
+    0x1052 => { Name => 'CropTopLeft', Writable => 'int32u' }, #forum15784
+    0x1053 => { Name => 'CropSize',    Writable => 'int32u' }, #forum15784
     # 0x1100 - This may not work well for newer cameras (ref forum12682)
     0x1100 => [{
         Name => 'AutoBracketing',
@@ -541,16 +596,44 @@ my %faceCategories = (
         Name => 'SequenceNumber',
         Writable => 'int16u',
     },
+    0x1102 => { #forum17602
+        Name => 'WhiteBalanceBracketing',
+        Writable => 'int16u', # (NC)
+        PrintHex => 1,
+        PrintConv => {
+            0x01ff => '+/- 1',
+            0x02ff => '+/- 2',
+            0x03ff => '+/- 3',
+        },
+    },
     0x1103 => {
         Name => 'DriveSettings',
         SubDirectory => { TagTable => 'Image::ExifTool::FujiFilm::DriveSettings' },
     },
     0x1105 => { Name => 'PixelShiftShots',  Writable => 'int16u' }, #IB
     0x1106 => { Name => 'PixelShiftOffset', Writable => 'rational64s', Count => 2 }, #IB
-    # (0x1150-0x1152 exist only for Pro Low-light and Pro Focus PictureModes)
-    # 0x1150 - Pro Low-light - val=1; Pro Focus - val=2 (ref 7); HDR - val=128 (forum10799)
-    # 0x1151 - Pro Low-light - val=4 (number of pictures taken?); Pro Focus - val=2,3 (ref 7); HDR - val=3 (forum10799)
-    # 0x1152 - Pro Low-light - val=1,3,4 (stacked pictures used?); Pro Focus - val=1,2 (ref 7); HDR - val=3 (forum10799)
+    0x1150 => {
+        Name => 'CompositeImageMode',
+        Writable => 'int32u',
+        PrintConv => {
+            0 => 'n/a', #PH
+            1 => 'Pro Low-light', #7
+            2 => 'Pro Focus', #7
+            32 => 'Panorama', #PH
+            128 => 'HDR', #forum10799
+            1024 => 'Multi-exposure', #forum17591
+        },
+    },
+    0x1151 => {
+        Name => 'CompositeImageCount1',
+        Writable => 'int16u',
+        # Pro Low-light - val=4 (number of pictures taken?); Pro Focus - val=2,3 (ref 7); HDR - val=3 (forum10799)
+    },
+    0x1152 => {
+        Name => 'CompositeImageCount2',
+        Writable => 'int16u',
+        # Pro Low-light - val=1,3,4 (stacked pictures used?); Pro Focus - val=1,2 (ref 7); HDR - val=3 (forum10799)
+    },
     0x1153 => { #forum7668
         Name => 'PanoramaAngle',
         Writable => 'int16u',
@@ -560,8 +643,8 @@ my %faceCategories = (
         Writable => 'int16u',
         PrintConv => {
             1 => 'Right',
-            2 => 'Up',
-            3 => 'Left',
+            2 => 'Left', #forum17591
+            3 => 'Up', #forum17591
             4 => 'Down',
         },
     },
@@ -583,6 +666,10 @@ my %faceCategories = (
             0x60006 => 'Partial Color Purple',
             0x70000 => 'Soft Focus',
             0x90000 => 'Low Key',
+            0x100000 => 'Light Leak', #forum17392
+            0x130000 => 'Expired Film Green', #forum17392
+            0x130001 => 'Expired Film Red', #forum17392 (NC)
+            0x130002 => 'Expired Film Neutral', #forum17392
         },
     },
     0x1210 => { #2
@@ -654,6 +741,7 @@ my %faceCategories = (
             0x800 => 'Classic Negative', #forum10536
             0x900 => 'Bleach Bypass', #forum10890
             0xa00 => 'Nostalgic Neg', #forum12085
+            0xb00 => 'Reala ACE', #forum15190
         },
     },
     0x1402 => { #2
@@ -698,15 +786,6 @@ my %faceCategories = (
         Writable => 'int16u',
         PrintConv => '"$val%"',
         PrintConvInv => '$val=~s/\s*\%$//; $val',
-    },
-    0x104e => { #forum10800 (X-Pro3)
-        Name => 'ColorChromeFXBlue',
-        Writable => 'int32s',
-        PrintConv => {
-            0 => 'Off',
-            32 => 'Weak', # (NC)
-            64 => 'Strong',
-        },
     },
     0x1422 => { #8
         Name => 'ImageStabilization',
@@ -791,6 +870,14 @@ my %faceCategories = (
     },
     0x1447 => { Name => 'FujiModel',  Writable => 'string' },
     0x1448 => { Name => 'FujiModel2', Writable => 'string' },
+
+    # Found in X-M5, X-E5
+    # White balance as shot. Same valus as 0xf00e.
+    0x144a => { Name => 'WBRed',      Writable => 'int16u' },
+    0x144b => { Name => 'WBGreen',    Writable => 'int16u' },
+    0x144c => { Name => 'WBBlue',     Writable => 'int16u' },
+
+    0x144d => { Name => 'RollAngle',  Writable => 'rational64s' }, #forum14319
     0x3803 => { #forum10037
         Name => 'VideoRecordingMode',
         Groups => { 2 => 'Video' },
@@ -800,6 +887,7 @@ my %faceCategories = (
             0x00 => 'Normal',
             0x10 => 'F-log',
             0x20 => 'HLG',
+            0x30 => 'F-log2', #forum14384
         },
     },
     0x3804 => { #forum10037
@@ -872,6 +960,7 @@ my %faceCategories = (
             3 => 'Right Eye',
             7 => 'Body',
             8 => 'Head',
+            9 => 'Both Eyes', #forum17635
             11 => 'Bike',
             12 => 'Body of Car',
             13 => 'Front of Car',
@@ -888,6 +977,8 @@ my %faceCategories = (
             25 => 'Aircraft Cockpit',
             26 => 'Train Front',
             27 => 'Train Cockpit',
+            28 => 'Animal Head (28)', #forum15192
+            29 => 'Animal Body (29)', #forum15192
         },'REPEAT'],
     },
     # 0x4202 int8u[-1] - number of cooredinates in each rectangle? (ref 11)
@@ -1000,14 +1091,19 @@ my %faceCategories = (
     },
     0.5 => {
         Name => 'AFAreaZoneSize',
-        Mask => 0xf0000,
+        Mask => 0xff0000,
         PrintConv => {
             0 => 'n/a',
             OTHER => sub {
                 my ($val, $inv) = @_;
-                return "$val x $val" unless $inv;
-                $val =~ s/ ?x.*//;
-                return $val;
+                my ($w, $h);
+                if ($inv) {
+                    my ($w, $h) = $val =~ /(\d+)/g;
+                    return 0 unless $w and $h;
+                    return((($h << 5) & 0xf0) | ($w & 0x0f));
+                }
+                ($w, $h) = ($val & 0x0f, $val >> 5);
+                return "$w x $h";
             },
         },
     },
@@ -1095,7 +1191,7 @@ my %faceCategories = (
 %Image::ExifTool::FujiFilm::FaceRecInfo = (
     PROCESS_PROC => \&ProcessFaceRec,
     GROUPS => { 0 => 'MakerNotes', 2 => 'Image' },
-    VARS => { NO_ID => 1 },
+    VARS => { ID_FMT => 'none' },
     NOTES => 'Face recognition information.',
     Face1Name => { },
     Face2Name => { },
@@ -1121,6 +1217,46 @@ my %faceCategories = (
     Face6Birthday => { },
     Face7Birthday => { },
     Face8Birthday => { },
+);
+
+# tags extracted from RAF header
+%Image::ExifTool::FujiFilm::RAFHeader = (
+    PROCESS_PROC => \&Image::ExifTool::ProcessBinaryData,
+    GROUPS => { 0 => 'RAF', 1 => 'RAF', 2 => 'Image' },
+    NOTES => 'Tags extracted from the header of RAF images.',
+  # 0x00 - eg. "FUJIFILMCCD-RAW 0201FA392001FinePix S3Pro"
+    0x3c => { #PH
+        Name => 'RAFVersion',
+        Format => 'undef[4]',
+    },
+    # (all int32u values)
+  # 0x40 - 1 for M-RAW, 0 otherwise?
+  # 0x44 - high word of M-RAW offset? (only seen zero)
+  # 0x48 - M-RAW header offset
+  # 0x4c - M-RAW header length
+  # 0x50 - ? (only seen zero)
+  # 0x54 - JPEG offset
+  # 0x58 - JPEG length
+  # 0x5c - RAF directory offset
+  # 0x60 - RAF directory length
+  # 0x64 - FujiIFD dir offset
+  # 0x68 - FujiIFD dir length
+  # 0x6c - RAFCompression or JPEG start
+    0x6c => { #10
+        Name => 'RAFCompression',
+        Condition => '$$valPt =~ /^\0\0\0/', # (JPEG header is in this location for some RAF versions)
+        Format => 'int32u',
+        PrintConv => { 0 => 'Uncompressed', 2 => 'Lossless', 3 => 'Lossy'  },
+    },
+  # 0x70 - ? same as 0x68?
+  # 0x74 - ? usually 0, but have seen 0x1700
+  # 0x78 - RAF1 dir offset
+  # 0x7c - RAF1 dir length
+  # 0x80 - FujiIFD1 dir offset
+  # 0x84 - FujiIFD1 dir length
+  # 0x88-0x8c - always zero?
+  # 0x90 - ? same as 0x74?
+  # 0x94 - JPEG or M-RAW start
 );
 
 # tags in RAF images (ref 5)
@@ -1157,12 +1293,36 @@ my %faceCategories = (
         ValueConv => 'my @v=reverse split(" ",$val);"@v"', # reverse to show width first
         PrintConv => '$val=~tr/ /x/; $val',
     },
+    # 0x112 - int16u[2] same as 0x111 but with width/height swapped?
+    # 0x113 - int16u[2] same as 0x111?
     0x115 => {
         Name => 'RawImageAspectRatio',
         Format => 'int16u',
         Count => 2,
         ValueConv => 'my @v=reverse split(" ",$val);"@v"', # reverse to show width first
         PrintConv => '$val=~tr/ /:/; $val',
+    },
+    0x117 => {
+        Name => 'RawZoomActive',
+        Format => 'int32u',
+        Count => 1,
+        PrintConv => { 0 => 'No', 1 => 'Yes' },
+    },
+    0x118 => {
+        Name => 'RawZoomTopLeft',
+        Format => 'int16u',
+        Count => 2,
+        Notes => 'relative to RawCroppedImageSize',
+        ValueConv => 'my @v=reverse split(" ",$val);"@v"', # reverse to show width first
+        PrintConv => '$val=~tr/ /x/; $val',
+    },
+    0x119 => {
+        Name => 'RawZoomSize',
+        Format => 'int16u',
+        Count => 2,
+        Notes => 'relative to RawCroppedImageSize',
+        ValueConv => 'my @v=reverse split(" ",$val);"@v"', # reverse to show width first
+        PrintConv => '$val=~tr/ /x/; $val',
     },
     0x121 => [
         {
@@ -1206,6 +1366,7 @@ my %faceCategories = (
         Count => 36,
         PrintConv => '$val =~ tr/012 /RGB/d; join " ", $val =~ /....../g',
     },
+    # 0x141 - int16u[2] Bit depth? "14 42" for 14-bit RAF and "16 48" for 16-bit RAF
     0x2000 => { #IB
         Name => 'WB_GRGBLevelsAuto',
         Format => 'int16u',
@@ -1363,6 +1524,7 @@ my %faceCategories = (
     0xf007 => {
         Name => 'StripOffsets',
         IsOffset => 1,
+        IsImageData => 1,
         OffsetPair => 0xf008,  # point to associated byte counts
     },
     0xf008 => {
@@ -1377,6 +1539,8 @@ my %faceCategories = (
     0xf00e => 'WB_GRBLevels',
     0xf00f => 'ChromaticAberrationParams', # (rational64s[23])
     0xf010 => 'VignettingParams', #9 (rational64s[31 or 64])
+    # 0xf013 - int32u[3] same as 0xf00d
+    # 0xf014 - int32u[3] - also related to WhiteBalance
 );
 
 # information found in FFMV atom of MOV videos
@@ -1423,6 +1587,31 @@ my %faceCategories = (
         Format => 'rational64s',
         PrintConv => '$val ? sprintf("%+.1f", $val) : 0',
     },
+);
+
+# tags in RAF M-RAW header (ref PH)
+%Image::ExifTool::FujiFilm::MRAW = (
+    PROCESS_PROC => \&ProcessMRAW,
+    GROUPS => { 0 => 'RAF', 1 => 'M-RAW', 2 => 'Image' },
+    FORMAT => 'int32u',
+    TAG_PREFIX => 'MRAW',
+    NOTES => q{
+        Tags extracted from the M-RAW header of multi-image RAF files.  The family 1
+        group name for these tags is "M-RAW".  Additional metadata may be extracted
+        from the embedded RAW images with the ExtractEmbedded option.
+    },
+    0x2001 => { Name => 'RawImageNumber', Format => 'int32u' },
+    # 0x2003 - seen "0 100", "-300 100" and "300 100" for a sequence of 3 images
+    0x2003 => { Name => 'ExposureCompensation', Format => 'rational32s', Unknown => 1, Hidden => 1, PrintConv => 'sprintf("%+.2f",$val)' },
+    # 0x2004 - (same value as 3 in all my samples)
+    0x2004 => { Name => 'ExposureCompensation2', Format => 'rational32s', Unknown => 1, Hidden => 1, PrintConv => 'sprintf("%+.2f",$val)' },
+    # 0x2005 - seen "10 1600", "10 6800", "10 200", "10 35000" etc
+    0x2005 => { Name => 'ExposureTime', Format => 'rational64u', PrintConv => 'Image::ExifTool::Exif::PrintExposureTime($val)' },
+    # 0x2006 - seen "450 100", "400 100" (all images in RAF have same value)
+    0x2006 => { Name => 'FNumber', Format => 'rational64u', PrintConv => 'Image::ExifTool::Exif::PrintFNumber($val)' },
+    # 0x2007 - seen 200, 125, 250, 2000
+    0x2007 => 'ISO',
+    # 0x2008 - seen 0, 65536
 );
 
 #------------------------------------------------------------------------------
@@ -1496,7 +1685,7 @@ sub ProcessFujiDir($$$)
     $raf->Read($buff, 4) or return 0;
     my $entries = unpack 'N', $buff;
     $entries < 256 or return 0;
-    $et->Options('Verbose') and $et->VerboseDir('Fuji', $entries);
+    $et->VerboseDir('Fuji', $entries);
     SetByteOrder('MM');
     my $pos = $offset + 4;
     for ($index=0; $index<$entries; ++$index) {
@@ -1529,6 +1718,68 @@ sub ProcessFujiDir($$$)
 }
 
 #------------------------------------------------------------------------------
+# get information from FujiFilm M-RAW header
+# Inputs: 0) ExifTool ref, 1) dirInfo ref, 2) tag table ref
+# Returns: 1 if this was a valid M-RAW header
+sub ProcessMRAW($$$)
+{
+    my ($et, $dirInfo, $tagTablePtr) = @_;
+    return 1 if $$et{DOC_NUM};
+    my $dataPt = $$dirInfo{DataPt};
+    my $dataPos = $$dirInfo{DataPos};
+    my $dataLen = length $$dataPt;
+    $dataLen < 44 and $et->Warn('Short M-RAW header'), return 0;
+    $$dataPt =~ /^FUJIFILMM-RAW  / or $et->Warn('Bad M-RAW header'), return 0;
+    my $ver = substr($$dataPt, 16, 4);
+    $et->VerboseDir("M-RAW $ver", undef, $dataLen);
+    SetByteOrder('MM');
+    my $size = Get16u($dataPt, 40); # (these are just a guess - PH)
+    my $num = Get16u($dataPt, 42);
+    my $pos = 44;
+    my ($i, $n);
+    for ($n=0; ; ++$n) {
+        my $end = $pos + 16 + $size;
+        last if $end > $dataLen;
+        my $rafStart = Get64u($dataPt, $pos);
+        my $rafLen = Get64u($dataPt, $pos+8);
+        $pos += 16;  # skip offset/size fields
+        $$et{DOC_NUM} = ++$$et{DOC_COUNT} if $pos > 60;
+        $et->VPrint(0, "$$et{INDENT}(Raw image $n parameters: $size bytes, $num entries)\n");
+        for ($i=0; $i<$num; ++$i) {
+            last if $pos + 4 > $end;
+            my $tag = Get16u($dataPt, $pos);
+            my $size = Get16u($dataPt, $pos+2);
+            $pos += 4;
+            last if $pos + $size > $end;
+            $et->HandleTag($tagTablePtr, $tag, undef,
+                DataPt  => $dataPt,
+                DataPos => $dataPos,
+                Start   => $pos,
+                Size    => $size,
+            );
+            $pos += $size;
+        }
+        if ($rafStart and $et->Options('ExtractEmbedded')) {
+            if ($et->Options('Verbose')) {
+                my $msg = sprintf("$$et{INDENT}(RAW image $n data: Start=0x%x, Length=0x%x)\n",$rafStart,$rafLen);
+                $et->VPrint(0, $msg);
+            }
+            my $raf = $$et{RAF};
+            my $tell = $raf->Tell();
+            my $order = GetByteOrder();
+            my $fujiWidth = $$et{FujiWidth};
+            $raf->Seek($rafStart, 0) or next;
+            ProcessRAF($et, { RAF => $raf, Base => $rafStart });
+            $$et{FujiWidth} = $fujiWidth;
+            SetByteOrder($order);
+            $raf->Seek($tell, 0);
+        }
+    }
+    delete $$et{DOC_NUM};
+    return 1;
+}
+
+#------------------------------------------------------------------------------
 # write information to FujiFilm RAW file (RAF)
 # Inputs: 0) ExifTool object reference, 1) dirInfo reference
 # Returns: 1 on success, 0 if this wasn't a valid RAF file, or -1 on write error
@@ -1543,10 +1794,12 @@ sub WriteRAF($$)
     my $ver = substr($hdr, 0x3c, 4);
     $ver =~ /^\d{4}$/ or $testedRAF{$ver} or return 0;
 
+    # get position and size of M-RAW header
+    my ($mpos, $mlen) = unpack('x72NN', $hdr);
     # get the position and size of embedded JPEG
     my ($jpos, $jlen) = unpack('x84NN', $hdr);
     # check to be sure the JPEG starts in the expected location
-    if ($jpos > 0x94 or $jpos < 0x68 or $jpos & 0x03) {
+    if (($mpos > 0x94 or $jpos > 0x94 + $mlen) or $jpos < 0x68 or $jpos & 0x03) {
         $et->Error("Unsupported or corrupted RAF image (version $ver)");
         return 1;
     }
@@ -1560,12 +1813,33 @@ sub WriteRAF($$)
         $et->Error('Error reading RAF meta information');
         return 1;
     }
+    if ($mpos) {
+        if ($mlen != 0x11c) {
+            $et->Error('Unsupported M-RAW header (please submit sample for testing)');
+            return 1;
+        }
+        # read M-RAW header and add to file header
+        my $mraw;
+        unless ($raf->Seek($mpos, 0) and $raf->Read($mraw, $mlen) == $mlen) {
+            $et->Error('Error reading M-RAW header');
+            return 1;
+        }
+        $hdr .= $mraw;
+        # verify that the 1st raw image offset is zero, and that the 1st raw image
+        # length is the same as the 2nd raw image offset
+        unless (substr($hdr, 0xc0, 8) eq "\0\0\0\0\0\0\0\0" and
+                substr($hdr, 0xc8, 8) eq substr($hdr, 0x110, 8))
+        {
+            $et->Error('Unexpected layout of M-RAW header');
+            return 1;
+        }
+    }
     # use same write directories as JPEG
     $et->InitWriteDirs('JPEG');
     # rewrite the embedded JPEG in memory
     my %jpegInfo = (
         Parent  => 'RAF',
-        RAF     => new File::RandomAccess(\$jpeg),
+        RAF     => File::RandomAccess->new(\$jpeg),
         OutFile => \$outJpeg,
     );
     $$et{FILE_TYPE} = 'JPEG';
@@ -1604,12 +1878,28 @@ sub WriteRAF($$)
     }
     # calculate offset difference due to change in JPEG size
     my $ptrDiff = length($outJpeg) + length($pad) - ($jlen + $oldPadLen);
-    # update necessary pointers in header
-    foreach $offset (0x5c, 0x64, 0x78, 0x80) {
+    # update necessary pointers in header (0xcc and higher in M-RAW header)
+    foreach $offset (0x5c, 0x64, 0x78, 0x80, 0xcc, 0x114, 0x164) {
         last if $offset >= $jpos;   # some versions have a short header
         my $oldPtr = Get32u(\$hdr, $offset);
         next unless $oldPtr;        # don't update if pointer is zero
-        Set32u($oldPtr + $ptrDiff, \$hdr, $offset);
+        my $newPtr = $oldPtr + $ptrDiff;
+        if ($newPtr < 0 or $newPtr > 0xffffffff) {
+            $offset < 0xcc and $et->Error('Invalid offset in RAF header'), return 1;
+            # assume values at 0xcc and greater are 8-byte integers (NC)
+            # and adjust high word if necessary
+            my $high = Get32u(\$hdr, $offset-4);
+            if ($newPtr < 0) {
+                $high -= 1;
+                $newPtr += 0xffffffff + 1;
+                $high < 0 and $et->Error('RAF header offset error'), return 1;
+            } else {
+                $high += 1;
+                $newPtr -= 0xffffffff + 1;
+            }
+            Set32u($high, \$hdr, $offset-4);
+        }
+        Set32u($newPtr, \$hdr, $offset);
     }
     # write the new header
     my $outfile = $$dirInfo{OutFile};
@@ -1637,36 +1927,44 @@ sub ProcessRAF($$)
     my ($buff, $jpeg, $warn, $offset);
 
     my $raf = $$dirInfo{RAF};
-    $raf->Read($buff,0x5c) == 0x5c    or return 0;
+    my $base = $$dirInfo{Base} || 0;
+    $raf->Read($buff,0x70) == 0x70    or return 0;
     $buff =~ /^FUJIFILM/              or return 0;
+    # get position and size of M-RAW header and jpeg preview
+    my ($mpos, $mlen) = unpack('x72NN', $buff);
     my ($jpos, $jlen) = unpack('x84NN', $buff);
     $jpos & 0x8000                   and return 0;
-    $raf->Seek($jpos, 0)              or return 0;
-    $raf->Read($jpeg, $jlen) == $jlen or return 0;
-
-    $et->SetFileType();
-    $et->FoundTag('RAFVersion', substr($buff, 0x3c, 4));
+    if ($jpos) {
+        $raf->Seek($jpos+$base, 0)        or return 0;
+        $raf->Read($jpeg, $jlen) == $jlen or return 0;
+    }
+    SetByteOrder('MM');
+    $et->SetFileType() unless $$et{DOC_NUM};
+    my $tbl = GetTagTable('Image::ExifTool::FujiFilm::RAFHeader');
+    $et->ProcessDirectory({ DataPt => \$buff, DirName => 'RAFHeader', Base => $base }, $tbl);
 
     # extract information from embedded JPEG
     my %dirInfo = (
         Parent => 'RAF',
-        RAF    => new File::RandomAccess(\$jpeg),
+        RAF    => File::RandomAccess->new(\$jpeg),
     );
-    $$et{BASE} += $jpos;
-    my $rtnVal = $et->ProcessJPEG(\%dirInfo);
-    $$et{BASE} -= $jpos;
-    $et->FoundTag('PreviewImage', \$jpeg) if $rtnVal;
-
+    if ($jpos) {
+        $$et{BASE} += $jpos + $base;
+        my $ok = $et->ProcessJPEG(\%dirInfo);
+        $$et{BASE} -= $jpos + $base;
+        $et->FoundTag('PreviewImage', \$jpeg) if $ok;
+    }
     # extract information from Fuji RAF and TIFF directories
     my ($rafNum, $ifdNum) = ('','');
-    foreach $offset (0x5c, 0x64, 0x78, 0x80) {
-        last if $offset >= $jpos;
-        unless ($raf->Seek($offset, 0) and $raf->Read($buff, 4)) {
+    foreach $offset (0x48, 0x5c, 0x64, 0x78, 0x80) {
+        last if $jpos and $offset >= $jpos;
+        unless ($raf->Seek($offset+$base, 0) and $raf->Read($buff, 8)) {
             $warn = 1;
             last;
         }
-        my $start = unpack('N',$buff);
+        my ($start, $len) = unpack('N2',$buff);
         next unless $start;
+        $start += $base;
         if ($offset == 0x64 or $offset == 0x80) {
             # parse FujiIFD directory
             %dirInfo = (
@@ -1676,9 +1974,20 @@ sub ProcessRAF($$)
             $$et{SET_GROUP1} = "FujiIFD$ifdNum";
             my $tagTablePtr = GetTagTable('Image::ExifTool::FujiFilm::IFD');
             # this is TIFF-format data only for some models, so no warning if it fails
-            $et->ProcessTIFF(\%dirInfo, $tagTablePtr, \&Image::ExifTool::ProcessTIFF);
+            unless ($et->ProcessTIFF(\%dirInfo, $tagTablePtr, \&Image::ExifTool::ProcessTIFF)) {
+                # do hash of image data if necessary
+                $et->ImageDataHash($raf, $len, 'raw') if $$et{ImageDataHash} and $raf->Seek($start,0);
+            }
             delete $$et{SET_GROUP1};
             $ifdNum = ($ifdNum || 1) + 1;
+        } elsif ($offset == 0x48) {
+            $$et{VALUE}{FileType} .= ' (M-RAW)';
+            if ($raf->Seek($start, 0) and $raf->Read($buff, $mlen) == $mlen) {
+                my $tbl = GetTagTable('Image::ExifTool::FujiFilm::MRAW');
+                $et->ProcessDirectory({ DataPt => \$buff, DataPos => $start, DirName => 'M-RAW' }, $tbl);
+            } else {
+                $et->Warn('Error reading M-RAW header');
+            }
         } else {
             # parse RAF directory
             %dirInfo = (
@@ -1687,14 +1996,17 @@ sub ProcessRAF($$)
             );
             $$et{SET_GROUP1} = "RAF$rafNum";
             my $tagTablePtr = GetTagTable('Image::ExifTool::FujiFilm::RAF');
-            $et->ProcessDirectory(\%dirInfo, $tagTablePtr) or $warn = 1;
+            if ($et->ProcessDirectory(\%dirInfo, $tagTablePtr)) {
+                $rafNum = ($rafNum || 1) + 1;
+            } else {
+                $warn = 1;
+            }
             delete $$et{SET_GROUP1};
-            $rafNum = ($rafNum || 1) + 1;
         }
     }
     $warn and $et->Warn('Possibly corrupt RAF information');
 
-    return $rtnVal;
+    return 1;
 }
 
 1; # end
@@ -1717,7 +2029,7 @@ FujiFilm maker notes in EXIF information, and to read/write FujiFilm RAW
 
 =head1 AUTHOR
 
-Copyright 2003-2022, Phil Harvey (philharvey66 at gmail.com)
+Copyright 2003-2026, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

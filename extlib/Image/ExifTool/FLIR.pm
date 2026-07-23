@@ -24,7 +24,7 @@ use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::Exif;
 use Image::ExifTool::GPS;
 
-$VERSION = '1.21';
+$VERSION = '1.23';
 
 sub ProcessFLIR($$;$);
 sub ProcessFLIRText($$$);
@@ -241,7 +241,8 @@ my %float8g = ( Format => 'float', PrintConv => 'sprintf("%.8g",$val)' );
     16.1 => {
         Name => 'RawThermalImage',
         Groups => { 2 => 'Preview' },
-        RawConv => '\$$self{RawThermalImage}',
+        # make a copy in case we want to extract more of them with -ee2
+        RawConv => 'my $copy = $$self{RawThermalImage}; \$copy',
     },
 );
 
@@ -272,7 +273,7 @@ my %float8g = ( Format => 'float', PrintConv => 'sprintf("%.8g",$val)' );
     },
     16.1 => {
         Name => 'GainDeadMapImage',
-        RawConv => '\$$self{GainDeadMapImage}',
+        RawConv => 'my $copy = \$$self{GainDeadMapImage}; \$copy',
     },
 );
 
@@ -303,7 +304,7 @@ my %float8g = ( Format => 'float', PrintConv => 'sprintf("%.8g",$val)' );
     },
     16.1 => {
         Name => 'CoarseMapImage',
-        RawConv => '\$$self{CoarseMapImage}',
+        RawConv => 'my $copy = \$$self{CoarseMapImage}; \$copy',
     },
 );
 
@@ -334,7 +335,7 @@ my %float8g = ( Format => 'float', PrintConv => 'sprintf("%.8g",$val)' );
     },
     20.1 => {
         Name => 'PaintImage',
-        RawConv => '\$$self{PaintImage}',
+        RawConv => 'my $copy = \$$self{PaintImage}; \$copy',
     },
 );
 
@@ -475,10 +476,10 @@ my %float8g = ( Format => 'float', PrintConv => 'sprintf("%.8g",$val)' );
     GROUPS => { 0 => 'APP1', 2 => 'Image' },
     PROCESS_PROC => \&ProcessMeasInfo,
     FORMAT => 'int16u',
-    VARS => { NO_ID => 1 },
+    VARS => { ID_FMT => 'none' },
     NOTES => q{
         Tags listed below are only for the first measurement tool, however multiple
-        measurements may be added, and information is extracted for all of them. 
+        measurements may be added, and information is extracted for all of them.
         Tags for subsequent measurements are generated as required with the prefixes
         "Meas2", "Meas3", etc.
     },
@@ -547,7 +548,7 @@ my %float8g = ( Format => 'float', PrintConv => 'sprintf("%.8g",$val)' );
 %Image::ExifTool::FLIR::TextInfo = (
     GROUPS => { 0 => 'APP1', 2 => 'Image' },
     PROCESS_PROC => \&ProcessFLIRText,
-    VARS => { NO_ID => 1 },
+    VARS => { ID_FMT => 'none' },
     Label0 => { },
     Value0 => { },
     Label1 => { },
@@ -563,7 +564,7 @@ my %float8g = ( Format => 'float', PrintConv => 'sprintf("%.8g",$val)' );
 %Image::ExifTool::FLIR::ParamInfo = (
     GROUPS => { 0 => 'APP1', 2 => 'Image' },
     PROCESS_PROC => \&ProcessFLIRText,
-    VARS => { NO_ID => 1 },
+    VARS => { ID_FMT => 'none' },
     Generated => {
         Name => 'DateTimeGenerated',
         Description => 'Date/Time Generated',
@@ -1467,7 +1468,7 @@ sub ProcessMeasInfo($$$)
 sub ProcessFLIR($$;$)
 {
     my ($et, $dirInfo, $tagTablePtr) = @_;
-    my $raf = $$dirInfo{RAF} || new File::RandomAccess($$dirInfo{DataPt});
+    my $raf = $$dirInfo{RAF} || File::RandomAccess->new($$dirInfo{DataPt});
     my $verbose = $et->Options('Verbose');
     my $out = $et->Options('TextOut');
     my $base = $raf->Tell();
@@ -1632,7 +1633,7 @@ Systems Inc. thermal image files (FFF, FPF and JPEG format).
 
 =head1 AUTHOR
 
-Copyright 2003-2022, Phil Harvey (philharvey66 at gmail.com)
+Copyright 2003-2026, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

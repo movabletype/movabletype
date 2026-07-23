@@ -114,7 +114,7 @@ our %Requirements = (
     },
     "Encode" => {
         label     => "Encode is required to handle multibyte characters correctly.",
-        perl_core => 2.44,
+        perl_core => "2.44_01",
         required  => 1,
         tags      => ["Base"],
         url       => "https://metacpan.org/pod/Encode",
@@ -173,7 +173,7 @@ our %Requirements = (
         url    => "https://metacpan.org/pod/HTTP::Request",
     },
     "Image::ExifTool" => {
-        extlib => "12.50",
+        extlib => 13.55,
         label  => "Image::ExifTool is used to manipulate image metadata.",
         tags   => ["Image"],
         url    => "https://metacpan.org/pod/Image::ExifTool",
@@ -237,7 +237,7 @@ our %Requirements = (
     },
     "List::Util" => {
         label     => "List::Util is required to manipulate a list of numbers.",
-        perl_core => 1.23,
+        perl_core => 1.25,
         required  => 1,
         tags      => ["Base"],
         url       => "https://metacpan.org/pod/List::Util",
@@ -258,13 +258,13 @@ our %Requirements = (
         url   => "https://metacpan.org/pod/Log::Minimal",
     },
     "LWP::Protocol::https" => {
-        extlib => "6.10",
+        extlib => 6.15,
         label  => "LWP::Protocol::https is optional. It provides https support for LWP::UserAgent.",
         tags   => ["HTTP"],
         url    => "https://metacpan.org/pod/LWP::Protocol::https",
     },
     "LWP::UserAgent" => {
-        extlib => 6.67,
+        extlib => 6.83,
         label  => "LWP::UserAgent is optional. It is used to fetch information from local and external servers.",
         tags   => ["HTTP"],
         url    => "https://metacpan.org/pod/LWP::UserAgent",
@@ -332,7 +332,7 @@ our %Requirements = (
     },
     "Scalar::Util" => {
         label     => "Scalar::Util is required to avoid memory leaks.",
-        perl_core => 1.23,
+        perl_core => 1.25,
         tags      => ["Base"],
         url       => "https://metacpan.org/pod/Scalar::Util",
         version   => "1.10",
@@ -484,7 +484,7 @@ our %ExtLibOnly = (
         used_in => ["MT"],
     },
     "Crypt::URandom" => {
-        extlib  => 0.36,
+        extlib  => 0.55,
         url     => "https://metacpan.org/pod/Crypt::URandom",
         used_in => ["MT::Util::UniqueID"],
     },
@@ -566,17 +566,17 @@ our %ExtLibOnly = (
         url      => "https://metacpan.org/pod/HTML::Template",
     },
     "HTTP::Cookies" => {
-        extlib  => "6.10",
-        url     => "https://metacpan.org/pod/HTTP::Cookies",
-        used_in => ["LWP::UserAgent"],
+        extlib   => "6.10",
+        not_used => 1,
+        url      => "https://metacpan.org/pod/HTTP::Cookies",
     },
     "HTTP::Daemon" => {
-        extlib   => 6.14,
+        extlib   => 6.17,
         not_used => 1,
         url      => "https://metacpan.org/pod/HTTP::Daemon",
     },
     "HTTP::Date" => {
-        extlib  => 6.05,
+        extlib  => 6.08,
         url     => "https://metacpan.org/pod/HTTP::Date",
         used_in => ["LWP::UserAgent"],
     },
@@ -670,7 +670,7 @@ our %ExtLibOnly = (
         used_in => ["MT"],
     },
     "Net::OAuth" => {
-        extlib   => 0.28,
+        extlib   => 0.31,
         not_used => 1,
         url      => "https://metacpan.org/pod/Net::OAuth",
     },
@@ -690,6 +690,11 @@ our %ExtLibOnly = (
         extlib  => "0.2800",
         url     => "https://metacpan.org/pod/Sub::Uplevel",
         used_in => ["constant::override"],
+    },
+    "Text::CSV" => {
+        extlib  => 2.06,
+        url     => "https://metacpan.org/pod/Text::CSV",
+        used_in => ["MT::App"],
     },
     "Time::Local" => {
         extlib    => "1.30",
@@ -906,12 +911,12 @@ sub check_imglib {
         webp => 'libwebp',
     );
     my @libpaths = split / /, $Config::Config{libpth};
-    my $re = join '|', keys %lib;
+    my $re       = join '|', keys %lib;
 
 FORMAT:
     for my $libpath (@libpaths) {
         opendir my $dh, $libpath or next;
-        while(my $file = readdir $dh) {
+        while (my $file = readdir $dh) {
             next unless $file =~ /^lib($re)\.(?:so|dll|a)(?:(?:\.[0-9]+)*)$/;
             $found_imglib{$1} = delete $lib{$1};
             last FORMAT unless %lib;
