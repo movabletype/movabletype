@@ -35,8 +35,6 @@ sub system_check {
 
     MT::Util::SystemCheck->check_all(\%param);
 
-    $param{is_cloud} = eval { require MT::Cloud::App::CMS; 1 };
-
     $app->add_breadcrumb( $app->translate('System Information') );
 
     $app->load_tmpl( 'system_check.tmpl', \%param );

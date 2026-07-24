@@ -140,7 +140,6 @@
 </ul>
 
 <ul id="path-info" class="list-unstyled">
-<mt:unless name="is_cloud">
     <li><strong><__trans phrase="Current working directory:"></strong> <code><mt:var name="current_working_directory" escape="html"></code></li>
     <li><strong><__trans phrase="MT home directory:"></strong> <code><mt:var name="mt_home" escape="html"></code></li>
     <li><strong><__trans phrase="Operating system:"></strong> <code><mt:var name="os" escape="html"></code></li>
@@ -150,7 +149,6 @@
         <mt:var name="__value__" escape="html"><br />
     </mt:loop>
     </code></li>
-</mt:unless>
 
     <mt:if name="web_server">
     <li><strong><__trans phrase="Web server:"></strong> <code><mt:var name="web_server" escape="html"></code></li>
