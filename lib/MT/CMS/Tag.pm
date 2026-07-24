@@ -396,6 +396,9 @@ sub post_delete {
 }
 
 sub build_tag_table {
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::warning(since => '9.3.0');
+
     my $app = shift;
     my (%args) = @_;
 
