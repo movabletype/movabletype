@@ -40,13 +40,12 @@
               </td>
             </mt:if>
             <td class="panel-description">
-              <mt:ignore><!-- No, the duplicate escape modifiers below is not a typo. --></mt:ignore>
               <mt:if name="link">
                 <span class="view-site-link">
                   <a href="<mt:var name="link" escape="html">" target="_blank">
                     <img
                       src="<mt:var name="static_uri">images/spacer.gif"
-                      title="<__trans phrase="Go to [_1]" params="<mt:var name="label" escape="html" escape="html">">"
+                      title="<__trans phrase="Go to [_1]" params="<mt:var name="label" escape="html">">"
                       width="13" height="9" alt=""
                     >
                   </a>
