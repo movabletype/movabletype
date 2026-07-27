@@ -88,6 +88,7 @@ themes/broken_blog_theme
 #?package=MTAWS ^mt-cp.cgi
 #?package=MTAWS ^addons/Community.pack
 #?package=MTAWS ^mt-static/addons/Community.pack
+#?package=MTAWS ^addons/LicenseVerification.pack
 #?package=MTAWS ^plugins/LicenseVerification
 
 #?package=MTOS ^addons
@@ -120,6 +121,7 @@ themes/broken_blog_theme
 #?package=MTOS ^mt-static/addons/Sync.pack
 #?package=MTOS ^addons/AWS.pack
 #?package=MTOS ^plugins/P-M-SizeLimit
+#?package=MTOS ^addons/LicenseVerification.pack
 #?package=MTOS ^plugins/LicenseVerification
 
 #?package=MTCOM ^COPYING
@@ -152,6 +154,7 @@ themes/broken_blog_theme
 #?package=MTCOM ^mt-static/addons/Sync.pack
 #?package=MTCOM ^addons/AWS.pack
 #?package=MTCOM ^plugins/P-M-SizeLimit
+#?package=MTCOM ^addons/LicenseVerification.pack
 #?package=MTCOM ^plugins/LicenseVerification
 
 #?package=MTA ^COPYING
@@ -178,6 +181,7 @@ themes/broken_blog_theme
 #?package=MTAAWS ^mt-cp.cgi
 #?package=MTAAWS ^addons/Community.pack
 #?package=MTAAWS ^mt-static/addons/Community.pack
+#?package=MTAAWS ^addons/LicenseVerification.pack
 #?package=MTAAWS ^plugins/LicenseVerification
 
 #?package=MTCLOUD ^COPYING
@@ -191,6 +195,7 @@ themes/broken_blog_theme
 #?package=MTCLOUD ^addons/Community.pack
 #?package=MTCLOUD ^mt-static/addons/Community.pack
 #?package=MTCLOUD ^addons/Cloud.pack/tools/Cloud.pack/cloud-log
+#?package=MTCLOUD ^addons/LicenseVerification.pack
 #?package=MTCLOUD ^plugins/LicenseVerification
 
 #?package=MTP ^COPYING
@@ -221,6 +226,7 @@ themes/broken_blog_theme
 #?pacakge=MTP ^plugins/mixiComment
 #?pacakge=MTP ^mt-static/plugins/mixiComment
 #?package=MTP ^plugins/P-M-SizeLimit
+#?package=MTP ^addons/LicenseVerification.pack
 #?package=MTP ^plugins/LicenseVerification
 
 #?package=MTPA ^COPYING
@@ -238,6 +244,7 @@ themes/broken_blog_theme
 #?pacakge=MTPA ^plugins/mixiComment
 #?pacakge=MTPA ^mt-static/plugins/mixiComment
 #?package=MTPA ^plugins/P-M-SizeLimit
+#?package=MTPA ^addons/LicenseVerification.pack
 #?package=MTPA ^plugins/LicenseVerification
 
 #?package=MTPCLOUD ^COPYING
@@ -252,6 +259,7 @@ themes/broken_blog_theme
 #?package=MTPCLOUD ^mt-static/addons/Community.pack
 #?package=MTPCLOUD ^plugins/PremiumSearch
 #?package=MTPCLOUD ^plugins/PremiumOpenSearch
+#?package=MTPCLOUD ^addons/LicenseVerification.pack
 #?package=MTPCLOUD ^plugins/LicenseVerification
 
 #?language=ja ^plugins/zemanta
