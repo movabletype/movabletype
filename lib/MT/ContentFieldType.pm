@@ -1140,6 +1140,8 @@ sub _tags_registry {
         site_data_import_handler =>
             '$Core::MT::ContentFieldType::Tags::site_data_import_handler',
         ss_validator => '$Core::MT::ContentFieldType::Tags::ss_validator',
+        pre_save_handler =>
+            '$Core::MT::ContentFieldType::Tags::pre_save_handler',
         tag_handler  => '$Core::MT::ContentFieldType::Tags::tag_handler',
         list_props   => {
             tags => {

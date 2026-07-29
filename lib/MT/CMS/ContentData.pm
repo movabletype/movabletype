@@ -1180,6 +1180,28 @@ sub delete {
     return $app->call_return;
 }
 
+sub pre_save {
+    my ( $eh, $app, $obj, $orig_obj ) = @_;
+
+    my $content_field_types = $app->registry('content_field_types');
+    my $content_type = $obj->content_type;
+
+    foreach my $f ( @{ $content_type->fields } ) {
+        my $field_type = $content_field_types->{ $f->{type} };
+
+        if ( my $handler = $field_type->{pre_save_handler} ) {
+            if ( !ref $handler ) {
+                $handler = $app->handler_to_coderef($handler);
+            }
+            if ( 'CODE' eq ref $handler ) {
+                return 0 unless $handler->( $app, $f, $obj );
+            }
+        }
+    }
+
+    return 1;
+}
+
 sub post_save {
     my ( $eh, $app, $obj, $orig_obj ) = @_;
 

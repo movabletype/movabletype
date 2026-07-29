@@ -151,15 +151,6 @@ sub ss_validator {
         return $app->translate( 'Cannot create tags [_1] in "[_2]" field.',
             $tag_names, $field_label );
     }
-    else {
-        for my $tag_name (@invalid_tag_names) {
-            my $tag = MT::Tag->new( name => $tag_name );
-            $tag->save
-                or return $app->translate( 'Cannot create tag "[_1]": [_2]',
-                $tag_name, $tag->errstr );
-            $valid_tag_hash{$tag_name} = $tag->id;
-        }
-    }
 
     my $type_label        = 'tag';
     my $type_label_plural = 'tags';
@@ -167,7 +158,6 @@ sub ss_validator {
         $type_label, $type_label_plural );
     return $error if $error;
 
-    @$data = map { $valid_tag_hash{$_} } @$data;
     return;
 }
 
@@ -376,6 +366,55 @@ sub site_data_import_handler {
     my @new_tag_ids = map { $_->id }
         grep {$_} map { $all_objects->{"MT::Tag#$_"} } @old_tag_ids;
     @new_tag_ids ? \@new_tag_ids : undef;
+}
+
+sub pre_save_handler {
+    my ( $app, $field_data, $obj ) = @_;
+
+    my $options     = $field_data->{options} || {};
+    my $field_label = $options->{label};
+    my $data        = $obj->data();
+    my $vals        = $data->{ $field_data->{id} };
+
+    my $iter = MT::Tag->load_iter( { name => @{ $vals || [] } ? $vals : 0 },
+        { binary => { name => 1 }, fetchonly => [ 'id', 'name' ] } );
+    my %valid_tag_hash;    # name => id
+    while ( my $tag = $iter->() ) {
+        $valid_tag_hash{ $tag->name } = $tag->id;
+    }
+
+    my @invalid_tag_names = grep { !$valid_tag_hash{$_} } @$vals;
+    if ( !$options->{can_add} && @invalid_tag_names ) {
+        # Checked at ss_validator as well
+        my $tag_names = join ', ', sort(@invalid_tag_names);
+        return $app->trans_error( 'Cannot create tags [_1] in "[_2]" field.',
+            $tag_names, $field_label );
+    }
+
+    for my $tag_name ( @invalid_tag_names ) {
+        my $tag = MT::Tag->new( name => $tag_name );
+        unless ( $tag->save ) {
+            my $message = $app->translate( 'Cannot create tag "[_1]": [_2]',
+                $tag_name, $tag->errstr );
+            require MT::Log;
+            $app->log(
+                {   message  => $message,
+                    class    => 'tag',
+                    category => 'new',
+                    level    => MT::Log::ERROR(),
+                }
+            );
+
+            return $app->error($message);
+        }
+
+        $valid_tag_hash{$tag_name} = $tag->id;
+    }
+
+    @$vals = map { $valid_tag_hash{$_} } @$vals;
+    $obj->data($data);
+
+    return 1;
 }
 
 1;
