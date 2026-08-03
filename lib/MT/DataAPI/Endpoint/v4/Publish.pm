@@ -25,19 +25,19 @@ DESCRIPTION
                 in          => 'query',
                 name        => 'blogId',
                 schema      => { type => 'integer' },
-                description => 'Target site ID. Either blogID or blogIds must be specified.',
+                description => 'Site ID to specify the time zone for startTime parameter',
             },
             {
                 in          => 'query',
                 name        => 'blogIds',
                 schema      => { type => 'string' },
-                description => 'The comma separated site ID list. Either blogID or blogIds must be specified.',
+                description => 'Target site ID list in a comma separated values. Either ids or blogIds must be specified.',
             },
             {
                 in          => 'query',
                 name        => 'ids',
                 schema      => { type => 'string' },
-                description => 'The comma separated content data ID list. You should specifiy this parameter to next call if this endpoint returns ‘Rebuilding’ status and you want to continue to publish.',
+                description => 'The comma separated content data ID list.',
             },
             {
                 in          => 'query',
@@ -60,11 +60,11 @@ DESCRIPTION
                                 },
                                 startTime => {
                                     type        => 'string',
-                                    description => "The string of build start time. You should specifiy this parameter to next call if this endpoint returns 'Rebuilding' status and you want to continue to publish.",
+                                    description => "The string of build start time in GMT.",
                                 },
                                 restIds => {
                                     type          => 'string',
-                                    'description' => "The comma separated content data ID list. You should specifiy this parameter to next call if this endpoint returns 'Rebuilding' status and you want to continue to publish.",
+                                    'description' => "The comma separated content data ID list. You should copy the list to ids parameter for next call if this endpoint returns 'Rebuilding' status and you want to continue to publish.",
                                 },
                             },
                         },
