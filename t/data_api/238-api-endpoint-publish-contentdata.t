@@ -49,7 +49,7 @@ test_data_api([
             },
         ],
         next_phase_url => qr{/publish/contentData\?.*ids=\d},
-        complete => sub { 
+        complete => sub {
             my ($data, $body, $headers) = @_;
             my $res = decode_json($body);
             @rest_ids = split(',', $res->{restIds});
