@@ -11,7 +11,7 @@
   <mtapp:statusmsg
      id="saved"
      class="success">
-    <__trans phrase="You have added [_1] to your list of banned IP addresses." params="<mt:var name="saved" escape="html" escape="html">">
+    <__trans phrase="You have added [_1] to your list of banned IP addresses." params="<mt:var name="request.saved" escape="html">">
   </mtapp:statusmsg>
 </mt:if>
 <mt:if name="request.saved_deleted">
@@ -93,6 +93,7 @@
             jQuery('#ip-address').trigger('focus');
             return false;
         }
+        var ipAddress = jQuery('#ip-address').val();
         closeCreateMode();
 
         var returnArgs = '<mt:var name="script_url" escape="js">?<mt:var name="return_args" escape="js">';
@@ -107,14 +108,14 @@
                 blog_id: '<mt:var name="blog_id" escape="js">',
                 datasource: 'banlist',
                 forward_list: 1,
-                ip: jQuery('#ip-address').val(),
+                ip: ipAddress,
                 magic_token: '<mt:var name="magic_token" escape="js">'
             },
         }).done(function (data) {
             if (data.error) {
                 window.location.href = returnArgs + '&error_' + data.error + '=1';
             } else {
-                window.location.href = returnArgs + '&saved=1';
+                window.location.href = returnArgs + '&saved=' + encodeURIComponent(ipAddress);
             }
         }).fail(function () {
             window.location.href = returnArgs + '&error=1';
