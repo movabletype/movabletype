@@ -1440,6 +1440,7 @@ sub dump_table {
 
 sub skip_if_addon_exists {
     my ($self, $name) = @_;
+    $name .= '.pack' unless $name =~ /\.pack$/;
     my $config = "$MT_HOME/addons/$name/config.yaml";
     plan skip_all => "$config exists" if -f $config;
 }
@@ -1452,6 +1453,7 @@ sub skip_if_plugin_exists {
 
 sub skip_unless_addon_exists {
     my ($self, $name) = @_;
+    $name .= '.pack' unless $name =~ /\.pack$/;
     my $config = "$MT_HOME/addons/$name/config.yaml";
     plan skip_all => "$config does not exist" unless -f $config;
 }
@@ -1470,12 +1472,14 @@ sub plugin_exists {
 
 sub addon_exists {
     my ($self, $name) = @_;
+    $name .= '.pack' unless $name =~ /\.pack$/;
     my $config = "$MT_HOME/addons/$name/config.yaml";
     -f $config ? 1 : 0;
 }
 
 sub disable_addon {
     my ($self, $name) = @_;
+    $name .= '.pack' unless $name =~ /\.pack$/;
     my $config   = "$MT_HOME/addons/$name/config.yaml";
     my $disabled = "$config.disabled";
 
@@ -1489,6 +1493,7 @@ sub disable_addon {
 
 sub enable_addon {
     my ($self, $name) = @_;
+    $name .= '.pack' unless $name =~ /\.pack$/;
     my $config   = "$MT_HOME/addons/$name/config.yaml";
     my $disabled = "$config.disabled";
 
