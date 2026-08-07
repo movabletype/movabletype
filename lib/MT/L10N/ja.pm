@@ -2754,6 +2754,7 @@ use vars qw( @ISA %Lexicon );
 	'Error loading class [_1].' => '[_1]をロードできません。',
 	'Error loading class: [_1].' => 'クラスをロードできませんでした: [_1]',
 	'Error saving [_1] record # [_3]: [_2]...' => '[_1]のレコード(ID:[_3])を保存できませんでした: [_2]',
+	'Invalid parameters for upgrade function: [_1].' => '不正なパラメータでアップグレード機能を実行しようとしました: [_1]',
 	'Invalid upgrade function: [_1].' => '不正なアップグレード機能を実行しようとしました: [_1]',
 	'Upgrading database from version [_1].' => 'データベースをバージョン [_1]から更新しています...',
 	'Upgrading table for [_1] records...' => '[_1]のテーブルを更新しています...',
