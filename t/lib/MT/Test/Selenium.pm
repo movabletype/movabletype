@@ -316,7 +316,7 @@ sub request {
     if ( $method eq 'GET' ) {
         $request_url = $self->mt_url($params);
         $self->driver->get("$request_url");
-        $self->{content} = $self->driver->get_page_source;
+        $self->{content} = wait_until { $self->driver->get_page_source };
     }
     elsif ( $method eq 'POST' ) {
         $request_url = $self->mt_url;
@@ -355,7 +355,7 @@ sub request {
                 }
             }
         }
-        my $source = $self->driver->get_page_source;
+        my $source = wait_until { $self->driver->get_page_source };
         if ($submit) {
             $submit->click;
         }
