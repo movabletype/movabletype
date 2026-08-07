@@ -11,7 +11,7 @@ use URI::QueryParam;
 use Test::More;
 use JSON;
 use File::Basename;
-use Storable;
+use Clone;
 
 with qw(
     MT::Test::Role::Request
@@ -127,7 +127,7 @@ sub request {
     $self->{locations} = undef unless $is_redirect;
 
     # not to break params in a test
-    my $cloned_params = Storable::dclone($params);
+    my $cloned_params = Clone::clone($params);
 
     # Note that 302 redirect for SEC_FETCH_SITE=none causes SEC_FETCH_SITE=none again
     # On the other hand redirection by client side js always causes SEC_FETCH_SITE=same-origin
