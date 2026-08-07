@@ -10,6 +10,7 @@ our $test_env;
 BEGIN {
     $test_env = MT::Test::Env->new(
         DefaultLanguage => 'en_US',
+        PluginSwitch => { LicenseVerification => 0 },
     );
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
@@ -49,6 +50,7 @@ subtest 'Load system check' => sub {
             if ($c) {
                 my $label   = $c->label || $pack->{label};
                 $label      = $label->() if ref($label) eq 'CODE';
+                $label      = 'License' if $label eq 'LicenseVerification';
                 my $version = $c->version;
                 ok grep(/$label  $version/, @items), "$label version: $version";
                 $has_pack++;
