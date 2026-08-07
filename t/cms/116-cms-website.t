@@ -12,6 +12,8 @@ BEGIN {
         DefaultLanguage => 'en_US',    ## for now
     );
     $ENV{MT_CONFIG} = $test_env->config_file;
+
+    $test_env->skip_if_addon_exists('Cloud.pack');
 }
 
 use MT::Test;
