@@ -31,10 +31,6 @@ subtest 'add param basic' => sub {
     note explain($loop);
     my $cwd = cwd();
     my $expected = 3;
-    if (-e "$cwd/addons/Cloud.pack") {
-        # Comments plugins is automatically disabled if Cloud.pack exists
-        $expected--;
-    }
     if (-e "$cwd/plugins/Trackback" && $app->config->PluginSwitch->{Trackback}) {
         $expected++;
     }
