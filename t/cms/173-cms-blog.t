@@ -16,10 +16,6 @@ our $test_env;
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
-
-    # Move addons/Cloud.pack/config.yaml to config.yaml.disabled.
-    # An error occurs in save_community_prefs mode when Cloud.pack installed.
-    $test_env->skip_if_addon_exists('Cloud.pack');
 }
 
 use MT;
