@@ -228,6 +228,7 @@ themes/broken_blog_theme
 #?package=MTP ^plugins/P-M-SizeLimit
 #?package=MTP ^addons/LicenseVerification.pack
 #?package=MTP ^plugins/LicenseVerification
+#?package=MTP ^plugins/CopyThisEntry
 
 #?package=MTPA ^COPYING
 #?package=MTPA ^COPYRIGHT
@@ -246,6 +247,7 @@ themes/broken_blog_theme
 #?package=MTPA ^plugins/P-M-SizeLimit
 #?package=MTPA ^addons/LicenseVerification.pack
 #?package=MTPA ^plugins/LicenseVerification
+#?package=MTPA ^plugins/CopyThisEntry
 
 #?package=MTPCLOUD ^COPYING
 #?package=MTPCLOUD ^COPYRIGHT
@@ -261,6 +263,7 @@ themes/broken_blog_theme
 #?package=MTPCLOUD ^plugins/PremiumOpenSearch
 #?package=MTPCLOUD ^addons/LicenseVerification.pack
 #?package=MTPCLOUD ^plugins/LicenseVerification
+#?package=MTPCLOUD ^plugins/CopyThisEntry
 
 #?language=ja ^plugins/zemanta
 
