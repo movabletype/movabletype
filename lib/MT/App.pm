@@ -1813,7 +1813,7 @@ sub commenter_session_cookie_name {
     my $app               = shift;
     my $user_session_name = MT->config->UserSessionCookieName;
     if ( !MT->config->SingleCommunity ) {
-        my $blog = $app->blog or return;
+        my $blog = $app->blog or return '';
         my $blog_id = $blog->id;
         $user_session_name =~ s/%b/$blog_id/;
     }
