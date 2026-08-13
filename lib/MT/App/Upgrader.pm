@@ -669,10 +669,17 @@ sub run_actions {
     $app->{no_print_body} = 1;
     $app->send_http_header('text/plain');
 
-    my $install_mode = $app->param('installing');
+    if (eval { MT->model('author')->exist }) {
+        my ($author) = $app->login;
+        if (!$author) {
+            $app->response->{error} = $app->errstr || $app->translate('Invalid login.');
+            return $app->json_response;
+        }
 
-    if ( !$install_mode ) {
-        $app->login;
+        if ($app->config->RequireUpgradePermission && !$author->is_superuser) {
+            $app->response->{error} = $app->translate('No permissions.');
+            return $app->json_response;
+        }
     }
 
     my $schema = $app->{cfg}->SchemaVersion || 0;
@@ -698,7 +705,7 @@ sub run_actions {
         MT::Upgrade->init;
 
         local $MT::Upgrade::App        = $app;
-        local $MT::Upgrade::Installing = $install_mode;
+        local $MT::Upgrade::Installing = $app->param('installing');
         local $MT::Upgrade::MAX_TIME   = $MAX_TIME;
 
         while ( $step = shift @steps ) {
