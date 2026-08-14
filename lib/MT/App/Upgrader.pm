@@ -164,7 +164,7 @@ sub login {
                             $author->magic_token,
 
                             # note this is BasicAuthor::magic_token
-                            $remember
+                            $remember // ''
                         ),
                         -path => $app->config('CookiePath') || $app->mt_path
                     );
