@@ -84,12 +84,10 @@ sub login {
     {
         ( $user, $cookie_middle, $remember ) = split /::/,
             $cookies->{$cookie_name}->value;
-        $remember //= '';
     }
     elsif ( $cookies->{'user'} ) {    # 1.1 - 2.661
         ( $user, $cookie_middle, $remember ) = split /::/,
             $cookies->{'user'}->value;
-        $remember //= '';
     }
     else {
         $cookie_middle = '';
