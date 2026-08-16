@@ -664,6 +664,9 @@ sub run_actions {
 
     return $app->main(@_) unless $app->needs_upgrade;
 
+    my $steps = $app->param('steps');
+    $steps = JSON::from_json($steps);
+
     $| = 1;
 
     $app->{no_print_body} = 1;
@@ -673,11 +676,13 @@ sub run_actions {
         my ($author) = $app->login;
         if (!$author) {
             $app->response->{error} = $app->errstr || $app->translate('Invalid login.');
+            $app->response->{steps} = $steps;
             return $app->json_response;
         }
 
         if ($app->config->RequireUpgradePermission && !$author->is_superuser) {
             $app->response->{error} = $app->translate('No permissions.');
+            $app->response->{steps} = $steps;
             return $app->json_response;
         }
     }
@@ -686,12 +691,10 @@ sub run_actions {
     if ($schema) {
         if ( !$app->validate_magic ) {
             $app->response->{error} = $app->translate("Invalid session.");
+            $app->response->{steps} = $steps;
             return $app->json_response;
         }
     }
-
-    my $steps = $app->param('steps');
-    $steps = JSON::from_json($steps);
 
     my $start = time;
     my @steps = (@$steps);
