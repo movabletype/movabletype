@@ -672,25 +672,18 @@ sub run_actions {
     $app->{no_print_body} = 1;
     $app->send_http_header('text/plain');
 
-    if (eval { MT->model('author')->exist }) {
+    my $schema = $app->{cfg}->SchemaVersion || 0;
+    if ($schema) {
         my ($author) = $app->login;
         if (!$author) {
             $app->response->{error} = $app->errstr || $app->translate('Invalid login.');
-            $app->response->{steps} = $steps;
-            return $app->json_response;
-        }
-
-        if ($app->config->RequireUpgradePermission && !$author->is_superuser) {
+        } elsif ($app->config->RequireUpgradePermission && !$author->is_superuser) {
             $app->response->{error} = $app->translate('No permissions.');
-            $app->response->{steps} = $steps;
-            return $app->json_response;
-        }
-    }
-
-    my $schema = $app->{cfg}->SchemaVersion || 0;
-    if ($schema) {
-        if ( !$app->validate_magic ) {
+        } elsif (!$app->validate_magic) {
             $app->response->{error} = $app->translate("Invalid session.");
+        }
+
+        if ($app->response->{error}) {
             $app->response->{steps} = $steps;
             return $app->json_response;
         }
