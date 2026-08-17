@@ -317,6 +317,25 @@ sub suite {
                 is( $tmpl, undef, 'Deleted template.' );
             },
         },
+        {   path   => "/v4/sites/$blog_id/templates/__ID__",
+            method => 'DELETE',
+            setup  => sub {
+                my ($data) = @_;
+                my $template = MT::Test::Permission->make_template(
+                    name    => 'my-template',
+                    type    => 'backup',
+                    blog_id => $blog_id,
+                    text    => 'foo',
+                );
+                $data->{__test_template_id} = $template->id;
+                $data->{path} =~ s/__ID__/$data->{__test_template_id}/;
+            },
+            complete => sub {
+                my ($data) = @_;
+                my $tmpl = $app->model('template')->load($data->{__test_template_id});
+                is($tmpl, undef, 'Deleted template.');
+            },
+        },
 
         # publish_template
         {    # v2 (ct)

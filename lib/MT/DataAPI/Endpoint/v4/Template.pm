@@ -97,7 +97,7 @@ sub delete {
         'template', $tmpl )
         or return;
 
-    if ( !$SupportedType{ $tmpl->type } and $tmpl->type ne 'custom' ) {
+    if ( !$SupportedType{ $tmpl->type } and $tmpl->type ne 'backup' and $tmpl->type ne 'custom' ) {
         return $app->error(
             $app->translate( 'Cannot delete [_1] template.', $tmpl->type ),
             403 );
