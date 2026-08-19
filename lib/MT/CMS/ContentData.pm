@@ -2074,7 +2074,7 @@ sub _update_content_data_status {
 
         return $app->permission_denied
             unless $app_author->is_superuser
-            || $app_author->permissions( $content_data->id )
+            || $app_author->permissions( $content_data->blog_id )
             ->can_edit_content_data( $content_data, $app_author, 1 );
 
         if (   $app->config('DeleteFilesAtRebuild')
@@ -2196,7 +2196,7 @@ sub can_save {
 sub can_delete {
     my ( $eh, $app, $obj ) = @_;
     my $user = $app->user or return;
-    $user->permissions(0)->can_edit_content_data( $obj, $user );
+    $user->permissions( $obj->blog_id )->can_edit_content_data( $obj, $user );
 }
 
 sub build_content_data_table {
