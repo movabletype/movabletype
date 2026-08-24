@@ -52,8 +52,9 @@ subtest 'When the Editor environment variable is defined' => sub {
 subtest 'When the Editor environment variable is not defined' => sub {
     set_config({});
 
-    is MT::Util::Editor::current_wysiwyg_editor($app), 'awesome_editor';
-    is MT::Util::Editor::current_source_editor($app),  'awesome_editor';
+    my $expected = MT->has_plugin('MTRichTextEditor') ? 'mt_rich_text_editor' : 'awesome_editor';
+    is MT::Util::Editor::current_wysiwyg_editor($app), $expected;
+    is MT::Util::Editor::current_source_editor($app),  $expected;
 };
 
 done_testing;

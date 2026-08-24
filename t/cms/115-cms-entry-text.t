@@ -26,6 +26,10 @@ my @suite = ({
             text => 'TinyMCE is used',
         },
         like => qr{TinyMCE6/lib/js/adapter\.js},
+        condition => sub {
+            require MT::Util::Editor;
+            return MT::Util::Editor->current_wysiwyg_editor eq 'tinymce' ? 1 : 0;
+        },
     },
     {
         param => {
@@ -62,6 +66,7 @@ my @suite = ({
 for my $type (qw(entry page)) {
     subtest '_type:' . $type => sub {
         for my $data (@suite) {
+            next if $data->{condition} && !$data->{condition}->();
             my $p = MT::Util::to_json({
                     param => $data->{param},
                     ($data->{config} ? (config => $data->{config}) : ())
