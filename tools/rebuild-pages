@@ -82,7 +82,7 @@ my $scraper = scraper {
 
 ### Runs build script.
 foreach my $blog (@blogs) {
-    logging( "rebuilding (" . $blog->name . " ...\n" );
+    logging( "rebuilding (" . $blog->name . ") ...\n" );
     run_rebuild($blog);
 }
 
