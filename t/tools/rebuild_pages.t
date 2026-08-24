@@ -19,6 +19,8 @@ use MT;
 use MT::Test;
 use MT::Test::Fixture;
 use IPC::Run3 qw/run3/;
+use File::Find ();
+use File::Path qw/rmtree/;
 use File::Spec;
 use Time::Piece;
 use Time::Seconds;
@@ -39,24 +41,14 @@ my $objs = MT::Test::Fixture->prepare(
                 site_path => File::Spec->catdir( $test_env->root . '/site' ),
                 archive_path =>
                     File::Spec->catdir( $test_env->root . '/site/archive' ),
-            },
-            {   name      => 'ct_blog',
-                site_path =>
-                    File::Spec->catdir( $test_env->root . '/ct_site' ),
-                archive_path =>
-                    File::Spec->catdir( $test_env->root . '/ct_site/archive' ),
-            },
+            }
         ],
-        category => [
-            { label => 'cat1', blog => 'my_blog' },
-            { label => 'cat2', blog => 'my_blog' },
-        ],
+        category => [qw/cat1 cat2/],
         entry    => [
             map {
                 +{  basename => "entry$_",
                     title    => "entry$_",
                     author   => 'admin',
-                    blog     => 'my_blog',
                     status   => 'publish',
                     authored_on =>
                         ( $start + ONE_DAY * $_ )->strftime('%Y%m%d%H%M%S'),
@@ -65,16 +57,12 @@ my $objs = MT::Test::Fixture->prepare(
                 }
             } ( 1 .. 50 )
         ],
-        folder => [
-            { label => 'folder1', blog => 'my_blog' },
-            { label => 'folder2', blog => 'my_blog' },
-        ],
+        folder => [qw/folder1 folder2/],
         page   => [
             map {
                 +{  basename => "page$_",
                     title    => "page$_",
                     author   => 'admin',
-                    blog     => 'my_blog',
                     status   => 'publish',
                     authored_on =>
                         ( $start + ONE_DAY * $_ )->strftime('%Y%m%d%H%M%S'),
@@ -83,53 +71,62 @@ my $objs = MT::Test::Fixture->prepare(
             } ( 1 .. 50 )
         ],
         content_type => {
-            ct_blog_ct => {
-                blog  => 'ct_blog',
-                fields => [
-                    title_field => 'single_line_text',
-                ],
+            ct_one => {
+                fields => [ title_field => 'single_line_text' ],
+            },
+            ct_two => {
+                fields => [ title_field => 'single_line_text' ],
             },
         },
         content_data => {
-            cd1 => {
-                content_type => 'ct_blog_ct',
-                blog         => 'ct_blog',
-                author       => 'admin',
-                status       => 'publish',
-                data         => { title_field => 'content1' },
-            },
-            cd2 => {
-                content_type => 'ct_blog_ct',
-                blog         => 'ct_blog',
-                author       => 'admin',
-                status       => 'publish',
-                data         => { title_field => 'content2' },
-            },
-            cd3 => {
-                content_type => 'ct_blog_ct',
-                blog         => 'ct_blog',
-                author       => 'admin',
-                status       => 'publish',
-                data         => { title_field => 'content3' },
-            },
+            (   map {
+                    sprintf( 'cd_one_%02d', $_ ) => {
+                        content_type => 'ct_one',
+                        author       => 'admin',
+                        status       => 'publish',
+                        identifier   => sprintf( 'cd-one-%02d', $_ ),
+                        authored_on  =>
+                            ( $start + ONE_DAY * $_ )->strftime('%Y%m%d%H%M%S'),
+                        data => { title_field => "content one $_" },
+                    }
+                } ( 1 .. 25 )
+            ),
+            (   map {
+                    sprintf( 'cd_two_%02d', $_ ) => {
+                        content_type => 'ct_two',
+                        author       => 'admin',
+                        status       => 'publish',
+                        identifier   => sprintf( 'cd-two-%02d', $_ ),
+                        authored_on  =>
+                            ( $start + ONE_DAY * $_ )->strftime('%Y%m%d%H%M%S'),
+                        data => { title_field => "content two $_" },
+                    }
+                } ( 1 .. 25 )
+            ),
         },
         template => [
             {   archive_type => 'ContentType',
-                blog         => 'ct_blog',
-                content_type => 'ct_blog_ct',
-                mapping      => [ {} ],
+                content_type => 'ct_one',
+                name         => 'ct_one_archive',
+                mapping      => [ { file_template => 'ct_one/%y/%m/%-f' } ],
+            },
+            {   archive_type => 'ContentType',
+                content_type => 'ct_two',
+                name         => 'ct_two_archive',
+                mapping      => [ { file_template => 'ct_two/%y/%m/%-f' } ],
             },
         ],
     }
 );
 
 ok my $blog = $objs->{blog}{my_blog};
-ok my $ct_blog = $objs->{blog}{ct_blog};
 
-my $home = $ENV{MT_HOME};
+my $home      = $ENV{MT_HOME};
+my $site_root = File::Spec->catdir( $test_env->root, 'site' );
 
-subtest 'entry-based archives' => sub {
-    my @cmd = (
+sub run_rebuild_pages {
+    my @options = @_;
+    my @cmd     = (
         $^X,
         '-I',
         File::Spec->catdir( $home, 't/lib' ),
@@ -140,32 +137,96 @@ subtest 'entry-based archives' => sub {
         'pass',
         '--blog_id',
         $blog->id,
+        @options,
     );
 
     run3 \@cmd, \my $stdin, \my $stdout, \my $stderr;
 
     ok $stdout !~ /failed/, "no failures" or diag $stdout;
     ok $? == 0, "no errors" or diag $stderr;
+
+    return $stdout;
+}
+
+sub built_types {
+    my $stdout = shift;
+    my @types  = $stdout =~ /^\t(\S+) built success\.$/gm;
+    return [ sort @types ];
+}
+
+sub published_files {
+    return () unless -d $site_root;
+    my @files;
+    File::Find::find(
+        {   wanted   => sub { push @files, $File::Find::name if -f },
+            no_chdir => 1,
+        },
+        $site_root
+    );
+    return @files;
+}
+
+subtest 'rebuild all archive types' => sub {
+    rmtree $site_root;
+
+    my $stdout = run_rebuild_pages();
+
+    is_deeply built_types($stdout),
+        [ sort 'index', split( /,/, $blog->archive_type ) ],
+        'all archive types are built successfully'
+        or diag $stdout;
+
+    my @files = published_files();
+    is scalar( grep m{/archive/\d{4}/\d{2}/entry\d+\.html$}, @files ), 50,
+        'all individual archives are built';
+    is scalar( grep m{/page\d+\.html$}, @files ), 50,
+        'all page archives are built';
+    is scalar( grep m{/archive/ct_one/\d{4}/\d{2}/cd-one-\d+\.html$},
+        @files ), 25, 'all content type archives of ct_one are built';
+    is scalar( grep m{/archive/ct_two/\d{4}/\d{2}/cd-two-\d+\.html$},
+        @files ), 25, 'all content type archives of ct_two are built';
+    ok scalar( grep m{/archive/\d{4}/\d{2}/index\.html$}, @files ),
+        'monthly archives are built';
+    ok scalar( grep m{/archive/cat\d+/index\.html$}, @files ),
+        'category archives are built';
+    ok scalar( grep m{/site/index\.html$}, @files ),
+        'index templates are built';
 };
 
-subtest 'content type archives' => sub {
-    my @cmd = (
-        $^X,
-        '-I',
-        File::Spec->catdir( $home, 't/lib' ),
-        File::Spec->catfile( $home, 'tools/rebuild-pages' ),
-        '--user',
-        'admin',
-        '--pass',
-        'pass',
-        '--blog_id',
-        $ct_blog->id,
-    );
+subtest 'rebuild only entry archives' => sub {
+    rmtree $site_root;
 
-    run3 \@cmd, \my $stdin, \my $stdout, \my $stderr;
+    my $stdout = run_rebuild_pages( '--type', 'Individual' );
 
-    ok $stdout !~ /failed/, "no failures" or diag $stdout;
-    ok $? == 0, "no errors" or diag $stderr;
+    is_deeply built_types($stdout), ['Individual'],
+        'only Individual is built'
+        or diag $stdout;
+
+    my @files = published_files();
+    is scalar( grep m{/archive/\d{4}/\d{2}/entry\d+\.html$}, @files ), 50,
+        'all individual archives are built';
+    is scalar(@files), 50, 'no other files are built'
+        or diag explain \@files;
+};
+
+subtest 'rebuild only content type archives' => sub {
+    rmtree $site_root;
+
+    my $stdout = run_rebuild_pages( '--type', 'ContentType' );
+
+    is_deeply built_types($stdout), ['ContentType'],
+        'only ContentType is built'
+        or diag $stdout;
+
+    my @files = published_files();
+    is scalar( grep m{/archive/ct_one/\d{4}/\d{2}/cd-one-\d+\.html$},
+        @files ), 25, 'all content type archives of ct_one are built';
+    is scalar( grep m{/archive/ct_two/\d{4}/\d{2}/cd-two-\d+\.html$},
+        @files ), 25, 'all content type archives of ct_two are built';
+    ok !scalar( grep m{/entry\d+\.html$}, @files ),
+        'no entry archives are built';
+    is scalar(@files), 50, 'no other files are built'
+        or diag explain \@files;
 };
 
 done_testing;
