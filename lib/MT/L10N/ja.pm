@@ -5333,7 +5333,7 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/admin2023/cms/listing/banlist_list_header.tmpl
 	'Invalid IP address.' => '不正なIPアドレスです。',
 	'The IP you entered is already banned for this site.' => '入力されたIPアドレスはすでに禁止IPに登録されています。',
-	'You have added [_1] to your list of banned IP addresses.' => '禁止IPリストに[_1]を追加しました。',
+	'You have added an IP address to your list of banned IP addresses.' => '禁止IPリストにIPアドレスを追加しました。',
 	'You have successfully deleted the selected IP addresses from the list.' => 'リストから選択したIPアドレスを削除しました。',
 
 ## tmpl/admin2023/cms/listing/blog_list_header.tmpl
