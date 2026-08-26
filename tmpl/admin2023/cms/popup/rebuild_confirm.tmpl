@@ -1,6 +1,6 @@
 <mt:setvar name="screen_type" value="popup-screen">
-<mt:setvarblock name="html_title"><__trans phrase="Publish [_1]" params="<mt:var name="blog_name" escape="html" escape="html">"></mt:setvarblock>
-<mt:setvarblock name="page_title"><__trans phrase="Publish <em>[_1]</em>" params="<mt:var name="blog_name" escape="html" escape="html">"></mt:setvarblock>
+<mt:setvarblock name="html_title"><__trans phrase="Publish [_1]" params="<mt:var name="blog_name" escape="html">"></mt:setvarblock>
+<mt:setvarblock name="page_title"><__trans phrase="Publish <em>[_1]</em>" params="<mt:var name="blog_name" escape="html">"></mt:setvarblock>
 <mt:setvar name="complete" value="1">
 
 <mt:setvarblock name="page_content">
@@ -22,7 +22,7 @@
         <select name="type" class="full custom-select form-control form-select">
           <option value="<mt:var name="build_order">" selected="selected"><__trans phrase="All Files"></option>
         <mt:if name="index_tmpl_id">
-          <option value="index-<mt:var name="index_tmpl_id">" selected="selected"><__trans phrase="Index Template: [_1]" params="<mt:var name="index_tmpl_name" escape="html" escape="html">"></option>
+          <option value="index-<mt:var name="index_tmpl_id">" selected="selected"><__trans phrase="Index Template: [_1]" params="<mt:var name="index_tmpl_name" escape="html">"></option>
         </mt:if>
           <option value="index"<mt:if name="index_selected"> selected="selected"</mt:if>><__trans phrase="Only Indexes"></option>
         <mt:loop name="archive_type_loop">
