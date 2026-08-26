@@ -5265,7 +5265,6 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/admin2023/cms/list_template.tmpl
 	'<strong>&lt;$MTWidgetSet name=&quot;Name of the Widget Set&quot;$&gt;</strong>' => '<strong>&lt;$MTWidgetSet name=&quot;ウィジェットセットの名前&quot;$&gt;</strong>',
 	'Content Type Listing Archive' => 'コンテンツタイプリストアーカイブ',
-	'Content type Templates' => 'コンテンツタイプのテンプレート',
 	'Create new template (c)' => 'テンプレートの作成 (s)',
 	'Create' => '新規作成',
 	'Delete selected Widget Sets (x)' => '選択されたウィジェットセットを削除 (x)',
@@ -5334,7 +5333,7 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/admin2023/cms/listing/banlist_list_header.tmpl
 	'Invalid IP address.' => '不正なIPアドレスです。',
 	'The IP you entered is already banned for this site.' => '入力されたIPアドレスはすでに禁止IPに登録されています。',
-	'You have added [_1] to your list of banned IP addresses.' => '禁止IPリストに[_1]を追加しました。',
+	'You have added an IP address to your list of banned IP addresses.' => '禁止IPリストにIPアドレスを追加しました。',
 	'You have successfully deleted the selected IP addresses from the list.' => 'リストから選択したIPアドレスを削除しました。',
 
 ## tmpl/admin2023/cms/listing/blog_list_header.tmpl
@@ -5360,7 +5359,7 @@ use vars qw( @ISA %Lexicon );
 	'The content data has been deleted from the database.' => 'コンテンツデータをデータベースから削除しました。',
 
 ## tmpl/admin2023/cms/listing/content_type_list_header.tmpl
-	'Some content types were not deleted. You need to delete archive templates or content type fields from the content type first.' => 'いくつかのコンテンツタイプが削除できませんでした。先にアーカイブマッピングを削除する必要があります。',
+	'Some content types were not deleted. You need to delete content type templates or content type fields from the content type first.' => 'いくつかのコンテンツタイプが削除できませんでした。先に関連するコンテンツタイプテンプレートとコンテンツタイプフィールドを削除する必要があります。',
 	'The content type has been deleted from the database.' => 'コンテンツタイプをデータベースから削除しました。',
 
 ## tmpl/admin2023/cms/listing/group_list_header.tmpl

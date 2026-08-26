@@ -11,7 +11,7 @@
   <mtapp:statusmsg
      id="saved"
      class="success">
-    <__trans phrase="You have added [_1] to your list of banned IP addresses." params="<mt:var name="saved" escape="html">">
+    <__trans phrase="You have added an IP address to your list of banned IP addresses.">
   </mtapp:statusmsg>
 </mt:if>
 <mt:if name="request.saved_deleted">
@@ -110,7 +110,7 @@
                 ip: jQuery('#ip-address').val(),
                 magic_token: '<mt:var name="magic_token" escape="js">'
             },
-        }).success(function (data) {
+        }).done(function (data) {
             if (data.error) {
                 window.location.href = returnArgs + '&error_' + data.error + '=1';
             } else {
