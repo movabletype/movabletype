@@ -4807,14 +4807,13 @@ sub remove_preview_file {
 
     if ($preview_basename) {
         require MT::Session;
-        if (my $tf = MT::Session->load(
-                {   id   => $preview_basename,
-                    kind => 'TF',
-                }
-            )
-            )
+        if (
+            my $tf = MT::Session->load([
+                [{ id => $preview_basename }, '-or', { name => $preview_basename }],
+                '-and', { kind => 'TF' },
+            ]))
         {
-            my $file = $tf->name;
+            my $file = $tf->get('file') || $tf->name;
             my $fmgr = $app->blog->file_mgr;
             if ($fmgr->delete($file)) {
                 require File::Basename;
