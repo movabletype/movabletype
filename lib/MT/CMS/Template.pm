@@ -1573,8 +1573,10 @@ sub preview {
     else {
         $file_ext = '';
     }
+    require MT::Util::UniqueID;
+    my $preview_session_id = 'mt-preview-' . MT::Util::UniqueID::create_sha1_id(__PACKAGE__ . ':' . __LINE__);
     $archive_file
-        = File::Spec->catfile( $path, $preview_basename . $file_ext );
+        = File::Spec->catfile( $path, $preview_session_id . $file_ext );
 
     my @data;
     $app->run_callbacks( 'cms_pre_preview.template', $app, $preview_tmpl,
@@ -1631,7 +1633,7 @@ sub preview {
         $param{preview_file} = $preview_basename;
         my $preview_url = $archive_url;
         $preview_url
-            =~ s! / \Q$orig_file\E ( /? ) $!/$path_in_outfile$preview_basename$file_ext$1!x;
+            =~ s! / \Q$orig_file\E ( /? ) $!/$path_in_outfile$preview_session_id$file_ext$1!x;
 
         # We also have to translate the URL used for the
         # published file to be on the MT app domain.
@@ -1648,11 +1650,12 @@ sub preview {
         # by the user.
         require MT::Session;
         my $sess_obj = MT::Session->get_by_key(
-            {   id   => $preview_basename,
+            {   id   => $preview_session_id,
                 kind => 'TF',                # TF = Temporary File
-                name => $archive_file,
+                name => $preview_basename,
             }
         );
+        $sess_obj->set(file => $archive_file),
         $sess_obj->start(time);
         $sess_obj->save;
 
