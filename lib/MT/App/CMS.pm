@@ -11,7 +11,6 @@ use warnings;
 use base qw( MT::App );
 
 use MT::CMS::ContentData;
-use MT::Util qw( perl_sha1_digest_hex );
 use MT::App::CMS::Common;
 
 sub LISTING_DATE_FORMAT ()      {'%b %e, %Y'}
@@ -4432,7 +4431,8 @@ sub preview_object_basename {
     push @parts, $content_type_id if $content_type_id;
     push @parts, $app->config->SecretToken;
     my $data = join ",", @parts;
-    return 'mt-preview-' . perl_sha1_digest_hex($data);
+    require MT::Util::Digest::SHA;
+    return 'mt-preview-' . MT::Util::Digest::SHA::sha1_hex($data);
 }
 
 sub object_edit_uri {
