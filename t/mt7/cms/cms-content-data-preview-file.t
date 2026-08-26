@@ -267,9 +267,10 @@ subtest 'Delete preview file for task' => sub {
 
     my $this_test_session = MT::Session->get_by_key({
         kind => 'TF',
-        name => $preview_file_path,
+        id   => $preview_file_name,
     });
 
+    $this_test_session->set(file => $preview_file_path);
     $this_test_session->start(time - 60 * 61);
     $this_test_session->save;
 
