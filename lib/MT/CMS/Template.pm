@@ -1630,7 +1630,7 @@ sub preview {
     }
 
     if ( $fmgr->exists($path) && $fmgr->can_write($path) ) {
-        $param{preview_file} = $preview_basename;
+        $param{preview_file} = $preview_session_id;
         my $preview_url = $archive_url;
         $preview_url
             =~ s! / \Q$orig_file\E ( /? ) $!/$path_in_outfile$preview_session_id$file_ext$1!x;
