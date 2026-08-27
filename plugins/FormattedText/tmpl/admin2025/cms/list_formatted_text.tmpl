@@ -1,0 +1,12 @@
+<mt:setvarblock name="system_msg" append="1">
+<__trans_section component="FormattedText">
+    <mt:if name="saved_deleted">
+        <mtapp:statusmsg
+            id="saved_deleted"
+            class="success">
+            <__trans phrase="The boilerplate has been deleted from the database.">
+        </mtapp:statusmsg>
+    </mt:if>
+</__trans_section>
+</mt:setvarblock>
+<mt:include name="list_common.tmpl" />
