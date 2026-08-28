@@ -48,7 +48,7 @@ sub _content_type_registry {
         field_value_handler =>
             '$Core::MT::ContentFieldType::ContentType::field_value_handler',
         ss_validator =>
-            '$Core::MT::ContentFieldType::ContentType::ss_validator',
+            '$Core::MT::ContentFieldType::Common::ss_validator_multiple',
         tag_handler =>
             '$Core::MT::ContentFieldType::ContentType::tag_handler',
         feed_value_handler => '$Core::MT::ContentFieldType::ContentType::feed_value_handler',    # DEPRECATED
