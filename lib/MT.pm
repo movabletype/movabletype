@@ -2180,7 +2180,7 @@ sub load_tmpl {
     if ( exists( $mt->{component} ) && ( lc( $mt->{component} ) ne 'core' ) )
     {
         if ( my $c = $mt->component( $mt->{component} ) ) {
-            return $c->load_tmpl(@_);
+            return $c->load_tmpl(@_) // $mt->error($c->errstr);
         }
     }
 
