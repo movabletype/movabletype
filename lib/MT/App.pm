@@ -896,7 +896,17 @@ sub csv_result {
     print {$fh} "\x{FEFF}"
       if MT->config->CSVExportWithBOM && ( $encoding || '' ) =~ /utf-?8/i;
 
-    require Text::CSV;
+    my $csv_module;
+    if ( eval { require Text::CSV } ) {
+        $csv_module = 'Text::CSV';
+    } else {
+        if ( $@ && $@ =~ /\A(.+?) at/ ) {
+            MT::Util::Log->init;
+            MT::Util::Log->debug("Failed to load Text::CSV, so use Text::CSV_PP: $1");
+        }
+        require Text::CSV_PP;
+        $csv_module = 'Text::CSV_PP';
+    }
     my $csv_options = { binary => 1 };
 
     if ( MT->config->CSVExportEscapeFormula ) {
@@ -914,7 +924,7 @@ sub csv_result {
         };
     }
 
-    my $csv = Text::CSV->new($csv_options);
+    my $csv = $csv_module->new($csv_options);
     $csv->say( $fh, $opt->{headers} );
 
     while ( my $row = $row_iterator->() ) {
