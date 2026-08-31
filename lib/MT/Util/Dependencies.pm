@@ -651,6 +651,11 @@ our %ExtLibOnly = (
         url     => "https://metacpan.org/pod/HTML::Diff",
         used_in => ["MT::Revisable"],
     },
+    "HTML::Entities::Numbered" => {
+        extlib  => 0.04,
+        url     => "https://metacpan.org/pod/HTML::Entities::Numbered",
+        used_in => ["WXRImporter::Import"],
+    },
     "HTTP::Cookies" => {
         extlib   => 6.11,
         internal => 1,
@@ -687,6 +692,11 @@ our %ExtLibOnly = (
         url     => "https://metacpan.org/pod/IPC::Run3",
         used_in => ["MT::Util::Archive::BinZip"],
     },
+    "List::MoreUtils" => {
+        extlib  => "0.430",
+        url     => "https://metacpan.org/pod/List::MoreUtils",
+        used_in => ["Markdown::Perl"],
+    },
     "Locale::Maketext" => {
         dropped_in => ["amazonlinux2023", "centos7"],
         extlib     => 1.33,
@@ -713,6 +723,11 @@ our %ExtLibOnly = (
         extlib  => 2.22,
         url     => "https://metacpan.org/pod/Mail::Address",
         used_in => ["MIME::Lite"],
+    },
+    "Markdown::Perl" => {
+        extlib  => 1.14,
+        url     => "https://metacpan.org/pod/Markdown::Perl",
+        used_in => ["CommonMark"],
     },
     "Math::BigInt" => {
         dropped_in => ["amazonlinux2023"],
@@ -758,6 +773,11 @@ our %ExtLibOnly = (
         url       => "https://metacpan.org/pod/parent",
         used_in   => ["MT::PSGI"],
     },
+    "Readonly" => {
+        extlib  => 2.05,
+        url     => "https://metacpan.org/pod/Readonly",
+        used_in => ["Markdown::Perl"],
+    },
     "Sub::Uplevel" => {
         extlib  => "0.2800",
         url     => "https://metacpan.org/pod/Sub::Uplevel",
@@ -778,6 +798,11 @@ our %ExtLibOnly = (
         extlib  => 0.32,
         url     => "https://metacpan.org/pod/Try::Tiny",
         used_in => ["LWP::UserAgent"],
+    },
+    "Unicode::CaseFold" => {
+        extlib  => 1.01,
+        url     => "https://metacpan.org/pod/Unicode::CaseFold",
+        used_in => ["Markdown::Perl::Util"],
     },
     "UUID::URandom" => {
         extlib  => 0.001,
