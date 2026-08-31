@@ -12,8 +12,10 @@ Object.defineProperty(window, "matchMedia", {
   })),
 });
 
-window.ResizeObserver = vi.fn().mockImplementation(() => ({
-  observe: vi.fn(),
-  unobserve: vi.fn(),
-  disconnect: vi.fn(),
-}));
+window.ResizeObserver = vi.fn().mockImplementation(function () {
+  return {
+    observe: vi.fn(),
+    unobserve: vi.fn(),
+    disconnect: vi.fn(),
+  };
+});
