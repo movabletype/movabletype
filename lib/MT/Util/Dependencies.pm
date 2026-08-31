@@ -1112,7 +1112,6 @@ USED:
             $core_hash{$module} //= {};
             next;
         }
-        next if $used_in_mt;
         print STDERR "$module is missing? " . Data::Dump::dump($used->{$module}), "\n";
     }
 
@@ -1154,8 +1153,10 @@ sub _modify_hash {
             delete $hash{$module}{perl_core};
             delete $hash{$module}{perl_only};
         }
-        (my $file = "./extlib/$module.pm") =~ s!::!/!g;
-        if (-e $file) {
+        my $found_in_extlib;
+        for my $extlib_dir ("./extlib", glob("./plugins/*/extlib")) {
+            (my $file = "$extlib_dir/$module.pm") =~ s!::!/!g;
+            next unless -e $file;
             my $info = Parse::PMFile->new->parse($file);
             if ($hash{$module}{pinned}) {
                 if (version->parse($hash{$module}{extlib}) < version->parse($info->{$module}{version})) {
@@ -1164,7 +1165,10 @@ sub _modify_hash {
                 }
             }
             $hash{$module}{extlib} = $info->{$module}{version};
-        } else {
+            $found_in_extlib = 1;
+            last;
+        }
+        if (!$found_in_extlib) {
             delete $hash{$module}{extlib};
             if ($used) {
                 delete $hash{$module};
