@@ -91,7 +91,7 @@ describe("MT.App.EditorStrategy.Multi create/set/save integration", () => {
 
     const MT = createMT();
     const managers: Record<string, ReturnType<typeof createEditorStub>> = {};
-    MT.EditorManager = vi.fn().mockImplementation((id: string) => {
+    MT.EditorManager = vi.fn().mockImplementation(function (id: string) {
       const manager = createEditorStub();
       managers[id] = manager;
       return manager;
