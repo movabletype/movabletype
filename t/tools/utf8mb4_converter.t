@@ -45,12 +45,12 @@ sub run {
 
 sub _connect_info {
     my %mapping = (
-        DBHost    => 'host',
-        DBSocket  => 'mysql_socket',
-        DBUser    => 'user',
-        DBPasword => 'pass',
-        DBPort    => 'port',
-        Database  => 'db',
+        DBHost     => 'host',
+        DBSocket   => 'mysql_socket',
+        DBUser     => 'user',
+        DBPassword => 'pass',
+        DBPort     => 'port',
+        Database   => 'db',
     );
     my %info;
     for my $key ( keys %mapping ) {
