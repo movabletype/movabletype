@@ -461,7 +461,7 @@ our %Requirements = (
         url        => "https://metacpan.org/pod/Unicode::UCD",
     },
     "URI" => {
-        extlib  => 5.35,
+        extlib  => 5.36,
         label   => "This module is sometimes used to parse URI.",
         tags    => ["HTTP", "URI"],
         url     => "https://metacpan.org/pod/URI",
@@ -905,6 +905,11 @@ our %HiddenCoreDeps = (
     "Text::Wrap"     => {
         perl_core => 2009.0305,
         url       => "https://metacpan.org/pod/Text::Wrap",
+    },
+    "Unicode::Normalize" => {
+        dropped_in => ["amazonlinux2023"],
+        perl_core  => 1.14,
+        url        => "https://metacpan.org/pod/Unicode::Normalize",
     },
 );
 

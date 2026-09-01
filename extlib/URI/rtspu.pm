@@ -3,10 +3,10 @@ package URI::rtspu;
 use strict;
 use warnings;
 
-our $VERSION = '5.35';
+our $VERSION = '5.36';
 
 use parent 'URI::rtsp';
 
-sub default_port { 554 }
+sub default_port {554}
 
 1;

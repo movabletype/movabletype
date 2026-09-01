@@ -146,18 +146,18 @@ it under the same terms as Perl itself.
 
 use Exporter 5.57 'import';
 our %escapes;
-our @EXPORT = qw(uri_escape uri_unescape uri_escape_utf8);
+our @EXPORT    = qw(uri_escape uri_unescape uri_escape_utf8);
 our @EXPORT_OK = qw(%escapes);
-our $VERSION = '5.35';
+our $VERSION   = '5.36';
 
 use Carp ();
 
 # Build a char->hex map
-for (0..255) {
+for (0 .. 255) {
     $escapes{chr($_)} = sprintf("%%%02X", $_);
 }
 
-my %subst;  # compiled patterns
+my %subst;    # compiled patterns
 
 my %Unsafe = (
     RFC2732 => qr/[^A-Za-z0-9\-_.!~*'()]/,
@@ -165,10 +165,10 @@ my %Unsafe = (
 );
 
 sub uri_escape {
-    my($text, $patn) = @_;
+    my ($text, $patn) = @_;
     return undef unless defined $text;
     my $re;
-    if (defined $patn){
+    if (defined $patn) {
         if (ref $patn eq 'Regexp') {
             $text =~ s{($patn)}{
                 join('', map +($escapes{$_} || _fail_hi($_)), split //, "$1")
@@ -178,6 +178,7 @@ sub uri_escape {
         $re = $subst{$patn};
         if (!defined $re) {
             $re = $patn;
+
             # we need to escape the [] characters, except for those used in
             # posix classes. if they are prefixed by a backslash, allow them
             # through unmodified.
@@ -203,7 +204,8 @@ sub uri_escape {
 
 sub _fail_hi {
     my $chr = shift;
-    Carp::croak(sprintf "Can't escape \\x{%04X}, try uri_escape_utf8() instead", ord($chr));
+    Carp::croak(sprintf "Can't escape \\x{%04X}, try uri_escape_utf8() instead",
+        ord($chr));
 }
 
 sub uri_escape_utf8 {
@@ -214,13 +216,15 @@ sub uri_escape_utf8 {
 }
 
 sub uri_unescape {
+
     # Note from RFC1630:  "Sequences which start with a percent sign
     # but are not followed by two hexadecimal characters are reserved
     # for future extension"
     my $str = shift;
     if (@_ && wantarray) {
+
         # not executed for the common case of a single argument
-        my @str = ($str, @_);  # need to copy
+        my @str = ($str, @_);    # need to copy
         for (@str) {
             s/%([0-9A-Fa-f]{2})/chr(hex($1))/eg;
         }
@@ -232,9 +236,10 @@ sub uri_unescape {
 
 # XXX FIXME escape_char is buggy as it assigns meaning to the string's storage format.
 sub escape_char {
-    # Old versions of utf8::is_utf8() didn't properly handle magical vars (e.g. $1).
-    # The following forces a fetch to occur beforehand.
-    my $dummy = substr($_[0], 0, 0);
+
+# Old versions of utf8::is_utf8() didn't properly handle magical vars (e.g. $1).
+# The following forces a fetch to occur beforehand.
+    () = substr($_[0], 0, 0);
 
     if (utf8::is_utf8($_[0])) {
         my $s = shift;

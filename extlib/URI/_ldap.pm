@@ -7,86 +7,90 @@ package URI::_ldap;
 use strict;
 use warnings;
 
-our $VERSION = '5.35';
+our $VERSION = '5.36';
 
 use URI::Escape qw(uri_unescape);
 
 sub _ldap_elem {
-  my $self  = shift;
-  my $elem  = shift;
-  my $query = $self->query;
-  my @bits  = (split(/\?/,defined($query) ? $query : ""),("")x4);
-  my $old   = $bits[$elem];
+    my $self  = shift;
+    my $elem  = shift;
+    my $query = $self->query;
+    my @bits  = (split(/\?/, defined($query) ? $query : ""), ("") x 4);
+    my $old   = $bits[$elem];
 
-  if (@_) {
-    my $new = shift;
-    $new =~ s/\?/%3F/g;
-    $bits[$elem] = $new;
-    $query = join("?",@bits);
-    $query =~ s/\?+$//;
-    $query = undef unless length($query);
-    $self->query($query);
-  }
+    if (@_) {
+        my $new = shift;
+        $new =~ s/\?/%3F/g;
+        $bits[$elem] = $new;
+        $query = join("?", @bits);
+        $query =~ s/\?+$//;
+        $query = undef unless length($query);
+        $self->query($query);
+    }
 
-  $old;
+    $old;
 }
 
 sub dn {
-  my $old = shift->path(@_);
-  $old =~ s:^/::;
-  uri_unescape($old);
+    my $old = shift->path(@_);
+    $old =~ s:^/::;
+    uri_unescape($old);
 }
 
 sub attributes {
-  my $self = shift;
-  my $old = _ldap_elem($self,0, @_ ? join(",", map { my $tmp = $_; $tmp =~ s/,/%2C/g; $tmp } @_) : ());
-  return $old unless wantarray;
-  map { uri_unescape($_) } split(/,/,$old);
+    my $self = shift;
+    my $old  = _ldap_elem($self, 0,
+        @_ ? join(",", map { my $tmp = $_; $tmp =~ s/,/%2C/g; $tmp } @_) : ());
+    return $old unless wantarray;
+    map { uri_unescape($_) } split(/,/, $old);
 }
 
 sub _scope {
-  my $self = shift;
-  my $old = _ldap_elem($self,1, @_);
-  return undef unless defined wantarray && defined $old;
-  uri_unescape($old);
+    my $self = shift;
+    my $old  = _ldap_elem($self, 1, @_);
+    return undef unless defined wantarray && defined $old;
+    uri_unescape($old);
 }
 
 sub scope {
-  my $old = &_scope;
-  $old = "base" unless length $old;
-  $old;
+    my $old = &_scope;
+    $old = "base" unless length $old;
+    $old;
 }
 
 sub _filter {
-  my $self = shift;
-  my $old = _ldap_elem($self,2, @_);
-  return undef unless defined wantarray && defined $old;
-  uri_unescape($old); # || "(objectClass=*)";
+    my $self = shift;
+    my $old  = _ldap_elem($self, 2, @_);
+    return undef unless defined wantarray && defined $old;
+    uri_unescape($old);    # || "(objectClass=*)";
 }
 
 sub filter {
-  my $old = &_filter;
-  $old = "(objectClass=*)" unless length $old;
-  $old;
+    my $old = &_filter;
+    $old = "(objectClass=*)" unless length $old;
+    $old;
 }
 
 sub extensions {
-  my $self = shift;
-  my @ext;
-  while (@_) {
-    my $key = shift;
-    my $value = shift;
-    push(@ext, join("=", map { $_="" unless defined; s/,/%2C/g; $_ } $key, $value));
-  }
-  @ext = join(",", @ext) if @ext;
-  my $old = _ldap_elem($self,3, @ext);
-  return $old unless wantarray;
-  map { uri_unescape($_) } map { /^([^=]+)=(.*)$/ } split(/,/,$old);
+    my $self = shift;
+    my @ext;
+    while (@_) {
+        my $key   = shift;
+        my $value = shift;
+        push(
+            @ext,
+            join("=",
+                map { $_ = "" unless defined; s/,/%2C/g; $_ } $key, $value)
+        );
+    }
+    @ext = join(",", @ext) if @ext;
+    my $old = _ldap_elem($self, 3, @ext);
+    return $old unless wantarray;
+    map { uri_unescape($_) } map {/^([^=]+)=(.*)$/} split(/,/, $old);
 }
 
-sub canonical
-{
-    my $self = shift;
+sub canonical {
+    my $self  = shift;
     my $other = $self->_nonldap_canonical;
 
     # The stuff below is not as efficient as one might hope...
@@ -106,33 +110,35 @@ sub canonical
 
     # Remove filter if default
     my $old_filter = $other->filter;
-    $other->filter("") if lc($old_filter) eq "(objectclass=*)" ||
-	                  lc($old_filter) eq "objectclass=*";
+    $other->filter("")
+        if lc($old_filter) eq "(objectclass=*)"
+        || lc($old_filter) eq "objectclass=*";
 
     # Lowercase extensions types and deal with known extension values
     my @ext = $other->extensions;
     for (my $i = 0; $i < @ext; $i += 2) {
-	my $etype = $ext[$i] = lc($ext[$i]);
-	if ($etype =~ /^!?bindname$/) {
-	    $ext[$i+1] = _normalize_dn($ext[$i+1]);
-	}
+        my $etype = $ext[$i] = lc($ext[$i]);
+        if ($etype =~ /^!?bindname$/) {
+            $ext[$i + 1] = _normalize_dn($ext[$i + 1]);
+        }
     }
     $other->extensions(@ext) if @ext;
-    
+
     $other;
 }
 
-sub _normalize_dn  # RFC 2253
+sub _normalize_dn    # RFC 2253
 {
     my $dn = shift;
 
     return $dn;
+
     # The code below will fail if the "+" or "," is embedding in a quoted
     # string or simply escaped...
 
     my @dn = split(/([+,])/, $dn);
     for (@dn) {
-	s/^([a-zA-Z]+=)/lc($1)/e;
+        s/^([a-zA-Z]+=)/lc($1)/e;
     }
     join("", @dn);
 }

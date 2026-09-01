@@ -6,163 +6,161 @@ use warnings;
 use parent qw(URI URI::_query);
 
 use URI::Escape qw(uri_unescape);
-use Carp ();
+use Carp        ();
 
-our $VERSION = '5.35';
+our $VERSION = '5.36';
 
-my $ACHAR = URI::HAS_RESERVED_SQUARE_BRACKETS ? $URI::uric : $URI::uric4host;  $ACHAR =~ s,\\[/?],,g;
-my $PCHAR = $URI::uric;                                                        $PCHAR =~ s,\\[?],,g;
+my $ACHAR = URI::HAS_RESERVED_SQUARE_BRACKETS ? $URI::uric : $URI::uric4host;
+$ACHAR =~ s,\\[/?],,g;
+my $PCHAR = $URI::uric;
+$PCHAR =~ s,\\[?],,g;
 
-sub _no_scheme_ok { 1 }
+sub _no_scheme_ok {1}
 
 our $IPv6_re;
 
 sub _looks_like_raw_ip6_address {
-  my $addr = shift;
+    my $addr = shift;
 
-  if ( !$IPv6_re ) { #-- lazy / runs once / use Regexp::IPv6 if installed
-    eval {
-      require Regexp::IPv6;
-      Regexp::IPv6->import( qw($IPv6_re) );
-      1;
-    }  ||  do { $IPv6_re = qr/[:0-9a-f]{3,}/; }; #-- fallback: unambitious guess
-  }
+    if (!$IPv6_re) {    #-- lazy / runs once / use Regexp::IPv6 if installed
+        eval {
+            require Regexp::IPv6;
+            Regexp::IPv6->import(qw($IPv6_re));
+            1;
+        }
+            || do { $IPv6_re = qr/[:0-9a-f]{3,}/; }; #-- fallback: unambitious guess
+    }
 
-  return 0 unless $addr;
-  return 0 if $addr =~ tr/:/:/ < 2;  #-- fallback must not create false positive for IPv4:Port = 0:0
-  return 1 if $addr =~ /^$IPv6_re$/i;
-  return 0;
+    return 0 unless $addr;
+    return 0
+        if $addr =~ tr/:/:/
+        < 2;    #-- fallback must not create false positive for IPv4:Port = 0:0
+    return 1 if $addr =~ /^$IPv6_re$/i;
+    return 0;
 }
 
 
-sub authority
-{
+sub authority {
     my $self = shift;
     $$self =~ m,^((?:$URI::scheme_re:)?)(?://([^/?\#]*))?(.*)$,os or die;
 
     if (@_) {
-	my $auth = shift;
-	$$self = $1;
-	my $rest = $3;
-	if (defined $auth) {
-	    $auth =~ s/([^$ACHAR])/ URI::Escape::escape_char($1)/ego;
-            if ( my ($user, $host) = $auth =~ /^(.*@)?([^@]+)$/ ) { #-- special escape userinfo part
-              $user ||= '';
-              $user =~ s/([^$URI::uric4user])/ URI::Escape::escape_char($1)/ego;
-              $user =~ s/%40$/\@/; # recover final '@'
-              $host = "[$host]" if _looks_like_raw_ip6_address( $host );
-              $auth = $user . $host;
+        my $auth = shift;
+        $$self = $1;
+        my $rest = $3;
+        if (defined $auth) {
+            $auth =~ s/([^$ACHAR])/ URI::Escape::escape_char($1)/ego;
+            if (my ($user, $host) = $auth =~ /^(.*@)?([^@]+)$/)
+            {    #-- special escape userinfo part
+                $user ||= '';
+                $user
+                    =~ s/([^$URI::uric4user])/ URI::Escape::escape_char($1)/ego;
+                $user =~ s/%40$/\@/;    # recover final '@'
+                $host = "[$host]" if _looks_like_raw_ip6_address($host);
+                $auth = $user . $host;
             }
-	    utf8::downgrade($auth);
-	    $$self .= "//$auth";
-	}
-	_check_path($rest, $$self);
-	$$self .= $rest;
+            utf8::downgrade($auth);
+            $$self .= "//$auth";
+        }
+        _check_path($rest, $$self);
+        $$self .= $rest;
     }
     $2;
 }
 
-sub path
-{
+sub path {
     my $self = shift;
     $$self =~ m,^((?:[^:/?\#]+:)?(?://[^/?\#]*)?)([^?\#]*)(.*)$,s or die;
 
     if (@_) {
-	$$self = $1;
-	my $rest = $3;
-	my $new_path = shift;
-	$new_path = "" unless defined $new_path;
-	$new_path =~ s/([^$PCHAR])/ URI::Escape::escape_char($1)/ego;
-	utf8::downgrade($new_path);
-	_check_path($new_path, $$self);
-	$$self .= $new_path . $rest;
+        $$self = $1;
+        my $rest     = $3;
+        my $new_path = shift;
+        $new_path = "" unless defined $new_path;
+        $new_path =~ s/([^$PCHAR])/ URI::Escape::escape_char($1)/ego;
+        utf8::downgrade($new_path);
+        _check_path($new_path, $$self);
+        $$self .= $new_path . $rest;
     }
     $2;
 }
 
-sub path_query
-{
+sub path_query {
     my $self = shift;
     $$self =~ m,^((?:[^:/?\#]+:)?(?://[^/?\#]*)?)([^\#]*)(.*)$,s or die;
 
     if (@_) {
-	$$self = $1;
-	my $rest = $3;
-	my $new_path = shift;
-	$new_path = "" unless defined $new_path;
-	$new_path =~ s/([^$URI::uric])/ URI::Escape::escape_char($1)/ego;
-	utf8::downgrade($new_path);
-	_check_path($new_path, $$self);
-	$$self .= $new_path . $rest;
+        $$self = $1;
+        my $rest     = $3;
+        my $new_path = shift;
+        $new_path = "" unless defined $new_path;
+        $new_path =~ s/([^$URI::uric])/ URI::Escape::escape_char($1)/ego;
+        utf8::downgrade($new_path);
+        _check_path($new_path, $$self);
+        $$self .= $new_path . $rest;
     }
     $2;
 }
 
-sub _check_path
-{
-    my($path, $pre) = @_;
+sub _check_path {
+    my ($path, $pre) = @_;
     my $prefix;
-    if ($pre =~ m,/,) {  # authority present
-	$prefix = "/" if length($path) && $path !~ m,^[/?\#],;
+    if ($pre =~ m,/,) {    # authority present
+        $prefix = "/" if length($path) && $path !~ m,^[/?\#],;
     }
     else {
-	if ($path =~ m,^//,) {
-	    Carp::carp("Path starting with double slash is confusing")
-		if $^W;
-	}
-	elsif (!length($pre) && $path =~ m,^[^:/?\#]+:,) {
-	    Carp::carp("Path might look like scheme, './' prepended")
-		if $^W;
-	    $prefix = "./";
-	}
+        if ($path =~ m,^//,) {
+            Carp::carp("Path starting with double slash is confusing") if $^W;
+        }
+        elsif (!length($pre) && $path =~ m,^[^:/?\#]+:,) {
+            Carp::carp("Path might look like scheme, './' prepended") if $^W;
+            $prefix = "./";
+        }
     }
     substr($_[0], 0, 0) = $prefix if defined $prefix;
 }
 
-sub path_segments
-{
+sub path_segments {
     my $self = shift;
     my $path = $self->path;
     if (@_) {
-	my @arg = @_;  # make a copy
-	for (@arg) {
-	    if (ref($_)) {
-		my @seg = @$_;
-		$seg[0] =~ s/%/%25/g;
-		for (@seg) { s/;/%3B/g; }
-		$_ = join(";", @seg);
-	    }
-	    else {
-		 s/%/%25/g; s/;/%3B/g;
-	    }
-	    s,/,%2F,g;
-	}
-	$self->path(join("/", @arg));
+        my @arg = @_;    # make a copy
+        for (@arg) {
+            if (ref($_)) {
+                my @seg = @$_;
+                $seg[0] =~ s/%/%25/g;
+                for (@seg) { s/;/%3B/g; }
+                $_ = join(";", @seg);
+            }
+            else {
+                s/%/%25/g;
+                s/;/%3B/g;
+            }
+            s,/,%2F,g;
+        }
+        $self->path(join("/", @arg));
     }
     return $path unless wantarray;
-    map {/;/ ? $self->_split_segment($_)
-             : uri_unescape($_) }
+    map { /;/ ? $self->_split_segment($_) : uri_unescape($_) }
         split('/', $path, -1);
 }
 
 
-sub _split_segment
-{
+sub _split_segment {
     my $self = shift;
     require URI::_segment;
     URI::_segment->new(@_);
 }
 
 
-sub abs
-{
+sub abs {
     my $self = shift;
     my $base = shift || Carp::croak("Missing base argument");
 
     if (my $scheme = $self->scheme) {
-	return $self unless $URI::ABS_ALLOW_RELATIVE_SCHEME;
-	$base = URI->new($base) unless ref $base;
-	return $self unless $scheme eq $base->scheme;
+        return $self            unless $URI::ABS_ALLOW_RELATIVE_SCHEME;
+        $base = URI->new($base) unless ref $base;
+        return $self            unless $scheme eq $base->scheme;
     }
 
     $base = URI->new($base) unless ref $base;
@@ -175,12 +173,12 @@ sub abs
     return $abs if $path =~ m,^/,;
 
     if (!length($path)) {
-	my $abs = $base->clone;
-	my $query = $self->query;
-	$abs->query($query) if defined $query;
-	my $fragment = $self->fragment;
-	$abs->fragment($fragment) if defined $fragment;
-	return $abs;
+        my $abs   = $base->clone;
+        my $query = $self->query;
+        $abs->query($query) if defined $query;
+        my $fragment = $self->fragment;
+        $abs->fragment($fragment) if defined $fragment;
+        return $abs;
     }
 
     my $p = $base->path;
@@ -190,23 +188,24 @@ sub abs
     shift(@p) if @p && !length($p[0]);
     my $i = 1;
     while ($i < @p) {
-	#print "$i ", join("/", @p), " ($p[$i])\n";
-	if ($p[$i-1] eq ".") {
-	    splice(@p, $i-1, 1);
-	    $i-- if $i > 1;
-	}
-	elsif ($p[$i] eq ".." && $p[$i-1] ne "..") {
-	    splice(@p, $i-1, 2);
-	    if ($i > 1) {
-		$i--;
-		push(@p, "") if $i == @p;
-	    }
-	}
-	else {
-	    $i++;
-	}
+
+        #print "$i ", join("/", @p), " ($p[$i])\n";
+        if ($p[$i - 1] eq ".") {
+            splice(@p, $i - 1, 1);
+            $i-- if $i > 1;
+        }
+        elsif ($p[$i] eq ".." && $p[$i - 1] ne "..") {
+            splice(@p, $i - 1, 2);
+            if ($i > 1) {
+                $i--;
+                push(@p, "") if $i == @p;
+            }
+        }
+        else {
+            $i++;
+        }
     }
-    $p[-1] = "" if @p && $p[-1] eq ".";  # trailing "/."
+    $p[-1] = "" if @p && $p[-1] eq ".";    # trailing "/."
     if ($URI::ABS_REMOTE_LEADING_DOTS) {
         shift @p while @p && $p[0] =~ /^\.\.?$/;
     }
@@ -218,7 +217,7 @@ sub abs
 sub rel {
     my $self = shift;
     my $base = shift || Carp::croak("Missing base argument");
-    my $rel = $self->clone;
+    my $rel  = $self->clone;
     $base = URI->new($base) unless ref $base;
 
     #my($scheme, $auth, $path) = @{$rel}{qw(scheme authority path)};
@@ -227,8 +226,9 @@ sub rel {
     my $path   = $rel->path;
 
     if (!defined($scheme) && !defined($auth)) {
-	# it is already relative
-	return $rel;
+
+        # it is already relative
+        return $rel;
     }
 
     #my($bscheme, $bauth, $bpath) = @{$base}{qw(scheme authority path)};
@@ -237,15 +237,16 @@ sub rel {
     my $bpath   = $base->path;
 
     for ($bscheme, $bauth, $auth) {
-	$_ = '' unless defined
+        $_ = '' unless defined;
     }
 
     unless ($scheme eq $bscheme && $auth eq $bauth) {
-	# different location, can't make it relative
-	return $rel;
+
+        # different location, can't make it relative
+        return $rel;
     }
 
-    for ($path, $bpath) {  $_ = "/$_" unless m,^/,; }
+    for ($path, $bpath) { $_ = "/$_" unless m,^/,; }
 
     # Make it relative by eliminating scheme and authority
     $rel->scheme(undef);
@@ -255,25 +256,25 @@ sub rel {
     # First we calculate common initial path components length ($li).
     my $li = 1;
     while (1) {
-	my $i = index($path, '/', $li);
-	last if $i < 0 ||
-                $i != index($bpath, '/', $li) ||
-	        substr($path,$li,$i-$li) ne substr($bpath,$li,$i-$li);
-	$li=$i+1;
+        my $i = index($path, '/', $li);
+        last
+            if $i < 0
+            || $i != index($bpath, '/', $li)
+            || substr($path, $li, $i - $li) ne substr($bpath, $li, $i - $li);
+        $li = $i + 1;
     }
-    # then we nuke it from both paths
-    substr($path, 0,$li) = '';
-    substr($bpath,0,$li) = '';
 
-    if ($path eq $bpath &&
-        defined($rel->fragment) &&
-        !defined($rel->query)) {
+    # then we nuke it from both paths
+    substr($path,  0, $li) = '';
+    substr($bpath, 0, $li) = '';
+
+    if ($path eq $bpath && defined($rel->fragment) && !defined($rel->query)) {
         $rel->path("");
     }
     else {
         # Add one "../" for each path component left in the base path
         $path = ('../' x $bpath =~ tr|/|/|) . $path;
-	$path = "./" if $path eq "";
+        $path = "./" if $path eq "";
         $rel->path($path);
     }
 

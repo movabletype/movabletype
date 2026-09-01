@@ -3,23 +3,24 @@ package URI::http;
 use strict;
 use warnings;
 
-our $VERSION = '5.35';
+our $VERSION = '5.36';
 
 use parent 'URI::_server';
 
-sub default_port { 80 }
+sub default_port {80}
 
-sub canonical
-{
-    my $self = shift;
+sub canonical {
+    my $self  = shift;
     my $other = $self->SUPER::canonical;
 
-    my $slash_path = defined($other->authority) &&
-        !length($other->path) && !defined($other->query);
+    my $slash_path
+        = defined($other->authority)
+        && !length($other->path)
+        && !defined($other->query);
 
     if ($slash_path) {
-	$other = $other->clone if $other == $self;
-	$other->path("/");
+        $other = $other->clone if $other == $self;
+        $other->path("/");
     }
     $other;
 }

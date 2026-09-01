@@ -14,17 +14,16 @@ use parent qw(URI::_server URI::_userpass);
 
 use URI::Escape ();
 
-our $VERSION = '5.35';
+our $VERSION = '5.36';
 
-sub default_port { 5060 }
+sub default_port {5060}
 
-sub authority
-{
+sub authority {
     my $self = shift;
     $$self =~ m,^($URI::scheme_re:)?([^;?]*)(.*)$,os or die;
-    my $start = $1;
+    my $start        = $1;
     my $authoritystr = $2;
-    my $rest = $3;
+    my $rest         = $3;
 
     if (@_) {
         $authoritystr = shift;
@@ -34,48 +33,46 @@ sub authority
     return $authoritystr;
 }
 
-sub params_form
-{
+sub params_form {
     my $self = shift;
     $$self =~ m,^((?:$URI::scheme_re:)?)(?:([^;?]*))?(;[^?]*)?(.*)$,os or die;
-    my $start = $1 . $2;
+    my $start    = $1 . $2;
     my $paramstr = $3;
-    my $rest = $4;
+    my $rest     = $4;
 
     if (@_) {
-	my @paramarr;
-	for (my $i = 0; $i < @_; $i += 2) {
-	    push(@paramarr, "$_[$i]=$_[$i+1]");
-	}
-	$paramstr = join(";", @paramarr);
-	$$self = $start . ";" . $paramstr . $rest;
+        my @paramarr;
+        for (my $i = 0; $i < @_; $i += 2) {
+            push(@paramarr, "$_[$i]=$_[$i+1]");
+        }
+        $paramstr = join(";", @paramarr);
+        $$self    = $start . ";" . $paramstr . $rest;
     }
     $paramstr =~ s/^;//o;
     return split(/[;=]/, $paramstr);
 }
 
-sub params
-{
+sub params {
     my $self = shift;
     $$self =~ m,^((?:$URI::scheme_re:)?)(?:([^;?]*))?(;[^?]*)?(.*)$,os or die;
-    my $start = $1 . $2;
+    my $start    = $1 . $2;
     my $paramstr = $3;
-    my $rest = $4;
+    my $rest     = $4;
 
     if (@_) {
-        $paramstr = shift; 
-        $$self = $start . ";" . $paramstr . $rest;
+        $paramstr = shift;
+        $$self    = $start . ";" . $paramstr . $rest;
     }
     $paramstr =~ s/^;//o;
     return $paramstr;
 }
 
 # Inherited methods that make no sense for a SIP URI.
-sub path {}
-sub path_query {}
-sub path_segments {}
-sub abs { shift }
-sub rel { shift }
-sub query_keywords {}
+sub path           { }
+sub path_query     { }
+sub path_segments  { }
+sub abs            {shift}
+sub rel            {shift}
+sub query_keywords { }
 
 1;
