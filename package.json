@@ -71,7 +71,7 @@
     "@sveltejs/vite-plugin-svelte": "^4.0.4",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/svelte": "^5.2.9",
-    "@testing-library/user-event": "^14.6.1",
+    "@testing-library/user-event": "^14.6.6",
     "@tsconfig/svelte": "^5.0.5",
     "@types/bootstrap": "^5.2.11",
     "@types/jquery": "^3.5.30",
