@@ -176,7 +176,7 @@
       {/each}
     </div>
   {/if}
-  {#if item.type !== "type" && filterTypeHash[item.type]}
+  {#if item.type !== "pack" && filterTypeHash[item.type]}
     <div
       data-mt-list-item-content-index="0"
       class={"filtertype type-" + item.type}
