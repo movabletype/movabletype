@@ -144,7 +144,7 @@ sub find_code_and_tag_runs {
       }
     }
   }
-  $tree->push(new_text($text)) if $text;
+  $tree->push(new_text($text)) if length($text) > 0;
 
   return $tree;
 }
@@ -174,7 +174,7 @@ sub process_char_escaping {
       $new_tree->push(new_literal($1));
       substr $node->{content}, 0, $LAST_MATCH_END[0], '';  # This resets pos($node->{content}) as we want it to.
     }
-    $new_tree->push($node) if $node->{content};
+    $new_tree->push($node) if length($node->{content}) > 0;
     return $new_tree;
   } elsif ($node->{type} eq 'html') {
     return $node;
@@ -328,7 +328,7 @@ sub parse_inline_link {
 
   # We have this variable early because we may be filling it soon if the link
   # destination was already parsed as an autolink or an html element.
-  my $target = '';
+  my $target = undef;
 
   if ($has_bracket) {
     if (my @end_target = $tree->find_in_text(qr/>/, $cur_child, $search_start + 1)) {
@@ -423,13 +423,14 @@ sub parse_inline_link {
 
   if (@target) {
     my $target_tree = $tree->extract(@target);
-    $target = $target_tree->to_source_text() unless $target;
+    $target = $target_tree->to_source_text() unless defined $target;
     $tree->extract($start[2], $start[3], $target[0], $target[1]);
   }
 
   $tree->extract(@start);
 
-  return (target => $target, ($title ? (title => $title) : ()));
+  # A link with no destination at all, like [foo](), has an empty target.
+  return (target => $target // '', (defined $title ? (title => $title) : ()));
 }
 
 sub parse_reference_link {
