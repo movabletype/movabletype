@@ -55,7 +55,10 @@ if (   $usage
 if (@blog_ids) {
     @blog_ids = split(/,/, join(',', @blog_ids));
 }
-my @blogs = MT::Blog->load( { ( @blog_ids ? ( id => @blog_ids ) : () ), } )
+else {
+    push @blog_ids, '1';
+}
+my @blogs = MT::Blog->load( { id => \@blog_ids } )
     or die "Couldn't load blogs. [" . Dumper(@blog_ids) . "]\n";
 
 # Parse template option
@@ -182,7 +185,7 @@ usage: $0
     -pass='login password of mt'
 
   optional:
-    -blog_id='target blog id.'
+    -blog_id='target blog id. (default: 1)'
     -template='target archive type'
     -count='the count of cyclic call'
     -silent='no output any logs (1|0)'
