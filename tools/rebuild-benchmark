@@ -71,9 +71,9 @@ my $ua = new LWP::UserAgent;
 
 # Create scraper object
 my $scraper = scraper {
-    process "div.msg-publishing", status_publishing => 'TEXT';
-    process "div.msg-error",      status_error      => 'TEXT';
-    process "div.msg-success",    status_success    => 'TEXT';
+    process "div.alert-publishing", status_publishing => 'TEXT';
+    process "div.alert-error",      status_error      => 'TEXT';
+    process "div.alert-success",    status_success    => 'TEXT';
 
     result 'status_publishing', 'status_error', 'status_success';
 };
