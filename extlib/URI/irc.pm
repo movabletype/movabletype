@@ -1,20 +1,20 @@
-package URI::irc;  # draft-butcher-irc-url-04
+package URI::irc;    # draft-butcher-irc-url-04
 
 use strict;
 use warnings;
 
-our $VERSION = '5.35';
+our $VERSION = '5.36';
 
 use parent 'URI::_login';
 
 use overload (
-   '""'     => sub { $_[0]->as_string  },
-   '=='     => sub {  URI::_obj_eq(@_) },
-   '!='     => sub { !URI::_obj_eq(@_) },
-   fallback => 1,
+    '""'     => sub { $_[0]->as_string },
+    '=='     => sub { URI::_obj_eq(@_) },
+    '!='     => sub { !URI::_obj_eq(@_) },
+    fallback => 1,
 );
 
-sub default_port { 6667 }
+sub default_port {6667}
 
 #   ircURL   = ircURI "://" location "/" [ entity ] [ flags ] [ options ]
 #   ircURI   = "irc" / "ircs"
@@ -41,7 +41,7 @@ sub default_port { 6667 }
 # %23 for the URL::_generic::path operations to parse correctly.
 sub _init {
     my $class = shift;
-    my $self = $class->SUPER::_init(@_);
+    my $self  = $class->SUPER::_init(@_);
     $$self =~ s|^((?:[^:/?\#]+:)?(?://[^/?\#]*)?)/\#|$1/%23|s;
     $self;
 }
@@ -55,6 +55,7 @@ sub path {
     $val =~ s|^/%23|/\#|;
     $val;
 }
+
 sub path_query {
     my $self = shift;
     my ($new) = @_;
@@ -63,9 +64,10 @@ sub path_query {
     $val =~ s|^/%23|/\#|;
     $val;
 }
+
 sub as_string {
     my $self = shift;
-    my $val = $self->SUPER::as_string;
+    my $val  = $self->SUPER::as_string;
     $val =~ s|^((?:[^:/?\#]+:)?(?://[^/?\#]*)?)/%23|$1/\#|s;
     $val;
 }
@@ -80,7 +82,7 @@ sub entity {
     if (@_) {
         my $new = shift;
         $new = '' unless defined $new;
-        $self->path( '/'.join(',', $new, @flags) );
+        $self->path('/' . join(',', $new, @flags));
     }
 
     return unless length $entity;
@@ -95,7 +97,7 @@ sub flags {
     my ($entity, @flags) = split /,/, $path;
 
     if (@_) {
-        $self->path( '/'.join(',', $entity, @_) );
+        $self->path('/' . join(',', $entity, @_));
     }
 
     @flags;
@@ -104,7 +106,7 @@ sub flags {
 sub options { shift->query_form(@_) }
 
 sub canonical {
-    my $self = shift;
+    my $self  = shift;
     my $other = $self->SUPER::canonical;
 
     # Clean up the flags
@@ -112,28 +114,23 @@ sub canonical {
     $path =~ s|^/||;
     my ($entity, @flags) = split /,/, $path;
 
-    my @clean =
-        map { $_ eq 'isnick' ? 'isuser' : $_ }  # convert isnick->isuser
-        map { lc }
+    my @clean = map { $_ eq 'isnick' ? 'isuser' : $_ }  # convert isnick->isuser
+        map {lc}
+
         # NOTE: Allow flags from draft-mirashi-url-irc-01 as well
-        grep { /^(?:is(?:user|channel|server|network|nick)|need(?:pass|key))$/i }
-        @flags
-    ;
+        grep {/^(?:is(?:user|channel|server|network|nick)|need(?:pass|key))$/i}
+        @flags;
 
     # Only allow the first type of each category, per the Butcher draft
-    my ($enttype)  = grep { /^is(?:user|channel)$/   } @clean;
-    my ($hosttype) = grep { /^is(?:server|network)$/ } @clean;
-    my @others     = grep { /^need(?:pass|key)$/ }     @clean;
+    my ($enttype)  = grep {/^is(?:user|channel)$/} @clean;
+    my ($hosttype) = grep {/^is(?:server|network)$/} @clean;
+    my @others     = grep {/^need(?:pass|key)$/} @clean;
 
-    my @new = (
-        $enttype  ? $enttype  : (),
-        $hosttype ? $hosttype : (),
-        @others,
-    );
+    my @new = ($enttype ? $enttype : (), $hosttype ? $hosttype : (), @others,);
 
     unless (join(',', @new) eq join(',', @flags)) {
         $other = $other->clone if $other == $self;
-        $other->path( '/'.join(',', $entity, @new) );
+        $other->path('/' . join(',', $entity, @new));
     }
 
     $other;

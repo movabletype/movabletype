@@ -8,21 +8,17 @@ use URI ();
 
 use overload '""' => sub { shift->as_string };
 
-our $VERSION = '5.35';
+our $VERSION = '5.36';
 
 sub new {
-    my($class, $uri, $scheme) = @_;
+    my ($class, $uri, $scheme) = @_;
     utf8::upgrade($uri);
-    return bless {
-	uri => URI->new($uri, $scheme),
-    }, $class;
+    return bless {uri => URI->new($uri, $scheme),}, $class;
 }
 
 sub clone {
     my $self = shift;
-    return bless {
-	uri => $self->{uri}->clone,
-    }, ref($self);
+    return bless {uri => $self->{uri}->clone,}, ref($self);
 }
 
 sub as_string {
@@ -31,9 +27,9 @@ sub as_string {
 }
 
 our $AUTOLOAD;
-sub AUTOLOAD
-{
-    my $method = substr($AUTOLOAD, rindex($AUTOLOAD, '::')+2);
+
+sub AUTOLOAD {
+    my $method = substr($AUTOLOAD, rindex($AUTOLOAD, '::') + 2);
 
     # We create the function here so that it will not need to be
     # autoloaded the next time.
@@ -42,6 +38,6 @@ sub AUTOLOAD
     goto &$method;
 }
 
-sub DESTROY {}   # avoid AUTOLOADing it
+sub DESTROY { }    # avoid AUTOLOADing it
 
 1;

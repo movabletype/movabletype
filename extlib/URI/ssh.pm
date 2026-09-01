@@ -3,14 +3,14 @@ package URI::ssh;
 use strict;
 use warnings;
 
-our $VERSION = '5.35';
+our $VERSION = '5.36';
 
 use parent 'URI::_login';
 
 # ssh://[USER@]HOST[:PORT]/SRC
 
-sub default_port { 22 }
+sub default_port {22}
 
-sub secure { 1 }
+sub secure {1}
 
 1;

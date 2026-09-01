@@ -7,11 +7,11 @@ package URI::ldap;
 use strict;
 use warnings;
 
-our $VERSION = '5.35';
+our $VERSION = '5.36';
 
 use parent qw(URI::_ldap URI::_server);
 
-sub default_port { 389 }
+sub default_port {389}
 
 sub _nonldap_canonical {
     my $self = shift;

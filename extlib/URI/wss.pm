@@ -3,7 +3,7 @@ package URI::wss;
 use strict;
 use warnings;
 
-our $VERSION = '5.35';
+our $VERSION = '5.36';
 
 use parent 'URI::https';
 

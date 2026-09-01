@@ -3,12 +3,12 @@ package URI::https;
 use strict;
 use warnings;
 
-our $VERSION = '5.35';
+our $VERSION = '5.36';
 
 use parent 'URI::http';
 
-sub default_port { 443 }
+sub default_port {443}
 
-sub secure { 1 }
+sub secure {1}
 
 1;

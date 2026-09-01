@@ -7,39 +7,37 @@ use parent 'URI::file::Base';
 
 use URI::Escape qw(uri_unescape);
 
-our $VERSION = '5.35';
+our $VERSION = '5.36';
 
-sub _file_extract_path
-{
-    my($class, $path) = @_;
+sub _file_extract_path {
+    my ($class, $path) = @_;
 
     # tidy path
     $path =~ s,//+,/,g;
     $path =~ s,(/\.)+/,/,g;
-    $path = "./$path" if $path =~ m,^[^:/]+:,,; # look like "scheme:"
+    $path = "./$path" if $path =~ m,^[^:/]+:,,;    # look like "scheme:"
 
     return $path;
 }
 
 sub _file_is_absolute {
-    my($class, $path) = @_;
+    my ($class, $path) = @_;
     return $path =~ m,^/,;
 }
 
-sub file
-{
+sub file {
     my $class = shift;
-    my $uri = shift;
+    my $uri   = shift;
     my @path;
 
     my $auth = $uri->authority;
     if (defined($auth)) {
-	if (lc($auth) ne "localhost" && $auth ne "") {
-	    $auth = uri_unescape($auth);
-	    unless ($class->_file_is_localhost($auth)) {
-		push(@path, "", "", $auth);
-	    }
-	}
+        if (lc($auth) ne "localhost" && $auth ne "") {
+            $auth = uri_unescape($auth);
+            unless ($class->_file_is_localhost($auth)) {
+                push(@path, "", "", $auth);
+            }
+        }
     }
 
     my @ps = $uri->path_segments;
@@ -47,9 +45,10 @@ sub file
     push(@path, @ps);
 
     for (@path) {
-	# Unix file/directory names are not allowed to contain '\0' or '/'
-	return undef if /\0/;
-	return undef if /\//;  # should we really?
+
+        # Unix file/directory names are not allowed to contain '\0' or '/'
+        return undef if /\0/;
+        return undef if /\//;    # should we really?
     }
 
     return join("/", @path);

@@ -5,13 +5,13 @@ use warnings;
 
 use parent 'URI::_login';
 
-our $VERSION = '5.35';
+our $VERSION = '5.36';
 
-sub default_port { 445 }
+sub default_port {445}
 
 sub user {
     my $self = shift;
-    my $new = shift;
+    my $new  = shift;
     my ($user, $authdomain) = _parse_user($self->SUPER::user());
     if ($new) {
         $self->SUPER::user($authdomain ? "$authdomain;$new" : $new);
@@ -22,7 +22,7 @@ sub user {
 
 sub authdomain {
     my $self = shift;
-    my $new = shift;
+    my $new  = shift;
     my ($user, $authdomain) = _parse_user($self->SUPER::user());
 
     # it must not be possible to set authdomain without user
@@ -39,7 +39,7 @@ sub sharename {
 
 sub _parse_user {
     my $input = shift or return;
-    my ($authdomain, $user) = split ';', $input, 2; 
+    my ($authdomain, $user) = split ';', $input, 2;
     return $user ? ($user, $authdomain) : $authdomain;
 }
 

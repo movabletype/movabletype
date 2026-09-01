@@ -3,12 +3,12 @@ package URI::ftpes;
 use strict;
 use warnings;
 
-our $VERSION = '5.35';
+our $VERSION = '5.36';
 
 use parent 'URI::ftp';
 
-sub secure { 1 }
+sub secure {1}
 
-sub encrypt_mode { 'explicit' }
+sub encrypt_mode {'explicit'}
 
 1;

@@ -3,12 +3,12 @@ package URI::nntps;
 use strict;
 use warnings;
 
-our $VERSION = '5.35';
+our $VERSION = '5.36';
 
 use parent 'URI::nntp';
 
-sub default_port { 563 }
+sub default_port {563}
 
-sub secure { 1 }
+sub secure {1}
 
 1;

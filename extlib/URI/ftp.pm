@@ -3,35 +3,34 @@ package URI::ftp;
 use strict;
 use warnings;
 
-our $VERSION = '5.35';
+our $VERSION = '5.36';
 
 use parent qw(URI::_server URI::_userpass);
 
-sub default_port { 21 }
+sub default_port {21}
 
-sub encrypt_mode { undef }
+sub encrypt_mode {undef}
 
-sub path { shift->path_query(@_) }  # XXX
+sub path { shift->path_query(@_) }    # XXX
 
-sub _user     { shift->SUPER::user(@_);     }
+sub _user     { shift->SUPER::user(@_); }
 sub _password { shift->SUPER::password(@_); }
 
-sub user
-{
+sub user {
     my $self = shift;
     my $user = $self->_user(@_);
     $user = "anonymous" unless defined $user;
     $user;
 }
 
-sub password
-{
+sub password {
     my $self = shift;
     my $pass = $self->_password(@_);
     unless (defined $pass) {
-	my $user = $self->user;
-	if ($user eq 'anonymous' || $user eq 'ftp') {
-	    # anonymous ftp login password
+        my $user = $self->user;
+        if ($user eq 'anonymous' || $user eq 'ftp') {
+
+            # anonymous ftp login password
             # If there is no ftp anonymous password specified
             # then we'll just use 'anonymous@'
             # We don't try to send the read e-mail address because:
@@ -39,8 +38,8 @@ sub password
             # - We want to stop SPAM
             # - We don't want to let ftp sites to discriminate by the user,
             #   host, country or ftp client being used.
-	    $pass = 'anonymous@';
-	}
+            $pass = 'anonymous@';
+        }
     }
     $pass;
 }
