@@ -907,8 +907,9 @@ our %HiddenCoreDeps = (
         url       => "https://metacpan.org/pod/Text::Wrap",
     },
     "Unicode::Normalize" => {
-        perl_core => 1.14,
-        url       => "https://metacpan.org/pod/Unicode::Normalize",
+        dropped_in => ["amazonlinux2023"],
+        perl_core  => 1.14,
+        url        => "https://metacpan.org/pod/Unicode::Normalize",
     },
 );
 
