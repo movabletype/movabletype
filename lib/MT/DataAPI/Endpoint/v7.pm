@@ -119,6 +119,19 @@ sub endpoints {
             handler         => '$Core::MT::DataAPI::Endpoint::v7::Stats::sessions_for_year',
             openapi_handler => '$Core::MT::DataAPI::Endpoint::v7::Stats::sessions_for_year_openapi_spec',
         },
+        {
+            id              => 'publish_all',
+            route           => '/publish/all',
+            verb            => 'POST',
+            version         => 7,
+            handler         => '$Core::MT::DataAPI::Endpoint::v7::Publish::all',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v7::Publish::all_openapi_spec',
+            error_codes     => {
+                400 => 'siteId is required.',
+                403 => 'Permission denied.',
+                404 => 'Site not found.',
+            },
+        },
     ];
 }
 
