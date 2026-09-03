@@ -525,7 +525,7 @@
                 tinymce.each(v.split('&'), function (v) {
                     v = v.split('=')
                     h = h || {}
-                    h[unescape(v[0])] = unescape(v[1])
+                    h[decodeURIComponent(v[0])] = decodeURIComponent(v[1])
                 })
             }
 
@@ -536,7 +536,7 @@
             var o = ''
 
             tinymce.each(v, function (v, k) {
-                o += (!o ? '' : '&') + escape(k) + '=' + escape(v)
+                o += (!o ? '' : '&') + encodeURIComponent(k) + '=' + encodeURIComponent(v)
             })
 
             this.set(n, o, e, p, d, s)
@@ -563,11 +563,11 @@
 
             if (e == -1) e = c.length
 
-            return unescape(c.substring(b + p.length, e))
+            return decodeURIComponent(c.substring(b + p.length, e))
         }
 
         static set(n, v, e, p, d, s) {
-            document.cookie = n + '=' + escape(v) + (e ? '; expires=' + e.toGMTString() : '') + (p ? '; path=' + escape(p) : '') + (d ? '; domain=' + d : '') + (s ? '; secure' : '')
+            document.cookie = n + '=' + encodeURIComponent(v) + (e ? '; expires=' + e.toGMTString() : '') + (p ? '; path=' + encodeURIComponent(p) : '') + (d ? '; domain=' + d : '') + (s ? '; secure' : '')
         }
 
         static remove(name, path, domain) {
