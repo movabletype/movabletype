@@ -18,7 +18,7 @@ jobs:
     permissions:
       contents: read
       packages: read
-    if: ${{ always() }}
+    if: ${{ !cancelled() }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -213,7 +213,7 @@ jobs:
     - test_job2
     - test_job3
     - node_lts
-    if: ${{ always() }}
+    if: ${{ !cancelled() }}
     steps:
     - name: Set Slack color
       run: echo "SLACK_COLOR=${{ contains(needs.*.result, 'failure') && 'danger' || 'good' }}" >> "$GITHUB_ENV"
