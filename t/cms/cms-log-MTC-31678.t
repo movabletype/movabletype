@@ -11,7 +11,9 @@ BEGIN {
     # force Text::CSV to fail to load.
     $ENV{PERL_TEXT_CSV} = 'Invalid Value';
 
-    $test_env = MT::Test::Env->new();
+    $test_env = MT::Test::Env->new(
+        CSVExportWithBOM => 0
+    );
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
@@ -60,8 +62,7 @@ subtest 'download is successful in spite of Text::CSV failing' => sub {
 
     my $res     = $app->post_ok($args);
     my $content = $res->content;
-    $content =~ s/^\xEF\xBB\xBF//;
-    my $io = IO::String->new($content);
+    my $io      = IO::String->new($content);
 
     require Text::CSV_PP;
     my $csv = Text::CSV_PP->new({ binary => 1 });
