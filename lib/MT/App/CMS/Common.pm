@@ -264,6 +264,7 @@ sub init_core_callbacks {
             $pkg
                 . 'delete_permission_filter.content_data' =>
                 "${pfx}ContentData::can_delete",
+            $pkg . 'pre_save.content_data' => "${pfx}ContentData::pre_save",
             $pkg . 'post_save.content_data' => "${pfx}ContentData::post_save",
             $pkg
                 . 'post_delete.content_data' =>

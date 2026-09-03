@@ -15,45 +15,40 @@ BEGIN {
 
 use MT::Test;
 use MT::Test::Permission;
+use MT::Test::Fixture;
 use MT::Test::App;
 use MT::ContentData;
 
-$test_env->prepare_fixture('db');
-
-my $blog_id = 1;
-my $content_type_id;
-
-$test_env->prepare_fixture(sub {
-    MT::Test->init_db;
-
-    my $ct = MT::Test::Permission->make_content_type(
-        name    => 'test content data',
-        blog_id => $blog_id,
-    );
-    my $cf_single_line_text_1 = MT::Test::Permission->make_content_field(
-        blog_id         => $ct->blog_id,
-        content_type_id => $ct->id,
-        name            => 'single line text (1)',
-        type            => 'single_line_text',
-    );
-
-    my $fields = [
-        {   id        => $cf_single_line_text_1->id,
-            order     => 1,
-            type      => $cf_single_line_text_1->type,
-            options   => { label => $cf_single_line_text_1->name },
-            unique_id => $cf_single_line_text_1->unique_id,
+my %spec = (
+    author => [qw/author/],
+    blog   => [
+        {   name          => 'My Site',
+            server_offset => 0,
+            site_path     => 'TEST_ROOT/site',
+            archive_path  => 'TEST_ROOT/site/archive',
         }
-    ];
-    $ct->fields($fields);
-    $ct->save or die $ct->errstr;
+    ],
+    content_type => {
+        ct => {
+            name   => 'test content data',
+            fields => [
+                cf_single_line_text => {
+                    type => 'single_line_text',
+                    name => 'single line text (1)',
+                },
+            ],
+        },
+    },
+);
 
-    $content_type_id = $ct->id;
-});
+$test_env->prepare_fixture('db');
+my $objs = MT::Test::Fixture->prepare(\%spec);
+
+my $admin = $objs->{author}{author};
+my $blog_id = $objs->{blog}{'My Site'}->id;
+my $content_type_id = $objs->{content_type}{ct}{content_type}->id;
 
 subtest 'Prepare validation tests' => sub {
-    my $admin = MT::Author->load(1);
-
     subtest 'Add item of content_data' => sub {
         ok $content_type_id, "ContentType(id: ${content_type_id}) is valid.";
         my $content_data_type = "content_data_${content_type_id}";

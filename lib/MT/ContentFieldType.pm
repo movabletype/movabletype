@@ -48,7 +48,7 @@ sub _content_type_registry {
         field_value_handler =>
             '$Core::MT::ContentFieldType::ContentType::field_value_handler',
         ss_validator =>
-            '$Core::MT::ContentFieldType::ContentType::ss_validator',
+            '$Core::MT::ContentFieldType::Common::ss_validator_multiple',
         tag_handler =>
             '$Core::MT::ContentFieldType::ContentType::tag_handler',
         feed_value_handler => '$Core::MT::ContentFieldType::ContentType::feed_value_handler',    # DEPRECATED
@@ -1140,6 +1140,8 @@ sub _tags_registry {
         site_data_import_handler =>
             '$Core::MT::ContentFieldType::Tags::site_data_import_handler',
         ss_validator => '$Core::MT::ContentFieldType::Tags::ss_validator',
+        pre_save_handler =>
+            '$Core::MT::ContentFieldType::Tags::pre_save_handler',
         tag_handler  => '$Core::MT::ContentFieldType::Tags::tag_handler',
         list_props   => {
             tags => {
