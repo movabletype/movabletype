@@ -4808,22 +4808,24 @@ sub remove_preview_file {
     if ($preview_basename) {
         require MT::Session;
         if (
-            my $tf = MT::Session->load([
+            my @tfs = MT::Session->load([
                 [{ id => $preview_basename }, '-or', { name => $preview_basename }],
                 '-and', { kind => 'TF' },
             ]))
         {
-            my $file = $tf->get('file') || $tf->name;
-            my $fmgr = $app->blog->file_mgr;
-            if ($fmgr->delete($file)) {
-                require File::Basename;
-                my $dir = File::Basename::dirname($file);
-                # MTC-26474
-                if (File::Basename::basename($dir) =~ /^mt\-preview\-/ && !glob("$dir/*")) {
-                    rmdir($dir);
+            for my $tf (@tfs) {
+                my $file = $tf->get('file') || $tf->name;
+                my $fmgr = $app->blog->file_mgr;
+                if ($fmgr->delete($file)) {
+                    require File::Basename;
+                    my $dir = File::Basename::dirname($file);
+                    # MTC-26474
+                    if (File::Basename::basename($dir) =~ /^mt\-preview\-/ && !glob("$dir/*")) {
+                        rmdir($dir);
+                    }
                 }
+                $tf->remove;
             }
-            $tf->remove;
         }
     }
 }
