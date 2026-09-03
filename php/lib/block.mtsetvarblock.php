@@ -42,9 +42,12 @@ function smarty_block_mtsetvarblock($args, $content, &$ctx, &$repeat) {
 
         if (preg_match('/^\$/', $name)) {
             $name = $vars[$name];
-            if (!isset($name))
+            if (!isset($name)) {
                 return $ctx->error($ctx->mt->translate(
-                    "You used a [_1] tag without a valid name attribute.", "<MT$tag>" ));
+                    "You used a [_1] tag without a valid name attribute.",
+                    "<MTSetVarBlock>"
+                ));
+            }
         }
 
         $value = $content;
