@@ -17,9 +17,8 @@ function score_for(&$ctx, $obj_id, $datasource, $namespace) {
     } else {
         $scores = $ctx->mt->db()->fetch_scores($namespace, $obj_id, $datasource);
         if (!isset($scores) || !$scores) {
-            return '';
+            return null;
         }
-        $sum = 0;
         foreach ($scores as $score) {
             $sum += $score->objectscore_score;
         }
