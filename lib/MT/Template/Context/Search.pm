@@ -340,6 +340,8 @@ sub _hdlr_results {
             if $this_object->can('blog') && $this_object->blog;
         local $ctx->{__stash}{content_type} = $this_object->content_type
             if $this_object->isa('MT::ContentData');
+        local $ctx->{__stash}{content_field_types} = MT->registry('content_field_types')
+            if $this_object->isa('MT::ContentData');
         my $ts;
         if ( $this_object->isa('MT::Entry') ) {
             $ts = $this_object->authored_on;

@@ -97,6 +97,9 @@ sub _hdlr_category_sets {
     my $glue = $args->{glue};
     my $vars = $ctx->{__stash}{vars} ||= {};
 
+    local $ctx->{__stash}{content_field_types} = MT->registry('content_field_types')
+        if $content_type;
+
     for my $category_set (@category_sets) {
         my $site;
         if ($ctx->{__stash}{blog} && $ctx->{__stash}{blog}->id == $category_set->blog_id) {
