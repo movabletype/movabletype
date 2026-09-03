@@ -22,7 +22,6 @@ use MT::Test::Fixture;
 use MT::Test::App;
 use Web::Query::LibXML;
 use File::Path;
-use Test::Deep qw(cmp_bag);
 
 $test_env->prepare_fixture('db');
 
