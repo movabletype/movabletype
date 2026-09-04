@@ -1419,6 +1419,9 @@ use vars qw( @ISA %Lexicon );
 	'__UNPUBLISHED' => '公開終了',
 	'rebuild indexes.' => 'インデックスを再構築する',
 
+## lib/MT/CMS/Revision.pm
+	q{[_1] (ID:[_2])'s change note ([_3]) edited by user '[_4]'} => q{[_4]が[_1] (ID:[_2])の更新メモ(保存した日:[_3])を変更しました'},
+
 ## lib/MT/CMS/Search.pm
 	'"[_1]" is invalid for "[_2]" field of "[_3]" (ID:[_4]): [_5]' => '"[_1]"は、コンテンツタイプ "[_3]" (ID:[_4])の"[_2]"フィールドの入力として無効です: [_5]',
 	'Basename' => '出力ファイル名',
@@ -5147,9 +5150,11 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/admin2023/cms/include/revision_table.tmpl
 	'*Deleted due to data breakage*' => '*データの破損のため削除されました*',
+	'Failed to save' => '保存に失敗しました',
 	'No revisions could be found.' => '変更履歴がありません。',
 	'Note' => 'メモ',
 	'Saved By' => '保存したユーザー',
+	'This revision note has been saved.' => 'メモを保存しました。',
 	'_REVISION_DATE_' => '保存した日',
 
 ## tmpl/admin2023/cms/include/scope_selector.tmpl
@@ -5794,10 +5799,6 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/admin2025/cms/include/primary_navigation.tmpl
 	'View Site' => 'サイトを見る',
 
-# tmpl/admin2025/cms/include/revision_table.tmpl
-    'This revision note has been saved.' => 'メモを保存しました。',
-    'Failed to save' => '保存に失敗しました',
-    q{[_1] (ID:[_2])'s change note ([_3]) edited by user '[_4]'} => q{[_4]が[_1] (ID:[_2])の更新メモ(保存した日:[_3])を変更しました'},
 );
 
 1;
