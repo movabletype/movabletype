@@ -553,7 +553,6 @@ use vars qw( @ISA %Lexicon );
 	'Address Book' => 'アドレス帳',
 	'Are you sure you want to delete the selected group(s)?' => '選択されているグループを削除してよろしいですか?',
 	'Are you sure you want to remove the selected member(s) from the group?' => '選択されているメンバーをグループから削除してよろしいですか?',
-	'Are you sure you want to reset the activity log?' => 'ログを消去してもよろしいですか?',
 	'Asset' => 'アセット',
 	'Assets' => 'アセット',
 	'Associations' => '関連付け',
@@ -1388,8 +1387,6 @@ use vars qw( @ISA %Lexicon );
 	'Publishing' => '公開',
 	q{Activity log before [_4] for blog '[_1]' (ID:[_2]) deleted by '[_3]'} => q{'[_3]'がブログ'[_1]'(ID:[_2])の[_4]以前のログを削除しました。},
 	q{Activity log before [_2] deleted by '[_1]'} => q{'[_1]'が[_2]以前のログを削除しました。},
-	q{Clear site '[_1]' logs} => q{サイト '[_1]' のログを削除します},
-	'Clear system-wide logs' => 'システム全体のログを削除します',
 
 ## lib/MT/CMS/Plugin.pm
 	'Added' => '追加',
@@ -4358,6 +4355,11 @@ use vars qw( @ISA %Lexicon );
 	'overwrite some existing templates with new template code' => '既存のテンプレートを新しいテンプレートで置き換えます。',
 	'potentially install new templates' => '(もしあれば)新しいテンプレートをインストールします。',
 	q{Deletes all existing templates and install the selected theme's default.} => q{全テンプレートを削除して、既定となっているテーマをインストールします。},
+
+## tmpl/admin2023/cms/dialog/reset_log.tmpl
+	'Are you sure you want to reset the activity log?' => 'ログを消去してもよろしいですか?',
+	'Clear system-wide logs' => 'システム全体のログを削除します',
+	q{Clear site '[_1]' logs} => q{サイト '[_1]' のログを削除します},
 
 ## tmpl/admin2023/cms/dialog/restore_end.tmpl
 	'All data imported successfully!' => 'すべてのデータをインポートしました。',
