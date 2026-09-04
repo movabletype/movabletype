@@ -3265,6 +3265,18 @@ use vars qw( @ISA %Lexicon );
 	'File Name' => 'ファイル名',
 	'No Preview Available.' => 'プレビューは利用できません。',
 
+## mt-static/js/build/admin2025/admin-ui.js
+	'Add to starred sites' => 'スター付きサイトに追加',
+	'Filter by site name' => 'サイト名で絞り込む',
+	'New [_1] creation' => '[_1]を新規作成',
+	'Only child sites' => '子サイトのみ',
+	'Parent Sites' => '親サイト',
+	'Parent and child sites' => '親サイトと子サイト',
+	'Remove from starred sites' => 'スター付きサイトから削除',
+	'Select target and search text...' => '対象を選んでテキスト検索...',
+	'View your site.' => 'サイトを見る',
+	'[_1]Site' => '[_1]サイト',
+
 ## mt-static/js/build/edit-author.js
 	'Are you sure you want to delete the existing password?' => '既存のパスワードを削除します。よろしいですか？',
 
@@ -5457,7 +5469,6 @@ use vars qw( @ISA %Lexicon );
 	'Success' => '完了',
 	'The files for [_1] have been published.' => '[_1]を再構築しました。',
 	'View this page.' => 'ページを見る',
-	'View your site.' => 'サイトを見る',
 	'Your [_1] archives have been published.' => '[_1]アーカイブを再構築しました。',
 	'Your [_1] templates have been published.' => '[_1]テンプレートを再構築しました。',
 
@@ -5808,22 +5819,8 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/listing/ts_job_list_header.tmpl
 	'The job(s) has been deleted from the database.' => 'ジョブをデータベースから削除しました。',
 	q{You can't delete running job(s). (ID: [_1])} => q{実行中のジョブは削除できません(ID: [_1])},
-
-## tmpl/admin2025/cms/include/content-header.tmpl
-	'New [_1] creation' => '[_1]を新規作成',
-
 ## tmpl/admin2025/cms/include/primary_navigation.tmpl
 	'View Site' => 'サイトを見る',
-
-## tmpl/admin2025/cms/include/system-header-actions.tmpl
-	'Select target and search text...' => '対象を選んでテキスト検索...',
-	'[_1]Site' => '[_1]サイト',
-	'Parent Sites' => '親サイト',
-	'Parent and child sites' => '親サイトと子サイト',
-	'Only child sites' => '子サイトのみ',
-	'Filter by site name' => 'サイト名で絞り込む',
-	'Add to starred sites' => 'スター付きサイトに追加',
-	'Remove from starred sites' => 'スター付きサイトから削除',
 
 # tmpl/admin2025/cms/include/revision_table.tmpl
     'This revision note has been saved.' => 'メモを保存しました。',
