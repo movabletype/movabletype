@@ -1112,6 +1112,7 @@ use vars qw( @ISA %Lexicon );
 	'Upload Asset' => 'アセットのアップロード',
 	'Uploaded file is not an image.' => 'アップロードしたファイルは画像ではありません。',
 	'[_1] changed' => '[_1]が変更されました',
+	'[_1] is not a valid [_2] file.' => '[_1] は、正しい[_2]ファイルではありません。',
 	'basename of user' => 'ユーザーのベースネーム',
 	'none' => 'なし',
 	'unassigned' => '(未設定)',
@@ -3443,7 +3444,6 @@ use vars qw( @ISA %Lexicon );
 ## plugins/BlockEditor/tmpl/admin2023/cms/dialog/include/asset_upload_panel.tmpl
 	'Cancelled: [_1]' => 'キャンセルされました: [_1]',
 	'The file you tried to upload is too large: [_1]' => 'アップロードしようとしたファイルは大きすぎます: [_1]',
-	'[_1] is not a valid [_2] file.' => '[_1] は、正しい[_2]ファイルではありません。',
 
 ## plugins/Comments/lib/Comments.pm
 	'(Deleted)' => '削除されたユーザー',
@@ -3885,8 +3885,6 @@ use vars qw( @ISA %Lexicon );
 	'Advanced Archive Publishing' => '高度な公開の設定',
 	'Allow properly configured template modules to be cached to enhance publishing performance.' => '再構築の速度向上のために、テンプレートモジュール毎のキャッシュ設定を有効にする',
 	'Allow to change at upload' => 'アップロード時に変更を許可する',
-	'Trim spaces before and after path' => 'パスの前後の空白を除去する',
-	'Enable file path trimming' => '前後の空白を除去する',
 	'Apache Server-Side Includes' => 'ApacheのSSI',
 	'Archive Root' => 'アーカイブパス',
 	'Archive Settings' => 'アーカイブ設定',
@@ -4976,7 +4974,9 @@ use vars qw( @ISA %Lexicon );
 	'Choose files to upload or drag files.' => 'アップロードするファイルを選択または画面にドラッグ＆ドロップしてください。（複数可）',
 	'Choose files to upload.' => 'アップロードするファイルを選択してください。',
 	'Drag and drop here' => 'ファイルをドロップしてください',
+	'Enable file path trimming' => '前後の空白を除去する',
 	'Operation for a file exists' => '既存ファイルの処理',
+	'Trim spaces before and after path' => 'パスの前後の空白を除去する',
 	'Upload Options' => 'アップロードオプション',
 	'_USAGE_UPLOAD' => 'アップロード先には、サブディレクトリを指定することが出来ます。指定されたディレクトリが存在しない場合は、作成されます。',
 
