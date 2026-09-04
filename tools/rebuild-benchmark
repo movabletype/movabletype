@@ -56,7 +56,10 @@ if (   $usage
 if (@blog_ids) {
     @blog_ids = split(/,/, join(',', @blog_ids));
 }
-my @blogs = MT::Blog->load( { ( @blog_ids ? ( id => @blog_ids ) : () ), } )
+else {
+    push @blog_ids, '1';
+}
+my @blogs = MT::Blog->load( { id => \@blog_ids } )
     or die "Couldn't load blogs. [" . Dumper(@blog_ids) . "]\n";
 
 # Parse template option
@@ -69,9 +72,9 @@ my $ua = new LWP::UserAgent;
 
 # Create scraper object
 my $scraper = scraper {
-    process "div.msg-publishing", status_publishing => 'TEXT';
-    process "div.msg-error",      status_error      => 'TEXT';
-    process "div.msg-success",    status_success    => 'TEXT';
+    process "div.alert-publishing", status_publishing => 'TEXT';
+    process "div.alert-error",      status_error      => 'TEXT';
+    process "div.alert-success",    status_success    => 'TEXT';
 
     result 'status_publishing', 'status_error', 'status_success';
 };
@@ -104,44 +107,8 @@ sub run_rebuild {
         my $start = Time::HiRes::time();
         my $total = 0;
         if ($archiver) {
-            if ( ( $archiver->entry_based || $archiver->date_based )
-                && !$entry_id )
-            {
-                my $entry_class = $archiver->entry_class || 'entry';
-                require MT::Entry;
-                my $terms = {
-                    class   => $entry_class,
-                    status  => MT::Entry::RELEASE(),
-                    blog_id => $blog->id,
-                };
-                $total = MT::Entry->count($terms);
-            }
-            elsif ( $archiver->category_based ) {
-                require MT::Category;
-                my $terms = {
-                    blog_id => $blog->id,
-                    class   => $archiver->category_class,
-                };
-                $total = MT::Category->count($terms);
-            }
-            elsif ( $archiver->author_based ) {
-                require MT::Author;
-                require MT::Entry;
-                my $terms = {
-                    blog_id => $blog->id,
-                    status  => MT::Entry::RELEASE(),
-                    class   => 'entry',
-                };
-                $total = MT::Author->count(
-                    undef,
-                    {
-                        join => MT::Entry->join_on(
-                            'author_id', $terms, { unique => 1 }
-                        ),
-                        unique => 1,
-                    }
-                );
-            }
+            require MT::CMS::Blog;
+            $total = MT::CMS::Blog::_determine_total( $archiver, $blog->id );
         }
 
         my $url =
@@ -219,7 +186,7 @@ usage: $0
     -pass='login password of mt'
 
   optional:
-    -blog_id='target blog id.'
+    -blog_id='target blog id. (default: 1)'
     -template='target archive type'
     -count='the count of cyclic call'
     -silent='no output any logs (1|0)'

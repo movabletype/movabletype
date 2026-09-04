@@ -3722,8 +3722,9 @@ sub _determine_total {
             || $archiver->contenttype_author_based
             || $archiver->contenttype_date_based )
         {
+            require MT::ContentStatus;
             my $terms = {
-                status  => MT::Entry::RELEASE(),
+                status  => MT::ContentStatus::RELEASE(),
                 blog_id => $blog_id,
                 (   $content_type_id
                     ? ( content_type_id => $content_type_id )
@@ -3763,6 +3764,7 @@ sub _determine_total {
     }
     elsif ( $archiver->author_based ) {
         require MT::Author;
+        require MT::Entry;
         my $terms = {
             blog_id => $blog_id,
             status  => MT::Entry::RELEASE(),
