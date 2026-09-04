@@ -3284,34 +3284,34 @@ use vars qw( @ISA %Lexicon );
 	'You must set a path beginning with %s or %a.' => '%s（サイトパス）か %a（アーカイブパス）から始まるパス名を指定してください。',
 	'You must set a valid path.' => '有効なパス名を指定してください。',
 
-## mt-static/plugins/BlockEditor/lib/js/blockeditor_field.js
+## mt-static/plugins/BlockEditor/lib/js/admin2023/blockeditor_field.js
 	'Edit [_1] block' => '[_1]ブロックの編集',
 
-## mt-static/plugins/BlockEditor/lib/js/fields/embed.js
+## mt-static/plugins/BlockEditor/lib/js/admin2023/fields/embed.js
 	'Embed Code' => '埋め込みコード',
 	'Please enter the embed code here.' => '埋め込みコードを入力してください',
 
-## mt-static/plugins/BlockEditor/lib/js/fields/header.js
+## mt-static/plugins/BlockEditor/lib/js/admin2023/fields/header.js
 	'Heading Level' => '見出し',
 	'Heading' => '見出し',
 	'Please enter the Header Text here.' => '見出しを入力してください。',
 
-## mt-static/plugins/BlockEditor/lib/js/fields/horizon.js
+## mt-static/plugins/BlockEditor/lib/js/admin2023/fields/horizon.js
 	'Horizontal Rule' => '水平線',
 
-## mt-static/plugins/BlockEditor/lib/js/fields/image.js
+## mt-static/plugins/BlockEditor/lib/js/admin2023/fields/image.js
 	'image' => '画像',
 
-## mt-static/plugins/BlockEditor/lib/js/fields/text.js
+## mt-static/plugins/BlockEditor/lib/js/admin2023/fields/text.js
 	'__TEXT_BLOCK__' => 'テキスト',
 
-## mt-static/plugins/BlockEditor/lib/js/jquery.blockeditor.js
+## mt-static/plugins/BlockEditor/lib/js/admin2023/jquery.blockeditor.js
 	'Select a block' => 'ブロックを選択',
 
-## mt-static/plugins/FormattedTextForTinyMCE/extension.js
+## mt-static/plugins/FormattedTextForTinyMCE6/extension.js
 	'Insert Boilerplate' => '定型文の挿入',
 
-## mt-static/plugins/TinyMCE5/lib/js/tinymce/plugins/mt/langs/plugin.js
+## mt-static/plugins/TinyMCE6/lib/js/tinymce/plugins/mt/langs/plugin.js
 	'Block Quotation' => '引用ブロック',
 	'Copy column' => '列のコピー',
 	'Cut column' => '列の切り取り',
@@ -3331,13 +3331,13 @@ use vars qw( @ISA %Lexicon );
 	'Unordered List' => '番号なしリスト',
 	'Vertical align' => '縦配置',
 
-## mt-static/plugins/TinyMCE5/lib/js/tinymce/plugins/mt/plugin.js
+## mt-static/plugins/TinyMCE6/lib/js/tinymce/plugins/mt/plugin.js
 	'HTML' => 'HTML',
 
-## mt-static/plugins/TinyMCE5/lib/js/tinymce/plugins/mt_fullscreen/langs/plugin.js
+## mt-static/plugins/TinyMCE6/lib/js/tinymce/plugins/mt_fullscreen/langs/plugin.js
 	'Fullscreen' => '全画面表示',
 
-## mt-static/plugins/TinyMCE5/tiny_mce/plugins/autosave/plugin.js
+## mt-static/plugins/TinyMCE6/tiny_mce/plugins/autosave/plugin.js
 	'You have unsaved changes are you sure you want to navigate away?' => '保存していない変更があります。移動してもよろしいですか？',
 
 ## php/lib/block.mtarchives.php
@@ -3374,7 +3374,7 @@ use vars qw( @ISA %Lexicon );
 ## plugins/BlockEditor/tmpl/admin2023/cms/dialog/asset_modal.tmpl
 	'[_1] - [_2] of [_3]' => '[_1] - [_2] / [_3]',
 
-## plugins/BlockEditor/tmpl/cms/dialog/include/asset_upload_panel.tmpl
+## plugins/BlockEditor/tmpl/admin2023/cms/dialog/include/asset_upload_panel.tmpl
 	'Cancelled: [_1]' => 'キャンセルされました: [_1]',
 	'The file you tried to upload is too large: [_1]' => 'アップロードしようとしたファイルは大きすぎます: [_1]',
 	'[_1] is not a valid [_2] file.' => '[_1] は、正しい[_2]ファイルではありません。',
@@ -3493,7 +3493,7 @@ use vars qw( @ISA %Lexicon );
 	'Boilerplate' => '定型文',
 	q{The boilerplate '[_1]' is already in use in this blog.} => q{[_1]という定型文は既にこのブログに存在しています。},
 
-## plugins/FormattedTextForTinyMCE5/lib/FormattedTextForTinyMCE5/App.pm
+## plugins/FormattedTextForTinyMCE6/lib/FormattedTextForTinyMCE6/App.pm
 	'Cannot load boilerplate.' => '定型文をロードできませんでした。',
 
 ## plugins/GoogleAnalyticsV4/lib/GoogleAnalyticsV4/App.pm
