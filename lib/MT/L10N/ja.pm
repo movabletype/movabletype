@@ -5320,7 +5320,6 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/admin2023/cms/listing/asset_list_header.tmpl
 	'You have successfully deleted the asset(s).' => 'アセットを削除しました。',
-	q{Cannot write to '[_1]'. Thumbnail of items may not be displayed.} => q{サムネイル画像を表示できません: '[_1]'へ書き込みができません。},
 
 ## tmpl/admin2023/cms/listing/association_list_header.tmpl
 	'You have successfully granted the given permission(s).' => '権限を付与しました。',
