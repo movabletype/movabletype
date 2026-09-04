@@ -20,10 +20,8 @@ use vars qw( %Lexicon );
 	'Import WordPress exported RSS into MT.' => 'WordPressからエクスポートされたRSSをMTにインポートします。',
 
 ## plugins/WXRImporter/lib/WXRImporter/Import.pm
-	'Archive Root' => 'アーカイブパス',
 	'Need either ImportAs or ParentAuthor' => '「自分の記事としてインポートする」か「記事の著者を変更しない」のどちらかを選択してください。',
 	'No Site' => 'サイトがありません',
-	'Site Root' => 'サイトパス',
 	'You need to provide a password if you are going to create new users for each user listed in your site.' => 'サイトにユーザーを追加するためには、パスワードを指定する必要があります。',
 	q{Invalid extra path '[_1]'} => q{追加パス'[_1]'が不正です。},
 
@@ -56,10 +54,12 @@ use vars qw( %Lexicon );
 	q{Saving page ('[_1]')...} => q{ウェブページ('[_1]')を保存しています...},
 
 ## plugins/WXRImporter/tmpl/admin2023/options.tmpl
+	'Archive Root' => 'アーカイブパス',
 	'Download attachments (images and files) from the imported WordPress powered blog.' => 'インポート中に、既存のWordPressで公開されているブログからAttachment（画像やファイル）をダウンロードします。',
 	'Download attachments' => 'Attachmentのダウンロード',
 	'Replace with' => '置き換えるパス',
 	'Requires the use of a cron job to download attachments from WordPress powered blog in the background.' => 'WordPressのブログからAttachmentをダウンロードするには、cronなどの決められたタイミングでプログラムを実行する環境が必要です。',
+	'Site Root' => 'サイトパス',
 	'Upload path for this WordPress blog' => 'メディアのアップロードパス',
 );
 
