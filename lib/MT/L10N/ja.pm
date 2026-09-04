@@ -499,6 +499,7 @@ use vars qw( @ISA %Lexicon );
 	'Failed to send reboot signal: [_1]' => 'プロセス再起動シグナルを送信することができませんでした: [_1]',
 	'Internal Error: Login user is not initialized.' => '内部エラー: ユーザーが初期化されていません。',
 	'Invalid login.' => 'サインインできませんでした。',
+	'Invalid pid file: [_1]' => 'PIDファイル[_1]が不正です。',
 	'Invalid request' => '不正な要求です。',
 	'Invalid row iterator' => '不正な行イテレータです。',
 	'No filename' => 'ファイル名がありません。',
@@ -1567,7 +1568,6 @@ use vars qw( @ISA %Lexicon );
 	'Invalid password recovery attempt; Cannot recover the password in this configuration' => 'パスワードの再設定に失敗しました。この構成では再設定はできません。',
 	'Invalid password recovery attempt; cannot recover password in this configuration' => 'パスワードの再設定に失敗しました。この構成では再設定はできません。',
 	'Invalid password reset request' => '不正なリクエストです。',
-	'Invalid pid file: [_1]' => 'PIDファイル[_1]が不正です。',
 	'Lockout IP address whitelist' => 'ロックアウトの除外IPアドレス',
 	'MT::Asset#[_1]: ' => 'MT::Asset#[_1]: ',
 	'Manifest file [_1] was not a valid Movable Type exported manifest file.' => '[_1]はMovable Typeで作成された正しいマニフェストファイルではありません。',
@@ -3267,6 +3267,9 @@ use vars qw( @ISA %Lexicon );
 	'File Name' => 'ファイル名',
 	'No Preview Available.' => 'プレビューは利用できません。',
 
+## mt-static/js/build/listing.js
+	'[_1] - [_2] of [_3]' => '[_1] - [_2] / [_3]',
+
 ## mt-static/js/dialog.js
 	'(None)' => '(なし)',
 
@@ -3370,9 +3373,6 @@ use vars qw( @ISA %Lexicon );
 
 ## php/mt.php
 	'Page not found - [_1]' => '[_1]が見つかりませんでした。',
-
-## plugins/BlockEditor/tmpl/admin2023/cms/dialog/asset_modal.tmpl
-	'[_1] - [_2] of [_3]' => '[_1] - [_2] / [_3]',
 
 ## plugins/BlockEditor/tmpl/admin2023/cms/dialog/include/asset_upload_panel.tmpl
 	'Cancelled: [_1]' => 'キャンセルされました: [_1]',
@@ -4539,8 +4539,6 @@ use vars qw( @ISA %Lexicon );
 	'Unpublished Time' => '公開取り消し時刻',
 	'Update this [_1]' => '[_1]の更新',
 	'Update' => '更新',
-	'Latest' => '最新',
- 	'Displaying' => '表示中',
 	'View revisions of this [_1]' => '[_1]の更新履歴を表示',
 	'View revisions' => '更新履歴を表示',
 	'Warning: If you set the basename manually, it may conflict with another content data.' => '警告: 出力ファイル名を手動で設定すると、他のコンテンツデータと衝突を起こす可能性があります。',
@@ -4723,6 +4721,7 @@ use vars qw( @ISA %Lexicon );
 	'Custom Index Template' => 'カスタムインデックステンプレート',
 	'Date & Time Field' => '日付と時刻フィールド',
 	'Disabled (<a href="[_1]">change publishing settings</a>)' => '無効(<a href="[_1]">変更する</a>)',
+	'Displaying' => '表示中',
 	'Do Not Publish' => '公開しない',
 	'Dynamically' => 'ダイナミック',
 	'Edit Widget' => 'ウィジェットの編集',
@@ -4731,6 +4730,7 @@ use vars qw( @ISA %Lexicon );
 	'Expire upon creation or modification of:' => '作成または更新後に無効にする:',
 	'Include cache path' => 'キャッシュのパス',
 	'Included Templates' => 'インクルードテンプレート',
+	'Latest' => '最新',
 	'Learn more about <a href="https://www.movabletype.org/documentation/administrator/publishing/settings.html" target="_blank">publishing settings</a>' => '<a href="http://www.movabletype.jp/documentation/administrator/publishing/settings.html" target="_blank">公開プロファイルについて</a>',
 	'Learn more about <a href="https://www.movabletype.org/documentation/appendices/archive-file-path-specifiers.html" target="_blank">Archive File Path Specifiers</a>' => '<a href="https://www.movabletype.jp/documentation/appendices/archive-file-path-specifiers.html" target="_blank">カスタムマッピング変数</a>',
 	'Link to File' => 'ファイルへのリンク',
