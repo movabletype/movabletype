@@ -14,7 +14,7 @@ our %Lexicon = (
 ## plugins/ContentInfoWidget/config.yaml
 	'Show ContentType information on the right sidebar of Edit Template.' => 'テンプレート編集画面の右サイドバーにコンテンツタイプ情報を表示します。',
 
-## plugins/ContentInfoWidget/tmpl/config.tmpl
+## plugins/ContentInfoWidget/tmpl/admin2023/config.tmpl
 	'Content Type Archive' => 'コンテンツタイプアーカイブ',
 	'Content Type Listing Archive' => 'コンテンツタイプリストアーカイブ',
 	'Index' => 'インデックス',
@@ -23,7 +23,7 @@ our %Lexicon = (
 	'Template Type' => 'テンプレートの種類',
 	'Widget' => 'ウィジェット',
 
-## plugins/ContentInfoWidget/tmpl/widget.tmpl
+## plugins/ContentInfoWidget/tmpl/admin2023/widget.tmpl
 	'Content Field' => 'コンテンツフィールド',
 	'Content Type' => 'コンテンツタイプ',
 	'Copy Unique ID' => 'ユニークIDをコピー',
