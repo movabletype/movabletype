@@ -1045,6 +1045,7 @@ use vars qw( @ISA %Lexicon );
 	'First Blog' => 'First Blog',
 	'No default templates were found.' => 'デフォルトテンプレートが見つかりませんでした。',
 	'Parent Site' => '親サイト',
+	'Site URL' => 'サイトURL',
 	'Theme' => 'テーマ',
 	'__ASSET_COUNT' => 'アセット数',
 	'__INTEGER_FILTER_EQUAL' => 'である',
@@ -1440,7 +1441,6 @@ use vars qw( @ISA %Lexicon );
 	'Output Filename' => '出力ファイル名',
 	'Page Body' => '本文',
 	'Site Root' => 'サイトパス',
-	'Site URL' => 'サイトURL',
 	'Template Name' => 'テンプレート名',
 	'Templates' => 'テンプレート',
 	'Text' => '本文',
@@ -3266,6 +3266,9 @@ use vars qw( @ISA %Lexicon );
 	'Dimensions' => '大きさ',
 	'File Name' => 'ファイル名',
 	'No Preview Available.' => 'プレビューは利用できません。',
+
+## mt-static/js/build/edit-author.js
+	'Are you sure you want to delete the existing password?' => '既存のパスワードを削除します。よろしいですか？',
 
 ## mt-static/js/build/listing.js
 	'[_1] - [_2] of [_3]' => '[_1] - [_2] / [_3]',
@@ -5817,7 +5820,6 @@ use vars qw( @ISA %Lexicon );
 	'Web Services password is successfully issued as follows.' => '下記のWEBサービスパスワードが正常に発行されました。',
 	'Please save it in a secure place since the password won\'t be shown again.' => 'パスワードの内容は今後確認できませんので、安全な場所に保管してください。',
 	'Web Services password is successfully deleted.' => 'Webサービスパスワードは正常に削除されました。',
-	'Are you sure you want to delete the existing password?' => '既存のパスワードを削除します。よろしいですか？',
 	'Copy to clipboard' => 'クリップボードにコピー',
 	'Copied' => 'コピーしました',
 
@@ -5826,6 +5828,5 @@ use vars qw( @ISA %Lexicon );
     'Failed to save' => '保存に失敗しました',
     q{[_1] (ID:[_2])'s change note ([_3]) edited by user '[_4]'} => q{[_4]が[_1] (ID:[_2])の更新メモ(保存した日:[_3])を変更しました'},
 );
-
 
 1;
