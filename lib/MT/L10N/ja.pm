@@ -1316,12 +1316,12 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/CMS/Entry.pm
 	'(user deleted - ID:[_1])' => '(削除されたユーザー - ID:[_1])',
 	'/' => '/',
+	'Create Entry' => '記事の作成',
+	'Create Page' => 'ウェブページの作成',
 	'Failed to remove relationship between [_1] (ID: [_2]) and Asset (ID: [_3]): [_4]' => '[_1] (ID:[_2])とアセット(ID:[_3])の関連付けを削除できませんでした。: [_4]',
 	'Failed to save relationship between [_1] (ID: [_2]) and Asset (ID: [_3]): [_4]' => '[_1] (ID:[_2])とアセット(ID:[_3])の関連付けを設定できませんでした。: [_4]',
 	'Need a status to update entries' => '記事を更新するにはまず公開状態を設定してください。',
 	'Need entries to update status' => '公開状態を設定するには記事が必要です。',
-	'New Entry' => '記事を作成',
-	'New Page' => 'ページを作成',
 	'No such [_1].' => '[_1]が存在しません。',
 	'One of the entries ([_1]) did not exist' => '記事(ID:[_1])は存在しませんでした。',
 	'Removing placement failed: [_1]' => '記事とカテゴリの関連付けを削除できませんでした: [_1]',
@@ -4596,8 +4596,6 @@ use vars qw( @ISA %Lexicon );
 	'Category Name' => 'カテゴリ名',
 	'Change Folder' => 'フォルダの変更',
 	'Converting to rich text may result in changes to your current document.' => 'リッチテキストに変換すると、現在のHTML構造に変更が生じる可能性があります。',
-	'Create Entry' => '記事の作成',
-	'Create Page' => 'ウェブページの作成',
 	'Delete this entry (x)' => '記事を削除 (x)',
 	'Delete this page (x)' => 'ウェブページを削除 (x)',
 	'Draggable' => 'ドラッグ可能',
@@ -5246,6 +5244,8 @@ use vars qw( @ISA %Lexicon );
 	'<mt:var name="js_message">' => '<mt:var name="js_message">',
 
 ## tmpl/admin2023/cms/list_entry.tmpl
+	'New Entry' => '記事を作成',
+	'New Page' => 'ページを作成',
 	'Quickfilters' => 'クイックフィルタ',
 	'Recent Users...' => '最近のユーザー',
 	'Remove filter' => 'フィルタしない',
