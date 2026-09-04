@@ -466,7 +466,6 @@ use vars qw( @ISA %Lexicon );
 	'Two plugins are in conflict' => 'プラグイン同士が競合しています。',
 	'TypePad' => 'TypePad',
 	'Unnamed plugin' => '(名前なし)',
-	'Version [_1]' => 'バージョン [_1]',
 	'Vox' => 'Vox',
 	'WordPress.com' => 'WordPress.com',
 	'Yahoo! JAPAN' => 'Yahoo! JAPAN',
@@ -3139,7 +3138,6 @@ use vars qw( @ISA %Lexicon );
 	'Perl include path:' => 'Perl の インクルードパス',
 	'Perl version:' => 'Perl のバージョン',
 	'Please consult the installation instructions for help in installing [_1].' => '[_1]のインストールはインストールマニュアルに沿って行ってください。',
-	'Schema version:' => 'スキーマバージョン',
 	'The following modules are <strong>optional</strong>. If your server does not have these modules installed, you only need to install them if you require the functionality that they provide.' => 'これらのモジュールのインストールは<strong>任意</strong>です。お使いのサーバーにこれらのモジュールがインストールされていない場合でも、Movable Type の基本機能は動作します。これらのモジュールの機能が必要となった場合にはインストールを行ってください。',
 	'The following modules are required by databases that can be used with Movable Type. Your server must have DBI and at least one of these related modules installed for the application to work properly.' => 'これらのモジュールは、Movable Type がデータを保存するために必要なモジュールです。DBIと、1つ以上のデータベース用のモジュールをインストールする必要があります。',
 	'The version of Perl installed on your server ([_1]) is lower than the minimum supported version ([_2]). Please upgrade to at least Perl [_2].' => 'お使いのシステムにインストールされているPerl ([_1])は、Movable Type でサポートされている最低限のバージョン[_2]を満たしていません。Perlを[_2]以上にアップグレードしてください。',
@@ -3343,7 +3341,6 @@ use vars qw( @ISA %Lexicon );
 ## mt-static/js/tc/mixer/display.js
 	'Author:' => '作者:',
 	'Description:' => '説明:',
-	'Tags:' => 'タグ:',
 	'Title:' => 'タイトル:',
 	'URL:' => 'URL:',
 
@@ -3649,9 +3646,6 @@ use vars qw( @ISA %Lexicon );
 	q{If you use an RSS reader, you can subscribe to a feed of all future entries matching '[_1]'.} => q{RSSリーダーを使うと、'[_1]'を含むすべての記事のフィードを購読することができます。},
 	q{If you use an RSS reader, you can subscribe to a feed of all future entries tagged '[_1]'.} => q{RSSリーダーを使うと、'[_1]'タグのすべての記事のフィードを購読することができます。},
 
-## themes/classic_blog/templates/comment_detail.mtml
-	'[_1] replied to <a href="[_2]">comment from [_3]</a>' => '[_1]から<a href="[_2]">[_3]</a>への返信',
-
 ## themes/classic_blog/templates/comment_listing.mtml
 	'Comment Detail' => 'コメント詳細',
 
@@ -3660,7 +3654,6 @@ use vars qw( @ISA %Lexicon );
 	'Leave a comment' => 'コメントする',
 	'Previewing your Comment' => 'コメントのプレビュー',
 	'Replying to comment from [_1]' => '[_1]からのコメントに返信',
-	'Submit' => '投稿',
 
 ## themes/classic_blog/templates/comment_response.mtml
 	'Your comment has been submitted!' => 'コメントを投稿しました。',
@@ -3687,9 +3680,6 @@ use vars qw( @ISA %Lexicon );
 ## themes/classic_website/templates/about_this_page.mtml
 	'<a href="[_1]">[_2]</a> is the next entry in this website.' => '次の記事は「<a href="[_1]">[_2]</a>」です。',
 	'<a href="[_1]">[_2]</a> was the previous entry in this website.' => 'ひとつ前の記事は「<a href="[_1]">[_2]</a>」です。',
-
-## themes/classic_website/templates/blogs.mtml
-	'Blogs' => 'ブログ',
 
 ## themes/classic_website/templates/syndication.mtml
 	q{Subscribe to this website's feed} => q{ウェブサイトを購読},
@@ -3873,6 +3863,7 @@ use vars qw( @ISA %Lexicon );
 	'Resources' => 'リソース',
 	'Run [_1]' => '[_1]を起動',
 	'Tag Attributes:' => 'タグの属性: ',
+	'Tags:' => 'タグ:',
 	'Text Filters' => 'テキストフィルタ',
 	'This plugin has not been upgraded to support Movable Type [_1]. As such, it may not be completely functional.' => 'このプラグインは、 Movable Type [_1]向けにアップグレードされていません。そのため、動作しない場合があります。',
 	'Your plugin settings have been reset.' => 'プラグインの設定をリセットしました。',
@@ -3993,7 +3984,6 @@ use vars qw( @ISA %Lexicon );
 	q{The path where your index files will be published. Do not end with '/' or '\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog} => q{インデックスファイルが公開されるパスです。末尾には'/'や'\'を含めません。},
 	q{Used to generate URLs (permalinks) for this child site's archived entries. Choose one of the archive types used in this child site's archive templates.} => q{記事にリンクするときのURLとして使われます。このサイトで使われているアーカイブテンプレートの中から選択してください。},
 	q{Used to generate URLs (permalinks) for this site's archived entries. Choose one of the archive types used in this site's archive templates.} => q{記事にリンクするときのURLとして使われます。このサイトで使われているアーカイブテンプレートの中から選択してください。},
-	q{This field is overriden by a value in the Movable Type configuration file.} => q{MTの設定ファイルによって設定されている値が優先されます。},
 
 ## tmpl/admin2023/cms/cfg_rebuild_trigger.tmpl
 	'Action' => 'アクション',
@@ -4197,6 +4187,7 @@ use vars qw( @ISA %Lexicon );
 	'On [_1], [_2] commented on [_3]' => '[_2]から[_3]へのコメント([_1])',
 	'Reply to comment' => 'コメントに返信',
 	'Submit reply (s)' => '返信を投稿 (s)',
+	'Submit' => '投稿',
 	'Your reply:' => '返信',
 
 ## tmpl/admin2023/cms/dialog/content_data_modal.tmpl
@@ -4976,6 +4967,7 @@ use vars qw( @ISA %Lexicon );
 	'Drag and drop here' => 'ファイルをドロップしてください',
 	'Enable file path trimming' => '前後の空白を除去する',
 	'Operation for a file exists' => '既存ファイルの処理',
+	'This field is overriden by a value in the Movable Type configuration file.' => 'MTの設定ファイルによって設定されている値が優先されます。',
 	'Trim spaces before and after path' => 'パスの前後の空白を除去する',
 	'Upload Options' => 'アップロードオプション',
 	'_USAGE_UPLOAD' => 'アップロード先には、サブディレクトリを指定することが出来ます。指定されたディレクトリが存在しない場合は、作成されます。',
@@ -5027,6 +5019,9 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/admin2023/cms/include/category_selector.tmpl
 	'Add sub folder' => 'サブフォルダを追加',
+
+## tmpl/admin2023/cms/include/comment_detail.tmpl
+	'[_1] replied to <a href="[_2]">comment from [_3]</a>' => '[_1]から<a href="[_2]">[_3]</a>への返信',
 
 ## tmpl/admin2023/cms/include/comment_table.tmpl
 	'([quant,_1,reply,replies])' => '(返信数 [_1])',
@@ -5163,6 +5158,7 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/admin2023/cms/include/scope_selector.tmpl
 	'(on [_1])' => '([_1])',
+	'Blogs' => 'ブログ',
 	'Create Blog (on [_1])' => 'ブログの作成 ([_1])',
 	'Create Website' => 'ウェブサイトの作成',
 	'Select another blog...' => 'ブログを選択',
@@ -5576,6 +5572,7 @@ use vars qw( @ISA %Lexicon );
 	'Memcached Status' => 'Memcachedの状態',
 	'Memcached is [_1].' => 'Memcachedは[_1]です。',
 	'Not installed' => '未インストール',
+	'Schema version:' => 'スキーマバージョン',
 	'Server Model' => 'サーバーモデル',
 	'Total Users' => '全ユーザー数',
 	'available' => '利用可能',
@@ -5596,6 +5593,7 @@ use vars qw( @ISA %Lexicon );
 	'The following Movable Type components require upgrading or installation:' => '以下のコンポーネントのアップグレード、またはインストールが必要です。',
 	'Time to Upgrade!' => 'アップグレード開始',
 	'Upgrade Check' => 'アップグレードのチェック',
+	'Version [_1]' => 'バージョン [_1]',
 	'Your Movable Type installation is already up to date.' => 'Movable Type は最新版です。',
 	q{A new version of Movable Type has been installed.  We'll need to complete a few tasks to update your database.} => q{新しいバージョンの Movable Type をインストールしました。データベースのアップグレードを実行してください。},
 	q{The Movable Type Upgrade Guide can be found <a href='[_1]' target='_blank'>here</a>.} => q{Movable Typeアップグレードガイドは<a href='https://www.movabletype.jp/documentation/upgrade/' target='_blank'>こちらを</a>参照ください。},
