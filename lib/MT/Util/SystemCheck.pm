@@ -129,6 +129,11 @@ sub check_server_model {
     $param;
 }
 
+sub _version {
+    my $version = shift;
+    eval { version->parse($version) } || 0;
+}
+
 sub check_dependencies {
     my ($class, $param) = @_;
 
@@ -199,6 +204,7 @@ sub check_dependencies {
                 version     => $list->[1],
                 required    => $list->[2],
                 description => $list->[3],
+                recommends  => $list->[4],
             );
             my $module = $hash{module};
             eval("use $module" . ($hash{version} ? " $hash{version} ();" : "();"));
@@ -206,7 +212,10 @@ sub check_dependencies {
                 $hash{exception} = $@;
                 push @missing, \%hash;
             } else {
-                $hash{installed_version} = $module->VERSION || MT->translate('unknown');
+                $hash{installed_version} = $module->VERSION // MT->translate('unknown');
+                if ($hash{recommends} and (_version($hash{recommends}) > _version($module->VERSION))) {
+                    $hash{warning} = MT->translate("Upgrading the module to at least version [_1] is recommended.", $hash{recommends});
+                }
                 if ($module eq 'DBI') {
                     $param->{dbi_is_okay} = 1;
                 } elsif ($key eq 'data' && !$param->{dbi_is_okay}) {
