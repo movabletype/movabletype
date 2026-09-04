@@ -1388,9 +1388,6 @@ use vars qw( @ISA %Lexicon );
 	'Publishing' => '公開',
 	q{Activity log before [_4] for blog '[_1]' (ID:[_2]) deleted by '[_3]'} => q{'[_3]'がブログ'[_1]'(ID:[_2])の[_4]以前のログを削除しました。},
 	q{Activity log before [_2] deleted by '[_1]'} => q{'[_1]'が[_2]以前のログを削除しました。},
-	'Specify the period' => '期間を指定する',
-	q{Download site '[_1]' logs} => q{サイト '[_1]' のログをダウンロードします},
-	'Download system-wide logs' => 'システム全体のログをダウンロードします',
 	q{Clear site '[_1]' logs} => q{サイト '[_1]' のログを削除します},
 	'Clear system-wide logs' => 'システム全体のログを削除します',
 
@@ -4271,6 +4268,20 @@ use vars qw( @ISA %Lexicon );
 	'You must specify at least one recipient.' => '少なくとも一人の受信者を指定する必要があります。',
 	q{Your [_1]'s name, title, and a link to view it will be sent in the notification. Additionally, you can add a message, include an excerpt and/or send the entire body.} => q{[_1]名、タイトル、およびパーマリンクが送られます。メッセージを追加したり、概要や本文を送ることもできます。},
 
+## tmpl/admin2023/cms/dialog/export_log.tmpl
+	'Created On' => '作成日',
+	'Download system-wide logs' => 'システム全体のログをダウンロードします',
+	'Specify the period' => '期間を指定する',
+	'[_1] and [_2]' => 'が[_1] から [_2]',
+	'_FILTER_DATE_DAYS' => 'が[_1]',
+	'__FILTER_DATE_ORIGIN' => 'が[_1]',
+	'is after' => 'より後',
+	'is before' => 'より前',
+	'is between' => 'の期間内',
+	'is within the last' => '日以内',
+	q{Download site '[_1]' logs} => q{サイト '[_1]' のログをダウンロードします},
+	q{_LOCALE_CALENDAR_HEADER_} => q{'日', '月', '火', '水', '木', '金', '土'},
+
 ## tmpl/admin2023/cms/dialog/list_revision.tmpl
 	'Select the revision to populate the values of the Edit screen.' => '編集画面に読み込む更新履歴を選んでください。',
 
@@ -4655,7 +4666,6 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/admin2023/cms/edit_group.tmpl
 	'Created By' => '作成者',
-	'Created On' => '作成日',
 	'Edit Group' => 'グループの編集',
 	'LDAP Group ID' => 'LDAPグループID',
 	'Member ([_1])' => 'メンバー([_1])',
@@ -4996,27 +5006,20 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/admin2023/cms/include/basic_filter_forms.tmpl
 	'[_1] [_2] [_3]' => '[_1] が [_3] [_2]',
-	'[_1] and [_2]' => 'が[_1] から [_2]',
 	'[_1] hours' => 'が[_1]',
-	'_FILTER_DATE_DAYS' => 'が[_1]',
-	'__FILTER_DATE_ORIGIN' => 'が[_1]',
 	'__STRING_FILTER_EQUAL' => 'である',
 	'__TIME_FILTER_HOURS' => '時間以内',
 	'contains' => 'を含む',
 	'does not contain' => 'を含まない',
 	'ends with' => 'で終わる',
 	'is after now' => 'が今日より後',
-	'is after' => 'より後',
 	'is before now' => 'が今日より前',
-	'is before' => 'より前',
-	'is between' => 'の期間内',
 	'is blank' => 'が空である',
 	'is greater than or equal to' => '以上',
 	'is greater than' => 'より大きい',
 	'is less than or equal to' => '以下',
 	'is less than' => 'より小さい',
 	'is not blank' => 'が空ではない',
-	'is within the last' => '日以内',
 	'starts with' => 'で始まる',
 
 ## tmpl/admin2023/cms/include/blog_table.tmpl
@@ -5139,7 +5142,6 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/admin2023/cms/include/old_footer.tmpl
 	'<a href="[_1]"><mt:var name="mt_product_name"></a> version [_2]' => '<a href="[_1]"><mt:var name="mt_product_name"></a> version [_2]',
 	'Your Dashboard' => 'ユーザーダッシュボード',
-	q{_LOCALE_CALENDAR_HEADER_} => q{'日', '月', '火', '水', '木', '金', '土'},
 
 ## tmpl/admin2023/cms/include/pagination.tmpl
 	'First' => '最初',
