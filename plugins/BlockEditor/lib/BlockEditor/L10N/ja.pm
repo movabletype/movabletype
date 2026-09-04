@@ -73,17 +73,6 @@ use vars qw( %Lexicon );
 	'Upload new image' => '新しい画像をアップロード',
 	'[_1] - [_2] of [_3]' => '[_1] - [_2] / [_3]',
 
-## plugins/BlockEditor/tmpl/admin2023/cms/field_html/field_html_multi_line_text.tmpl
-	'Changing to block editor is not possible to result return to your current document.' => 'ブロックエディタに変換すると、現在のHTML構造に戻れない可能性があります。',
-	'Changing to plain text is not possible to return to the block edit.' => '他の入力フォーマットへ変換すると、ブロック構造が失われます。',
-	'Converting to rich text may result in changes to your current document.' => 'リッチテキストに変換すると、現在のHTML構造に変更が生じる可能性があります。',
-	'Format:' => 'フォーマット:',
-	'No block in this field.' => 'ブロックがありません。',
-	'Preview' => 'プレビュー',
-	'Required' => '必須',
-	'Sort' => '並び替え',
-	'This field is required' => 'このフィールドは必須です。',
-
 ## plugins/BlockEditor/tmpl/admin2023/cms/dialog/include/asset_upload_panel.tmpl
 	'Cancel upload' => 'アップロードしない',
 	'Cancelled: [_1]' => 'キャンセルされました: [_1]',
@@ -108,6 +97,16 @@ use vars qw( %Lexicon );
 	'[_1] is not a valid [_2] file.' => '[_1] は、正しい[_2]ファイルではありません。',
 	'_USAGE_UPLOAD' => 'アップロード先には、サブディレクトリを指定することが出来ます。指定されたディレクトリが存在しない場合は、作成されます。',
 
+## plugins/BlockEditor/tmpl/admin2023/cms/field_html/field_html_multi_line_text.tmpl
+	'Changing to block editor is not possible to result return to your current document.' => 'ブロックエディタに変換すると、現在のHTML構造に戻れない可能性があります。',
+	'Changing to plain text is not possible to return to the block edit.' => '他の入力フォーマットへ変換すると、ブロック構造が失われます。',
+	'Converting to rich text may result in changes to your current document.' => 'リッチテキストに変換すると、現在のHTML構造に変更が生じる可能性があります。',
+	'Format:' => 'フォーマット:',
+	'No block in this field.' => 'ブロックがありません。',
+	'Preview' => 'プレビュー',
+	'Required' => '必須',
+	'Sort' => '並び替え',
+	'This field is required' => 'このフィールドは必須です。',
 
 ## plugins/BlockEditor/tmpl/admin2023/cms/include/insert_options.tmpl
 	'Align Center' => '中央揃え',
