@@ -69,6 +69,13 @@
   <mt:if name="version">
     <p><em><__trans phrase="Minimal version requirement: [_1]" params="<mt:var name="version">"></em></p>
   </mt:if>
+  <mt:if name="recommends">
+    <p><em><__trans phrase="Recommended version: [_1]" params="<mt:var name="recommends">"></em>
+  <mt:if name="installed">
+    (<__trans phrase="Installed version: [_1]" params="<mt:var name="installed">">)
+  </mt:if>
+    </p>
+  </mt:if>
   </dd>
 </mt:loop>
 </dl>

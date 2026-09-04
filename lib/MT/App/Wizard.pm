@@ -404,7 +404,7 @@ sub packages {
         my $pkg = $req->{$key};
         push @REQ,
             [
-            $key, $pkg->{version} || 0, 1, $pkg->{label},
+            $key, $pkg->{version} || 0, 1, $pkg->{label}, $pkg->{recommends} || 0,
             $key, $pkg->{link}
             ];
     }
@@ -442,6 +442,7 @@ sub packages {
                 "The [_1] database driver is required to use [_2].",
                 $driver->{dbd_package}, $label
             ),
+            $driver->{recommends} || 0,
             $label, $link, undef,
             lc( $driver->{recommended} ? '_' . $label : $label ),
             ];
@@ -460,7 +461,7 @@ sub packages {
         my $pkg = $opt->{$key};
         push @OPT,
             [
-            $key, $pkg->{version} || 0, 0, $pkg->{label},
+            $key, $pkg->{version} || 0, 0, $pkg->{label}, $pkg->{recommends} || 0,
             $key, $pkg->{link}
             ];
     }
@@ -1150,12 +1151,17 @@ sub cgipath {
     $cgipath;
 }
 
+sub _version {
+    my $version = shift;
+    eval { version->parse($version) } || 0;
+}
+
 sub module_check {
     my $self    = shift;
     my $modules = shift;
     my ( @missing, @ok );
     foreach my $ref (@$modules) {
-        my ( $mod, $ver, $req, $desc, $name, $link, $display, $sort ) = @$ref;
+        my ( $mod, $ver, $req, $desc, $recommends, $name, $link, $display, $sort ) = @$ref;
         if ( 'CODE' eq ref($desc) ) {
             $desc = $desc->();
         }
@@ -1163,6 +1169,7 @@ sub module_check {
             $desc = $self->translate($desc);
         }
         eval( "use $mod" . ( $ver ? " $ver ();" : " ();" ) );
+        my $module = $mod;
         $mod .= $ver if $mod eq 'DBD::ODBC';
         $sort = $mod unless defined $sort;
         if ($@) {
@@ -1172,6 +1179,7 @@ sub module_check {
                 version     => $ver,
                 required    => $req,
                 description => $desc,
+                recommends  => $recommends,
                 label       => $name,
                 link        => $link,
                 display     => $display,
@@ -1179,17 +1187,34 @@ sub module_check {
                 };
         }
         else {
-            push @ok,
-                {
-                module      => $mod,
-                version     => $ver,
-                required    => $req,
-                description => $desc,
-                label       => $name,
-                link        => $link,
-                display     => $display,
-                sort        => $sort,
-                };
+            if ($recommends and (_version($recommends) > _version($mod->VERSION))) {
+                push @missing,
+                    {
+                    module      => $mod,
+                    version     => $ver,
+                    required    => $req,
+                    description => $desc,
+                    recommends  => $recommends,
+                    label       => $name,
+                    link        => $link,
+                    display     => $display,
+                    sort        => $sort,
+                    installed   => $module->VERSION || 0,
+                    };
+            } else {
+                push @ok,
+                    {
+                    module      => $mod,
+                    version     => $ver,
+                    required    => $req,
+                    description => $desc,
+                    recommends  => $recommends,
+                    label       => $name,
+                    link        => $link,
+                    display     => $display,
+                    sort        => $sort,
+                    };
+            }
         }
     }
     ( \@missing, \@ok );
