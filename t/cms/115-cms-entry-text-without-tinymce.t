@@ -14,7 +14,9 @@ BEGIN {
 our $test_env;
 BEGIN {
     $test_env = MT::Test::Env->new(
-        PluginSwitch => ['TinyMCE6=0', 'TinyMCE5=0', 'TinyMCE=0'],
+
+        PluginSwitch => ['TinyMCE6=0', 'TinyMCE5=0', 'TinyMCE=0',
+            'MTRichTextEditor=0', 'FormattedTextForMTRichTextEditor=0'],
     );
     $ENV{MT_CONFIG} = $test_env->config_file;
 }

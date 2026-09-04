@@ -59,8 +59,7 @@ MT->request->reset;
 subtest 'make_list_props' => sub {
     my $props = MT::ContentData::make_list_props();
     ok( $props && ref $props eq 'HASH', 'make_list_properties returns hash' );
-    MT->registry( 'list_properties', $props )
-        ;    # registry will be updated after rebooting.
+    MT::CMS::ContentType::init_content_type(undef, MT->instance);
 };
 
 subtest 'make_title' => sub {
