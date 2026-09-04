@@ -646,6 +646,7 @@ use vars qw( @ISA %Lexicon );
 	'Upload' => 'アップロード',
 	'Use Publishing Profile' => '公開プロファイルを設定',
 	'User' => 'ユーザー',
+	'View Site' => 'サイトを見る',
 	'Web Services' => 'Webサービス',
 	'Website' => 'ウェブサイト',
 	'_WARNING_DELETE_USER' => 'ユーザーの削除操作は取り消せず、削除したユーザーは復元できません。また、このユーザーが作成した記事やウェブページ、コンテンツデータは作成者不明となります。このユーザーを利用しなくなったり、システムへのアクセスを禁止したい場合は、ユーザーのアカウントを無効にすることをおすすめします。選択したユーザーを削除してよろしいですか?',
@@ -5796,9 +5797,6 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/listing/ts_job_list_header.tmpl
 	'The job(s) has been deleted from the database.' => 'ジョブをデータベースから削除しました。',
 	q{You can't delete running job(s). (ID: [_1])} => q{実行中のジョブは削除できません(ID: [_1])},
-## tmpl/admin2025/cms/include/primary_navigation.tmpl
-	'View Site' => 'サイトを見る',
-
 );
 
 1;
