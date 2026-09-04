@@ -44,7 +44,7 @@ use vars qw( %Lexicon );
 	'Text' => '本文',
 	q{The boilerplate '[_1]' is already in use in this blog.} => q{[_1]という定型文は既にこのブログに存在しています。},
 
-## plugins/FormattedText/tmpl/cms/edit_formatted_text.tmpl
+## plugins/FormattedText/tmpl/admin2023/cms/edit_formatted_text.tmpl
 	'Edit Boilerplate' => '定型文の編集',
 	'Label' => '名前',
 	'Save Changes' => '変更を保存',
@@ -52,7 +52,7 @@ use vars qw( %Lexicon );
 	'This boilerplate has been saved.' => '定型文を保存しました。',
 	'Your changes have been saved.' => '変更を保存しました。',
 
-## plugins/FormattedText/tmpl/cms/list_formatted_text.tmpl
+## plugins/FormattedText/tmpl/admin2023/cms/list_formatted_text.tmpl
 	'The boilerplate has been deleted from the database.' => '定型文を削除しました',
 );
 
