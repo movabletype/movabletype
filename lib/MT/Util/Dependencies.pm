@@ -440,6 +440,12 @@ our %Requirements = (
         tags  => ["System", "Encoding"],
         url   => "https://metacpan.org/pod/Term::Encoding",
     },
+    "Text::CSV_XS" => {
+        label      => "This module is optional. If the latest version is installed, CSV processing will be faster.",
+        recommends => "1.60",
+        tags       => ["CSV", "Performance"],
+        url        => "https://metacpan.org/pod/Text::CSV_XS",
+    },
     "TheSchwartz" => {
         extlib => 1.18,
         label  => "This module is required to run background jobs.",
