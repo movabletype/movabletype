@@ -1101,6 +1101,7 @@ use vars qw( @ISA %Lexicon );
 	'Invalid Request.' => '不正な要求です。',
 	'Movable Type was unable to write to the "Upload Destination". Please make sure that the webserver can write to this folder.' => 'アップロード先のディレクトリに書き込みできません。ウェブサーバーから書き込みできるパーミッションを与えてください。',
 	'No permissions' => '権限がありません。',
+	'Non-ASCII characters are not allowed in filenames. Please rename the file using only ASCII characters.' => 'ファイル名にASCII文字以外の文字（日本語など）が含まれています。ファイル名には半角英数字を使用してください。',
 	'Please select a video to upload.' => 'アップロードするビデオファイルを選択してください。',
 	'Please select an audio file to upload.' => 'アップロードするオーディオファイルを選択してください。',
 	'Please select an image to upload.' => 'アップロードする画像を選択してください。',
@@ -4959,7 +4960,6 @@ use vars qw( @ISA %Lexicon );
 	'Drag and drop here' => 'ファイルをドロップしてください',
 	'Operation for a file exists' => '既存ファイルの処理',
 	'Upload Options' => 'アップロードオプション',
-	'Non-ASCII characters are not allowed in filenames. Please rename the file using only ASCII characters.' => 'ファイル名にASCII文字以外の文字（日本語など）が含まれています。ファイル名には半角英数字を使用してください。',
 	'_USAGE_UPLOAD' => 'アップロード先には、サブディレクトリを指定することが出来ます。指定されたディレクトリが存在しない場合は、作成されます。',
 
 ## tmpl/admin2023/cms/include/author_table.tmpl
