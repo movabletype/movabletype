@@ -4231,6 +4231,17 @@ use vars qw( @ISA %Lexicon );
 	'Select Trigger Event' => 'イベントを選択',
 	'Select Trigger Object' => '対象を選択',
 
+## tmpl/admin2023/cms/dialog/dialog_api_password.tmpl
+	'Copied' => 'コピーしました',
+	'Copy to clipboard' => 'クリップボードにコピー',
+	'Delete password' => 'パスワードを削除',
+	'Issue a new password' => '新しいパスワードを発行',
+	'Web Services password is successfully deleted.' => 'Webサービスパスワードは正常に削除されました。',
+	'Web Services password is successfully issued as follows.' => '下記のWEBサービスパスワードが正常に発行されました。',
+	'Web services password is not currently available.' => '現在、Webサービスパスワードは設定されていません。',
+	'You have a Web services password securely stored in the database. If you forgot the password, please delete it and issue the new one.' => 'Webサービスパスワードはすでにデータベースに安全に保存されています。パスワードを忘れたときは一度削除してから再発行してください。',
+	q{Please save it in a secure place since the password won't be shown again.} => q{パスワードの内容は今後確認できませんので、安全な場所に保管してください。},
+
 ## tmpl/admin2023/cms/dialog/edit_image.tmpl
 	'Crop' => 'トリミング',
 	'Flip horizontal' => '水平方向に反転',
@@ -5811,17 +5822,6 @@ use vars qw( @ISA %Lexicon );
 	'Filter by site name' => 'サイト名で絞り込む',
 	'Add to starred sites' => 'スター付きサイトに追加',
 	'Remove from starred sites' => 'スター付きサイトから削除',
-
-## tmpl/admin2025/cms/dialog/dialog_api_password.tmpl
-	'Web services password is not currently available.' => '現在、Webサービスパスワードは設定されていません。',
-	'You have a Web services password securely stored in the database. If you forgot the password, please delete it and issue the new one.'  => 'Webサービスパスワードはすでにデータベースに安全に保存されています。パスワードを忘れたときは一度削除してから再発行してください。',
-	'Delete password' => 'パスワードを削除',
-	'Issue a new password' => '新しいパスワードを発行',
-	'Web Services password is successfully issued as follows.' => '下記のWEBサービスパスワードが正常に発行されました。',
-	'Please save it in a secure place since the password won\'t be shown again.' => 'パスワードの内容は今後確認できませんので、安全な場所に保管してください。',
-	'Web Services password is successfully deleted.' => 'Webサービスパスワードは正常に削除されました。',
-	'Copy to clipboard' => 'クリップボードにコピー',
-	'Copied' => 'コピーしました',
 
 # tmpl/admin2025/cms/include/revision_table.tmpl
     'This revision note has been saved.' => 'メモを保存しました。',
