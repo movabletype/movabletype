@@ -2704,10 +2704,11 @@ sub remove_temporary_files {
     my $fmgr = MT::FileMgr->new('Local');
     my @ids;
     foreach my $f (@files) {
-        if ( $fmgr->delete( $f->name ) ) {
+        my $file = $f->get('file') || $f->name;
+        if ( $fmgr->delete( $file ) ) {
             # MTC-26474
             require File::Basename;
-            my $dir = File::Basename::dirname($f->name);
+            my $dir = File::Basename::dirname($file);
             if (File::Basename::basename($dir) =~ /^mt\-preview\-/ && !glob("$dir/*")) {
                 rmdir($dir);
             }

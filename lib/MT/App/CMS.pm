@@ -11,7 +11,6 @@ use warnings;
 use base qw( MT::App );
 
 use MT::CMS::ContentData;
-use MT::Util qw( perl_sha1_digest_hex );
 use MT::App::CMS::Common;
 
 sub LISTING_DATE_FORMAT ()      {'%b %e, %Y'}
@@ -4432,7 +4431,8 @@ sub preview_object_basename {
     push @parts, $content_type_id if $content_type_id;
     push @parts, $app->config->SecretToken;
     my $data = join ",", @parts;
-    return 'mt-preview-' . perl_sha1_digest_hex($data);
+    require MT::Util::Digest::SHA;
+    return 'mt-preview-' . MT::Util::Digest::SHA::sha1_hex($data);
 }
 
 sub object_edit_uri {
@@ -4807,24 +4807,25 @@ sub remove_preview_file {
 
     if ($preview_basename) {
         require MT::Session;
-        if (my $tf = MT::Session->load(
-                {   id   => $preview_basename,
-                    kind => 'TF',
-                }
-            )
-            )
+        if (
+            my @tfs = MT::Session->load([
+                [{ id => $preview_basename }, '-or', { name => $preview_basename }],
+                '-and', { kind => 'TF' },
+            ]))
         {
-            my $file = $tf->name;
-            my $fmgr = $app->blog->file_mgr;
-            if ($fmgr->delete($file)) {
-                require File::Basename;
-                my $dir = File::Basename::dirname($file);
-                # MTC-26474
-                if (File::Basename::basename($dir) =~ /^mt\-preview\-/ && !glob("$dir/*")) {
-                    rmdir($dir);
+            for my $tf (@tfs) {
+                my $file = $tf->get('file') || $tf->name;
+                my $fmgr = $app->blog->file_mgr;
+                if ($fmgr->delete($file)) {
+                    require File::Basename;
+                    my $dir = File::Basename::dirname($file);
+                    # MTC-26474
+                    if (File::Basename::basename($dir) =~ /^mt\-preview\-/ && !glob("$dir/*")) {
+                        rmdir($dir);
+                    }
                 }
+                $tf->remove;
             }
-            $tf->remove;
         }
     }
 }

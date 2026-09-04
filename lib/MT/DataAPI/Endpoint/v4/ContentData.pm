@@ -877,15 +877,16 @@ sub _preview_common {
     }
 
     my $session_class = MT->model('session');
-    my $sess = $session_class->load( { id => $preview_basename } );
+    my $sess          = $session_class->load([[{ id => $preview_basename }, '-or', { name => $preview_basename }], '-and', { kind => 'TF' }]);
     return $app->error( $app->translate('Preview data not found.'), 404 )
         unless $sess;
 
     require MT::FileMgr;
     my $fmgr    = MT::FileMgr->new('Local');
-    my $content = $fmgr->get_data( $sess->name );
+    my $file    = $sess->get('file') || $sess->name;
+    my $content = $fmgr->get_data($file);
 
-    $fmgr->delete( $sess->name );
+    $fmgr->delete($file);
     $sess->remove;
 
     return +{

@@ -1779,6 +1779,7 @@ sub _build_content_data_preview {
     my $orig_file    = '';
     my $file_ext     = '';
     my $archive_url;
+    my $preview_session_id;
     if ($tmpl_map) {
         $tmpl         = MT::Template->load( $tmpl_map->template_id );
         $archive_file = $content_data->archive_file;
@@ -1792,8 +1793,10 @@ sub _build_content_data_preview {
         my $path;
         ( $orig_file, $path ) = File::Basename::fileparse($archive_file);
         ( $file_ext ) = $orig_file =~ /(\.[^.]*)$/;
+        require MT::Util::UniqueID;
+        $preview_session_id = 'mt-preview-' . MT::Util::UniqueID::create_sha1_id(__PACKAGE__ . ':' . __LINE__);
         $archive_file
-            = File::Spec->catfile( $path, $preview_basename . $file_ext );
+            = File::Spec->catfile( $path, $preview_session_id . $file_ext );
     }
     else {
         $tmpl       = $app->load_tmpl('preview_content_data_content.tmpl');
@@ -1861,10 +1864,10 @@ sub _build_content_data_preview {
 
         if ( $fmgr->exists($path) && $fmgr->can_write($path) ) {
             $fmgr->put_data( $html, $archive_file );
-            $param{preview_file} = $preview_basename;
+            $param{preview_file} = $preview_session_id;
             my $preview_url = $content_data->archive_url;
             $preview_url
-                =~ s! / \Q$orig_file\E ( /? ) $!/$preview_basename$file_ext$1!x;
+                =~ s! / \Q$orig_file\E ( /? ) $!/$preview_session_id$file_ext$1!x;
 
             # We also have to translate the URL used for the
             # published file to be on the MT app domain.
@@ -1878,11 +1881,12 @@ sub _build_content_data_preview {
             # isn't cleaned up by re-editing, saving or cancelling on
             # by the user.
             my $sess_obj = MT::Session->get_by_key(
-                {   id   => $preview_basename,
+                {   id   => $preview_session_id,
                     kind => 'TF',                # TF = Temporary File
-                    name => $archive_file,
+                    name => $preview_basename,
                 }
             );
+            $sess_obj->set(file => $archive_file);
             $sess_obj->start(time);
             $sess_obj->save;
 
