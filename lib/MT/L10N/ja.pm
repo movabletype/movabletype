@@ -1149,7 +1149,6 @@ use vars qw( @ISA %Lexicon );
 	'Please choose a preferred archive type.' => '優先アーカイブタイプを指定してください',
 	'Plugin Settings' => 'プラグイン設定',
 	'Publish Site' => 'サイトを再構築',
-	'You can only register a maximum of [_1] starred sites.' => 'スター付きサイトは最大で[_1]件しか登録できません。',
 	'Registration Settings' => '登録/認証の設定',
 	'Saved [_1] Changes' => '[_1]の変更が保存されました',
 	'Saving blog failed: [_1]' => 'ブログを保存できませんでした: [_1]',
@@ -1162,6 +1161,7 @@ use vars qw( @ISA %Lexicon );
 	'This action can only be run on a single child site at a time.' => 'このアクションは同時に1つの子サイトでしか実行できません。',
 	'This action can only clone a child site.' => 'このアクションで複製できるのは子サイトのみです',
 	'Website Root' => 'ウェブサイトパス',
+	'You can only register a maximum of [_1] starred sites.' => 'スター付きサイトは最大で[_1]件しか登録できません。',
 	'You did not specify a blog name.' => 'ブログの名前を指定してください。',
 	'You did not specify an Archive Root.' => 'アーカイブパスを指定していません。',
 	'[_1] (ID:[_2])' => '[_1] (ID:[_2])',
@@ -1295,6 +1295,18 @@ use vars qw( @ISA %Lexicon );
 	q{Movable Type was unable to write to its 'support' directory. Please create a directory at this location: [_1], and assign permissions that will allow the web server write access to it.} => q{サポートディレクトリに書き込みできません。[_1]にディレクトリを作成して、ウェブサーバーから書き込みできるパーミッションを与えてください。},
 	q{The System Email Address is used in the 'From:' header of each email sent by Movable Type.  Email may be sent for password recovery, commenter registration, comment and trackback notification, user or IP address lockout, and a few other minor events. Please confirm your <a href="[_1]">settings.</a>} => q{このメールアドレスはMovable Typeから送られるメールの'From:'アドレスに利用されます。メールはパスワードの再設定、コメント投稿者の登録、コメントやトラックバックの通知、ユーザーまたはIPアドレスのロックアウト、その他の場合に送信されます。<a href="[_1]">設定</a>を確認してください。},
 
+## lib/MT/CMS/Deprecated/User.pm
+	'(newly created user)' => '(新規ユーザー)',
+	'Grant Permissions' => '権限の付与',
+	'Groups/Users Selected' => '選択されたユーザーとグループ',
+	'Roles Selected' => '選択されたロール',
+	'Select Groups And Users' => 'ユーザーとグループを選択',
+	'Select Roles' => 'ロールを選択',
+	'Select Site' => 'サイトを選択',
+	'Select Users' => 'ユーザーを選択',
+	'Sites Selected' => '選択されたサイト',
+	'Users Selected' => '選択されたユーザー',
+
 ## lib/MT/CMS/Entry.pm
 	'(user deleted - ID:[_1])' => '(削除されたユーザー - ID:[_1])',
 	'/' => '/',
@@ -1350,9 +1362,7 @@ use vars qw( @ISA %Lexicon );
 	'Search Groups' => 'グループを検索',
 	'Search Users' => 'ユーザーを検索',
 	'Select Groups' => 'グループを選択',
-	'Select Users' => 'ユーザーを選択',
 	'User load failed: [_1]' => 'ユーザーをロードできませんでした: [_1]',
-	'Users Selected' => '選択されたユーザー',
 	q{Group '[_1]' (ID:[_2]) deleted by '[_3]'} => q{[_3]がグループ「[_1]」(ID:[_2]) を削除しました。},
 	q{Group '[_1]' (ID:[_2]) edited by '[_3]'} => q{[_3]がグループ「[_1]」(ID:[_2])を編集しました。},
 	q{Group '[_1]' created by '[_2]'.} => q{[_2]がグループ「[_1]」を作成しました。},
@@ -1372,8 +1382,6 @@ use vars qw( @ISA %Lexicon );
 	'*Website/Blog deleted*' => '*削除されました*',
 	'All Feedback' => 'すべて',
 	'Publishing' => '公開',
-	q{Activity log for blog '[_1]' (ID:[_2]) reset by '[_3]'} => q{'[_3]'がブログ'[_1]'(ID:[_2])のログをリセットしました。},
-	q{Activity log reset by '[_1]'} => q{'[_1]'がログをリセットしました。},
 	q{Activity log before [_4] for blog '[_1]' (ID:[_2]) deleted by '[_3]'} => q{'[_3]'がブログ'[_1]'(ID:[_2])の[_4]以前のログを削除しました。},
 	q{Activity log before [_2] deleted by '[_1]'} => q{'[_1]'が[_2]以前のログを削除しました。},
 	'Specify the period' => '期間を指定する',
@@ -1407,7 +1415,6 @@ use vars qw( @ISA %Lexicon );
 	'Search Content Type' => 'コンテンツタイプを検索',
 	'Search Sites and Child Sites' => 'サイトを検索',
 	'Select Content Type' => 'コンテンツタイプを選択',
-	'Select Site' => 'サイトを選択',
 	'Select to apply this trigger to all child sites in this site.' => 'サイト内のすべての子サイトでトリガーを有効にする',
 	'Select to apply this trigger to all sites and child sites in this system.' => 'システム内のすべてのサイトと子サイトでトリガーを有効にする',
 	'TrackBack' => 'トラックバック',
@@ -1627,29 +1634,22 @@ use vars qw( @ISA %Lexicon );
 	q{User '[_1]' (user #[_2]) does not have email address} => q{ユーザー'[_1]'(ID:[_2])はメールアドレスがありません},
 
 ## lib/MT/CMS/User.pm
-	'(newly created user)' => '(新規ユーザー)',
 	'[_1] changed' => '[_1]が変更されました',
 	'Another role already exists by that name.' => '同名のロールが既に存在します。',
 	'Cannot load role #[_1].' => 'ロール: [_1]をロードできませんでした。',
 	'Create User' => 'ユーザーの作成',
 	'For improved security, please change your password' => 'セキュリティ向上の為パスワードを更新してください',
-	'Grant Permissions' => '権限の付与',
-	'Groups/Users Selected' => '選択されたユーザーとグループ',
 	'Invalid ID given for personal blog clone location ID.' => '個人用ブログの複製先のIDが不正です。',
 	'Invalid ID given for personal blog theme.' => '個人用ブログテーマのIDが不正です。',
 	'Invalid type' => 'typeが不正です。',
 	'Minimum password length must be an integer and greater than zero.' => 'パスワードの最低文字数は0以上の整数でなければなりません。',
 	'Password is changed' => 'パスワードが変更されました',
 	'Role name cannot be blank.' => 'ロールの名前は必須です。',
-	'Roles Selected' => '選択されたロール',
-	'Select Groups And Users' => 'ユーザーとグループを選択',
-	'Select Roles' => 'ロールを選択',
 	'Select a System Administrator' => 'システム管理者を選択',
 	'Select a entry author' => '記事の投稿者を選択',
 	'Select a page author' => 'ページの投稿者を選択',
 	'Selected System Administrator' => '選択されたシステム管理者',
 	'Selected author' => '選択された投稿者',
-	'Sites Selected' => '選択されたサイト',
 	'System Administrator' => 'システム管理者',
 	'Type a username to filter the choices below.' => 'ユーザー名を入力して絞り込み',
 	'User Settings' => 'ユーザー設定',
@@ -2106,6 +2106,8 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/DataAPI/Endpoint/v2/Log.pm
 	'Log message' => 'ログ',
+	q{Activity log for blog '[_1]' (ID:[_2]) reset by '[_3]'} => q{'[_3]'がブログ'[_1]'(ID:[_2])のログをリセットしました。},
+	q{Activity log reset by '[_1]'} => q{'[_1]'がログをリセットしました。},
 
 ## lib/MT/DataAPI/Endpoint/v2/Page.pm
 	q{'folder' parameter is invalid.} => q{'folder'パラメータが不正です。},
@@ -2575,6 +2577,7 @@ use vars qw( @ISA %Lexicon );
 	'Recursion attempt on [_1]: [_2]' => '[_1]でお互いがお互いを参照している状態になっています: [_2]',
 	'Recursion attempt on file: [_1]' => '[_1]でお互いがお互いを参照している状態になっています。',
 	'The entered message is displayed as a input field hint.' => '入力フィールドの説明として表示されます。',
+	'Unchecking this required, data label field will reset to default.' => 'この必須チェックを解除すると、データ識別ラベルは初期値に戻ります。',
 	'Unspecified archive template' => 'アーカイブテンプレートが指定されていません。',
 	'You used a [_1] tag without a valid name attribute.' => '[_1]タグではname属性は必須です。',
 	'You used an [_1] tag without a date context set up.' => '[_1]を日付コンテキストの外部で利用しようとしました。',
@@ -3172,7 +3175,6 @@ use vars qw( @ISA %Lexicon );
 	'Data label field have been changed to "[_2]" from "[_1]"' => 'データ識別ラベルが"[_1]"から"[_2]"に変更されました',
 	'Do you want to delete [_1]([_2])?' => '[_1]([_2])を削除しますか？',
 	'Duplicate' => '複製',
-	'Unchecking this required, data label field will reset to default.' => 'この必須チェックを解除すると、データ識別ラベルは初期値に戻ります。',
 	'Show input field to enter data label' => 'ユーザーが入力する',
 
 ## mt-static/js/admin2023/contenttype/tag/content-field.tag
@@ -3666,6 +3668,7 @@ use vars qw( @ISA %Lexicon );
 	'Display in popup' => 'ポップアップで表示する',
 	'Display on the same screen' => '同じ画面に表示する',
 	'Dutch' => 'オランダ語',
+	'Editor Setting' => 'エディタの設定',
 	'English' => '英語',
 	'Entry Fields' => '記事フィールド',
 	'Estonian' => 'エストニア語',
@@ -3711,7 +3714,6 @@ use vars qw( @ISA %Lexicon );
 	'The range for Basename Length is 15 to 250.' => 'ファイル名の文字数は、15から250の範囲で設定してください。',
 	'Unpublished' => '下書き',
 	'Use thumbnail' => 'サムネイルを利用',
-	'Editor Setting' => 'エディタの設定',
 	'You must set valid default thumbnail width.' => '有効なサムネイル画像の幅を指定してください。',
 	'Your preferences have been saved.' => '設定を保存しました。',
 	'pixels' => 'ピクセル',
@@ -4513,6 +4515,7 @@ use vars qw( @ISA %Lexicon );
 	'An error occurred while trying to recover your saved content data.' => 'コンテンツデータを元に戻す際にエラーが発生しました。',
 	'Auto-saving...' => '自動保存中...',
 	'Change note' => '変更メモ',
+	'Delete this [_1] (x)' => '[_1]を削除 (x)',
 	'Draft this [_1]' => '[_1]の下書き',
 	'Enter a label to identify this data' => 'このデータを識別するラベルを入力します',
 	'Last auto-save at [_1]:[_2]:[_3]' => '[_1]:[_2]:[_3]に自動保存済み',
@@ -4520,6 +4523,7 @@ use vars qw( @ISA %Lexicon );
 	'Not specified' => '指定されていません',
 	'One tag only' => 'ひとつのみ',
 	'Permalink:' => 'パーマリンク:',
+	'Preview this [_1] (v)' => '[_1]をプレビュー (v)',
 	'Publish On' => '公開する',
 	'Publish this [_1]' => '[_1]の公開',
 	'Published Time' => '公開時刻',
@@ -4544,8 +4548,6 @@ use vars qw( @ISA %Lexicon );
 	'You must configure this site before you can publish this content data.' => 'コンテンツデータを公開する前にサイトの設定を行ってください。',
 	'[_1] is also editing the same data (last updated at [_2]).' => '同じコンテンツデータを編集中のユーザーがいます: [_1] (最終更新日時: [_2])',
 	q{Warning: Changing this content data's basename may break inbound links.} => q{警告: このコンテンツデータの出力ファイル名の変更は、内部のリンク切れの原因となります。},
-	'Preview this [_1] (v)' => '[_1]をプレビュー (v)',
-    'Delete this [_1] (x)' => '[_1]を削除 (x)',
 
 ## tmpl/admin2023/cms/edit_content_type.tmpl
 	'1 or more label-value pairs are required' => '1つ以上の値とラベルの組み合わせが必要です。',
@@ -5592,6 +5594,10 @@ use vars qw( @ISA %Lexicon );
 	q{A new version of Movable Type has been installed.  We'll need to complete a few tasks to update your database.} => q{新しいバージョンの Movable Type をインストールしました。データベースのアップグレードを実行してください。},
 	q{The Movable Type Upgrade Guide can be found <a href='[_1]' target='_blank'>here</a>.} => q{Movable Typeアップグレードガイドは<a href='https://www.movabletype.jp/documentation/upgrade/' target='_blank'>こちらを</a>参照ください。},
 
+## tmpl/admin2023/cms/upgrade_pending.tmpl
+	'A new version of Movable Type has been installed. Please wait until an administrator completes the upgrade.' => 'Movable Typeの新しいバージョンがインストールされました。管理者がアップグレードを完了するまでお待ちください。',
+	'Upgrade Pending' => 'アップグレードの準備ができました',
+
 ## tmpl/admin2023/cms/upgrade_runner.tmpl
 	'Error during installation:' => 'インストール中にエラーが発生しました',
 	'Error during upgrade:' => 'アップグレード中にエラーが発生しました',
@@ -5774,10 +5780,6 @@ use vars qw( @ISA %Lexicon );
 	'To create a new configuration file using the Wizard, remove the current configuration file and then refresh this page' => 'ウィザードで新しく構成ファイルを作るときは、現在の構成ファイルを別の場所に移動してこのページを更新してください。',
 	q{<strong>Error: '[_1]' could not be found.</strong>  Please move your static files to the directory first or correct the setting if it is incorrect.} => q{エラー: '[_1]'が見つかりませんでした。ファイルをmt-staticディレクトリに移動するか、設定を修正してください。},
 	q{The [_1] directory is in the main Movable Type directory which this wizard script resides, but due to your web server's configuration, the [_1] directory is not accessible in this location and must be moved to a web-accessible location (e.g., your web document root directory).} => q{[_1]ディレクトリは、Movable Typeのメインディレクトリ(このウィザード自身も含まれている)以下で見つかりました。しかし現在のサーバーの構成上、[_1]ディレクトリにはWebブラウザからアクセスできません。ウェブサイトのルートディレクトリの下など、Webブラウザからアクセスできる場所に移動してください。},
-
-## tmpl/cms/upgrade_pending.tmpl
-	'Upgrade Pending' => 'アップグレードの準備ができました',
-	'A new version of Movable Type has been installed. Please wait until an administrator completes the upgrade.' => 'Movable Typeの新しいバージョンがインストールされました。管理者がアップグレードを完了するまでお待ちください。',
 
 ## tmpl/cms/include/content_data_table.tmpl
 	'Unpublish' => '公開取り消し',
