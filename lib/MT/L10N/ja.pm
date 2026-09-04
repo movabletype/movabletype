@@ -3274,6 +3274,51 @@ use vars qw( @ISA %Lexicon );
 	'View your site.' => 'サイトを見る',
 	'[_1]Site' => '[_1]サイト',
 
+## mt-static/js/build/contenttype.js
+	'Allow users to create new categories?' => 'カテゴリの作成を許可する',
+	'Allow users to create new tags?' => '新しいタグの作成を許可する',
+	'Allow users to increase/decrease cols?' => '列の追加と削除を許可する',
+	'Allow users to increase/decrease rows?' => '行の追加と削除を許可する',
+	'Allow users to input multiple values?' => '複数のタグを許可する',
+	'Allow users to select multiple assets?' => '複数アセットの選択を許可する',
+	'Allow users to select multiple categories?' => '複数のカテゴリの選択を許可する',
+	'Allow users to select multiple image assets?' => '複数の画像の選択を許可する',
+	'Allow users to select multiple values?' => '複数選択を許可する',
+	'Allow users to select multiple video assets?' => '複数のビデオの選択を許可する',
+	'Allow users to upload a new asset?' => 'ファイルのアップロードを許可する',
+	'Allow users to upload a new audio asset?' => '新しいオーディオファイルのアップロードを許可する',
+	'Allow users to upload a new image asset?' => '新しい画像ファイルのアップロードを許可する',
+	'Allow users to upload a new video asset?' => '新しいビデオファイルのアップロードを許可する',
+	'Initial Cols' => '初期列数',
+	'Initial Rows' => '初期行数',
+	'Initial Value (Date)' => '初期値（日付）',
+	'Initial Value (Time)' => '初期値（時刻）',
+	'Initial Value' => '初期値',
+	'Input format' => '入力フォーマット',
+	'Max Length' => '最大文字数',
+	'Max Value' => '最大値',
+	'Maximum number of selections' => '選択できる最大件数',
+	'Min Length' => '最小文字数',
+	'Min Value' => '最小値',
+	'Minimum number of selections' => '選択できる最小件数',
+	'Number of decimal places' => '小数点以下の桁数',
+	'Selected' => '選択状態',
+	'Source Category Set' => 'カテゴリセット',
+	'Source Content Type' => 'コンテンツタイプ',
+	'There is no content type that can be selected. Please create a content type if you use the Content Type field type.' => 'コンテンツタイプが存在しないため利用できません。コンテンツタイプを作成する必要があります。',
+	'This block is only visible in the administration screen for comments.' => 'このブロックはコメントのため、管理画面でのみ表示されます。',
+	'Thumbnail height' => 'サムネイル画像の最大高',
+	'Thumbnail width' => 'サムネイル画像の最大幅',
+	'Use all rich text decoration buttons' => 'リッチテキストの入力支援ボタンをすべて利用する',
+	'Value' => '値',
+	'Values' => '値',
+	'[_1]Publish[_2] your [_3] to see these changes take effect.' => '変更を反映するために、対象の[_3]を[_1]再構築[_2]してください。',
+	'[_1]Publish[_2] your site to see these changes take effect, even when publishing profile is dynamic publishing.' => 'ダイナミック・パブリッシングを利用している場合でも、設定を反映するために[_1]再構築[_2]してください。',
+	'__TEXT_LABEL_TEXT' => 'テキスト',
+	'add' => '追加',
+	'blog(s)' => 'ブログ',
+	'website(s)' => 'ウェブサイト',
+
 ## mt-static/js/build/edit-author.js
 	'Are you sure you want to delete the existing password?' => '既存のパスワードを削除します。よろしいですか？',
 
@@ -4072,75 +4117,6 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/admin2023/cms/content_data/select_list.tmpl
 	'No Content Type.' => 'コンテンツタイプがありません',
 	'Select List Content Type' => 'コンテンツタイプを選択',
-
-## tmpl/admin2023/cms/content_field_type_options/asset.tmpl
-	'Allow users to select multiple assets?' => '複数アセットの選択を許可する',
-	'Allow users to upload a new asset?' => 'ファイルのアップロードを許可する',
-	'Maximum number of selections' => '選択できる最大件数',
-	'Minimum number of selections' => '選択できる最小件数',
-
-## tmpl/admin2023/cms/content_field_type_options/asset_audio.tmpl
-	'Allow users to upload a new audio asset?' => '新しいオーディオファイルのアップロードを許可する',
-
-## tmpl/admin2023/cms/content_field_type_options/asset_image.tmpl
-	'Allow users to select multiple image assets?' => '複数の画像の選択を許可する',
-	'Allow users to upload a new image asset?' => '新しい画像ファイルのアップロードを許可する',
-	'Thumbnail height' => 'サムネイル画像の最大高',
-	'Thumbnail width' => 'サムネイル画像の最大幅',
-
-## tmpl/admin2023/cms/content_field_type_options/asset_video.tmpl
-	'Allow users to select multiple video assets?' => '複数のビデオの選択を許可する',
-	'Allow users to upload a new video asset?' => '新しいビデオファイルのアップロードを許可する',
-
-## tmpl/admin2023/cms/content_field_type_options/categories.tmpl
-	'Allow users to create new categories?' => 'カテゴリの作成を許可する',
-	'Allow users to select multiple categories?' => '複数のカテゴリの選択を許可する',
-	'Source Category Set' => 'カテゴリセット',
-
-## tmpl/admin2023/cms/content_field_type_options/checkboxes.tmpl
-	'Selected' => '選択状態',
-	'Value' => '値',
-	'Values' => '値',
-	'add' => '追加',
-
-## tmpl/admin2023/cms/content_field_type_options/content_type.tmpl
-	'Allow users to select multiple values?' => '複数選択を許可する',
-	'Source Content Type' => 'コンテンツタイプ',
-	'There is no content type that can be selected. Please create a content type if you use the Content Type field type.' => 'コンテンツタイプが存在しないため利用できません。コンテンツタイプを作成する必要があります。',
-
-## tmpl/admin2023/cms/content_field_type_options/date.tmpl
-	'Initial Value' => '初期値',
-
-## tmpl/admin2023/cms/content_field_type_options/date_time.tmpl
-	'Initial Value (Date)' => '初期値（日付）',
-	'Initial Value (Time)' => '初期値（時刻）',
-
-## tmpl/admin2023/cms/content_field_type_options/multi_line_text.tmpl
-	'Input format' => '入力フォーマット',
-	'Use all rich text decoration buttons' => 'リッチテキストの入力支援ボタンをすべて利用する',
-
-## tmpl/admin2023/cms/content_field_type_options/number.tmpl
-	'Max Value' => '最大値',
-	'Min Value' => '最小値',
-	'Number of decimal places' => '小数点以下の桁数',
-
-## tmpl/admin2023/cms/content_field_type_options/single_line_text.tmpl
-	'Max Length' => '最大文字数',
-	'Min Length' => '最小文字数',
-
-## tmpl/admin2023/cms/content_field_type_options/tables.tmpl
-	'Allow users to increase/decrease cols?' => '列の追加と削除を許可する',
-	'Allow users to increase/decrease rows?' => '行の追加と削除を許可する',
-	'Initial Cols' => '初期列数',
-	'Initial Rows' => '初期行数',
-
-## tmpl/admin2023/cms/content_field_type_options/tags.tmpl
-	'Allow users to create new tags?' => '新しいタグの作成を許可する',
-	'Allow users to input multiple values?' => '複数のタグを許可する',
-
-## tmpl/admin2023/cms/content_field_type_options/text_label.tmpl
-	'This block is only visible in the administration screen for comments.' => 'このブロックはコメントのため、管理画面でのみ表示されます。',
-	'__TEXT_LABEL_TEXT' => 'テキスト',
 
 ## tmpl/admin2023/cms/dashboard/dashboard.tmpl
 	'Dashboard' => 'ダッシュボード',
@@ -5142,12 +5118,6 @@ use vars qw( @ISA %Lexicon );
 	'PC View' => 'PC表示',
 	'Select another child site...' => '他の子サイトを選択...',
 	'Select another site...' => '他のサイトを選択...',
-
-## tmpl/admin2023/cms/include/mtapp_statusmsg.tmpl
-	'[_1]Publish[_2] your [_3] to see these changes take effect.' => '変更を反映するために、対象の[_3]を[_1]再構築[_2]してください。',
-	'[_1]Publish[_2] your site to see these changes take effect, even when publishing profile is dynamic publishing.' => 'ダイナミック・パブリッシングを利用している場合でも、設定を反映するために[_1]再構築[_2]してください。',
-	'blog(s)' => 'ブログ',
-	'website(s)' => 'ウェブサイト',
 
 ## tmpl/admin2023/cms/include/notification_table.tmpl
 	'Date Added' => '日付',
