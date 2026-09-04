@@ -679,6 +679,7 @@ use vars qw( @ISA %Lexicon );
 	'Template must be a main_index for Index archive type' => 'テンプレートはmain_indexでなれければなりません',
 	'Template must be archive listing for non-Index archive types' => 'テンプレートはインデックスではないアーカイブリストでなければなりません',
 	'The search you conducted has timed out.  Please simplify your query and try again.' => 'タイムアウトしました。お手数ですが検索をやり直してください。',
+	'Too long query. Please simplify your query to [_1] characters or less and try again.' => 'クエリーが長すぎます。お手数ですが、[_1]文字以内で検索をやり直してください。',
 	'Unsupported type: [_1]' => '[_1]はサポートされていません。',
 	'You must pass a valid archive_type with the template_id' => '正しいアーカイブタイプとテンプレートidを指定してください',
 	'template_id cannot refer to a global template' => 'template_idにグローバルテンプレートを指定することは出来ません',
@@ -1443,7 +1444,6 @@ use vars qw( @ISA %Lexicon );
 	'Templates' => 'テンプレート',
 	'Text' => '本文',
 	'Title' => 'タイトル',
-	'Too long query. Please simplify your query to [_1] characters or less and try again.' => 'クエリーが長すぎます。お手数ですが、[_1]文字以内で検索をやり直してください。',
 	'replace_handler of [_1] field is invalid' => '[_1]フィールドのreplace_handlerは不正です',
 	'ss_validator of [_1] field is invalid' => '[_1]フィールドのss_validatorは不正です',
 	q{Searched for: '[_1]' Replaced with: '[_2]'} => q{検索ワード「[_1]」を「[_2]」で置換しました},
@@ -2258,6 +2258,7 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/Filter.pm
 	'"editable_terms" and "editable_filters" cannot be specified at the same time.' => '"editable_terms"と"editable_filters"は、同時に指定できません。',
 	'Invalid filter type [_1]:[_2]' => '不正なフィルタタイプです。[_1]:[_2]',
+	'Invalid value' => '入力された値が正しくありません',
 
 ## lib/MT/Group.pm
 	'Active Groups' => '有効なグループ',
@@ -3157,7 +3158,6 @@ use vars qw( @ISA %Lexicon );
 	'Invalid URL' => 'URLのフォーマットが正しくありません',
 	'Invalid date format' => '日付の入力フォーマットが正しくありません',
 	'Invalid time format' => '時刻の入力フォーマットが正しくありません',
-	'Invalid value' => '入力された値が正しくありません',
 	'Only 1 option can be selected' => 'ひとつだけ選択できます',
 	'Options greater than or equal to [_1] must be selected' => '[_1]個以上選択してください',
 	'Options less than or equal to [_1] must be selected' => '[_1]個までしか選択できません',
@@ -3190,9 +3190,6 @@ use vars qw( @ISA %Lexicon );
 	'Please add a content field.' => 'コンテンツフィールドを追加します',
 	'Unique ID' => 'ユニークID',
 	'close' => '閉じる',
-
-## mt-static/js/admin2023/listing/list_data.js
-	'[_1] - Filter [_2]' => '[_1] - フィルタ [_2]',
 
 ## mt-static/js/admin2023/listing/listing.js
 	'Are you sure you want to [_2] this [_1]?' => '[_1]を[_2]してよろしいですか?',
@@ -3279,6 +3276,9 @@ use vars qw( @ISA %Lexicon );
 	'Tags:' => 'タグ:',
 	'Title:' => 'タイトル:',
 	'URL:' => 'URL:',
+
+## mt-static/js/listing/list_data.js
+	'[_1] - Filter [_2]' => '[_1] - フィルタ [_2]',
 
 ## mt-static/js/upload_settings.js
 	'You must set a path beginning with %s or %a.' => '%s（サイトパス）か %a（アーカイブパス）から始まるパス名を指定してください。',
@@ -3516,7 +3516,6 @@ use vars qw( @ISA %Lexicon );
 	'http://www.movabletype.org/documentation/appendices/tags/%t.html' => 'https://www.movabletype.org/documentation/appendices/tags/%t.html',
 
 ## plugins/WXRImporter/lib/WXRImporter/Import.pm
-	'Archive Root' => 'アーカイブパス',
 	'No Site' => 'サイトがありません',
 	q{Invalid extra path '[_1]'} => q{追加パス'[_1]'が不正です。},
 
@@ -3823,6 +3822,7 @@ use vars qw( @ISA %Lexicon );
 	'Trim spaces before and after path' => 'パスの前後の空白を除去する',
 	'Enable file path trimming' => '前後の空白を除去する',
 	'Apache Server-Side Includes' => 'ApacheのSSI',
+	'Archive Root' => 'アーカイブパス',
 	'Archive Settings' => 'アーカイブ設定',
 	'Archive URL' => 'アーカイブURL',
 	'Cancel upload' => 'アップロードしない',
@@ -4586,7 +4586,6 @@ use vars qw( @ISA %Lexicon );
 	'Edit Page' => 'ウェブページの編集',
 	'Enter the link address:' => 'リンクするURLを入力:',
 	'Enter the text to link to:' => 'リンクのテキストを入力:',
-	'Format:' => 'フォーマット:',
 	'Make primary' => 'メインカテゴリにする',
 	'Manage Entries' => '記事の管理',
 	'No assets' => 'アセットはありません',
@@ -4830,6 +4829,9 @@ use vars qw( @ISA %Lexicon );
 	'[_1] greater than or equal to [_2] must be selected' => '[_2]以上の[_1]を選択してください',
 	'[_1] less than or equal to [_2] must be selected' => '選択できる[_1]は[_2]以下です',
 
+## tmpl/admin2023/cms/field_html/field_html_multi_line_text.tmpl
+	'Format:' => 'フォーマット:',
+
 ## tmpl/admin2023/cms/field_html/field_html_select_box.tmpl
 	'Not Selected' => '未選択',
 
@@ -4884,6 +4886,7 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/admin2023/cms/include/alert_asset_upload.tmpl
 	q{Before you can upload a file, you must <a href='[_1]' class='alert-link'>configure your site's publishing paths</a> first.} => q{ファイルをアップロードする前に、まず<a href='[_1]' class='alert-link'>サイトパスを設定</a>してください。},
+	q{Cannot write to '[_1]'. Thumbnail of items may not be displayed.} => q{サムネイル画像を表示できません: '[_1]'へ書き込みができません。},
 
 ## tmpl/admin2023/cms/include/anonymous_comment.tmpl
 	'Allow comments from anonymous or unauthenticated users.' => '認証なしユーザーまたは匿名ユーザーからコメントを受け付ける',
@@ -4937,11 +4940,8 @@ use vars qw( @ISA %Lexicon );
 	'Upload (s)' => 'アップロード (s)',
 	'Your system or [_1] administrator needs to publish the [_1] before you can upload files. Please contact your system or [_1] administrator.' => 'ファイルアップロードができるように、システム、または[_1]管理者が[_1]を再構築する必要があります。システム、または[_1]管理者に連絡してください。',
 	'[_1] contains a character that is invalid when used in a directory name: [_2]' => '[_1]のディレクトリ名として正しくない文字が含まれています: [_2]',
-	'_USAGE_UPLOAD' => 'アップロード先には、サブディレクトリを指定することが出来ます。指定されたディレクトリが存在しない場合は、作成されます。',
 	q{Asset file('[_1]') has been uploaded.} => q{アセット('[_1]')がアップロードされました。},
 	q{Before you can upload a file, you need to publish your [_1]. [_2]Configure your [_1]'s publishing paths[_3] and republish your [_1].} => q{ファイルのアップロードができるように、[_1]を再構築する必要があります。[_2]公開パスの設定[_3]をして、[_1]を再構築してください。},
-	q{Cannot write to '[_1]'. Image upload is possible, but thumbnail is not created.} => q{ファイルのアップロードは可能ですが、'[_1]'への書き込みが行えないため、画像ファイルのサムネイルを作成する事ができません。},
-
 ## tmpl/admin2023/cms/include/async_asset_list.tmpl
 	'All Types' => 'すべてのアセット',
 	'Asset Type: ' => 'アセット種類',
@@ -4957,6 +4957,7 @@ use vars qw( @ISA %Lexicon );
 	'Operation for a file exists' => '既存ファイルの処理',
 	'Upload Options' => 'アップロードオプション',
 	'Non-ASCII characters are not allowed in filenames. Please rename the file using only ASCII characters.' => 'ファイル名にASCII文字以外の文字（日本語など）が含まれています。ファイル名には半角英数字を使用してください。',
+	'_USAGE_UPLOAD' => 'アップロード先には、サブディレクトリを指定することが出来ます。指定されたディレクトリが存在しない場合は、作成されます。',
 
 ## tmpl/admin2023/cms/include/author_table.tmpl
 	'Disable selected users (d)' => '選択したユーザーを無効化 (d)',
