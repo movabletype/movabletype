@@ -81,6 +81,7 @@ use vars qw( %Lexicon );
 	'Choose files to upload or drag files.' => 'アップロードするファイルを選択または画面にドラッグ＆ドロップしてください。（複数可）',
 	'Choose files to upload.' => 'アップロードするファイルを選択してください。',
 	'Drag and drop here' => 'ファイルをドロップしてください',
+	'Enable file path trimming' => '前後の空白を除去する',
 	'Enable orientation normalization' => '画像の向きを自動的に修正する',
 	'Normalize orientation' => '画像向きの修正',
 	'Operation for a file exists' => '既存ファイルの処理',
@@ -88,6 +89,8 @@ use vars qw( %Lexicon );
 	'Rename filename' => 'ファイル名の変更',
 	'Rename non-ascii filename automatically' => '日本語ファイル名を自動で変換する',
 	'The file you tried to upload is too large: [_1]' => 'アップロードしようとしたファイルは大きすぎます: [_1]',
+	'This field is overriden by a value in the Movable Type configuration file.' => 'MTの設定ファイルによって設定されている値が優先されます。',
+	'Trim spaces before and after path' => 'パスの前後の空白を除去する',
 	'Upload Destination' => 'アップロード先',
 	'Upload Options' => 'アップロードオプション',
 	'Upload Settings' => 'アップロードの設定',
@@ -114,9 +117,11 @@ use vars qw( %Lexicon );
 	'Align Right' => '右揃え',
 	'Alt' => '代替テキスト',
 	'Caption' => 'キャプション',
+	'Keep aspect ratio' => '縦横比を維持する',
 	'None' => 'なし',
 	'Title' => 'タイトル',
 	'Use thumbnail' => 'サムネイルを利用',
+	'height:' => '高さ:',
 	'width:' => '幅:',
 
 ## plugins/BlockEditor/tmpl/cms/dialog/multi_asset_options.tmpl
