@@ -937,9 +937,10 @@ sub optional_packages_for_wizard {
         my $hash = $Requirements{$module};
         next if $hash->{required};
         next if $hash->{tags} && $hash->{tags}[0] eq 'Database';
-        $packages{$module}{link}    = $hash->{url};
-        $packages{$module}{label}   = $hash->{label};
-        $packages{$module}{version} = $hash->{version} if $hash->{version};
+        $packages{$module}{link}       = $hash->{url};
+        $packages{$module}{label}      = $hash->{label};
+        $packages{$module}{version}    = $hash->{version}    if $hash->{version};
+        $packages{$module}{recommends} = $hash->{recommends} if $hash->{recommends};
     }
     \%packages;
 }
@@ -950,9 +951,10 @@ sub required_packages_for_wizard {
     for my $module (keys %Requirements) {
         my $hash = $Requirements{$module};
         next unless $hash->{required};
-        $packages{$module}{link}    = $hash->{url};
-        $packages{$module}{label}   = $hash->{label};
-        $packages{$module}{version} = $hash->{version} if $hash->{version};
+        $packages{$module}{link}       = $hash->{url};
+        $packages{$module}{label}      = $hash->{label};
+        $packages{$module}{version}    = $hash->{version}    if $hash->{version};
+        $packages{$module}{recommends} = $hash->{recommends} if $hash->{recommends};
     }
     \%packages;
 }
@@ -961,16 +963,17 @@ sub requirements_for_check {
     my ($class, $app) = @_;
     my (@core, @data, @opts);
     for my $module (sort keys %Requirements) {
-        my $hash     = $Requirements{$module};
-        my $label    = $app ? $app->translate($hash->{label}) : $hash->{label};
-        my $version  = $hash->{version}  || 0;
-        my $required = $hash->{required} || 0;
+        my $hash       = $Requirements{$module};
+        my $label      = $app ? $app->translate($hash->{label}) : $hash->{label};
+        my $version    = $hash->{version}    || 0;
+        my $required   = $hash->{required}   || 0;
+        my $recommends = $hash->{recommends} || 0;
         if ($hash->{tags} && $hash->{tags}[0] eq 'Database') {
-            push @data, [$module, $version, $required, $label];
+            push @data, [$module, $version, $required, $label, $recommends];
         } elsif ($required) {
-            push @core, [$module, $version, $required, $label];
+            push @core, [$module, $version, $required, $label, $recommends];
         } else {
-            push @opts, [$module, $version, $required, $label];
+            push @opts, [$module, $version, $required, $label, $recommends];
         }
     }
     return (\@core, \@data, \@opts);
