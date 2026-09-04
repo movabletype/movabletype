@@ -629,6 +629,7 @@ use vars qw( @ISA %Lexicon );
 	'Site Stats' => 'サイト情報',
 	'Sites' => 'サイト',
 	'System Information' => 'システム情報',
+	'System' => 'システム',
 	'Tags to add to selected assets' => '追加するタグを入力',
 	'Tags to add to selected entries' => '追加するタグを入力',
 	'Tags to add to selected pages' => '追加するタグを入力',
@@ -1288,7 +1289,6 @@ use vars qw( @ISA %Lexicon );
 	'Please install the required module.' => '必須モジュールをインストールしてください。',
 	'Required module [_1] (ver [_2]) is missing.' => '必須モジュール [_1] (バージョン [_2]) がインストールされていません。',
 	'Required module [_1] (ver [_2]) is too old (ver [_3]).' => '必須モジュール [_1] (バージョン [_2]) が古すぎます(バージョン [_3])。',
-	'System' => 'システム',
 	'The support directory is not writable.' => 'サポートディレクトリに書き込めません。',
 	'Unknown Content Type' => '不明なコンテンツタイプ',
 	'You should remove "SSLVerifyNone 1" in mt-config.cgi.' => 'SSLVerifyNone 環境変数の指定を mt-config.cgi から削除してください。',
@@ -1298,6 +1298,8 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/CMS/Entry.pm
 	'(user deleted - ID:[_1])' => '(削除されたユーザー - ID:[_1])',
 	'/' => '/',
+	'Failed to remove relationship between [_1] (ID: [_2]) and Asset (ID: [_3]): [_4]' => '[_1] (ID:[_2])とアセット(ID:[_3])の関連付けを削除できませんでした。: [_4]',
+	'Failed to save relationship between [_1] (ID: [_2]) and Asset (ID: [_3]): [_4]' => '[_1] (ID:[_2])とアセット(ID:[_3])の関連付けを設定できませんでした。: [_4]',
 	'Need a status to update entries' => '記事を更新するにはまず公開状態を設定してください。',
 	'Need entries to update status' => '公開状態を設定するには記事が必要です。',
 	'New Entry' => '記事を作成',
@@ -1315,8 +1317,6 @@ use vars qw( @ISA %Lexicon );
 	q{[_1] '[_2]' (ID:[_3]) edited and its status changed from [_4] to [_5] by user '[_6]'} => q{[_6]が[_1]「[_2]」(ID:[_3])を更新し、公開の状態を[_4]から[_5]に変更しました。},
 	q{[_1] '[_2]' (ID:[_3]) edited by user '[_4]'} => q{[_4]が[_1]「[_2]」(ID:[_3])を更新しました。},
 	q{[_1] '[_2]' (ID:[_3]) status changed from [_4] to [_5]} => q{[_1]「[_2] (ID:[_3])」の公開状態が[_4]から[_5]に変更されました。},
-	q{Failed to remove relationship between [_1] (ID: [_2]) and Asset (ID: [_3]): [_4]} => q{[_1] (ID:[_2])とアセット(ID:[_3])の関連付けを削除できませんでした。: [_4]},
-	q{Failed to save relationship between [_1] (ID: [_2]) and Asset (ID: [_3]): [_4]} => q{[_1] (ID:[_2])とアセット(ID:[_3])の関連付けを設定できませんでした。: [_4]},
 
 ## lib/MT/CMS/Export.pm
 	'Please select a site.' => 'サイトを選択してください。',
@@ -1902,7 +1902,6 @@ use vars qw( @ISA %Lexicon );
 	'Database Socket' => 'データベースソケット',
 	'Date Created' => '作成日',
 	'Date Modified' => '更新日',
-    'The condition must be specified with a string or a number.' => '条件は文字列、または数値で指定してください。',
 	'Days must be a number.' => '日数には数値を指定してください。',
 	'Edit All Entries' => 'すべての記事の編集',
 	'Entries List' => '記事の一覧',
@@ -1986,6 +1985,7 @@ use vars qw( @ISA %Lexicon );
 	'Sign In(Data API)' => 'Data API でのサインイン',
 	'Synchronizes content to other server(s).' => 'コンテンツを他のサーバーに同期します。',
 	'Tag' => 'タグ',
+	'The condition must be specified with a string or a number.' => '条件は文字列、または数値で指定してください。',
 	'The physical file path for your SQLite database. ' => 'SQLiteのデータベースファイルのパス',
 	'Unpublish Past Contents' => '公開期限が過ぎたコンテンツの公開を終了',
 	'Unpublish Past Entries' => '公開期限が過ぎた記事の公開を終了',
@@ -2586,6 +2586,7 @@ use vars qw( @ISA %Lexicon );
 	'mode [_1] does not return JSON' => 'mode [_1]の返値はJSONではありません',
 	'mode [_1] is ambiguous' => 'mode [_1]は一意に定まりません',
 	'mode is required' => 'modeが必要です',
+	'path is required.' => 'pathを指定してください。',
 	'records' => 'オブジェクト',
 	q{'[_1]' is not a hash.} => q{[_1]はハッシュではありません。},
 	q{'[_1]' is not a valid function for a hash.} => q{[_1]はハッシュで利用できる関数ではありません。},
@@ -2647,7 +2648,6 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/Template/Tags/Misc.pm
 	q{Specified WidgetSet '[_1]' not found.} => q{ウィジェットセット「[_1]」が見つかりません。},
-	'path is required.' => 'pathを指定してください。',
 
 ## lib/MT/Template/Tags/Tag.pm
 	'content_type modifier cannot be used with type "[_1]".' => 'content_typeモディファイアは[_1]と同時に利用できません',
@@ -3173,6 +3173,7 @@ use vars qw( @ISA %Lexicon );
 	'Do you want to delete [_1]([_2])?' => '[_1]([_2])を削除しますか？',
 	'Duplicate' => '複製',
 	'Unchecking this required, data label field will reset to default.' => 'この必須チェックを解除すると、データ識別ラベルは初期値に戻ります。',
+	'Show input field to enter data label' => 'ユーザーが入力する',
 
 ## mt-static/js/admin2023/contenttype/tag/content-field.tag
 	'ContentField' => 'コンテンツフィールド',
@@ -3185,7 +3186,6 @@ use vars qw( @ISA %Lexicon );
 	'Drag and drop area' => 'ドラッグ・アンド・ドロップ領域',
 	'Edit all' => 'すべて編集',
 	'Please add a content field.' => 'コンテンツフィールドを追加します',
-	'Show input field to enter data label' => 'ユーザーが入力する',
 	'Unique ID' => 'ユニークID',
 	'close' => '閉じる',
 
@@ -3656,8 +3656,6 @@ use vars qw( @ISA %Lexicon );
 	'Compose Defaults' => '作成の既定値',
 	'Content CSS will be applied if supported by the editor in use. You can specify CSS file by URL or {{theme_static}} placeholder. Example: {{theme_static}}path/to/cssfile.css' => 'エディタ内で利用するCSSファイルのURL又は、{{theme_static}}変数を利用したURLを指定する事ができます。エディタが対応していない場合は適用されません。例: {{theme_static}}path/to/cssfile.css',
 	'Content CSS' => 'コンテンツCSSファイル',
-	'LINK_TARGET_SELF' => '同じウィンドウ',
-	'LINK_TARGET_BLANK' => '新規ウィンドウ',
 	'Czech' => 'チェコ語',
 	'Danish' => 'デンマーク語',
 	'Date Language' => '日付の言語',
@@ -3678,6 +3676,8 @@ use vars qw( @ISA %Lexicon );
 	'Image default insertion options' => '画像挿入の既定値',
 	'Italian' => 'イタリア語',
 	'Japanese' => '日本語',
+	'LINK_TARGET_BLANK' => '新規ウィンドウ',
+	'LINK_TARGET_SELF' => '同じウィンドウ',
 	'Left' => '左',
 	'Link from image' => '画像からのリンク',
 	'Link to original image' => 'オリジナル画像にリンクする',
@@ -4796,6 +4796,7 @@ use vars qw( @ISA %Lexicon );
 	'_USAGE_EXPORT_1' => 'Movable Typeから記事をエクスポートして、基本的なデータ(記事、コメント、トラックバック)を保存できます。',
 
 ## tmpl/admin2023/cms/export_theme.tmpl
+	'Always include all options' => '常に全てのオプションをエクスポート対象にする',
 	'Author link' => '作者のページ',
 	'Basename may only contain letters, numbers, and the dash or underscore character. The basename must begin with a letter.' => 'アルファベット、数字、ダッシュ(-)、アンダースコア(_)を利用。かならずアルファベットで始めてください。',
 	'Destination' => '出力形式',
@@ -4807,7 +4808,6 @@ use vars qw( @ISA %Lexicon );
 	'_THEME_AUTHOR' => '作者名',
 	q{Cannot install new theme with existing (and protected) theme's basename.} => q{新しいテーマは既存、または保護されたテーマベース名ではインストールできません。},
 	q{Use letters, numbers, dash or underscore only (a-z, A-Z, 0-9, '-' or '_').} => q{次の文字と数字のみ利用できます: アルファベット、数字、ダッシュ(-)、アンダースコア(_)},
-  'Always include all options' => '常に全てのオプションをエクスポート対象にする',
 
 ## tmpl/admin2023/cms/field_html/field_html_asset.tmpl
 	'Assets greater than or equal to [_1] must be selected' => '[_1]以上のアセットを選択してください',
