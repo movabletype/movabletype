@@ -18,34 +18,34 @@ use vars qw( %Lexicon );
 	'Add' => '追加',
 	'Cancel' => 'キャンセル',
 
-## mt-static/plugins/BlockEditor/lib/js/blockeditor_field.js
+## mt-static/plugins/BlockEditor/lib/js/admin2023/blockeditor_field.js
 	'Delete' => '削除',
 	'Edit [_1] block' => '[_1]ブロックの編集',
 	'Edit' => '編集',
 
-## mt-static/plugins/BlockEditor/lib/js/blockeditor_field_manager.js
+## mt-static/plugins/BlockEditor/lib/js/admin2023/blockeditor_field_manager.js
 	'Move' => '移動',
 
-## mt-static/plugins/BlockEditor/lib/js/fields/embed.js
+## mt-static/plugins/BlockEditor/lib/js/admin2023/fields/embed.js
 	'Embed Code' => '埋め込みコード',
 	'Please enter the embed code here.' => '埋め込みコードを入力してください',
 
-## mt-static/plugins/BlockEditor/lib/js/fields/header.js
+## mt-static/plugins/BlockEditor/lib/js/admin2023/fields/header.js
 	'Heading Level' => '見出し',
 	'Heading' => '見出し',
 	'Please enter the Header Text here.' => '見出しを入力してください。',
 
-## mt-static/plugins/BlockEditor/lib/js/fields/horizon.js
+## mt-static/plugins/BlockEditor/lib/js/admin2023/fields/horizon.js
 	'Horizontal Rule' => '水平線',
 
-## mt-static/plugins/BlockEditor/lib/js/fields/image.js
+## mt-static/plugins/BlockEditor/lib/js/admin2023/fields/image.js
 	'Loading...' => 'ロード中...',
 	'image' => '画像',
 
-## mt-static/plugins/BlockEditor/lib/js/fields/text.js
+## mt-static/plugins/BlockEditor/lib/js/admin2023/fields/text.js
 	'__TEXT_BLOCK__' => 'テキスト',
 
-## mt-static/plugins/BlockEditor/lib/js/jquery.blockeditor.js
+## mt-static/plugins/BlockEditor/lib/js/admin2023/jquery.blockeditor.js
 	'Next' => '次',
 	'Select a block' => 'ブロックを選択',
 
@@ -84,7 +84,7 @@ use vars qw( %Lexicon );
 	'Sort' => '並び替え',
 	'This field is required' => 'このフィールドは必須です。',
 
-## plugins/BlockEditor/tmpl/cms/dialog/include/asset_upload_panel.tmpl
+## plugins/BlockEditor/tmpl/admin2023/cms/dialog/include/asset_upload_panel.tmpl
 	'Cancel upload' => 'アップロードしない',
 	'Cancelled: [_1]' => 'キャンセルされました: [_1]',
 	'Choose file to upload or drag file.' => 'アップロードするファイルを選択または画面にドラッグ＆ドロップしてください。',
@@ -111,7 +111,7 @@ use vars qw( %Lexicon );
 ## plugins/BlockEditor/tmpl/cms/dialog/multi_asset_options.tmpl
 	'This field must be a positive integer.' => 'このフィールドは0以上の整数を指定してください。',
 
-## plugins/BlockEditor/tmpl/cms/include/insert_options.tmpl
+## plugins/BlockEditor/tmpl/admin2023/cms/include/insert_options.tmpl
 	'Align Center' => '中央揃え',
 	'Align Left' => '左揃え',
 	'Align Right' => '右揃え',

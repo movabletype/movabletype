@@ -55,7 +55,7 @@ use vars qw( %Lexicon );
 	q{Saving entry ('[_1]')...} => q{記事([_1])を保存しています...},
 	q{Saving page ('[_1]')...} => q{ウェブページ('[_1]')を保存しています...},
 
-## plugins/WXRImporter/tmpl/options.tmpl
+## plugins/WXRImporter/tmpl/admin2023/options.tmpl
 	'Download attachments (images and files) from the imported WordPress powered blog.' => 'インポート中に、既存のWordPressで公開されているブログからAttachment（画像やファイル）をダウンロードします。',
 	'Download attachments' => 'Attachmentのダウンロード',
 	'Replace with' => '置き換えるパス',

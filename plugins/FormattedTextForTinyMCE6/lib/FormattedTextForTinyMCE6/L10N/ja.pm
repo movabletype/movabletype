@@ -14,16 +14,15 @@ use vars qw( %Lexicon );
 
 %Lexicon = (
 
-## plugins/FormattedTextForTinyMCE/config.yaml
+## plugins/FormattedTextForTinyMCE6/config.yaml
 	'Add the "Insert Boilerplate" button to the TinyMCE.' => 'TinyMCE に「定型文の挿入」ボタンを追加します。',
 
-## plugins/FormattedTextForTinyMCE/lib/FormattedTextForTinyMCE/App.pm
+## plugins/FormattedTextForTinyMCE6/lib/FormattedTextForTinyMCE6/App.pm
 	'Cannot load boilerplate.' => '定型文をロードできませんでした。',
 
-## plugins/FormattedTextForTinyMCE/tmpl/extension.tmpl
+## plugins/FormattedTextForTinyMCE6/tmpl/extension.tmpl
 	'Boilerplate' => '定型文',
 	'Select a Boilerplate' => '定型文を選択...',
-
 );
 
 1;
