@@ -356,6 +356,7 @@ sub find_phrases {
         tiny_mce/plugins/help/plugin.js
         tiny_mce/themes/silver/theme.js
         themes/eiger/
+        themes/eigerwand/
         themes/mont-blanc/
         themes/rainier/
         php/lib/content_field_type_lib.php
