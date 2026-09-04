@@ -1333,6 +1333,7 @@ use vars qw( @ISA %Lexicon );
 	q{[_1] '[_2]' (ID:[_3]) status changed from [_4] to [_5]} => q{[_1]「[_2] (ID:[_3])」の公開状態が[_4]から[_5]に変更されました。},
 
 ## lib/MT/CMS/Export.pm
+	'Export [_1] Entries' => '[_1]の記事をエクスポート',
 	'Please select a site.' => 'サイトを選択してください。',
 	'You do not have export permissions' => 'エクスポートする権限がありません。',
 	q{Loading site '[_1]' failed: [_2]} => q{サイト '[_1]' をロードできません: [_2]},
@@ -1372,12 +1373,11 @@ use vars qw( @ISA %Lexicon );
 	q{User '[_1]' (ID:[_2]) was added to group '[_3]' (ID:[_4]) by '[_5]'} => q{[_5]がユーザー「[_1](ID:[_2])」をグループ「[_3](ID:[_4])」に追加しました。},
 
 ## lib/MT/CMS/Import.pm
+	'Import [_1] Entries' => '[_1]に記事をインポート',
 	'Importer type [_1] was not found.' => '[_1]というインポート形式は存在しません。',
 	'You do not have import permission' => 'インポートの権限がありません。',
 	'You do not have permission to create users' => 'ユーザーを作成する権限がありません。',
 	'You need to provide a password if you are going to create new users for each user listed in your site.' => 'サイトにユーザーを追加するためには、パスワードを指定する必要があります。',
-	q{Before you import entries in your site, we recommend that you <a href='[_1]'>configure your site's publishing paths</a> first.} => q{サイトに記事をインポートする前に、まず<a href='[_1]'>サイトパスを設定</a>してください。},
-	q{Site's publishing directory does not exist. [_1]} => 'サイトパスに設定されたディレクトリが存在しません。 [_1]',
 
 ## lib/MT/CMS/Log.pm
 	'(system)' => 'システム',
@@ -4792,7 +4792,6 @@ use vars qw( @ISA %Lexicon );
 	'An error occurred' => 'エラーが発生しました。',
 
 ## tmpl/admin2023/cms/export.tmpl
-	'Export [_1] Entries' => '[_1]の記事をエクスポート',
 	'[_1] to Export' => 'エクスポートする[_1]',
 	'_USAGE_EXPORT_1' => 'Movable Typeから記事をエクスポートして、基本的なデータ(記事、コメント、トラックバック)を保存できます。',
 
@@ -4867,7 +4866,6 @@ use vars qw( @ISA %Lexicon );
 	'Import Entries (s)' => '記事をインポート (s)',
 	'Import Entries' => '記事のインポート',
 	'Import File Encoding' => 'インポートするファイルの文字コード',
-	'Import [_1] Entries' => '[_1]に記事をインポート',
 	'Import as me' => '自分の記事としてインポートする',
 	'Importing from' => 'インポート元',
 	'Ownership of imported entries' => 'インポートした記事の所有者',
@@ -4877,6 +4875,8 @@ use vars qw( @ISA %Lexicon );
 	'Upload import file (optional)' => 'インポートファイルをアップロード(オプション)',
 	'You must select a site to import.' => 'インポート先のサイトを選択してください。',
 	'You will be assigned the user of all imported entries.  If you wish the original user to keep ownership, you must contact your MT system administrator to perform the import so that new users can be created if necessary.' => 'あなたがインポートした記事を作成したことになります。元の著者を変更せずにインポートしたい場合には、システム管理者がインポート作業を行ってください。その場合には必要に応じて新しいユーザーを作成できます。',
+	q{Before you import entries in your site, we recommend that you <a href='[_1]'>configure your site's publishing paths</a> first.} => q{サイトに記事をインポートする前に、まず<a href='[_1]'>サイトパスを設定</a>してください。},
+	q{Site's publishing directory does not exist. [_1]} => q{サイトパスに設定されたディレクトリが存在しません。 [_1]},
 
 ## tmpl/admin2023/cms/import_others.tmpl
 	'Default entry status (optional)' => '既定の公開状態(任意)',
