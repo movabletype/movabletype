@@ -2531,7 +2531,11 @@ sub new_ua {
         = exists $opt->{sec_proxy} ? $opt->{sec_proxy} : $cfg->HTTPSProxy;
     my $no_proxy
         = exists $opt->{no_proxy} ? $opt->{no_proxy} : $cfg->HTTPNoProxy;
-    my $agent = $opt->{agent} || $MT::PRODUCT_NAME . '/' . $MT::VERSION;
+    my $agent = $opt->{agent} || do {
+        my $name = $MT::PRODUCT_NAME;
+        $name =~ s{\s}{}g; # Remove spaces according to RFC 9110
+        $name . '/' . $MT::VERSION;
+    };
     my $interface
         = exists $opt->{interface} ? $opt->{interface} : $cfg->HTTPInterface;
 
