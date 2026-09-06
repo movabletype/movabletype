@@ -3562,7 +3562,7 @@ use vars qw( @ISA %Lexicon );
 	'Site search' => 'サイトの検索',
 	'What is this?' => 'フィードとは',
 	'http://www.sixapart.com/about/feeds' => 'http://www.sixapart.jp/about/feeds.html',
-	q{Content Data matching '[_1]'} => q{'[_1]で検索されたコンテンツ'},
+	q{Content Data matching '[_1]'} => q{'[_1]'で検索されたコンテンツ},
 	q{Content Data tagged with '[_1]'} => q{'[_1]'タグのコンテンツ},
 	q{If you use an RSS reader, you can subscribe to a feed of all future content data matching '[_1]'.} => q{RSSリーダーを使うと、'[_1]'を含むすべてのコンテンツのフィードを購読することができます。},
 	q{If you use an RSS reader, you can subscribe to a feed of all future content data tagged '[_1]'.} => q{RSSリーダーを使うと、'[_1]'タグのすべてのコンテンツのフィードを購読することができます。},
@@ -5823,7 +5823,7 @@ use vars qw( @ISA %Lexicon );
 # tmpl/admin2025/cms/include/revision_table.tmpl
     'This revision note has been saved.' => 'メモを保存しました。',
     'Failed to save' => '保存に失敗しました',
-    q{[_1] (ID:[_2])'s change note ([_3]) edited by user '[_4]'} => q{[_4]が[_1] (ID:[_2])の更新メモ(保存した日:[_3])を変更しました'},
+    q{[_1] (ID:[_2])'s change note ([_3]) edited by user '[_4]'} => q{'[_4]'が[_1] (ID:[_2])の更新メモ(保存した日:[_3])を変更しました},
 );
 
 
