@@ -129,6 +129,12 @@ sub check_server_model {
     $param;
 }
 
+sub module_upgrade_is_recommended {
+    my ($module_version, $recommended_version) = @_;
+    return unless $recommended_version;
+    return _version($recommended_version) > _version($module_version);
+}
+
 sub _version {
     my $version = shift;
     eval { version->parse($version) } || 0;
@@ -213,7 +219,7 @@ sub check_dependencies {
                 push @missing, \%hash;
             } else {
                 $hash{installed_version} = $module->VERSION // MT->translate('unknown');
-                if ($hash{recommends} and (_version($hash{recommends}) > _version($module->VERSION))) {
+                if (module_upgrade_is_recommended($module->VERSION, $hash{recommends})) {
                     $hash{warning} = MT->translate("Upgrading the module to at least version [_1] is recommended.", $hash{recommends});
                 }
                 if ($module eq 'DBI') {

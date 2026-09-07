@@ -597,11 +597,6 @@ for (@DATA) {
 }
 @DATA = @new_data;
 
-sub _version {
-    my $version = shift;
-    eval { version->parse($version) } || 0;
-}
-
 my %imglib = MT::Util::Dependencies->check_imglib();
 my %extra = (
     'Image::Magick' => sub {
@@ -713,7 +708,7 @@ MSG
             print_encode(qq{</div>});
         }
         else {
-            if ($recommends and (_version($recommends) > _version($mod->VERSION))) {
+            if (MT::Util::SystemCheck::module_upgrade_is_recommended($mod->VERSION, $recommends)) {
                 print_encode(
                     trans_templ(
                         qq{<div class="alert alert-warning msg msg-warning"><p class="msg-text"><__trans phrase="Upgrading the module to at least version [_1] is recommended." params="$recommends"></p></div>}

@@ -1151,15 +1151,11 @@ sub cgipath {
     $cgipath;
 }
 
-sub _version {
-    my $version = shift;
-    eval { version->parse($version) } || 0;
-}
-
 sub module_check {
     my $self    = shift;
     my $modules = shift;
     my ( @missing, @ok );
+    require MT::Util::SystemCheck;
     foreach my $ref (@$modules) {
         my ( $mod, $ver, $req, $desc, $recommends, $name, $link, $display, $sort ) = @$ref;
         if ( 'CODE' eq ref($desc) ) {
@@ -1187,7 +1183,7 @@ sub module_check {
                 };
         }
         else {
-            if ($recommends and (_version($recommends) > _version($mod->VERSION))) {
+            if (MT::Util::SystemCheck::module_upgrade_is_recommended($mod->VERSION, $recommends)) {
                 push @missing,
                     {
                     module      => $mod,
