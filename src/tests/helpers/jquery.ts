@@ -7,6 +7,7 @@ const createJQueryMock = (): Record<string, unknown> => {
       length: 0,
       val: vi.fn().mockReturnValue(0),
       each: vi.fn(),
+      datepicker: vi.fn(),
     }),
     attr: vi.fn(),
     parents: vi.fn().mockReturnValue({
