@@ -5151,3 +5151,27 @@ path is required.
 <MTApp:Stylesheet path="/foo/bar.css" version="1.0.0">
 --- expected
 <link rel="stylesheet" href="/mt-static/foo/bar.css?v=1.0.0">
+
+=== test 925 asset thumbnail link with alt
+--- skip_php
+[% no_php_gd %]
+--- template
+<MTAssets lastn='1'><$MTAssetThumbnailLink alt="Sample Photo"$></MTAssets>
+--- expected
+<a href="http://narnia.na/nana/images/test.jpg"><img src="http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-640x480-1.jpg" width="640" height="480" alt="Sample Photo" /></a>
+
+=== test 926 asset thumbnail link with alt to be escaped
+--- skip_php
+[% no_php_gd %]
+--- template
+<MTAssets lastn='1'><$MTAssetThumbnailLink alt="a & b"$></MTAssets>
+--- expected
+<a href="http://narnia.na/nana/images/test.jpg"><img src="http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-640x480-1.jpg" width="640" height="480" alt="a &amp; b" /></a>
+
+=== test 927 asset thumbnail link with multibyte alt
+--- skip_php
+[% no_php_gd %]
+--- template
+<MTAssets lastn='1'><$MTAssetThumbnailLink alt="記事の画像"$></MTAssets>
+--- expected
+<a href="http://narnia.na/nana/images/test.jpg"><img src="http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-640x480-1.jpg" width="640" height="480" alt="記事の画像" /></a>

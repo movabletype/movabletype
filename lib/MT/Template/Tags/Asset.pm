@@ -1211,6 +1211,12 @@ asset.
 
 If set to '1', causes the link to open a new window to the linked asset.
 
+=item * alt (optional)
+
+Specifies the value of the alt attribute of the generated img tag.
+The value is HTML-encoded. If not specified, an empty alt attribute
+is output.
+
 =back
 
 =for tags assets
@@ -1242,12 +1248,13 @@ sub _hdlr_asset_thumbnail_link {
     }
 
     my ( $url, $w, $h ) = $a->thumbnail_url(%arg);
+    my $alt = defined $args->{alt} ? MT::Util::encode_html( $args->{alt} ) : '';
     my $ret = sprintf qq(<a href="%s"), $a->url;
     if ( $args->{new_window} ) {
         $ret .= qq( target="_blank");
     }
-    $ret .= sprintf qq(><img src="%s" width="%d" height="%d" alt="" /></a>),
-        $url, $w, $h;
+    $ret .= sprintf qq(><img src="%s" width="%d" height="%d" alt="%s" /></a>),
+        $url, $w, $h, $alt;
     $ret;
 }
 
