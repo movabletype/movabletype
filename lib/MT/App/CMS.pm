@@ -2335,7 +2335,7 @@ sub core_menus {
         },
         'settings:ip_info' => {
             label     => "IP Banning",
-            order     => 900,
+            order     => 890,
             mode      => 'list',
             args      => { _type => 'banlist' },
             condition => sub {
