@@ -3552,7 +3552,7 @@ use vars qw( @ISA %Lexicon );
 	'Site search' => 'サイトの検索',
 	'What is this?' => 'フィードとは',
 	'http://www.sixapart.com/about/feeds' => 'http://www.sixapart.jp/about/feeds.html',
-	q{Content Data matching '[_1]'} => q{'[_1]で検索されたコンテンツ'},
+	q{Content Data matching '[_1]'} => q{'[_1]'で検索されたコンテンツ},
 	q{Content Data tagged with '[_1]'} => q{'[_1]'タグのコンテンツ},
 	q{If you use an RSS reader, you can subscribe to a feed of all future content data matching '[_1]'.} => q{RSSリーダーを使うと、'[_1]'を含むすべてのコンテンツのフィードを購読することができます。},
 	q{If you use an RSS reader, you can subscribe to a feed of all future content data tagged '[_1]'.} => q{RSSリーダーを使うと、'[_1]'タグのすべてのコンテンツのフィードを購読することができます。},
