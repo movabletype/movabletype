@@ -14,9 +14,7 @@ export default defineConfig(async (): Promise<ViteUserConfig> => {
 
   return {
     plugins: [
-      svelte({
-        hot: false,
-      }),
+      svelte(),
     ],
     resolve: {
       conditions: ["browser"],
