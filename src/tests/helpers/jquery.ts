@@ -1,4 +1,4 @@
-import { vi } from "vitest";
+import { vi, type Mock } from "vitest";
 
 const createJQueryMock = (): Record<string, unknown> => {
   const mock: Record<string, unknown> = {
@@ -41,7 +41,7 @@ const createJQueryMock = (): Record<string, unknown> => {
   return mock;
 };
 
-export type AjaxMockFn = ReturnType<typeof vi.fn>;
+export type AjaxMockFn = Mock;
 
 const jQueryMock = Object.assign(
   vi.fn().mockImplementation(() => createJQueryMock()),
@@ -80,7 +80,7 @@ export const setupAjaxMockRejected = (error: Error): AjaxMockFn => {
   return mockFn;
 };
 
-export type FetchMockFn = ReturnType<typeof vi.fn>;
+export type FetchMockFn = Mock;
 
 export const setupFetchMock = <T>(response?: T): FetchMockFn => {
   const mockFn = vi.fn().mockResolvedValue({

@@ -16,6 +16,7 @@
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "types": [
+      "node",
       "vitest/globals",
       "@types/jquery",
       "@types/jqueryui",
