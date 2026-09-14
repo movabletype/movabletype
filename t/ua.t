@@ -11,11 +11,8 @@ BEGIN {
 }
 
 use MT;
-use MT::Test;
 
-$test_env->prepare_fixture('db');
-
-my $app = MT::App->instance;
+my $app = MT->instance;
 my $ua  = $app->new_ua;
 is $ua->agent, 'MovableType/' . $MT::VERSION, 'default UA: ' . $ua->agent;
 
