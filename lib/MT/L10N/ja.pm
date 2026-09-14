@@ -1430,7 +1430,7 @@ use vars qw( @ISA %Lexicon );
 	'rebuild indexes.' => 'インデックスを再構築する',
 
 ## lib/MT/CMS/Revision.pm
-	q{[_1] (ID:[_2])'s change note ([_3]) edited by user '[_4]'} => q{[_4]が[_1] (ID:[_2])の更新メモ(保存した日:[_3])を変更しました'},
+	q{[_1] (ID:[_2])'s change note ([_3]) edited by user '[_4]'} => q{'[_4]'が[_1] (ID:[_2])の更新メモ(保存した日:[_3])を変更しました},
 
 ## lib/MT/CMS/Search.pm
 	'"[_1]" is invalid for "[_2]" field of "[_3]" (ID:[_4]): [_5]' => '"[_1]"は、コンテンツタイプ "[_3]" (ID:[_4])の"[_2]"フィールドの入力として無効です: [_5]',
@@ -3624,7 +3624,7 @@ use vars qw( @ISA %Lexicon );
 	'Site search' => 'サイトの検索',
 	'What is this?' => 'フィードとは',
 	'http://www.sixapart.com/about/feeds' => 'http://www.sixapart.jp/about/feeds.html',
-	q{Content Data matching '[_1]'} => q{'[_1]で検索されたコンテンツ'},
+	q{Content Data matching '[_1]'} => q{'[_1]'で検索されたコンテンツ},
 	q{Content Data tagged with '[_1]'} => q{'[_1]'タグのコンテンツ},
 	q{If you use an RSS reader, you can subscribe to a feed of all future content data matching '[_1]'.} => q{RSSリーダーを使うと、'[_1]'を含むすべてのコンテンツのフィードを購読することができます。},
 	q{If you use an RSS reader, you can subscribe to a feed of all future content data tagged '[_1]'.} => q{RSSリーダーを使うと、'[_1]'タグのすべてのコンテンツのフィードを購読することができます。},
