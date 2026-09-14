@@ -147,14 +147,7 @@ sub login {
                 }
                 elsif ( $cookie_middle eq $author->magic_token ) {
                     $valid = 1;
-                }
-                elsif (
-                    eval {
-                        require MT::BasicSession;
-                        MT::BasicSession->load($cookie_middle);
-                    }
-                    )
-                {
+                } elsif ($app->session_user($author, $cookie_middle)) {
                     $valid = 1;
                 }
             }
