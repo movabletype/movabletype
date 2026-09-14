@@ -123,6 +123,8 @@ sub login {
             # So force BasicAuthor if necessary
             bless $author, 'MT::BasicAuthor' if ref $author eq 'MT::Author';
 
+            next unless $author->status == MT::Author::ACTIVE();
+
             # skip any possible non-authors...
             if ( MT::Auth->password_exists ) {
                 next unless $author->password;
