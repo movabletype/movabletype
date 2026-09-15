@@ -58,12 +58,12 @@ Cookie = new Class ( Object, {
      * @return <code>Cookie</code> The fetched cookie.
      */
     fetch: function() {
-        var prefix = escape( this.name ) + "=";
+        var prefix = encodeURIComponent( this.name ) + "=";
         var cookies = ("" + document.cookie).split( /;\s*/ );
         
         for( var i = 0; i < cookies.length; i++ ) {
             if( cookies[ i ].indexOf( prefix ) == 0 ) {
-                this.value = unescape( cookies[ i ].substring( prefix.length ) );
+                this.value = decodeURIComponent( cookies[ i ].substring( prefix.length ) );
                 return this;
             }
         }
@@ -85,12 +85,12 @@ Cookie = new Class ( Object, {
         else 
             value = this.value;
 		
-        var name = escape( this.name );
-        value = escape( value );
+        var name = encodeURIComponent( this.name );
+        value = encodeURIComponent( value );
         
         // log( "Saving value: " + value );
-        var attributes = ( this.domain ? "; domain=" + escape( this.domain ) : "") +
-            (this.path ? "; path=" + escape( this.path ) : "") +
+        var attributes = ( this.domain ? "; domain=" + encodeURIComponent( this.domain ) : "") +
+            (this.path ? "; path=" + encodeURIComponent( this.path ) : "") +
             (this.expires ? "; expires=" + this.expires.toGMTString() : "") +
             (this.secure ? "; secure=1"  : "");       
 
