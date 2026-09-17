@@ -5303,6 +5303,7 @@ use vars qw( @ISA %Lexicon );
 	'Portions of this theme cannot be applied to the child site. [_1] elements will be skipped.' => 'テーマの一部はサイトに適用できません。[_1]要素はスキップされます。',
 	'Portions of this theme cannot be applied to the site. [_1] elements will be skipped.' => 'テーマの一部はサイトに適用できません。[_1]要素はスキップされます。',
 	'Reapply' => '再適用',
+	'The templates in use before applying the theme have been backed up. You can view them in [_1].' => 'テーマ適用前のテンプレートはバックアップされました。[_1]から確認できます。',
 	'Theme Errors' => 'テーマエラー',
 	'Theme Information' => 'テーマ情報',
 	'Theme Warnings' => 'テーマ警告',

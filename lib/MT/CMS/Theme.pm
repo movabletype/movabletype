@@ -100,6 +100,7 @@ sub list {
     $param{theme_uninstalled}      = $app->param('theme_uninstalled');
     $param{uninstalled_theme_name} = $app->param('uninstalled_theme_name');
     $param{warning_on_apply}       = $app->param('warning_on_apply');
+    $param{templates_backed_up}    = $app->param('templates_backed_up');
     $param{refreshed}              = $app->param('refreshed');
     $app->load_tmpl( 'list_theme.tmpl', \%param );
 }
@@ -190,6 +191,10 @@ sub apply {
     $blog->theme_export_settings(undef);
     $blog->save;
     $blog->apply_theme or die $blog->errstr;
+    my $templates_backed_up = grep {
+        ( $_->{importer} || '' ) eq 'template_set'
+            && ( !$_->{class} || $_->{class} eq $blog->class_type )
+    } $theme->elements;
     $app->redirect(
         $app->uri(
             mode => 'list_theme',
@@ -197,6 +202,7 @@ sub apply {
                 applied          => 1,
                 blog_id          => $blog->id,
                 warning_on_apply => $theme->{warning_on_apply},
+                ( $templates_backed_up ? ( templates_backed_up => 1 ) : () ),
             },
         )
     );

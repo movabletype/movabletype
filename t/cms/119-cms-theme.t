@@ -146,11 +146,43 @@ subtest 'Check applying a blog theme' => sub {
     });
     $app->has_no_permission_error;
     ok($app->last_location->query_param('applied'), 'Theme has been applied.');
+    ok(
+        $app->last_location->query_param('templates_backed_up'),
+        'templates_backed_up is set for a theme with a template set.'
+    );
+    $app->content_like(
+        qr/have been backed up/,
+        'Backup notification message is shown.'
+    );
+    $app->content_like(
+        qr/filter_key=backup_templates/,
+        'Link to Template Backups is shown.'
+    );
 
     $website = MT->model('website')->load($website->id);
     is(
         $website->theme_id, 'MyBlogTheme',
         'Website\'s theme has correct theme_id.'
+    );
+};
+
+subtest 'Check applying a theme without a template set' => sub {
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->login($admin);
+    $app->post_ok({
+        __mode   => 'apply_theme',
+        blog_id  => $website->id,
+        theme_id => 'very_old_theme',
+    });
+    $app->has_no_permission_error;
+    ok($app->last_location->query_param('applied'), 'Theme has been applied.');
+    ok(
+        !$app->last_location->query_param('templates_backed_up'),
+        'templates_backed_up is not set for a theme without a template set.'
+    );
+    $app->content_unlike(
+        qr/have been backed up/,
+        'Backup notification message is not shown.'
     );
 };
 

@@ -36,6 +36,14 @@
     <__trans phrase="Theme [_1] has been applied." params="<mt:var name="current_theme_name" escape="html">">
 </mt:if>
   </mtapp:statusmsg>
+  <mt:if name="templates_backed_up">
+  <mtapp:statusmsg
+     id="templates_backed_up"
+     class="info"
+     can_close="0">
+    <__trans phrase="The templates in use before applying the theme have been backed up. You can view them in [_1]." params="<a href="<mt:var name="script_url">?__mode=list_template&amp;filter_key=backup_templates&amp;blog_id=<mt:var name="blog_id">" class="alert-link"><__trans phrase="Template Backups"></a>">
+  </mtapp:statusmsg>
+  </mt:if>
 </mt:if>
 <mt:if name="refreshed">
   <mtapp:statusmsg
