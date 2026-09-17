@@ -1668,6 +1668,7 @@ sub preview {
     my $cols = $tmpl->column_names;
     for my $col ( ( @$cols, 'save_revision', 'revision-note' ) ) {
         my $value = $app->param($col);
+        next unless defined $value;
         push @data,
             {
             data_name  => $col,
