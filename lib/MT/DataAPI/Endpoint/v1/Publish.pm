@@ -54,6 +54,12 @@ DESCRIPTION
             },
             {
                 'in'        => 'query',
+                name        => 'blogIds',
+                schema      => { type => 'integer' },
+                description => 'Target site ID list in a comma separated values. Either ids or blogIds must be specified.',
+            },
+            {
+                'in'        => 'query',
                 name        => 'startTime',
                 schema      => { type => 'string' },
                 description => 'This is an optional parameter.',
@@ -96,7 +102,7 @@ DESCRIPTION
                                 startTime => {
                                     type        => 'string',
                                     format      => 'date-time',
-                                    description => 'The time which started rebuilding.',
+                                    description => 'The time which started rebuilding in GMT.',
                                 },
                                 restIds => {
                                     type        => 'string',
