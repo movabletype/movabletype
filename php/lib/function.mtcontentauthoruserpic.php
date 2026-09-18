@@ -26,8 +26,8 @@ function smarty_function_mtcontentauthoruserpic($args, &$ctx) {
         return '';
 
     $size   = 0;
-    $width  = $asset[0]->asset_image_width;
-    $height = $asset[0]->asset_image_height;
+    $width  = $asset[0]->image_width;
+    $height = $asset[0]->image_height;
     if ($width > $height) {
         $size = $height;
     } else {
