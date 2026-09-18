@@ -446,6 +446,10 @@ done_testing;
 sub run_rpt {
     MT::Session->remove({ kind => 'PT' });
     my $res = `perl -It/lib ./tools/run-periodic-tasks --verbose 2>&1`;
+
+    # Since ODBC driver seems to be fork-unsafe, dbh must be destroyed after forking process so that MT::Object will establish new one.
+    MT::Blog->driver->dbh(undef) if MT->config->ODBCDriver;
+
     # reload updated config
     MT->config->read_config_db();
     $res =~ s!\\!/!g if $^O eq 'MSWin32';
