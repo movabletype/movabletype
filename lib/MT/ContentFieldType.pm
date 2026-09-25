@@ -29,6 +29,8 @@ sub core_content_field_types {
         list             => _list_registry(),
         tables           => _table_registry(),
         text_label       => _text_label_registry(),
+        headline_label   => _headline_label_registry(),
+        border_label     => _border_label_registry(),
     };
 }
 
@@ -1277,6 +1279,41 @@ sub _text_label_registry {
               text
               )
         ],
+    };
+}
+
+sub _headline_label_registry {
+    {
+        label                => 'Headline Display Area',
+        data_type            => 'text',
+        order                => 220,
+        can_data_label_field => 0,
+        field_html           => 'field_html/field_html_headline_label.tmpl',
+        field_html_params    => '$Core::MT::ContentFieldType::HeadlineLabel::field_html_params',
+        tag_handler          => '$Core::MT::ContentFieldType::HeadlineLabel::tag_handler',
+        preview_handler      => '$Core::MT::ContentFieldType::HeadlineLabel::preview_handler',
+        options_html         => 'content_field_type_options/headline_label.tmpl',
+        options              => [qw(
+            label
+            headline
+        )],
+    };
+}
+
+sub _border_label_registry {
+    {
+        label                => 'Border Display Area',
+        data_type            => 'text',
+        order                => 230,
+        can_data_label_field => 0,
+        field_html           => 'field_html/field_html_border_label.tmpl',
+        field_html_params    => '$Core::MT::ContentFieldType::BorderLabel::field_html_params',
+        tag_handler          => '$Core::MT::ContentFieldType::BorderLabel::tag_handler',
+        preview_handler      => '$Core::MT::ContentFieldType::BorderLabel::preview_handler',
+        options_html         => 'content_field_type_options/border_label.tmpl',
+        options              => [qw(
+            label
+        )],
     };
 }
 

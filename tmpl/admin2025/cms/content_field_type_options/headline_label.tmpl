@@ -1,0 +1,18 @@
+<mt:app:ContentFieldOptionGroup type="headline_label">
+  <mtapp:ContentFieldOption
+     id="headline_label-headline"
+     label="<__trans phrase="見出し">"
+     hint="※<__trans phrase="This block is only visible in the administration screen for comments.">"
+     show_hint="1">
+    <textarea ref="text" name="headline" id="text_label-headline" class="form-control" >{ options.headline }</textarea>
+  </mtapp:ContentFieldOption>
+
+  <mt:app:ContentFieldOptionScript>
+  this.on('mount', function() {
+    // description, required, display field is hidden.
+    document.getElementById('headline-label-description-field-' + this.id).style.display ="none";
+    document.getElementById('headline-label-required-field-' + this.id).style.display ="none";
+    document.getElementById('headline-label-display-field-' + this.id).style.display ="none";
+  });
+  </mt:app:ContentFieldOptionScript>
+</mt:app:ContentFieldOptionGroup>
