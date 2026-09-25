@@ -288,7 +288,7 @@ function init() {
             datasource.pager2.render();
 
         if(search.val() != ''){
-            args += '&search=' + escape(search.val());
+            args += '&search=' + encodeURIComponent(search.val());
         }
         if(target == 'both'){
             args += '&_type=user';
