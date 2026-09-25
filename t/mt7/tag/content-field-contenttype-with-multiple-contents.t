@@ -235,8 +235,9 @@ $publisher->rebuild(
 
 MT::Test::Tag->run_perl_tests($blog_id, sub {
     my ($ctx, $block) = @_;
-    $ctx->{current_timestamp}     = '20180801000000';
-    $ctx->stash(template_map => $template_map);
+    $ctx->{current_timestamp} = '20180801000000';
+    $ctx->stash(template_map        => $template_map);
+    $ctx->stash(content_field_types => $app->registry('content_field_types'));
     if ($block->cd eq 'cd3') {
         $ctx->stash(content => $cd3);
         $ctx->stash(content_type => $ct);
