@@ -13,9 +13,7 @@ export default defineConfig(async (): Promise<ViteUserConfig> => {
   const __dirname = fileURLToPath(new URL(".", import.meta.url));
 
   return {
-    plugins: [
-      svelte(),
-    ],
+    plugins: [svelte({ configFile: false })],
     resolve: {
       conditions: ["browser"],
       alias: {
