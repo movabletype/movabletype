@@ -1,5 +1,5 @@
 import { writable, type Writable } from "svelte/store";
-import { vi } from "vitest";
+import { vi, type Mock } from "vitest";
 import type * as Listing from "../../@types/listing";
 import type {
   ReactiveStoreData,
@@ -291,7 +291,7 @@ export function createListActionsProps(
 
 export interface ListPaginationForPcPresetProps {
   context: ListStoreContext;
-  movePage: ReturnType<typeof vi.fn>;
+  movePage: Mock<(e: Event) => void>;
   nextDisabledProp: Record<string, string>;
   page: number;
   previousDisabledProp: Record<string, string>;
@@ -317,7 +317,7 @@ export function createListPaginationForPcProps(
 
 export interface DisplayOptionsLimitPresetProps {
   context: ListStoreContext;
-  changeLimit: ReturnType<typeof vi.fn>;
+  changeLimit: Mock<(e: Event) => void>;
 }
 
 export function createDisplayOptionsLimitProps(
