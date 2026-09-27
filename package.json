@@ -50,7 +50,7 @@
     "src-check": "npm run src-eslint && npm run src-prettier && npm run src-tsc && npm run src-svelte-check",
     "src-dev": "rollup --config rollup.config.ts --configPlugin \"typescript={tsconfig:'tsconfig.rollup.json'}\" -w",
     "src-eslint": "eslint --max-warnings 0 --fix src",
-    "src-prettier": "prettier --plugin prettier-plugin-svelte --write 'src/**/*.{ts,svelte}' '*.ts'",
+    "src-prettier": "prettier --plugin prettier-plugin-svelte --write 'src/**/*.{ts,mts,svelte}' '*.{ts,mts}'",
     "src-tsc": "tsc",
     "src-svelte-check": "svelte-check"
   },
