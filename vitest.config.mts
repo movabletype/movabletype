@@ -1,5 +1,5 @@
-import { defineConfig } from "vitest/config";
-import { createHttpServer } from "./src/tests/helpers/server";
+import { defineConfig, type ViteUserConfig } from "vitest/config";
+import { createHttpServer } from "./src/tests/helpers/server.mts";
 import type { AddressInfo } from "net";
 
 export default defineConfig(async () => {
@@ -20,7 +20,7 @@ export default defineConfig(async () => {
         },
       },
       setupFiles: ["./src/tests/helpers/window.ts"],
-      globalSetup: ["./src/tests/helpers/server.ts"],
+      globalSetup: ["./src/tests/helpers/server.mts"],
     },
   };
 });
