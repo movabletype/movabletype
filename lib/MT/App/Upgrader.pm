@@ -164,7 +164,7 @@ sub login {
                             $author->magic_token,
 
                             # note this is BasicAuthor::magic_token
-                            $remember
+                            $remember // ''
                         ),
                         -path => $app->config('CookiePath') || $app->mt_path
                     );
@@ -664,27 +664,30 @@ sub run_actions {
 
     return $app->main(@_) unless $app->needs_upgrade;
 
+    my $steps = $app->param('steps');
+    $steps = JSON::from_json($steps);
+
     $| = 1;
 
     $app->{no_print_body} = 1;
     $app->send_http_header('text/plain');
 
-    my $install_mode = $app->param('installing');
-
-    if ( !$install_mode ) {
-        $app->login;
-    }
-
     my $schema = $app->{cfg}->SchemaVersion || 0;
     if ($schema) {
-        if ( !$app->validate_magic ) {
+        my ($author) = $app->login;
+        if (!$author) {
+            $app->response->{error} = $app->errstr || $app->translate('Invalid login.');
+        } elsif ($app->config->RequireUpgradePermission && !$author->is_superuser) {
+            $app->response->{error} = $app->translate('No permissions.');
+        } elsif (!$app->validate_magic) {
             $app->response->{error} = $app->translate("Invalid session.");
+        }
+
+        if ($app->response->{error}) {
+            $app->response->{steps} = $steps;
             return $app->json_response;
         }
     }
-
-    my $steps = $app->param('steps');
-    $steps = JSON::from_json($steps);
 
     my $start = time;
     my @steps = (@$steps);
@@ -698,7 +701,7 @@ sub run_actions {
         MT::Upgrade->init;
 
         local $MT::Upgrade::App        = $app;
-        local $MT::Upgrade::Installing = $install_mode;
+        local $MT::Upgrade::Installing = $app->param('installing');
         local $MT::Upgrade::MAX_TIME   = $MAX_TIME;
 
         while ( $step = shift @steps ) {
