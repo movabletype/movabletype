@@ -645,7 +645,7 @@ sub edit {
         # publish options
         if ( defined(my $build_type = $app->param('build_type')) ) {
             $param->{build_type} = $build_type;
-            $param->{ 'build_type_' . ( $build_type || 0 ) } = 1;
+            $param->{ 'build_type_' . ( $build_type || 1 ) } = 1; # default is "static"
         }
         else {
             $param->{build_type} = $obj->build_type;
@@ -710,8 +710,9 @@ sub edit {
         if ( $template_type eq 'index' ) {
             $tab = 'index';
             $param->{template_group_trans} = $app->translate('index');
-            $param->{build_type}           = $app->param('build_type') || '';
-            $param->{ 'build_type_' . ( $app->param('build_type') || 0 ) } = 1;
+            my $build_type = defined($app->param('build_type')) ? $app->param('build_type') : 1; # default is "static"
+            $param->{build_type} = $build_type;
+            $param->{ 'build_type_' . $build_type } = 1;
         }
         elsif ($template_type eq 'archive'
             || $template_type eq 'individual'
