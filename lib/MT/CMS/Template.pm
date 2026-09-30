@@ -645,7 +645,7 @@ sub edit {
         # publish options
         if ( defined(my $build_type = $app->param('build_type')) ) {
             $param->{build_type} = $build_type;
-            $param->{ 'build_type_' . $build_type } = 1;
+            $param->{ 'build_type_' . ( $build_type || 0 ) } = 1;
         }
         else {
             $param->{build_type} = $obj->build_type;
