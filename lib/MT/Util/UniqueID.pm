@@ -45,7 +45,7 @@ sub create_uuid {
 }
 
 sub _create_uuid_pp {
-    my $uuid = substr( _psuedo_random_bytes(), 0, 16 );
+    my $uuid = substr( _pseudo_random_bytes(), 0, 16 );
     vec( $uuid, 13, 4 ) = 0x4;
     vec( $uuid, 35, 2 ) = 0x2;
     $uuid = join "-", unpack( "H8H4H4H4H12", $uuid );
