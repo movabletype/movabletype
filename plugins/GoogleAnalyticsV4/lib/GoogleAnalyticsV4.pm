@@ -136,6 +136,12 @@ sub extract_response_error {
     $res->status_line, $message;
 }
 
+sub authorization_header {
+    my ($token_data) = @_;
+    my $data = $token_data->{data} || {};
+    ($data->{token_type} || 'Bearer') . ' ' . $data->{access_token};
+}
+
 sub new_ua {
     my $ua = MT->new_ua({ max_size => undef });
 
