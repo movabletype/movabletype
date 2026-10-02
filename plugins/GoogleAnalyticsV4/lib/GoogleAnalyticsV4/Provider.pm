@@ -100,7 +100,7 @@ sub _request {
 
     my $res = $ua->request(
         POST $uri,
-        Authorization => "$token->{data}{token_type} $token->{data}{access_token}",
+        Authorization => GoogleAnalyticsV4::authorization_header($token),
         Content_Type  => 'application/json',
         Content       => MT::Util::to_json($params),
     );
