@@ -125,7 +125,7 @@ describe("initTemplateEditor", () => {
     });
     initTemplateEditor();
 
-    form.addEventListener("submit", (e) => e.preventDefault());
+    $(form).on("submit", (e) => e.preventDefault());
     $(form).trigger("submit");
 
     expect(textarea.value).toBe("helloworld!");
@@ -141,7 +141,7 @@ describe("initTemplateEditor", () => {
 
     textarea.value = "edited while off";
 
-    form.addEventListener("submit", (e) => e.preventDefault());
+    $(form).on("submit", (e) => e.preventDefault());
     $(form).trigger("submit");
 
     expect(textarea.value).toBe("edited while off");

@@ -1,5 +1,5 @@
 import { defineConfig, type ViteUserConfig } from "vitest/config";
-import { createHttpServer } from "./src/tests/helpers/server";
+import { createHttpServer } from "./src/tests/helpers/server.mts";
 import type { AddressInfo } from "net";
 import { fileURLToPath } from "url";
 import { resolve } from "path";
@@ -13,11 +13,7 @@ export default defineConfig(async (): Promise<ViteUserConfig> => {
   const __dirname = fileURLToPath(new URL(".", import.meta.url));
 
   return {
-    plugins: [
-      svelte({
-        hot: false,
-      }),
-    ],
+    plugins: [svelte({ configFile: false })],
     resolve: {
       conditions: ["browser"],
       alias: {
@@ -36,7 +32,7 @@ export default defineConfig(async (): Promise<ViteUserConfig> => {
         },
       },
       setupFiles: ["./src/tests/setup.ts"],
-      globalSetup: ["./src/tests/helpers/server.ts"],
+      globalSetup: ["./src/tests/helpers/server.mts"],
     },
   };
 });
