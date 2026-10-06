@@ -20,6 +20,7 @@ __PACKAGE__->install_properties(
             'password' => 'string(124) not null',
             'email'    => 'string(75)',
             'hint'     => 'string(75)',
+            'status'   => 'integer',
         },
         indexes => {
             name  => 1,

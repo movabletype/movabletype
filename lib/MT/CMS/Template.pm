@@ -655,8 +655,14 @@ sub edit {
         }
 
         # publish options
-        $param->{build_type} = $obj->build_type;
-        $param->{ 'build_type_' . ( $obj->build_type || 0 ) } = 1;
+        if ( defined(my $build_type = $app->param('build_type')) ) {
+            $param->{build_type} = $build_type;
+            $param->{ 'build_type_' . $build_type } = 1;
+        }
+        else {
+            $param->{build_type} = $obj->build_type;
+            $param->{ 'build_type_' . ( $obj->build_type || 0 ) } = 1;
+        }
 
         #my ( $period, $interval ) = _get_schedule( $obj->build_interval );
         #$param->{ 'schedule_period_' . $period } = 1;
@@ -716,6 +722,9 @@ sub edit {
         if ( $template_type eq 'index' ) {
             $tab = 'index';
             $param->{template_group_trans} = $app->translate('index');
+            my $build_type = defined($app->param('build_type')) ? $app->param('build_type') : 1; # default is "static"
+            $param->{build_type} = $build_type;
+            $param->{ 'build_type_' . $build_type } = 1;
         }
         elsif ($template_type eq 'archive'
             || $template_type eq 'individual'
@@ -832,12 +841,14 @@ sub edit {
             }
         }
         if ( $dtmpl->{type} eq 'index' ) {
+            my $identifier = $app->param('identifier');
             push @tmpl_ids,
                 {
                 label    => $dtmpl->{label},
                 key      => $dtmpl->{key},
                 selected => $dtmpl->{key} eq
-                    ( ( $obj ? $obj->identifier : undef ) || '' ),
+                    ( ( defined $identifier ? $identifier
+                      : $obj ? $obj->identifier : undef ) || '' ),
                 };
         }
     }
@@ -1685,6 +1696,7 @@ sub preview {
     my $cols = $tmpl->column_names;
     for my $col ( ( @$cols, 'save_revision', 'revision-note' ) ) {
         my $value = $app->param($col);
+        next unless defined $value;
         push @data,
             {
             data_name  => $col,

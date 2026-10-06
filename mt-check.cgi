@@ -537,7 +537,7 @@ if ($mt) {
         my $pkg = $req->{$key};
         push @REQ,
             [
-            $key, $pkg->{version} || 0, 1, $pkg->{label},
+            $key, $pkg->{version} || 0, 1, $pkg->{label}, $pkg->{recommends} || 0,
             $key, $pkg->{link}
             ];
     }
@@ -555,13 +555,15 @@ if ($mt) {
                 "The [_1] database driver is required to use [_2].",
                 $driver->{dbd_package}, $label
             ),
+            $driver->{recommends} || 0,
             $label, $link
             ];
     }
     unshift @DATA,
         [
         'DBI', 1.21, 0,
-        translate('DBI is required to store data in database.')
+        translate('DBI is required to store data in database.'),
+        0
         ]
         if @DATA;
     my $opt = $mt->registry("optional_packages");
@@ -569,7 +571,7 @@ if ($mt) {
         my $pkg = $opt->{$key};
         push @OPT,
             [
-            $key, $pkg->{version} || 0, 0, $pkg->{label},
+            $key, $pkg->{version} || 0, 0, $pkg->{label}, $pkg->{recommends} || 0,
             $key, $pkg->{link}
             ];
     }
@@ -661,7 +663,7 @@ MSG
     my $got_one_data = 0;
     my $dbi_is_okay  = 0;
     for my $ref (@$list) {
-        my ( $mod, $ver, $req, $desc ) = @$ref;
+        my ( $mod, $ver, $req, $desc, $recommends ) = @$ref;
         if ( 'CODE' eq ref($desc) ) {
             $desc = $desc->();
         }
@@ -706,6 +708,14 @@ MSG
             print_encode(qq{</div>});
         }
         else {
+            if (MT::Util::SystemCheck::module_upgrade_is_recommended($mod->VERSION, $recommends)) {
+                print_encode(
+                    trans_templ(
+                        qq{<div class="alert alert-warning msg msg-warning"><p class="msg-text"><__trans phrase="Upgrading the module to at least version [_1] is recommended." params="$recommends"></p></div>}
+                    )
+                );
+            }
+
             if ($data) {
                 $dbi_is_okay = 1 if $mod eq 'DBI';
                 if ( $mod eq 'DBD::mysql' ) {

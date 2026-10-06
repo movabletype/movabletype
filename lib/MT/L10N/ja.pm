@@ -1430,7 +1430,7 @@ use vars qw( @ISA %Lexicon );
 	'rebuild indexes.' => 'インデックスを再構築する',
 
 ## lib/MT/CMS/Revision.pm
-	q{[_1] (ID:[_2])'s change note ([_3]) edited by user '[_4]'} => q{[_4]が[_1] (ID:[_2])の更新メモ(保存した日:[_3])を変更しました'},
+	q{[_1] (ID:[_2])'s change note ([_3]) edited by user '[_4]'} => q{'[_4]'が[_1] (ID:[_2])の更新メモ(保存した日:[_3])を変更しました},
 
 ## lib/MT/CMS/Search.pm
 	'"[_1]" is invalid for "[_2]" field of "[_3]" (ID:[_4]): [_5]' => '"[_1]"は、コンテンツタイプ "[_3]" (ID:[_4])の"[_2]"フィールドの入力として無効です: [_5]',
@@ -3050,6 +3050,7 @@ use vars qw( @ISA %Lexicon );
 	'This module and its dependencies are required to run Movable Type under FastCGI.' => 'FastCGI環境でMovable Typeを実行する場合に必要となります。',
 	'This module and its dependencies are required to run Movable Type under psgi.' => 'PSGI環境下でMovable Typeを実行する場合に必要となります。',
 	'This module is one of the image processors that you can use to create thumbnails of uploaded images.' => 'アップロードした画像のサムネイルを作成するときに使われる画像処理モジュールのひとつです。',
+	'This module is optional. If the latest version is installed, CSV processing will be faster.' => 'このモジュールの最新版がインストールされていればCSVの処理が高速化されます。',
 	'This module is optional. It is used to customize the logging behavior.' => 'このモジュールがインストールされていればログの挙動をカスタマイズするのに使われます。',
 	'This module is optional. It is used to download assets from a website.' => 'このモジュールがインストールされていればウェブサイトからアセットをダウンロードするのに使われます。',
 	'This module is optional. It is used to know the encoding of the terminal to log.' => 'このモジュールがインストールされていればログを出力する端末のエンコーディングを調べるのに使われます。',
@@ -3097,6 +3098,7 @@ use vars qw( @ISA %Lexicon );
 	'Supported format: [_1]' => '対応している形式: [_1]',
 	'The DBD::mysql version you have installed is known to be incompatible with Movable Type. Please install the most current release available.' => 'お使いのサーバーにインストールされている DBD::mysqlのバージョンは、Movable Type と互換性がありません。CPAN に公開されている最新バージョンをインストールしてください。',
 	'The [_1] is installed properly, but requires an updated DBI module. Please see the note above regarding the DBI module requirements.' => '[_1]はインストールされていますが、新しいDBIが必要です。上記を参考に必要なDBIを確認してください。',
+	'Upgrading the module to at least version [_1] is recommended.' => 'バージョン[_1]以上への更新を推奨します。',
 	'unknown' => '不明',
 
 ## lib/MT/Util/YAML.pm
@@ -3633,7 +3635,7 @@ use vars qw( @ISA %Lexicon );
 	'Site search' => 'サイトの検索',
 	'What is this?' => 'フィードとは',
 	'http://www.sixapart.com/about/feeds' => 'http://www.sixapart.jp/about/feeds.html',
-	q{Content Data matching '[_1]'} => q{'[_1]で検索されたコンテンツ'},
+	q{Content Data matching '[_1]'} => q{'[_1]'で検索されたコンテンツ},
 	q{Content Data tagged with '[_1]'} => q{'[_1]'タグのコンテンツ},
 	q{If you use an RSS reader, you can subscribe to a feed of all future content data matching '[_1]'.} => q{RSSリーダーを使うと、'[_1]'を含むすべてのコンテンツのフィードを購読することができます。},
 	q{If you use an RSS reader, you can subscribe to a feed of all future content data tagged '[_1]'.} => q{RSSリーダーを使うと、'[_1]'タグのすべてのコンテンツのフィードを購読することができます。},
@@ -5761,12 +5763,14 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/admin2023/wizard/packages.tmpl
 	'All required Perl modules were found.' => '必要なPerlモジュールは揃っています。',
+	'Installed version: [_1]' => 'インストール済みバージョン: [_1]',
 	'Learn more about installing Perl modules.' => 'Perlモジュールのインストールについて',
 	'Minimal version requirement: [_1]' => '必須バージョン: [_1]',
 	'Missing Database Modules' => 'データベースモジュールが見つかりません',
 	'Missing Optional Modules' => 'オプションのモジュールが見つかりません',
 	'Missing Required Modules' => '必要なモジュールが見つかりません',
 	'One or more Perl modules required by Movable Type could not be found.' => 'ひとつ以上の必須Perlモジュールが見つかりませんでした。',
+	'Recommended version: [_1]' => '推奨バージョン: [_1]',
 	'Requirements Check' => 'システムチェック',
 	'Some optional Perl modules could not be found. <a href="javascript:void(0)" onclick="[_1]">Display list of optional modules</a>' => 'オプションのPerlモジュールのうちいくつかが見つかりませんでした。<a href="javascript:void(0)" onclick="[_1]">オプションモジュールを表示</a>',
 	'You are ready to proceed with the installation of Movable Type.' => 'Movable Typeのインストールを続行する準備が整いました。',
