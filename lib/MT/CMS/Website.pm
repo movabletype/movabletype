@@ -344,6 +344,17 @@ sub pre_save {
     my $eh = shift;
     my ( $app, $obj, $original ) = @_;
 
+    require MT::Util;
+    if (my $site_url = $obj->site_url) {
+        if (!MT::Util::is_url($site_url)) {
+            return $app->errtrans('Invalid URL in "[_1]" field.', $app->translate('Site URL'));
+        }
+    }
+    if (my $archive_url = $obj->archive_url) {
+        if (!MT::Util::is_url($archive_url)) {
+            return $app->errtrans('Invalid URL in "[_1]" field.', $app->translate('Archive URL'));
+        }
+    }
     if ( !$obj->id ) {
         my $site_path = $obj->site_path;
         my $fmgr      = $obj->file_mgr;
@@ -425,21 +436,21 @@ sub can_view_website_list {
 }
 
 sub can_save {
-    my ( $eh, $app, $id ) = @_;
+    my ($eh, $app, $obj) = @_;
 
-    if ($id) {
-        unless ( ref $id ) {
-            $id = MT->model('blog')->load($id)
-                or return;
+    if ($obj) {
+        unless (ref $obj) {
+            $obj = MT->model('blog')->load($obj) or return;
         }
 
-        my $author = $app->user;
-        return $author->permissions( $id->id )->can_do('edit_blog_config')
-            || ( $app->isa('MT::App::CMS')
-            && $app->param('cfg_screen')
-            && $app->param('cfg_screen') eq 'cfg_publish_profile' );
-    }
-    else {
+        my $author     = $app->user;
+        my $cfg_screen = $app->param('cfg_screen') || '';
+        if ($app->isa('MT::App::CMS') && $cfg_screen eq 'cfg_publish_profile') {
+            return $author->permissions($obj->id)->can_do('edit_templates');
+        } else {
+            return $author->permissions($obj->id)->can_do('edit_blog_config');
+        }
+    } else {
         return $app->can_do('create_new_website');
     }
 }

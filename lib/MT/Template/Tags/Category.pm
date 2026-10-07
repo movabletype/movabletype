@@ -103,13 +103,13 @@ sub _sort_cats {
 
     # If sort_method is defined
     if ( defined $sort_method ) {
-        my $package = $sort_method;
-
         # Check if it has a package name
-        if ( $package =~ /::/ ) {
+        if ( $sort_method =~ /::/ ) {
+            if ($sort_method !~ /\A\w+(::\w+)+\z/) {
+                return $ctx->error(MT->translate("Illegal sort_method: [_1]", $sort_method));
+            }
 
-            # Extract the package name
-            $package =~ s/::[^(::)]+$//;
+            my ($package, $method) = $sort_method =~ /\A(.+)::([^:]+)\z/;
 
             # Make sure it's loaded
             eval(qq(use $package;));
@@ -121,10 +121,9 @@ sub _sort_cats {
                     )
                 );
             }
-        }
-
-        # Sort the categories based on sort_method
-        if ( $sort_method =~ /::/ ) {
+            if (!$package->can($method)) {
+                return $ctx->error(MT->translate("Illegal sort_method: [_1]", $sort_method));
+            }
             eval("\@\$cats = sort $sort_method \@\$cats");
         }
         else {

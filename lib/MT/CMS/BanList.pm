@@ -9,28 +9,39 @@ use strict;
 use warnings;
 
 sub can_save {
-    my ( $eh, $app, $id ) = @_;
+    my ($eh, $app, $obj) = @_;
+
+    # no system scope
+    my $blog_id = $app->param('blog_id') or return;
+    if ($obj && !ref $obj) {
+        $obj = MT->model('ipbanlist')->load($obj) or return;
+    }
+    return if $obj && $obj->blog_id != $blog_id;
     return $app->can_do('save_banlist');
 }
 
 sub can_delete {
-    my ( $eh, $app, $id ) = @_;
-    return $app->can_do('delete_banlist');
+    my ($eh, $app, $obj) = @_;
+    return $app->user->permissions($obj->blog_id)->can_do('delete_banlist');
 }
 
 sub save_filter {
     my $eh    = shift;
     my ($app) = @_;
-    my $ip    = $app->param('ip');
+
+    # Saving banlist from the system scope list is not supported.
+    my $blog_id = $app->param('blog_id') or return $eh->error('Invalid request');
+
+    # Updating banlist is not supported.
+    my $id = $app->param('id');
+    return $eh->error('Invalid request') if $id;
+
+    my $ip = $app->param('ip');
     $ip =~ s/(^\s+|\s+$)//g;
     return $eh->error('empty') if ( '' eq $ip );
-    my $blog_id = $app->param('blog_id');
-    require MT::IPBanList;
-    my $existing
-        = MT::IPBanList->load( { 'ip' => $ip, 'blog_id' => $blog_id } );
-    my $id = $app->param('id') || 0;
 
-    if ( $existing && ( !$id || $existing->id != $id ) ) {
+    require MT::IPBanList;
+    if (MT::IPBanList->exist({ 'ip' => $ip, 'blog_id' => $blog_id })) {
         return $eh->error('duplicated');
     }
     return 1;
