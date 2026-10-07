@@ -129,6 +129,10 @@ sub request {
     # not to break params in a test
     my $cloned_params = Storable::dclone($params);
 
+    # Note that 302 redirect for SEC_FETCH_SITE=none causes SEC_FETCH_SITE=none again
+    # On the other hand redirection by client side js always causes SEC_FETCH_SITE=same-origin
+    local $ENV{HTTP_SEC_FETCH_SITE} = $self->{_request_sent} ? 'same-origin' : 'none';
+
     my $res =
           $self->{server}
         ? $self->_request_locally($cloned_params)
@@ -140,12 +144,23 @@ sub request {
 
     my $content_type = $res->headers->content_type;
 
+    if ($ENV{MT_TEST_SIGNIN_MANUALLY} && (my $cookies = $res->headers->{'set-cookie'})) {
+        require CGI::Cookie;
+        my %cookie = CGI::Cookie->parse(ref($cookies) eq 'ARRAY' ? $cookies->[-1] : $cookies);
+        if ($cookie{mt_user}) {
+            $self->{user}    = MT->model('author')->load({ name => $cloned_params->{username} });
+            $self->{session} = (split(/::/, $cookie{mt_user}->value))[1];
+        }
+    }
+
     # redirect?
     my $location;
     if ($res->header('Location')) {
         $location = $res->header('Location');
     } elsif ($content_type =~ /html/ and $self->{content} =~ /window\.location\s*=\s*(['"])(\S+)\1/) {
         $location = $2;
+        $self->{_request_sent} = 1;
+        Test::More::note "REDIRECTING BY window.location";
     }
     if ($location) {
         Test::More::note "REDIRECTING TO $location";
@@ -158,9 +173,12 @@ sub request {
         my $max_redirect = $self->{max_redirect} || 10;
         if (!defined $max_redirect or $max_redirect > @{$self->{locations} || []}) {
             push @{ $self->{locations} ||= [] }, $uri;
+            $query_params->{magic_token} //= ''; # disable auto filling
             return $self->request($query_params, 1) unless $self->{no_redirect};
         }
     }
+
+    $self->{_request_sent} = 1;
 
     # json response?
     if ($content_type =~ /json/ or $self->{content} =~ /\A\s*[\{\[]/) {
@@ -214,13 +232,13 @@ sub _request_locally {
         if ($self->{session}) {
             require MT::Session;
             my $sess = MT::Session->load($self->{session}) or delete $self->{session};
-            $params->{magic_token} = $sess->get('magic_token') if $method eq 'POST';
+            $params->{magic_token} //= $sess->get('magic_token');
         }
         if (!$self->{session}) {
             require MT::App;
             my $sess = MT::App::make_session($user, 1);
             $self->{session}       = $sess->id;
-            $params->{magic_token} = $sess->get('magic_token') if $method eq 'POST';
+            $params->{magic_token} //= $sess->get('magic_token');
             if ($self->{app_class} eq 'MT::App::DataAPI') {
                 require MT::AccessToken;
                 require MT::Util::UniqueID;
@@ -316,7 +334,7 @@ sub _request_internally {
         } else {
             $app->session_user($user, $self->{session});
         }
-        $app->param('magic_token', $app->current_magic);
+        $app->param('magic_token', $app->current_magic) unless defined($app->param('magic_token'));
         $app->user($user);
         my $cookie_name  = $app->user_cookie;
         my $cookie_value = join '::', $user->name, $self->{session};

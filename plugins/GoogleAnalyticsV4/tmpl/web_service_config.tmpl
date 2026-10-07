@@ -9,7 +9,7 @@
 <mtapp:setting
    id="ga4_setup_own_client_id"
    label="<__trans phrase="OAuth2 settings">">
-<__trans phrase="This [_2] is using the settings of [_1]." params="<mt:If name="has_parent_client_permission"><a href="<mt:Var name="mt_url">?__mode=cfg_web_services&amp;_type=blog<mt:If name="parent_client_blog_id">&amp;blog_id=<mt:Var name="parent_client_blog_id" /></mt:If>"></mt:If><mt:If name="parent_client_blog_id"><mt:Var name="parent_client_blog_name" /><mt:Else><__trans phrase="System" /></mt:If><mt:If name="has_parent_client_permission"></a></mt:If>%%<mt:var name="scope_label" escape="html">" />
+<__trans phrase="This [_2] is using the settings of [_1]." params="<mt:If name="has_parent_client_permission"><a href="<mt:Var name="mt_url">?__mode=cfg_web_services&amp;_type=blog<mt:If name="parent_client_blog_id">&amp;blog_id=<mt:Var name="parent_client_blog_id" escape="html" /></mt:If>"></mt:If><mt:If name="parent_client_blog_id"><mt:Var name="parent_client_blog_name" escape="html" /><mt:Else><__trans phrase="System" /></mt:If><mt:If name="has_parent_client_permission"></a></mt:If>%%<mt:var name="scope_label" escape="html">" />
 <a href="#" id="ga4_setup_own_client_id" class="button"><__trans phrase="Other Google account" /></a>
 <input type="hidden" id="ga4_parent_client_id" value="<mt:Var name="parent_client_id" encode_html="1" />" />
 </mtapp:setting>
@@ -59,9 +59,9 @@
 <input type="hidden" id="ga4_configured_client_secret" value="<mt:Var name="configured_client_secret" encode_html="1" />" />
 <input type="hidden" id="ga4_profile_name" name="ga4_profile_name" value="<mt:Var name="ga4_profile_name" encode_html="1" />" />
 <input type="hidden" id="ga4_profile_web_property_id" name="ga4_profile_web_property_id" value="<mt:Var name="ga4_profile_web_property_id" encode_html="1" />" />
-<input type="hidden" id="ga4_measurement_id" name="ga4_measurement_id" value="<mt:Var name="ga4_measurement_id" />" />
-<input type="hidden" id="ga4_parent_profile_name" value="<mt:Var name="parent_profile_name" />" />
-<input type="hidden" id="ga4_parent_profile_web_property_id" value="<mt:Var name="parent_profile_web_property_id" />" />
+<input type="hidden" id="ga4_measurement_id" name="ga4_measurement_id" value="<mt:Var name="ga4_measurement_id" encode_html="1"/>" />
+<input type="hidden" id="ga4_parent_profile_name" value="<mt:Var name="parent_profile_name" encode_html="1" />" />
+<input type="hidden" id="ga4_parent_profile_web_property_id" value="<mt:Var name="parent_profile_web_property_id" encode_html="1" />" />
 <script>
 jQuery(function($) {
     var redirectUri = $('#ga4_redirect_uri').val();

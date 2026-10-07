@@ -70,7 +70,7 @@ subtest 'remove sites that relate to the test role' => sub {
         _type       => 'website',
         action_name => 'delete',
         blog_id     => 0,
-        return_args => '__mode%3Dlist%26_type%3Dwebsite%26blog_id%3D0%26does_act%3D1',
+        return_args => '__mode=list&_type=website&blog_id=0&does_act=1',
         id          => $second_site->id,
     });
     ok !$app->generic_error, "no error";
@@ -86,7 +86,7 @@ subtest 'remove sites that relate to the test role' => sub {
         _type       => 'website',
         action_name => 'delete',
         blog_id     => 0,
-        return_args => '__mode%3Dlist%26_type%3Dwebsite%26blog_id%3D0%26does_act%3D1',
+        return_args => '__mode=list&_type=website&blog_id=0&does_act=1',
         id          => $first_site->id,
     });
     ok !$app->generic_error, "no error";

@@ -49,6 +49,7 @@ use vars qw( %Lexicon );
 	q{Creating new user ('[_1]')...} => q{ユーザー([_1])を作成しています...},
 	q{Duplicate asset ('[_1]') found.  Skipping.} => q{アセット「[_1]」は既にインポートされているのでスキップします。},
 	q{Duplicate entry ('[_1]') found.  Skipping.} => q{記事「[_1]」は既にインポートされているのでスキップします。},
+	q{External asset ('[_1]') found.  Skipping.} => q{アセット「[_1]」はアップロードパス配下にないのでスキップします。},
 	q{Saving asset ('[_1]')...} => q{アセット('[_1]')を保存しています...},
 	q{Saving entry ('[_1]')...} => q{記事([_1])を保存しています...},
 	q{Saving page ('[_1]')...} => q{ウェブページ('[_1]')を保存しています...},

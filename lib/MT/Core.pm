@@ -1441,6 +1441,7 @@ BEGIN {
             group        => '$Core::MT::Group::system_filters',
             group_member => '$Core::MT::Group::member_system_filters',
             website      => '$Core::MT::Website::system_filters',
+            content_data => '$Core::MT::ContentData::system_filters',
         },
         listing_screens => {
             website => {

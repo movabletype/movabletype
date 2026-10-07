@@ -100,6 +100,21 @@ subtest 'listing with less privileged user' => sub {
         ok($json->{result}{count} == 1, 'got result without error');
         like($json->{result}{objects}[0][1], qr/test parent cd/, 'right label'); # col1
         like($json->{result}{objects}[0][2], qr/test child cd/,  'right label'); # col2
+
+        subtest 'filter with labels(MTC-26507)' => sub {
+            my $res  = $app->post_ok({
+                %$test_formdata,
+                'items' => JSON::encode_json([{
+                        type => 'label',
+                        args => { string => 'test', option => 'contains' },
+                    },
+                ]),
+            });
+            my $json = MT::Util::from_json($res->decoded_content);
+            ok($json->{result}{count} == 1, 'got result without error');
+            like($json->{result}{objects}[0][1], qr/test parent cd/, 'right label');    # col1
+            like($json->{result}{objects}[0][2], qr/test child cd/,  'right label');    # col2
+        };
     };
 
     subtest 'not permitted' => sub {

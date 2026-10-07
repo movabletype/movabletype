@@ -18,6 +18,7 @@ use MT::Blog;
 use MT::CMS::ContentType;
 use MT::ContentStatus;
 use MT::ContentType;
+use MT::ContentData;
 use MT::Log;
 use MT::Session;
 use MT::Template;
@@ -255,6 +256,13 @@ sub edit {
         $param->{unpublished_on_time} = $app->param('unpublished_on_time')
             || MT::Util::format_ts( '%H:%M:%S', $content_data->unpublished_on,
             $blog, $app->user ? $app->user->preferred_language : undef );
+
+        my $errors = MT::ContentData::verify_content_data( $app, $content_type, $content_data );
+        if ( $errors ) {
+            $param->{verify_error_msgs} = [
+                map { $_->{error}; } @{$errors}
+            ];
+        }
     }
     else {
         my $def_status;
@@ -1997,6 +2005,8 @@ sub _build_content_data_preview {
 sub publish_content_data {
     my $app = shift;
 
+    $app->validate_magic or return;
+
     $app->validate_param({
         id => [qw/ID MULTI/],
     }) or return;
@@ -2010,6 +2020,8 @@ sub publish_content_data {
 
 sub draft_content_data {
     my $app = shift;
+
+    $app->validate_magic or return;
 
     $app->validate_param({
         id => [qw/ID MULTI/],

@@ -59,6 +59,14 @@ sub post_ok {
     $res;
 }
 
+sub sign_in_ok {
+    my ($self, $params) = @_;
+    local $ENV{MT_TEST_SIGNIN_MANUALLY} = 1;
+    my $res = $self->post_form_ok($params);
+    ok $self->{session}, 'sign in succeeded';
+    $res;
+}
+
 sub post_form_ok {
     my $self = shift;
     my ( $form_id, $params, $message ) = ref $_[0] ? ( undef, @_ ) : @_;

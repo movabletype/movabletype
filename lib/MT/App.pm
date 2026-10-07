@@ -1168,6 +1168,15 @@ sub init_request {
     }
     $app->init_query();
 
+    if ((($app->get_header('Sec-Fetch-Site') || '') ne 'same-origin') || $app->{query}->param('_is_cross_origin')) {
+        if (defined(my $args = $app->{query}->param('return_args'))) {
+            require URI;
+            my $uri = URI->new;
+            $uri->query($args);
+            $uri->query_param(_is_cross_origin => 1);
+            $app->{query}->param('return_args', $uri->query);
+        }
+    }
     $app->{return_args} = $app->{query}->param('return_args');
     $app->cookies;
 
@@ -2432,12 +2441,6 @@ sub login {
                 class    => 'author',
                 category => 'login_user',
             });
-
-            ## magic_token = the user is trying to post something
-            ## (after a long pause, or because of CSRF)
-            if ( defined $app->param('magic_token') ) {
-                return $app->redirect_to_home;
-            }
         }
         else {
             $author = $app->session_user( $author, $ctx->{session_id},
@@ -4071,10 +4074,18 @@ sub current_magic {
 
 sub validate_magic {
     my $app = shift;
-    return 1
-        if $app->param('username')
+    if (   $app->param('username')
         && $app->param('password')
-        && $app->request('fresh_login');
+        && $app->request('fresh_login'))
+    {
+        if ($app->param('_is_cross_origin')
+            || ($app->get_header('Sec-Fetch-Site') || '') ne 'same-origin')
+        {
+            return $app->redirect_to_home;
+        } else {
+            return 1;
+        }
+    }
     $app->{login_again} = 1, return undef
         unless ( $app->current_magic || '' ) eq
         ( $app->param('magic_token') || '' );

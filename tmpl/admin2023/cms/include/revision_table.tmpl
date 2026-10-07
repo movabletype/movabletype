@@ -107,6 +107,7 @@
   id="revision-update-script"
   data-object-id="<mt:var name="object_id" escape="html">"
   data-object-type="<mt:var name="object_type" escape="html">"
+  data-blog-id="<mt:var name="blog_id" escape="html">"
   data-magic-token="<mt:var name="magic_token" escape="html">"
   data-message-cancel="<__trans phrase="Cancel" escape="html">"
   data-message-update="<__trans phrase="Update" escape="html">"
@@ -183,6 +184,7 @@ jQuery(function($) {
             id: script.data('objectId'),
             r: num,
             'revision-note': newText,
+            blog_id: script.data('blogId'),
             magic_token: script.data('magicToken')
           },
           success: function(data) {

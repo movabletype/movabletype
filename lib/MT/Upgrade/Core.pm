@@ -409,7 +409,7 @@ sub upgrade_templates {
                 $installer->($val, 0) or return;
             }
         } else {
-            my @tmpl = MT::Template->load(\%template_terms, { fetch_only => ['blog_id'] });
+            my @tmpl = MT::Template->load(\%template_terms, { fetchonly => ['blog_id'] });
             my %map  = map { $_->blog_id => 1 } @tmpl;
             delete $map{0};                      # just in case
             next if keys %map == $blog_count;    # all the sites have the template

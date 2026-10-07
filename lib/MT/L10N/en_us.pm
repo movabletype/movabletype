@@ -290,6 +290,9 @@ sub ascii_only { ( ( ref $_[0] ) || $_[0] ) eq __PACKAGE__ }
 
     '__PLUGIN_LABEL_DEFAULT' => 'Default',
     '__PLUGIN_LABEL_DEFAULT_BUT_MODIFIED' => 'Default (Modified)',
+
+    '__BROKEN__' => 'Broken',
+    '__INVALID_FIELDS__' => 'Invalid fields',
 );
 
 1;

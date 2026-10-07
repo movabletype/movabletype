@@ -314,13 +314,13 @@ sub save {
     my $app = shift;
     $app->validate_magic or return;
 
-    return $app->permission_denied()
-        unless $app->user->is_superuser()
-        || ($app->blog && $app->user->permissions($app->blog->id)->can_administer_site());
-
     if ($app->param('blog_id')) {
+        return $app->permission_denied()
+            unless $app->user->is_superuser()
+            || ($app->blog && $app->user->permissions($app->blog->id)->can_administer_site());
 
-        my $blog_id = $app->blog ? $app->blog->id : return;
+        my $blog    = $app->blog or return;
+        my $blog_id = $blog->id;
         my @db_rts  = MT->model('rebuild_trigger')->load({ blog_id => $blog_id });
         my %digests = map { _rt_digest($_), $_ } @db_rts;
 
@@ -357,14 +357,7 @@ sub save {
             $digests{$new_digest} = 0;
             $rt->save or return $app->error($rt->errstr);
         }
-    }
 
-    if (defined(my $val = $app->param('default_access_allowed'))) {
-        $app->config('DefaultAccessAllowed', $val, 1);
-    }
-    $app->config->save_config;
-
-    if (my $blog = $app->blog) {
         $blog->blog_content_accessible(scalar $app->param('blog_content_accessible'));
         if (defined(my $val = $app->param('default_mt_sites_action'))) {
             $blog->default_mt_sites_action($val);
@@ -373,6 +366,13 @@ sub save {
             $blog->default_mt_sites_sites($val);
         }
         $blog->save;
+    } else {
+        return $app->permission_denied() unless $app->user->is_superuser();
+
+        if (defined(my $val = $app->param('default_access_allowed'))) {
+            $app->config('DefaultAccessAllowed', $val, 1);
+            $app->config->save_config;
+        }
     }
 
     $app->add_return_arg('saved' => 1);
