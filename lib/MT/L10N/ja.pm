@@ -1740,6 +1740,14 @@ use vars qw( @ISA %Lexicon );
 	'[_1] ( id:[_2] ) does not exists.' => '[_1] ( id:[_2] ) が見つかりません。',
 	'basename is too long.' => '出力ファイルが長すぎます。',
 	'record does not exist.' => 'ブログがありません。',
+	'__BROKEN__' => '要修正',
+	'__INVALID_FIELDS__' => '要修正のフィールド',
+	'exists' => '存在する',
+	'not exists' => '存在しない',
+	'Has Invalid Fields' => '要修正のフィールドが存在する',
+	'No Invalid Fields' => '要修正のフィールドが存在しない',
+	'"[_1]" is required field.' => '"[_1]"は必須フィールドです。',
+	'Please correct the following problem.' => '以下の問題を解消してください。',
 
 ## lib/MT/ContentField.pm
 	'Cannot load content field data_type [_1]' => 'コンテンツフィールドのdata_typeが見つかりません ([_1])',
@@ -1793,7 +1801,7 @@ use vars qw( @ISA %Lexicon );
 	'Invalid [_1] in "[_2]" field.' => '"[_2]"フィールドの値は不正な[_1]です。',
 	'Invalid values in "[_1]" field: [_2]' => '"[_1]"フィールドの値が不正です: [_2]',
 	'Only 1 [_1] can be selected in "[_2]" field.' => '"[_2]”フィールドはひとつだけ選択できます',
-	'[_1] greater than or equal to [_2] must be selected in "[_3]" field.' => '"[_3]"フィールドの[_1]は[_2]個以下である必要があります。',
+	'[_1] greater than or equal to [_2] must be selected in "[_3]" field.' => '"[_3]"フィールドの[_1]は[_2]個以上である必要があります。',
 	'[_1] less than or equal to [_2] must be selected in "[_3]" field.' => '"[_3]"フィールドの[_1]は[_2]個以下である必要があります。',
 	'is not selected' => 'が選択されていない',
 	'is selected' => 'が選択されている',
@@ -2630,6 +2638,7 @@ use vars qw( @ISA %Lexicon );
 	'Cannot find package [_1]: [_2]' => '[_1]というパッケージが見つかりませんでした: [_2]',
 	'Cannot use sort_by and sort_method together in [_1]' => '[_1]ではsort_byとsort_methodは同時に利用できません。',
 	'Error sorting [_2]: [_1]' => '[_2]の並べ替えでエラーが発生しました: [_1]',
+	'Illegal sort_method: [_1]' => '不正なsort_methodです: [_1]',
 	'MT[_1] must be used in a [_2] context' => 'MT[_1]は[_2]のコンテキスト外部では利用できません。',
 	'[_1] cannot be used without publishing [_2] archive.' => '[_2]アーカイブを公開していないので[_1]は使えません。',
 	'[_1] used outside of [_2]' => '[_1]を[_2]の外部で利用しようとしました。',
@@ -2745,6 +2754,7 @@ use vars qw( @ISA %Lexicon );
 	'Error loading class [_1].' => '[_1]をロードできません。',
 	'Error loading class: [_1].' => 'クラスをロードできませんでした: [_1]',
 	'Error saving [_1] record # [_3]: [_2]...' => '[_1]のレコード(ID:[_3])を保存できませんでした: [_2]',
+	'Invalid parameters for upgrade function: [_1].' => '不正なパラメータでアップグレード機能を実行しようとしました: [_1]',
 	'Invalid upgrade function: [_1].' => '不正なアップグレード機能を実行しようとしました: [_1]',
 	'Upgrading database from version [_1].' => 'データベースをバージョン [_1]から更新しています...',
 	'Upgrading table for [_1] records...' => '[_1]のテーブルを更新しています...',
@@ -3172,6 +3182,9 @@ use vars qw( @ISA %Lexicon );
 ## mt-static/js/admin2023/contenttype/contenttype.js
 	'Do you want to delete [_1]([_2])?' => '[_1]([_2])を削除しますか？',
 	'Duplicate' => '複製',
+	'Data label field have been changed to "[_2]" from "[_1]"' => 'データ識別ラベルが"[_1]"から"[_2]"に変更されました',
+	'"[_1]" cannot delete because using as data label field.' => '"[_1]"はデータ識別ラベルとして使用しているため、削除できません。',
+	'Unchecking this required, data label field will reset to default.' => 'この必須チェックを解除すると、データ識別ラベルは初期値に戻ります。',
 
 ## mt-static/js/admin2023/contenttype/tag/content-field.tag
 	'ContentField' => 'コンテンツフィールド',
@@ -3651,7 +3664,7 @@ use vars qw( @ISA %Lexicon );
 	'Ascending' => '昇順',
 	'Basename Length' => 'ファイル名の文字数',
 	'Center' => '中央',
-	'Character entities (&amp#8221;, &amp#8220;, etc.)' => 'エンティティ (&amp#8221;、&amp#8220;など)',
+	'Character entities (&amp;#8221;, &amp;#8220;, etc.)' => 'エンティティ (&amp;#8221;、&amp;#8220;など)',
 	'Compose Defaults' => '作成の既定値',
 	'Content CSS will be applied if supported by the editor in use. You can specify CSS file by URL or {{theme_static}} placeholder. Example: {{theme_static}}path/to/cssfile.css' => 'エディタ内で利用するCSSファイルのURL又は、{{theme_static}}変数を利用したURLを指定する事ができます。エディタが対応していない場合は適用されません。例: {{theme_static}}path/to/cssfile.css',
 	'Content CSS' => 'コンテンツCSSファイル',
@@ -4624,6 +4637,8 @@ use vars qw( @ISA %Lexicon );
 	'edit' => '編集',
 	q{(delimited by '[_1]')} => q{([_1]で区切る)},
 	q{Warning: Changing this entry's basename may break inbound links.} => q{警告: この記事の出力ファイル名の変更は、内部のリンク切れの原因となります。},
+	'categories' => 'カテゴリ',
+	'folders' => 'フォルダ',
 
 ## tmpl/admin2023/cms/edit_entry_batch.tmpl
 	'Save these [_1] (s)' => '[_1]の保存',
@@ -5815,6 +5830,11 @@ use vars qw( @ISA %Lexicon );
 	'Are you sure you want to delete the existing password?' => '既存のパスワードを削除します。よろしいですか？',
 	'Copy to clipboard' => 'クリップボードにコピー',
 	'Copied' => 'コピーしました',
+
+# tmpl/admin2025/cms/include/revision_table.tmpl
+    'This revision note has been saved.' => 'メモを保存しました。',
+    'Failed to save' => '保存に失敗しました',
+    q{[_1] (ID:[_2])'s change note ([_3]) edited by user '[_4]'} => q{[_4]が[_1] (ID:[_2])の更新メモ(保存した日:[_3])を変更しました'},
 );
 
 

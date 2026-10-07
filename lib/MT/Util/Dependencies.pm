@@ -28,9 +28,10 @@ our %Requirements = (
         url   => "https://metacpan.org/pod/Archive::Zip",
     },
     "Authen::SASL" => {
-        label => "This module and its dependencies are required in order to support CRAM-MD5, DIGEST-MD5 or LOGIN SASL mechanisms.",
-        tags  => ["Mail"],
-        url   => "https://metacpan.org/pod/Authen::SASL",
+        extlib => "2.2000",
+        label  => "This module and its dependencies are required in order to support CRAM-MD5, DIGEST-MD5 or LOGIN SASL mechanisms.",
+        tags   => ["Mail"],
+        url    => "https://metacpan.org/pod/Authen::SASL",
     },
     "Cache::Memcached" => {
         label => "Cache::Memcached and a memcached server are optional. They are used to cache in-memory objects.",
@@ -38,7 +39,7 @@ our %Requirements = (
         url   => "https://metacpan.org/pod/Cache::Memcached",
     },
     "CGI" => {
-        extlib   => 4.71,
+        extlib   => 4.72,
         label    => "CGI is required for all Movable Type application functionality.",
         required => 1,
         tags     => ["Base"],
@@ -230,7 +231,7 @@ our %Requirements = (
         url        => "https://metacpan.org/pod/I18N::LangTags::List",
     },
     "Image::ExifTool" => {
-        extlib => 13.44,
+        extlib => 13.55,
         label  => "Image::ExifTool is used to manipulate image metadata.",
         tags   => ["Image"],
         url    => "https://metacpan.org/pod/Image::ExifTool",
@@ -271,7 +272,7 @@ our %Requirements = (
         url        => "https://metacpan.org/pod/IO::Uncompress::Gunzip",
     },
     "JSON" => {
-        extlib   => "4.10",
+        extlib   => 4.11,
         label    => "JSON is required to use DataAPI, Content Type, and listing framework.",
         required => 1,
         tags     => ["JSON"],
@@ -279,7 +280,7 @@ our %Requirements = (
     },
     "JSON::PP" => {
         dropped_in => ["amazonlinux2023", "centos7"],
-        extlib     => 4.16,
+        extlib     => 4.18,
         label      => "This module is shipped with perl. If missing, your perl distribution is incomplete and needs an extra package.",
         perl_core  => "2.27200",
         tags       => ["JSON"],
@@ -328,13 +329,13 @@ our %Requirements = (
         url   => "https://metacpan.org/pod/Log::Minimal",
     },
     "LWP::Protocol::https" => {
-        extlib => 6.14,
+        extlib => 6.15,
         label  => "LWP::Protocol::https is optional. It provides https support for LWP::UserAgent.",
         tags   => ["HTTP"],
         url    => "https://metacpan.org/pod/LWP::Protocol::https",
     },
     "LWP::UserAgent" => {
-        extlib => 6.81,
+        extlib => 6.83,
         label  => "LWP::UserAgent is optional. It is used to fetch information from local and external servers.",
         tags   => ["HTTP"],
         url    => "https://metacpan.org/pod/LWP::UserAgent",
@@ -346,7 +347,7 @@ our %Requirements = (
         url       => "https://metacpan.org/pod/MIME::Base64",
     },
     "MIME::Lite" => {
-        extlib => 3.035,
+        extlib => 3.038,
         label  => "MIME::Lite is an alternative module to create mail.",
         tags   => ["Mail"],
         url    => "https://metacpan.org/pod/MIME::Lite",
@@ -460,7 +461,7 @@ our %Requirements = (
         url        => "https://metacpan.org/pod/Unicode::UCD",
     },
     "URI" => {
-        extlib  => 5.34,
+        extlib  => 5.35,
         label   => "This module is sometimes used to parse URI.",
         tags    => ["HTTP", "URI"],
         url     => "https://metacpan.org/pod/URI",
@@ -577,7 +578,7 @@ our %ExtLibOnly = (
         used_in => ["MT"],
     },
     "Crypt::URandom" => {
-        extlib  => 0.54,
+        extlib  => 0.55,
         url     => "https://metacpan.org/pod/Crypt::URandom",
         used_in => ["MT::Util::UniqueID"],
     },
@@ -587,7 +588,7 @@ our %ExtLibOnly = (
         used_in => ["MT::Object"],
     },
     "Date::Parse" => {
-        extlib  => 2.33,
+        extlib  => 2.35,
         rev_dep => ["MailTools"],
         url     => "https://metacpan.org/pod/Date::Parse",
         used_in => ["Mail::Field::Date"],
@@ -599,8 +600,13 @@ our %ExtLibOnly = (
         url        => "https://metacpan.org/pod/Digest::base",
         used_in    => ["Digest::SHA::PurePerl"],
     },
+    "Digest::HMAC_MD5" => {
+        extlib  => 1.05,
+        url     => "https://metacpan.org/pod/Digest::HMAC_MD5",
+        used_in => ["Authen::SASL::Perl::DIGEST_MD5"],
+    },
     "Digest::Perl::MD5" => {
-        extlib  => 1.9,
+        extlib  => 1.91,
         url     => "https://metacpan.org/pod/Digest::Perl::MD5",
         used_in => ["MT::Util::Digest::MD5"],
     },
@@ -651,7 +657,7 @@ our %ExtLibOnly = (
         url      => "https://metacpan.org/pod/HTTP::Cookies",
     },
     "HTTP::Date" => {
-        extlib  => 6.06,
+        extlib  => 6.08,
         url     => "https://metacpan.org/pod/HTTP::Date",
         used_in => ["LWP::UserAgent"],
     },
@@ -699,7 +705,7 @@ our %ExtLibOnly = (
         used_in => ["HTTP::Request::Common"],
     },
     "LWP::Protocol::http" => {
-        extlib  => 6.81,
+        extlib  => 6.83,
         url     => "https://metacpan.org/pod/LWP::Protocol::http",
         used_in => ["MT::App::Wizard"],
     },
@@ -780,7 +786,7 @@ our %ExtLibOnly = (
     },
     "version" => {
         dropped_in => ["amazonlinux2023", "centos7"],
-        extlib     => 0.9933,
+        extlib     => 0.9934,
         perl_core  => 0.99,
         url        => "https://metacpan.org/pod/version",
         used_in    => ["MT::version"],
@@ -793,7 +799,7 @@ our %ExtLibOnly = (
         used_in => ["MT"],
     },
     "WWW::RobotRules" => {
-        extlib  => 6.02,
+        extlib  => 6.03,
         url     => "https://metacpan.org/pod/WWW::RobotRules",
         used_in => ["LWP::RobotUA"],
     },
@@ -992,6 +998,8 @@ my %OptionalModules = map { $_ => 1 } qw(
     URI::urn::isbn
     URI::otpauth
     WWW::RobotRules::AnyDBM_File
+    WWW::RobotRules::DB_File
+    Authen::SASL::Perl::GSSAPI
 );
 
 sub update_me {

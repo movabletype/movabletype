@@ -8,7 +8,7 @@ use URI::Split qw( uri_split uri_join );
 
 use base qw( URI );
 
-our $VERSION = '5.34';
+our $VERSION = '5.35';
 
 sub _MINIMUM_LATITUDE      { return -90 }
 sub _MAXIMUM_LATITUDE      { return 90 }

@@ -22,7 +22,7 @@ use strict;
 use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 
-$VERSION = '1.25';
+$VERSION = '1.26';
 
 sub ProcessPEResources($$);
 sub ProcessPEVersion($$);
@@ -942,7 +942,7 @@ sub ReadUnicodeStr($$$;$)
     }
     $pos += 2 if $pos & 0x03;
     my $to = $et ? $et->Options('Charset') : 'UTF8';
-    return (Image::ExifTool::Decode(undef,$str,'UCS2','II',$to), $pos);
+    return (Image::ExifTool::Decode(undef,$str,'UTF16','II',$to), $pos);
 }
 
 #------------------------------------------------------------------------------
@@ -1355,7 +1355,7 @@ sub ProcessEXE($$)
                         } else { # misc debug info
                             next unless $n > 12;
                             my $exe = substr($buf2,12);
-                            $exe = $et->Decode($exe, 'UCS2') if Get32u(\$buf2,8);
+                            $exe = $et->Decode($exe, 'UTF16') if Get32u(\$buf2,8);
                             $exe =~ s/\0.*//; # truncate at null
                             $tagTablePtr = GetTagTable('Image::ExifTool::EXE::Misc');
                             $et->HandleTag($tagTablePtr, 12, $exe, DataPt => \$buf2, DataPos => $of);
@@ -1553,7 +1553,7 @@ library files.
 
 =head1 AUTHOR
 
-Copyright 2003-2025, Phil Harvey (philharvey66 at gmail.com)
+Copyright 2003-2026, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

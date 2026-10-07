@@ -1303,10 +1303,7 @@ BEGIN {
                             ->load( { id => [ keys %blog_id ] },
                             { no_class => 1, } );
                         my %blogname = map { $_->id => $_->name } @blogs;
-                        return sort {
-                            $blogname{ $a->blog_id }
-                                cmp $blogname{ $b->blog_id }
-                        } @$objs;
+                        return sort { ($blogname{ $a->blog_id } // '') cmp($blogname{ $b->blog_id } // '') } @$objs;
                     },
                 },
                 current_user => {
@@ -1444,6 +1441,7 @@ BEGIN {
             group        => '$Core::MT::Group::system_filters',
             group_member => '$Core::MT::Group::member_system_filters',
             website      => '$Core::MT::Website::system_filters',
+            content_data => '$Core::MT::ContentData::system_filters',
         },
         listing_screens => {
             website => {
@@ -1896,6 +1894,7 @@ BEGIN {
             'CookieSameSite'        => { default => 'Lax' },
             'MailModule'            => { default => 'MIME::Lite', },
             'MailEncoding'          => { default => 'UTF-8', },
+            'MailSMTPOAuthProvider' => undef,
             'MailTransfer'          => { default => 'sendmail' },
             'MailTransferEncoding'  => undef,
             'MailLogAlways'         => undef,
@@ -2294,13 +2293,16 @@ BEGIN {
             'CSVExportEscapeFormula' => { default => 1 },
             'AllowNonAsciiFilename' => { default => 1 },
             'RequireUpgradePermission' => { default => 1 },
+            'RequireAdministerSiteForChildAssets' => { default => 0 },
+            'UseCodeMirror6' => { default => 0 },
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {
             'wizard' => {
-                handler => 'MT::App::Wizard',
-                script  => sub {'mt-wizard.cgi'},
-                type    => 'run_once',
+                handler  => 'MT::App::Wizard',
+                script   => sub {'mt-wizard.cgi'},
+                cgi_path => sub { MT->config->AdminCGIPath || MT->config->CGIPath },
+                type     => 'run_once',
             },
             'check' => {
                 script => sub { MT->config->CheckScript },
@@ -2330,7 +2332,7 @@ BEGIN {
                 handler         => 'MT::App::CMS',
                 type            => 'psgi_streaming',
                 script          => sub { MT->config->AdminScript },
-                cgi_path        => sub { MT->config->AdminCGIPath },
+                cgi_path        => sub { MT->config->AdminCGIPath || MT->config->CGIPath },
                 cgi_base        => 'mt',
                 page_actions    => sub { MT->app->core_page_actions(@_) },
                 content_actions => sub { MT->app->core_content_actions(@_) },
@@ -2358,10 +2360,11 @@ BEGIN {
                     sub { MT::CMS::Dashboard->site_stats_widget_lines() },
             },
             upgrade => {
-                handler => 'MT::App::Upgrader',
-                methods => '$Core::MT::App::Upgrader::core_methods',
-                script  => sub { MT->config->UpgradeScript },
-                type    => 'run_once',
+                handler  => 'MT::App::Upgrader',
+                methods  => '$Core::MT::App::Upgrader::core_methods',
+                script   => sub { MT->config->UpgradeScript },
+                cgi_path => sub { MT->config->AdminCGIPath || MT->config->CGIPath },
+                type     => 'run_once',
             },
             'data_api' => {
                 handler   => 'MT::App::DataAPI',

@@ -17,7 +17,7 @@ our @EXPORT_OK = qw(perl_sha1_digest_hex cc_url cc_rdf cc_name cc_image is_valid
 
 sub warning {
     my (%args) = @_;
-    my ($filename, $subroutine) = (caller)[1, 3];
+    my ($filename, $subroutine) = (caller(1))[1, 3];
     $filename = Cwd::realpath($filename) unless File::Spec->file_name_is_absolute($filename);
     $filename =~ s!\\!/!g if $^O eq 'MSWin32';
 

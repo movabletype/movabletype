@@ -206,7 +206,7 @@ extend( DOM, {
             t = t ? t.toLowerCase() : "";
         
             var name = e.name;
-            if (!e.getAttribute('mt:raw-name')) {
+            if (!(e.getAttribute('data-mt-raw-name') || e.getAttribute('mt:raw-name'))) {
                 name = name.cssToJS();
             }
             var tn = e.tagName.toLowerCase();

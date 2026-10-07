@@ -461,7 +461,7 @@
             null,
             null,
             "checkboxes",
-            "5475a4e22dc1feb57e54c3e3c197aeecdd3a0510"
+            "d7c78ef50e1e419f95792509b25d21efc01f9435"
          ],
          [
             2,
@@ -478,7 +478,7 @@
             null,
             null,
             "radio_button",
-            "e5ca81fdf16a054549c2a1c96a0a4ad50957a968"
+            "5da4afe0d8e4030fbdefac4751315c0a7814c5c1"
          ],
          [
             2,
@@ -495,7 +495,7 @@
             null,
             null,
             "select_box",
-            "25446d7ccb04e509d94a5dd6e60c79ddf9c98335"
+            "68a05d97b3c21497d9125fab5ce3fa793eba33f8"
          ]
       ]
    },
@@ -506,7 +506,7 @@
       ],
       "rows" : [
          [
-            "DataAPIDisableSite 0\nDefaultSupportedLanguages en_us,ja\nDisableContentFieldPermission 1\nDisableDataAPI 0\nDisableNotificationPings 1\nHidePrivateRelatedContentData 1\nPluginAlias ContentType Information Widget=ContentInfoWidget\nPluginAlias Markdown=Markdown/Markdown.pl\nPluginAlias SmartyPants=Markdown/SmartyPants.pl\nPluginAlias Textile=Textile/textile2.pl\nPluginAlias WXR Importer=WXRImporter\nPluginAlias Widget Manager Upgrade Assistant=WidgetManager/WidgetManager.pl\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion blockeditor=1\nPluginSchemaVersion commonmark=1.0\nPluginSchemaVersion formattedtext=1.00\nPluginSchemaVersion tinymce6=1\nPluginSwitch BlockEditor=0\nPluginSwitch CommonMark=1\nPluginSwitch ContentInfoWidget=1\nPluginSwitch DashboardWidgetTemplate=1\nPluginSwitch FormattedText=1\nPluginSwitch FormattedTextForTinyMCE6=1\nPluginSwitch GoogleAnalyticsV4=1\nPluginSwitch Markdown/Markdown.pl=1\nPluginSwitch Markdown/SmartyPants.pl=1\nPluginSwitch Textile/textile2.pl=0\nPluginSwitch TinyMCE6=1\nPluginSwitch WXRImporter=1\nPluginSwitch WidgetManager/WidgetManager.pl=0\nSchemaVersion 9.0002\nTrimFilePath 1\n",
+            "DataAPIDisableSite 0\nDefaultSupportedLanguages en_us,ja\nDisableContentFieldPermission 1\nDisableDataAPI 0\nDisableNotificationPings 1\nHidePrivateRelatedContentData 1\nPluginAlias ContentType Information Widget=ContentInfoWidget\nPluginAlias Markdown=Markdown/Markdown.pl\nPluginAlias SmartyPants=Markdown/SmartyPants.pl\nPluginAlias Textile=Textile/textile2.pl\nPluginAlias WXR Importer=WXRImporter\nPluginAlias Widget Manager Upgrade Assistant=WidgetManager/WidgetManager.pl\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion blockeditor=1\nPluginSchemaVersion commonmark=1.0\nPluginSchemaVersion formattedtext=1.00\nPluginSchemaVersion tinymce6=1\nPluginSwitch BlockEditor=0\nPluginSwitch CommonMark=1\nPluginSwitch ContentInfoWidget=1\nPluginSwitch DashboardWidgetTemplate=1\nPluginSwitch FormattedText=1\nPluginSwitch FormattedTextForTinyMCE6=1\nPluginSwitch GoogleAnalyticsV4=1\nPluginSwitch Markdown/Markdown.pl=1\nPluginSwitch Markdown/SmartyPants.pl=1\nPluginSwitch Textile/textile2.pl=0\nPluginSwitch TinyMCE6=1\nPluginSwitch WXRImporter=1\nPluginSwitch WidgetManager/WidgetManager.pl=0\nSchemaVersion 9.0003\nTrimFilePath 1\n",
             1
          ]
       ]
@@ -534,12 +534,12 @@
             "__NOW__",
             null,
             "This is a sample.",
-            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002A\u0000\u0000\u0000\u0001H\u0000\u0000\u0000\b\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\ncheckboxes\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0004name-\u0000\u0000\u0000\bcf_check\u0000\u0000\u0000\ntype_label-\u0000\u0000\u0000\nCheckboxes\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0003\u0000\u0000\u0000\u0007display-\u0000\u0000\u0000\u0007default\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\bcf_check\u0000\u0000\u0000\u0006valuesA\u0000\u0000\u0000\u0004H\u0000\u0000\u0000\u0003\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0006check1\u0000\u0000\u0000\u0007checked-\u0000\u0000\u0000\u0007checked\u0000\u0000\u0000\u0005value-\u0000\u0000\u0000\u0006value1H\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u0005value-\u0000\u0000\u0000\u0006value2\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0006check2H\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u0005value-\u0000\u0000\u0000\u0006value3\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0006check3H\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0006check0\u0000\u0000\u0000\u0005value-\u0000\u0000\u0000\u00010\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(5475a4e22dc1feb57e54c3e3c197aeecdd3a0510",
+            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002A\u0000\u0000\u0000\u0001H\u0000\u0000\u0000\b\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\ntype_label-\u0000\u0000\u0000\nCheckboxes\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(d7c78ef50e1e419f95792509b25d21efc01f9435\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\ncheckboxes\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0003\u0000\u0000\u0000\u0006valuesA\u0000\u0000\u0000\u0004H\u0000\u0000\u0000\u0003\u0000\u0000\u0000\u0007checked-\u0000\u0000\u0000\u0007checked\u0000\u0000\u0000\u0005value-\u0000\u0000\u0000\u0006value1\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0006check1H\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0006check2\u0000\u0000\u0000\u0005value-\u0000\u0000\u0000\u0006value2H\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u0005value-\u0000\u0000\u0000\u0006value3\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0006check3H\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0006check0\u0000\u0000\u0000\u0005value-\u0000\u0000\u0000\u00010\u0000\u0000\u0000\u0007display-\u0000\u0000\u0000\u0007default\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\bcf_check\u0000\u0000\u0000\u0004name-\u0000\u0000\u0000\bcf_check",
             1,
             null,
             "__NOW__",
             "ct_check",
-            "207f70a290fb0c84d1682c8466eca0f1c9e42065",
+            "1f79900a42221bd63247b3d5809f2aecd1fcc7c8",
             null,
             null
          ],
@@ -549,12 +549,12 @@
             "__NOW__",
             null,
             "This is a sample.",
-            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002A\u0000\u0000\u0000\u0001H\u0000\u0000\u0000\b\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(e5ca81fdf16a054549c2a1c96a0a4ad50957a968\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\ntype_label-\u0000\u0000\u0000\fRadio Button\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00012\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0003\u0000\u0000\u0000\u0007display-\u0000\u0000\u0000\u0007default\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\bcf_radio\u0000\u0000\u0000\u0006valuesA\u0000\u0000\u0000\u0004H\u0000\u0000\u0000\u0003\u0000\u0000\u0000\u0005value-\u0000\u0000\u0000\u0006value1\u0000\u0000\u0000\u0007checked-\u0000\u0000\u0000\u0007checked\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0006radio1H\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u0005value-\u0000\u0000\u0000\u0006value2\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0006radio2H\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0006radio3\u0000\u0000\u0000\u0005value-\u0000\u0000\u0000\u0006value3H\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0006radio0\u0000\u0000\u0000\u0005value-\u0000\u0000\u0000\u00010\u0000\u0000\u0000\u0004name-\u0000\u0000\u0000\bcf_radio\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\fradio_button",
+            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002A\u0000\u0000\u0000\u0001H\u0000\u0000\u0000\b\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(5da4afe0d8e4030fbdefac4751315c0a7814c5c1\u0000\u0000\u0000\u0004name-\u0000\u0000\u0000\bcf_radio\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0003\u0000\u0000\u0000\u0007display-\u0000\u0000\u0000\u0007default\u0000\u0000\u0000\u0006valuesA\u0000\u0000\u0000\u0004H\u0000\u0000\u0000\u0003\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0006radio1\u0000\u0000\u0000\u0005value-\u0000\u0000\u0000\u0006value1\u0000\u0000\u0000\u0007checked-\u0000\u0000\u0000\u0007checkedH\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u0005value-\u0000\u0000\u0000\u0006value2\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0006radio2H\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u0005value-\u0000\u0000\u0000\u0006value3\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0006radio3H\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u0005value-\u0000\u0000\u0000\u00010\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0006radio0\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\bcf_radio\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\fradio_button\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00012\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\ntype_label-\u0000\u0000\u0000\fRadio Button",
             2,
             null,
             "__NOW__",
             "ct_radio",
-            "da1738768b6c58f6793adf181970b8e3b8f2d0be",
+            "ebc0777f658ed9a916a9b19732ed9f695c818acf",
             null,
             null
          ],
@@ -564,12 +564,12 @@
             "__NOW__",
             null,
             "This is a sample.",
-            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002A\u0000\u0000\u0000\u0001H\u0000\u0000\u0000\b\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(25446d7ccb04e509d94a5dd6e60c79ddf9c98335\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\ntype_label-\u0000\u0000\u0000\nSelect Box\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0003\u0000\u0000\u0000\u0007display-\u0000\u0000\u0000\u0007default\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\tcf_select\u0000\u0000\u0000\u0006valuesA\u0000\u0000\u0000\u0004H\u0000\u0000\u0000\u0003\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0007select1\u0000\u0000\u0000\u0005value-\u0000\u0000\u0000\u0006value1\u0000\u0000\u0000\u0007checked-\u0000\u0000\u0000\u0007checkedH\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0007select2\u0000\u0000\u0000\u0005value-\u0000\u0000\u0000\u0006value2H\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u0005value-\u0000\u0000\u0000\u0006value3\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0007select3H\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u0005value-\u0000\u0000\u0000\u00010\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0007select0\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00013\u0000\u0000\u0000\u0004name-\u0000\u0000\u0000\tcf_select\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\nselect_box",
+            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002A\u0000\u0000\u0000\u0001H\u0000\u0000\u0000\b\u0000\u0000\u0000\ntype_label-\u0000\u0000\u0000\nSelect Box\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00013\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(68a05d97b3c21497d9125fab5ce3fa793eba33f8\u0000\u0000\u0000\u0004name-\u0000\u0000\u0000\tcf_select\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0003\u0000\u0000\u0000\u0007display-\u0000\u0000\u0000\u0007default\u0000\u0000\u0000\u0006valuesA\u0000\u0000\u0000\u0004H\u0000\u0000\u0000\u0003\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0007select1\u0000\u0000\u0000\u0005value-\u0000\u0000\u0000\u0006value1\u0000\u0000\u0000\u0007checked-\u0000\u0000\u0000\u0007checkedH\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0007select2\u0000\u0000\u0000\u0005value-\u0000\u0000\u0000\u0006value2H\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0007select3\u0000\u0000\u0000\u0005value-\u0000\u0000\u0000\u0006value3H\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u0005value-\u0000\u0000\u0000\u00010\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0007select0\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\tcf_select\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\nselect_box\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00011",
             3,
             null,
             "__NOW__",
             "ct_select",
-            "cb7dacccfd8d0a0b821209816a68d88c3642cbec",
+            "5266623e33a32635ac14555e146fd349df20309a",
             null,
             null
          ]
@@ -2209,5 +2209,5 @@
          ]
       ]
    },
-   "schema_version" : "WidgetManager 1.1; blockeditor 1; commonmark 1.0; core 9.0002; formattedtext 1.00; tinymce6 1"
+   "schema_version" : "WidgetManager 1.1; blockeditor 1; commonmark 1.0; core 9.0003; formattedtext 1.00; tinymce6 1"
 }

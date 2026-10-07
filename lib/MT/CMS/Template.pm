@@ -73,12 +73,12 @@ sub edit {
                     $obj->modified_on, $blog,
                     $app->user ? $app->user->preferred_language : undef );
                 my $rev = $obj->load_revision( { rev_number => $rn } );
-                if ( $rev && @$rev ) {
+                if ( $rev && @$rev && $rn != $obj->current_revision ) {
                     $obj = $rev->[0];
                     my $rev_obj = $rev->[3];
                     my $values = $obj->get_values;
                     $param->{$_} = $values->{$_} foreach keys %$values;
-                    $param->{'revision-note'} = $rev_obj->description;
+                    $param->{'revision-note-in-status-widget'} = $rev_obj->description;
                     $param->{loaded_revision} = 1;
                 }
                 $param->{rev_number} = $rn;
@@ -86,6 +86,12 @@ sub edit {
                     $obj->modified_on, $blog,
                     $app->user ? $app->user->preferred_language : undef );
                 $param->{no_snapshot} = 1 if $app->param('no_snapshot');
+            }
+        }
+        if ( my $cur_rev = $obj->current_revision ) {
+            my $rev = $obj->load_revision( { rev_number => $cur_rev } );
+            if ( $rev && @$rev ) {
+                $param->{'latest-revision-note'} = $rev->[3]->description;
             }
         }
         $param->{nav_templates} = 1;
@@ -2894,6 +2900,8 @@ BLOG: for my $blog_id (@id) {
 sub refresh_individual_templates {
     my ($app) = @_;
 
+    $app->validate_magic or return;
+
     $app->validate_param({
         blog_id => [qw/ID/],
         id      => [qw/ID MULTI/],
@@ -2918,7 +2926,7 @@ sub refresh_individual_templates {
     MT::Util::Log->debug('--- Start refresh_individual_templates.');
 
     my $set;
-    my $blog_id = $app->param('blog_id');
+    my $blog_id = $app->param('blog_id') || 0;
     my $blog    = $app->blog;
 
     # force saving the revision when indiv. templates are refreshed.
@@ -2971,11 +2979,8 @@ sub refresh_individual_templates {
     my @id = $app->multi_param('id');
     require MT::Template;
     foreach my $tmpl_id (@id) {
-        my $tmpl = MT::Template->load($tmpl_id);
+        my $tmpl = MT::Template->load({ id => $tmpl_id, blog_id => $blog_id });
         next unless $tmpl;
-        my $blog_id = $tmpl->blog_id;
-
-        # FIXME: permission check -- for this blog_id
 
         my @ts = MT::Util::offset_time_list( $t, $blog_id );
         my $ts = sprintf "%04d-%02d-%02d %02d:%02d:%02d", $ts[5] + 1900,
@@ -2989,7 +2994,7 @@ sub refresh_individual_templates {
             push @msg,
                 $app->translate(
                 "Skipping template '[_1]' since it appears to be a custom template.",
-                $tmpl->name
+                MT::Util::encode_html($tmpl->name)
                 );
             next;
         }
@@ -3019,7 +3024,7 @@ sub refresh_individual_templates {
             push @msg,
                 $app->translate(
                 'Refreshing template <strong>[_3]</strong> after making <a href="?__mode=view&amp;blog_id=[_1]&amp;_type=template&amp;id=[_2]">backup</a>.',
-                $blog_id, $backup->id, $tmpl->name );
+                MT::Util::encode_url($blog_id), MT::Util::encode_url($backup->id), MT::Util::encode_html($tmpl->name) );
 
             # we found that the previous template had not been
             # altered, so replace it with new default template...
@@ -3043,7 +3048,7 @@ sub refresh_individual_templates {
             push @msg,
                 $app->translate(
                 "Skipping template '[_1]' since it has not been changed.",
-                $tmpl->name );
+                MT::Util::encode_html($tmpl->name) );
         }
     }
     my @msg_loop;
@@ -3060,8 +3065,11 @@ sub refresh_individual_templates {
 sub clone_templates {
     my ($app) = @_;
 
+    $app->validate_magic or return;
+
     $app->validate_param({
-        id => [qw/ID MULTI/],
+        id      => [qw/ID MULTI/],
+        blog_id => [qw/ID/],
     }) or return;
 
     my $user = $app->user;
@@ -3075,10 +3083,11 @@ sub clone_templates {
             || $perms->can_administer_site )
         );
 
-    my @id = $app->multi_param('id');
+    my @id      = $app->multi_param('id');
+    my $blog_id = $app->param('blog_id') || 0;
     require MT::Template;
     foreach my $tmpl_id (@id) {
-        my $tmpl = MT::Template->load($tmpl_id);
+        my $tmpl = MT::Template->load({ id => $tmpl_id, blog_id => $blog_id });
         next unless $tmpl;
 
         my $new_tmpl = $tmpl->clone(

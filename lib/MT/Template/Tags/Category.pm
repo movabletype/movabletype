@@ -103,13 +103,13 @@ sub _sort_cats {
 
     # If sort_method is defined
     if ( defined $sort_method ) {
-        my $package = $sort_method;
-
         # Check if it has a package name
-        if ( $package =~ /::/ ) {
+        if ( $sort_method =~ /::/ ) {
+            if ($sort_method !~ /\A\w+(::\w+)+\z/) {
+                return $ctx->error(MT->translate("Illegal sort_method: [_1]", $sort_method));
+            }
 
-            # Extract the package name
-            $package =~ s/::[^(::)]+$//;
+            my ($package, $method) = $sort_method =~ /\A(.+)::([^:]+)\z/;
 
             # Make sure it's loaded
             eval(qq(use $package;));
@@ -121,10 +121,9 @@ sub _sort_cats {
                     )
                 );
             }
-        }
-
-        # Sort the categories based on sort_method
-        if ( $sort_method =~ /::/ ) {
+            if (!$package->can($method)) {
+                return $ctx->error(MT->translate("Illegal sort_method: [_1]", $sort_method));
+            }
             eval("\@\$cats = sort $sort_method \@\$cats");
         }
         else {
@@ -732,8 +731,12 @@ sub _hdlr_sub_categories {
         if !$sort_by || !$class->has_column($sort_by);
 
     my $category_set_id = $args->{category_set_id} || 0;
-    if ( !$category_set_id && $ctx->stash('category_set') ) {
-        $category_set_id = $ctx->stash('category_set')->id;
+    if (!$category_set_id) {
+        if ($ctx->stash('category_set')) {
+            $category_set_id = $ctx->stash('category_set')->id;
+        } elsif ($ctx->stash('category_set_id')) {
+            $category_set_id = $ctx->stash('category_set_id');
+        }
     }
 
     # Store the tokens for recursion

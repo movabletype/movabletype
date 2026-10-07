@@ -340,7 +340,7 @@ sub list_props {
                 return @sorted;
             },
             verb                  => ' ',
-            single_select_options => [
+            single_select_options => sub {[
                 {
                     label => MT->translate('__INTEGER_FILTER_EQUAL'),
                     value => 1,
@@ -349,7 +349,7 @@ sub list_props {
                     label => MT->translate('__INTEGER_FILTER_NOT_EQUAL'),
                     value => 0,
                 },
-            ],
+            ]},
             singleton => 1,
             base      => '__virtual.single_select',
             terms     => sub {
@@ -777,7 +777,7 @@ sub site_url {
     else {
         my $url = '';
         if ( $blog->is_blog() ) {
-            if ( my $website = $blog->website() ) {
+            if ( my $website = MT->model('website')->load({ id => $blog->parent_id }, { fetchonly => [qw(site_url)] }) ) {
                 $url = $website->column('site_url');
             }
             else {
@@ -845,7 +845,7 @@ sub site_path {
         if ( $blog->is_blog() && $website ) {
             $base_path = $website->column('site_path');
             if ($base_path) {
-                $path = File::Spec->catdir( $base_path, $raw_path );
+                $path = File::Spec->catdir( $base_path, $raw_path // '' );
             }
             else {
                 $path = $raw_path;

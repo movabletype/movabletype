@@ -12,9 +12,6 @@ BEGIN {
         DefaultLanguage => 'en_US',    ## for now
     );
     $ENV{MT_CONFIG} = $test_env->config_file;
-
-    # Disable Commercial.pack temporarily.
-    $test_env->skip_if_addon_exists('Commercial.pack');
 }
 
 use MT::Test;
@@ -182,6 +179,9 @@ my $pic   = MT::Asset::Image->load({ label => 'Userpic A' });
 my $pic2  = MT::Asset::Image->load({ label => 'Sample Image' });
 my $file1 = MT::Asset->load({ label => 'Sample File' });
 
+$pic->created_by($aikawa->id);
+$pic->save;
+
 subtest 'mode = asset_userpic' => sub {
     my $app = MT::Test::App->new('MT::App::CMS');
     $app->login($admin);
@@ -299,7 +299,12 @@ subtest 'mode = dialog_asset_modal' => sub {
         label      => 'New Label',
         blog_id    => $blog->id,
     });
-    $app->has_permission_error("dialog_asset_modal by edit_assets");
+    # Commercial.pack adds access_to_insert_asset_list to edit_assets
+    if (MT->has_plugin('Commercial.pack')) {
+        $app->has_no_permission_error("dialog_asset_modal by edit_assets");
+    } else {
+        $app->has_permission_error("dialog_asset_modal by edit_assets");
+    }
 };
 
 subtest 'mode = dialog_list_asset' => sub {
@@ -348,7 +353,12 @@ subtest 'mode = dialog_list_asset' => sub {
         label      => 'New Label',
         blog_id    => $blog->id,
     });
-    $app->has_permission_error("dialog_list_asset by edit_assets");
+    # Commercial.pack adds access_to_insert_asset_list to edit_assets
+    if (MT->has_plugin('Commercial.pack')) {
+        $app->has_no_permission_error("dialog_asset_modal by edit_assets");
+    } else {
+        $app->has_permission_error("dialog_list_asset by edit_assets");
+    }
 };
 
 subtest 'mode = asset_insert' => sub {
@@ -406,7 +416,12 @@ subtest 'mode = asset_insert' => sub {
         id      => $pic2->id,
         blog_id => $blog->id,
     });
-    $app->has_permission_error("asset_insert by other permission");
+    # Commercial.pack adds insert_asset to edit_assets
+    if (MT->has_plugin('Commercial.pack')) {
+        $app->has_no_permission_error("asset_insert by other permission (edit_assets from the designer role)");
+    } else {
+        $app->has_permission_error("asset_insert by other permission (edit_assets form the designer role)");
+    }
 };
 
 subtest 'mode = list' => sub {
@@ -1331,7 +1346,7 @@ subtest 'mode = add_tags' => sub {
         _type                  => 'asset',
         action_name            => 'add_tags',
         itemset_action_input   => 'New Tag',
-        return_args            => '__mode%3Dlist_asset%26blog_id%3D' . $blog->id,
+        return_args            => '__mode=list_asset&blog_id=' . $blog->id,
         blog_id                => $blog->id,
         id                     => $asset->id,
         plugin_action_selector => 'add_tags',
@@ -1345,7 +1360,7 @@ subtest 'mode = add_tags' => sub {
         _type                  => 'asset',
         action_name            => 'add_tags',
         itemset_action_input   => 'New Tag',
-        return_args            => '__mode%3Dlist_asset%26blog_id%3D' . $blog->id,
+        return_args            => '__mode=list_asset&blog_id=' . $blog->id,
         blog_id                => $blog->id,
         id                     => $asset->id,
         plugin_action_selector => 'add_tags',
@@ -1359,7 +1374,7 @@ subtest 'mode = add_tags' => sub {
         _type                  => 'asset',
         action_name            => 'add_tags',
         itemset_action_input   => 'New Tag',
-        return_args            => '__mode%3Dlist_asset%26blog_id%3D' . $blog->id,
+        return_args            => '__mode=list_asset&blog_id=' . $blog->id,
         blog_id                => $blog->id,
         id                     => $asset->id,
         plugin_action_selector => 'add_tags',
@@ -1373,7 +1388,7 @@ subtest 'mode = add_tags' => sub {
         _type                  => 'asset',
         action_name            => 'add_tags',
         itemset_action_input   => 'New Tag',
-        return_args            => '__mode%3Dlist_asset%26blog_id%3D' . $blog->id,
+        return_args            => '__mode=list_asset&blog_id=' . $blog->id,
         blog_id                => $blog->id,
         id                     => $asset->id,
         plugin_action_selector => 'add_tags',
@@ -1404,7 +1419,7 @@ subtest 'mode = remove_tags' => sub {
         _type                  => 'asset',
         action_name            => 'remove_tags',
         itemset_action_input   => 'New Tag',
-        return_args            => '__mode%3Dlist_asset%26blog_id%3D' . $blog->id,
+        return_args            => '__mode=list_asset&blog_id=' . $blog->id,
         blog_id                => $blog->id,
         id                     => $asset->id,
         plugin_action_selector => 'remove_tags',
@@ -1418,7 +1433,7 @@ subtest 'mode = remove_tags' => sub {
         _type                  => 'asset',
         action_name            => 'remove_tags',
         itemset_action_input   => 'New Tag',
-        return_args            => '__mode%3Dlist_asset%26blog_id%3D' . $blog->id,
+        return_args            => '__mode=list_asset&blog_id=' . $blog->id,
         blog_id                => $blog->id,
         id                     => $asset->id,
         plugin_action_selector => 'remove_tags',
@@ -1432,7 +1447,7 @@ subtest 'mode = remove_tags' => sub {
         _type                  => 'asset',
         action_name            => 'remove_tags',
         itemset_action_input   => 'New Tag',
-        return_args            => '__mode%3Dlist_asset%26blog_id%3D' . $blog->id,
+        return_args            => '__mode=list_asset&blog_id=' . $blog->id,
         blog_id                => $blog->id,
         id                     => $asset->id,
         plugin_action_selector => 'remove_tags',
@@ -1446,7 +1461,7 @@ subtest 'mode = remove_tags' => sub {
         _type                  => 'asset',
         action_name            => 'remove_tags',
         itemset_action_input   => 'New Tag',
-        return_args            => '__mode%3Dlist_asset%26blog_id%3D' . $blog->id,
+        return_args            => '__mode=list_asset&blog_id=' . $blog->id,
         blog_id                => $blog->id,
         id                     => $asset->id,
         plugin_action_selector => 'remove_tags',

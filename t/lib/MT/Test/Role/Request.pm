@@ -59,6 +59,14 @@ sub post_ok {
     $res;
 }
 
+sub sign_in_ok {
+    my ($self, $params) = @_;
+    local $ENV{MT_TEST_SIGNIN_MANUALLY} = 1;
+    my $res = $self->post_form_ok($params);
+    ok $self->{session}, 'sign in succeeded';
+    $res;
+}
+
 sub post_form_ok {
     my $self = shift;
     my ( $form_id, $params, $message ) = ref $_[0] ? ( undef, @_ ) : @_;
@@ -145,6 +153,12 @@ sub js_get_ok {
     my ( $self, $params, $message ) = @_;
     local $ENV{HTTP_X_REQUESTED_WITH} = 'XMLHttpRequest';
     $self->get_ok($params, $message);
+}
+
+sub js_post {
+    my ( $self, $params, $message ) = @_;
+    local $ENV{HTTP_X_REQUESTED_WITH} = 'XMLHttpRequest';
+    $self->post($params, $message);
 }
 
 sub js_post_ok {

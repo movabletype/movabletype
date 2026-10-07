@@ -160,14 +160,14 @@ sub list_props {
                         );
                 }
             },
-            single_select_options => [
+            single_select_options => sub {[
                 {   label => MT->translate('__ROLE_ACTIVE'),
                     value => 'active',
                 },
                 {   label => MT->translate('__ROLE_INACTIVE'),
                     value => 'inactive',
                 },
-            ],
+            ]},
         },
         description => {
             auto      => 1,

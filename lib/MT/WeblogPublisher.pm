@@ -1269,11 +1269,16 @@ sub remove_marked_files {
     for my $info (@infos) {
         my $file = $info->file_path;
         $info->remove;
-        if ( MT->model('fileinfo')->exist( { blog_id => $info->blog_id, file_path => $file } ) ) {
+        my $blog_id = $info->blog_id;
+        if ( MT->model('fileinfo')->exist( { blog_id => $blog_id, file_path => $file } ) ) {
             next;
         }
+        # The related entry/cd object should have already been removed by now
+        my $archive_type = $info->archive_type;
+        MT->run_callbacks( 'pre_delete_archive_file', $file, $archive_type, undef, $blog_id);
         $fmgr->delete($file);
         MT::Util::Log->info("Removed $file");
+        MT->run_callbacks( 'post_delete_archive_file', $file, $archive_type, undef, $blog_id);
     }
     MT::Util::Log->info('--- End removing marked files');
 }

@@ -85,8 +85,11 @@ sub core_search_apis {
             setup_terms_args   => sub {
                 my ( $terms, $args, $blog_id ) = @_;
                 if ( $app->param('filter') && $app->param('filter_val') ) {
-                    $terms->{ $app->param('filter') }
-                        = $app->param('filter_val');
+                    my $col = $app->param('filter');
+                    unless (MT->model('content_data')->has_column($col)) {
+                        die MT::ErrorHandler::Exception->new(MT->translate('Invalid filter: [_1]', $col));
+                    }
+                    $terms->{$col} = $app->param('filter_val');
                 }
                 my $content_type_id = $app->param('content_type_id') || 0;
                 my $content_type
@@ -158,8 +161,11 @@ sub core_search_apis {
             'setup_terms_args'   => sub {
                 my ( $terms, $args, $blog_id ) = @_;
                 if ( $app->param('filter') && $app->param('filter_val') ) {
-                    $terms->{ $app->param('filter') }
-                        = $app->param('filter_val');
+                    my $col = $app->param('filter');
+                    unless (MT->model('entry')->has_column($col)) {
+                        die MT::ErrorHandler::Exception->new(MT->translate('Invalid filter: [_1]', $col));
+                    }
+                    $terms->{$col} = $app->param('filter_val');
                 }
                 $args->{sort}      = 'authored_on';
                 $args->{direction} = 'descend';
@@ -209,8 +215,11 @@ sub core_search_apis {
             'setup_terms_args' => sub {
                 my ( $terms, $args, $blog_id ) = @_;
                 if ( $app->param('filter') && $app->param('filter_val') ) {
-                    $terms->{ $app->param('filter') }
-                        = $app->param('filter_val');
+                    my $col = $app->param('filter');
+                    unless (MT->model('page')->has_column($col)) {
+                        die MT::ErrorHandler::Exception->new(MT->translate('Invalid filter: [_1]', $col));
+                    }
+                    $terms->{$col} = $app->param('filter_val');
                 }
                 $args->{sort}      = 'modified_on';
                 $args->{direction} = 'descend';
@@ -857,8 +866,10 @@ sub do_search_replace {
         }
     }
 
-    $replace && ( $app->validate_magic() or return );
-    $search = $orig_search if $do_replace;    # for safety's sake
+    if ($do_replace) {
+        $app->validate_magic() or return;
+        $search = $orig_search    # for safety's sake
+    }
     my $list_pref = $app->list_pref($type);
     my $search_api = $app->registry("search_apis")->{$type};
 

@@ -194,7 +194,14 @@ sub validate_credentials {
 
             # password validation
             if ( $ctx->{session_id} ) {
-                my $sess = $app->model('session')->load( $ctx->{session_id} );
+                require MT::Session;
+                my $timeout = $ctx->{permanent} ? (360 * 24 * 365 * 10) : $app->config->UserSessionTimeout;
+                my $sess    = MT::Session::get_unexpired_value(
+                    $timeout, {
+                        id   => $ctx->{session_id},
+                        kind => 'US',
+                    },
+                );
 
                 my $sess_author_id = $sess ? $sess->get('author_id') : undef;
                 if (   $sess

@@ -242,8 +242,11 @@ class MTViewer extends Smarty {
         }
     }
 
-    function error($err, $error_type = E_USER_WARNING) {
-        trigger_error($err, $error_type);
+    function error($err, $error_type = E_USER_ERROR) {
+        $trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2);
+        $caller = $trace[1] ?? $trace[0];
+        $error_handler = get_error_handler();
+        $error_handler($error_type, $err, $caller['file'] ?? __FILE__, $caller['line'] ?? __LINE__);
         return '';
     }
 
@@ -326,7 +329,7 @@ class MTViewer extends Smarty {
             if ($cond_tag == '1' or $cond_tag == '0') {
                 $ctx->stash('conditional', $cond_tag);
             } else {
-                $ctx->stash('conditional', !empty($ctx->__stash[$cond_tag]));
+                $ctx->stash('conditional', !empty($ctx->__stash[$cond_tag ?? '']));
             }
         } else {
             if (!$ctx->__stash['conditional']) {

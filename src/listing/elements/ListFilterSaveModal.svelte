@@ -1,23 +1,26 @@
 <script lang="ts">
-  import type * as Listing from "../../@types/listing";
+  import { getContext } from "svelte";
+  import type { ListStoreContext } from "../listStoreContext";
 
-  export let currentFilter: Listing.Filter;
-  export let listFilterTopGetItemValues: () => void;
-  export let store: Listing.ListStore;
+  type Props = {
+    listFilterTopGetItemValues: () => void;
+  };
+  let { listFilterTopGetItemValues }: Props = $props();
+
+  const { store, reactiveStore } = getContext<ListStoreContext>("listStore");
 
   let modal: HTMLDivElement;
   let filterName: HTMLInputElement;
-  let saveAs: boolean | undefined;
+  let saveAs: boolean | undefined = $state(undefined);
 
   const closeModal = (): void => {
     /* @ts-expect-error : bootstrap is not defined */
     bootstrap.Modal.getInstance(modal)?.hide();
   };
 
-  export const openModal = (args: {
-    filterLabel?: string;
-    saveAs?: boolean;
-  }): void => {
+  export function openModal(
+    args: { filterLabel?: string; saveAs?: boolean } = {},
+  ): void {
     if (!args) {
       args = {};
     }
@@ -28,9 +31,9 @@
     }
     saveAs = args.saveAs;
     /* @ts-expect-error : bootstrap is not defined */
-    let $bsmodal = new bootstrap.Modal(modal, {});
-    $bsmodal.show();
-  };
+    let bsmodal = new bootstrap.Modal(modal, {});
+    bsmodal.show();
+  }
 
   const saveFilter = (): boolean | void => {
     /* @ts-expect-error : mtValidate is not defined */
@@ -38,11 +41,11 @@
       return false;
     }
     listFilterTopGetItemValues();
-    currentFilter.label = filterName.value;
+    $reactiveStore.currentFilter.label = filterName.value;
     if (saveAs) {
-      currentFilter.id = "";
+      $reactiveStore.currentFilter.id = "";
     }
-    store.trigger("save_filter", currentFilter);
+    store.trigger("save_filter", $reactiveStore.currentFilter);
     closeModal();
   };
 </script>
@@ -84,13 +87,13 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button class="btn btn-primary" on:click={saveFilter}>
+        <button class="btn btn-primary" onclick={saveFilter}>
           {window.trans("Save")}
         </button>
         <button
           class="btn btn-default"
           data-bs-dismiss="modal"
-          on:click={closeModal}
+          onclick={closeModal}
         >
           {window.trans("Cancel")}
         </button>

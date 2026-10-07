@@ -96,7 +96,7 @@ sub edit {
                     my $rev_obj = $rev->[3];
                     my $values = $obj->get_values;
                     $param->{$_} = $values->{$_} foreach keys %$values;
-                    $param->{'revision-note'} = $rev_obj->description;
+                    $param->{'revision-note-in-status-widget'} = $rev_obj->description;
                     $param->{loaded_revision} = 1;
                 }
                 $param->{rev_number}       = $rn;
@@ -107,6 +107,12 @@ sub edit {
                 $param->{missing_tags_rev} = 1
                     if exists( $obj->{__missing_tags_rev} )
                     && $obj->{__missing_tags_rev};
+            }
+            if ( my $cur_rev = $obj->current_revision ) {
+                my $rev = $obj->load_revision( { rev_number => $cur_rev } );
+                if ( $rev && @$rev ) {
+                    $param->{'latest-revision-note'} = $rev->[3]->description;
+                }
             }
             $param->{rev_date} = format_ts( "%Y-%m-%d %H:%M:%S",
                 $obj->modified_on, $blog, $preferred_language );
@@ -1681,10 +1687,12 @@ sub save {
             $place->blog_id( $obj->blog_id );
             $place->is_primary(1);
         }
-        $place->category_id($cat_id);
-        $place->save;
-        $primary_category   = $cat_class->load($cat_id);
-        $placements_updated = 1;
+        $primary_category = $cat_class->load({ id => $cat_id, blog_id => $obj->blog_id });
+        if ($primary_category) {
+            $place->category_id($cat_id);
+            $place->save;
+            $placements_updated = 1;
+        }
     }
     else {
         if ($place) {
@@ -2189,6 +2197,8 @@ sub save_entry_prefs {
 sub publish_entries {
     my $app = shift;
 
+    $app->validate_magic or return;
+
     $app->validate_param({
         id => [qw/ID MULTI/],
     }) or return;
@@ -2200,6 +2210,8 @@ sub publish_entries {
 
 sub draft_entries {
     my $app = shift;
+
+    $app->validate_magic or return;
 
     $app->validate_param({
         id => [qw/ID MULTI/],

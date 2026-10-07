@@ -340,7 +340,7 @@ for my $s (@suite) {
     my $template = $s->{Template};
     my $map      = $s->{TemplateMap};
 
-    sleep 1;
+    sleep 2;
     $publisher->start_time(time());
 
     note( 'ArchiveType: ' . $at );
@@ -438,7 +438,7 @@ for my $s (@suite) {
     }
 
     # file must not meet the condition mod_time >= start_time
-    sleep 1;
+    sleep 2;
     $publisher->start_time(time());
 
     $mt->request->reset;

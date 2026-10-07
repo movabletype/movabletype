@@ -193,6 +193,7 @@ sub _load_from_themes_directory {
     my $pkg        = shift;
     my ($theme_id) = @_;
     my @dir_list   = MT->config('ThemesDirectory');
+    unshift @dir_list, MT->config('UserThemesDirectory') if MT->config('UserThemesDirectory');
 
     require File::Spec;
     my ( $dir, $path );

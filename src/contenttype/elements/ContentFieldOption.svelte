@@ -1,24 +1,34 @@
 <script lang="ts">
+  import { type Snippet } from "svelte";
+
   // copied from lib/MT/Template/ContextHandlers.pm
+  type Props = {
+    id: string;
+    attr?: string;
+    attrShow?: boolean | null;
+    hint?: string;
+    label?: string;
+    required?: number;
+    showHint?: number;
+    showLabel?: number;
+    children?: Snippet;
+  };
+  let {
+    id,
+    attr = "",
+    attrShow = null,
+    hint = "",
+    label = "",
+    required = 0,
+    showHint = 0,
+    showLabel = 1,
+    children,
+  }: Props = $props();
 
-  export let id: string;
+  let attrProp = $derived(attr ? { attr: attr } : {});
 
-  export let attr = "";
-  export let attrShow: boolean | null = null;
-  export let hint = "";
-  export let label = "";
-  export let required = 0;
-  export let showHint = 0;
-  export let showLabel = 1;
-
-  if (!id) {
-    console.error("ConetntFieldOption: 'id' attribute missing");
-  }
-
-  $: attrProp = attr ? { attr: attr } : {};
-
-  let attrShowProps = {};
-  $: {
+  let attrShowProps = $state({});
+  $effect(() => {
     if (attrShow !== null) {
       if (attrShow) {
         attrShowProps = {
@@ -31,7 +41,7 @@
         };
       }
     }
-  }
+  });
 </script>
 
 <div
@@ -53,7 +63,7 @@
     </label>
   {/if}
 
-  <slot />
+  {@render children?.()}
 
   {#if hint && showHint}
     <small id="{id}-field-help" class="form-text text-muted">

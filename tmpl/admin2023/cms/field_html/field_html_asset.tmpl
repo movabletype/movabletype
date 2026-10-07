@@ -16,7 +16,7 @@
   <mt:elseif name="asset_type" eq="image">
     <mt:if name="asset_preview_url">
       <span class="asset-preview-image picture small me-3 mb-3">
-        <img src="<mt:var name="asset_preview_url" escape="html">" width="<mt:var name="asset_preview_width" escape="html">" height="<mt:var name="asset_preview_height" escape="html">">
+        <img src="<mt:var name="asset_preview_url" escape="html">" width="<mt:var name="asset_preview_width" escape="html">" height="<mt:var name="asset_preview_height" escape="html">" alt="">
       </span>
     <mt:else>
       <mtapp:svgicon id="ic_image" title="Image" color="secondary">

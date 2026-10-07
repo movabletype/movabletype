@@ -1057,9 +1057,11 @@ sub make_list_props {
                 bulk_sort => sub {
                     my $prop = shift;
                     my ( $objs, $app, $opts ) = @_;
-                    return
-                        sort { ( $a->label || '' ) cmp( $b->label || '' ) }
-                        @$objs;
+                    my %label_cache;
+                    return sort {
+                        ( $label_cache{$a->id} //= $a->label || '' ) cmp
+                        ( $label_cache{$b->id} //= $b->label || '' )
+                    } @$objs;
                 },
                 terms => sub {
                     my $prop = shift;
@@ -1249,6 +1251,92 @@ sub make_list_props {
             modified_by => {
                 base  => '__virtual.modified_by',
                 order => $order + 500,
+            },
+            invalid_fields => {
+                base    => '__virtual.single_select',
+                bulk_html => sub {
+                    my ($prop, $objs) = @_;
+                    my $app = MT->app;
+                    my @out;
+                    for my $obj (@{$objs}) {
+                        my $errors = verify_content_data($app, $obj->content_type, $obj);
+                        if ($errors) {
+                            push @out, scalar(@{$errors});
+                        } else {
+                            push @out, MT->translate('none');
+                        }
+                    }
+                    return @out;
+                },
+                bulk_sort => sub {
+                    my ($prop, $objs) = @_;
+                    return @{$objs} unless @{$objs};
+
+                    my $content_type = $objs->[0]->content_type;
+                    my $app = MT->app;
+                    my %cache;
+                    for my $obj (@{$objs}) {
+                        my $errors = scalar @{verify_content_data($app, $content_type, $obj) || []};
+                        $cache{$obj->id} = $errors || 0;
+                    }
+
+                    sort {
+                        $cache{$a->id} <=> $cache{$b->id};
+                    } @{$objs};
+                },
+                display => 'optional',
+                filter_tmpl => sub {
+                    my $label_value = MT->translate('__INVALID_FIELDS__');
+                    return <<"__FILTER_TMPL__";
+<mt:setvar name="label" value="${label_value}">
+<mt:var name="filter_form_single_select">
+__FILTER_TMPL__
+                },
+                label           => MT->translate('__BROKEN__'),
+                label_via_param => sub {
+                    my $prop = shift;
+                    my ($app, $val) = @_;
+                    if ($val) {
+                        return MT->translate('Has Invalid Fields');
+                    } else {
+                        return MT->translate('No Invalid Fields');
+                    }
+                },
+                order => $order + 600,
+                single_select_options => [{
+                        label => MT->translate('exists'),
+                        value => 1,
+                    },
+                    {
+                        label => MT->translate('not exists'),
+                        value => 0,
+                    },
+                ],
+                singleton => 1,
+                terms => sub {
+                    my $prop = shift;
+                    my ( $args, $db_terms, $db_args ) = @_;
+
+                    my $app = MT->app;
+
+                    my $filter;
+                    if ($args->{value}) {
+                        $filter = sub { verify_content_data($app, $_[0]->content_type, $_[0]) };
+                    } else {
+                        $filter = sub { !verify_content_data($app, $_[0]->content_type, $_[0]) };
+                    }
+
+                    my @id;
+
+                    require MT::ContentData;
+                    my $iter = MT::ContentData->load_iter($db_terms, $db_args);
+                    while (my $cd = $iter->()) {
+                        push @id, $cd->id if $filter->($cd);
+                    }
+
+                    return { id => @id ? \@id : 0 };
+                },
+                # view_sort => [],
             },
             %{$field_list_props},
         };
@@ -1512,20 +1600,24 @@ sub _default_bulk_sort {
     my $data_type = $prop->data_type;
     my $cf_id     = $prop->content_field_id;
 
+    my %sort_cache;
+
     if (   $data_type eq 'integer'
         || $data_type eq 'float'
         || $data_type eq 'double'
         || $data_type eq 'datetime' )
     {
         @sorted_objs = sort {
-            ( _get_field_first_value( $a->data->{$cf_id} ) || 0 )
-                <=> ( _get_field_first_value( $b->data->{$cf_id} ) || 0 )
+            ($sort_cache{ $a->id } //= _get_field_first_value($a->data->{$cf_id}) || 0)
+            <=>
+            ($sort_cache{ $b->id } //= _get_field_first_value($b->data->{$cf_id}) || 0)
         } @$objs;
     }
     else {
         @sorted_objs = sort {
-            _get_field_first_value( $a->data->{$cf_id} )
-                cmp _get_field_first_value( $b->data->{$cf_id} )
+            ($sort_cache{ $a->id } //= _get_field_first_value($a->data->{$cf_id}))
+            cmp
+            ($sort_cache{ $b->id } //= _get_field_first_value($b->data->{$cf_id}))
         } @$objs;
     }
 
@@ -2304,6 +2396,97 @@ sub load_by_id_or_name {
         $cd = $class->load( { name => $id_or_name, blog_id => $blog_id } );
     }
     $cd;
+}
+
+sub system_filters {
+    return {
+        has_invalid_fields => {
+            items => [
+                {
+                    type => 'invalid_fields',
+                    args => {
+                        value => 1,
+                    },
+                }
+            ],
+            label => 'Has Invalid Fields',
+            order => 100,
+        },
+        no_invalid_fields => {
+            items => [
+                {
+                    type => 'invalid_fields',
+                    args => {
+                        value => 0,
+                    },
+                }
+            ],
+            label => 'No Invalid Fields',
+            order => 200,
+        },
+    };
+}
+
+sub verify_content_data {
+    my ( $app, $content_type, $cd ) = @_;
+    my $content_field_types = $app->registry('content_field_types');
+    my @errors = ();
+
+    my $data = $cd->data;
+    foreach my $f ( @{ $content_type->fields } ) {
+        my $field_type  = $content_field_types->{ $f->{type} };
+        my $options     = $f->{options};
+        my $val         = $data->{ $f->{id} };
+
+        my $not_fill_in_error;
+        if ( exists($options->{required}) and $options->{required} ) {
+            if ( not _is_filled_in($f, $val) ) {
+                my $field_label = $f->{options}{label};
+                $not_fill_in_error = $app->translate(
+                    '"[_1]" is required field.',
+                    $field_label );
+            }
+        }
+
+        if ( $not_fill_in_error ) {
+            push @errors,
+                {
+                field_id => $f->{id},
+                error    => $not_fill_in_error
+                };
+        } elsif ( my $ss_validator = $field_type->{ss_validator} ) {
+            if ( !ref $ss_validator ) {
+                $ss_validator = $app->handler_to_coderef($ss_validator);
+            }
+            if ( 'CODE' eq ref $ss_validator ) {
+                if ( my $error = $ss_validator->( $app, $f, $val ) ) {
+                    push @errors,
+                        {
+                        field_id => $f->{id},
+                        error    => $error,
+                        };
+                }
+            }
+        }
+    }
+
+    return @errors ? \@errors : undef;
+}
+
+sub _is_filled_in {
+    my ( $f, $val ) = @_;
+
+    if ( !defined($val) ) {
+        return 0;
+    } elsif ( ref($val) eq 'ARRAY' ) {
+        if ( ($f->{type} eq 'select_box') and (@{$val} == 1) ) {
+            return $val->[0] ne '';
+        } else {
+            return 0 < scalar(@{$val});
+        }
+    } else {
+        return $val ne '';
+    }
 }
 
 1;

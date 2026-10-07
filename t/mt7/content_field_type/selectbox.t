@@ -253,4 +253,34 @@ subtest 'options_validation_handler' => sub {
     }
 };
 
+subtest 'ss_validator_multiple' => sub {
+    my $field_data = {
+        options => {
+            label    => 'myselectbox',
+            multiple => 1,
+            min      => 1,
+            max      => 2,
+            values   => [
+                { label => 'foo',  value => 'foo' },
+                { label => 'bar',  value => 'bar' },
+                { label => 'zero', value => 0 },
+            ],
+        },
+    };
+    my @test_cases = (
+        { name => 'scalar',        data => 'foo',             error => undef },
+        { name => 'list',          data => ['foo', 'bar'],    error => undef },
+        { name => 'undef',         data => undef,             error => undef },
+        { name => '[0]',           data => [0],               error => undef },
+        { name => 'invalid value', data => 'invalid',         error => 'Invalid values in "myselectbox" field: invalid' },
+        { name => 'below min',     data => [],                error => 'Options greater than or equal to 1 must be selected in "myselectbox" field.' },
+        { name => 'above max',     data => ['foo', 'bar', 0], error => 'Options less than or equal to 2 must be selected in "myselectbox" field.' },
+    );
+
+    for my $case (@test_cases) {
+        is MT::ContentFieldType::SelectBox::ss_validator_multiple($app, $field_data, $case->{data}),
+            $case->{error}, $case->{name};
+    }
+};
+
 done_testing;

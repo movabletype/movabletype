@@ -10,6 +10,9 @@ our $test_env;
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
+
+    # Skip if LicenseVerification plugin is installed
+    $test_env->skip_if_plugin_exists('LicenseVerification');
 }
 
 use MT::Test qw(:newdb);

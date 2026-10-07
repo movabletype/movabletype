@@ -901,10 +901,9 @@ sub edit {
         # If any column value is overridden by $app->param,
         # the MT (especially WYSISYG editor) will be working in tainted mode.
         $param{tainted_input} = 0;
-        local $app->{login_again};
+        local @{$app}{ qw(login_again redirect redirect_use_meta) };
         unless ( $app->validate_magic ) {
-            $param{tainted_input} ||= ( $app->param($_) || '' ) !~ /^\d*$/
-                for @$cols;
+            $param{tainted_input} ||= ( $app->param($_) || '' ) !~ /^\d*$/ for @$cols;
         }
     }
 
@@ -2244,7 +2243,7 @@ sub build_revision_table {
             code   => $hasher,
             terms  => { $class->datasource . '_id' => $obj->id },
             source => $type,
-            params => { dialog => $dialog, },
+            params => { dialog => $dialog, object_id => $obj->id, object_type => $type },
             %$param
         }
     );

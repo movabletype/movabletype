@@ -4,28 +4,40 @@
   import ListFilterItem from "./ListFilterItem.svelte";
   import ListFilterButtons from "./ListFilterButtons.svelte";
 
-  export let currentFilter: Listing.Filter;
-  export let filterTypes: Array<Listing.FilterType>;
-  export let isFilterItemSelected: (
-    filter: Listing.Filter,
-    type: string,
-  ) => boolean;
-  export let listFilterTopAddFilterItem: (filterType: string) => void;
-  export let listFilterTopAddFilterItemContent: (
-    itemIndex: string,
-    contentIndex: string,
-  ) => void;
-  export let listFilterTopGetItemValues: () => void;
-  export let listFilterTopIsUserFilter: () => boolean;
-  export let listFilterTopRemoveFilterItem: (itemIndex: string) => void;
-  export let listFilterTopRemoveFilterItemContent: (
-    itemIndex: string,
-    contentIndex: string,
-  ) => void;
-  export let listFilterTopValidateFilterDetails: () => boolean;
-  export let localeCalendarHeader: Array<string>;
-  export let objectLabel: string;
-  export let store: Listing.ListStore;
+  type Props = {
+    currentFilter: Listing.Filter;
+    filterTypes: Array<Listing.FilterType>;
+    isFilterItemSelected: (filter: Listing.Filter, type: string) => boolean;
+    listFilterTopAddFilterItem: (filterType: string) => void;
+    listFilterTopAddFilterItemContent: (
+      itemIndex: string,
+      contentIndex: string,
+    ) => void;
+    listFilterTopGetItemValues: () => void;
+    listFilterTopIsUserFilter: () => boolean;
+    listFilterTopRemoveFilterItem: (itemIndex: string) => void;
+    listFilterTopRemoveFilterItemContent: (
+      itemIndex: string,
+      contentIndex: string,
+    ) => void;
+    listFilterTopValidateFilterDetails: () => boolean;
+    localeCalendarHeader: Array<string>;
+    objectLabel: string;
+  };
+  let {
+    currentFilter,
+    filterTypes,
+    isFilterItemSelected,
+    listFilterTopAddFilterItem,
+    listFilterTopAddFilterItemContent,
+    listFilterTopGetItemValues,
+    listFilterTopIsUserFilter,
+    listFilterTopRemoveFilterItem,
+    listFilterTopRemoveFilterItemContent,
+    listFilterTopValidateFilterDetails,
+    localeCalendarHeader,
+    objectLabel,
+  }: Props = $props();
 
   const addFilterItem = (e: Event): void => {
     if ((e.currentTarget as HTMLElement)?.classList.contains("disabled")) {
@@ -53,7 +65,7 @@
           <div class="dropdown-menu">
             {#each filterTypes as filterType}
               {#if filterType.editable}
-                <!-- svelte-ignore a11y-invalid-attribute -->
+                <!-- svelte-ignore a11y_invalid_attribute -->
                 <a
                   class:disabled={isFilterItemSelected(
                     currentFilter,
@@ -62,7 +74,7 @@
                   class="dropdown-item"
                   href="#"
                   data-mt-filter-type={filterType.type}
-                  on:click={addFilterItem}
+                  onclick={addFilterItem}
                 >
                   {@html filterType.label}
                 </a>
@@ -106,7 +118,6 @@
       {listFilterTopIsUserFilter}
       {listFilterTopValidateFilterDetails}
       {objectLabel}
-      {store}
     />
   </div>
 </div>

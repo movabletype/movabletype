@@ -164,10 +164,10 @@ sub list_props {
             base                  => '__virtual.single_select',
             display               => 'none',
             label                 => 'Author Status',
-            single_select_options => [
+            single_select_options => sub {[
                 { label => MT->translate('Enabled'),  value => 'enabled', },
                 { label => MT->translate('Disabled'), value => 'disabled', },
-            ],
+            ]},
             terms => sub {
                 my $prop = shift;
                 my ( $args, $db_terms, $db_args ) = @_;
@@ -218,7 +218,8 @@ sub list_props {
             html => sub {
                 my $prop = shift;
                 my ( $obj, $app ) = @_;
-                $prop->screen_name( $obj->object_ds );
+                require MT::Util;
+                MT::Util::encode_html($prop->screen_name( $obj->object_ds ));
             },
             bulk_sort => sub {
                 my $prop = shift;

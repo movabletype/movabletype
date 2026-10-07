@@ -15278,6 +15278,11 @@ li.nav-item, .mt-sharedPreviewNav .mt-sharedPreviewNav__rightNav li.mt-sharedPre
     flex: 0 1 180px;
   }
 }
+/* Asset associations in entry */
+#assets-field .asset-type-image {
+  position: relative;
+}
+
 .selector.scope {
   background-color: #333;
 }

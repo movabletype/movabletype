@@ -149,17 +149,23 @@
           <mt:if name="current_rev_date">
         <br><mt:var name="current_rev_date" escape="html">
           </mt:if>
+          <mt:if name="latest-revision-note">
+            <br><mt:var name="latest-revision-note" escape="html">
+          </mt:if>
       </div>
       <div class="status">
         <strong><__trans phrase="Displaying"></strong>
         <br><mt:var name="rev_date" escape="html">
-          <mt:if name="revision-note">
-        <br><mt:var name="revision-note" escape="html">
+          <mt:if name="revision-note-in-status-widget">
+        <br><mt:var name="revision-note-in-status-widget" escape="html">
           </mt:if>
       </div>
         <mt:else>
       <div class="status">
         <mt:var name="rev_date" escape="html">
+        <mt:if name="latest-revision-note">
+          <br><mt:var name="latest-revision-note" escape="html">
+        </mt:if>
       </div>
         </mt:if>
       <a href="<mt:var name="script_url">?__mode=list_revision&_type=<mt:var name="object_type" default="entry">&id=<$mt:var name="id" escape="html"$>&blog_id=<$mt:var name="blog_id"$>&r=<mt:var name="rev_number" escape="html">" class="mt-open-dialog mt-modal-open" data-mt-modal-large title="<__trans phrase="View revisions of this template">">
@@ -273,17 +279,17 @@
     <mt:if name="can_link">
       <a href="<mt:var name="include_link">" class="tmpl-label icon-left-xwide <mt:var name="include_scope_type">-tmpl">
         <mt:var name="template_status_icon">
-        <mt:var name="include_module">
+        <mt:var name="include_module" escape="html">
       </a>
     <mt:else>
       <mt:var name="template_status_icon">
-      <span class="tmpl-label icon-left-xwide <mt:var name="include_scope_type">-tmpl"><mt:var name="include_module"></span>
+      <span class="tmpl-label icon-left-xwide <mt:var name="include_scope_type">-tmpl"><mt:var name="include_module" escape="html"></span>
     </mt:if>
-      <mt:if name="include_from" ne="self"><span class="include-from">(<mt:var name="include_blog_name">)</span></mt:if>
+      <mt:if name="include_from" ne="self"><span class="include-from">(<mt:var name="include_blog_name" escape="html">)</span></mt:if>
   <mt:else>
       <mtapp:svgicon id="ic_stop" title="<__trans phrase="Error">" size="sm" color="danger">
-      <span class="tmpl-label icon-left-xwide <mt:var name="include_scope_type">-tmpl error"><mt:var name="include_module"></span><mt:unless name="include_from" eq="error"> (<a href="<mt:var name="create_link">"><__trans phrase="create"></a>)</mt:unless>
-      <mt:if name="include_from" ne="self"><span class="include-from <mt:var name="include_from">">(<mt:var name="include_blog_name">)</span></mt:if>
+      <span class="tmpl-label icon-left-xwide <mt:var name="include_scope_type">-tmpl error"><mt:var name="include_module" escape="html"></span><mt:unless name="include_from" eq="error"> (<a href="<mt:var name="create_link">"><__trans phrase="create"></a>)</mt:unless>
+      <mt:if name="include_from" ne="self"><span class="include-from <mt:var name="include_from">">(<mt:var name="include_blog_name" escape="html">)</span></mt:if>
   </mt:if>
     </li>
   </mt:loop>
@@ -291,11 +297,11 @@
   <mt:setvarblock name="include_scope_type"><mt:if name="include_from" eq="self"><mt:var name="scope_type"><mt:else><mt:var name="include_from"></mt:if></mt:setvarblock>
     <li>
   <mt:if name="include_link">
-      <a href="<mt:var name="include_link">" class="tmpl-label icon-left-xwide <mt:var name="include_scope_type">-tmpl"><mt:var name="include_module"></a>
-      <mt:if name="include_from" ne="self"><span class="include-from <mt:var name="include_from">">(<mt:var name="include_blog_name">)</span></mt:if>
+      <a href="<mt:var name="include_link">" class="tmpl-label icon-left-xwide <mt:var name="include_scope_type">-tmpl"><mt:var name="include_module" escape="html"></a>
+      <mt:if name="include_from" ne="self"><span class="include-from <mt:var name="include_from">">(<mt:var name="include_blog_name" escape="html">)</span></mt:if>
   <mt:else>
-      <span class="tmpl-label icon-left-xwide <mt:var name="include_scope_type">-tmpl error"><mt:var name="include_module"></span><mt:unless name="include_from" eq="error"> (<a href="<mt:var name="create_link">"><__trans phrase="create"></a>)</mt:unless>
-      <mt:if name="include_from" ne="self"><span class="include-from <mt:var name="include_from">">(<mt:var name="include_blog_name">)</span></mt:if>
+      <span class="tmpl-label icon-left-xwide <mt:var name="include_scope_type">-tmpl error"><mt:var name="include_module" escape="html"></span><mt:unless name="include_from" eq="error"> (<a href="<mt:var name="create_link">"><__trans phrase="create"></a>)</mt:unless>
+      <mt:if name="include_from" ne="self"><span class="include-from <mt:var name="include_from">">(<mt:var name="include_blog_name" escape="html">)</span></mt:if>
   </mt:if>
     </li>
   </mt:loop>
@@ -303,11 +309,11 @@
   <mt:setvarblock name="include_scope_type"><mt:if name="include_from" eq="self"><mt:var name="scope_type"><mt:else><mt:var name="include_from"></mt:if></mt:setvarblock>
     <li>
   <mt:if name="include_link">
-      <a href="<mt:var name="include_link">" class="tmpl-label icon-left-xwide <mt:var name="include_scope_type">-tmpl"><mt:var name="include_module"></a>
-      <mt:if name="include_from" ne="self"><span class="include-from <mt:var name="include_from">">(<mt:var name="include_blog_name">)</span></mt:if>
+      <a href="<mt:var name="include_link">" class="tmpl-label icon-left-xwide <mt:var name="include_scope_type">-tmpl"><mt:var name="include_module" escape="html"></a>
+      <mt:if name="include_from" ne="self"><span class="include-from <mt:var name="include_from">">(<mt:var name="include_blog_name" escape="html">)</span></mt:if>
   <mt:else>
-      <span class="tmpl-label icon-left-xwide <mt:var name="include_scope_type">-tmpl error"><mt:var name="include_module"></span><mt:unless name="include_from" eq="error"> (<a href="<mt:var name="create_link">"><__trans phrase="create"></a>)</mt:unless>
-      <mt:if name="include_from" ne="self"><span class="include-from <mt:var name="include_from">">(<mt:var name="include_blog_name">)</span></mt:if>
+      <span class="tmpl-label icon-left-xwide <mt:var name="include_scope_type">-tmpl error"><mt:var name="include_module" escape="html"></span><mt:unless name="include_from" eq="error"> (<a href="<mt:var name="create_link">"><__trans phrase="create"></a>)</mt:unless>
+      <mt:if name="include_from" ne="self"><span class="include-from <mt:var name="include_from">">(<mt:var name="include_blog_name" escape="html">)</span></mt:if>
   </mt:if>
     </li>
   </mt:loop>
@@ -360,6 +366,9 @@
 </mt:setvartemplate>
 
 <mt:setvarblock name="html_head" append="1">
+<mt:if name="config.usecodemirror6">
+<mtapp:script path="js/build/template-editor/codemirror6/index.js">
+<mt:else>
 <mtapp:script path="codemirror/lib/codemirror.js">
 <mtapp:stylesheet path="codemirror/lib/codemirror.css">
 
@@ -368,6 +377,8 @@
 <mtapp:script path="codemirror/mt/css.js">
 <mtapp:script path="codemirror/mt/htmlmixed.js">
 <mtapp:stylesheet path="codemirror/mt/mt.css">
+<mtapp:script path="codemirror/mt/template-editor.js">
+</mt:if>
 
 <mtapp:script path="js/tc/client.js">
 <script>
@@ -400,15 +411,6 @@ function validate (f, rebuild) {
     }
 
     app.clearDirty();
-    var area = DOM.getElement('text');
-    var str = area.value;
-    if ( !defined( str ) ) str = '';
-    str = str.replace(/[\0-\x08\x0B\x0C\x0E-\x1F\x7F]/g, "");
-    area.value = str;
-    str = editor.getValue();
-    if ( !defined( str ) ) str = '';
-    str = str.replace(/[\0-\x08\x0B\x0C\x0E-\x1F\x7F]/g, "");
-    editor.setValue(str);
     if (rebuild) setRebuild(f);
     return true;
 }
@@ -467,19 +469,6 @@ function toggleCache(id) {
     var es = DOM.getElement('cache-events').getElementsByTagName('input');
     for (var i=0, len=es.length; i<len; i++)
         toggleDisable( es[i].id, "expire-event" != id )
-    return false;
-}
-
-function setSyntaxHighlight(on_or_off) {
-    syncEditor();
-    var wrapper = editor.getWrapperElement();
-    if (on_or_off == 'off') {
-        jQuery('#text').show();
-        jQuery(wrapper).hide();
-    } else {
-        jQuery('#text').hide();
-        jQuery(wrapper).show();
-    }
     return false;
 }
 
@@ -567,7 +556,7 @@ function setSyntaxHighlight(on_or_off) {
       <div class="card-header me-0">
         <div class="custom-control float-end me-0">
           <span class="custom-control-description me-2"><__trans phrase="Code Highlight"></span>
-          <input type="checkbox" class="mt-switch" id="code-highlight-switch" />
+          <input type="checkbox" class="mt-switch" id="code-highlight-switch"<mt:if name="disp_prefs_syntax" ne="off"> checked</mt:if> />
           <label for="code-highlight-switch" class="form-label"><__trans phrase="Code Highlight"></label>
         </div>
       </div>
@@ -922,33 +911,6 @@ MT.App = new Class( MT.App, {
 
 } );
 
-var options = jQuery('#text').attr('mt:editor-options');
-var editor_params = {
-    lineNumbers: true,
-    lineWrapping: false,
-    tabMode: "default",
-    indentUnit: 0,
-    pollForIME: true,
-    mode: "text/html",
-    viewportMargin: Infinity
-};
-if (options.match('lang:css')) {
-    editor_params['mode'] = 'text/css';
-} else if (options.match('lang:javascript')) {
-    editor_params['mode'] = 'text/javascript';
-}
-
-var editor = CodeMirror.fromTextArea(jQuery('#text').get(0), editor_params);
-
-function syncEditor() {
-    var wrapper = editor.getWrapperElement();
-    if ( jQuery(wrapper).css('display') == 'none') {
-        editor.setValue(jQuery('#text').val());
-    } else {
-        jQuery('#text').val(editor.getValue());
-    }
-}
-
 function saveTemplatePrefs( sync ) {
   jQuery.ajax({
     type: 'POST',
@@ -970,7 +932,6 @@ function saveTemplatePrefs( sync ) {
 
 <mt:setvarblock name="jq_js_include" append="1">
     jQuery('button.save, button.publish').on('click', function() {
-        syncEditor();
         jQuery('form#template-listing-form > input[name=__mode]').val('save');
   <mt:if name="config.previewinnewwindow">
         jQuery('form#template-listing-form').removeAttr('target');
@@ -990,7 +951,6 @@ function saveTemplatePrefs( sync ) {
         return false;
     });
     jQuery('button.preview').on('click', function() {
-        syncEditor();
         jQuery('form#template-listing-form > input[name=__mode]').val('preview_template');
   <mt:if name="config.previewinnewwindow">
         jQuery('form#template-listing-form').attr('target', 'mt_preview_template_<mt:var name="blog_id" escape="js" default="0">_<mt:var name="id" escape="js" default="0">');
@@ -1007,38 +967,6 @@ function saveTemplatePrefs( sync ) {
     jQuery('button.mt-template-listing-form-action').mtDoPluginAction({
         plural: 'Templates',
         phrase: 'to act upon'
-    });
-    jQuery('#code-highlight-switch').on('change', function() {
-        var syntax = this.checked ? 'on' : 'off';
-        setSyntaxHighlight( syntax );
-        saveTemplatePrefs( syntax );
-        return false;
-    });
-    jQuery('#syntaxon, #syntaxoff').on('click', function() {
-        syncEditor();
-        var wrapper = editor.getWrapperElement();
-        jQuery('#syntaxon, #syntaxoff').removeClass('active');
-        var id = jQuery(this).addClass('active').attr('id');
-        var syntax;
-        if (id == 'syntaxon') {
-            jQuery('#text').hide();
-            jQuery(wrapper).show();
-            syntax = 'on';
-        } else {
-            jQuery('#text').show();
-            jQuery(wrapper).hide();
-            syntax = 'off';
-        }
-        saveTemplatePrefs( syntax );
-        return false;
-    });
-<mt:if name="disp_prefs_syntax" ne="off">
-    jQuery('#code-highlight-switch').prop('checked', 'checked');
-<mt:else>
-    setSyntaxHighlight('off');
-</mt:if>
-    jQuery(window).on('pre_autosave', function(){
-        syncEditor();
     });
     function saveArchiveMapChange(param) {
         showMsg('<__trans phrase="Processing request..." escape="js">', 'map-message', 'success')

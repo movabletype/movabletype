@@ -1165,22 +1165,14 @@ function create_tag_expr_function($expr, &$tags, $datasource = 'entry') {
         ## ( AND, OR, NOT, and round brackets ).
         $id = '#' . $tag->tag_id;
         $count = 0;
-        $expr = preg_replace('/
-            (
-                \sAND\s
-                | \sOR\s
-                | \s?NOT\s
-                | \(
-                | \A
-            )
-            \s*?\Q'.$name.'\E\s*?
-            (
-                \Z
-                | \)
-                | \sAND\s
-                | \sOR\s
-                | \sNOT\s
-            )/ix', "$1$id$2", $expr, -1, $count); # Change all matches to #$id (e.g. #932)
+        $expr = preg_replace(
+            implode('', array(
+                '/',
+                '(\sAND\s|\sOR\s|\s?NOT\s|\(|\A)',
+                '\s*?',preg_quote($name, '/'),'\s*?',
+                '(\Z|\)|\sAND\s|\sOR\s|\sNOT\s)',
+                '/i'
+            )), "$1$id$2", $expr, -1, $count); # Change all matches to #$id (e.g. #932)
 
         if (0 < $count) {
             unset($tags_dict[$tag->tag_name]);
@@ -1522,6 +1514,10 @@ function create_status_expr_function($expr, &$status, $datasource = 'author') {
 
 function create_rating_expr_function($expr, $filter, $namespace, $datasource = 'entry') {
     $orig_expr = $expr;
+    if (preg_match('/[^0-9.]/', $orig_expr)) {
+        echo "Invalid rating filter: $orig_expr";
+        return;
+    }
 
     require_once 'rating_lib.php';
     $expr = '$ctx = $c; if ($ctx == null) { $mt = MT::get_instance(); $ctx = $mt->context(); }';
