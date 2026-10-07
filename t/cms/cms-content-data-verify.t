@@ -433,6 +433,8 @@ subtest 'Verify content data including required fields' => sub {
     subtest 'Verify content_data' => sub {
         my $app = MT->instance;
 
+        $test_env->clear_mt_cache;
+
         my @items = MT->model('content_data')->load({
             blog_id         => $blog_id,
             content_type_id => $content_type_id,
