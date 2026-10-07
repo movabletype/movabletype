@@ -35,12 +35,14 @@ function smarty_function_mtassetthumbnaillink($args, &$ctx) {
         $target = " target=\"_blank\"";
 
     $asset_url = smarty_function_mtasseturl($args, $ctx);
+    $alt = isset($args['alt']) ? encode_html($args['alt']) : '';
 
-    return sprintf("<a href=\"%s\"%s><img src=\"%s\" width=\"%d\" height=\"%d\" alt=\"\" /></a>",
+    return sprintf("<a href=\"%s\"%s><img src=\"%s\" width=\"%d\" height=\"%d\" alt=\"%s\" /></a>",
         $asset_url,
         $target,
         $thumb,
         $thumb_w,
-        $thumb_h);
+        $thumb_h,
+        $alt);
 }
 ?>
