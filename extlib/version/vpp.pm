@@ -123,7 +123,7 @@ use warnings::register;
 
 use Config;
 
-our $VERSION = '0.9933';
+our $VERSION = '0.9934';
 our $CLASS = 'version::vpp';
 our ($LAX, $STRICT, $WARN_CATEGORY);
 
@@ -253,10 +253,6 @@ sub prescan_version {
 
     my $d = $s;
 
-    if ($qv && isDIGIT($d)) {
-	goto dotted_decimal_version;
-    }
-
     if ($d eq 'v') { # explicit v-string
 	$d++;
 	if (isDIGIT($d)) {
@@ -266,7 +262,9 @@ sub prescan_version {
 	    # requires v1.2.3
 	    return BADVERSION($s,$errstr,"Invalid version format (dotted-decimal versions require at least three parts)");
 	}
+    }
 
+    if ($qv && isDIGIT($d)) {
 dotted_decimal_version:
 	if ($strict && $d eq '0' && isDIGIT($d+1)) {
 	    # no leading zeros allowed

@@ -180,6 +180,14 @@ sub run_step {
         }
         my %update_params;
         if ( $fn->{updater} ) {
+            for my $key (keys %param) {
+                next if $key eq 'count' || $key eq 'from' || $key eq 'offset';
+                return $self->error(
+                    $self->translate_escape(
+                        'Invalid parameters for upgrade function: [_1]', $name,
+                    ),
+                );
+            }
             %update_params = %{ $fn->{updater} };
             $fn->{code} ||= \&core_update_records;
         }

@@ -63,34 +63,22 @@ subtest 'Upgrade permission check' => sub {
 
     subtest 'Superuser: allowed when RequireUpgradePermission=1' => sub {
         setup_upgrade_test( require_admin => 1 );
-        my $app = MT::Test::App->new(
-            app_class   => 'MT::App::Upgrader',
-            no_redirect => 1
-        );
-        my $res = $app->post(
-            {
-                __mode   => 'upgrade',
-                username => 'Melody',
-                password => 'Nelson',
-            }
-        );
+        my $app = MT::Test::App->new('MT::App::Upgrader');
+        $app->get_ok();
+        like $app->content, qr/A new version of Movable Type has been installed/, 'upgrade detected';
+        $app->post_form_ok;
+        my $res = $app->sign_in_ok({ username => 'Melody', password => 'Nelson' });
         like $res->decoded_content => qr/Upgrading database/,
           "Superuser should see upgrade runner";
     };
 
     subtest 'Superuser: allowed when RequireUpgradePermission=0' => sub {
         setup_upgrade_test( require_admin => 0 );
-        my $app = MT::Test::App->new(
-            app_class   => 'MT::App::Upgrader',
-            no_redirect => 1
-        );
-        my $res = $app->post(
-            {
-                __mode   => 'upgrade',
-                username => 'Melody',
-                password => 'Nelson',
-            }
-        );
+        my $app = MT::Test::App->new('MT::App::Upgrader');
+        $app->get_ok();
+        like $app->content, qr/A new version of Movable Type has been installed/, 'upgrade detected';
+        $app->post_form_ok;
+        my $res = $app->sign_in_ok({ username => 'Melody', password => 'Nelson' });
         like $res->decoded_content => qr/Upgrading database/,
           "Superuser should see upgrade runner";
     };
@@ -104,17 +92,11 @@ subtest 'Upgrade permission check' => sub {
         );
         ok( !$author->is_superuser, "author is not superuser" );
 
-        my $app = MT::Test::App->new(
-            app_class   => 'MT::App::Upgrader',
-            no_redirect => 1
-        );
-        my $res = $app->post(
-            {
-                __mode   => 'upgrade',
-                username => $test_user_name,
-                password => $test_password,
-            }
-        );
+        my $app = MT::Test::App->new('MT::App::Upgrader');
+        $app->get_ok();
+        like $app->content, qr/A new version of Movable Type has been installed/, 'upgrade detected';
+        $app->post_form_ok;
+        my $res = $app->sign_in_ok({ username => $test_user_name, password => $test_password });
         like $res->decoded_content => qr/Upgrading database/,
           "Non-superuser should see upgrade runner";
     };
@@ -128,17 +110,11 @@ subtest 'Upgrade permission check' => sub {
         );
         ok( !$author->is_superuser, "author is not superuser" );
 
-        my $app = MT::Test::App->new(
-            app_class   => 'MT::App::Upgrader',
-            no_redirect => 1
-        );
-        my $res = $app->post(
-            {
-                __mode   => 'upgrade',
-                username => $test_user_name,
-                password => $test_password,
-            }
-        );
+        my $app = MT::Test::App->new('MT::App::Upgrader');
+        $app->get_ok();
+        like $app->content, qr/A new version of Movable Type has been installed/, 'upgrade detected';
+        $app->post_form_ok;
+        my $res = $app->sign_in_ok({ username => $test_user_name, password => $test_password });
         like $app->last_location => qr/__mode=upgrade_pending/,
           "Non-superuser should be redirected to upgrade_pending";
     };

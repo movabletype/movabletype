@@ -1896,6 +1896,7 @@ BEGIN {
             'CookieSameSite'        => { default => 'Lax' },
             'MailModule'            => { default => 'MIME::Lite', },
             'MailEncoding'          => { default => 'UTF-8', },
+            'MailSMTPOAuthProvider' => undef,
             'MailTransfer'          => { default => 'sendmail' },
             'MailTransferEncoding'  => undef,
             'MailLogAlways'         => undef,
@@ -2407,6 +2408,7 @@ BEGIN {
         },
         commenter_authenticators => \&load_core_commenter_auth,
         captcha_providers        => \&load_captcha_providers,
+        xoauth2_providers        => {},
         tasks                    => \&load_core_tasks,
         default_templates        => \&load_default_templates,
         template_sets            => {

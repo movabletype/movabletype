@@ -918,7 +918,9 @@ sub upgrade_pending {
     return $app->build_page(
         'upgrade_pending.tmpl',
         {
-            upgrade_pending => $app->{upgrade_required}
+            build_blog_selector => 0,
+            build_menus         => 0,
+            upgrade_pending     => $app->{upgrade_required}
         }
     );
 }
@@ -2368,9 +2370,13 @@ sub dialog_restore_upload {
         my $objects_tmp = JSON::from_json($objects_json);
         my %class2ids;
 
+        my $object_types  = MT->registry('object_types');
+        my %valid_classes = map { $_ => 1 } values %$object_types;
+
         # { MT::CLASS#OLD_ID => NEW_ID }
         for my $key ( keys %$objects_tmp ) {
             my ( $class, $old_id ) = split '#', $key;
+            next unless $valid_classes{$class};
             if ( exists $class2ids{$class} ) {
                 my $newids = $class2ids{$class}->{newids};
                 push @$newids, $objects_tmp->{$key};
@@ -3056,7 +3062,7 @@ sub restore_upload_manifest {
     $assets_json = encode_url( MT::Util::to_json($assets) )
         if scalar(@$assets) > 0;
     $param->{files}    = join( ',', @$files );
-    $param->{assets}   = $assets_json;
+    $param->{assets}   = $assets_json // '';
     $param->{filename} = $file_next;
     $param->{last}     = scalar(@$files) ? 0 : ( scalar(@$assets) ? 0 : 1 );
     $param->{open_dialog}    = 1;
@@ -3154,16 +3160,20 @@ sub _progress {
     my ( $str, $id ) = @_;
     if ( $id && $ids->{$id} ) {
         my $str_js = encode_js($str);
+        my $id_js  = encode_js($id);
         $app->print_encode(
-            qq{<script>progress('$str_js', '$id');</script>}
+            qq{<script>progress('$str_js', '$id_js');</script>}
         );
     }
     elsif ($id) {
+        my $str_html = encode_html($str);
+        my $id_html  = encode_html($id);
         $ids->{$id} = 1;
-        $app->print_encode(qq{\n<span id="$id">$str</span>});
+        $app->print_encode(qq{\n<span id="$id_html">$str_html</span>});
     }
     else {
-        $app->print_encode("<span>$str</span>");
+        my $str_html = encode_html($str);
+        $app->print_encode("<span>$str_html</span>");
     }
 
     $app->request( 'progress_ids', $ids );

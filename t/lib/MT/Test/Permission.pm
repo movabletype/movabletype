@@ -144,6 +144,12 @@ sub make_blog {
         parent_id            => 1,
     };
 
+    if (!exists $params{parent_id} or $params{parent_id}) {
+        for my $url (qw(site_url archive_url)) {
+            Carp::confess("$url must be relative or contain /::/ if a parent exists") if $url =~ /^https?/;
+        }
+    }
+
     if (%params) {
         foreach my $key ( keys %params ) {
             $values->{$key} = $params{$key};

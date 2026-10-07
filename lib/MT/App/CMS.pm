@@ -739,6 +739,7 @@ sub init_request {
 
     if ( $mode ne 'logout' && $app->{upgrade_required} ) {
         my $driver = MT::Object->driver;
+        local $driver->rw_handle->{RaiseError} = 0;
         my $ctx;
         if ($driver && $driver->table_exists('MT::Author')) {
             require MT::Auth;
@@ -749,6 +750,8 @@ sub init_request {
                 {
                     name => $ctx->{username},
                     type => MT::Author::AUTHOR(),
+                }, {
+                    fetchonly => [qw(id name password type email status external_id locked_out_time)],
                 }
             );
             if (   $author
@@ -2340,28 +2343,19 @@ sub core_menus {
                 return 0 unless $app->config->ShowIPInformation;
                 return 1 if $app->user->is_superuser;
 
-                my $blog = $app->blog;
-                my $blog_ids
-                    = !$blog         ? undef
-                    : $blog->is_blog ? [ $blog->id ]
-                    :   [ $blog->id, map { $_->id } @{ $blog->blogs } ];
+                my $blog     = $app->blog or return;
+                my $blog_ids = $blog->is_blog ? [ $blog->id ] : [ $blog->id, map { $_->id } @{ $blog->blogs } ];
 
                 require MT::Permission;
-                my $iter = MT::Permission->load_iter(
-                    {   author_id => $app->user->id,
-                        (   $blog_ids
-                            ? ( blog_id => $blog_ids )
-                            : ( blog_id => { not => 0 } )
-                        ),
-                    }
-                );
+                my $iter = MT::Permission->load_iter({
+                    author_id => $app->user->id,
+                    blog_id   => $blog_ids,
+                });
 
-                my $cond;
                 while ( my $p = $iter->() ) {
-                    $cond = 1, last
-                        if $p->can_do('manage_feedback');
+                    return 1 if $p->can_do('manage_feedback');
                 }
-                return $cond ? 1 : 0;
+                return;
             },
             view => [qw( system website blog )],
         },

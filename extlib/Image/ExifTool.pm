@@ -8,7 +8,7 @@
 # Revisions:    Nov. 12/2003 - P. Harvey Created
 #               (See html/history.html for revision history)
 #
-# Legal:        Copyright (c) 2003-2025, Phil Harvey (philharvey66 at gmail.com)
+# Legal:        Copyright (c) 2003-2026, Phil Harvey (philharvey66 at gmail.com)
 #               This library is free software; you can redistribute it and/or
 #               modify it under the same terms as Perl itself.
 #------------------------------------------------------------------------------
@@ -29,7 +29,7 @@ use vars qw($VERSION $RELEASE @ISA @EXPORT_OK %EXPORT_TAGS $AUTOLOAD @fileTypes
             %jpegMarker %specialTags %fileTypeLookup $testLen $exeDir
             %static_vars $advFmtSelf $configFile @configFiles $noConfig);
 
-$VERSION = '13.44';
+$VERSION = '13.55';
 $RELEASE = '';
 @ISA = qw(Exporter);
 %EXPORT_TAGS = (
@@ -1045,8 +1045,8 @@ $testLen = 1024;    # number of bytes to read when testing for magic number
 # file types with weak magic number recognition
 my %weakMagic = ( MP3 => 1 );
 
-# file types that are determined by the process proc when FastScan == 3
-# (when done, the process proc must exit after SetFileType if FastScan is 3)
+# file types that are determined by the process proc when FastScan > 2
+# (when done, the process proc must exit after SetFileType if FastScan is > 2)
 my %processType = map { $_ => 1 } qw(JPEG TIFF XMP AIFF EXE Font PS Real VCard TXT);
 
 # Compact/XMPShorthand option settings
@@ -1147,6 +1147,7 @@ my @availableOptions = (
     [ 'GeoMinSats',       undef,  'geotag minimum satellites' ],
     [ 'GeoHPosErr',       undef,  'geotag GPSHPositioningError based on $GPSDOP' ],
     [ 'GeoSpeedRef',      undef,  'geotag GPSSpeedRef' ],
+    [ 'GeoUserTag',       undef,  'user-defined tags for geotagging' ],
     [ 'GlobalTimeShift',  undef,  'apply time shift to all extracted date/time values' ],
     [ 'GPSQuadrant',      undef,  'quadrant for GPS if not otherwise known' ],
     [ 'Group#',           undef,  'return tags for specified groups in family #' ],
@@ -1193,6 +1194,7 @@ my @availableOptions = (
     [ 'Struct',           undef,  'return structures as hash references' ],
     [ 'StructFormat',     undef,  'format for structure serialization when reading/writing' ],
     [ 'SystemTags',       undef,  'extract additional File System tags' ],
+    [ 'SystemTimeRes',    0,      'number of sub-second digits in system and epoch times' ],
     [ 'TextOut',        \*STDOUT, 'file for Verbose/HtmlDump output' ],
     [ 'TimeZone',         undef,  'local time zone' ],
     [ 'UndefTags',        undef,  'leave undef tags in -if conditions when -m or -f are used' ],
@@ -1200,7 +1202,7 @@ my @availableOptions = (
     [ 'UserParam',        { },    'user parameters for additional user-defined tag values' ],
     [ 'Validate',         undef,  'perform additional validation' ],
     [ 'Verbose',          0,      'print verbose messages (0-5, higher # = more verbose)' ],
-    [ 'WindowsLongPath',  1,      'enable support for long pathnames (enables WindowsWideFile)' ],
+    [ 'WindowsLongPath',  0,      'enable support for long pathnames (enables WindowsWideFile)' ],
     [ 'WindowsWideFile',  undef,  'force the use of Windows wide-character file routines' ], # (see forum15208)
     [ 'WriteMode',        'wcg',  'enable all write modes by default' ],
     [ 'XAttrTags',        undef,  'extract MacOS extended attribute tags' ],
@@ -1244,6 +1246,10 @@ sub DummyWriteProc { return 1; }
 # queued plug-in tags to add to lookup
 @Image::ExifTool::pluginTags = ( );
 %Image::ExifTool::pluginTags = ( );
+
+# memory purge variables
+my $purgeFlag = 0;
+my @purgeTags;
 
 my %systemTagsNotes = (
     Notes => q{
@@ -1455,12 +1461,15 @@ my %systemTagsNotes = (
     FileCreateDate => {
         Description => 'File Creation Date/Time',
         Notes => q{
-            the filesystem creation date/time.  Windows/Mac only.  In Windows, the file
-            creation date/time is preserved by default when writing if Win32API::File
-            and Win32::API are available.  On Mac, this tag is extracted only if it or
-            the MacOS group is specifically requested or the API L<RequestAll|../ExifTool.html#RequestAll> option is
-            set to 2 or higher.  Requires "setfile" for writing on Mac, which may be
-            installed by typing C<xcode-select --install> in the Terminal
+            the filesystem creation date/time.  Windows/Mac/Linux only.  In Windows, the
+            file creation date/time is preserved by default when writing if
+            Win32API::File and Win32::API are available.  On Mac, this tag is extracted
+            only if it or the MacOS group is specifically requested or the API
+            L<RequestAll|../ExifTool.html#RequestAll> option is set to 2 or higher.  On
+            Linux, this tag is read-only and extracted only if the filesystem supports
+            btime and "File::StatX" is available.  Requires "setfile" for writing on
+            Mac, which may be installed by typing C<xcode-select --install> in the
+            Terminal
         },
         Groups => { 1 => 'System', 2 => 'Time' },
         Writable => 1,
@@ -2624,7 +2633,7 @@ sub Options($$;@)
             # add to existing plot settings
             $newVal = "$oldVal,$newVal" if defined $oldVal and defined $newVal;
             $$options{$param} = $newVal;
-        } elsif ($param eq 'KeepUTCTime') {
+        } elsif ($param eq 'KeepUTCTime' or $param eq 'SystemTimeRes') {
             $$options{$param} = $static_vars{$param} = $newVal;
         } elsif (lc $param eq 'geodir') {
             $Image::ExifTool::Geolocation::geoDir = $newVal;
@@ -2672,11 +2681,13 @@ sub ClearOptions($)
 {
     local $_;
     my $self = shift;
-
-    $$self{OPTIONS} = { };  # clear all options
+    my $opts = $$self{OPTIONS} = { };  # clear all options
 
     # load default options
-    $$self{OPTIONS}{$$_[0]} = $$_[1] foreach @availableOptions;
+    $$opts{$$_[0]} = $$_[1] foreach @availableOptions;
+
+    # enable WindowsLongPath if Win32::API is available
+    $$opts{WindowsLongPath} = 1 if $^O eq 'MSWin32' and eval { require Win32::API };
 
     # keep necessary member variables in sync with options
     delete $$self{CUR_LANG};
@@ -2884,6 +2895,16 @@ sub ExtractInfo($;@)
         $self->FoundTag('FileAccessDate', $stat[8]) if defined $stat[8];
         my $cTag = $^O eq 'MSWin32' ? 'FileCreateDate' : 'FileInodeChangeDate';
         $self->FoundTag($cTag, $stat[10]) if defined $stat[10];
+        if ($^O eq 'linux' and @stat and eval { require File::StatX }) {
+            my $stat;
+            local $SIG{'__WARN__'} = \&SetWarning;
+            if ($raf) {
+                eval { $stat=File::StatX::fstatx($$raf{FILE_PT}, 0, File::StatX::STATX_BTIME()) };
+            } else {
+                eval { $stat=File::StatX::statx($filename, 0, File::StatX::STATX_BTIME()) };
+            }
+            $self->FoundTag('FileCreateDate', $stat->btime) if $stat and $stat->btime;
+        }
         $self->FoundTag('FilePermissions', $stat[2]) if defined $stat[2];
         # extract more system info if SystemTags option is set
         if (@stat) {
@@ -3013,8 +3034,8 @@ sub ExtractInfo($;@)
             # save file type in member variable
             $$self{FILE_TYPE} = $type;
             $dirInfo{Parent} = ($type eq 'TIFF') ? $tiffType : $type;
-            # don't process the file when FastScan == 3
-            if ($fast == 3 and not $processType{$type}) {
+            # don't process the file when FastScan > 2
+            if ($fast > 2 and not $processType{$type}) {
                 unless ($weakMagic{$type} and (not $ext or $ext ne $type)) {
                     $self->SetFileType($dirInfo{Parent});
                 }
@@ -3581,7 +3602,7 @@ sub GetValue($$;$)
                                 $self->Warn("$convType $tag: " . CleanWarning()) if $evalWarning;
                             }
                             if (not defined $value) {
-                                if ($$tagInfo{PrintHex} and $val and IsInt($val) and
+                                if ($$tagInfo{PrintHex} and defined $val and IsInt($val) and
                                     $convType eq 'PrintConv')
                                 {
                                     $value = sprintf('Unknown (0x%x)',$val);
@@ -4286,7 +4307,11 @@ sub Init($)
     my $self = shift;
     # delete all DataMember variables (lower-case names)
     delete $$self{$_} foreach grep /[a-z]/, keys %$self;
-    %static_vars = ( KeepUTCTime => $$self{OPTIONS}{KeepUTCTime} ); # reset static variables
+    # reset static variables
+    %static_vars = (
+        KeepUTCTime => $$self{OPTIONS}{KeepUTCTime},
+        SystemTimeRes => $$self{OPTIONS}{SystemTimeRes},
+    );
     delete $$self{FOUND_TAGS};      # list of found tags
     delete $$self{EXIF_DATA};       # the EXIF data block
     delete $$self{EXIF_POS};        # EXIF position in file
@@ -4331,6 +4356,21 @@ sub Init($)
     }
     # make sure our TextOut is a file reference
     $$self{OPTIONS}{TextOut} = \*STDOUT unless ref $$self{OPTIONS}{TextOut};
+}
+
+#------------------------------------------------------------------------------
+# Purge temporary tags from memory and set purge flag for next time
+# Inputs: 0) false=disable purging, true=enable purging, and
+#            purge now if number of digits in tags to purge >= flag
+sub Purge(;$)
+{
+    $purgeFlag = shift || 0;
+    if (@purgeTags and length(scalar @purgeTags) >= $purgeFlag) {
+        foreach (@purgeTags) {
+            delete $$_{Table}{$$_{TagID}} unless defined $$_{IsProtobuf};
+        }
+        undef @purgeTags;
+    }
 }
 
 #------------------------------------------------------------------------------
@@ -4676,7 +4716,8 @@ sub SplitFileName($)
 
 #------------------------------------------------------------------------------
 # Encode file name for calls to system i/o routines
-# Inputs: 0) ExifTool ref, 1) file name in CharsetFileName encoding, 2) flag to force conversion
+# Inputs: 0) ExifTool ref, 1) file name in CharsetFileName encoding,
+#         2) flag to force conversion even if no special characters
 # Returns: true if Windows Unicode routines should be used (in which case
 #          the file name will be encoded as a null-terminated UTF-16LE string)
 sub EncodeFileName($$;$)
@@ -4872,7 +4913,7 @@ sub Exists($$;$)
         eval { Win32API::File::CloseHandle($wh) };
     } elsif ($writing) {
         # (named pipes already exist, but we pretend that they don't
-        #  so we will be able to write them, so test with for pipe -p)
+        #  so we will be able to write them, so test for pipe with -p)
         return(-e $file and not -p $file);
     } else {
         return(-e $file);
@@ -6713,34 +6754,33 @@ sub TimeZoneString($;$)
 
 #------------------------------------------------------------------------------
 # Convert Unix time to EXIF date/time string
-# Inputs: 0) Unix time value, 1) non-zero to convert to local time,
-#         2) number of digits after the decimal for fractional seconds
+# Inputs: 0) Unix time value, 1) non-zero to convert to local time, 2) number of
+#         digits after the decimal for fractional seconds, negative to trim
+#         trailing zeros, or undef to use SystemTimeRes
 # Returns: EXIF date/time string (with timezone for local times)
 sub ConvertUnixTime($;$$)
 {
     my ($time, $toLocal, $dec) = @_;
     return '0000:00:00 00:00:00' if $time == 0;
-    my (@tm, $tz);
-    if ($dec) {
-        my $frac = $time - int($time);
-        $time = int($time);
-        $frac < 0 and $frac += 1, $time -= 1;
-        $dec = sprintf('%.*f', $dec, $frac);
-        # remove number before decimal and increment integer time if it was rounded up
-        $dec =~ s/^(\d)// and $1 eq '1' and $time += 1;
-    } else {
-        $time = int($time + 1e-6) if $time != int($time);  # avoid round-off errors
-        $dec = '';
-    }
+    my (@tm, $tz, $trim);
+    $dec = $static_vars{SystemTimeRes} || 0 unless defined $dec;
+    $dec < 0 and $dec = -$dec, $trim = 1;
+    my $itime = int($time);
+    my $frac = $time - $itime;
+    $frac < 0 and $frac += 1, $itime -= 1;
+    $dec = sprintf('%.*f', $dec, $frac);
+    # remove number before decimal and increment integer time if necessary
+    $dec =~ s/^(\d)// and $1 eq '1' and $itime += 1;
+    $dec =~ s/\.?0+$// if $trim;    # trim trailing zeros if specified
     if (not $toLocal) {
-        @tm = gmtime($time);
+        @tm = gmtime($itime);
         $tz = '';
     } elsif ($static_vars{KeepUTCTime}) {
-        @tm = gmtime($time);
+        @tm = gmtime($itime);
         $tz = 'Z';
     } else {
-        @tm = localtime($time);
-        $tz = TimeZoneString(\@tm, $time);
+        @tm = localtime($itime);
+        $tz = TimeZoneString(\@tm, $itime);
     }
     my $str = sprintf("%4d:%.2d:%.2d %.2d:%.2d:%.2d$dec%s",
                       $tm[5]+1900, $tm[4]+1, $tm[3], $tm[2], $tm[1], $tm[0], $tz);
@@ -6783,7 +6823,7 @@ sub GetUnixTime($;$)
 
 #------------------------------------------------------------------------------
 # Print conversion for file size
-# Inputs: 0) file size in bytes
+# Inputs: 0) file size in bytes, 1) optional ExifTool ref
 # Returns: converted file size
 sub ConvertFileSize($;$)
 {
@@ -7250,7 +7290,7 @@ sub ProcessJPEG($$;$)
     }
     if (not $$self{VALUE}{FileType} or ($$self{DOC_NUM} and $$options{ExtractEmbedded})) {
         $self->SetFileType();               # set FileType tag
-        return 1 if $fast == 3;             # don't process file when FastScan == 3
+        return 1 if $fast > 2;              # don't process file when FastScan > 2
         $$self{LOW_PRIORITY_DIR}{IFD1} = 1; # lower priority of IFD1 tags
     }
     $$raf{NoBuffer} = 1 if $self->Options('FastScan'); # disable buffering in FastScan mode
@@ -8127,11 +8167,11 @@ sub ProcessJPEG($$;$)
                 $self->ProcessDirectory(\%dirInfo, $tagTablePtr);
             }
         } elsif ($marker == 0xe7) {         # APP7 (InfiRay, Pentax, Huawei, Qualcomm)
-            if ($$segDataPt =~ /^PENTAX \0(II|MM)/) {
-                # found in K-3 images (is this multi-segment??)
-                SetByteOrder($1);
+            if ($$segDataPt =~ /^(PENTAX |RICOH)\0(II|MM)/) {
+                # found in K-3 and Ricoh GR_IV images (is this multi-segment??)
+                SetByteOrder($2);
                 undef $dumpType; # (dump this ourself)
-                my $hdrLen = 10;
+                my $hdrLen = length($1) + 3;
                 my $tagTablePtr = GetTagTable('Image::ExifTool::Pentax::Main');
                 DirStart(\%dirInfo, $hdrLen, 0);
                 $dirInfo{DirName} = 'Pentax APP7';
@@ -8217,7 +8257,7 @@ sub ProcessJPEG($$;$)
         } elsif ($marker == 0xea) {         # APP10 (PhotoStudio Unicode comments, HDR gain curve)
             if ($$segDataPt =~ /^UNICODE\0/) {
                 $dumpType = 'PhotoStudio';
-                my $comment = $self->Decode(substr($$segDataPt,8), 'UCS2', 'MM');
+                my $comment = $self->Decode(substr($$segDataPt,8), 'UTF16', 'MM');
                 $self->FoundTag('Comment', $comment);
             } elsif ($$segDataPt =~ /^AROT\0\0.{4}/s) {
                 $dumpType = 'AROT', # (HDR gain curve? PH guess)
@@ -8630,8 +8670,8 @@ sub DoProcessTIFF($$;$)
             my $t = ($baseType eq 'TIFF' or $fileType =~ /RAW/) ? $fileType : undef;
             $self->SetFileType($t);
         }
-        # don't process file if FastScan == 3
-        return 1 if not $outfile and $$self{OPTIONS}{FastScan} and $$self{OPTIONS}{FastScan} == 3;
+        # don't process file if FastScan > 2
+        return 1 if not $outfile and $$self{OPTIONS}{FastScan} and $$self{OPTIONS}{FastScan} > 2;
     }
     # (accommodate CR3 images which have a TIFF directory with ExifIFD at the top level)
     my $ifdName = ($$dirInfo{DirName} and $$dirInfo{DirName} =~ /^(ExifIFD|GPS)$/) ? $1 : 'IFD0';
@@ -9083,7 +9123,8 @@ sub GetTagInfoList($$)
 #------------------------------------------------------------------------------
 # Find tag information, processing conditional tags
 # Inputs: 0) ExifTool object reference, 1) tagTable pointer, 2) tag ID
-#         3) optional value reference, 4) optional format type, 5) optional value count
+#         3) optional value reference (usually reference to binary data value, but
+#            depends on information type), 4) optional format type, 5) optional value count
 # Returns: pointer to tagInfo hash, undefined if none found, or '' if $valPt needed
 # Notes: You should always call this routine to find a tag in a table because
 # this routine will evaluate conditional tags.
@@ -9183,6 +9224,7 @@ sub AddTagToTable($$;$$)
     $$tagInfo{GotGroups} = 1,
     $$tagInfo{Table} = $tagTablePtr;
     $$tagInfo{TagID} = $tagID;
+    $$tagInfo{Hidden} = 1 unless defined $$tagInfo{Hidden};
     if (defined $$tagTablePtr{AVOID} and not defined $$tagInfo{Avoid}) {
         $$tagInfo{Avoid} = $$tagTablePtr{AVOID};
     }
@@ -9204,6 +9246,9 @@ sub AddTagToTable($$;$$)
     # if someone thinks there isn't any tagInfo because a condition wasn't satisfied)
     unless (defined $$tagTablePtr{$tagID} or $specialTags{$tagID}) {
         $$tagTablePtr{$tagID} = $tagInfo;
+        if ($purgeFlag and $$tagInfo{Unknown} and not $$tagInfo{SubDirectory}) {
+            push @purgeTags, $tagInfo;
+        }
     }
     $$tagInfo{AddedUnknown} = 1 if $$tagInfo{Unknown};
     return $tagInfo;
@@ -9211,7 +9256,7 @@ sub AddTagToTable($$;$$)
 
 #------------------------------------------------------------------------------
 # Handle simple extraction of new tag information
-# Inputs: 0) ExifTool object ref, 1) tag table reference, 2) tagID, 3) value,
+# Inputs: 0) ExifTool object ref, 1) tag table reference, 2) tagID, 3) raw value,
 #         4-N) parameters hash: Index, DataPt, DataPos, Base, Start, Size, Parent,
 #              TagInfo, ProcessProc, RAF, Format, Count, MakeTagInfo
 # Returns: tag key or undef if tag not found
@@ -9223,10 +9268,21 @@ sub HandleTag($$$$;%)
     my ($self, $tagTablePtr, $tag, $val, %parms) = @_;
     my $verbose = $$self{OPTIONS}{Verbose};
     my $pfmt = $parms{Format};
-    my $tagInfo = $parms{TagInfo} || $self->GetTagInfo($tagTablePtr, $tag, \$val, $pfmt, $parms{Count});
+    my $valPt = defined $val ? \$val : undef;
+    my $tagInfo = $parms{TagInfo} || $self->GetTagInfo($tagTablePtr, $tag, $valPt, $pfmt, $parms{Count});
     my $dataPt = $parms{DataPt};
     my ($subdir, $format, $noTagInfo, $rational, $binVal);
 
+    # get binary data for Condition if necessary
+    if (not $tagInfo and defined $tagInfo and $dataPt) {
+        my $start = $parms{Start} || 0;
+        my $size = $parms{Size};
+        $size = length($$dataPt) - $start unless defined $size;
+        return undef if $start + $size > length($$dataPt);
+        $size = 1024 if $size > 1024;   # max 1024 bytes available for the Condition
+        my $dat = substr($$dataPt, $start, $size);
+        $tagInfo = $self->GetTagInfo($tagTablePtr, $tag, \$dat, $pfmt, $parms{Count});
+    }
     if ($tagInfo) {
         $subdir = $$tagInfo{SubDirectory};
     } elsif ($parms{MakeTagInfo}) {
@@ -9248,7 +9304,7 @@ sub HandleTag($$$$;%)
         my $start = $parms{Start} || 0;
         my $dLen = $dataPt ? length($$dataPt) : -1;
         my $size = $parms{Size};
-        $size = $dLen unless defined $size;
+        defined $size or $size = ($dLen > 0 ? $dLen : 0);
         # read from data in memory if possible
         if ($start >= 0 and $start + $size <= $dLen) {
             $format = $$tagInfo{Format} || $$tagTablePtr{FORMAT};
@@ -9282,6 +9338,9 @@ sub HandleTag($$$$;%)
     }
     if ($tagInfo) {
         if ($subdir) {
+            if ($$tagInfo{MakerNotes} and $$self{OPTIONS}{FastScan} and $$self{OPTIONS}{FastScan} > 1) {
+                return undef;   # don't process maker note directories when FastScan > 1
+            }
             my $subdirStart = $parms{Start};
             my $subdirLen = $parms{Size};
             if ($$tagInfo{RawConv} and not $$tagInfo{Writable}) {
@@ -9320,6 +9379,7 @@ sub HandleTag($$$$;%)
                 DataPos  => $parms{DataPos},
                 DirStart => $subdirStart,
                 DirLen   => $subdirLen,
+                DirID    => $tag,
                 Parent   => $parms{Parent},
                 Base     => $parms{Base},
                 Multi    => $$subdir{Multi},
@@ -9842,7 +9902,7 @@ sub ProcessBinaryData($$$)
     my $nextIndex = 0;
     my $varSize = 0;
     foreach $index (@tags) {
-        my ($tagInfo, $val, $saveNextIndex, $len, $mask, $wasVar, $rational);
+        my ($tagInfo, $val, $saveNextIndex, $len, $mask, $wasVar, $rational, $offAdj);
         if ($$tagTablePtr{$index}) {
             $tagInfo = $self->GetTagInfo($tagTablePtr, $index);
             unless ($tagInfo) {
@@ -9897,7 +9957,7 @@ sub ProcessBinaryData($$$)
                 $format = $1;
                 $count = $2;
                 # evaluate count to allow count to be based on previous values
-                #### eval Format size (%val, $size, $self)
+                #### eval Format size (%val, $size, $varSize, $self)
                 $count = eval $count;
                 $@ and warn("Format $$tagInfo{Name}: $@"), next;
                 next if $count < 0;
@@ -9952,7 +10012,7 @@ sub ProcessBinaryData($$$)
                 $varSize += $count; # shift subsequent indices
                 unless (defined $val) {
                     $val = substr($$dataPt, $entry+$dirStart, $count);
-                    $val = $self->Decode($val, 'UCS2') if $format eq 'ustring' or $format eq 'ustr32';
+                    $val = $self->Decode($val, 'UTF16') if $format eq 'ustring' or $format eq 'ustr32';
                     $val =~ s/\0.*//s unless $format eq 'undef';  # truncate at null
                 }
                 $binVal = substr($$dataPt, $entry+$dirStart, $count) if $$self{OPTIONS}{SaveBin};
@@ -9976,7 +10036,7 @@ sub ProcessBinaryData($$$)
             } elsif ($varSize != $oldVarSize and $verbose > 2) {
                 my ($tmp, $sign) = ($varSize, '+');
                 $tmp < 0 and $tmp = -$tmp, $sign = '-';
-                $self->VPrint(2, sprintf("$$self{INDENT}\[offsets adjusted by ${sign}0x%.4x after 0x%.4x $$tagInfo{Name}]\n", $tmp, $index));
+                $offAdj = sprintf("$$self{INDENT}\[offsets adjusted by ${sign}0x%.4x after 0x%.4x $$tagInfo{Name}]\n", $tmp, $index);
             }
         }
         if ($unknown > 1) {
@@ -10015,6 +10075,7 @@ sub ProcessBinaryData($$$)
                 Extra  => $mask ? sprintf(', mask 0x%.2x',$mask) : undef,
             );
         }
+        $offAdj and $self->VPrint(2, $offAdj);
         # parse nested BinaryData directories
         if ($$tagInfo{SubDirectory}) {
             my $subdir = $$tagInfo{SubDirectory};

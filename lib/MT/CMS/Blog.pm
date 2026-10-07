@@ -1263,6 +1263,9 @@ sub start_rebuild_pages {
 sub start_rebuild_pages_directly {
     my $app = shift;
 
+    my $perms = $app->permissions
+        or return $app->error( $app->translate("No permissions") );
+
     my $start_time = $app->param('start_time');
 
     if ( !$start_time ) {
@@ -1308,11 +1311,16 @@ sub start_rebuild_pages_directly {
     );
 
     if ( $type_name =~ /^index-(\d+)$/ ) {
+        return $app->permission_denied() unless $perms->can_do('rebuild');
+
         my $tmpl_id = $1;
         require MT::Template;
         my $tmpl = MT::Template->load($tmpl_id)
             or return $app->error(
             $app->translate( 'Cannot load template #[_1].', $tmpl_id ) );
+
+        return $app->permission_denied() unless $app->user->permissions($tmpl->blog_id)->can_do('rebuild');
+
         $param{build_type_name} = $app->translate( "index template '[_1]'",
             MT::Util::encode_html( $tmpl->name ) );
         $param{is_one_index} = 1;
@@ -1323,6 +1331,11 @@ sub start_rebuild_pages_directly {
         my $entry = MT::Entry->load($entry_id)
             or return $app->error(
             $app->translate( 'Cannot load entry #[_1].', $entry_id ) );
+
+        return $app->permission_denied()
+            if !$perms->can_edit_entry( $entry, $app->user )
+            && !$perms->can_republish_entry( $entry, $app->user );
+
         $param{build_type_name}
             = $app->translate( "[_1] '[_2]'", $entry->class_label,
             MT::Util::encode_html( $entry->title ) );
@@ -1341,6 +1354,9 @@ sub start_rebuild_pages_directly {
         my $content_data = MT::ContentData->load($content_data_id)
             or return $app->errtrans( 'Cannot load content data #[_1].',
             $content_data_id );
+
+        return $app->permission_denied unless $perms->can_edit_content_data( $content_data, $app->user );
+
         $param{build_type_name} = $app->translate(
             "[_1] (ID:[_2])",
             $content_data->content_type->name || $app->translate('(no name)'),
@@ -1585,21 +1601,21 @@ sub can_view {
 }
 
 sub can_save {
-    my ( $eh, $app, $id ) = @_;
+    my ($eh, $app, $obj) = @_;
 
-    if ($id) {
-        unless ( ref $id ) {
-            $id = MT->model('blog')->load($id)
-                or return;
+    if ($obj) {
+        unless (ref $obj) {
+            $obj = MT->model('blog')->load($obj) or return;
         }
 
-        my $author = $app->user;
-        return $author->permissions( $id->id )->can_do('edit_blog_config')
-            || ( $app->isa('MT::App::CMS')
-            && $app->param('cfg_screen')
-            && $app->param('cfg_screen') eq 'cfg_publish_profile' );
-    }
-    else {
+        my $author     = $app->user;
+        my $cfg_screen = $app->param('cfg_screen') || '';
+        if ($app->isa('MT::App::CMS') && $cfg_screen eq 'cfg_publish_profile') {
+            return $author->permissions($obj->id)->can_do('edit_templates');
+        } else {
+            return $author->permissions($obj->id)->can_do('edit_blog_config');
+        }
+    } else {
         return $app->can_do('create_site');
     }
 }
@@ -1623,6 +1639,38 @@ sub can_delete {
 sub pre_save {
     my $eh = shift;
     my ( $app, $obj, $original ) = @_;
+
+    require MT::Util;
+    if (my $site_url = $obj->site_url) {
+        if (!MT::Util::is_url($site_url)) {
+            # parent site may not be set yet
+            my $ok;
+            if ($site_url =~ m!/::/!) {
+                my @parts = $obj->raw_site_url;
+                my $tmp   = 'https://' . (@parts == 2 ? shift @parts : '') . 'example.com/';
+                $tmp      = MT::Util::caturl($tmp, shift @parts);
+                $ok       = MT::Util::is_url($tmp) ? 1 : 0;
+            }
+            if (!$ok) {
+                return $app->errtrans('Invalid URL in "[_1]" field.', $app->translate('Site URL'));
+            }
+        }
+    }
+    if (my $archive_url = $obj->archive_url) {
+        if (!MT::Util::is_url($archive_url)) {
+            # parent site may not be set yet
+            my $ok;
+            if ($archive_url =~ m!/::/!) {
+                my @parts = $obj->raw_archive_url;
+                my $tmp   = 'https://' . (@parts == 2 ? shift @parts : '') . 'example.com/';
+                $tmp      = MT::Util::caturl($tmp, shift @parts);
+                $ok       = MT::Util::is_url($tmp) ? 1 : 0;
+            }
+            if (!$ok) {
+                return $app->errtrans('Invalid URL in "[_1]" field.', $app->translate('Archive URL'));
+            }
+        }
+    }
 
     my $overlay = $app->param('overlay');
     my $screen = $app->param('cfg_screen') || '';
@@ -2346,12 +2394,16 @@ sub cfg_prefs_save {
     $blog->include_cache( $app->param('include_cache') ? 1 : 0 );
 
     if ( $blog->class eq 'blog' && $app->can_do('set_publish_paths') ) {
+        require MT::Util;
         my $subdomain = $app->param('site_url_subdomain');
         $subdomain = '' if !$app->param('use_subdomain');
         $subdomain .= '.' if $subdomain && $subdomain !~ /\.$/;
         $subdomain =~ s/\.{2,}/\./g;
         my $path = $app->param('site_url_path');
         $blog->site_url("$subdomain/::/$path");
+        if (!MT::Util::is_url($blog->site_url)) {
+            return $app->errtrans('Invalid URL in "[_1]" field.', $app->translate('Site URL'));
+        }
         if ( $app->param('enable_archive_paths') ) {
             $subdomain = $app->param('archive_url_subdomain');
             $subdomain = '' if !$app->param('use_archive_subdomain');
@@ -2359,6 +2411,9 @@ sub cfg_prefs_save {
             $subdomain =~ s/\.{2,}/\./g;
             $path = $app->param('archive_url_path');
             $blog->archive_url("$subdomain/::/$path");
+            if (!MT::Util::is_url($blog->archive_url)) {
+                return $app->errtrans('Invalid URL in "[_1]" field.', $app->translate('Archive URL'));
+            }
         }
         my $site_path_absolute    = $app->param('site_path_absolute');
         my $use_absolute          = $app->param('use_absolute');

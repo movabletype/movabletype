@@ -371,6 +371,7 @@ build-language-stamp
 ^rollup.config.ts
 ^vitest.config.ts
 ^tsconfig.json
+^tsconfig.rollup.json
 \.babelrc
 \.eslintrc.json
 \.eslintignore

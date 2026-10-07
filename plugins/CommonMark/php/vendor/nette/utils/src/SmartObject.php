@@ -22,7 +22,6 @@ use Nette\Utils\ObjectHelpers;
 trait SmartObject
 {
 	/**
-	 * @param  mixed[]  $args
 	 * @return mixed
 	 * @throws MemberAccessException
 	 */
@@ -48,8 +47,6 @@ trait SmartObject
 
 
 	/**
-	 * @param  mixed[]  $args
-	 * @return never
 	 * @throws MemberAccessException
 	 */
 	public static function __callStatic(string $name, array $args)

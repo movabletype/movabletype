@@ -2,7 +2,7 @@ package HTTP::Date;
 
 use strict;
 
-our $VERSION = '6.06';
+our $VERSION = '6.08';
 
 require Exporter;
 our @ISA       = qw(Exporter);
@@ -36,7 +36,7 @@ sub str2time ($;$) {
 
     # fast exit for strictly conforming string
     if ( $str
-        =~ /^[SMTWF][a-z][a-z], (\d\d) ([JFMAJSOND][a-z][a-z]) (\d\d\d\d) (\d\d):(\d\d):(\d\d) GMT$/
+        =~ /^[SMTWF][a-z][a-z], ([0-9][0-9]) ([JFMAJSOND][a-z][a-z]) ([0-9][0-9][0-9][0-9]) ([0-9][0-9]):([0-9][0-9]):([0-9][0-9]) GMT$/
     ) {
         return eval {
             my $t = Time::Local::timegm( $6, $5, $4, $1, $MoY{$2} - 1, $3 );
@@ -65,7 +65,7 @@ sub str2time ($;$) {
 
         # offset already zero
     }
-    elsif ( $tz =~ /^([-+])?(\d\d?):?(\d\d)?$/ ) {
+    elsif ( $tz =~ /^([-+])?([0-9][0-9]?):?([0-9][0-9])?$/ ) {
         $offset = 3600 * $2;
         $offset += 60 * $3 if $3;
         $offset *= -1      if $1 && $1 eq '-';
@@ -88,6 +88,14 @@ sub parse_date ($) {
     local ($_) = shift;
     return unless defined;
 
+    # Reject over-long input up front, before any regex runs, so hostile
+    # strings cannot drive the parsing regexes into pathological backtracking.
+    # Length is measured as given (leading/trailing whitespace included).  This
+    # cap is a security limit, not a tunable: every format we accept is far
+    # shorter, and the parsing regexes still contain adjacent unbounded
+    # quantifiers, so raising it demands re-benchmarking against hostile input.
+    return if length($_) > 64;
+
     # More lax parsing below
     s/^\s+//;                                            # kill leading space
     s/^(?:Sun|Mon|Tue|Wed|Thu|Fri|Sat)[a-z]*,?\s*//i;    # Useless weekday
@@ -98,18 +106,18 @@ sub parse_date ($) {
     (
         ( $day, $mon, $yr, $hr, $min, $sec, $tz )
         = /^
-     (\d\d?)               # day
+     ([0-9][0-9]?)               # day
         (?:\s+|[-\/])
      (\w+)                 # month
         (?:\s+|[-\/])
-     (\d+)                 # year
+     ([0-9]+)                 # year
      (?:
            (?:\s+|:)       # separator before clock
-        (\d\d?):(\d\d)     # hour:min
-        (?::(\d\d))?       # optional seconds
+        ([0-9][0-9]?):([0-9][0-9])     # hour:min
+        (?::([0-9][0-9]))?       # optional seconds
      )?                    # optional clock
         \s*
-     ([-+]?\d{2,4}|(?![APap][Mm]\b)[A-Za-z]+)? # timezone
+     ([-+]?[0-9]{2,4}|(?![APap][Mm]\b)[A-Za-z]+)? # timezone
         \s*
      (?:\(\w+\)|\w{3,})?   # ASCII representation of timezone.
         \s*$
@@ -124,13 +132,13 @@ sub parse_date ($) {
         = /^
      (\w{1,3})             # month
         \s+
-     (\d\d?)               # day
+     ([0-9][0-9]?)               # day
         \s+
-     (\d\d?):(\d\d)        # hour:min
-     (?::(\d\d))?          # optional seconds
+     ([0-9][0-9]?):([0-9][0-9])        # hour:min
+     (?::([0-9][0-9]))?          # optional seconds
         \s+
      (?:([A-Za-z]+)\s+)?   # optional timezone
-     (\d+)                 # year
+     ([0-9]+)                 # year
         \s*$               # allow trailing whitespace
     /x
         )
@@ -143,12 +151,12 @@ sub parse_date ($) {
         = /^
      (\w{3})               # month
         \s+
-     (\d\d?)               # day
+     ([0-9][0-9]?)               # day
         \s+
      (?:
-        (\d\d\d\d) |       # year
-        (\d{1,2}):(\d{2})  # hour:min
-            (?::(\d\d))?       # optional seconds
+        ([0-9][0-9][0-9][0-9]) |       # year
+        ([0-9]{1,2}):([0-9]{2})  # hour:min
+            (?::([0-9][0-9]))?       # optional seconds
      )
      \s*$
        /x
@@ -160,18 +168,18 @@ sub parse_date ($) {
         (
         ( $yr, $mon, $day, $hr, $min, $sec, $tz )
         = /^
-      (\d{4})              # year
+      ([0-9]{4})              # year
          [-\/]?
-      (\d\d?)              # numerical month
+      ([0-9][0-9]?)              # numerical month
          [-\/]?
-      (\d\d?)              # day
+      ([0-9][0-9]?)              # day
      (?:
            (?:\s+|[-:Tt])  # separator before clock
-        (\d\d?):?(\d\d)    # hour:min
-        (?::?(\d\d(?:\.\d*)?))?  # optional seconds (and fractional)
+        ([0-9][0-9]?):?([0-9][0-9])    # hour:min
+        (?::?([0-9][0-9](?:\.[0-9]*)?))?  # optional seconds (and fractional)
      )?                    # optional clock
         \s*
-     ([-+]?\d\d?:?(:?\d\d)?
+     ([-+]?[0-9][0-9]?:?(?:[0-9][0-9])?
       |Z|z)?               # timezone  (Z is "zero meridian", i.e. GMT)
         \s*$
     /x
@@ -183,13 +191,13 @@ sub parse_date ($) {
         (
         ( $mon, $day, $yr, $hr, $min, $ampm )
         = /^
-          (\d{2})                # numerical month
+          ([0-9]{2})                # numerical month
              -
-          (\d{2})                # day
+          ([0-9]{2})                # day
              -
-          (\d{2,4})              # year
+          ([0-9]{2,4})              # year
              \s+
-          (\d\d?):(\d\d)([APap][Mm])  # hour:min AM or PM
+          ([0-9][0-9]?):([0-9][0-9])([APap][Mm])  # hour:min AM or PM
              \s*$
         /x
         )
@@ -200,7 +208,7 @@ sub parse_date ($) {
     $mon
         = $MoY{$mon}
         || $MoY{"\u\L$mon"}
-        || ( $mon =~ /^\d\d?$/ && $mon >= 1 && $mon <= 12 && int($mon) )
+        || ( $mon =~ /^[0-9][0-9]?$/ && $mon >= 1 && $mon <= 12 && int($mon) )
         || return;
 
     # If the year is missing, we assume first date before the current,
@@ -289,7 +297,7 @@ HTTP::Date - HTTP::Date - date conversion routines
 
 =head1 VERSION
 
-version 6.06
+version 6.08
 
 =head1 SYNOPSIS
 
@@ -350,6 +358,12 @@ In scalar context the numbers are interpolated in a string of the
 If the date is unrecognized, then the empty list is returned (C<undef> in
 scalar context).
 
+As a safeguard against pathological input, strings longer than 64
+characters are rejected without being parsed.  The length is measured on the
+string as given, before any leading or trailing whitespace is trimmed, so
+heavily padded input may be rejected even if its trimmed payload would fit.
+Every date format this module recognizes is far shorter than this limit.
+
 The function is able to parse the following formats:
 
  "Wed, 09 Feb 1994 22:23:32 GMT"       -- HTTP format
@@ -383,6 +397,12 @@ The function is able to parse the following formats:
 
 The parser ignores leading and trailing whitespace.  It also allow the
 seconds to be missing and the month to be numerical in most formats.
+
+Numeric-only dates use day/month/year ordering (the ISO and common
+European convention), not the US month/day/year ordering.  So
+"3/4/2014" is parsed as 4 March 2014, and a US-style date such as
+"3/13/2014" returns undef because 13 is not a valid month.  To parse
+US-style dates, swap the first two fields before calling parse_date().
 
 If the year is missing, then we assume that the date is the first
 matching date I<before> current month.  If the year is given with only

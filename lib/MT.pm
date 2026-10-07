@@ -39,14 +39,14 @@ our $plugins_installed;
 BEGIN {
     $plugins_installed = 0;
 
-    ( $VERSION, $SCHEMA_VERSION ) = ( '9.000009', '9.0003' );
+    ( $VERSION, $SCHEMA_VERSION ) = ( '9.000010', '9.0003' );
     (   $PRODUCT_NAME, $PRODUCT_CODE,   $PRODUCT_VERSION,
         $VERSION_ID,   $RELEASE_NUMBER, $PORTAL_URL,
         $RELEASE_VERSION_ID
         )
         = (
         '__PRODUCT_NAME__',   '__PRODUCT_CODE__',
-        '9.0.9',              '__PRODUCT_VERSION_ID__',
+        '9.0.10',             '__PRODUCT_VERSION_ID__',
         '__RELEASE_NUMBER__', '__PORTAL_URL__',
         '__RELEASE_VERSION_ID__',
         );
@@ -2468,10 +2468,18 @@ sub build_page {
         my $q = $mt->{query};
         if ($mode) {
             my @query;
+
+            if ((($mt->get_header('Sec-Fetch-Site') || '') ne 'same-origin')
+                || $mt->param('_is_cross_origin'))
+            {
+                push @query, { name => '_is_cross_origin', value => 1 };
+            }
+
             my @query_keys = grep {
                        ( $_ ne 'username' )
                     && ( $_ ne 'password' )
                     && ( $_ ne 'submit' )
+                    && ( $_ ne '_is_cross_origin' )
                     && ( $mode eq 'logout' ? ( $_ ne '__mode' ) : 1 )
             } $mt->multi_param;
             for my $query_key (@query_keys) {
