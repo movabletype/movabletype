@@ -108,6 +108,7 @@ sub options_validation_handler {
 sub ss_validator_multiple {
     my ( $app, $field_data, $data, $type_label, $type_label_plural ) = @_;
     return undef unless defined $data;
+    $data = [$data] unless ref $data eq 'ARRAY';
 
     if ( !defined $type_label_plural ) {
         if ( defined $type_label ) {
