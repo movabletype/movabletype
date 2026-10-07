@@ -617,7 +617,7 @@ sub get_tags_js {
     require MT::ObjectTag;
     require MT::Util;
     my $tags_js = MT::Util::to_json(
-        [   map { $_->name } MT::Tag->load(
+        [   map { MT::Util::encode_html($_->name) } MT::Tag->load(
                 undef,
                 {   join => [
                         'MT::ObjectTag', 'tag_id',

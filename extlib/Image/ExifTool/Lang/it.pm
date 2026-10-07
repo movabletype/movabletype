@@ -3613,10 +3613,10 @@ $VERSION = '1.14';
         'Off' => 'Spento',
       },
     },
-   'ISOAutoParameters' => {
+   'ISOAutoMinSpeed' => {
       Description => 'Parametri ISO auto',
       PrintConv => {
-        'Fast' => 'Veloce',
+        'Auto Fast' => 'Auto veloce',
       },
     },
    'ISODisplay' => {
@@ -6424,7 +6424,6 @@ $VERSION = '1.14';
       Description => 'Rotazione',
       PrintConv => {
         'Horizontal' => 'Orizzontale',
-        'Horizontal (Normal)' => 'Orizzontale (normale)',
         'Horizontal (normal)' => 'Orizzontale (normale)',
         'Rotate 180' => 'Ruota di 180°',
         'Rotate 270 CW' => 'Ruota di 270° in senso orario',
@@ -7903,7 +7902,7 @@ and values.
 
 =head1 AUTHOR
 
-Copyright 2003-2022, Phil Harvey (philharvey66 at gmail.com)
+Copyright 2003-2026, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

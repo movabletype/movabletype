@@ -1,11 +1,11 @@
-package HTTP::Daemon; # git description: v6.13-4-ge6492b6
+package HTTP::Daemon; # git description: v6.15-42-g961eff5
 
 # ABSTRACT: A simple http server class
 
 use strict;
 use warnings;
 
-our $VERSION = '6.14';
+our $VERSION = '6.17';
 
 use Socket ();
 use IO::Socket::IP;
@@ -52,7 +52,7 @@ sub url {
     $host = "::1"       if $host eq "::";
     $host = "[$host]"   if $self->sockdomain == Socket::AF_INET6;
 
-    my $url = $self->_default_scheme . "://" . $host;
+    my $url  = $self->_default_scheme . "://" . $host;
     my $port = $self->sockport;
     $url .= ":$port" if $port != $self->_default_port;
     $url .= "/";
@@ -85,9 +85,9 @@ our $DEBUG;
 use HTTP::Request  ();
 use HTTP::Response ();
 use HTTP::Status;
-use HTTP::Date qw(time2str);
+use HTTP::Date      qw(time2str);
 use LWP::MediaTypes qw(guess_media_type);
-use Carp ();
+use Carp            ();
 
 # "\r\n" is not portable
 my $CRLF     = "\015\012";
@@ -141,7 +141,7 @@ READ_HEADER:
     }
     if ($buf !~ s/^(\S+)[ \t]+(\S+)(?:[ \t]+(HTTP\/\d+\.\d+))?[^\012]*\012//) {
         ${*$self}{'httpd_client_proto'} = _http_version("HTTP/1.0");
-        $self->send_error(400);                # BAD_REQUEST
+        $self->send_error(400);    # BAD_REQUEST
         $self->reason("Bad request line: $buf");
         return;
     }
@@ -153,7 +153,7 @@ READ_HEADER:
     my $r = HTTP::Request->new($method, $uri);
     $r->protocol($proto);
     ${*$self}{'httpd_client_proto'} = $proto = _http_version($proto);
-    ${*$self}{'httpd_head'} = ($method eq "HEAD");
+    ${*$self}{'httpd_head'}         = ($method eq "HEAD");
 
     if ($proto >= $HTTP_1_0) {
 
@@ -192,9 +192,9 @@ READ_HEADER:
     }
 
     # Find out how much content to read
-    my $te  = $r->header('Transfer-Encoding');
-    my $ct  = $r->header('Content-Type');
-    my $len = $r->header('Content-Length');
+    my $tr_enc  = $r->header('Transfer-Encoding');
+    my $ct_type = $r->header('Content-Type');
+    my $ct_len  = $r->header('Content-Length');
 
     # Act on the Expect header, if it's there
     for my $e ($r->header('Expect')) {
@@ -209,7 +209,7 @@ READ_HEADER:
         }
     }
 
-    if ($te && lc($te) eq 'chunked') {
+    if ($tr_enc && lc($tr_enc) eq 'chunked') {
 
         # Handle chunked transfer encoding
         my $body = "";
@@ -227,7 +227,7 @@ READ_HEADER:
                 last CHUNK if $size == 0;
 
                 my $missing = $size - length($buf) + 2;    # 2=CRLF at chunk end
-                     # must read until we have a complete chunk
+                    # must read until we have a complete chunk
                 while ($missing > 0) {
                     print STDERR "Need $missing more bytes\n" if $DEBUG;
                     my $n = $self->_need_more($buf, $timeout, $fdset);
@@ -280,32 +280,66 @@ READ_HEADER:
         $r->push_header($key, $val) if $key;
 
     }
-    elsif ($te) {
+    elsif ($tr_enc) {
         $self->send_error(501);    # Unknown transfer encoding
-        $self->reason("Unknown transfer encoding '$te'");
+        $self->reason("Unknown transfer encoding '$tr_enc'");
         return;
 
     }
-    elsif ($len) {
+    elsif ($ct_len) {
+
+        # After a security issue, we ensure we comply to
+        # RFC-7230 -- HTTP/1.1 Message Syntax and Routing
+        # section 3.3.2 -- Content-Length
+        # section 3.3.3 -- Message Body Length
+
+        # split and clean up Content-Length ', ' separated string
+        my @vals
+            = map { my $str = $_; $str =~ s/^\s+//; $str =~ s/\s+$//; $str }
+            split ',', $ct_len;
+
+        # check that they are all numbers (RFC: Content-Length = 1*DIGIT)
+        my @nums = grep {/^[0-9]+$/} @vals;
+        unless (@vals == @nums) {
+            my $reason = "Content-Length value must be an unsigned integer";
+            $self->send_error(400, $reason);
+            $self->reason($reason);
+            return;
+        }
+
+        # check they are all the same
+        my $ct_len = shift @nums;
+        foreach (@nums) {
+            next if $_ == $ct_len;
+            my $reason = "Content-Length values are not the same";
+            $self->send_error(400, $reason);
+            $self->reason($reason);
+            return;
+        }
+
+        # ensure we have now a fixed header, with only 1 value
+        $r->header('Content-Length' => $ct_len);
 
         # Plain body specified by "Content-Length"
-        my $missing = $len - length($buf);
+        my $missing = $ct_len - length($buf);
         while ($missing > 0) {
             print "Need $missing more bytes of content\n" if $DEBUG;
             my $n = $self->_need_more($buf, $timeout, $fdset);
             return unless $n;
             $missing -= $n;
         }
-        if (length($buf) > $len) {
-            $r->content(substr($buf, 0, $len));
-            substr($buf, 0, $len) = '';
+        if (length($buf) > $ct_len) {
+            $r->content(substr($buf, 0, $ct_len));
+            substr($buf, 0, $ct_len) = '';
         }
         else {
             $r->content($buf);
             $buf = '';
         }
     }
-    elsif ($ct && $ct =~ m/^multipart\/\w+\s*;.*boundary\s*=\s*("?)(\w+)\1/i) {
+    elsif ($ct_type
+        && $ct_type =~ m/^multipart\/\w+\s*;.*boundary\s*=\s*("?)(\w+)\1/i)
+    {
 
         # Handle multipart content type
         my $boundary = "$CRLF--$2--";
@@ -396,7 +430,7 @@ sub send_status_line {
     return if $self->antique_client;
     $status  ||= RC_OK;
     $message ||= status_message($status) || "";
-    $proto   ||= $HTTP::Daemon::PROTO || "HTTP/1.1";
+    $proto   ||= $HTTP::Daemon::PROTO    || "HTTP/1.1";
     print $self "$proto $status $message$CRLF";
 }
 
@@ -497,8 +531,8 @@ sub send_redirect {
     print $self "Location: $loc$CRLF";
 
     if ($content) {
-        my $ct = $content =~ /^\s*</ ? "text/html" : "text/plain";
-        print $self "Content-Type: $ct$CRLF";
+        my $ct_type = $content =~ /^\s*</ ? "text/html" : "text/plain";
+        print $self "Content-Type: $ct_type$CRLF";
     }
     print $self $CRLF;
     print $self $content if $content && !$self->head_request;
@@ -537,13 +571,13 @@ sub send_file_response {
         local (*F);
         sysopen(F, $file, 0) or return $self->send_error(RC_FORBIDDEN);
         binmode(F);
-        my ($ct, $ce) = guess_media_type($file);
-        my ($size, $mtime) = (stat _)[7, 9];
+        my ($mime_type, $file_enc) = guess_media_type($file);
+        my ($size,      $mtime)    = (stat _)[7, 9];
         unless ($self->antique_client) {
             $self->send_basic_header;
-            print $self "Content-Type: $ct$CRLF";
-            print $self "Content-Encoding: $ce$CRLF" if $ce;
-            print $self "Content-Length: $size$CRLF" if $size;
+            print $self "Content-Type: $mime_type$CRLF";
+            print $self "Content-Encoding: $file_enc$CRLF" if $file_enc;
+            print $self "Content-Length: $size$CRLF"       if $size;
             print $self "Last-Modified: ", time2str($mtime), "$CRLF" if $mtime;
             print $self $CRLF;
         }
@@ -564,11 +598,10 @@ sub send_dir {
 sub send_file {
     my ($self, $file) = @_;
     my $opened = 0;
-    local (*FILE);
     if (!ref($file)) {
-        open(FILE, $file) || return undef;
-        binmode(FILE);
-        $file = \*FILE;
+        open(my $fh, '<', $file) || return undef;
+        binmode($fh)             || do { close($fh); return undef };
+        $file = $fh;
         $opened++;
     }
     my $cnt = 0;
@@ -580,7 +613,11 @@ sub send_file {
         print $self $buf;
     }
     close($file) if $opened;
-    $cnt;
+
+    # Return a "true zero" for empty-but-successful copies so callers
+    # using `send_file or die` can distinguish open failure (undef)
+    # from a successful zero-byte transfer.
+    $cnt || '0E0';
 }
 
 sub daemon {
@@ -603,7 +640,7 @@ HTTP::Daemon - A simple http server class
 
 =head1 VERSION
 
-version 6.14
+version 6.17
 
 =head1 SYNOPSIS
 
@@ -874,6 +911,28 @@ Copy the file to the client.  The file can be a string (which
 will be interpreted as a filename) or a reference to an C<IO::Handle>
 or glob.
 
+Returns the number of bytes copied on success, or C<undef> if the
+filename form failed to open.  An empty file returns the string
+C<'0E0'> (zero numerically, true in boolean context) so that callers
+using C<< send_file or die >> can distinguish open failure from a
+successful zero-byte transfer.
+
+The filename form uses Perl's 3-argument C<open> with an explicit C<<
+< >> mode, so the path is no longer interpreted as a 2-argument
+C<open> shell-magic shape such as C<< | cmd >>, C<< cmd | >>, or
+C<< > path >>.  See
+L<CVE-2026-8450|https://www.cve.org/CVERecord?id=CVE-2026-8450> for
+the prior 2-argument C<open> behaviour this replaces.
+
+Note that this fix only neutralises 2-argument C<open> shell-magic.
+Callers remain responsible for validating attacker-influenced paths:
+C<send_file> will still happily open symlinks, character/block devices
+(e.g. C</dev/zero>, C</dev/stdin>), named pipes (which may block the
+worker), and files outside an intended document root.  If C<$filename>
+can be derived from request input, validate it (canonicalise, reject
+C<..> segments, require C<-f _> and a vetted prefix) before passing it
+in.
+
 =item $c->daemon
 
 Return a reference to the corresponding C<HTTP::Daemon> object.
@@ -899,6 +958,14 @@ RFC 2616
 
 L<IO::Socket::IP>, L<IO::Socket>
 
+=head1 GIVING THANKS
+
+=for stopwords MetaCPAN GitHub
+
+If you found this module to be useful, please show your appreciation by
+adding a +1 in L<MetaCPAN|https://metacpan.org/dist/HTTP-Daemon>
+and a star in L<GitHub|https://github.com/libwww-perl/HTTP-Daemon>.
+
 =head1 SUPPORT
 
 Bugs may be submitted through L<https://github.com/libwww-perl/HTTP-Daemon/issues>.
@@ -915,7 +982,7 @@ Gisle Aas <gisle@activestate.com>
 
 =head1 CONTRIBUTORS
 
-=for stopwords Olaf Alders Ville Skyttä Karen Etheridge Mark Stosberg Shoichi Kaji Chase Whitener Slaven Rezic Petr Písař Zefram Alexey Tourbin Bron Gondwana Michal Josef Špaček Mike Schilli Tom Hukins Adam Kennedy Sjogren Alex Kapranoff amire80 Andreas J. Koenig Bill Mann Daniel Hedlund David E. Wheeler DAVIDRW Father Chrysostomos Ferenc Erki FWILES Gavin Peters Graeme Thompson Hans-H. Froehlich Ian Kilgore Jacob J jefflee john9art murphy Ondrej Hanak Perlover Peter Rabbitson phrstbrn Robert Stone Rolf Grossmann ruff sasao Sean M. Burke Spiros Denaxas Steve Hay Todd Lipcon Tony Finch Toru Yamaguchi Yuri Karaban
+=for stopwords Olaf Alders Ville Skyttä Graham Knop dependabot[bot] Karen Etheridge Mark Stosberg Shoichi Kaji Chase Whitener Theo van Hoesel Julien Fiegehenn Slaven Rezic Petr Písař Zefram Alexey Tourbin Bron Gondwana Michal Josef Špaček Mike Schilli Tom Hukins Adam Kennedy Sjogren Alex Kapranoff amire80 Andreas J. Koenig Bill Mann Daniel Hedlund David E. Wheeler DAVIDRW Father Chrysostomos Ferenc Erki FWILES Gavin Peters Graeme Thompson Hans-H. Froehlich Ian Kilgore Jacob J jefflee john9art murphy Ondrej Hanak Perlover Peter Rabbitson phrstbrn Robert Stone Rolf Grossmann ruff sasao Sean M. Burke Spiros Denaxas Steve Hay Todd Lipcon Tony Finch Toru Yamaguchi Yuri Karaban
 
 =over 4
 
@@ -926,6 +993,14 @@ Olaf Alders <olaf@wundersolutions.com>
 =item *
 
 Ville Skyttä <ville.skytta@iki.fi>
+
+=item *
+
+Graham Knop <haarg@haarg.org>
+
+=item *
+
+dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>
 
 =item *
 
@@ -942,6 +1017,14 @@ Shoichi Kaji <skaji@cpan.org>
 =item *
 
 Chase Whitener <capoeirab@cpan.org>
+
+=item *
+
+Theo van Hoesel <tvanhoesel@perceptyx.com>
+
+=item *
+
+Julien Fiegehenn <simbabque@cpan.org>
 
 =item *
 

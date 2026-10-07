@@ -17,7 +17,7 @@ use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::Minolta;
 
-$VERSION = '1.16';
+$VERSION = '1.20';
 
 sub ProcessMRW($$;$);
 sub WriteMRW($$;$);
@@ -203,13 +203,13 @@ sub WriteMRW($$;$);
             Name => 'ColorMode',
             Condition => '$$self{Make} !~ /^SONY/',
             Priority => 0,
-            Writable => 'int32u',
+            Writable => 1,
             PrintConv => \%Image::ExifTool::Minolta::minoltaColorMode,
         },
         { #3
             Name => 'ColorMode',
             Condition => '$$self{Model} eq "DSLR-A100"',
-            Writable => 'int32u',
+            Writable => 1,
             Notes => 'Sony A100',
             Priority => 0,
             PrintHex => 1,
@@ -400,7 +400,7 @@ sub ProcessMRW($$;$)
 
     if ($$dirInfo{DataPt}) {
         # make a RAF object for MRW information extracted from other file types
-        $raf = new File::RandomAccess($$dirInfo{DataPt});
+        $raf = File::RandomAccess->new($$dirInfo{DataPt});
         # MRW information in DNG images may not start at beginning of data block
         $raf->Seek($$dirInfo{DirStart}, 0) if $$dirInfo{DirStart};
     }
@@ -489,6 +489,7 @@ sub ProcessMRW($$;$)
         $err and $et->Error("MRW format error", $$et{TIFF_TYPE} eq 'ARW');
     } else {
         $err and $et->Warn("MRW format error");
+        $et->ImageDataHash($raf, undef, 'raw') unless $$et{A100DataOffset};
     }
     return $rtnVal;
 }
@@ -512,7 +513,7 @@ write Konica-Minolta RAW (MRW) images.
 
 =head1 AUTHOR
 
-Copyright 2003-2022, Phil Harvey (philharvey66 at gmail.com)
+Copyright 2003-2026, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

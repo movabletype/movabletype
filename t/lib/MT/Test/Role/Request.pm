@@ -16,7 +16,7 @@ sub _convert_params {
     if ( blessed $params && $params->isa('HTTP::Request') ) {
         my $c = HTTP::Request::AsCGI->new($params)->setup;
         my $param_method = CGI->VERSION < 4 ? 'param' : 'multi_param';
-        my $cgi = CGI->new( $params->content );
+        my $cgi = CGI->new;
         my %hash;
         for my $name ( $cgi->$param_method ) {
             my @values = $cgi->$param_method($name);
@@ -35,9 +35,9 @@ sub get {
 }
 
 sub get_ok {
-    my ( $self, $params ) = @_;
+    my ( $self, $params, $message ) = @_;
     my $res = $self->get($params);
-    ok !$res->is_error, "get succeeded";
+    ok !$res->is_error, $message // "get succeeded";
     my $header_title = $self->header_title();
     note $header_title if $header_title;
     $res;
@@ -51,17 +51,25 @@ sub post {
 }
 
 sub post_ok {
-    my ( $self, $params ) = @_;
+    my ( $self, $params, $message ) = @_;
     my $res = $self->post($params);
-    ok !$res->is_error, "post succeeded";
+    ok !$res->is_error, $message // "post succeeded";
     my $header_title = $self->header_title();
     note $header_title if $header_title;
     $res;
 }
 
+sub sign_in_ok {
+    my ($self, $params) = @_;
+    local $ENV{MT_TEST_SIGNIN_MANUALLY} = 1;
+    my $res = $self->post_form_ok($params);
+    ok $self->{session}, 'sign in succeeded';
+    $res;
+}
+
 sub post_form_ok {
     my $self = shift;
-    my ( $form_id, $params ) = ref $_[0] ? ( undef, @_ ) : @_;
+    my ( $form_id, $params, $message ) = ref $_[0] ? ( undef, @_ ) : @_;
     my $form = $self->form($form_id);
     ok $form, "found form" or return;
 
@@ -73,32 +81,96 @@ sub post_form_ok {
             $input->readonly(0);
             note "Set value to readonly field: $name";
         }
-    }
-    for my $name (keys %$params) {
-        $form->param( $name => $params->{$name} );
+        if ($input->type eq 'file') {
+            $input->file($params->{$name});
+        } else {
+            $form->param( $name => $params->{$name} );
+        }
     }
 
     my $res = $self->post( $form->click );
-    ok $res->is_success, "post succeeded";
+    ok $res->is_success, $message // "post succeeded";
+    $res;
+}
+
+sub post_list_action_ok {
+    my ( $self, $params, $message ) = @_;
+    my ($object_type) = $self->content =~ /var objectType = '(\w+)'/;
+    my ($list_action_args) = $self->content =~ /ListClient\((\{[^}]+?\})\)/s;
+    if (!$list_action_args) {
+        die "ListClient param not found";
+    }
+    $list_action_args =~ s/(\w+): '([^']*)'/"$1": "$2"/g;
+    $list_action_args =~ s/\n\s+objectType: objectType,\n/\n/s;
+    my $decoded_args = JSON::decode_json($list_action_args);
+    $params->{__mode}      //= 'itemset_action';
+    $params->{_type}       //= $object_type;
+    $params->{blog_id}     //= $decoded_args->{siteId};
+    $params->{magic_token} //= $decoded_args->{magicToken};
+    $params->{return_args} //= $decoded_args->{returnArgs} . '&does_act=1';
+    $params->{type}        //= $decoded_args->{subType} if $decoded_args->{subType};
+
+    my $res = $self->post($params);
+    ok !$res->is_error, $message // "post succeeded";
+    my $header_title = $self->header_title();
+    note $header_title if $header_title;
+    $res;
+}
+
+sub put {
+    my ( $self, $params ) = @_;
+    $params = _convert_params($params);
+    $params->{__request_method} = 'PUT';
+    $self->request($params);
+}
+
+sub put_ok {
+    my ( $self, $params, $message ) = @_;
+    my $res = $self->put($params);
+    ok !$res->is_error, $message // "put succeeded";
+    my $header_title = $self->header_title();
+    note $header_title if $header_title;
+    $res;
+}
+
+sub delete {
+    my ( $self, $params ) = @_;
+    $params = _convert_params($params);
+    $params->{__request_method} = 'DELETE';
+    $self->request($params);
+}
+
+sub delete_ok {
+    my ( $self, $params, $message ) = @_;
+    my $res = $self->delete($params);
+    ok !$res->is_error, $message // "delete succeeded";
+    my $header_title = $self->header_title();
+    note $header_title if $header_title;
     $res;
 }
 
 sub js_get_ok {
-    my ( $self, $params ) = @_;
+    my ( $self, $params, $message ) = @_;
     local $ENV{HTTP_X_REQUESTED_WITH} = 'XMLHttpRequest';
-    $self->get_ok($params);
+    $self->get_ok($params, $message);
+}
+
+sub js_post {
+    my ( $self, $params, $message ) = @_;
+    local $ENV{HTTP_X_REQUESTED_WITH} = 'XMLHttpRequest';
+    $self->post($params, $message);
 }
 
 sub js_post_ok {
-    my ( $self, $params ) = @_;
+    my ( $self, $params, $message ) = @_;
     local $ENV{HTTP_X_REQUESTED_WITH} = 'XMLHttpRequest';
-    $self->post_ok($params);
+    $self->post_ok($params, $message);
 }
 
 sub js_post_form_ok {
-    my ( $self, $params ) = @_;
+    my ( $self, $params, $message ) = @_;
     local $ENV{HTTP_X_REQUESTED_WITH} = 'XMLHttpRequest';
-    $self->post_form_ok($params);
+    $self->post_form_ok($params, $message);
 }
 
 sub forms {
@@ -160,9 +232,10 @@ sub content_doesnt_expose {
 }
 
 sub api_request {
-    my ( $self, $method, $path, $key, $body_params ) = @_;
-    my $params = {};
-    if ( $key && $body_params ) {
+    my ( $self, $method, $path, $params, $body_params ) = @_;
+    if ( $method =~ /POST|PUT/i && $params && !ref $params && $body_params && ref $body_params ) {
+        my $key = $params;
+        $params = {};
         $params->{$key} = JSON::encode_json($body_params);
     }
     $params = _convert_params($params);
@@ -173,8 +246,9 @@ sub api_request {
 
 sub api_request_ok {
     my $self = shift;
+    my $message = (@_ > 2 && !ref $_[-1]) ? pop @_ : undef;
     my $res = $self->api_request(@_);
-    ok $res->is_success, "request succeeded";
+    ok $res->is_success, $message // "request succeeded";
     return JSON::decode_json($res->decoded_content);
 }
 

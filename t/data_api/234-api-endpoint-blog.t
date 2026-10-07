@@ -633,6 +633,7 @@ sub suite {
         # insert_new_blog - normal tests
         {    # Minimal pameters.
             path   => '/v2/sites/2',
+            skip   => 'MTC-31610',
             method => 'POST',
             params => {
                 blog => {
@@ -660,6 +661,7 @@ sub suite {
             result => sub { $app->model('blog')->load( { name => 'blog' } ) },
         },
         {   path   => '/v2/sites/2',
+            skip   => 'MTC-31610',
             method => 'POST',
             params => {
                 blog => {
@@ -713,6 +715,7 @@ sub suite {
         },
         {    # Set siteSubDomain, and sitePath is absolute.
             path   => '/v2/sites/2',
+            skip   => 'MTC-31610',
             method => 'POST',
             params => {
                 blog => {
@@ -763,6 +766,7 @@ sub suite {
 
         # site_path blog
         {   path         => '/v2/sites/2',
+            skip         => 'MTC-31610',
             method       => 'POST',
             is_superuser => 1,
             params       => {

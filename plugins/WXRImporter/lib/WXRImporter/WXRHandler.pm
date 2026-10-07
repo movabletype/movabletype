@@ -13,6 +13,7 @@ use Time::Local qw( timegm );
 use MT;
 use MT::Util qw( offset_time_list );
 use MT::Util::Encode;
+use URI;
 
 use base qw(XML::SAX::Base);
 
@@ -460,6 +461,14 @@ sub _create_asset {
                 push @tags, $value;
             }
             elsif ( '_guid' eq $key ) {
+                my $scheme = URI->new($value)->scheme;
+                unless ($scheme && $scheme =~ /^https?$/) {
+                    return $cb->($plugin->translate(
+                        '\'[_1]\' is not allowed to upload by system settings.: [_2]',
+                        $scheme,
+                        $value
+                    ));
+                }
                 $asset_values->{'url'} = $value;
             }
             elsif ( '_description' eq $key ) {
@@ -542,13 +551,65 @@ sub _create_asset {
         }
         $path = File::Spec->canonpath($path);
     }
+
+    # Validate the path as we do in MT::CMS::Asset::_upload_file
+    # (NB: We can't change file extensions here as they are not downloaded yet)
+
+    $path =~ s!\\!/!g;    ## Change backslashes to forward slashes
+    $path = MT::Util::trim_path($path) if MT->config->TrimFilePath;
+    if ($path =~ m!\.\.|\0|\|!) {
+        return $cb->($plugin->translate("Invalid filename '[_1]'", $path));
+    }
+    if (!MT->config->AllowNonAsciiFilename && $path =~ m/[^\x20-\x7E]/) {
+        return $cb->($plugin->translate("Non-ASCII characters are not allowed in filenames. Please rename the file using only ASCII characters."));
+    }
+
+    my $ext = (File::Basename::fileparse($path, '\.[^\.]*'))[2];
+
+    if (my $deny_exts = MT->config->DeniedAssetFileExtensions) {
+        my @deny_exts = map {
+            if   ($_ =~ m/^\./) { qr/$_(?:\..*)?/i }
+            else                { qr/\.$_(?:\..*)?/i }
+        } grep { defined $_ && $_ ne '' } split '\s?,\s?', $deny_exts;
+        my @ret = File::Basename::fileparse($path, @deny_exts);
+        if ($ret[2]) {
+            return $cb->($plugin->translate(
+                '\'[_1]\' is not allowed to upload by system settings.: [_2]',
+                $ret[2],
+                $path
+            ));
+        }
+    }
+
+    if (my $allow_exts = MT->config('AssetFileExtensions')) {
+        my @allow_exts = map {
+            if   ($_ =~ m/^\./) { qr/$_/i }
+            else                { qr/\.$_/i }
+        } split '\s?,\s?', $allow_exts;
+        my @ret = File::Basename::fileparse($path, @allow_exts);
+        unless ($ret[2]) {
+            return $cb->($plugin->translate(
+                '\'[_1]\' is not allowed to upload by system settings.: [_2]',
+                $ext,
+                $path
+            ));
+        }
+    }
+
     $asset_values->{'file_path'} = $path;
 
     my $mt_url  = $self->{'mt_url'};
     my $url     = $asset_values->{'url'};
     my $old_url = $url;
     if ($mt_url) {
-        $url =~ s/^.*$wp_path(.+)$/$mt_url$1/i;
+        unless ($url =~ s/^.*$wp_path(.+)$/$mt_url$1/i) {
+            $cb->($plugin->translate(
+                "External asset ('[_1]') found.  Skipping.",
+                $asset_values->{label},
+            ));
+            $cb->("\n");
+            return 1;
+        }
     }
     $asset_values->{'url'} = $url;
 
@@ -574,10 +635,10 @@ sub _create_asset {
     }
     require File::Basename;
     my $local_basename = File::Basename::basename($path);
-    my $ext = ( File::Basename::fileparse( $path, qr/[A-Za-z]+$/ ) )[2];
+    my $local_ext      = (File::Basename::fileparse($path, qr/[A-Za-z]+$/))[2];
 
     $asset_values->{'file_name'} = $local_basename;
-    $asset_values->{'file_ext'}  = $ext;
+    $asset_values->{'file_ext'}  = $local_ext;
 
     # Now save the asset.
     my $asset_pkg = MT::Asset->handler_for_file($local_basename);

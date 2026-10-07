@@ -387,6 +387,10 @@ sub asset_userpic {
         $asset = $app->model('asset')->lookup($id);
     }
 
+    if (!$asset || $asset->blog_id != 0 || !$asset->isa('MT::Asset::Image')) {
+        return $app->errtrans('Invalid request.');
+    }
+
     my $user_id = $param->{user_id} || $app->param('user_id');
     my $user;
     if ($user_id) {
@@ -394,9 +398,11 @@ sub asset_userpic {
         if ($user) {
 
             my $appuser = $app->user;
-            if (   ( !$appuser->is_superuser )
-                && ( $user->id != $appuser->id ) )
-            {
+            if ( $appuser->is_superuser ) {
+                # everthing is ok
+            } elsif ( $user->id != $appuser->id ) {
+                return $app->permission_denied();
+            } elsif ($asset->created_by != $user->id) {
                 return $app->permission_denied();
             }
 
@@ -665,12 +671,18 @@ sub complete_insert {
     }
     return $app->errtrans('Invalid request.') unless $asset;
 
+    require MT::Blog;
+    my $blog = $app->blog or return $app->errtrans( "Cannot load blog #[_1].", $blog_id );
+    my %blog_ids;
+    if ( !$blog->is_blog ) {
+        %blog_ids = map { $_->id => 1 } @{ $blog->blogs };
+    }
+    $blog_ids{$blog_id} = 1;
+    return $app->errtrans('Invalid request.') unless defined $blog_ids{ $asset->blog_id };
+
     $args{is_image} = $asset->isa('MT::Asset::Image') ? 1 : 0
         unless defined $args{is_image};
 
-    require MT::Blog;
-    my $blog = $asset->blog
-        or return $app->errtrans( "Cannot load blog #[_1].", $blog_id );
     my $perms = $app->permissions
         or return $app->errtrans('No permissions');
 
@@ -746,20 +758,8 @@ sub complete_insert {
             $param->{'auth_pref_tag_delim'} = $delim;
         }
 
-        require MT::ObjectTag;
-        my $tags_js = MT::Util::to_json(
-            [   map { $_->name } MT->model('tag')->load(
-                    undef,
-                    {   join => [
-                            'MT::ObjectTag', 'tag_id',
-                            { blog_id => $blog_id }, { unique => 1 }
-                        ]
-                    }
-                )
-            ]
-        );
-        $tags_js =~ s!/!\\/!g;
-        $param->{tags_js} = $tags_js;
+        require MT::Tag;
+        $param->{tags_js} = MT::Tag->get_tags_js($blog_id);
     }
 
     # XXX: useless? should always be false
@@ -809,7 +809,7 @@ sub cancel_upload {
     $app->validate_magic() or return;
 
     my $asset;
-    $param{id} && ( $asset = MT->model('asset')->load( $param{id} ) )
+    $param{id} && ( $asset = MT->model('asset')->load({ id => $param{id}, blog_id => $param{blog_id} }) )
         or return $app->errtrans("Invalid request.");
 
    # User has permission to delete asset and asset file, or user created asset
@@ -837,6 +837,9 @@ sub cancel_upload {
 
 sub complete_upload {
     my $app     = shift;
+
+    $app->validate_magic or return;
+
     my $blog_id = $app->param('blog_id');
     my %param   = $app->param_hash;
     my $asset;
@@ -2702,7 +2705,7 @@ sub dialog_edit_asset {
     return $app->permission_denied()
         if $blog_id && !$app->can_do('upload');
 
-    my $asset = MT->model('asset')->load($id)
+    my $asset = MT->model('asset')->load({ id => $id, blog_id => $blog_id })
         or return $app->errtrans( "Cannot load asset #[_1].", $id );
 
     my $param = {
@@ -2783,20 +2786,7 @@ sub dialog_edit_asset {
     $param->{'auth_pref_tag_delim'} = $tag_delim
         if $tag_delim;
 
-    require MT::ObjectTag;
-    my $tags_js = MT::Util::to_json(
-        [   map { $_->name } MT->model('tag')->load(
-                undef,
-                {   join => [
-                        'MT::ObjectTag', 'tag_id',
-                        { blog_id => $asset->blog_id }, { unique => 1 }
-                    ]
-                }
-            )
-        ]
-    );
-    $tags_js =~ s!/!\\/!g;
-    $param->{tags_js} = $tags_js;
+    $param->{tags_js} = MT::Tag->get_tags_js($asset->blog_id);
 
     $param->{return_args} = $app->make_return_args;
     $param->{saved_image} = 1
@@ -2834,7 +2824,7 @@ sub js_save_asset {
         $app->json_error( $app->translate("Permission denied.") ) )
         if $blog_id && !$app->can_do('upload');
 
-    my $asset = MT->model('asset')->load($id)
+    my $asset = MT->model('asset')->load({ id => $id, blog_id => $blog_id })
         or return $app->error(
         $app->json_error(
             $app->translate( "Cannot load asset #[_1].", $id )
@@ -3247,6 +3237,14 @@ sub insert_asset {
     return $app->permission_denied()
         unless $app->can_do('insert_asset');
 
+    my $blog_id = $app->param('blog_id');
+    my $blog    = $app->blog or return $app->errtrans( "Cannot load blog #[_1].", $blog_id );
+    my %blog_ids;
+    if ( !$blog->is_blog ) {
+        %blog_ids = map { $_->id => 1 } @{ $blog->blogs };
+    }
+    $blog_ids{$blog_id} = 1;
+
     require MT::Asset;
     my $text;
     my $assets;
@@ -3257,6 +3255,9 @@ sub insert_asset {
     elsif ( $app->param('direct_asset_insert') ) {
         $assets = $param->{assets};
         foreach my $a (@$assets) {
+            return $app->errtrans('Invalid request.')
+                unless defined $blog_ids{ $a->blog_id };
+
             my %param;
             $param{wrap_text} = 1;
             $param{new_entry} = $app->param('new_entry') ? 1 : 0;
@@ -3288,6 +3289,7 @@ sub insert_asset {
                 unless $id;
             my $asset = MT->model('asset')->load($id)
                 or return $app->errtrans( 'Cannot load asset #[_1]', $id );
+            return $app->errtrans('Invalid request.') unless defined $blog_ids{ $asset->blog_id };
             my %param;
             foreach my $k ( keys %$item ) {
                 my $name = $k;

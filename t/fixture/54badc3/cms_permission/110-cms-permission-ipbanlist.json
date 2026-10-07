@@ -26,12 +26,24 @@
             1
          ],
          [
+            3,
+            2,
+            null,
+            "__NOW__",
+            0,
+            2,
+            null,
+            "__NOW__",
+            9,
+            1
+         ],
+         [
             2,
             3,
             null,
             "__NOW__",
             0,
-            2,
+            3,
             null,
             "__NOW__",
             8,
@@ -43,7 +55,7 @@
             null,
             "__NOW__",
             0,
-            3,
+            4,
             null,
             "__NOW__",
             9,
@@ -55,7 +67,7 @@
             null,
             "__NOW__",
             0,
-            4,
+            5,
             null,
             "__NOW__",
             4,
@@ -67,7 +79,7 @@
             null,
             "__NOW__",
             0,
-            5,
+            6,
             null,
             "__NOW__",
             8,
@@ -79,7 +91,7 @@
             null,
             "__NOW__",
             0,
-            6,
+            7,
             null,
             "__NOW__",
             9,
@@ -509,7 +521,7 @@
             null,
             "__NOW__",
             null,
-            "Test site",
+            "my website",
             null,
             null,
             0,
@@ -763,7 +775,7 @@
       ],
       "rows" : [
          [
-            "DataAPIDisableSite 0\nDefaultSupportedLanguages en_us,ja\nDisableDataAPI 0\nDisableNotificationPings 1\nPluginAlias ContentType Information Widget=ContentInfoWidget\nPluginAlias Markdown=Markdown/Markdown.pl\nPluginAlias Professional Pack=Commercial.pack\nPluginAlias SmartyPants=Markdown/SmartyPants.pl\nPluginAlias Sync Pack=Sync.pack\nPluginAlias Textile=Textile/textile2.pl\nPluginAlias WXR Importer=WXRImporter\nPluginAlias Widget Manager Upgrade Assistant=WidgetManager/WidgetManager.pl\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion blockeditor=1\nPluginSchemaVersion commercial=1.55\nPluginSchemaVersion contenttypecolumn=0.01\nPluginSchemaVersion enterprise=1.1\nPluginSchemaVersion formattedtext=1.00\nPluginSchemaVersion sync=1.13\nPluginSchemaVersion tinymce5=1\nPluginSchemaVersion tinymce6=1\nPluginSwitch Awesome=1\nPluginSwitch BlockEditor=0\nPluginSwitch Commercial.pack=1\nPluginSwitch ContentInfoWidget=1\nPluginSwitch ContentTypeColumn=1\nPluginSwitch Enterprise.pack=1\nPluginSwitch FormattedText=1\nPluginSwitch FormattedTextForTinyMCE5=0\nPluginSwitch FormattedTextForTinyMCE6=1\nPluginSwitch GoogleAnalyticsV4=1\nPluginSwitch IllegalObjectType=1\nPluginSwitch Markdown/Markdown.pl=1\nPluginSwitch Markdown/SmartyPants.pl=1\nPluginSwitch SortMethod=1\nPluginSwitch Sync.pack=1\nPluginSwitch Textile/textile2.pl=0\nPluginSwitch TinyMCE5=0\nPluginSwitch TinyMCE6=1\nPluginSwitch WXRImporter=1\nPluginSwitch WidgetManager/WidgetManager.pl=0\nSchemaVersion 7.0054\nTrimFilePath 1\n",
+            "DataAPIDisableSite 0\nDefaultSupportedLanguages en_us,ja\nDisableDataAPI 0\nDisableNotificationPings 1\nPluginAlias ContentType Information Widget=ContentInfoWidget\nPluginAlias Markdown=Markdown/Markdown.pl\nPluginAlias Professional Pack=Commercial.pack\nPluginAlias SmartyPants=Markdown/SmartyPants.pl\nPluginAlias Sync Pack=Sync.pack\nPluginAlias Textile=Textile/textile2.pl\nPluginAlias WXR Importer=WXRImporter\nPluginAlias Widget Manager Upgrade Assistant=WidgetManager/WidgetManager.pl\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion blockeditor=1\nPluginSchemaVersion commercial=1.55\nPluginSchemaVersion contenttypecolumn=0.01\nPluginSchemaVersion enterprise=1.1\nPluginSchemaVersion formattedtext=1.00\nPluginSchemaVersion sync=1.14\nPluginSchemaVersion tinymce5=1\nPluginSchemaVersion tinymce6=1\nPluginSwitch Awesome=1\nPluginSwitch BlockEditor=0\nPluginSwitch Commercial.pack=1\nPluginSwitch ContentInfoWidget=1\nPluginSwitch ContentTypeColumn=1\nPluginSwitch Enterprise.pack=1\nPluginSwitch FormattedText=1\nPluginSwitch FormattedTextForTinyMCE5=0\nPluginSwitch FormattedTextForTinyMCE6=1\nPluginSwitch GoogleAnalyticsV4=1\nPluginSwitch IllegalObjectType=1\nPluginSwitch Markdown/Markdown.pl=1\nPluginSwitch Markdown/SmartyPants.pl=1\nPluginSwitch SortMethod=1\nPluginSwitch Sync.pack=1\nPluginSwitch Textile/textile2.pl=0\nPluginSwitch TinyMCE5=0\nPluginSwitch TinyMCE6=1\nPluginSwitch WXRImporter=1\nPluginSwitch WidgetManager/WidgetManager.pl=0\nSchemaVersion 8.0000\nTrimFilePath 1\n",
             1
          ]
       ]
@@ -921,13 +933,29 @@
             null
          ],
          [
+            3,
+            2,
+            null,
+            null,
+            "__NOW__",
+            null,
+            8,
+            null,
+            "__NOW__",
+            null,
+            "'manage_feedback'",
+            null,
+            0,
+            null
+         ],
+         [
             2,
             3,
             null,
             null,
             "__NOW__",
             null,
-            8,
+            9,
             null,
             "__NOW__",
             null,
@@ -943,7 +971,7 @@
             null,
             "__NOW__",
             null,
-            9,
+            10,
             null,
             "__NOW__",
             null,
@@ -959,7 +987,7 @@
             null,
             "__NOW__",
             null,
-            10,
+            11,
             null,
             "__NOW__",
             null,
@@ -975,7 +1003,7 @@
             null,
             "__NOW__",
             null,
-            11,
+            12,
             null,
             "__NOW__",
             null,
@@ -991,7 +1019,7 @@
             null,
             "__NOW__",
             null,
-            12,
+            13,
             null,
             "__NOW__",
             null,
@@ -5000,5 +5028,5 @@
          ]
       ]
    },
-   "schema_version" : "WidgetManager 1.1; blockeditor 1; commercial 1.55; contenttypecolumn 0.01; core 7.0054; enterprise 1.1; formattedtext 1.00; sync 1.13; tinymce5 1; tinymce6 1"
+   "schema_version" : "WidgetManager 1.1; blockeditor 1; commercial 1.55; contenttypecolumn 0.01; core 8.0000; enterprise 1.1; formattedtext 1.00; sync 1.14; tinymce5 1; tinymce6 1"
 }
