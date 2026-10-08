@@ -3,19 +3,19 @@
     xmlns="http://www.w3.org/2005/Atom"
     xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/">
     <title><MT_TRANS phrase="Search Results for [_1]" params="<$MTSearchString remove_html="1" encode_xml="1"$>"></title>
-    <id>tag:<$MTCGIHost exclude_port="1" encode_xml="1"$>,<$MTDate format="%Y"$>:<$MTCGIRelativeURL encode_xml="1"$>/feed/<$MTSearchString remove_html="1" encode_xml="1"$></id>
-    <link rel="self" type="application/atom+xml" href="<$MTCGIPath$><$MTContentDataSearchScript$>?search=<$MTSearchString$>&amp;Template=<$MTSearchTemplateID$>&amp;IncludeBlogs=<$MTSearchIncludeBlogs$>&amp;SearchContentTypes=<$MTSearchContentTypes remove_html="1" encode_xml="1"$>" />
-    <link rel="alternate" type="text/html" href="<$MTCGIPath$><$MTContentDataSearchScript$>?IncludeBlogs=<$MTSearchIncludeBlogs$>&amp;SearchContentTypes=<$MTSearchContentTypes remove_html="1" encode_xml="1"$>&amp;search=<$MTSearchString remove_html="1" encode_xml="1"$>" />
+    <id>tag:<$MTCGIHost exclude_port="1" encode_html="1"$>,<$MTDate format="%Y"$>:<$MTCGIRelativeURL encode_html="1"$>/feed/<$MTSearchString remove_html="1" encode_html="1"$></id>
+    <link rel="self" type="application/atom+xml" href="<$MTCGIPath$><$MTContentDataSearchScript$>?search=<$MTSearchString encode_url="1"$>&amp;Template=<$MTSearchTemplateID$>&amp;IncludeBlogs=<$MTSearchIncludeBlogs$>&amp;SearchContentTypes=<$MTSearchContentTypes escape="url" escape="html"$>" />
+    <link rel="alternate" type="text/html" href="<$MTCGIPath$><$MTContentDataSearchScript$>?IncludeBlogs=<$MTSearchIncludeBlogs$>&amp;SearchContentTypes=<$MTSearchContentTypes escape="url" escape="html"$>&amp;search=<$MTSearchString encode_url="1"$>" />
     <updated><$MTDate utc="1" format="%Y-%m-%dT%H:%M:%SZ"$></updated>
     <generator uri="http://www.sixapart.com/movabletype/">Movable Type <$MTVersion$></generator>
-    <opensearch:Query role="request" searchTerms="<$MTSearchString remove_html="1" encode_xml="1"$>" />
+    <opensearch:Query role="request" searchTerms="<$MTSearchString remove_html="1" encode_html="1"$>" />
     <opensearch:totalResults><$MTSearchResultCount$></opensearch:totalResults>
     <opensearch:startIndex>1</opensearch:startIndex>
     <opensearch:itemsPerPage><$MTSearchResultCount$></opensearch:itemsPerPage>
     <MTSearchResults>
     <entry>
         <title><$MTContentLabel remove_html="1" encode_xml="1"$> (<$MTContentTypeName remove_html="1" encode_xml="1"$>)</title>
-        <link rel="alternate" type="text/html" href="<$MTContentPermalink encode_xml="1"$>" />
+        <link rel="alternate" type="text/html" href="<$MTContentPermalink encode_html="1"$>" />
         <id><$MTContentUniqueID$></id>
         <published><$MTContentDate utc="1" format="%Y-%m-%dT%H:%M:%SZ"$></published>
         <updated><$MTContentModifiedDate utc="1" format="%Y-%m-%dT%H:%M:%SZ"$></updated>
@@ -23,7 +23,7 @@
             <name><$MTContentAuthorDisplayName encode_xml="1"$></name>
             <MTIfNonEmpty tag="MTEntryAuthorURL"><uri><$MTContentAuthorURL encode_xml="1"$></uri></MTIfNonEmpty>
         </author>
-        <content type="html" xml:lang="<$MTBlogLanguage ietf="1"$>" xml:base="<$MTBlogURL encode_xml="1"$>">
+        <content type="html" xml:lang="<$MTBlogLanguage ietf="1"$>" xml:base="<$MTBlogURL encode_html="1"$>">
 <MTContentFields encode_html="1">
             <$MTVar name="content_field_options{label}" escape="html"$> (<$MTVar name="content_field_type_label" escape="html"$>):
     <MTContentField>
