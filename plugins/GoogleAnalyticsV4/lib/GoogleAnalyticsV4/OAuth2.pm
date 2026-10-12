@@ -102,7 +102,7 @@ sub get_username {
     my $uri = URI->new('https://analyticsadmin.googleapis.com/v1beta/accounts');
 
     my $res = $ua->request(GET($uri,
-        Authorization => GoogleAnalyticsV4::authorization_header($token_data)
+        GoogleAnalyticsV4::authorization_header($token_data)
     ));
 
     return $app->error(
@@ -135,7 +135,7 @@ sub get_profiles {
         );
 
         my $res = $ua->request(GET($uri,
-            Authorization => GoogleAnalyticsV4::authorization_header($token_data)
+            GoogleAnalyticsV4::authorization_header($token_data)
         ));
 
         return $app->error(
@@ -241,7 +241,7 @@ sub get_webstream {
         );
 
         my $res = $ua->request(GET($uri,
-            Authorization => GoogleAnalyticsV4::authorization_header($token_data)
+            GoogleAnalyticsV4::authorization_header($token_data)
         ));
 
         return $app->error(
