@@ -138,8 +138,11 @@ sub extract_response_error {
 
 sub authorization_header {
     my ($token_data) = @_;
-    my $data = $token_data->{data} || {};
-    ($data->{token_type} || 'Bearer') . ' ' . $data->{access_token};
+    return unless ref($token_data) eq 'HASH' && $token_data->{data};
+
+    my $data = $token_data->{data};
+    return unless exists $data->{access_token};
+    return (Authorization => ($data->{token_type} || 'Bearer') . ' ' . $data->{access_token});
 }
 
 sub new_ua {
