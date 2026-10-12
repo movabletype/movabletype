@@ -24,7 +24,7 @@ sub authorize_url {
         response_type   => 'code',
         client_id       => $client_id,
         redirect_uri    => $redirect_uri,
-        scope           => 'https://www.googleapis.com/auth/analytics https://www.googleapis.com/auth/analytics.readonly',
+        scope           => 'https://www.googleapis.com/auth/analytics.readonly',
         access_type     => 'offline',
         prompt          => 'select_account consent',
         state           => $app->current_magic,

@@ -22,6 +22,7 @@ BEGIN {
 use HTTP::Request;
 use HTTP::Response;
 use GoogleAnalyticsV4::OAuth2;
+use MT::App;
 use MT::Util;
 
 my @request_log;
@@ -40,7 +41,7 @@ sub test_access_token_in_request {
     return \@rets;
 }
 
-my $app = MT->instance;
+my $app = MT::App->instance;
 my $ua  = Test::LWP::UserAgent->new;
 
 my $ga4_mock = Test::MockModule->new('GoogleAnalyticsV4');
@@ -238,6 +239,12 @@ subtest 'request' => sub {
         { query_param => 0, bearer_header => 1 },
         ],
         "access_token in request ";
+};
+
+subtest 'scope in authorize_url' => sub {
+    my $uri   = MT::Util::decode_url(GoogleAnalyticsV4::OAuth2::authorize_url($app, 'dummy', 'dummy'));
+    my %scope = map { $_ => 1 } split /\+/, ($uri =~ qr{scope=([^&]+)})[0];
+    is_deeply \%scope, { 'https://www.googleapis.com/auth/analytics.readonly' => 1 }, 'scope';
 };
 
 done_testing;
