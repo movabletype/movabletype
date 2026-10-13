@@ -160,11 +160,11 @@ sub test_data_api {
             : $data->{params};
 
         my $note = $test_number++ . ': ' . $path;
-        if ( lc $data->{method} eq 'get' && $data->{params} ) {
+        if ( lc $data->{method} eq 'get' && $params ) {
             $note .= '?'
                 . join( '&',
-                map { $_ . '=' . $data->{params}{$_} }
-                sort keys %{ $data->{params} } );
+                map { $_ . '=' . $params->{$_} }
+                sort keys %$params );
         }
         $note .= ' ' . $data->{method};
         $note .= ' ' . $data->{note} if $data->{note};

@@ -643,7 +643,7 @@ sub offset_time {
     }
 
     $offset = MT->current_time_offset unless defined $offset;
-    $offset += 1 if $blog && ( localtime $ts )[8];
+    $offset += 1 if $blog && $ts && ( localtime $ts )[8];
     $offset *= -1 if $dir && $dir eq '-';
     $ts += $offset * 3600;
     $ts;
