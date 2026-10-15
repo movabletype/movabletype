@@ -25,22 +25,6 @@ use GoogleAnalyticsV4::OAuth2;
 use MT::App;
 use MT::Util;
 
-my @request_log;
-
-sub test_access_token_in_request {
-    my ($access_token) = @_;
-    my @rets;
-
-    for my $req (@request_log) {
-        push @rets, {
-            query_param   => $req->uri =~ /access_token/                                     ? 1 : 0,
-            bearer_header => ($req->header('Authorization') // '') eq "Bearer $access_token" ? 1 : 0,
-        };
-    }
-
-    return \@rets;
-}
-
 my $app = MT::App->instance;
 my $ua  = Test::LWP::UserAgent->new;
 
@@ -48,10 +32,10 @@ my $ga4_mock = Test::MockModule->new('GoogleAnalyticsV4');
 $ga4_mock->mock('new_ua', sub { $ua });
 
 sub set_responses {
-    my ($args) = @_;
+    my ($token, $args) = @_;
+    my %header = GoogleAnalyticsV4::authorization_header($token);
     my %res;
 
-    @request_log = ();
     $ua->unmap_all(1);
 
     for my $path (keys %$args) {
@@ -64,7 +48,11 @@ sub set_responses {
         $ua->map_response(
             qr/$path/ => sub {
                 my ($req) = @_;
-                push @request_log, $req;
+                diag("$path");
+                ok $req->uri !~ qr/access_token/,
+                    'No access_token in path_query : ' . $req->uri->path_query;
+                is $req->header('Authorization'), $header{Authorization},
+                    'Authorization header : ' . $req->header('Authorization');
                 return shift @{ $res{$path} };
             });
     }
@@ -95,86 +83,85 @@ subtest 'authorization_header' => sub {
 };
 
 subtest 'get_username' => sub {
-    set_responses({
-        '/v1beta/accounts' => [{
-                result => { accounts => [{ name => 'mt_user' }] },
-            },
-        ] });
-
     my $token = {
         data => {
             token_type   => 'Bearer',
             access_token => 'ACCESS_TOKEN_XXXX',
         } };
 
+    set_responses(
+        $token, {
+            '/v1beta/accounts' => [{
+                    result => { accounts => [{ name => 'mt_user' }] },
+                },
+            ] });
+
     my $username = GoogleAnalyticsV4::OAuth2::get_username($app, $ua, $token);
     is $username, 'mt_user', 'usename';
-
-    my $ret = test_access_token_in_request($token->{data}->{access_token});
-    is_deeply $ret, [{ query_param => 0, bearer_header => 1 }], 'access_token in request';
 };
 
 subtest 'get_profiles & get_webstream' => sub {
-    set_responses({
-        '/v1beta/accountSummaries' => [{
-                result => {
-                    accountSummaries => [{
-                        propertySummaries => [{
-                            property => 'properties/xxxxxxxx',
-                        }],
-                    }],
-                    nextPageToken => 'dummy',
-                },
-            }, {
-                result => {
-                    accountSummaries => [{
-                        propertySummaries => [{
-                            property => 'properties/yyyyyyyy',
-                        }],
-                    }],
-                    nextPageToken => '',
-                },
-            }
-        ],
-        '/v1beta/properties/xxxxxxxx/dataStreams' => [{
-            result => {
-                dataStreams => [{
-                    webStreamData => {
-                        measurementId => 'G-XXXXXXXXXX',
-                        defaultUri    => 'https://example.com',
-                    },
-                }]
-            },
-        }],
-        '/v1beta/properties/yyyyyyyy/dataStreams' => [{
-                result => {
-                    dataStreams => [{
-                        webStreamData => {    # use this
-                            measurementId => 'G-YYYYYYYYY1',
-                            defaultUri    => 'https://example.com',
-                        },
-                    }],
-                    nextPageToken => 'dummy',
-                },
-            }, {
-                result => {
-                    dataStreams => [{
-                        webStreamData => {
-                            measurementId => 'G-YYYYYYYYY2',
-                            defaultUri    => 'https://example.com',
-                        },
-                    }],
-                    nextPageToken => '',
-                },
-            }
-        ],
-    });
-
     my $token = {
         data => {
             token_type   => 'Bearer',
             access_token => 'ACCESS_TOKEN_YYYY',
         } };
+
+    set_responses(
+        $token, {
+            '/v1beta/accountSummaries' => [{
+                    result => {
+                        accountSummaries => [{
+                            propertySummaries => [{
+                                property => 'properties/xxxxxxxx',
+                            }],
+                        }],
+                        nextPageToken => 'dummy',
+                    },
+                }, {
+                    result => {
+                        accountSummaries => [{
+                            propertySummaries => [{
+                                property => 'properties/yyyyyyyy',
+                            }],
+                        }],
+                        nextPageToken => '',
+                    },
+                }
+            ],
+            '/v1beta/properties/xxxxxxxx/dataStreams' => [{
+                result => {
+                    dataStreams => [{
+                        webStreamData => {
+                            measurementId => 'G-XXXXXXXXXX',
+                            defaultUri    => 'https://example.com',
+                        },
+                    }]
+                },
+            }],
+            '/v1beta/properties/yyyyyyyy/dataStreams' => [{
+                    result => {
+                        dataStreams => [{
+                            webStreamData => {    # use this
+                                measurementId => 'G-YYYYYYYYY1',
+                                defaultUri    => 'https://example.com',
+                            },
+                        }],
+                        nextPageToken => 'dummy',
+                    },
+                }, {
+                    result => {
+                        dataStreams => [{
+                            webStreamData => {
+                                measurementId => 'G-YYYYYYYYY2',
+                                defaultUri    => 'https://example.com',
+                            },
+                        }],
+                        nextPageToken => '',
+                    },
+                }
+            ],
+        });
 
     my $res = GoogleAnalyticsV4::OAuth2::get_profiles($app, $ua, $token);
     is_deeply $res, [{
@@ -188,16 +175,6 @@ subtest 'get_profiles & get_webstream' => sub {
         }
         ],
         'get_profiles result';
-
-    my $ret = test_access_token_in_request($token->{data}->{access_token});
-    is_deeply $ret, [
-        { query_param => 0, bearer_header => 1 },
-        { query_param => 0, bearer_header => 1 },
-        { query_param => 0, bearer_header => 1 },
-        { query_param => 0, bearer_header => 1 },
-        { query_param => 0, bearer_header => 1 },
-        ],
-        "access_token in request ";
 };
 
 subtest 'request' => sub {
@@ -223,22 +200,16 @@ subtest 'request' => sub {
 
     $app->request('ga4_current_plugindata:blog:1' => $plugin_data);
 
-    set_responses({
-        '/v1beta/Dummy:runReport' => [
-            { code => 401 },    # retry
-            { code => 200 },
-        ] });
+    set_responses(
+        $plugin_data->data->{token_data}, {
+            '/v1beta/Dummy:runReport' => [
+                { code => 401 },    # retry
+                { code => 200 },
+            ] });
 
     require GoogleAnalyticsV4::Provider;
     my $provider = GoogleAnalyticsV4::Provider->new(1 => $blog);
     $provider->_request($app, {});
-
-    my $ret = test_access_token_in_request('Dummy');
-    is_deeply $ret, [
-        { query_param => 0, bearer_header => 1 },
-        { query_param => 0, bearer_header => 1 },
-        ],
-        "access_token in request ";
 };
 
 subtest 'scope in authorize_url' => sub {
