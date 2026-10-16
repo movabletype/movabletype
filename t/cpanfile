@@ -147,6 +147,7 @@ on 'test' => sub {
     requires 'Test::Differences';
     requires 'Test::FailWarnings';
     requires 'Test::File';
+    requires 'Test::LWP::UserAgent';
     requires 'Test::LeakTrace';
     requires 'Test::Memcached';
     requires 'Test::MockModule';
