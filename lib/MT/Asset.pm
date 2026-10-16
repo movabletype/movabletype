@@ -424,6 +424,7 @@ __FILTER_TMPL__
             },
         },
         content_field => {
+            base => '__virtual.base',
             args_via_param => sub {
                 my $prop = shift;
                 my ( $app, $val ) = @_;
