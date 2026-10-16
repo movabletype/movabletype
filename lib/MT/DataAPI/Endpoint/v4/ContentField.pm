@@ -186,12 +186,54 @@ sub create {
         = $app->resource_object( 'content_field', $orig_content_field )
         or return;
 
+    _check_duplicate_label($app, $content_type, $new_content_field) or return;
+
     save_object( $app, 'content_field', $new_content_field,
         $orig_content_field,
         _build_around_filter( $app, $content_type, $new_content_field ),
     ) or return;
 
     $new_content_field;
+}
+
+sub _check_duplicate_label {
+    my ($app, $content_type, $content_field) = @_;
+
+    return 1 unless $content_field;
+    return 1
+        unless defined $content_field->name && $content_field->name ne '';
+
+    my $field_list = [];
+    for my $field (@{ $content_type->fields }) {
+        next if ($field->{id} || 0) eq ($content_field->id || 0);
+        push @$field_list, $field;
+    }
+    push @$field_list, { options => { label => $content_field->name } };
+
+    my %seen_field_names;
+    for my $field (@$field_list) {
+        my $name    = $field->{options}{label};
+        my $lc_name = lc $name;
+        if ($seen_field_names{$lc_name}) {
+            my $prev = $seen_field_names{$lc_name};
+            my $error;
+            if ($prev ne $name) {
+                $error = $app->translate(
+                    'Field \'[_1]\' and \'[_2]\' must not coexist within the same content type.',
+                    $prev, $name
+                );
+            } else {
+                $error = $app->translate(
+                    'Field \'[_1]\' must be unique in this content type.',
+                    $name
+                );
+            }
+            return $app->error($error, 409);
+        }
+        $seen_field_names{$lc_name} = $name;
+    }
+
+    1;
 }
 
 sub _build_around_filter {
@@ -352,6 +394,8 @@ sub update {
 
     my $new_content_field
         = $app->resource_object( 'content_field', $orig_content_field );
+
+    _check_duplicate_label($app, $content_type, $new_content_field) or return;
 
     save_object(
         $app, 'content_field', $new_content_field, $orig_content_field,
