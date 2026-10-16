@@ -136,6 +136,15 @@ sub extract_response_error {
     $res->status_line, $message;
 }
 
+sub authorization_header {
+    my ($token_data) = @_;
+    return unless ref($token_data) eq 'HASH' && $token_data->{data};
+
+    my $data = $token_data->{data};
+    return unless exists $data->{access_token};
+    return (Authorization => ($data->{token_type} || 'Bearer') . ' ' . $data->{access_token});
+}
+
 sub new_ua {
     my $ua = MT->new_ua({ max_size => undef });
 
