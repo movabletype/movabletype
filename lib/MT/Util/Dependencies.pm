@@ -587,6 +587,11 @@ our %ExtLibOnly = (
         url     => "https://metacpan.org/pod/Data::ObjectDriver",
         used_in => ["MT::Object"],
     },
+    "Data::Visitor::Tiny" => {
+        extlib  => 0.001,
+        url     => "https://metacpan.org/pod/Data::Visitor::Tiny",
+        used_in => ["MT::Util::YAML::Tiny"],
+    },
     "Date::Parse" => {
         extlib  => 2.35,
         rev_dep => ["MailTools"],
