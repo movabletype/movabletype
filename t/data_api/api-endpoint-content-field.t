@@ -321,6 +321,32 @@ sub irregular_tests_for_create {
             code => 409,
         }
     );
+    test_data_api({
+        note   => 'duplicate label',
+        path   => "/v4/sites/$site_id/contentTypes/$content_type_id/fields",
+        method => 'POST',
+        params => {
+            content_field => {
+                type  => 'single_line_text',
+                label => 'create-content-field',
+            },
+        },
+        code  => 409,
+        error => "Field 'create-content-field' must be unique in this content type.",
+    });
+    test_data_api({
+        note   => 'duplicate label in different case',
+        path   => "/v4/sites/$site_id/contentTypes/$content_type_id/fields",
+        method => 'POST',
+        params => {
+            content_field => {
+                type  => 'single_line_text',
+                label => 'Create-Content-Field',
+            },
+        },
+        code  => 409,
+        error => "Field 'create-content-field' and 'Create-Content-Field' must not coexist within the same content type.",
+    });
 }
 
 sub irregular_tests_for_list {
@@ -658,6 +684,8 @@ sub irregular_tests_for_update {
     my $cf = MT->model('content_field')
         ->load( { content_type_id => $content_type_id } );
     ok($cf);
+    my ($other_cf) = grep { $_->id != $cf->id } MT->model('content_field')->load({ content_type_id => $content_type_id });
+    ok($other_cf);
 
     test_data_api(
         {   note => 'not logged in',
@@ -747,6 +775,22 @@ sub irregular_tests_for_update {
             code   => 409,
         }
     );
+    test_data_api({
+        note   => 'duplicate label',
+        path   => "/v4/sites/$site_id/contentTypes/$content_type_id/fields/" . $cf->id,
+        method => 'PUT',
+        params => { content_field => { label => $other_cf->name } },
+        code   => 409,
+        error  => "Field '" . $other_cf->name . "' must be unique in this content type.",
+    });
+    test_data_api({
+        note   => 'duplicate label in different case',
+        path   => "/v4/sites/$site_id/contentTypes/$content_type_id/fields/" . $cf->id,
+        method => 'PUT',
+        params => { content_field => { label => uc $other_cf->name } },
+        code   => 409,
+        error  => "Field '" . $other_cf->name . "' and '" . uc($other_cf->name) . "' must not coexist within the same content type.",
+    });
 }
 
 sub normal_tests_for_update {
@@ -914,6 +958,21 @@ sub normal_tests_for_update {
             },
         }
     );
+    test_data_api({
+        note   => 'keep the same label',
+        path   => "/v4/sites/$site_id/contentTypes/$content_type_id/fields/" . $cf->id,
+        method => 'PUT',
+        params => {
+            content_field => {
+                label   => $cf->name,
+                options => { display => 'default', },
+            },
+        },
+        restrictions => { $site_id => ['edit_all_content_types'], },
+        result       => sub {
+            MT->model('content_field')->load({ id => $cf->id, name => $cf->name });
+        },
+    });
 }
 
 sub irregular_tests_for_permutate {
