@@ -24,7 +24,7 @@ sub authorize_url {
         response_type   => 'code',
         client_id       => $client_id,
         redirect_uri    => $redirect_uri,
-        scope           => 'https://www.googleapis.com/auth/analytics https://www.googleapis.com/auth/analytics.readonly',
+        scope           => 'https://www.googleapis.com/auth/analytics.readonly',
         access_type     => 'offline',
         prompt          => 'select_account consent',
         state           => $app->current_magic,
@@ -100,11 +100,10 @@ sub get_username {
     my ($app, $ua, $token_data) = @_;
 
     my $uri = URI->new('https://analyticsadmin.googleapis.com/v1beta/accounts');
-    $uri->query_form(
-        access_token  => $token_data->{data}{access_token},
-    );
 
-    my $res = $ua->request(GET($uri));
+    my $res = $ua->request(GET($uri,
+        GoogleAnalyticsV4::authorization_header($token_data)
+    ));
 
     return $app->error(
         translate(
@@ -131,12 +130,13 @@ sub get_profiles {
     while (1) {
         my $uri = URI->new('https://analyticsadmin.googleapis.com/v1beta/accountSummaries');
         $uri->query_form(
-            access_token => $token_data->{data}{access_token},
             'pageSize'   => $max_results,
             'pageToken'  => $next_page_token
         );
 
-        my $res = $ua->request(GET($uri));
+        my $res = $ua->request(GET($uri,
+            GoogleAnalyticsV4::authorization_header($token_data)
+        ));
 
         return $app->error(
             translate(
@@ -236,12 +236,14 @@ sub get_webstream {
     while (1) {
         my $uri = URI->new('https://analyticsadmin.googleapis.com/v1beta/' . $parent . '/dataStreams');
         $uri->query_form(
-            access_token => $token_data->{data}{access_token},
             'pageSize'   => $max_results,
             'pageToken'  => $next_page_token
         );
 
-        my $res = $ua->request(GET($uri));
+        my $res = $ua->request(GET($uri,
+            GoogleAnalyticsV4::authorization_header($token_data)
+        ));
+
         return $app->error(
             translate(
                 'An error occurred when getting profiles: [_1]: [_2]',
