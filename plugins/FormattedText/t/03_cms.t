@@ -52,28 +52,57 @@ subtest 'menu in website scope' => sub {
     );
 };
 
-subtest 'boilerplate listing screen in system scope' => sub {
-    plan 'skip_all';
+subtest 'boilerplate listing screen scope' => sub {
+    my $website = MT->model('website')->load();
+    my $blog    = MT->model('blog')->load({ class => 'blog' });
 
-    my $app = MT::Test::App->new;
-    $app->login($admin);
-    $app->get_ok({
-        __mode  => 'list',
-        _type   => 'formatted_text',
-        blog_id => 0,
-    });
-
-    my $option = quotemeta('<label for="custom-prefs-blog_name">Website/Blog Name</label>');
-    $app->content_like(
-        qr/$option/,
-        '"Website/Blog Name" option exists in boilerplate listing screen at system scope.'
+    my @scope_suite = (
+        {
+            name    => 'system',
+            params  => { blog_id => 0 },
+            allowed => 0,
+        },
+        {
+            name    => 'user',
+            params  => {},
+            allowed => 0,
+        },
+        {
+            name    => 'website',
+            params  => { blog_id => $website->id },
+            allowed => 1,
+        },
+        {
+            name    => 'blog',
+            params  => { blog_id => $blog->id },
+            allowed => 1,
+        },
     );
 
-    my $column = quotemeta('<span class="col-label">Website/Blog Name</span>');
-    $app->content_like(
-        qr/$column/,
-        '"Website/Blog Name" column exists in boilerplate listing screen at system scope.'
-    );
+    foreach my $scope (@scope_suite) {
+        subtest $scope->{name} => sub {
+            my $app = MT::Test::App->new;
+            $app->login($admin);
+            $app->get_ok({
+                __mode => 'list',
+                _type  => 'formatted_text',
+                %{ $scope->{params} },
+            });
+
+            if ($scope->{allowed}) {
+                ok !$app->last_location, 'The listing screen is accessible';
+                is $app->page_title, 'Manage Boilerplates',
+                    'The boilerplate listing screen is displayed';
+            } else {
+                my $location = $app->last_location;
+                ok $location, 'The request is redirected';
+                is $location ? $location->query_param('__mode') : undef,
+                    'dashboard', 'Redirected to the dashboard';
+                isnt $app->page_title, 'Manage Boilerplates',
+                    'The boilerplate listing screen is not displayed';
+            }
+        };
+    }
 };
 
 done_testing();

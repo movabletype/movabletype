@@ -228,6 +228,7 @@ sub filtered_list_param {
 sub listing_screens {
     return {
         object_label       => 'Boilerplate',
+        view               => [ 'website', 'blog' ],
         primary            => 'label',
         default_sort_key   => 'created_on',
         default_sort_order => 'descend',
