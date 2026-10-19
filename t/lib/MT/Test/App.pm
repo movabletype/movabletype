@@ -307,7 +307,7 @@ sub _script_name {
 sub _request_internally {
     my ($self, $params) = @_;
     local $ENV{HTTP_HOST} = 'localhost';    ## for app->base
-    local $ENV{SCRIPT_NAME} = $self->_script_name;
+    local $ENV{SCRIPT_NAME} = '/cgi-bin/' . $self->_script_name;
     CGI::initialize_globals();
     $self->_clear_cache;
 
