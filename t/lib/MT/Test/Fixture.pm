@@ -9,6 +9,7 @@ use MT::Association;
 use Data::Visitor::Tiny;
 use List::Util qw(uniq);
 use File::Basename;
+use String::CamelCase qw(camelize);
 
 our @CARP_NOT;
 my $content_field_types;
@@ -46,6 +47,12 @@ sub prepare {
     $class->prepare_content_data($spec, $objs);
     $class->prepare_role($spec, $objs);
     $class->prepare_template($spec, $objs);
+    $class->prepare_banlist($spec, $objs);
+    $class->prepare_notification($spec, $objs);
+    $class->prepare_ts_job($spec, $objs);
+    $class->prepare_formatted_text($spec, $objs);
+    $class->prepare_filter($spec, $objs);
+    $class->prepare_log($spec, $objs);
 
     delete $objs->{__first_time};
 
@@ -85,6 +92,8 @@ sub _fix_fields {
 
 sub prepare_author {
     my ($class, $spec, $objs) = @_;
+
+    require MT::Author;
     if (!$spec->{author}) {
         if ($objs->{__first_time}) {
             my $author = MT::Author->load(1) or croak "No author";
@@ -102,9 +111,27 @@ sub prepare_author {
                 next;
             }
             $arg{nickname} ||= $arg{name};
-            my $roles       = delete $arg{roles};                        ## not for now
+            my $roles       = delete $arg{roles};         ## not for now
             my $permissions = delete $arg{permissions};
-            my $author      = MT::Test::Permission->make_author(%arg);
+            if (my $status = $arg{status}) {
+                my %map = (
+                    active   => MT::Author::ACTIVE(),
+                    disabled => MT::Author::INACTIVE(),
+                    approved => MT::Author::APPROVED(),
+                    banned   => MT::Author::BANNED(),
+                    blocked  => MT::Author::BLOCKED(),
+                    pending  => MT::Author::PENDING(),
+                );
+                $arg{status} = $map{$status} || $status;
+            }
+            if (my $type = $arg{type}) {
+                my %map = (
+                    author    => MT::Author::AUTHOR(),
+                    commenter => MT::Author::COMMENTER(),
+                );
+                $arg{type} = $map{$type} || $type;
+            }
+            my $author = MT::Test::Permission->make_author(%arg);
             if ((!$roles and !$permissions and !defined $arg{is_superuser}) or $arg{is_superuser}) {
                 $author->is_superuser(1);
                 $author->save;
@@ -127,6 +154,7 @@ sub prepare_author {
 sub prepare_group {
     my ($class, $spec, $objs) = @_;
 
+    require MT::Group;
     if (ref $spec->{group} eq 'ARRAY') {
         for my $item (@{ $spec->{group} }) {
             my %arg = ref $item eq 'HASH' ? %$item : (name => $item);
@@ -135,9 +163,22 @@ sub prepare_group {
                 next;
             }
             $arg{display_name} ||= $arg{name};
-            my $roles = delete $arg{roles};                        ## not for now
+            my $roles   = delete $arg{roles};           ## not for now
+            my $members = delete $arg{members} || [];
+            if (my $status = $arg{status}) {
+                my %map = (
+                    active   => MT::Group::ACTIVE(),
+                    disabled => MT::Group::INACTIVE(),
+                );
+                $arg{status} = $map{$status} || $status;
+            }
             my $group = MT::Test::Permission->make_group(%arg);
             $objs->{group}{ $group->name } = $group;
+
+            for my $member (@$members) {
+                my $author = $objs->{author}{$member} or croak "unknown member: $member";
+                $group->add_user($author);
+            }
         }
     }
 }
@@ -269,7 +310,7 @@ sub prepare_image {
             my $item = $spec->{image}{$name};
             if (ref $item eq 'HASH') {
                 my $blog_id = _find_blog_id($objs, $item);
-                my $site = _find_blog($objs, $blog_id);
+                my $site    = _find_blog($objs, $blog_id);
                 my ($file, $path);
                 if ($site) {
                     $file = File::Spec->catfile($site->site_path, "images/$name");
@@ -278,7 +319,7 @@ sub prepare_image {
                     $file = File::Spec->catfile(MT->instance->support_directory_path, "images/$name");
                     $path = "%s/images/$name";
                 }
-                my $dir     = File::Basename::dirname($file);
+                my $dir = File::Basename::dirname($file);
                 File::Path::mkpath($dir) unless -d $dir;
                 MT::Test::Image->write(file => $file);
                 my $info = Image::ExifTool::ImageInfo($file);
@@ -337,10 +378,12 @@ sub prepare_asset {
                     require MT::Test::Image;
                     MT::Test::Image->write(file => $file);
                 } else {
-                    my $body = delete $item->{body} || $name;
-                    open my $fh, '>', $file;
-                    print $fh $body;
-                    close $fh;
+                    if (!delete $item->{no_file}) {
+                        my $body = delete $item->{body} || $name;
+                        open my $fh, '>', $file;
+                        print $fh $body;
+                        close $fh;
+                    }
                 }
                 my %args = (
                     class     => $asset_class,
@@ -497,11 +540,12 @@ sub prepare_entry {
             } else {
                 %arg = (title => $item);
             }
-            my $title     = $arg{title} || '(no title)';
-            my @cat_names = @{ delete $arg{categories} || [] };
-            my @tag_names = @{ delete $arg{tags}       || [] };
-            my @asset_names = @{ delete $arg{assets}   || [] };
-            my @image_names = @{ delete $arg{images}   || [] };
+            my $title       = $arg{title} || '(no title)';
+            my @cat_names   = @{ delete $arg{categories} || [] };
+            my @tag_names   = @{ delete $arg{tags}       || [] };
+            my @asset_names = @{ delete $arg{assets}     || [] };
+            my @image_names = @{ delete $arg{images}     || [] };
+            my @comments    = @{ delete $arg{comments}   || [] };
 
             my $blog_id = _find_blog_id($objs, \%arg)
                 or croak "blog_id is required: entry: $title";
@@ -557,6 +601,28 @@ sub prepare_entry {
                     object_id => $entry->id,
                     object_ds => 'entry',
                     asset_id  => $image->id,
+                );
+            }
+            for my $comment (@comments) {
+                my %comment_args = %$comment;
+                if (my $author = $comment_args{author}) {
+                    if (my $obj = $objs->{author}{$author}) {
+                        $comment_args{commenter_id} = $obj->id,;
+                    }
+                } elsif (my $commenter = delete $comment_args{commenter}) {
+                    if (my $obj = $objs->{author}{$commenter}) {
+                        $comment_args{commenter_id} = $obj->id,
+                            $comment_args{author} = $commenter;
+                    }
+                }
+                if (my $junk = $comment_args{junk}) {
+                    $comment_args{junk_status} = MT::Comment::JUNK();
+                }
+                MT::Test::Permission->make_comment(
+                    %comment_args,
+                    blog_id  => $blog_id,
+                    entry_id => $entry->id,
+                    ip       => '127.0.0.1',
                 );
             }
         }
@@ -1149,22 +1215,172 @@ sub prepare_template {
         }
         for my $widgetset (@widgetsets) {
             my @modulesets;
-            for my $widget (@{ $widgetset->{modulesets} || []}) {
-                if (!exists $objs->{template}{$widgetset->{blog_id}}{$widget}) {
+            for my $widget (@{ $widgetset->{modulesets} || [] }) {
+                if (!exists $objs->{template}{ $widgetset->{blog_id} }{$widget}) {
                     croak("template: unknown widget $widget for site $widgetset->{blog_id} widgetset $widgetset->{name}");
                 }
                 push @modulesets, $widget;
             }
-            my $obj = $objs->{template}{$widgetset->{blog_id}}{$widgetset->{name}};
+            my $obj = $objs->{template}{ $widgetset->{blog_id} }{ $widgetset->{name} };
             $obj->modulesets(MT::Template->widgets_to_modulesets(\@modulesets, $widgetset->{blog_id}));
             $obj->save_widgetset;
         }
     }
     if ($needs_update) {
         for my $type (qw(website blog)) {
-            for my $site (values %{$objs->{$type} || {}}) {
+            for my $site (values %{ $objs->{$type} || {} }) {
                 $site->refresh;    # to update archive_types
             }
+        }
+    }
+}
+
+sub prepare_banlist {
+    my ($class, $spec, $objs) = @_;
+    return unless $spec->{banlist};
+
+    if (ref $spec->{banlist} eq 'ARRAY') {
+        for my $item (@{ $spec->{banlist} }) {
+            my %arg;
+            if (ref $item eq 'HASH') {
+                %arg = %$item;
+            } else {
+                %arg = (ip => $item);
+            }
+            my $blog_id = $arg{blog_id} ||= _find_blog_id($objs, \%arg)
+                or croak "blog_id is required: banlist";
+            if (exists $objs->{banlist}{ $arg{ip} } && exists $objs->{banlist}{ $arg{ip} }{$blog_id}) {
+                _note_or_croak("banlist: $arg{ip} already exists for site $blog_id");
+                next;
+            }
+            my $banlist = MT::Test::Permission->make_banlist(%arg);
+            $objs->{banlist}{ $banlist->ip }{$blog_id} = $banlist;
+        }
+    }
+}
+
+sub prepare_notification {
+    my ($class, $spec, $objs) = @_;
+    return unless $spec->{notification};
+
+    if (ref $spec->{notification} eq 'ARRAY') {
+        for my $item (@{ $spec->{notification} }) {
+            my %arg;
+            if (ref $item eq 'HASH') {
+                %arg = %$item;
+            } else {
+                %arg = (email => $item);
+            }
+            my $blog_id = $arg{blog_id} ||= _find_blog_id($objs, \%arg)
+                or croak "blog_id is required: notification";
+            if (exists $objs->{notification}{ $arg{email} } && exists $objs->{notification}{ $arg{email} }{$blog_id}) {
+                _note_or_croak("notification: $arg{email} already exists for site $blog_id");
+                next;
+            }
+            my $notification = MT::Test::Permission->make_notification(%arg);
+            $objs->{notification}{ $notification->email }{$blog_id} = $notification;
+        }
+    }
+}
+
+sub prepare_ts_job {
+    my ($class, $spec, $objs) = @_;
+    return unless $spec->{ts_job};
+
+    my %funcmap = map { $_->funcname => $_->funcid } MT->model('ts_funcmap')->load;
+
+    if (ref $spec->{ts_job} eq 'ARRAY') {
+        for my $item (@{ $spec->{ts_job} }) {
+            my %arg      = %$item;
+            my $funcname = delete $arg{funcname}
+                or croak "funcname is required: ts_job";
+            my $funcid = $funcmap{$funcname};
+            if (!$funcid) {
+                my $map = MT::TheSchwartz::FuncMap->new(funcname => $funcname);
+                $map->save;
+                $funcid = $map->funcid;
+                $funcmap{$funcname} = $funcid;
+            }
+            $arg{funcid} = $funcid;
+            $arg{grabbed_until} ||= 0;
+            $arg{run_after}     ||= time;
+            $arg{insert_time}   ||= time;
+            if (exists $objs->{ts_job}{ $arg{uniqkey} }) {
+                _note_or_croak("ts_job: $arg{uniqkey} already exists");
+                next;
+            }
+            require MT::TheSchwartz::Job;
+            my $ts_job = MT::TheSchwartz::Job->new(%arg);
+            $ts_job->save;
+            $objs->{ts_job}{ $ts_job->uniqkey } = $ts_job;
+        }
+    }
+}
+
+sub prepare_formatted_text {
+    my ($class, $spec, $objs) = @_;
+    return unless $spec->{formatted_text};
+
+    if (ref $spec->{formatted_text} eq 'ARRAY') {
+        for my $item (@{ $spec->{formatted_text} }) {
+            my %arg;
+            if (ref $item eq 'HASH') {
+                %arg = %$item;
+            } else {
+                %arg = (label => $item);
+            }
+            $arg{description} //= '';
+            my $blog_id = $arg{blog_id} ||= _find_blog_id($objs, \%arg)
+                or croak "blog_id is required: formatted_text";
+            if (exists $objs->{formatted_text}{ $arg{label} } && exists $objs->{formatted_text}{ $arg{label} }{$blog_id}) {
+                _note_or_croak("formatted_text: $arg{label} already exists for site $blog_id");
+                next;
+            }
+            my $formatted_text = MT->model('formatted_text')->new(%arg);
+            $formatted_text->save;
+            $objs->{formatted_text}{ $formatted_text->label }{$blog_id} = $formatted_text;
+        }
+    }
+}
+
+sub prepare_filter {
+    my ($class, $spec, $objs) = @_;
+    return unless $spec->{filter};
+
+    if (ref $spec->{filter} eq 'ARRAY') {
+        for my $item (@{ $spec->{filter} }) {
+            my %arg       = %$item;
+            my $label     = $arg{label} or croak "label is required: filter";
+            my $items     = $arg{items} or croak "items is required: filter";
+            my $author_id = _find_author_id($objs, \%arg)
+                or croak "author_id is required: filter: $label";
+            my $blog_id = $arg{blog_id} //= _find_blog_id($objs, \%arg) || 0;
+            if (exists $objs->{filter}{$label} && exists $objs->{filter}{$label}{$blog_id}) {
+                _note_or_croak("filter: $label already exists for site $blog_id");
+                next;
+            }
+            my $filter = MT::Test::Permission->make_filter(%arg);
+            $objs->{filter}{ $filter->label }{$blog_id} = $filter;
+        }
+    }
+}
+
+sub prepare_log {
+    my ($class, $spec, $objs) = @_;
+    return unless $spec->{log};
+
+    if (ref $spec->{log} eq 'ARRAY') {
+        for my $item (@{ $spec->{log} }) {
+            my %arg       = %$item;
+            my $message   = $arg{message};
+            my $author_id = _find_author_id($objs, \%arg)                 || 0;
+            my $blog_id   = $arg{blog_id} //= _find_blog_id($objs, \%arg) || 0;
+            if (exists $objs->{log}{$message} && exists $objs->{log}{$message}{$blog_id}) {
+                _note_or_croak("log: $message already exists for site $blog_id");
+                next;
+            }
+            my $log = MT::Test::Permission->make_log(level => 1, ip => '127.0.0.1', %arg);
+            $objs->{log}{ $log->message }{$blog_id} = $log;
         }
     }
 }
@@ -1443,7 +1659,33 @@ sub load_objs {
             push @{ $objs{templatemap}{ $tmpl->name } ||= [] }, $map;
         }
     }
+
+    if ($spec->{banlist}) {
+        my @banlist_ips = map { ref $_ ? $_->{ip} : $_ } @{ $spec->{banlist} };
+        my @banlists    = MT->model('ipbanlist')->load({ ip => \@banlist_ips });
+        for my $banlist (@banlists) {
+            $objs{banlist}{ $banlist->ip }{ $banlist->blog_id } = $banlist;
+        }
+    }
+
+    if ($spec->{notification}) {
+        my @notification_emails = map { ref $_ ? $_->{email} : $_ } @{ $spec->{notification} };
+        my @notifications       = MT->model('notification')->load({ email => \@notification_emails });
+        for my $notification (@notifications) {
+            $objs{notification}{ $notification->email }{ $notification->blog_id } = $notification;
+        }
+    }
+
     \%objs;
+}
+
+sub add_fixture {
+    my ($class, $fixture_name, $spec) = @_;
+    my @path          = map { camelize($_) } split('/', $fixture_name);
+    my $fixture_class = 'MT::Test::Fixture::' . (join '::', @path);
+    eval "require $fixture_class; 1" or croak "Fixture class error: $fixture_name:" . $@;
+    my $objs = $fixture_class->load_objs;
+    $class->prepare($spec, $objs);
 }
 
 1;
