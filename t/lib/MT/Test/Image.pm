@@ -80,6 +80,7 @@ sub write_multi {
 sub _image_data_for {
     my ( $class, $args ) = @_;
     my ($type) = ( $args->{type} || $args->{file} ) =~ /(gif|png|jpe?g|bmp|webp)$/;
+    return '' unless $type;
     my $method = "_$type";
     my $data = decode_base64( $class->$method );
 

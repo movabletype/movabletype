@@ -11,7 +11,7 @@ use URI::QueryParam;
 use Test::More;
 use JSON;
 use File::Basename;
-use Storable;
+use Clone;
 
 with qw(
     MT::Test::Role::Request
@@ -19,6 +19,14 @@ with qw(
 );
 
 my %Initialized;
+my %class_to_cgi = (
+    'MT::App::CMS'                 => 'mt.cgi',
+    'MT::App::DataAPI'             => 'mt-data-api.cgi',
+    'MT::App::Search'              => 'mt-search.cgi',
+    'MT::App::Search::ContentData' => 'mt-cdsearch.cgi',
+    'MT::App::Upgrader'            => 'mt-upgrade.cgi',
+);
+my %cgi_to_class = map {$class_to_cgi{$_} => $_} keys %class_to_cgi;
 
 sub import {
     my ($class, @roles) = @_;
@@ -89,13 +97,7 @@ sub new {
 sub launch_server {
     my ($class, $app_class) = @_;
     require Test::TCP;
-    my %mapping = (
-        'MT::App::DataAPI'             => 'mt-data-api.cgi',
-        'MT::App::Search'              => 'mt-search.cgi',
-        'MT::App::Search::ContentData' => 'mt-cdsearch.cgi',
-        'MT::App::Upgrader'            => 'mt-upgrade.cgi',
-    );
-    my $script = join "/", $ENV{MT_HOME}, $mapping{$app_class} || "mt.cgi";
+    my $script = join "/", $ENV{MT_HOME}, $class_to_cgi{$app_class} || "mt.cgi";
     my $sep    = $^O eq 'MSWin32' ? ';' : ':';
     Test::TCP->new(
         code => sub {
@@ -127,7 +129,7 @@ sub request {
     $self->{locations} = undef unless $is_redirect;
 
     # not to break params in a test
-    my $cloned_params = Storable::dclone($params);
+    my $cloned_params = Clone::clone($params);
 
     # Note that 302 redirect for SEC_FETCH_SITE=none causes SEC_FETCH_SITE=none again
     # On the other hand redirection by client side js always causes SEC_FETCH_SITE=same-origin
@@ -166,15 +168,25 @@ sub request {
         Test::More::note "REDIRECTING TO $location";
         my $uri          = URI->new($location);
         my $query_params = $uri->query_form_hash;
+        my ($cgi)        = $uri->path =~ /\b(mt(?:-[a-z0-9_-]+)?\.cgi)\b/;
+        if ($cgi) {
+            my $cgi_class = $cgi_to_class{$cgi} or die "unknown cgi: " . $uri->path;
+            if ($self->{app_class} ne $cgi_class) {
+                $self->init($cgi_class);
+                $self->{app_class} = $cgi_class;
+            }
 
-        # avoid processing multiple requests in a second
-        sleep 1;
+            # avoid processing multiple requests in a second
+            sleep 1;
 
-        my $max_redirect = $self->{max_redirect} || 10;
-        if (!defined $max_redirect or $max_redirect > @{$self->{locations} || []}) {
+            my $max_redirect = $self->{max_redirect} || 10;
+            if (!defined $max_redirect or $max_redirect > @{$self->{locations} || []}) {
+                push @{ $self->{locations} ||= [] }, $uri;
+                $query_params->{magic_token} //= ''; # disable auto filling
+                return $self->request($query_params, 1) unless $self->{no_redirect};
+            }
+        } else {
             push @{ $self->{locations} ||= [] }, $uri;
-            $query_params->{magic_token} //= ''; # disable auto filling
-            return $self->request($query_params, 1) unless $self->{no_redirect};
         }
     }
 
@@ -307,7 +319,7 @@ sub _script_name {
 sub _request_internally {
     my ($self, $params) = @_;
     local $ENV{HTTP_HOST} = 'localhost';    ## for app->base
-    local $ENV{SCRIPT_NAME} = $self->_script_name;
+    local $ENV{SCRIPT_NAME} = '/cgi-bin/' . $self->_script_name;
     CGI::initialize_globals();
     $self->_clear_cache;
 

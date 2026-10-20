@@ -7,6 +7,7 @@ package MT::Test::Permission;
 
 use strict;
 use warnings;
+use File::Path;
 
 sub clear_cache {
     require MT::ObjectDriver::Driver::Cache::RAM;
@@ -99,6 +100,13 @@ sub make_website {
     $website->class('website');
     $website->save() or die "Couldn't save website: " . $website->errstr;
 
+    if ($website->site_path) {
+        mkpath($website->site_path) unless -d $website->site_path;
+    }
+    if ($website->archive_path) {
+        mkpath($website->archive_path) unless -d $website->archive_path;
+    }
+
     require MT::Theme;
     my $theme = MT::Theme->load( $values->{theme_id} )
         or die MT::Theme->errstr;
@@ -163,6 +171,13 @@ sub make_blog {
     $blog->set_values($values);
     $blog->class('blog');
     $blog->save() or die "Couldn't save blog: " . $blog->errstr;
+
+    if ($blog->site_path) {
+        mkpath($blog->site_path) unless -d $blog->site_path;
+    }
+    if ($blog->archive_path) {
+        mkpath($blog->archive_path) unless -d $blog->archive_path;
+    }
 
     require MT::Theme;
     my $theme = MT::Theme->load( $values->{theme_id} )
