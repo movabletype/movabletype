@@ -1316,7 +1316,7 @@ sub _make_label_html {
         };
     }
 
-    my $label = MT::Util::encode_html($obj->label || MT->translate('No Label'), 1);
+    my $label = MT::Util::encode_html($obj->label // MT->translate('No Label'), 1);
     my $edit_link = $app->uri(
         mode => 'view',
         args => {

@@ -78,5 +78,27 @@ subtest 'make_title' => sub {
     ok( $html =~ /^<span class/, 'no error occurs' );
 };
 
+subtest 'make_label' => sub {
+    my $prop = MT::ListProperty->new( 'content_data.content_data_1', 'label' );
+    my $content_data = MT::Test::Permission->make_content_data(
+        blog_id         => $content_type->blog_id,
+        author_id       => 1,
+        content_type_id => $content_type->id,
+    );
+    my @label_suite = (
+        [ '0', '0', 'zero' ],
+        [ 'test', 'test', 'text' ],
+        [ '', '', 'empty string' ],
+        [ undef, MT->translate('No Label'), 'undefined value' ],
+        [ '<label>', '&lt;label&gt;', 'HTML characters' ],
+    );
+    foreach my $suite (@label_suite) {
+        my ( $label, $expected, $name ) = @$suite;
+        $content_data->label($label);
+        my $html = MT::ContentData::_make_label_html( $prop, $content_data );
+        like( $html, qr{<a class="label" href="[^"]*">\Q$expected\E</a>}, $name );
+    }
+};
+
 done_testing;
 
