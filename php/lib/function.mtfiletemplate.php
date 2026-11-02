@@ -84,14 +84,7 @@ function smarty_function_mtfiletemplate($args, &$ctx) {
         }
     }
 
-    if ($ctx->mt->config('DynamicTemplateAllowPHP')) {
-        ob_start();
-        eval('?>' . $_var_compiled);
-        $file = ob_get_clean();
-    } else {
-        $file = $_var_compiled;
-    }
-
+    $file = $_var_compiled;
     $file = preg_replace('/\/{2,}/', '/', $file);
     $file = preg_replace('/(^\/|\/$)/', '', $file);
     return $file;
