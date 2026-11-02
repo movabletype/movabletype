@@ -31,11 +31,7 @@ function smarty_function_mtusersessioncookiepath($args, &$ctx) {
                 return $ctx->error("Error in expression for UserSessionCookiePath: '$path'");
             }
 
-            ob_start();
-            $ctx->_eval('?>' . $_var_compiled);
-            $path = ob_get_contents();
-            ob_end_clean();
-
+            $path = $_var_compiled;
             return $path;
         } else {
             return $path;
