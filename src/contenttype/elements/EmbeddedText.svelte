@@ -31,7 +31,6 @@
       value={displayOptions.initial_value}
       onchange={(e) => {
         options.initial_value = e.currentTarget.value;
-      }}
-    ></textarea>
+      }}></textarea>
   </ContentFieldOption>
 </ContentFieldOptionGroup>
