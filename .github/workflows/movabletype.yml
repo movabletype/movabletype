@@ -47,11 +47,11 @@ jobs:
             test: xt
     steps:
       - name: checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v6.1.0
         with:
           persist-credentials: false
       - name: docker login
-        uses: docker/login-action@v4
+        uses: docker/login-action@v4.7.0
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -106,11 +106,11 @@ jobs:
             test: php
     steps:
       - name: checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v6.1.0
         with:
           persist-credentials: false
       - name: docker login
-        uses: docker/login-action@v4
+        uses: docker/login-action@v4.7.0
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -162,11 +162,11 @@ jobs:
           - php
     steps:
       - name: checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v6.1.0
         with:
           persist-credentials: false
       - name: docker login
-        uses: docker/login-action@v4
+        uses: docker/login-action@v4.7.0
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -194,7 +194,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v6.1.0
         with:
           persist-credentials: false
       - name: check unresolved conflicts in code
@@ -231,7 +231,7 @@ jobs:
     steps:
     - name: Set Slack color
       run: echo "SLACK_COLOR=${{ contains(needs.*.result, 'failure') && 'danger' || 'good' }}" >> "$GITHUB_ENV"
-    - uses: rtCamp/action-slack-notify@b24d75fe0e728a4bf9fc42ee217caa686d141ee8
+    - uses: rtCamp/action-slack-notify@v2.2.1
       env:
         SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
         SLACK_USERNAME: "GitHub Actions ${{ github.repository }}"
