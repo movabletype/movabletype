@@ -863,6 +863,7 @@ sub run_statements {
                 else {
                     if ( $dbh && !$DryRun && $stmt ) {
                         my $err;
+                        local $dbh->{RaiseError} = 0;
                         $dbh->do($stmt) or $err = $dbh->errstr;
                         if ($err) {
 
