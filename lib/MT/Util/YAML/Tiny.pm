@@ -8,6 +8,7 @@ use strict;
 use warnings;
 use MT;
 use base qw( MT::Util::YAML );
+use Data::Visitor::Tiny;
 
 BEGIN {
     eval "require YAML::Tiny";
@@ -26,10 +27,10 @@ sub Load {
 
         # skip over non-hash elements
         shift @$y while @$y && ( ref( $y->[0] ) ne 'HASH' );
-        return $y->[0] if @$y;
+        return _fix($y->[0]) if @$y;
     }
     elsif ( ref($y) eq 'HASH' ) {
-        return $y;
+        return _fix($y);
     }
     return {};
 }
@@ -43,6 +44,23 @@ sub LoadFile {
     }
     my $yaml = $fmgr->get_data( $file, 'output' );
     return MT::Util::YAML::Tiny::Load($yaml);
+}
+
+sub _fix {
+    my $hashref = shift;
+    Data::Visitor::Tiny::visit(
+        $hashref,
+        sub {
+            my ($key, $valueref) = @_;
+            if (ref $$valueref eq 'HASH') {
+                for my $subkey (keys %{$$valueref}) {
+                    next unless substr($subkey, 0, 2) eq ' :';
+                    my $newkey = substr($subkey, 1);
+                    $$valueref->{$newkey} = delete $$valueref->{$subkey};
+                }
+            }
+        });
+    return $hashref;
 }
 
 1;
