@@ -34,92 +34,77 @@ my $blog = MT::Test::Permission->make_blog(
 my $ft = MT->model('formatted_text')->new;
 $ft->set_values({
     blog_id     => $blog->id,
-    label       => 'Blog Boilterplate',
+    label       => 'Blog Boilerplate',
     description => 'Description',
 });
 $ft->save or die $ft->errstr;
 
-subtest 'In system scope' => sub {
+my $website_ft = MT->model('formatted_text')->new;
+$website_ft->set_values({
+    blog_id     => $website->id,
+    label       => 'Website Boilerplate',
+    description => 'Description',
+});
+$website_ft->save or die $website_ft->errstr;
+
+subtest 'Filtered list scope' => sub {
     local $ENV{HTTP_X_REQUESTED_WITH} = 'XMLHttpRequest';
-    subtest 'Blog boilerplate' => sub {
-        my $app = MT::Test::App->new;
-        $app->login($admin);
-        $app->post_ok({
-            __mode     => 'filtered_list',
-            datasource => 'formatted_text',
-            blog_id    => 0,
-            columns    => 'blog_name',
-            fid        => '_allpass',
-        });
-        my $blog_name = 'First Website/First Blog';
-        $app->content_like(
-            qr/$blog_name/,
-            'blog_name is "First Website/First Blog"'
-        );
-    };
 
-    subtest 'Website boilerplate' => sub {
-        $ft->set_values({
-            blog_id => $website->id,
-            label   => 'Website Boilerplate',
-        });
-        $ft->save or die $ft->errstr;
-        my $app = MT::Test::App->new;
-        $app->login($admin);
-        $app->post_ok({
-            __mode     => 'filtered_list',
-            datasource => 'formatted_text',
-            blog_id    => 0,
-            columns    => 'blog_name',
-            fid        => '_allpass',
-        });
-        my $blog_name = 'First Website/First Blog';
-        $app->content_unlike(
-            qr/$blog_name/,
-            'blog_name is not "First Website/First Blog"'
-        );
-        $blog_name = 'First Website';
-        $app->content_like(qr/$blog_name/, 'blog_name is "First Website"');
-    };
+    my @scope_suite = (
+        {
+            name   => 'system',
+            params => { blog_id => 0 },
+        },
+        {
+            name   => 'no blog_id',
+            params => {},
+        },
+        {
+            name        => 'website',
+            params      => { blog_id => $website->id },
+            label       => $website_ft->label,
+            other_label => $ft->label,
+        },
+        {
+            name        => 'blog',
+            params      => { blog_id => $blog->id },
+            label       => $ft->label,
+            other_label => $website_ft->label,
+        },
+    );
 
-    subtest 'System boilerplate' => sub {
-        $ft->set_values({
-            blog_id => 0,
-            label   => 'System',
-        });
-        $ft->save or die $ft->errstr;
-        my $app = MT::Test::App->new;
-        $app->login($admin);
-        $app->post_ok({
-            __mode     => 'filtered_list',
-            datasource => 'formatted_text',
-            blog_id    => 0,
-            columns    => 'blog_name',
-            fid        => '_allpass',
-        });
-        $app->content_like(qr/\(system\)/, 'blog_name is "(system)"');
-    };
+    foreach my $scope (@scope_suite) {
+        subtest $scope->{name} => sub {
+            my $app = MT::Test::App->new;
+            $app->login($admin);
+            $app->post_ok({
+                __mode     => 'filtered_list',
+                datasource => 'formatted_text',
+                columns    => 'label',
+                fid        => '_allpass',
+                %{ $scope->{params} },
+            });
 
-    subtest 'Deleted site/child site boilerplate' => sub {
-        $ft->set_values({
-            blog_id => 10,
-            label   => 'Site/Child Site deleted',
-        });
-        $ft->save or die $ft->errstr;
-        my $app = MT::Test::App->new;
-        $app->login($admin);
-        $app->post_ok({
-            __mode     => 'filtered_list',
-            datasource => 'formatted_text',
-            blog_id    => 0,
-            columns    => 'blog_name',
-            fid        => '_allpass',
-        });
-        $app->content_like(
-            qr/\*Site\/Child Site deleted\*/,
-            'blog_name is "*Site/Child Site deleted*"'
-        );
-    };
+            if ($scope->{label}) {
+                is $app->json_error, '', 'The filtered list is accessible';
+                $app->content_like(
+                    qr/\Q$scope->{label}\E/,
+                    'The boilerplate in this scope is returned'
+                );
+                $app->content_unlike(
+                    qr/\Q$scope->{other_label}\E/,
+                    'A boilerplate in another scope is not returned'
+                );
+            } else {
+                is $app->json_error, 'Invalid request',
+                    'The filtered list is rejected';
+                $app->content_unlike(
+                    qr/Blog Boilerplate|Website Boilerplate/,
+                    'No boilerplates are returned'
+                );
+            }
+        };
+    }
 };
 
 done_testing;
