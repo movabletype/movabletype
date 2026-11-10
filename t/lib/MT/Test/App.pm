@@ -103,7 +103,7 @@ sub launch_server {
         code => sub {
             my $port = shift;
             exec "plackup", "-I", "$ENV{MT_HOME}/lib", -"I", "$ENV{MT_HOME}/extlib", "-MPlack::App::WrapCGI", "--port", $port,
-                "-e", "\$ENV{PERL5LIB} = '$ENV{PERL5LIB}$sep$ENV{MT_HOME}/t/lib'; Plack::App::WrapCGI->new(script => '$script', execute => 1)->to_app";
+                "-e", "\$ENV{PERL5LIB} = '" . ($ENV{PERL5LIB} ? "$ENV{PERL5LIB}$sep" : "") . "$ENV{MT_HOME}/t/lib'; Plack::App::WrapCGI->new(script => '$script', execute => 1)->to_app";
         },
     );
 }
