@@ -187,6 +187,21 @@ sub _load_from_registry {
     return $theme;
 }
 
+sub _fix_colon_order {
+    my $hashref = shift;
+    require Data::Visitor::Tiny;
+    Data::Visitor::Tiny::visit(
+        $hashref,
+        sub {
+            my ($key, $valueref) = @_;
+            if (ref $$valueref eq 'HASH' && exists $$valueref->{' :order'}) {
+                $$valueref->{':order'} = delete $$valueref->{' :order'};
+            }
+        },
+    );
+    return $hashref;
+}
+
 sub _load_from_themes_directory {
     my $pkg        = shift;
     my ($theme_id) = @_;
@@ -206,6 +221,9 @@ sub _load_from_themes_directory {
     my $y = eval { MT::Util::YAML::LoadFile($path) }
         or die "Error reading $path: "
         . ( MT::Util::YAML->errstr || $@ || $! );
+
+    # XXX: workaround for YAML::Tiny
+    _fix_colon_order($y);
 
     ## TBD: search all code or excutable values and destroy them here.
     # die "Invalid theme package"
