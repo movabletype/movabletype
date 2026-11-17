@@ -437,6 +437,10 @@ sub _connect_info_mysql {
         if ($opts{password}) {
             $info{DBPassword} = $opts{password};
         }
+        for my $key (sort grep /^mysql_/, keys %opts) {
+            next if $key eq 'mysql_socket';
+            $info{DBIConnectOptions}{$key} = $opts{$key};
+        }
         $self->{dsn} = "dbi:mysql:" . (join ";", map { "$_=$opts{$_}" } keys %opts);
 
         if ($ENV{TEST_VERBOSE}) {
