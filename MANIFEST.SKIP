@@ -191,7 +191,9 @@ themes/broken_blog_theme
 #?package=MTCLOUD ^tools/migrate-mssql
 #?package=MTCLOUD ^addons/Sync.pack/lib/MT/FileSynchronizer/Rsync.pm
 #?package=MTCLOUD ^addons/AWS.pack
+#?package=MTCLOUD ^mt-check.cgi
 #?package=MTCLOUD ^mt-cp.cgi
+#?package=MTCLOUD ^mt-wizard.cgi
 #?package=MTCLOUD ^addons/Community.pack
 #?package=MTCLOUD ^mt-static/addons/Community.pack
 #?package=MTCLOUD ^addons/Cloud.pack/tools/Cloud.pack/cloud-log
@@ -254,7 +256,9 @@ themes/broken_blog_theme
 #?package=MTPCLOUD ^tools/migrate-mssql
 #?package=MTPCLOUD ^addons/Sync.pack/lib/MT/FileSynchronizer/Rsync.pm
 #?package=MTPCLOUD ^addons/AWS.pack
+#?package=MTPCLOUD ^mt-check.cgi
 #?package=MTPCLOUD ^mt-cp.cgi
+#?package=MTPCLOUD ^mt-wizard.cgi
 #?package=MTPCLOUD ^addons/Community.pack
 #?package=MTPCLOUD ^mt-static/addons/Community.pack
 #?package=MTPCLOUD ^plugins/PremiumSearch
