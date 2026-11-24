@@ -13,14 +13,14 @@ use base qw( MT::Object );
 use Exporter 'import';
 our @EXPORT_OK = qw(
     TYPE_ENTRY_OR_PAGE TYPE_CONTENT_TYPE TYPE_COMMENT TYPE_PING
-    ACTION_RI ACTION_RIP
+    ACTION_RI ACTION_RIP ACTION_RAT
     EVENT_SAVE EVENT_PUBLISH EVENT_UNPUBLISH
     TARGET_ALL TARGET_BLOGS_IN_WEBSITE TARGET_BLOG
 );
 our %EXPORT_TAGS = (
     constants => [qw(
         TYPE_ENTRY_OR_PAGE TYPE_CONTENT_TYPE TYPE_COMMENT TYPE_PING
-        ACTION_RI ACTION_RIP
+        ACTION_RI ACTION_RIP ACTION_RAT
         EVENT_SAVE EVENT_PUBLISH EVENT_UNPUBLISH
         TARGET_ALL TARGET_BLOGS_IN_WEBSITE TARGET_BLOG
     )]);
@@ -32,6 +32,7 @@ sub TYPE_PING()          { 4 }
 
 sub ACTION_RI()  { 1 }    # rebuild index pages
 sub ACTION_RIP() { 2 }    # rebuild index pages and send update ping
+sub ACTION_RAT() { 3 }    # rebuild an archive template
 
 sub EVENT_SAVE()      { 1 }
 sub EVENT_PUBLISH()   { 2 }
@@ -51,6 +52,7 @@ __PACKAGE__->install_properties({
         'event'          => 'integer',
         'target'         => 'integer',
         'target_blog_id' => 'integer',
+        'template_id'    => 'integer',
     },
     indexes     => { blog_id => 1 },
     datasource  => 'rebuild_trigger',
@@ -65,6 +67,10 @@ sub ALLOWED () { 2 }
 
 sub class_label {
     MT->translate("Rebuild Trigger");
+}
+
+sub archive_template_types {
+    return qw( archive individual page category ct ct_archive );
 }
 
 sub get_config_value {
@@ -269,10 +275,13 @@ sub post_restore {
             }
         }
 
+        my $new_template_obj = $rt->template_id ? $objects->{ 'MT::Template#' . $rt->template_id } : undef;
+
         if ($blog_restored || $target_blog_restored) {
             $rt->blog_id($new_blog_id)               if $blog_restored;
             $rt->target_blog_id($new_target_blog_id) if $target_blog_restored;
             $rt->ct_id($new_content_type_id)         if $content_type_restored;
+            $rt->template_id($new_template_obj->id)  if $new_template_obj;
             $rt->save;
         }
     }

@@ -29,6 +29,7 @@ class RebuildTrigger extends BaseObject
     public $rebuild_trigger_object_type;
     public $rebuild_trigger_target;
     public $rebuild_trigger_target_blog_id;
+    public $rebuild_trigger_template_id;
 
     public function data($name = null) {
         if (!empty($name)) {
