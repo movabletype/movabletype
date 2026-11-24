@@ -921,41 +921,40 @@ sub _hdlr_entries {
                 || '';
             my $col = $args->{sort_by} || 'authored_on';
             if ( $col ne 'score' ) {
-                if ( my $def = $class->column_def($col) ) {
-                    if ( $def->{type} =~ m/^integer|float$/ ) {
+                (my $meta_col = $col) =~ s/(^field):(.*)/$1.$2/ig;
+                if ( $class->is_meta_column($meta_col) ) {
+                    my $type = MT::Meta->metadata_by_name( $class, $meta_col );
+                    no warnings;
+                    if ( $type->{type} =~ m/integer|float/ ) {
                         @$entries
                             = $so eq 'ascend'
-                            ? sort { $a->$col() <=> $b->$col() } @$entries
-                            : sort { $b->$col() <=> $a->$col() } @$entries;
+                            ? sort { $a->$meta_col() <=> $b->$meta_col() }
+                            @$entries
+                            : sort { $b->$meta_col() <=> $a->$meta_col() }
+                            @$entries;
                     }
                     else {
                         @$entries
                             = $so eq 'ascend'
-                            ? sort { $a->$col() cmp $b->$col() } @$entries
-                            : sort { $b->$col() cmp $a->$col() } @$entries;
+                            ? sort { $a->$meta_col() cmp $b->$meta_col() }
+                            @$entries
+                            : sort { $b->$meta_col() cmp $a->$meta_col() }
+                            @$entries;
                     }
                     $no_resort = 1;
-                }
-                else {
-                    $col =~ s/(^field):(.*)/$1.$2/ig;
-                    if ( $class->is_meta_column($col) ) {
-                        my $type = MT::Meta->metadata_by_name( $class, $col );
-                        no warnings;
-                        if ( $type->{type} =~ m/integer|float/ ) {
+                } else {
+                    if ( my $def = $class->column_def($col) ) {
+                        if ( $def->{type} =~ m/^integer|float$/ ) {
                             @$entries
                                 = $so eq 'ascend'
-                                ? sort { $a->$col() <=> $b->$col() }
-                                @$entries
-                                : sort { $b->$col() <=> $a->$col() }
-                                @$entries;
+                                ? sort { $a->$col() <=> $b->$col() } @$entries
+                                : sort { $b->$col() <=> $a->$col() } @$entries;
                         }
                         else {
                             @$entries
                                 = $so eq 'ascend'
-                                ? sort { $a->$col() cmp $b->$col() }
-                                @$entries
-                                : sort { $b->$col() cmp $a->$col() }
-                                @$entries;
+                                ? sort { $a->$col() cmp $b->$col() } @$entries
+                                : sort { $b->$col() cmp $a->$col() } @$entries;
                         }
                         $no_resort = 1;
                     }
