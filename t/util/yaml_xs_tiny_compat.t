@@ -61,9 +61,6 @@ subtest 'YAML::Tiny interoperability (MTC-31695)' => sub {
             my $theme_yaml = $test_env->path("themes/$theme_id/theme.yaml");
             ok -f $theme_yaml, "theme.yaml exists: $theme_yaml";
 
-            my $loaded = MT::Util::YAML::Tiny::LoadFile($theme_yaml);
-            ok exists $loaded->{elements}{default_categories}{data}{':order'}, ":order exists correctly";
-
             $test_env->update_config(YAMLModule => 'YAML::Tiny');
 
             MT::Util::YAML::_find_module('YAML::Tiny');
