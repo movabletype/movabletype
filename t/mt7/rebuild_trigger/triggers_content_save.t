@@ -105,6 +105,16 @@ my $objs = MT::Test::Fixture->prepare({
             text    => '<mt:Date format="%Y-%m-%d %H:%M:%S">',
             outfile => 'TEST_ROOT/site/child/custom_index.html',
             type    => 'index',
+        }, {
+            archive_type => 'ContentType',
+            name         => 'tmpl_child_custom',
+            content_type => 'child_ct',
+            blog         => 'Test Child Site',
+            text         => '<mt:Date format="%Y-%m-%d %H:%M:%S">',
+            mapping      => [{
+                file_template => 'custom/%i',
+                is_preferred  => 1,
+            }],
         }
     ],
 });
@@ -131,6 +141,18 @@ MT::RebuildTrigger->new(
     target         => TARGET_BLOG,
     target_blog_id => $parent->id,
     ct_id          => $ct->id,
+)->save;
+
+# If a piece of content data in the parent is saved, rebuild an archive template in the child
+MT::RebuildTrigger->new(
+    blog_id        => $child->id,
+    object_type    => TYPE_CONTENT_TYPE,
+    action         => ACTION_RAT,
+    event          => $EventType,
+    target         => TARGET_BLOG,
+    target_blog_id => $parent->id,
+    ct_id          => $ct->id,
+    template_id    => $objs->{template}{ $child->id }{tmpl_child_custom}->id,
 )->save;
 
 # If a piece of content data in the child is saved, rebuild indices in the parent
@@ -177,6 +199,10 @@ subtest 'single edit, content data, parent to child' => sub {
         my $mtime        = $custom_index->stat->mtime;
         my $html         = $custom_index->slurp;
 
+        my $custom_archive = path($test_env->path('site/child/archive/custom/index.html'));
+        my $archive_mtime  = $custom_archive->stat->mtime;
+        my $archive_html   = $custom_archive->slurp;
+
         my $app = MT::Test::App->new;
         $app->login($admin);
         $app->get_ok({
@@ -204,6 +230,14 @@ subtest 'single edit, content data, parent to child' => sub {
             ok $mtime < $new_mtime && $html ne $new_html, "custom_index in the child has been rebuilt by the trigger";
         } else {
             ok $mtime == $new_mtime && $html eq $new_html, "custom_index in the child remains the same";
+        }
+
+        my $new_archive_mtime = $custom_archive->stat->mtime;
+        my $new_archive_html  = $custom_archive->slurp;
+        if ($EventType == EVENT_SAVE or $EventType == EVENT_PUBLISH) {
+            ok $archive_mtime < $new_archive_mtime && $archive_html ne $new_archive_html, "custom archive in the child has been rebuilt by the trigger";
+        } else {
+            ok $archive_mtime == $new_archive_mtime && $archive_html eq $new_archive_html, "custom archive in the child remains the same";
         }
     };
 
