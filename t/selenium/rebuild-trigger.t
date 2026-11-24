@@ -199,6 +199,36 @@ subtest 'duplication with content type' => sub {
     }
 };
 
+subtest 'duplication with a trigger saved without template_id' => sub {
+
+    set_up();
+
+    my $rt = MT::RebuildTrigger->new;
+    $rt->blog_id(1);
+    $rt->object_type(MT::RebuildTrigger::TYPE_ENTRY_OR_PAGE());
+    $rt->action(MT::RebuildTrigger::ACTION_RI());
+    $rt->event(MT::RebuildTrigger::EVENT_SAVE());
+    $rt->target(MT::RebuildTrigger::TARGET_ALL());
+    $rt->target_blog_id(0);
+    $rt->ct_id(0);
+    $rt->save;
+
+    $s->visit('/cgi-bin/mt.cgi?__mode=cfg_rebuild_trigger&blog_id=1');
+    $s->wait_until_ready;
+    assert_no_browser_errors();
+
+    my @trs = $s->driver->find_elements('#multiblog_blog_list table tbody tr', 'css');
+    is(scalar @trs, 1, 'trigger exists');
+    wait_until { $s->driver->find_element('.mt-mainContent button.save', 'css')->is_displayed };
+    assert_no_browser_errors();
+    $s->scroll_and_click('.mt-mainContent button.save');
+    $s->wait_until_ready;
+    assert_no_browser_errors();
+    my @trs2 = $s->driver->find_elements('#multiblog_blog_list table tbody tr', 'css');
+    is(scalar @trs2, 1, 'duplication is not added');
+    $s->screenshot_full("saved") if $ENV{MT_TEST_CAPTURE_SCREENSHOT};
+};
+
 subtest 'two cases saved at once' => sub {
 
     set_up();
@@ -262,6 +292,32 @@ subtest 'remove' => sub {
     my @trs3 = $s->driver->find_elements('#multiblog_blog_list table tbody tr', 'css');
     is(scalar @trs3, 0, 'triggers are removed and saved');
     $s->screenshot_full("removed-saved") if $ENV{MT_TEST_CAPTURE_SCREENSHOT};
+};
+
+subtest 'archive template action' => sub {
+
+    set_up();
+
+    my $scenario = [[7, 1], [1, 1], [], [3, 1], [5, 2]];
+
+    $s->visit('/cgi-bin/mt.cgi?__mode=cfg_rebuild_trigger&blog_id=3');
+    $s->wait_until_ready;
+    assert_no_browser_errors();
+
+    note "scenarios: " . stringify_scenarios($scenario);
+    process_scenarios($scenario);
+
+    my @trs = $s->driver->find_elements('#multiblog_blog_list table tbody tr', 'css');
+    is(scalar @trs, 1, 'trigger is added');
+    $s->screenshot_full("added") if $ENV{MT_TEST_CAPTURE_SCREENSHOT};
+    wait_until { $s->driver->find_element('.mt-mainContent button.save', 'css')->is_displayed };
+    assert_no_browser_errors();
+    $s->scroll_and_click('.mt-mainContent button.save');
+    $s->wait_until_ready;
+    assert_no_browser_errors();
+    my @trs2 = $s->driver->find_elements('#multiblog_blog_list table tbody tr', 'css');
+    is(scalar @trs2, 1, 'trigger is saved');
+    $s->screenshot_full("saved") if $ENV{MT_TEST_CAPTURE_SCREENSHOT};
 };
 
 sub process_scenarios {

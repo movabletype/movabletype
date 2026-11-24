@@ -53,6 +53,11 @@ $test_env->prepare_fixture(sub {
         content_type_id => $ct->id,
         data            => { $cf->id => 'test text' },
     );
+
+    MT::Test::Permission->make_template(blog_id => $site->id, name => 'my archive',  type => 'archive');
+    MT::Test::Permission->make_template(blog_id => $site->id, name => '<b>tmpl</b>', type => 'individual');
+    MT::Test::Permission->make_template(blog_id => $site->id, name => 'my index',    type => 'index');
+    MT::Test::Permission->make_template(blog_id => $site->id, name => 'removed',     type => 'archive');
 });
 
 my $site = MT->model('website')->load({ name => 'my test website' });
@@ -80,6 +85,9 @@ subtest 'load_config for empty' => sub {
 };
 
 subtest 'load_config' => sub {
+    my $archive = MT->model('template')->load({ blog_id => $site->id, name => 'my archive' });
+    my $removed = MT->model('template')->load({ blog_id => $site->id, name => 'removed' });
+
     my $rt1 = MT::RebuildTrigger->new;
     $rt1->blog_id($site->id);
     $rt1->object_type(MT::RebuildTrigger::TYPE_CONTENT_TYPE());
@@ -116,11 +124,26 @@ subtest 'load_config' => sub {
     $rt5->id(undef);
     $rt5->blog_id(100);
     $rt5->save;
+    my $rt6 = MT::RebuildTrigger->new;
+    $rt6->blog_id($site->id);
+    $rt6->object_type(MT::RebuildTrigger::TYPE_ENTRY_OR_PAGE());
+    $rt6->action(MT::RebuildTrigger::ACTION_RAT());
+    $rt6->event(MT::RebuildTrigger::EVENT_SAVE());
+    $rt6->target(MT::RebuildTrigger::TARGET_BLOG());
+    $rt6->target_blog_id($blog->id);
+    $rt6->ct_id(0);
+    $rt6->template_id($archive->id);
+    $rt6->save;
+    my $rt7 = $rt6->clone();
+    $rt7->id(undef);
+    $rt7->template_id($removed->id);
+    $rt7->save;
+    $removed->remove;
 
     my $json  = MT::CMS::RebuildTrigger::load_config($app, $site->id);
-    my $param = JSON->new->utf8(0)->decode(MT::Util::decode_js($json));
+    my $param = JSON->new->utf8(0)->decode($json);
     is(ref $param, 'ARRAY', 'right ref');
-    is(@$param,    3,       'right number');
+    is(@$param,    4,       'right number');
 
     is($param->[0]->{id},             '1',                                          'right value');
     is($param->[0]->{object_type},    MT::RebuildTrigger::TYPE_CONTENT_TYPE(),      'right value');
@@ -158,6 +181,20 @@ subtest 'load_config' => sub {
     is($param->[2]->{blog_name},      '(All sites and child sites in this system)', 'right value');
     is($param->[2]->{ct_id},          $ct->id,                                      'right value');
     is($param->[2]->{ct_name},        'testct_a',                                   'right value');
+    is($param->[3]->{id},             '6',                                          'right value');
+    is($param->[3]->{object_type},    MT::RebuildTrigger::TYPE_ENTRY_OR_PAGE(),     'right value');
+    is($param->[3]->{object_label},   'Entry/Page',                                 'right value');
+    is($param->[3]->{action},         MT::RebuildTrigger::ACTION_RAT(),             'right value');
+    is($param->[3]->{action_label},   'rebuild archive template "my archive".',     'right value');
+    is($param->[3]->{event},          MT::RebuildTrigger::EVENT_SAVE(),             'right value');
+    is($param->[3]->{event_label},    'Save',                                       'right value');
+    is($param->[3]->{target},         MT::RebuildTrigger::TARGET_BLOG(),            'right value');
+    is($param->[3]->{target_blog_id}, $blog->id,                                    'right value');
+    is($param->[3]->{blog_name},      'my test blog',                               'right value');
+    is($param->[3]->{ct_id},          0,                                            'right value');
+    is($param->[3]->{ct_name},        '',                                           'right value');
+    is($param->[3]->{template_id},    $archive->id,                                 'right value');
+    ok(!MT::RebuildTrigger->load($rt7->id), 'trigger for the removed template is removed');
 };
 
 subtest 'config' => sub {
@@ -177,6 +214,11 @@ subtest 'config' => sub {
 
     $app->get_ok({ __mode => 'add_rebuild_trigger', blog_id => $blog->id, dialog => 1 });
     $app->get_ok({ __mode => 'add_rebuild_trigger', blog_id => $site->id, dialog => 1 });
+    my $archive = MT->model('template')->load({ blog_id => $site->id, name => 'my archive' });
+    my $index   = MT->model('template')->load({ blog_id => $site->id, name => 'my index' });
+    ok $app->content =~ /value="3_@{[ $archive->id ]}"/, 'include archive template';
+    ok $app->content !~ /value="3_@{[ $index->id ]}"/,   'not include index template';
+    ok $app->content =~ /&lt;b&gt;tmpl&lt;\/b&gt;/,     'template name is escaped';
 
     # avoid searching just by a single word 'test' as the uppercased 'TEST' is a part of the TEST_ROOT template
     $app->post_ok({ __mode => 'add_rebuild_trigger', blog_id => $site->id, json => 1, _type => 'site', offset => 0, search => 'my test' });
