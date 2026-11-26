@@ -500,16 +500,16 @@
             1,
             null,
             "__NOW__",
-            "9d62f433402b4ee527bb6f24dfe35d80fa70e901",
+            "347bd49e4d81922f36c03822c2d66f5e79c320cc",
             0,
             "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u00011-\u0000\u0000\u0000\ttest text",
             1,
-            "a81778f2eee6bebd5060e0657f14e981f865679c",
+            "31b37195cf1ed46396b986e0f49ec80316395c46",
             null,
             null,
             "__NOW__",
             2,
-            "a81778f2eee6bebd5060e0657f14e981f865679c",
+            "31b37195cf1ed46396b986e0f49ec80316395c46",
             null,
             201722
          ]
@@ -549,7 +549,7 @@
             null,
             null,
             "single_line_text",
-            "8eef9e2e397625911ba775e3ea9bd9a08fd5d4c3"
+            "6f66afe5ae1bbfcbcccc75b30aa946762a6eb81a"
          ]
       ]
    },
@@ -598,7 +598,7 @@
       ],
       "rows" : [
          [
-            "DataAPIDisableSite 0\nDefaultSupportedLanguages en_us,ja\nDisableContentFieldPermission 1\nDisableDataAPI 0\nDisableNotificationPings 1\nHidePrivateRelatedContentData 1\nPluginAlias ContentType Information Widget=ContentInfoWidget\nPluginAlias Markdown=Markdown/Markdown.pl\nPluginAlias SmartyPants=Markdown/SmartyPants.pl\nPluginAlias Textile=Textile/textile2.pl\nPluginAlias WXR Importer=WXRImporter\nPluginAlias Widget Manager Upgrade Assistant=WidgetManager/WidgetManager.pl\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion blockeditor=1\nPluginSchemaVersion commonmark=1.0\nPluginSchemaVersion formattedtext=1.00\nPluginSchemaVersion tinymce6=1\nPluginSwitch BlockEditor=0\nPluginSwitch CommonMark=1\nPluginSwitch ContentInfoWidget=1\nPluginSwitch DashboardWidgetTemplate=1\nPluginSwitch FormattedText=1\nPluginSwitch FormattedTextForTinyMCE6=1\nPluginSwitch GoogleAnalyticsV4=1\nPluginSwitch Markdown/Markdown.pl=1\nPluginSwitch Markdown/SmartyPants.pl=1\nPluginSwitch Textile/textile2.pl=0\nPluginSwitch TinyMCE6=1\nPluginSwitch WXRImporter=1\nPluginSwitch WidgetManager/WidgetManager.pl=0\nSchemaVersion 9.0003\nTrimFilePath 1\n",
+            "DataAPIDisableSite 0\nDefaultSupportedLanguages en_us,ja\nDisableContentFieldPermission 1\nDisableDataAPI 0\nDisableNotificationPings 1\nHidePrivateRelatedContentData 1\nPluginAlias ContentType Information Widget=ContentInfoWidget\nPluginAlias Markdown=Markdown/Markdown.pl\nPluginAlias SmartyPants=Markdown/SmartyPants.pl\nPluginAlias Textile=Textile/textile2.pl\nPluginAlias WXR Importer=WXRImporter\nPluginAlias Widget Manager Upgrade Assistant=WidgetManager/WidgetManager.pl\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion blockeditor=1\nPluginSchemaVersion commonmark=1.0\nPluginSchemaVersion formattedtext=1.00\nPluginSchemaVersion tinymce6=1\nPluginSwitch BlockEditor=0\nPluginSwitch CommonMark=1\nPluginSwitch ContentInfoWidget=1\nPluginSwitch DashboardWidgetTemplate=1\nPluginSwitch FormattedText=1\nPluginSwitch FormattedTextForTinyMCE6=1\nPluginSwitch GoogleAnalyticsV4=1\nPluginSwitch Markdown/Markdown.pl=1\nPluginSwitch Markdown/SmartyPants.pl=1\nPluginSwitch Textile/textile2.pl=0\nPluginSwitch TinyMCE6=1\nPluginSwitch WXRImporter=1\nPluginSwitch WidgetManager/WidgetManager.pl=0\nSchemaVersion 9.0004\nTrimFilePath 1\n",
             1
          ]
       ]
@@ -626,12 +626,12 @@
             "__NOW__",
             null,
             "This is a sample.",
-            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002A\u0000\u0000\u0000\u0001H\u0000\u0000\u0000\u0006\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\u0010single_line_text\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(8eef9e2e397625911ba775e3ea9bd9a08fd5d4c3\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0004name-\u0000\u0000\u0000\u000bsingle text\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00011",
+            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002A\u0000\u0000\u0000\u0001H\u0000\u0000\u0000\u0006\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\u0010single_line_text\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0004name-\u0000\u0000\u0000\u000bsingle text\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(6f66afe5ae1bbfcbcccc75b30aa946762a6eb81a\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u00011",
             1,
             null,
             "__NOW__",
             "testct_a",
-            "9d62f433402b4ee527bb6f24dfe35d80fa70e901",
+            "347bd49e4d81922f36c03822c2d66f5e79c320cc",
             null,
             null
          ],
@@ -646,7 +646,7 @@
             null,
             "__NOW__",
             "testct_b",
-            "47ecc92f84bf6406dad488032cb7e4d62968aba4",
+            "8c126a9b0a8f33c5aa8d581160d50ff09613593e",
             null,
             null
          ],
@@ -661,7 +661,7 @@
             null,
             "__NOW__",
             "testct_c",
-            "56d559e728e1e89a0f1493b30e52c95127347bd1",
+            "94d9024259ffd6df44e81d53f155a6b6eb3dc98c",
             null,
             null
          ]
@@ -3264,6 +3264,94 @@
             1,
             "<mt:include widget=\"Search\"><mt:include widget=\"Home Page Widgets Group\"><mt:include widget=\"About This Page\">",
             "widgetset"
+         ],
+         [
+            2,
+            0,
+            0,
+            1,
+            null,
+            null,
+            "__NOW__",
+            0,
+            110,
+            null,
+            null,
+            null,
+            null,
+            null,
+            "__NOW__",
+            "my archive",
+            "blog.html",
+            1,
+            "<MTBlogName>",
+            "archive"
+         ],
+         [
+            2,
+            0,
+            0,
+            1,
+            null,
+            null,
+            "__NOW__",
+            0,
+            111,
+            null,
+            null,
+            null,
+            null,
+            null,
+            "__NOW__",
+            "<b>tmpl</b>",
+            "blog.html",
+            1,
+            "<MTBlogName>",
+            "individual"
+         ],
+         [
+            2,
+            0,
+            0,
+            1,
+            null,
+            null,
+            "__NOW__",
+            0,
+            112,
+            null,
+            null,
+            null,
+            null,
+            null,
+            "__NOW__",
+            "my index",
+            "blog.html",
+            1,
+            "<MTBlogName>",
+            "index"
+         ],
+         [
+            2,
+            0,
+            0,
+            1,
+            null,
+            null,
+            "__NOW__",
+            0,
+            113,
+            null,
+            null,
+            null,
+            null,
+            null,
+            "__NOW__",
+            "removed",
+            "blog.html",
+            1,
+            "<MTBlogName>",
+            "archive"
          ]
       ]
    },
@@ -3497,5 +3585,5 @@
          ]
       ]
    },
-   "schema_version" : "WidgetManager 1.1; blockeditor 1; commonmark 1.0; core 9.0003; formattedtext 1.00; tinymce6 1"
+   "schema_version" : "WidgetManager 1.1; blockeditor 1; commonmark 1.0; core 9.0004; formattedtext 1.00; tinymce6 1"
 }

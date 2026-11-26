@@ -1,4 +1,4 @@
-SchemaVersion 9.0003
+SchemaVersion 9.0004
 plugins/BlockEditor
 plugins/CommonMark
 plugins/ContentInfoWidget
