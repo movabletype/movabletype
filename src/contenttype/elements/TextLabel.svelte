@@ -49,7 +49,6 @@
       value={displayOptions.text}
       onchange={(e) => {
         options.text = e.currentTarget.value;
-      }}
-    ></textarea>
+      }}></textarea>
   </ContentFieldOption>
 </ContentFieldOptionGroup>

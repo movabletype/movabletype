@@ -190,6 +190,7 @@ sub write_config {
         DebugMode              => $ENV{MT_TEST_DEBUG_MODE} || 0,
         BuilderModule          => $ENV{MT_TEST_BUILDER} || 'MT::Builder',
         DisableObjectCache     => $ENV{MT_TEST_DISABLE_OBJECT_CACHE} || 0,
+        UsejQuery4             => $ENV{MT_TEST_USE_JQUERY4} || 0,
         exists $ENV{MT_TEST_ADMIN_THEME_ID} ? (AdminThemeId => $ENV{MT_TEST_ADMIN_THEME_ID}) : (),
         exists $ENV{MT_TEST_DISABLE_REGEXP_SEARCH} ? (DisableRegexpSearch => $ENV{MT_TEST_DISABLE_REGEXP_SEARCH}) : (),
     );
@@ -435,6 +436,10 @@ sub _connect_info_mysql {
         }
         if ($opts{password}) {
             $info{DBPassword} = $opts{password};
+        }
+        for my $key (sort grep /^mysql_/, keys %opts) {
+            next if $key eq 'mysql_socket';
+            $info{DBIConnectOptions}{$key} = $opts{$key};
         }
         $self->{dsn} = "dbi:mysql:" . (join ";", map { "$_=$opts{$_}" } keys %opts);
 
