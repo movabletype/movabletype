@@ -37,6 +37,8 @@ my $new_blog        = $app->model('blog')->new;
 $new_blog->id(9999);
 my $new_content_type = $app->model('content_type')->new;
 $new_content_type->id(99999);
+my $new_template = $app->model('template')->new;
+$new_template->id(999);
 
 ### Utilities
 sub is_restored {
@@ -51,6 +53,8 @@ sub is_restored {
     $rebuild_trigger->ct_id( $original->{ct_id} )
         if $original->{object_type}
         == MT::RebuildTrigger::TYPE_CONTENT_TYPE();
+    $rebuild_trigger->template_id( $original->{template_id} )
+        if $original->{action} == MT::RebuildTrigger::ACTION_RAT();
     $rebuild_trigger->save;
     MT::RebuildTrigger->post_restore( $objects, undef, undef, sub { } );
     my $new_blog_id
@@ -66,6 +70,9 @@ sub is_restored {
     $data->{ct_id} = $rebuild_trigger_restored->ct_id
         if $rebuild_trigger_restored->object_type
         == MT::RebuildTrigger::TYPE_CONTENT_TYPE();
+    $data->{template_id} = $rebuild_trigger_restored->template_id
+        if $rebuild_trigger_restored->action
+        == MT::RebuildTrigger::ACTION_RAT();
     is_deeply( $data, $restored, $message );
 }
 
@@ -275,6 +282,29 @@ is_restored(
         ct_id          => 99999,
     },
     'If restoring data has a trigger for other_triggers.'
+);
+
+# Archive Template
+is_restored(
+    {   action         => MT::RebuildTrigger::ACTION_RAT(),
+        target         => MT::RebuildTrigger::TARGET_BLOG(),
+        target_blog_id => 1,
+        object_type    => MT::RebuildTrigger::TYPE_ENTRY_OR_PAGE(),
+        event          => MT::RebuildTrigger::EVENT_SAVE(),
+        template_id    => 1,
+    },
+    {   'MT::RebuildTrigger#1' => $rebuild_trigger,
+        'MT::Blog#1'           => $new_blog,
+        'MT::Template#1'       => $new_template,
+    },
+    {   action         => MT::RebuildTrigger::ACTION_RAT(),
+        target         => MT::RebuildTrigger::TARGET_BLOG(),
+        target_blog_id => 9999,
+        object_type    => MT::RebuildTrigger::TYPE_ENTRY_OR_PAGE(),
+        event          => MT::RebuildTrigger::EVENT_SAVE(),
+        template_id    => 999,
+    },
+    'If restoring data has a trigger for an archive template.'
 );
 
 done_testing;

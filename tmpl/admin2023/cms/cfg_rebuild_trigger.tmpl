@@ -159,7 +159,7 @@
             }
 
             function stringify(a) {
-                return ['id', 'object_type', 'action', 'event', 'target','target_blog_id', 'ct_id'].reduce(
+                return ['id', 'object_type', 'action', 'event', 'target','target_blog_id', 'ct_id', 'template_id'].reduce(
                                                         function(r, k){ r.push(a[k] || 0); return r; }, []).join(',');
             }
 

@@ -1427,6 +1427,7 @@ use vars qw( @ISA %Lexicon );
 	'Select to apply this trigger to all sites and child sites in this system.' => 'システム内のすべてのサイトと子サイトでトリガーを有効にする',
 	'TrackBack' => 'トラックバック',
 	'__UNPUBLISHED' => '公開終了',
+	'rebuild archive template "[_1]".' => 'アーカイブテンプレート「[_1]」を再構築する',
 	'rebuild indexes.' => 'インデックスを再構築する',
 
 ## lib/MT/CMS/Revision.pm

@@ -1,6 +1,6 @@
 --
 -- Created by SQL::Translator::Producer::MySQL
--- Created on Mon May 11 11:52:21 2026
+-- Created on Thu Nov 26 04:58:27 2026
 --
 SET foreign_key_checks=0;
 
@@ -1100,6 +1100,7 @@ CREATE TABLE `mt_rebuild_trigger` (
   `rebuild_trigger_object_type` integer(11) NULL DEFAULT NULL,
   `rebuild_trigger_target` integer(11) NULL DEFAULT NULL,
   `rebuild_trigger_target_blog_id` integer(11) NULL DEFAULT NULL,
+  `rebuild_trigger_template_id` integer(11) NULL DEFAULT NULL,
   INDEX `mt_rebuild_trigger_blog_id` (`rebuild_trigger_blog_id`),
   PRIMARY KEY (`rebuild_trigger_id`)
 ) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;

@@ -115,7 +115,7 @@ sub add {
         $params->{build_compose_menus} = 0;
         $params->{build_user_menus}    = 0;
         $params->{object_type_loop}    = object_type_loop_plugin_reduced($app);
-        $params->{action_loop}         = action_loop($app);
+        $params->{action_loop}         = action_loop($app, $blog_id);
         $params->{event_loop}          = event_loop($app);
         $params->{site_name}           = $app->blog->name;
 
@@ -215,10 +215,19 @@ sub ct_count {
 }
 
 sub action_loop {
-    my $app = shift;
-    return [
-        { id => MT::RebuildTrigger::ACTION_RI(),  name => $app->translate('rebuild indexes.') },
-    ];
+    my ($app, $blog_id) = @_;
+    my @loop = ({ id => MT::RebuildTrigger::ACTION_RI(), name => $app->translate('rebuild indexes.') });
+    my @tmpls = MT->model('template')->load(
+        { blog_id => $blog_id, type => [MT::RebuildTrigger::archive_template_types()] },
+        { sort    => 'name' },
+    );
+    for my $tmpl (@tmpls) {
+        push @loop, {
+            id   => MT::RebuildTrigger::ACTION_RAT() . '_' . $tmpl->id,
+            name => $app->translate('rebuild archive template "[_1]".', $tmpl->name),
+        };
+    }
+    return \@loop;
 }
 
 sub event_loop {
@@ -247,17 +256,20 @@ sub load_config {
     require MT::RebuildTrigger;
     require JSON;
 
-    my %actions_hash = (map { $_->{id}, $_->{name} } @{ action_loop($app) });
+    my %actions_hash = (map { $_->{id}, $_->{name} } @{ action_loop($app, $blog_id) });
     my %event_hash   = (map { $_->{id}, $_->{name} } @{ event_loop($app) });
     my %object_hash  = (map { $_->{id}, $_->{name} } @{ object_type_loop($app) });
     my @json_seed;
 
     for my $rt (MT->model('rebuild_trigger')->load({ blog_id => $blog_id })) {
+        my $is_rat       = $rt->action == MT::RebuildTrigger::ACTION_RAT();
+        my $action_label = $actions_hash{ $is_rat ? $rt->action . '_' . $rt->template_id : $rt->action };
+        $rt->remove() and next if $is_rat && !$action_label;
         my $ct      = $rt->ct_id ? MT->model('content_type')->load($rt->ct_id) : undef;
         my $ct_name = $ct        ? $ct->name                                   : '';
         my $e       = {
             id             => $rt->id,
-            action_label   => $actions_hash{ $rt->action },
+            action_label   => $action_label,
             action         => $rt->action,
             object_label   => $rt->ct_id ? $ct_name : $object_hash{ $rt->object_type },
             event_label    => $event_hash{ $rt->event },
@@ -267,6 +279,7 @@ sub load_config {
             ct_id          => $rt->ct_id,
             target         => $rt->target,
             target_blog_id => $rt->target_blog_id,
+            template_id    => $rt->template_id,
         };
         if ($rt->target == MT::RebuildTrigger::TARGET_ALL()) {
             $e->{blog_name} = $app->translate('(All sites and child sites in this system)');
@@ -283,11 +296,11 @@ sub load_config {
     return JSON->new->utf8(0)->encode(\@json_seed);
 }
 
-my @key_fields = ('object_type', 'action', 'event', 'target', 'target_blog_id', 'ct_id');
+my @key_fields = ('object_type', 'action', 'event', 'target', 'target_blog_id', 'ct_id', 'template_id');
 
 sub _rt_digest {
     my $rt = shift;
-    return join(',', map { $rt->$_ } @key_fields);
+    return join(',', map { $rt->$_ || 0 } @key_fields);
 }
 
 sub unstringify {
@@ -299,7 +312,7 @@ sub unstringify {
 
     my @array = split(/,/, $csv);
 
-    if (scalar @array != 7) {
+    if (scalar @array != 8) {
         die $app->translate('Format Error: Comma-separated-values contains wrong number of fields.');
     }
 
@@ -351,6 +364,7 @@ sub save {
             $rt->target($t->{target});
             $rt->target_blog_id($t->{target_blog_id} || 0);
             $rt->ct_id($t->{ct_id}                   || 0);
+            $rt->template_id($t->{template_id}       || 0);
 
             my $new_digest = _rt_digest($rt);
             next if (exists $digests{$new_digest});

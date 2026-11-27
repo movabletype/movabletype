@@ -42,7 +42,9 @@ jQuery(function(){
             // Action
             var action_elm = jQuery('input[name="action-cb"]:checked');
             var action_label = action_elm.parent().parent().parent().find('.panel-label').text();
-            var action = action_elm.val();
+            var action_value = action_elm.val().split('_');
+            var action = action_value[0];
+            var template_id = action_value[1] || 0;
             // Trigger
             var object_elm = jQuery('input[name="object-cb"]:checked');
             var object = object_elm.val();
@@ -65,6 +67,7 @@ jQuery(function(){
             window.parent.addMultiBlogTrigger({
                 'action_label': action_label,
                 'action': action,
+                'template_id': template_id,
                 'blog_name': blog_name,
                 'target_blog_id': blog_id.substr(0, 1) === '_' ? 0 : blog_id,
                 'target': blog_id.substr(0, 1) === '_' ? blog_id.substr(1) : TARGET_BLOG,
@@ -560,7 +563,7 @@ jQuery(function(){
                 </div>
               </td>
               <td class="panel-label">
-                <mt:var name="name">
+                <mt:var name="name" escape="html">
               </td>
             </tr>
             </mt:loop>
